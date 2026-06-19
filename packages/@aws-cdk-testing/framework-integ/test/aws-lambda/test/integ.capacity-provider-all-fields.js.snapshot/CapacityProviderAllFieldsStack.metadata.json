@@ -3,7 +3,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:9:15)",
+        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:42:15)",
         "...node internals..."
       ]
     }
@@ -73,16 +73,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
-        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+        "addBootstrapVersionRule (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:294:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:194:9)",
+        "DefaultStackSynthesizer.synthesize (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:335:18)",
+        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:3)",
+        "visit (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:524:9)",
+        "visit (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:521:9)",
+        "synthesizeTree (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:460:5)",
+        "synthesize (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:88:5)",
+        "App.synth (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:212:92)",
+        "App.synth (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:200:27)"
       ]
     }
   ],
@@ -94,16 +94,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
-        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+        "addBootstrapVersionRule (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:194:9)",
+        "DefaultStackSynthesizer.synthesize (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:335:18)",
+        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:3)",
+        "visit (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:524:9)",
+        "visit (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:521:9)",
+        "synthesizeTree (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:460:5)",
+        "synthesize (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:88:5)",
+        "App.synth (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:212:92)",
+        "App.synth (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:200:27)"
       ]
     }
   ],
@@ -115,9 +115,8 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:770:29)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:10:13)",
+        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:790:29)",
+        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:43:13)",
         "...node internals..."
       ]
     }
@@ -258,9 +257,8 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:825:29)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:10:13)",
+        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:29)",
+        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:43:13)",
         "...node internals..."
       ]
     }
@@ -273,9 +271,8 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:828:29)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:10:13)",
+        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:848:29)",
+        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:43:13)",
         "...node internals..."
       ]
     }
@@ -294,13 +291,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:98:25)",
-        "new RestrictDefaultSgProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:24:9)",
-        "RestrictDefaultSgProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:21:28)",
-        "WrappedClass.restrictDefaultSecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1072:99)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:894:22)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:10:13)",
+        "new CustomResourceProviderBase (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:131:25)",
+        "new RestrictDefaultSgProvider (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:57:9)",
+        "RestrictDefaultSgProvider.getOrCreateProvider (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:54:28)",
+        "WrappedClass.restrictDefaultSecurityGroup (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:97)",
+        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:914:22)",
+        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:43:13)",
         "...node internals..."
       ]
     }
@@ -313,13 +309,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:120:24)",
-        "new RestrictDefaultSgProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:24:9)",
-        "RestrictDefaultSgProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:21:28)",
-        "WrappedClass.restrictDefaultSecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1072:99)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:894:22)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:10:13)",
+        "new CustomResourceProviderBase (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:153:24)",
+        "new RestrictDefaultSgProvider (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:57:9)",
+        "RestrictDefaultSgProvider.getOrCreateProvider (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:54:28)",
+        "WrappedClass.restrictDefaultSecurityGroup (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:97)",
+        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:914:22)",
+        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:43:13)",
         "...node internals..."
       ]
     }
@@ -332,10 +327,8 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:11:23)",
+        "new SecurityGroup (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:440:34)",
+        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:44:23)",
         "...node internals..."
       ]
     }
@@ -348,9 +341,8 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:12:22)",
+        "new Role (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:470:34)",
+        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:45:22)",
         "...node internals..."
       ]
     }
@@ -363,9 +355,8 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CapacityProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/capacity-provider.js:329:37)",
-        "new CapacityProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:16:1)",
+        "new CapacityProvider (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/capacity-provider.js:349:37)",
+        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:49:1)",
         "...node internals..."
       ]
     }
@@ -378,16 +369,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "new Subnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1283:28)",
+        "new PublicSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1551:13)",
+        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
       ]
     }
   ],
@@ -399,16 +387,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "new Subnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1303:27)",
+        "new PublicSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1551:13)",
+        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
       ]
     }
   ],
@@ -420,16 +405,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "new Subnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1308:32)",
+        "new PublicSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1551:13)",
+        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
       ]
     }
   ],
@@ -441,13 +423,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addDefaultInternetRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1304:27)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:3)",
+        "WrappedClass.addDefaultInternetRoute (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1323:27)",
+        "WrappedClass.<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:855: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:855:3)",
         "Array.forEach (:)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:10:13)",
+        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:852:36)",
+        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:43:13)",
         "...node internals..."
       ]
     }
@@ -460,13 +441,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addNatGateway (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1556:50)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureNat (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
-        "WrappedClass.createNatGateways (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:10:13)",
+        "WrappedClass.addNatGateway (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:50)",
+        "WrappedClass.<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:188:33)",
+        "WrappedClass.createNatGateways (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:948:22)",
+        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:865:26)",
+        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:43:13)",
         "...node internals..."
       ]
     }
@@ -479,13 +459,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addNatGateway (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1554:25)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureNat (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
-        "WrappedClass.createNatGateways (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:10:13)",
+        "WrappedClass.addNatGateway (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1572:25)",
+        "WrappedClass.<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:188:33)",
+        "WrappedClass.createNatGateways (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:948:22)",
+        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:865:26)",
+        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:43:13)",
         "...node internals..."
       ]
     }
@@ -498,16 +477,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "new Subnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1283:28)",
+        "new PublicSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1551:13)",
+        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
       ]
     }
   ],
@@ -519,16 +495,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "new Subnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1303:27)",
+        "new PublicSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1551:13)",
+        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
       ]
     }
   ],
@@ -540,16 +513,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "new Subnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1308:32)",
+        "new PublicSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1551:13)",
+        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
       ]
     }
   ],
@@ -561,13 +531,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addDefaultInternetRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1304:27)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:3)",
+        "WrappedClass.addDefaultInternetRoute (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1323:27)",
+        "WrappedClass.<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:855: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:855:3)",
         "Array.forEach (:)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:10:13)",
+        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:852:36)",
+        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:43:13)",
         "...node internals..."
       ]
     }
@@ -580,13 +549,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addNatGateway (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1556:50)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureNat (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
-        "WrappedClass.createNatGateways (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:10:13)",
+        "WrappedClass.addNatGateway (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:50)",
+        "WrappedClass.<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:188:33)",
+        "WrappedClass.createNatGateways (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:948:22)",
+        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:865:26)",
+        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:43:13)",
         "...node internals..."
       ]
     }
@@ -599,13 +567,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addNatGateway (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1554:25)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureNat (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
-        "WrappedClass.createNatGateways (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:10:13)",
+        "WrappedClass.addNatGateway (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1572:25)",
+        "WrappedClass.<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:188:33)",
+        "WrappedClass.createNatGateways (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:948:22)",
+        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:865:26)",
+        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:43:13)",
         "...node internals..."
       ]
     }
@@ -618,16 +585,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "new Subnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1283:28)",
+        "new PrivateSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1623:13)",
+        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
       ]
     }
   ],
@@ -639,16 +603,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "new Subnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1303:27)",
+        "new PrivateSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1623:13)",
+        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
       ]
     }
   ],
@@ -660,16 +621,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "new Subnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1308:32)",
+        "new PrivateSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1623:13)",
+        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
       ]
     }
   ],
@@ -681,14 +639,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1393:27)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
-        "NatGatewayProvider.configureNat (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
-        "WrappedClass.createNatGateways (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:10:13)",
+        "WrappedClass.addRoute (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1412:27)",
+        "WrappedClass.<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:209:16)",
+        "NatGatewayProvider.configureNat (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:194:18)",
+        "WrappedClass.createNatGateways (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:948:22)",
+        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:865:26)",
+        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:43:13)",
         "...node internals..."
       ]
     }
@@ -701,16 +658,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "new Subnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1283:28)",
+        "new PrivateSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1623:13)",
+        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
       ]
     }
   ],
@@ -722,16 +676,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "new Subnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1303:27)",
+        "new PrivateSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1623:13)",
+        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
       ]
     }
   ],
@@ -743,16 +694,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "new Subnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1308:32)",
+        "new PrivateSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1623:13)",
+        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
       ]
     }
   ],
@@ -764,14 +712,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1393:27)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
-        "NatGatewayProvider.configureNat (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
-        "WrappedClass.createNatGateways (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:10:13)",
+        "WrappedClass.addRoute (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1412:27)",
+        "WrappedClass.<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:209:16)",
+        "NatGatewayProvider.configureNat (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:194:18)",
+        "WrappedClass.createNatGateways (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:948:22)",
+        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:865:26)",
+        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:43:13)",
         "...node internals..."
       ]
     }
@@ -784,13 +731,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "WrappedClass.restrictDefaultSecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1091:13)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:894:22)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:10:13)",
+        "new CustomResource (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:128:29)",
+        "WrappedClass.restrictDefaultSecurityGroup (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1111:13)",
+        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:914:22)",
+        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:43:13)",
         "...node internals..."
       ]
     }
