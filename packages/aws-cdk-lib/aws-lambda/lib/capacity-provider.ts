@@ -107,7 +107,7 @@ export interface CapacityProviderProps {
    * - `PropagateTags.none()` - Explicitly disable tag propagation
    * - `PropagateTags.explicit(tags)` - Propagate specified tags
    *
-   * @default - No tag propagation configured; the CloudFormation API default applies.
+   * @default - No tag propagation; tags are not propagated to managed resources.
    */
   readonly propagateTags?: PropagateTags;
 }
