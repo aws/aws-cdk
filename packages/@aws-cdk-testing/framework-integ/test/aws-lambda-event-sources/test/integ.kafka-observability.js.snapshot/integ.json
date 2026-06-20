@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "KafkaObservabilityIntegTest/DefaultTest": {
+      "stacks": [
+        "KafkaObservabilityTest"
+      ],
+      "assertionStack": "KafkaObservabilityIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "KafkaObservabilityIntegTestDefaultTestDeployAssert30D40A38"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

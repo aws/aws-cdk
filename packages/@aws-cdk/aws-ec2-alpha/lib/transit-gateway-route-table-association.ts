@@ -1,10 +1,11 @@
 import { CfnTransitGatewayRouteTableAssociation } from 'aws-cdk-lib/aws-ec2';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { ITransitGatewayAssociation, TransitGatewayAssociationBase } from './transit-gateway-association';
-import { ITransitGatewayAttachment } from './transit-gateway-attachment';
-import { ITransitGatewayRouteTable } from './transit-gateway-route-table';
+import type { Construct } from 'constructs';
+import type { ITransitGatewayAssociation } from './transit-gateway-association';
+import { TransitGatewayAssociationBase } from './transit-gateway-association';
+import type { ITransitGatewayAttachment } from './transit-gateway-attachment';
+import type { ITransitGatewayRouteTable } from './transit-gateway-route-table';
 
 /**
  * Represents a Transit Gateway Route Table Association.

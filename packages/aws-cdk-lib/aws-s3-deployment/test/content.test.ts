@@ -2,14 +2,13 @@ import { Vpc } from '../../aws-ec2';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
-import { IResolvable, Lazy, Stack, Token, Tokenization } from '../../core';
+import { Lazy, Stack, Tokenization } from '../../core';
 import { Source } from '../lib';
 import { renderData } from '../lib/render-data';
 
 const expectEqualIfResolved = (stack: Stack, a: any, b: any) => expect(stack.resolve(a)).toStrictEqual(stack.resolve(b));
 
 test('simple string', () => {
-  const stack = new Stack();
   expect(renderData('foo')).toStrictEqual({
     markers: {},
     text: 'foo',
@@ -89,7 +88,6 @@ test('markers are returned in the source config', () => {
 });
 
 test('lazy string is not resolved', () => {
-  const stack = new Stack();
   const token = Lazy.string({ produce: () => 'resolved!' });
 
   expect(renderData(token)).toStrictEqual({
@@ -101,7 +99,6 @@ test('lazy string is not resolved', () => {
 });
 
 test('lazy within a string is not resolved', () => {
-  const stack = new Stack();
   const token = Lazy.string({ produce: () => 'resolved!' });
 
   expect(renderData(`hello, ${token}`)).toStrictEqual({
@@ -113,7 +110,6 @@ test('lazy within a string is not resolved', () => {
 });
 
 test('renderData can render empty string data', () => {
-  const stack = new Stack();
   expect(renderData('')).toStrictEqual({
     markers: {},
     text: '',

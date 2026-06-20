@@ -1,5 +1,5 @@
-import * as iotevents from '@aws-cdk/aws-iotevents-alpha';
-import { Construct } from 'constructs';
+import type * as iotevents from '@aws-cdk/aws-iotevents-alpha';
+import type { Construct } from 'constructs';
 
 /**
  * The action to delete an existing timer.

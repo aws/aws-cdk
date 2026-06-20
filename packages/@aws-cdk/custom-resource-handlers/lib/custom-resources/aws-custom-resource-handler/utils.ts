@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
-/* eslint-disable no-console */
+
 import type { AwsCredentialIdentityProvider } from '@smithy/types';
-import { AwsSdkCall } from './construct-types';
+import type { AwsSdkCall } from './construct-types';
 
 type Event = AWSLambda.CloudFormationCustomResourceEvent;
 
@@ -113,7 +113,7 @@ export async function getCredentials(call: AwsSdkCall, physicalResourceId: strin
       ExternalId: call.externalId,
     };
 
-    const { fromTemporaryCredentials } = await import('@aws-sdk/credential-providers');
+    const { fromTemporaryCredentials } = require('@aws-sdk/credential-providers');
     credentials = fromTemporaryCredentials({
       params,
       clientConfig: call.region !== undefined ? { region: call.region } : undefined,

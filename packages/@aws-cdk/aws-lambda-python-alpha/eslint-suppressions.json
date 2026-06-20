@@ -8,10 +8,5 @@
     "@cdklabs/no-throw-default-error": {
       "count": 1
     }
-  },
-  "test/function.test.ts": {
-    "@cdklabs/no-throw-default-error": {
-      "count": 2
-    }
   }
 }

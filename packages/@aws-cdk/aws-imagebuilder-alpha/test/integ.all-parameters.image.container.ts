@@ -5,9 +5,12 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as imagebuilder from '../lib';
 import { ImageArchitecture, ImageType } from '../lib';
+import { enableInspector } from './enable-inspector';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-imagebuilder-image-container-all-parameters');
+
+const inspector = enableInspector(stack, ['ECR']);
 
 const repository = new ecr.Repository(stack, 'Repository', {
   emptyOnDelete: true,
@@ -38,7 +41,7 @@ const containerRecipe = new imagebuilder.ContainerRecipe(stack, 'ContainerRecipe
   targetRepository: imagebuilder.Repository.fromEcr(repository),
   components: [
     {
-      component: imagebuilder.AwsManagedComponent.helloWorld(stack, 'HelloWorld', {
+      component: imagebuilder.AmazonManagedComponent.helloWorld(stack, 'HelloWorld', {
         platform: imagebuilder.Platform.LINUX,
       }),
     },
@@ -59,7 +62,7 @@ const image = new imagebuilder.Image(stack, 'Image-Container', {
   distributionConfiguration: containerDistributionConfiguration,
   executionRole,
   logGroup,
-  workflows: [{ workflow: imagebuilder.AwsManagedWorkflow.buildContainer(stack, 'BuildContainer') }],
+  workflows: [{ workflow: imagebuilder.AmazonManagedWorkflow.buildContainer(stack, 'BuildContainer') }],
   enhancedImageMetadataEnabled: false,
   imageTestsEnabled: true,
   imageScanningEnabled: true,
@@ -68,6 +71,7 @@ const image = new imagebuilder.Image(stack, 'Image-Container', {
   deletionExecutionRole,
   tags: { key1: 'value1', key2: 'value2' },
 });
+image.node.addDependency(inspector);
 image.grantDefaultExecutionRolePermissions(executionRole);
 
 new cdk.CfnOutput(stack, 'ImageArn', { value: image.imageArn });

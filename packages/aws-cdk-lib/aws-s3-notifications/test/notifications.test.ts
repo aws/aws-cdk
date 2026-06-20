@@ -4,7 +4,6 @@ import * as sns from '../../aws-sns';
 import * as cdk from '../../core';
 import * as s3n from '../lib';
 
-/* eslint-disable max-len */
 /* eslint-disable @stylistic/quote-props */
 
 test('bucket without notifications', () => {
@@ -327,7 +326,7 @@ test('a notification destination can specify a set of dependencies that must be 
       NotificationConfiguration: { QueueConfigurations: [{ Events: ['s3:ObjectCreated:*'], QueueArn: 'arn' }] },
       SkipDestinationValidation: false,
     },
-    DependsOn: ['Dependent'],
+    DependsOn: ['BucketNotificationsHandlerPolicy2180A8BD', 'Dependent'],
   });
 });
 

@@ -1,4 +1,5 @@
-import { IPrincipal, ComparablePrincipal } from '../principals';
+import type { IPrincipal } from '../principals';
+import { ComparablePrincipal } from '../principals';
 
 export function partitionPrincipals(xs: IPrincipal[]): PartitionResult {
   const nonComparable: IPrincipal[] = [];

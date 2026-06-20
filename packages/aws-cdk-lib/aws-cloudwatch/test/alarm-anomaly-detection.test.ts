@@ -1,7 +1,6 @@
-import { Construct } from 'constructs';
-import { Match, Template, Annotations } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import { Duration, Stack } from '../../core';
-import { Alarm, AnomalyDetectionAlarm, ComparisonOperator, CfnAlarm, Metric, MathExpression, TreatMissingData } from '../lib';
+import { Alarm, AnomalyDetectionAlarm, ComparisonOperator, Metric, MathExpression, TreatMissingData } from '../lib';
 
 describe('AnomalyDetectionAlarm', () => {
   let stack: Stack;
@@ -173,7 +172,7 @@ describe('AnomalyDetectionAlarm', () => {
   describe('Behavior', () => {
     test('correctly sets up anomaly detection band', () => {
       // WHEN
-      const alarm = new AnomalyDetectionAlarm(stack, 'Alarm', {
+      new AnomalyDetectionAlarm(stack, 'Alarm', {
         metric,
         evaluationPeriods: 3,
         comparisonOperator: ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,

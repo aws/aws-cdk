@@ -706,6 +706,12 @@
     "SecurityGroups": [
      {
       "Fn::GetAtt": [
+       "NlbFargateServiceLBSecurityGroup2639219D",
+       "GroupId"
+      ]
+     },
+     {
+      "Fn::GetAtt": [
        "SecurityGroupNlbFA132873",
        "GroupId"
       ]
@@ -729,6 +735,33 @@
     "VpcPublicSubnet2DefaultRoute63E63096C",
     "VpcPublicSubnet2RouteTableAssociationDD5762D8"
    ]
+  },
+  "NlbFargateServiceLBSecurityGroup2639219D": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatically created Security Group for ELB NlbIpv6StackNlbFargateServiceLB636DBCD9",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "255.255.255.255/32",
+      "Description": "Disallow all traffic",
+      "FromPort": 252,
+      "IpProtocol": "icmp",
+      "ToPort": 86
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "from 0.0.0.0/0:80",
+      "FromPort": 80,
+      "IpProtocol": "tcp",
+      "ToPort": 80
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
   },
   "NlbFargateServiceLBPublicListenerBD013EC0": {
    "Type": "AWS::ElasticLoadBalancingV2::Listener",

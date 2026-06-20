@@ -1,8 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { AssetManifest } from '../../cloud-assembly-schema';
+import type { AssetManifest } from '../../cloud-assembly-schema';
 import { App, Stack } from '../../core';
-import { AssetManifestArtifact, CloudArtifact, CloudAssembly } from '../../cx-api';
+import type { CloudArtifact, CloudAssembly } from '../../cx-api';
+import { AssetManifestArtifact } from '../../cx-api';
 import { DockerImageAsset } from '../lib';
 
 describe('build cache', () => {

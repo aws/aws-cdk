@@ -5,9 +5,9 @@ import { EncryptCommand, KMSClient } from '@aws-sdk/client-kms';
 import * as S3 from '@aws-sdk/client-s3';
 import { mockClient } from 'aws-sdk-client-mock';
 import * as fs from 'fs-extra';
-import * as nock from 'nock';
+import nock from 'nock';
 import { handler } from '../../../lib/custom-resources/aws-custom-resource-handler';
-import { AwsSdkCall } from '../../../lib/custom-resources/aws-custom-resource-handler/construct-types';
+import type { AwsSdkCall } from '../../../lib/custom-resources/aws-custom-resource-handler/construct-types';
 import { forceSdkInstallation } from '../../../lib/custom-resources/aws-custom-resource-handler/load-sdk';
 import 'aws-sdk-client-mock-jest' ;
 
@@ -29,7 +29,6 @@ beforeEach(() => {
   mockExecSync.mockReset();
 });
 
-/* eslint-disable no-console */
 console.log = jest.fn();
 
 const eventCommon = {
@@ -486,7 +485,8 @@ test('installs the latest SDK', async () => {
   await fs.ensureDir('/tmp/node_modules/@aws-sdk');
   await fs.symlink(require.resolve('@aws-sdk/client-s3'), tmpPath);
 
-  const localAwsSdk: typeof S3 = await import(tmpPath);
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const localAwsSdk: typeof S3 = require(tmpPath);
   const localS3MockClient = mockClient(localAwsSdk.S3Client);
 
   // Now remove the symlink and let the handler install it
@@ -567,7 +567,8 @@ test('falls back to installed sdk if installation fails', async () => {
 test('SDK credentials are not persisted across subsequent invocations', async () => {
   // GIVEN
   s3MockClient.on(S3.GetObjectCommand).resolves({});
-  const credentialProviders = await import('@aws-sdk/credential-providers' as string);
+  // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
+  const credentialProviders = require('@aws-sdk/credential-providers');
   const mockCreds = credentialProviders.fromTemporaryCredentials({
     params: { RoleArn: 'arn:aws:iam::123456789012:role/CoolRole' },
   });
@@ -651,7 +652,8 @@ test('SDK credentials are not persisted across subsequent invocations', async ()
 test('Role Session Name is sanitized before assuming', async () => {
   // GIVEN
   s3MockClient.on(S3.GetObjectCommand).resolves({});
-  const credentialProviders = await import('@aws-sdk/credential-providers' as string);
+  // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
+  const credentialProviders = require('@aws-sdk/credential-providers');
   const mockCreds = credentialProviders.fromTemporaryCredentials({
     params: { RoleArn: 'arn:aws:iam::123456789012:role/CoolRole' },
   });

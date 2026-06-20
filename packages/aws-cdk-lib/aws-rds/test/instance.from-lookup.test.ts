@@ -1,4 +1,4 @@
-import { Match, Template } from '../../assertions';
+import { Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as cxschema from '../../cloud-assembly-schema';
 import { ContextProvider, Stack } from '../../core';
@@ -222,37 +222,37 @@ describe('DatabaseInstanceBase connections', () => {
     ];
     const value = { value: resultObjs };
     const mock = jest.spyOn(ContextProvider, 'getValue').mockReturnValue(value);
-    
+
     // WHEN
     const stack = new Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
-    
+
     const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(stack, 'TestSG', 'sg-test');
-    
+
     const instance = rds.DatabaseInstance.fromLookup(stack, 'MyInstance', {
       instanceIdentifier: 'instance-1',
     });
-    
+
     instance.connections.allowDefaultPortFrom(securityGroup, 'Allow from test SG');
-    
+
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
       IpProtocol: 'tcp',
-      FromPort: 5432,  
-      ToPort: 5432,    
+      FromPort: 5432,
+      ToPort: 5432,
       Description: 'Allow from test SG',
       SourceSecurityGroupId: 'sg-test',
       GroupId: 'sg-1'
     });
-    
+
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
       IpProtocol: 'tcp',
-      FromPort: 5432,  
-      ToPort: 5432,    
+      FromPort: 5432,
+      ToPort: 5432,
       Description: 'Allow from test SG',
       SourceSecurityGroupId: 'sg-test',
       GroupId: 'sg-2'
     });
-    
+
     mock.mockRestore();
   });
 });

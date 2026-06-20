@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Match, Template } from '../../../assertions';
-import { Metric } from '../../../aws-cloudwatch';
+import type { Metric } from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import { Key } from '../../../aws-kms';
 import * as s3 from '../../../aws-s3';
@@ -568,7 +568,7 @@ describe('tests', () => {
 
     test('bucket with KMS throws validation error', () => {
       // GIVEN
-      const { stack, bucket, lb } = loggingSetup(true);
+      const { bucket, lb } = loggingSetup(true);
 
       // WHEN
       const logAccessLogFunctionTest = () => lb.logAccessLogs(bucket);
@@ -904,7 +904,7 @@ describe('tests', () => {
 
     test('bucket with KMS throws validation error', () => {
       // GIVEN
-      const { stack, bucket, lb } = loggingSetup(true);
+      const { bucket, lb } = loggingSetup(true);
 
       // WHEN
       const logConnectionLogFunctionTest = () => lb.logConnectionLogs(bucket);

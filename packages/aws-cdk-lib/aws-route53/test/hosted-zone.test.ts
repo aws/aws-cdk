@@ -305,7 +305,7 @@ test('grantDelegation on L1s', () => {
   });
 
   // WHEN
-  HostedZoneGrants.fromHostedZone(zone).delegation(role);
+  HostedZoneGrants.fromHostedZone(zone as any).delegation(role);
 
   // THEN
   const template = Template.fromStack(stack);
@@ -763,5 +763,28 @@ describe('key signing key', () => {
 
     // THEN
     expect(() => zone.enableDnssec({ kmsKey: key })).toThrow('DNSSEC is already enabled for this hosted zone');
+  });
+});
+
+describe('acceleratedRecoveryEnabled', () => {
+  test.each([
+    [true, { EnableAcceleratedRecovery: true }],
+    [false, { EnableAcceleratedRecovery: false }],
+    [undefined, Match.absent()],
+  ])('acceleratedRecoveryEnabled=%p creates HostedZoneFeatures=%p on PublicHostedZone', (acceleratedRecoveryEnabled, expectedFeatures) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new PublicHostedZone(stack, 'HostedZone', {
+      zoneName: 'testZone',
+      acceleratedRecoveryEnabled,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::HostedZone', {
+      Name: 'testZone.',
+      HostedZoneFeatures: expectedFeatures,
+    });
   });
 });

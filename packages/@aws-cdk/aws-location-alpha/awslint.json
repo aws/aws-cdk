@@ -1,4 +1,12 @@
 {
-    "exclude": [
-    ]
+  "exclude": [
+    "prefer-ref-interface:@aws-cdk/aws-location-alpha.Tracker.addGeofenceCollections.geofenceCollections",
+    "prefer-ref-interface:@aws-cdk/aws-location-alpha.TrackerProps.geofenceCollections",
+    "interface-extends-ref:@aws-cdk/aws-location-alpha.IApiKey",
+    "interface-extends-ref:@aws-cdk/aws-location-alpha.IGeofenceCollection",
+    "interface-extends-ref:@aws-cdk/aws-location-alpha.IMap",
+    "interface-extends-ref:@aws-cdk/aws-location-alpha.IPlaceIndex",
+    "interface-extends-ref:@aws-cdk/aws-location-alpha.IRouteCalculator",
+    "interface-extends-ref:@aws-cdk/aws-location-alpha.ITracker"
+  ]
 }

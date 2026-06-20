@@ -3,16 +3,18 @@ import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
-import {
-  AwsManagedWorkflow,
-  ContainerRecipe,
-  DistributionConfiguration,
+import type {
   IContainerRecipe,
   IImageRecipe,
+  IRecipeBase,
+} from '../lib';
+import {
+  AmazonManagedWorkflow,
+  ContainerRecipe,
+  DistributionConfiguration,
   Image,
   ImageRecipe,
   InfrastructureConfiguration,
-  IRecipeBase,
   WorkflowOnFailure,
   WorkflowParameterValue,
 } from '../lib';
@@ -149,7 +151,7 @@ describe('Image', () => {
       ),
       workflows: [
         {
-          workflow: AwsManagedWorkflow.buildImage(stack, 'BuildImage'),
+          workflow: AmazonManagedWorkflow.buildImage(stack, 'BuildImage'),
           onFailure: WorkflowOnFailure.ABORT,
           parallelGroup: 'group-1',
           parameters: { parameterName: WorkflowParameterValue.fromString('parameterValue') },
@@ -275,7 +277,7 @@ describe('Image', () => {
       ),
       workflows: [
         {
-          workflow: AwsManagedWorkflow.buildContainer(stack, 'BuildContainer'),
+          workflow: AmazonManagedWorkflow.buildContainer(stack, 'BuildContainer'),
           onFailure: WorkflowOnFailure.ABORT,
           parallelGroup: 'group-1',
           parameters: { parameterName: WorkflowParameterValue.fromString('parameterValue') },
@@ -473,7 +475,7 @@ describe('Image', () => {
   test('generates an execution role when workflows are provided', () => {
     const image = new Image(stack, 'Image', {
       recipe: ImageRecipe.fromImageRecipeName(stack, 'ImageRecipe', 'imported-image-recipe'),
-      workflows: [{ workflow: AwsManagedWorkflow.buildImage(stack, 'BuildImage') }],
+      workflows: [{ workflow: AmazonManagedWorkflow.buildImage(stack, 'BuildImage') }],
     });
 
     const template = Template.fromStack(stack);

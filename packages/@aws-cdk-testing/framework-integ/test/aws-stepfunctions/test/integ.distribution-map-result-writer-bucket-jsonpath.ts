@@ -32,7 +32,7 @@ const distributedMap = new sfn.DistributedMap(stack, 'DistributedMap', {
 distributedMap.itemProcessor(new sfn.Pass(stack, 'Pass'));
 
 const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
-  definition: distributedMap,
+  definitionBody: sfn.DefinitionBody.fromChainable(distributedMap),
 });
 
 const integTest = new IntegTest(app, 'aws-stepfunctions-map-result-writer-bucket-jsonpath-test', {

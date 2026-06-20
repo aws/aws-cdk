@@ -1,9 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
-import { IAsset } from '../../assets';
+import type { IAsset } from '../../assets';
 import * as ecr from '../../aws-ecr';
 import { AssetStaging, Names, Stack, Stage, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * The sed pattern used to extract the image ID from docker load output
@@ -20,7 +21,7 @@ export interface TarballImageAssetProps {
   /**
    * Absolute path to the tarball.
    *
-   * It is recommended to to use the script running directory (e.g. `__dirname`
+   * It is recommended to use the script running directory (e.g. `__dirname`
    * in Node.js projects or dirname of `__file__` in Python) if your tarball
    * is located as a resource inside your project.
    */
@@ -90,7 +91,7 @@ export class TarballImageAsset extends Construct implements IAsset {
     super(scope, id);
 
     if (!fs.existsSync(props.tarballFile)) {
-      throw new ValidationError(`Cannot find file at ${props.tarballFile}`, this);
+      throw new ValidationError(lit`CannotFindFile`, `Cannot find file at ${props.tarballFile}`, this);
     }
 
     const stagedTarball = new AssetStaging(this, 'Staging', { sourcePath: props.tarballFile });
@@ -104,10 +105,16 @@ export class TarballImageAsset extends Construct implements IAsset {
     const stack = Stack.of(this);
     const location = stack.synthesizer.addDockerImageAsset({
       sourceHash: stagedTarball.assetHash,
+      // The tarball path is passed as a positional argument ($1) rather than
+      // interpolated into the script, so that a path containing shell
+      // metacharacters (e.g. `$(...)`, `;`, backticks) is treated as literal
+      // data and cannot result in command injection.
       executable: [
         'sh',
         '-c',
-        `${process.env.CDK_DOCKER ?? 'docker'} load -i ${relativePathInOutDir} | tail -n 1 | sed "${DOCKER_LOAD_OUTPUT_REGEX}"`,
+        `${process.env.CDK_DOCKER ?? 'docker'} load -i "$1" | tail -n 1 | sed "${DOCKER_LOAD_OUTPUT_REGEX}"`,
+        'cdk-tarball-image-asset',
+        relativePathInOutDir,
       ],
       displayName: props.displayName ?? Names.stackRelativeConstructPath(this),
     });

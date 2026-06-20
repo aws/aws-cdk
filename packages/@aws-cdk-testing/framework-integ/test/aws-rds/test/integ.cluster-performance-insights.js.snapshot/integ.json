@@ -1,5 +1,5 @@
 {
-  "version": "36.0.24",
+  "version": "52.0.0",
   "testCases": {
     "integ-cluster-performance-insights/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "integ-cluster-performance-insights/DefaultTest/DeployAssert",
       "assertionStackName": "integclusterperformanceinsightsDefaultTestDeployAssert60BCBDC0"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

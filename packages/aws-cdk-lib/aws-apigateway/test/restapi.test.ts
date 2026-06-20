@@ -1,12 +1,13 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { cx_api } from '../..';
 import { Template, Match } from '../../assertions';
 import { UserPool } from '../../aws-cognito';
 import { GatewayVpcEndpoint } from '../../aws-ec2';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import { App, CfnElement, CfnResource, Lazy, RemovalPolicy, Size, Stack } from '../../core';
+import type { CfnElement } from '../../core';
+import { App, CfnResource, Lazy, RemovalPolicy, Size, Stack } from '../../core';
 import { JSII_RUNTIME_SYMBOL } from '../../core/lib/constants';
+import * as cx_api from '../../cx-api';
 import * as apigw from '../lib';
 
 let stack: Stack;
@@ -1811,7 +1812,7 @@ describe('SpecRestApi', () => {
       const api = apigw.RestApi.fromRestApiId(stack, 'Api', 'api-id');
 
       // THEN
-      const result = api.addToResourcePolicy(new iam.PolicyStatement({
+      const result = (api as any).addToResourcePolicy(new iam.PolicyStatement({
         actions: ['execute-api:Invoke'],
         resources: [Stack.of(stack).formatArn({
           service: 'execute-api',
@@ -1831,7 +1832,7 @@ describe('SpecRestApi', () => {
       });
 
       // THEN
-      const result = api.addToResourcePolicy(new iam.PolicyStatement({
+      const result = (api as any).addToResourcePolicy(new iam.PolicyStatement({
         actions: ['execute-api:Invoke'],
         resources: [Stack.of(stack).formatArn({
           service: 'execute-api',
@@ -2016,19 +2017,19 @@ describe('SpecRestApi', () => {
 });
 
 describe('telemetry metadata', () => {
+  beforeEach(() => {
+    // In case we didn't compile using jsii
+    if (!(apigw.RestApi as any).hasOwnProperty(JSII_RUNTIME_SYMBOL)) {
+      (apigw.RestApi as any)[JSII_RUNTIME_SYMBOL] = {
+        fqn: 'aws-cdk-lib.aws-apigateway.RestApi',
+      };
+    }
+  });
+
   it('redaction happens when feature flag is enabled', () => {
     const app = new App();
     app.node.setContext(cx_api.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);
     stack = new Stack(app);
-
-    const mockConstructor = {
-      [JSII_RUNTIME_SYMBOL]: {
-        fqn: 'aws-cdk-lib.aws-apigateway.RestApi',
-      },
-    };
-    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
-      constructor: mockConstructor,
-    });
 
     const api = new apigw.RestApi(stack, 'myapi', {
       defaultMethodOptions: {
@@ -2055,15 +2056,6 @@ describe('telemetry metadata', () => {
     const app = new App();
     app.node.setContext(cx_api.ENABLE_ADDITIONAL_METADATA_COLLECTION, false);
     stack = new Stack(app);
-
-    const mockConstructor = {
-      [JSII_RUNTIME_SYMBOL]: {
-        fqn: 'aws-cdk-lib.aws-apigateway.RestApi',
-      },
-    };
-    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
-      constructor: mockConstructor,
-    });
 
     const api = new apigw.RestApi(stack, 'myapi', {
       defaultMethodOptions: {

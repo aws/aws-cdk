@@ -376,5 +376,31 @@ describe('lambda version', () => {
         });
       }).toThrow(/minExecutionEnvironments must be less than or equal to maxExecutionEnvironments/);
     });
+
+    test('accepts tokens for execution environment scaling config', () => {
+      const stack = new cdk.Stack();
+      const fn = new lambda.Function(stack, 'Fn', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+      const tokenMin = cdk.Token.asNumber(cdk.Fn.ref('MinEnvParam'));
+      const tokenMax = cdk.Token.asNumber(cdk.Fn.ref('MaxEnvParam'));
+
+      // WHEN - should not throw
+      new lambda.Version(stack, 'Version', {
+        lambda: fn,
+        minExecutionEnvironments: tokenMin,
+        maxExecutionEnvironments: tokenMax,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Version', {
+        FunctionScalingConfig: {
+          MinExecutionEnvironments: { Ref: 'MinEnvParam' },
+          MaxExecutionEnvironments: { Ref: 'MaxEnvParam' },
+        },
+      });
+    });
   });
 });

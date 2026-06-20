@@ -17,6 +17,14 @@ new Function(stack, 'Lambda', {
   runtime: Runtime.DOTNET_8,
 });
 
+new Function(stack, 'DotNet10Lambda', {
+  code: Code.fromAsset(path.join(__dirname, 'dotnet-handler')),
+  handler: 'Handler',
+  runtime: Runtime.DOTNET_10,
+});
+
 new integ.IntegTest(app, 'lambda-runtime-management', {
   testCases: [stack],
 });
+
+app.synth();

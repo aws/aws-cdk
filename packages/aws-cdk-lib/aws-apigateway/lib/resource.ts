@@ -1,13 +1,18 @@
-import { Construct } from 'constructs';
-import { CfnResource, CfnResourceProps, IResourceRef, ResourceReference } from './apigateway.generated';
-import { Cors, CorsOptions } from './cors';
-import { Integration } from './integration';
+import type { Construct } from 'constructs';
+import type { CfnResourceProps, IResourceRef, ResourceReference } from './apigateway.generated';
+import { CfnResource } from './apigateway.generated';
+import type { CorsOptions } from './cors';
+import { Cors } from './cors';
+import type { Integration } from './integration';
 import { MockIntegration } from './integrations';
-import { AuthorizationType, Method, MethodOptions } from './method';
-import { IRestApi, RestApi } from './restapi';
-import { IResource as IResourceBase, Resource as ResourceConstruct } from '../../core';
+import type { MethodOptions } from './method';
+import { AuthorizationType, Method } from './method';
+import type { IRestApi, RestApi } from './restapi';
+import type { IResource as IResourceBase } from '../../core';
+import { Resource as ResourceConstruct } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface IResource extends IResourceBase, IResourceRef {
@@ -27,7 +32,7 @@ export interface IResource extends IResourceBase, IResourceRef {
    * The rest API that this resource is part of.
    *
    * The reason we need the RestApi object itself and not just the ID is because the model
-   * is being tracked by the top-level RestApi object for the purpose of calculating it's
+   * is being tracked by the top-level RestApi object for the purpose of calculating its
    * hash to determine the ID of the deployment. This allows us to automatically update
    * the deployment when the model of the REST API changes.
    */
@@ -207,11 +212,11 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     // Access-Control-Allow-Origin
 
     if (options.allowOrigins.length === 0) {
-      throw new ValidationError('allowOrigins must contain at least one origin', this);
+      throw new ValidationError(lit`AllowOriginsContainLeastOne`, 'allowOrigins must contain at least one origin', this);
     }
 
     if (options.allowOrigins.includes('*') && options.allowOrigins.length > 1) {
-      throw new ValidationError(`Invalid "allowOrigins" - cannot mix "*" with specific origins: ${options.allowOrigins.join(',')}`, this);
+      throw new ValidationError(lit`InvalidAllowOriginsCannotMix`, `Invalid "allowOrigins" - cannot mix "*" with specific origins: ${options.allowOrigins.join(',')}`, this);
     }
 
     // we use the first origin here and if there are more origins in the list, we
@@ -232,7 +237,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
 
     if (allowMethods.includes('ANY')) {
       if (allowMethods.length > 1) {
-        throw new ValidationError(`ANY cannot be used with any other method. Received: ${allowMethods.join(',')}`, this);
+        throw new ValidationError(lit`CannotUsedOtherMethod`, `ANY cannot be used with any other method. Received: ${allowMethods.join(',')}`, this);
       }
 
       allowMethods = Cors.ALL_METHODS;
@@ -253,7 +258,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     let maxAgeSeconds;
 
     if (options.maxAge && options.disableCache) {
-      throw new ValidationError('The options "maxAge" and "disableCache" are mutually exclusive', this);
+      throw new ValidationError(lit`OptionsMaxageDisablecacheMutually`, 'The options "maxAge" and "disableCache" are mutually exclusive', this);
     }
 
     if (options.maxAge) {
@@ -356,7 +361,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
 
     if (path.startsWith('/')) {
       if (this.path !== '/') {
-        throw new ValidationError(`Path may start with "/" only for the resource, but we are at: ${this.path}`, this);
+        throw new ValidationError(lit`PathStartOnlyResource`, `Path may start with "/" only for the resource, but we are at: ${this.path}`, this);
       }
 
       // trim trailing "/"
@@ -366,7 +371,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     const parts = path.split('/');
     const next = parts.shift();
     if (!next || next === '') {
-      throw new ValidationError('resourceForPath cannot be called with an empty path', this);
+      throw new ValidationError(lit`ResourcePathCannotCalledEmpty`, 'resourceForPath cannot be called with an empty path', this);
     }
 
     let resource = this.getResource(next);
@@ -430,11 +435,11 @@ export class Resource extends ResourceBase {
       public readonly defaultCorsPreflightOptions?: CorsOptions = undefined;
 
       public get parentResource(): IResource {
-        throw new ValidationError('parentResource is not configured for imported resource.', scope);
+        throw new ValidationError(lit`ParentResourceConfiguredImportedResource`, 'parentResource is not configured for imported resource.', scope);
       }
 
       public get restApi(): RestApi {
-        throw new ValidationError('restApi is not configured for imported resource.', scope);
+        throw new ValidationError(lit`RestApiConfiguredImportedResource`, 'restApi is not configured for imported resource.', scope);
       }
     }
 
@@ -504,7 +509,7 @@ export class Resource extends ResourceBase {
    */
   public get restApi(): RestApi {
     if (!this.parentResource) {
-      throw new ValidationError('parentResource was unexpectedly not defined', this);
+      throw new ValidationError(lit`ParentResourceUnexpectedlyDefined`, 'parentResource was unexpectedly not defined', this);
     }
     return this.parentResource.restApi;
   }
@@ -584,7 +589,7 @@ function validateResourcePathPart(part: string, scope: Construct) {
   }
 
   if (!/^[a-zA-Z0-9:\.\_\-\$]+$/.test(part)) {
-    throw new ValidationError(`Resource's path part only allow [a-zA-Z0-9:._-$], an optional trailing '+'
+    throw new ValidationError(lit`ResourceSPathPartOnly`, `Resource's path part only allow [a-zA-Z0-9:._-$], an optional trailing '+'
       and curly braces at the beginning and the end: ${part}`, scope);
   }
 }

@@ -28,7 +28,7 @@ For example, let's say the minimum version your library needs is `2.38.0`. Your 
 {
   "peerDependencies": {
     "aws-cdk-lib": "^2.38.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.5.0"
   },
   "devDependencies": {
     /* Install the oldest version for testing so we don't accidentally use features from a newer version than we declare */
@@ -43,7 +43,7 @@ For CDK apps, declare them under the `dependencies` section. Use a caret so you 
 {
   "dependencies": {
     "aws-cdk-lib": "^2.38.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.5.0"
   }
 }
 ```
@@ -273,11 +273,8 @@ Nested stacks also support the use of Docker image and file assets.
 
 ## Accessing resources in a different stack
 
-You can access resources in a different stack, as long as they are in the
-same account and AWS Region (see [next section](#accessing-resources-in-a-different-stack-and-region) for an exception).
-The following example defines the stack `stack1`,
-which defines an Amazon S3 bucket. Then it defines a second stack, `stack2`,
-which takes the bucket from stack1 as a constructor property.
+You can pass resource references between stacks freely, including across regions and
+accounts. The CDK automatically wires the underlying CloudFormation mechanism for you.
 
 ```ts
 const prod = { account: '123456789012', region: 'us-east-1' };
@@ -291,30 +288,14 @@ const stack2 = new StackThatExpectsABucket(app, 'Stack2', {
 });
 ```
 
-If the AWS CDK determines that the resource is in the same account and
-Region, but in a different stack, it automatically synthesizes AWS
-CloudFormation
-[Exports](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-exports.html)
-in the producing stack and an
-[Fn::ImportValue](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-importvalue.html)
-in the consuming stack to transfer that information from one stack to the
-other.
-
-## Accessing resources in a different stack and region
-
-> **This feature is currently experimental**
-
-You can enable the Stack property `crossRegionReferences`
-in order to access resources in a different stack *and* region. With this feature flag
-enabled it is possible to do something like creating a CloudFront distribution in `us-east-2` and
-an ACM certificate in `us-east-1`.
+This also works across regions. For example, you can create a CloudFront distribution
+in `us-east-2` that references an ACM certificate in `us-east-1`:
 
 ```ts
 const stack1 = new Stack(app, 'Stack1', {
   env: {
     region: 'us-east-1',
   },
-  crossRegionReferences: true,
 });
 const cert = new acm.Certificate(stack1, 'Cert', {
   domainName: '*.example.com',
@@ -325,7 +306,6 @@ const stack2 = new Stack(app, 'Stack2', {
   env: {
     region: 'us-east-2',
   },
-  crossRegionReferences: true,
 });
 new cloudfront.Distribution(stack2, 'Distribution', {
   defaultBehavior: {
@@ -336,59 +316,183 @@ new cloudfront.Distribution(stack2, 'Distribution', {
 });
 ```
 
-When the AWS CDK determines that the resource is in a different stack *and* is in a different
-region, it will "export" the value by creating a custom resource in the producing stack which
-creates SSM Parameters in the consuming region for each exported value. The parameters will be
-created with the name '/cdk/exports/${consumingStackName}/${export-name}'.
-In order to "import" the exports into the consuming stack a [SSM Dynamic reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html#dynamic-references-ssm)
-is used to reference the SSM parameter which was created.
+### Reference strength
 
-In order to mimic strong references, a Custom Resource is also created in the consuming
-stack which marks the SSM parameters as being "imported". When a parameter has been successfully
-imported, the producing stack cannot update the value.
+Every cross-stack reference has a *strength* that determines the CloudFormation mechanism
+used to pass the value and the coupling it creates between stacks. There are three
+strengths:
+
+**Strong** (default) — the producing stack cannot be deleted while any consumer exists.
+This is enforced by CloudFormation itself.
+
+**Weak** — uses `Fn::GetStackOutput` to read an output directly from the producing stack.
+No coupling is created: the producing stack or resource can be deleted independently.
+This means consuming stacks may temporarily reference a nonexistent resource until they
+are updated as well.
+
+**Both** — a transitional state used when migrating from strong to weak. The producer
+keeps the strong-side artifacts while the consumer switches to `Fn::GetStackOutput`.
+Once all consumers have been deployed with the weak mechanism, the strong-side artifacts
+can be safely removed.
+
+The exact CloudFormation realization depends on the strength and whether the reference
+crosses region or account boundaries:
+
+|                            | Strong (default)                                  | Both                                                                                         | Weak                                                            |
+|----------------------------|---------------------------------------------------|----------------------------------------------------------------------------------------------|-----------------------------------------------------------------|
+| Same account and region    | Generates a `Fn::ImportValue` reference           | Generates a `Fn::GetStackOutput` reference AND an Export, but not the `Fn::ImportValue`      | Generates a `Fn::GetStackOutput` reference                      |
+| Same account, cross-region | Generates a pair of `ExportWriter`/`ExportReader` | Generates a `Fn::GetStackOutput` reference AND an `ExportWriter`, but not the `ExportReader` | Generates a `Fn::GetStackOutput` reference                      |
+| Cross-account              | Not possible. Falls back to weak.                 | Generates a `Fn::GetStackOutput` reference + cross-account role                              | Generates a `Fn::GetStackOutput` reference + cross-account role |
 
 > [!NOTE]
-> As a consequence of this feature being built on a Custom Resource, we are restricted to a
-> CloudFormation response body size limitation of [4096 bytes](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref-responses.html).
-> To prevent deployment errors related to the Custom Resource Provider response body being too
-> large, we recommend limiting the use of nested stacks and minimizing the length of stack names.
-> Doing this will prevent SSM parameter names from becoming too long which will reduce the size of the
-> response body.
+> Strong cross-region references rely on Custom Resources, which are restricted to a
+> CloudFormation response body size of
+> [4096 bytes](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref-responses.html).
+> To prevent deployment errors, limit the use of nested stacks and minimize stack name length.
 
-See the [adr](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/core/adr/cross-region-stack-references.md)
-for more details on this feature.
+### The deadly embrace
 
-### Removing automatic cross-stack references
+Strong references create a *deadly embrace*: a circular dependency between stacks that
+prevents any of them from being updated or deleted. This happens because CloudFormation
+Exports cannot be removed while any other stack imports them, and the producing stack
+cannot be updated to remove the Export as long as the consuming stack still has a
+`Fn::ImportValue` referencing it.
 
-The automatic references created by CDK when you use resources across stacks
-are convenient, but may block your deployments if you want to remove the
-resources that are referenced in this way. You will see an error like:
+In practice, you hit the deadly embrace when you try to remove a resource that is
+referenced by another stack. CloudFormation will reject the update with an error like:
 
 ```text
-Export Stack1:ExportsOutputFnGetAtt-****** cannot be deleted as it is in use by Stack1
+Export Stack1:ExportsOutputFnGetAtt-****** cannot be deleted as it is in use by Stack2
 ```
 
-Let's say there is a Bucket in the `stack1`, and the `stack2` references its
-`bucket.bucketName`. You now want to remove the bucket and run into the error above.
+The solution is to first weaken the reference (switching the consumer away from
+`Fn::ImportValue`), deploy, and then remove the resource. The sections below explain
+how to do this.
 
-It's not safe to remove `stack1.bucket` while `stack2` is still using it, so
-unblocking yourself from this is a two-step process. This is how it works:
+### Controlling reference strength
 
-DEPLOYMENT 1: break the relationship
+There are three ways to control the strength of cross-stack references, each operating
+at a different scope:
 
-- Make sure `stack2` no longer references `bucket.bucketName` (maybe the consumer
-  stack now uses its own bucket, or it writes to an AWS DynamoDB table, or maybe you just
-  remove the Lambda Function altogether).
-- In the `stack1` class, call `this.exportValue(this.bucket.bucketName)`. This
-  will make sure the CloudFormation Export continues to exist while the relationship
-  between the two stacks is being broken.
-- Deploy (this will effectively only change the `stack2`, but it's safe to deploy both).
+#### App-wide: context key
 
-DEPLOYMENT 2: remove the resource
+Set `@aws-cdk/core:defaultCrossStackReferences` in `cdk.json` to change the default for
+all references in the app:
 
-- You are now free to remove the `bucket` resource from `stack1`.
-- Don't forget to remove the `exportValue()` call as well.
-- Deploy again (this time only the `stack1` will be changed -- the bucket will be deleted).
+```json
+{
+  "context": {
+    "@aws-cdk/core:defaultCrossStackReferences": "weak"
+  }
+}
+```
+
+You can also set this on a specific scope (stack, construct) using
+`CrossStackReferences.of(scope).consume(strength)`:
+
+```ts
+declare const consumer: Stack;
+// All references consumed by this stack will be weak
+CrossStackReferences.of(consumer).consume(ReferenceStrength.WEAK);
+```
+
+#### Per-resource: `CrossStackReferences.of(resource).produce(strength)`
+
+Override the strength for all references pointing at a specific resource:
+
+```ts
+declare const producer: Stack;
+declare const consumer: Stack;
+
+const bucket = new s3.Bucket(producer, 'SharedBucket');
+CrossStackReferences.of(bucket).produce(ReferenceStrength.WEAK);
+
+// This reference will use Fn::GetStackOutput regardless of the global setting
+new CfnOutput(consumer, 'BucketName', { value: bucket.bucketName });
+```
+
+Other resources in the same stack continue to use the global default.
+
+#### Per-usage: `Stack.consumeReference()`
+
+Override the strength of a single reference usage without affecting other usages of the
+same resource:
+
+```ts
+declare const topic: sns.Topic;
+
+const consumer = new Stack(app, 'Consumer', {
+  env: { account: '123456789012', region: 'us-east-1' },
+});
+new sns.Subscription(consumer, 'Subscription', {
+  topic: sns.Topic.fromTopicArn(consumer, 'Topic',
+    Stack.consumeReference(topic.topicArn, ReferenceStrength.WEAK)),
+  endpoint: 'https://example.com/webhook',
+  protocol: sns.SubscriptionProtocol.HTTPS,
+});
+```
+
+The `consumeListReference` method is the equivalent for string list references.
+
+### Resolving the deadly embrace
+
+To remove a resource that has strong cross-stack references, you must weaken the
+references before removing the resource. There are two approaches depending on whether
+you want to weaken all references to the resource or just a specific one.
+
+#### Weakening all references to a resource
+
+Use `CrossStackReferences.of(resource).produce(...)` to weaken every reference pointing
+at the resource. This requires two deployments before you can remove it:
+
+DEPLOYMENT 1: switch to `BOTH` (keeps the strong-side artifacts while consumers switch
+to the weak mechanism)
+
+```ts
+declare const bucket: s3.Bucket;
+CrossStackReferences.of(bucket).produce(ReferenceStrength.BOTH);
+```
+
+DEPLOYMENT 2: switch to `WEAK` (removes the strong-side artifacts now that no consumer
+depends on them)
+
+```ts
+declare const bucket: s3.Bucket;
+CrossStackReferences.of(bucket).produce(ReferenceStrength.WEAK);
+```
+
+DEPLOYMENT 3: remove the bucket from `stack1` and any references from `stack2`.
+
+#### Weakening a single reference
+
+Use `Stack.consumeReference()` to weaken just one specific usage. This is useful when
+a resource is referenced from multiple stacks, and you only want to decouple one of them.
+The same two-deployment migration applies:
+
+DEPLOYMENT 1: wrap the reference with `consumeReference` (defaults to `BOTH`)
+
+```ts
+declare const bucket: s3.Bucket;
+declare const consumer: Stack;
+
+// Previously: bucket.bucketArn was used directly
+new CfnOutput(consumer, 'BucketArn', {
+  value: Stack.consumeReference(bucket.bucketArn),
+});
+```
+
+DEPLOYMENT 2: switch to `WEAK`
+
+```ts
+declare const bucket: s3.Bucket;
+declare const consumer: Stack;
+
+new CfnOutput(consumer, 'BucketArn', {
+  value: Stack.consumeReference(bucket.bucketArn, ReferenceStrength.WEAK),
+});
+```
+
+DEPLOYMENT 3: remove the resource or the reference as needed.
 
 ## Durations
 
@@ -437,6 +541,27 @@ a whole number. This can be overridden by unsetting `integral` property.
 ```ts
 Size.mebibytes(2).toKibibytes()                                             // yields 2048
 Size.kibibytes(2050).toMebibytes({ rounding: SizeRoundingBehavior.FLOOR })  // yields 2
+```
+
+## Bitrate
+
+To make specification of bitrate values unambiguous, a class called
+`Bitrate` is available.
+
+An instance of `Bitrate` is initialized through one of its static factory methods:
+
+```ts
+Bitrate.bps(5000)   // 5,000 bits per second
+Bitrate.kbps(500)   // 500 kilobits per second
+Bitrate.mbps(10)    // 10 megabits per second
+Bitrate.gbps(1)     // 1 gigabit per second
+```
+
+Instances of `Bitrate` created with one of the units can be converted into others:
+
+```ts
+Bitrate.mbps(10).toBps()    // yields 10000000
+Bitrate.mbps(10).toKbps()  // yields 10000
 ```
 
 ## Secrets
@@ -523,6 +648,12 @@ functions, it is important to know the format of the ARN you are dealing with.
 For an exhaustive list of ARN formats used in AWS, see [AWS ARNs and
 Namespaces](https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html)
 in the AWS General Reference.
+
+Some L1 constructs also have an auto-generated static `arnFor<ResourceName>()`
+method that can be used to generate ARNs for resources of that type. For example,
+`sns.Topic.arnForTopic(topic)` can be used to generate an ARN for a given topic.
+Note that the parameter to this method is of type `ITopicRef`, which means that
+it can be used with both `Topic` (L2) and `CfnTopic` (L1) constructs.
 
 ## Dependencies
 
@@ -719,7 +850,7 @@ currently only supports Node.js-based user handlers, represents permissions as r
 JSON blobs instead of `iam.PolicyStatement` objects, and it does not have
 support for asynchronous waiting (handler cannot exceed the 15min lambda
 timeout). The `CustomResourceProviderRuntime` supports runtime `nodejs12.x`,
-`nodejs14.x`, `nodejs16.x`, `nodejs18.x`.
+`nodejs14.x`, `nodejs16.x`, `nodejs18.x`, `nodejs20.x`, `nodejs22.x` and `nodejs24.x`.
 
 [`@aws-cdk/core.CustomResourceProvider`]: https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_core.CustomResourceProvider.html
 
@@ -733,7 +864,7 @@ stack-unique identifier and returns the service token:
 ```ts
 const serviceToken = CustomResourceProvider.getOrCreate(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_18_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_24_X,
   description: "Lambda function created by the custom resource provider",
 });
 
@@ -828,7 +959,7 @@ export class Sum extends Construct {
     const resourceType = 'Custom::Sum';
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: `${__dirname}/sum-handler`,
-      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_22_X,
     });
 
     const resource = new CustomResource(this, 'Resource', {
@@ -858,7 +989,7 @@ built-in singleton method:
 ```ts
 const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_18_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_22_X,
 });
 
 const roleArn = provider.roleArn;
@@ -871,7 +1002,7 @@ To add IAM policy statements to this role, use `addToRolePolicy()`:
 ```ts
 const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_18_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_22_X,
 });
 provider.addToRolePolicy({
   Effect: 'Allow',
@@ -1486,6 +1617,8 @@ To do this for a specific stack, add a `suppressTemplateIndentation: true` prope
 stack's `StackProps` parameter. You can also set this property to `false` to override
 the context key setting.
 
+Similarly, to do this for a specific nested stack, add a `suppressTemplateIndentation: true` property to its `NestedStackProps` parameter. You can also set this property to `false` to override the context key setting.
+
 ## App Context
 
 [Context values](https://docs.aws.amazon.com/cdk/v2/guide/context.html) are key-value pairs that can be associated with an app, stack, or construct.
@@ -1585,31 +1718,20 @@ generated CloudFormation templates against your policies immediately after
 synthesis. If there are any violations, the synthesis will fail and a report
 will be printed to the console or to a file (see below).
 
-> [!NOTE]
-> This feature is considered experimental, and both the plugin API and the
-> format of the validation report are subject to change in the future.
-
 ### For application developers
 
 To use one or more validation plugins in your application, use the
-`policyValidationBeta1` property of `Stage`:
+`Validations.of()` API:
 
 ```ts fixture=validation-plugin
 // globally for the entire app (an app is a stage)
-const app = new App({
-  policyValidationBeta1: [
-    // These hypothetical classes implement IPolicyValidationPluginBeta1:
-    new ThirdPartyPluginX(),
-    new ThirdPartyPluginY(),
-  ],
-});
+const app = new App();
+Validations.of(app).addPlugins(new ThirdPartyPluginX());
+Validations.of(app).addPlugins(new ThirdPartyPluginY());
 
 // only apply to a particular stage
-const prodStage = new Stage(app, 'ProdStage', {
-  policyValidationBeta1: [
-    new ThirdPartyPluginX(),
-  ],
-});
+const prodStage = new Stage(app, 'ProdStage');
+Validations.of(prodStage).addPlugins(new ThirdPartyPluginX());
 ```
 
 Immediately after synthesis, all plugins registered this way will be invoked to
@@ -1623,55 +1745,38 @@ validation.
 > etc. It's your responsibility as the consumer of a plugin to verify that it is
 > secure to use.
 
-By default, the report will be printed in a human-readable format. If you want a
-report in JSON format, enable it using the `@aws-cdk/core:validationReportJson`
-context passing it directly to the application:
+By default, the report is output in two ways:
 
-```ts
+- A JSON file called `policy-validation-report.json` is written to the cloud assembly directory.
+- A human-readable format is printed to the standard error output.
+
+To disable either format, explicitly set the corresponding context key to `false`:
+
+```ts fixture=validation-plugin
+// Disable pretty-printed console output (JSON file still written)
 const app = new App({
-  context: { '@aws-cdk/core:validationReportJson': true },
+  context: { '@aws-cdk/core:validationReportPrettyPrint': false },
 });
 ```
-
-Alternatively, you can set this context key-value pair using the `cdk.json` or
-`cdk.context.json` files in your project directory (see
-[Runtime context](https://docs.aws.amazon.com/cdk/v2/guide/context.html)).
-
-It is also possible to enable both JSON and human-readable formats by setting
-`@aws-cdk/core:validationReportPrettyPrint` context key explicitly:
-
-```ts
-const app = new App({
-  context: {
-    '@aws-cdk/core:validationReportJson': true,
-    '@aws-cdk/core:validationReportPrettyPrint': true,
-  },
-});
-```
-
-If you choose the JSON format, the CDK will print the policy validation report
-to a file called `policy-validation-report.json` in the cloud assembly
-directory. For the default, human-readable format, the report will be printed to
-the standard output.
 
 ### For plugin authors
 
 The communication protocol between the CDK core module and your policy tool is
-defined by the `IPolicyValidationPluginBeta1` interface. To create a new plugin you must
+defined by the `IPolicyValidationPlugin` interface. To create a new plugin you must
 write a class that implements this interface. There are two things you need to
 implement: the plugin name (by overriding the `name` property), and the
 `validate()` method.
 
-The framework will call `validate()`, passing an `IPolicyValidationContextBeta1` object.
+The framework will call `validate()`, passing an `IPolicyValidationContext` object.
 The location of the templates to be validated is given by `templatePaths`. The
-plugin should return an instance of `PolicyValidationPluginReportBeta1`. This object
-represents the report that the user wil receive at the end of the synthesis.
+plugin should return an instance of `PolicyValidationPluginReport`. This object
+represents the report that the user will receive at the end of the synthesis.
 
 ```ts fixture=validation-plugin
-class MyPlugin implements IPolicyValidationPluginBeta1 {
+class MyPlugin implements IPolicyValidationPlugin {
   public readonly name = 'MyPlugin';
 
-  public validate(context: IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
+  public validate(context: IPolicyValidationContext): PolicyValidationPluginReport {
     // First read the templates using context.templatePaths...
 
     // ...then perform the validation, and then compose and return the report.
@@ -1694,7 +1799,7 @@ class MyPlugin implements IPolicyValidationPluginBeta1 {
 ```
 
 In addition to the name, plugins may optionally report their version (`version`
-property ) and a list of IDs of the rules they are going to evaluate (`ruleIds`
+property) and a list of IDs of the rules they are going to evaluate (`ruleIds`
 property).
 
 Note that plugins are not allowed to modify anything in the cloud assembly. Any
@@ -1755,6 +1860,238 @@ Unlike warnings, info messages are not affected by the `--strict` mode and will 
 Annotations.of(this).addInfoV2('my-lib:Construct.someInfo', 'Some message explaining the info');
 Annotations.of(this).acknowledgeInfo('my-lib:Construct.someInfo', 'This info can be ignored');
 ```
+
+## Mixins
+
+CDK Mixins provide a new, advanced way to add functionality through composable abstractions.
+Unlike traditional L2 constructs that bundle all features together, Mixins allow you to pick and choose exactly the capabilities you need for constructs.
+
+Mixins are an *addition*, not a replacement for construct properties.
+They are applied during or after construct construction using the `.with()` method:
+
+```ts fixture=README-mixins
+// Apply mixins fluently with .with()
+new s3.CfnBucket(scope, "MyL1Bucket")
+  .with(new BucketBlockPublicAccess())
+  .with(new BucketAutoDeleteObjects());
+
+// Apply multiple mixins to the same construct
+new s3.CfnBucket(scope, "MyL1Bucket")
+  .with(new BucketBlockPublicAccess(), new BucketAutoDeleteObjects());
+
+// Mixins work with all types of constructs:
+// L1, L2 and even custom constructs
+new s3.Bucket(stack, 'MyL2Bucket').with(new BucketBlockPublicAccess());
+new CustomBucket(stack, 'MyCustomBucket').with(new BucketBlockPublicAccess());
+```
+
+There is an alternative form available that allows additional, advanced configuration of Mixin application: `Mixins.of()`.
+
+```ts fixture=README-mixins
+import { ConstructSelector } from "aws-cdk-lib/core";
+
+// Basic: Apply mixins to any construct, calls can be chained
+const myBucket = new s3.CfnBucket(scope, "MyBucket");
+Mixins.of(myBucket)
+  .apply(new BucketBlockPublicAccess())
+  .apply(new BucketAutoDeleteObjects());
+
+// Basic: Or multiple Mixins passed to apply
+Mixins.of(myBucket)
+  .apply(new BucketBlockPublicAccess(), new BucketAutoDeleteObjects());
+
+// Advanced: Apply to constructs matching a selector, e.g. match by ID
+Mixins.of(
+  scope,
+  ConstructSelector.byId("prod/**") 
+).apply(new CustomProdSecurityConfig());
+
+// Advanced: Require a mixin to be applied to every node in the construct tree
+Mixins.of(stack)
+  .apply(new CustomProdSecurityConfig())
+  .requireAll();
+```
+
+### How Mixins are applied
+
+Each construct has a `with()` method and Mixins will be applied to all nodes of the construct.
+Sometimes more control is needed.
+Especially when authoring construct libraries, it may be desirable to have full control over the Mixin application process.
+Think of the L3 pattern again: How can you encode the rules to which Mixins may or may not be applied in your L3?
+This is where `Mixins.of()` and the `MixinApplicator` class come in.
+They provide more complex ways to select targets, apply Mixins and set expectations.
+
+#### Mixin application on construct trees
+
+When working with construct trees like Stacks (as opposed to single resources),
+`Mixins.of()` offers a more comprehensive API to configure how Mixins are applied.
+By default, Mixins are applied to all supported constructs in the tree:
+
+```ts fixture=README-mixins
+// Apply to all constructs in a scope
+Mixins.of(scope).apply(new BucketBlockPublicAccess());
+```
+
+Optionally, you may select specific constructs:
+
+```ts fixture=README-mixins
+import { ConstructSelector } from "aws-cdk-lib/core";
+
+// Apply to a given L1 resource or L2 resource construct
+Mixins.of(
+  bucket,
+  ConstructSelector.cfnResource() // provided CfnResource or a CfnResource default child
+).apply(new BucketBlockPublicAccess());
+
+// Apply to all resources of a specific type
+Mixins.of(
+  scope,
+  ConstructSelector.resourcesOfType(s3.CfnBucket.CFN_RESOURCE_TYPE_NAME)
+).apply(new BucketBlockPublicAccess());
+
+// Alternative: select by CloudFormation resource type name
+Mixins.of(
+  scope,
+  ConstructSelector.resourcesOfType("AWS::S3::Bucket")
+).apply(new BucketBlockPublicAccess());
+
+// Apply to constructs matching a pattern
+Mixins.of(
+  scope,
+  ConstructSelector.byId("prod/**") 
+).apply(new CustomProdSecurityConfig());
+
+// The default is to apply to all constructs in the scope
+Mixins.of(
+  scope,
+  ConstructSelector.all() // pass through to IConstruct.findAll()
+).apply(new CustomProdSecurityConfig());
+```
+
+#### Mixins that must be used
+
+Sometimes you need assertions that a Mixin has been applied to certain set of constructs.
+`Mixins.of(...)` keeps track of Mixin applications and this report can be used to create assertions.
+
+It comes with two convenience helpers:
+Use `requireAll()` to assert the Mixin will be applied to all selected constructs.
+If a construct is in the selection that is not supported by the Mixin, this will throw an error.
+The `requireAny()` helper will assert the Mixin was applied to at least one construct from the selection.
+If the Mixin wasn't applied to any construct at all, this will throw an error.
+
+Both helpers will only check future calls of `apply()`.
+Set them before calling `apply()` to take effect.
+
+```ts fixture=README-mixins
+Mixins.of(scope, selector)
+  // Assert Mixin was applied to all constructs in the selection
+  .requireAll()
+  // Or assert Mixin was applied to at least one construct in the selection
+  // .requireAny()
+  .apply(new BucketBlockPublicAccess());
+
+// Get an application report for manual assertions
+const report = Mixins.of(scope).apply(new BucketBlockPublicAccess()).report;
+```
+
+### Creating Custom Mixins
+
+Mixins are simple classes that implement the `IMixin` interface (usually by extending the abstract `Mixin` class):
+
+```ts fixture=README-mixins
+class EnableVersioning extends Mixin implements IMixin {
+  supports(construct: any): construct is s3.CfnBucket {
+    return s3.CfnBucket.isCfnBucket(construct);
+  }
+
+  applyTo(bucket: IConstruct): void {
+    (bucket as s3.CfnBucket).versioningConfiguration = {
+      status: "Enabled"
+    };
+  }
+}
+
+// Usage
+new s3.CfnBucket(scope, "MyBucket")
+  .with(new EnableVersioning());
+```
+
+We recommend to implement Mixins at the L1 level and to have them target a specific resource construct.
+This way, the same Mixin can be applied to constructs from all levels.
+
+When applied, the `.supports()` method is used to decided if a Mixin can be applied to a given construct.
+Depending on the application method (see below), the Mixin is then applied, skipped or an error is thrown.
+
+```ts fixture=README-mixins
+bucketAccessLogsMixin.supports(bucket); // returns `true`
+bucketAccessLogsMixin.supports(queue); // returns `false`
+```
+
+#### Validation with Mixins
+
+Mixins have two distinct phases: Initialization and application.
+During initialization only the Mixin's input properties are available, but during application we also have access the target construct.
+
+Mixins should validate their properties and targets as early as possible.
+During initialization validate all input properties.
+Then during application validate any target dependent pre-conditions or interactions with Mixin properties.
+
+Like with constructs, Mixins should *throw an error* in case of unrecoverable failures and use *annotations* for recoverable ones.
+It is best practices to collect errors and throw as a group whenever possible.
+Mixins can attach *[lazy validators](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md#attaching-lazy-validators)* to the target construct.
+Use this to ensure a certain property is met at end of an app's execution.
+
+```ts fixture=README-mixins
+class MyEncryptionAtRest extends Mixin {
+  constructor(props: MyEncryptionAtRestProps = {}) {
+    super();
+    // Validate Mixin props at construction time
+    if (props.bucketKey && props.algorithm === 'aws:kms:dsse') {
+      throw new Error("Cannot use S3 Bucket Key and DSSE together");
+    }
+  }
+
+  supports(construct: any): construct is s3.CfnBucket {
+    return s3.CfnBucket.isCfnBucket(construct);
+  }
+
+  applyTo(target: s3.CfnBucket): s3.CfnBucket {
+    // Validate pre-conditions on the target, throw if error is unrecoverable
+    if (!target.bucketEncryption) {
+      throw new Error("Bucket encryption not configured");
+    }
+
+    // Validate properties are met after app execution
+    target.node.addValidation({
+      validate: () => isKmsEncrypted(target)
+        ? ['This bucket must use aws:kms encryption.']
+        : []
+    });
+
+    target.bucketEncryption = {
+      serverSideEncryptionConfiguration: [{
+        bucketKeyEnabled: true,
+        serverSideEncryptionByDefault: {
+          sseAlgorithm: "aws:kms"
+        }
+      }]
+    };
+    return target;
+  }
+}
+```
+
+#### Mixins and Aspects
+
+Mixins and Aspects are similar concepts and both are implementations of the [visitor pattern](https://en.wikipedia.org/wiki/Visitor_pattern).
+They crucially differ in their time of application:
+
+- Mixins are always applied *immediately*, they are a tool of *imperative* programming.
+- Aspects are applied *after* all other code during the synthesis phase, this makes them *declarative*.
+
+Both Mixins and Aspects have valid use cases and complement each other.
+We recommend to use Mixins to *make changes*, and to use Aspects to *validate behaviors*.
+Aspects may also be used when changes need to apply to *future additions*, for examples in custom libraries.
 
 ## Aspects
 
@@ -1895,6 +2232,23 @@ for (const aspectApplication of aspectApplications) {
   aspectApplication.priority = 700;
 }
 ```
+
+### Converting between Aspects and Mixins
+
+Since Mixins and Aspects are both implementations of the visitor pattern, they can be converted from each other using the `Shims` class:
+
+```ts fixture=README-mixins
+// Applies an Aspect immediately as a Mixin
+const versioningMixin = Shims.asMixin(new EnableBucketVersioning());
+Mixins.of(scope).apply(versioningMixin);
+
+// Delays application of a Mixin to the synthesis phase
+const publicAccessAspect = Shims.asAspect(new BucketBlockPublicAccess());
+Aspects.of(scope).add(publicAccessAspect);
+```
+
+When shimming a Mixin to an Aspect, the Mixin will automatically only be applied to supported constructs (via `supports()`).
+Going from an Aspect to a Mixin, the Aspect will be applied to every node.
 
 ## Blueprint Property Injection
 

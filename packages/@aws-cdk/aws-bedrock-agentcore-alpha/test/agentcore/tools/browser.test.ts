@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { App, Stack } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -1362,6 +1363,65 @@ describe('BrowserCustom recording configuration with S3 location tests', () => {
   });
 });
 
+describe('BrowserCustom error metric methods tests', () => {
+  let stack: cdk.Stack;
+  let browser: BrowserCustom;
+
+  function alarmForMetric(id: string, metric: cloudwatch.Metric): void {
+    new cloudwatch.Alarm(stack, id, { metric, evaluationPeriods: 1, threshold: 1 });
+  }
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack');
+    browser = new BrowserCustom(stack, 'test-browser-error-metrics', {
+      networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
+    });
+  });
+
+  test('metricThrottlesForApiOperation() produces Throttles with Operation dimension', () => {
+    alarmForMetric('ThrottlesAlarm', browser.metricThrottlesForApiOperation('TestOperation'));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Throttles',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Operation', Value: 'TestOperation' }),
+      ]),
+    });
+  });
+
+  test('metricSystemErrorsForApiOperation() produces SystemErrors with Operation dimension', () => {
+    alarmForMetric('SysErrAlarm', browser.metricSystemErrorsForApiOperation('TestOperation'));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'SystemErrors',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Operation', Value: 'TestOperation' }),
+      ]),
+    });
+  });
+
+  test('metricUserErrorsForApiOperation() produces UserErrors with Operation dimension', () => {
+    alarmForMetric('UserErrAlarm', browser.metricUserErrorsForApiOperation('TestOperation'));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'UserErrors',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Operation', Value: 'TestOperation' }),
+      ]),
+    });
+  });
+});
+
 describe('BrowserCustom browser signing configuration tests', () => {
   let app: cdk.App;
   let stack: cdk.Stack;
@@ -1577,5 +1637,24 @@ describe('BrowserCustom browser signing configuration tests', () => {
         Enabled: true,
       },
     });
+  });
+});
+
+describe('Browser Optional Physical Names', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+  });
+
+  test('Should create BrowserCustom without browserCustomName (auto-generated)', () => {
+    const browser = new BrowserCustom(stack, 'TestBrowser', {
+    });
+
+    expect(browser.name).toBeDefined();
+    expect(browser.name).not.toBe('');
   });
 });

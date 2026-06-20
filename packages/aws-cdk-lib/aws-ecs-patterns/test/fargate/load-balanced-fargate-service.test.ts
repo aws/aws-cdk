@@ -1366,7 +1366,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
         },
       },
       desiredCount: 2,
-      taskDefinition,
+      taskDefinition: taskDefinition as any,
     })).toThrow();
   });
 

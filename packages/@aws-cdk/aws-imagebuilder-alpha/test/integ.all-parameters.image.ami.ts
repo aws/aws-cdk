@@ -4,9 +4,12 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as imagebuilder from '../lib';
 import { ImageArchitecture, ImageType } from '../lib';
+import { enableInspector } from './enable-inspector';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-imagebuilder-image-ami-all-parameters');
+
+const inspector = enableInspector(stack, ['EC2']);
 
 const executionRole = new iam.Role(stack, 'ExecutionRole', {
   assumedBy: new iam.ServicePrincipal('imagebuilder.amazonaws.com'),
@@ -26,7 +29,7 @@ const imageRecipe = new imagebuilder.ImageRecipe(stack, 'ImageRecipe', {
   }).toBaseImage(),
   components: [
     {
-      component: imagebuilder.AwsManagedComponent.fromAwsManagedComponentName(
+      component: imagebuilder.AmazonManagedComponent.fromAmazonManagedComponentName(
         stack,
         'SimpleBootTest',
         'simple-boot-test-linux',
@@ -44,13 +47,14 @@ const image = new imagebuilder.Image(stack, 'Image-AMI', {
   distributionConfiguration: amiDistributionConfiguration,
   executionRole,
   logGroup,
-  workflows: [{ workflow: imagebuilder.AwsManagedWorkflow.testImage(stack, 'TestImage') }],
+  workflows: [{ workflow: imagebuilder.AmazonManagedWorkflow.testImage(stack, 'TestImage') }],
   enhancedImageMetadataEnabled: true,
   imageTestsEnabled: true,
   imageScanningEnabled: true,
   deletionExecutionRole,
   tags: { key1: 'value1', key2: 'value2' },
 });
+image.node.addDependency(inspector);
 image.grantDefaultExecutionRolePermissions(executionRole);
 
 new cdk.CfnOutput(stack, 'ImageArn', { value: image.imageArn });

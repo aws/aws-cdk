@@ -1,7 +1,8 @@
-import { IStageRef } from './apigateway.generated';
-import * as firehose from '../../aws-kinesisfirehose';
-import { ILogGroup } from '../../aws-logs';
+import type { IStageRef } from './apigateway.generated';
+import type * as firehose from '../../aws-kinesisfirehose';
 import { ValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
+import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
  * Access log destination for a RestApi Stage.
@@ -27,7 +28,7 @@ export interface AccessLogDestinationConfig {
  * Use CloudWatch Logs as a custom access log destination for API Gateway.
  */
 export class LogGroupLogDestination implements IAccessLogDestination {
-  constructor(private readonly logGroup: ILogGroup) {
+  constructor(private readonly logGroup: ILogGroupRef) {
   }
 
   /**
@@ -35,7 +36,7 @@ export class LogGroupLogDestination implements IAccessLogDestination {
    */
   public bind(_stage: IStageRef): AccessLogDestinationConfig {
     return {
-      destinationArn: this.logGroup.logGroupArn,
+      destinationArn: this.logGroup.logGroupRef.logGroupArn,
     };
   }
 }
@@ -52,7 +53,7 @@ export class FirehoseLogDestination implements IAccessLogDestination {
    */
   public bind(stage: IStageRef): AccessLogDestinationConfig {
     if (!this.stream.deliveryStreamName?.startsWith('amazon-apigateway-')) {
-      throw new ValidationError(`Firehose delivery stream name for access log destination must begin with 'amazon-apigateway-', got '${this.stream.deliveryStreamName}'`, stage);
+      throw new ValidationError(lit`MustBeFirehoseDeliveryStream`, `Firehose delivery stream name for access log destination must begin with 'amazon-apigateway-', got '${this.stream.deliveryStreamName}'`, stage);
     }
     return {
       destinationArn: this.stream.attrArn,

@@ -1,10 +1,11 @@
-import { Construct } from 'constructs';
-import { ProductionVariant } from './base-types';
+import type { Construct } from 'constructs';
+import type { ProductionVariant } from './base-types';
 import * as iam from '../../../aws-iam';
-import * as kms from '../../../aws-kms';
+import type * as kms from '../../../aws-kms';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
@@ -161,12 +162,12 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
 
   private validateProductionVariants() {
     if (this.props.productionVariants.length < 1 || this.props.productionVariants.length > 10) {
-      throw new ValidationError('Must specify from 1 to 10 production variants per endpoint configuration', this);
+      throw new ValidationError(lit`SpecifyProductionVariantsPerEndpoint`, 'Must specify from 1 to 10 production variants per endpoint configuration', this);
     }
     this.props.productionVariants.forEach((variant) => {
-      if (variant.initialInstanceCount && variant.initialInstanceCount < 1) throw new ValidationError('Must define at least one instance', this);
+      if (variant.initialInstanceCount && variant.initialInstanceCount < 1) throw new ValidationError(lit`DefineLeastOneInstance`, 'Must define at least one instance', this);
       if ( variant.initialVariantWeight && variant.initialVariantWeight <= 0) {
-        throw new ValidationError('InitialVariantWeight has minimum value of 0', this);
+        throw new ValidationError(lit`InitialVariantWeightMinimumValue`, 'InitialVariantWeight has minimum value of 0', this);
       }
     });
   }

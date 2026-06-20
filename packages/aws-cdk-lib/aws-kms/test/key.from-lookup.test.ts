@@ -1,7 +1,8 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as cxschema from '../../cloud-assembly-schema';
-import { App, ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '../../core';
-import * as cxapi from '../../cx-api';
+import type { GetContextValueOptions, GetContextValueResult } from '../../core';
+import { App, ContextProvider, Lazy, Stack } from '../../core';
+import type * as cxapi from '../../cx-api';
 import { Key } from '../lib';
 
 test('requires concrete values', () => {
@@ -105,7 +106,6 @@ interface MockKeyContextResponse {
 function mockKeyContextProviderWith(
   response: MockKeyContextResponse,
   paramValidator?: (options: cxschema.KeyContextQuery) => void) {
-  // eslint-disable-next-line @typescript-eslint/unbound-method
   const previous = ContextProvider.getValue;
   ContextProvider.getValue = (_scope: Construct, options: GetContextValueOptions) => {
     // do some basic sanity checks

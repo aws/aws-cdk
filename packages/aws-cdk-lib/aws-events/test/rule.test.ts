@@ -1,9 +1,11 @@
 /* eslint-disable object-curly-newline */
-import { Construct, IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
 import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
-import { CfnRule, EventBus, EventField, EventPattern, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule, Match as m } from '../lib';
+import type { EventPattern, IRule, IRuleTarget, RuleTargetConfig } from '../lib';
+import { CfnRule, EventBus, EventField, RuleTargetInput, Schedule, Match as m } from '../lib';
 import { Rule } from '../lib/rule';
 
 /* eslint-disable @stylistic/quote-props */
@@ -76,7 +78,7 @@ describe('rule', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app);
     const resource = new Construct(stack, 'Resource');
-    const rule = new Rule(stack, 'MyRule', {
+    new Rule(stack, 'MyRule', {
       schedule: Schedule.rate(cdk.Duration.minutes(10)),
       targets: [
         new SomeTarget('T1', resource),
@@ -734,7 +736,6 @@ describe('rule', () => {
       targets: [t1],
     });
 
-    // eslint-disable-next-line no-console
     console.log(Template.fromStack(stack).toJSON().Resources.EventRule5A491D2C.Properties.Targets[0]);
 
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -1220,7 +1221,6 @@ describe('rule', () => {
 });
 
 class SomeTarget implements IRuleTarget {
-  // eslint-disable-next-line @cdklabs/no-core-construct
   public constructor(private readonly id?: string, private readonly resource?: IConstruct) {
   }
 

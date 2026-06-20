@@ -1,18 +1,39 @@
 import { Construct } from 'constructs';
-import { BaseAppsyncFunctionProps, AppsyncFunction } from './appsync-function';
+import type { BaseAppsyncFunctionProps } from './appsync-function';
+import { AppsyncFunction } from './appsync-function';
 import { CfnDataSource } from './appsync.generated';
-import { IGraphqlApi } from './graphqlapi-base';
-import { BaseResolverProps, Resolver } from './resolver';
-import { ITable } from '../../aws-dynamodb';
-import { IDomain as IElasticsearchDomain } from '../../aws-elasticsearch';
-import { IEventBus } from '../../aws-events';
-import { Grant, IGrantable, IPrincipal, IRole, Role, ServicePrincipal } from '../../aws-iam';
-import { IFunction } from '../../aws-lambda';
-import { IDomain as IOpenSearchDomain } from '../../aws-opensearchservice';
-import { IServerlessCluster, IDatabaseCluster } from '../../aws-rds';
-import { ISecret } from '../../aws-secretsmanager';
-import { IResolvable, Lazy, Stack, Token } from '../../core';
+import type { IGraphqlApi } from './graphqlapi-base';
+import { extractApiIdFromGraphQLApiRef, toIGraphqlApi } from './private/ref-utils';
+import type { BaseResolverProps } from './resolver';
+import { Resolver } from './resolver';
+import type { ITable } from '../../aws-dynamodb';
+import type { IDomain as IElasticsearchDomain } from '../../aws-elasticsearch';
+import type { IEventBus } from '../../aws-events';
+import type { IGrantable, IPrincipal, IRole } from '../../aws-iam';
+import { Grant, Role, ServicePrincipal } from '../../aws-iam';
+import type { IFunction } from '../../aws-lambda';
+import type { IDomain as IOpenSearchDomain } from '../../aws-opensearchservice';
+import type { IServerlessCluster, IDatabaseCluster } from '../../aws-rds';
+import type { ISecret } from '../../aws-secretsmanager';
+import type { IResolvable } from '../../core';
+import { Lazy, Stack, Token } from '../../core';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IGraphQLApiRef } from '../../interfaces/generated/aws-appsync-interfaces.generated';
+
+/**
+ * Enum for enhanced data source metrics for specified data sources
+ */
+export enum DataSourceMetricsConfig {
+  /**
+   * Enables enhanced data source metrics for specified data sources
+   */
+  ENABLED = 'ENABLED',
+
+  /**
+   * Disables enhanced data source metrics for specified data sources
+   */
+  DISABLED = 'DISABLED',
+}
 
 /**
  * Base properties for an AppSync datasource
@@ -21,7 +42,7 @@ export interface BaseDataSourceProps {
   /**
    * The API to attach this data source to
    */
-  readonly api: IGraphqlApi;
+  readonly api: IGraphQLApiRef;
   /**
    * The name of the data source
    *
@@ -34,6 +55,14 @@ export interface BaseDataSourceProps {
    * @default - None
    */
   readonly description?: string;
+
+  /**
+   * Whether to enable enhanced metrics of the data source
+   * Value will be ignored, if `enhancedMetricsConfig.dataSourceLevelMetricsBehavior` on AppSync GraphqlApi construct is set to `FULL_REQUEST_DATA_SOURCE_METRICS`
+   *
+   * @default - no metrics configuration
+   */
+  readonly metricsConfig?: DataSourceMetricsConfig;
 }
 
 /**
@@ -116,7 +145,7 @@ export abstract class BaseDataSource extends Construct {
    */
   public readonly ds: CfnDataSource;
 
-  protected api: IGraphqlApi;
+  private _api: IGraphQLApiRef;
   protected serviceRole?: IRole;
 
   constructor(scope: Construct, id: string, props: BackedDataSourceProps, extended: ExtendedDataSourceProps) {
@@ -128,15 +157,31 @@ export abstract class BaseDataSource extends Construct {
     // Replace unsupported characters from DataSource name. The only allowed pattern is: {[_A-Za-z][_0-9A-Za-z]*}
     const name = (props.name ?? id);
     const supportedName = Token.isUnresolved(name) ? name : name.replace(/[\W]+/g, '');
+    const apiId = extractApiIdFromGraphQLApiRef(props.api);
     this.ds = new CfnDataSource(this, 'Resource', {
-      apiId: props.api.apiId,
+      apiId: apiId,
       name: supportedName,
       description: props.description,
       serviceRoleArn: this.serviceRole?.roleArn,
+      metricsConfig: props.metricsConfig,
       ...extended,
     });
     this.name = supportedName;
-    this.api = props.api;
+    this._api = props.api;
+  }
+
+  /**
+   * The API this data source is attached to
+   */
+  protected get api(): IGraphqlApi {
+    return toIGraphqlApi(this._api);
+  }
+
+  /**
+   * Set the API this data source is attached to
+   */
+  protected set api(api: IGraphqlApi) {
+    this._api = api;
   }
 
   /**

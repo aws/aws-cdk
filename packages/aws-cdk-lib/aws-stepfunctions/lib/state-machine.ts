@@ -1,18 +1,22 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CustomerManagedEncryptionConfiguration } from './customer-managed-key-encryption-configuration';
-import { EncryptionConfiguration } from './encryption-configuration';
+import type { EncryptionConfiguration } from './encryption-configuration';
 import { buildEncryptionConfiguration } from './private/util';
 import { StateGraph } from './state-graph';
 import { StateMachineGrants } from './state-machine-grants';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
-import { CfnStateMachine, IStateMachineRef, StateMachineReference } from './stepfunctions.generated';
-import { IChainable, QueryLanguage } from './types';
+import type { IStateMachineRef, StateMachineReference } from './stepfunctions.generated';
+import { CfnStateMachine } from './stepfunctions.generated';
+import type { IChainable, QueryLanguage } from './types';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import * as logs from '../../aws-logs';
+import type * as logs from '../../aws-logs';
 import * as s3_assets from '../../aws-s3-assets';
-import { ArnFormat, Duration, IResource, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
+import type { Duration, IResource } from '../../core';
+import { ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -69,7 +73,7 @@ export interface LogOptions {
    *
    * @default No log group. Required if your log level is not set to OFF.
    */
-  readonly destination?: logs.ILogGroup;
+  readonly destination?: logs.ILogGroupRef;
 
   /**
    * Determines whether execution data is included in your log.
@@ -230,6 +234,11 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   /**
    * Grant the given identity permissions to start an execution of this state
    * machine.
+   *
+   *
+   * The use of this method is discouraged. Please use `grants.startExecution()` instead.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantStartExecution(identity: iam.IGrantable): iam.Grant {
     return this.grants.startExecution(identity);
@@ -238,6 +247,11 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   /**
    * Grant the given identity permissions to start a synchronous execution of
    * this state machine.
+   *
+   *
+   * The use of this method is discouraged. Please use `grants.startSyncExecution()` instead.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantStartSyncExecution(identity: iam.IGrantable): iam.Grant {
     return this.grants.startSyncExecution(identity);
@@ -246,6 +260,10 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   /**
    * Grant the given identity permissions to read results from state
    * machine.
+   *
+   * The use of this method is discouraged. Please use `grants.read()` instead.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantRead(identity: iam.IGrantable): iam.Grant {
     return this.grants.read(identity);
@@ -253,6 +271,10 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
 
   /**
    * Grant the given identity task response permissions on a state machine
+   *
+   * The use of this method is discouraged. Please use `grants.taskResponse()` instead.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantTaskResponse(identity: iam.IGrantable): iam.Grant {
     return this.grants.taskResponse(identity);
@@ -260,6 +282,10 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
 
   /**
    * Grant the given identity permissions on all executions of the state machine
+   *
+   * The use of this method is discouraged. Please use `grants.execution()` instead.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantExecution(identity: iam.IGrantable, ...actions: string[]) {
     return this.grants.execution(identity, ...actions);
@@ -267,6 +293,11 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
 
   /**
    * Grant the given identity permission to redrive the execution of the state machine
+   *
+   *
+   * The use of this method is discouraged. Please use `grants.redriveExecution()` instead.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantRedriveExecution(identity: iam.IGrantable): iam.Grant {
     return this.grantExecution(identity, 'states:RedriveExecution');
@@ -274,6 +305,8 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
 
   /**
    * Grant the given identity custom permissions
+   *
+   * [disable-awslint:no-grants]
    */
   public grant(identity: iam.IGrantable, ...actions: string[]): iam.Grant {
     return this.grants.actions(identity, ...actions);
@@ -387,12 +420,23 @@ export class StateMachine extends StateMachineBase {
    * The name of the state machine
    * @attribute
    */
-  public readonly stateMachineName: string;
+  @memoizedGetter
+  public get stateMachineName(): string {
+    return this.getResourceNameAttribute(this.resource.attrName);
+  }
 
   /**
    * The ARN of the state machine
    */
-  public readonly stateMachineArn: string;
+  @memoizedGetter
+  public get stateMachineArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
+      service: 'states',
+      resource: 'stateMachine',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
 
   /**
    * Type of the state machine
@@ -406,6 +450,8 @@ export class StateMachine extends StateMachineBase {
    */
   public readonly stateMachineRevisionId: string;
 
+  private readonly resource: CfnStateMachine;
+
   constructor(scope: Construct, id: string, props: StateMachineProps) {
     super(scope, id, {
       physicalName: props.stateMachineName,
@@ -414,10 +460,10 @@ export class StateMachine extends StateMachineBase {
     addConstructMetadata(this, props);
 
     if (props.definition && props.definitionBody) {
-      throw new ValidationError('Cannot specify definition and definitionBody at the same time', this);
+      throw new ValidationError(lit`ConflictingDefinitionProperties`, 'Cannot specify definition and definitionBody at the same time', this);
     }
     if (!props.definition && !props.definitionBody) {
-      throw new ValidationError('You need to specify either definition or definitionBody', this);
+      throw new ValidationError(lit`MissingDefinition`, 'You need to specify either definition or definitionBody', this);
     }
 
     if (props.stateMachineName !== undefined) {
@@ -501,13 +547,7 @@ export class StateMachine extends StateMachineBase {
     resource.applyRemovalPolicy(props.removalPolicy, { default: RemovalPolicy.DESTROY });
 
     resource.node.addDependency(this.role);
-    this.stateMachineName = this.getResourceNameAttribute(resource.attrName);
-    this.stateMachineArn = this.getResourceArnAttribute(resource.ref, {
-      service: 'states',
-      resource: 'stateMachine',
-      resourceName: this.physicalName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    });
+    this.resource = resource;
 
     if (definitionBody instanceof ChainDefinitionBody) {
       graph!.bind(this);
@@ -534,18 +574,18 @@ export class StateMachine extends StateMachineBase {
   private validateStateMachineName(stateMachineName: string) {
     if (!Token.isUnresolved(stateMachineName)) {
       if (stateMachineName.length < 1 || stateMachineName.length > 80) {
-        throw new ValidationError(`State Machine name must be between 1 and 80 characters. Received: ${stateMachineName}`, this);
+        throw new ValidationError(lit`InvalidStateMachineNameLength`, `State Machine name must be between 1 and 80 characters. Received: ${stateMachineName}`, this);
       }
 
       if (!stateMachineName.match(/^[a-z0-9\+\!\@\.\(\)\-\=\_\']+$/i)) {
-        throw new ValidationError(`State Machine name must match "^[a-z0-9+!@.()-=_']+$/i". Received: ${stateMachineName}`, this);
+        throw new ValidationError(lit`InvalidStateMachineNamePattern`, `State Machine name must match "^[a-z0-9+!@.()-=_']+$/i". Received: ${stateMachineName}`, this);
       }
     }
   }
 
   private validateLogOptions(logOptions: LogOptions) {
     if (logOptions.level !== LogLevel.OFF && !logOptions.destination) {
-      throw new ValidationError('Logs destination is required when level is not OFF.', this);
+      throw new ValidationError(lit`LogsDestinationRequired`, 'Logs destination is required when level is not OFF.', this);
     }
   }
 
@@ -569,7 +609,7 @@ export class StateMachine extends StateMachineBase {
         resources: ['*'],
       }));
       destinations = [{
-        cloudWatchLogsLogGroup: { logGroupArn: logOptions.destination.logGroupArn },
+        cloudWatchLogsLogGroup: { logGroupArn: logOptions.destination.logGroupRef.logGroupArn },
       }];
     }
 

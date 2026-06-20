@@ -1,11 +1,15 @@
 import fs from 'fs';
 
 // @ts-check
-export function makeRules(/** @type{string} */ directory) {
-  const currentPackageJson = JSON.parse(fs.readFileSync(`${directory}/package.json`, 'utf-8'));
 
-  const isConstructLibrary = currentPackageJson.name === 'aws-cdk-lib' || ('aws-cdk-lib' in (currentPackageJson.peerDependencies ?? {}));
+// No more md5, will break in FIPS environments
+// Both qualified and unqualified calls
+const NO_MD5 = {
+  "selector": "CallExpression:matches([callee.name='createHash'], [callee.property.name='createHash']) Literal[value='md5']",
+  "message": "Use the md5hash() function from the core library if you want md5",
+};
 
+export function makeRules(/** @type{bool} */ isConstructLibrary) {
   /** @type { import("@eslint/core").RulesConfig } */
   const ret = {
     '@cdklabs/no-core-construct': ['error'],
@@ -13,6 +17,8 @@ export function makeRules(/** @type{string} */ directory) {
     '@cdklabs/no-literal-partition': ['error'],
     '@cdklabs/no-invalid-path': ['error'],
     '@cdklabs/promiseall-no-unbounded-parallelism': [ 'error' ],
+    '@cdklabs/no-evaluating-typeguard': [ 'error' ],
+    '@cdklabs/no-unconditional-token-allocation': [ 'error' ],
 
     // Error handling
     'no-throw-literal': [ 'error' ],
@@ -47,13 +53,19 @@ export function makeRules(/** @type{string} */ directory) {
     'jsdoc/require-returns-description': ['error'],
     'jsdoc/check-alignment': ['error'],
 
+    // Require all imports to use the type keyword if the import only exists in the type system
+    '@typescript-eslint/consistent-type-imports': 'error',
+
     // Require all imported dependencies are actually declared in package.json
     'import/no-extraneous-dependencies': [
       'error',
       {
         devDependencies: [ // Only allow importing devDependencies from:
+          'build-tools/**', // --> Build tools
           '**/build-tools/**', // --> Build tools
+          'scripts/**', // --> Build tools
           '**/scripts/**', // --> Build tools
+          'test/**', // --> Unit tests
           '**/test/**', // --> Unit tests
         ],
         optionalDependencies: false, // Disallow importing optional dependencies (those shouldn't be in use in the project)
@@ -82,8 +94,8 @@ export function makeRules(/** @type{string} */ directory) {
       },
     ],
 
-    // Cannot import from the same module twice
-    'no-duplicate-imports': ['error'],
+    // Cannot import from the same module twice (we prefer `import/no-duplicates` over `no-duplicate-imports` since the former can handle type imports)
+    'import/no-duplicates': ['error'],
 
     // Cannot shadow names
     'no-shadow': ['off'],
@@ -119,9 +131,6 @@ export function makeRules(/** @type{string} */ directory) {
     'no-return-await': 'off',
     '@typescript-eslint/return-await': 'error',
 
-    // Don't leave log statements littering the premises!
-    'no-console': ['error'],
-
     // Useless diff results
     'no-trailing-spaces': ['error'],
 
@@ -134,13 +143,15 @@ export function makeRules(/** @type{string} */ directory) {
     // Are you sure | is not a typo for || ?
     'no-bitwise': ['error'],
 
-    // No more md5, will break in FIPS environments
     "no-restricted-syntax": [
       "error",
+      NO_MD5,
       {
-        // Both qualified and unqualified calls
-        "selector": "CallExpression:matches([callee.name='createHash'], [callee.property.name='createHash']) Literal[value='md5']",
-        "message": "Use the md5hash() function from the core library if you want md5"
+        // Uncached lazys are an older API, not backed by a Box.
+        // They are detrimental to modern CDK features like deferred stack traces and property mixins.
+        // In most cases they are not needed can be replicated by using a Box directly.
+        "selector": "CallExpression[callee.property.name=/^uncached/]:matches([callee.object.name='Lazy'], [callee.object.property.name='Lazy'])",
+        "message": "Lazy.uncached*() is an older, less flexible API with missing features. Use the Box API instead."
       }
     ],
 
@@ -193,7 +204,11 @@ export function makeRules(/** @type{string} */ directory) {
     '@typescript-eslint/unbound-method': ['error', { ignoreStatic: true } ],
 
     ...isConstructLibrary ? {
+
       '@cdklabs/no-throw-default-error': ['error'],
+      // Don't leave log statements littering the premises!
+      'no-console': ['error'],
+
     } : undefined,
 
     // Overrides for plugin:jest/recommended
@@ -206,6 +221,26 @@ export function makeRules(/** @type{string} */ directory) {
     "jest/no-identical-title": "off", // TEMPORARY - Disabling this until https://github.com/jest-community/eslint-plugin-jest/issues/836 is resolved
     'jest/no-disabled-tests': 'error', // Skipped tests are easily missed in PR reviews
     'jest/no-focused-tests': 'error', // Focused tests are easily missed in PR reviews
+  };
+  return ret;
+}
+
+/**
+ * Override some rules from the above, and/or add some new ones.
+ */
+export function makeTestRules(/** @type{bool} */ isConstructLibrary) {
+  /** @type { import("@eslint/core").RulesConfig } */
+  const ret = {
+    // Only for library code, not test code
+    '@cdklabs/no-throw-default-error': 'off',
+    '@cdklabs/no-unconditional-token-allocation': 'off',
+    'no-console': 'off',
+
+    // Allow Lazy.uncached* in tests (they legitimately test uncached behavior)
+    "no-restricted-syntax": [
+      "error",
+      NO_MD5,
+    ],
   };
   return ret;
 }

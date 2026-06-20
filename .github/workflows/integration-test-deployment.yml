@@ -25,6 +25,7 @@ concurrency:
 jobs:
   integration_test_deployment:
     runs-on: codebuild-aws-cdk-github-actions-deployment-integ-runner-${{ github.run_id }}-${{ github.run_attempt }}
+    timeout-minutes: 7200 # Maximum limit for self-hosted runners, job can still be limited by our runner timeout (which is set at 36 hours).
     environment: deployment-integ-test # Do not change or remove this without discussing with Appsec
     if: contains(github.event.pull_request.labels.*.name, 'pr/needs-integration-tests-deployment')
     name: 'Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)'
@@ -48,11 +49,11 @@ jobs:
             yarn.lock
 
       - name: Set up Docker
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Load Docker images
         id: docker-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             ~/.docker-images.tar
@@ -63,7 +64,7 @@ jobs:
         run: docker image load --input ~/.docker-images.tar
 
       - name: Cache build artifacts
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.s3buildcache
@@ -101,7 +102,7 @@ jobs:
 
       - name: Cache Docker images
         if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             ~/.docker-images.tar

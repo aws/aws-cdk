@@ -431,6 +431,13 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "EC2_NO_OPEN_SECURITY_GROUPS"
+     ]
+    }
    }
   },
   "MyAutoScalingGroupInstanceRoleDFBF3134": {
@@ -580,7 +587,7 @@
          {
           "Ref": "ClusterEB0386A7"
          },
-         " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+         " >> /etc/ecs/ecs.config"
         ]
        ]
       }
@@ -655,7 +662,7 @@
      },
      "ManagedTerminationProtection": "ENABLED"
     },
-    "Name": "my-capacity-provider"
+    "Name": "cp-aws-ecs-integ-nlb-healthchecksMyProvider360FF666"
    }
   },
   "myServicelb1FA8CBE12": {
@@ -668,6 +675,20 @@
      }
     ],
     "Scheme": "internet-facing",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "myServicelb1SecurityGroup342C51EA",
+       "GroupId"
+      ]
+     },
+     {
+      "Fn::GetAtt": [
+       "NlbSglb18DF3D648",
+       "GroupId"
+      ]
+     }
+    ],
     "Subnets": [
      {
       "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
@@ -684,6 +705,24 @@
     "VpcPublicSubnet2DefaultRoute97F91067",
     "VpcPublicSubnet2RouteTableAssociationDD5762D8"
    ]
+  },
+  "myServicelb1SecurityGroup342C51EA": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatically created Security Group for ELB awsecsintegnlbhealthchecksmyServicelb10869016C",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "255.255.255.255/32",
+      "Description": "Disallow all traffic",
+      "FromPort": 252,
+      "IpProtocol": "icmp",
+      "ToPort": 86
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
   },
   "myServicelb1listener15ED0E805": {
    "Type": "AWS::ElasticLoadBalancingV2::Listener",
@@ -724,6 +763,20 @@
      }
     ],
     "Scheme": "internet-facing",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "myServicelb2SecurityGroupEB00B5B9",
+       "GroupId"
+      ]
+     },
+     {
+      "Fn::GetAtt": [
+       "NlbSglb27A5C6D94",
+       "GroupId"
+      ]
+     }
+    ],
     "Subnets": [
      {
       "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
@@ -740,6 +793,24 @@
     "VpcPublicSubnet2DefaultRoute97F91067",
     "VpcPublicSubnet2RouteTableAssociationDD5762D8"
    ]
+  },
+  "myServicelb2SecurityGroupEB00B5B9": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatically created Security Group for ELB awsecsintegnlbhealthchecksmyServicelb256A122B9",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "255.255.255.255/32",
+      "Description": "Disallow all traffic",
+      "FromPort": 252,
+      "IpProtocol": "icmp",
+      "ToPort": 86
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
   },
   "myServicelb2listener2AA6970EB": {
    "Type": "AWS::ElasticLoadBalancingV2::Listener",
@@ -928,6 +999,66 @@
     "myServicelb2listener2AA6970EB",
     "myServiceTaskDefTaskRole1C1DE6CC"
    ]
+  },
+  "NlbSglb18DF3D648": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-ecs-integ-nlb-healthchecks/NlbSglb1",
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "NlbSglb1toawsecsintegnlbhealthchecksMyAutoScalingGroupSG51B35F0232768655359527C198": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
+   "Properties": {
+    "Description": "NLB health checks to targets",
+    "DestinationSecurityGroupId": {
+     "Fn::GetAtt": [
+      "MyAutoScalingGroupSGEBE6954A",
+      "GroupId"
+     ]
+    },
+    "FromPort": 32768,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "NlbSglb18DF3D648",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 65535
+   }
+  },
+  "NlbSglb27A5C6D94": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-ecs-integ-nlb-healthchecks/NlbSglb2",
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "NlbSglb2toawsecsintegnlbhealthchecksMyAutoScalingGroupSG51B35F023276865535C0A9BC8D": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
+   "Properties": {
+    "Description": "NLB health checks to targets",
+    "DestinationSecurityGroupId": {
+     "Fn::GetAtt": [
+      "MyAutoScalingGroupSGEBE6954A",
+      "GroupId"
+     ]
+    },
+    "FromPort": 32768,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "NlbSglb27A5C6D94",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 65535
+   }
   }
  },
  "Parameters": {

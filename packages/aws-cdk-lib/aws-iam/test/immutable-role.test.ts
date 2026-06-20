@@ -102,9 +102,9 @@ describe('ImmutableRole', () => {
   });
 
   test('ignores calls to addManagedPolicy', () => {
-    mutableRole.addManagedPolicy({ managedPolicyArn: 'Arn1' });
+    mutableRole.addManagedPolicy({ managedPolicyArn: 'Arn1' } as any);
 
-    immutableRole.addManagedPolicy({ managedPolicyArn: 'Arn2' });
+    immutableRole.addManagedPolicy({ managedPolicyArn: 'Arn2' } as any);
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       'ManagedPolicyArns': [
