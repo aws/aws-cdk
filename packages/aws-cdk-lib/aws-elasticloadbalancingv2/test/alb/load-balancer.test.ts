@@ -1208,7 +1208,7 @@ describe('tests', () => {
 
     test('bucket with KMS throws validation error', () => {
       // GIVEN
-      const { stack, bucket, lb } = loggingSetup(true);
+      const { bucket, lb } = loggingSetup(true);
 
       // WHEN
       const testFn = () => lb.logHealthCheckLogs(bucket);

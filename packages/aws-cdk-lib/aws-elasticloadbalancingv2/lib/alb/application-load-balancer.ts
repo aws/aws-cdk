@@ -17,8 +17,7 @@ import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
 import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
-import type { ILoadBalancerRef } from '../elasticloadbalancingv2.generated';
-import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
+import type { CfnLoadBalancer, ILoadBalancerRef } from '../elasticloadbalancingv2.generated';
 import type { BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { BaseLoadBalancer } from '../shared/base-load-balancer';
 import type { DesyncMitigationMode } from '../shared/enums';
@@ -424,7 +423,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
      * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-health-check-logging.html
      */
     if (bucket.encryptionKey) {
-      throw new ValidationError('Encryption key detected. The health check logs buckets must use Server-Side Encryption with Amazon S3-managed keys (SSE-S3)', this);
+      throw new ValidationError(lit`EncryptionKeyDetectedBucketEncryption`, 'Encryption key detected. The health check logs buckets must use Server-Side Encryption with Amazon S3-managed keys (SSE-S3)', this);
     }
 
     prefix = prefix || '';
