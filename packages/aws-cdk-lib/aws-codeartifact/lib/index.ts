@@ -1,1 +1,0 @@
-export * from './codeartifact.generated';

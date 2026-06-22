@@ -1,4 +1,0 @@
-#!/usr/bin/env node
-
-// Run the original awslint
-require('awslint/bin/awslint.js');

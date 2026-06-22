@@ -1,7 +1,0 @@
-{
-  "bedrock/guardrails/guardrail-filters.ts": {
-    "@cdklabs/no-throw-default-error": {
-      "count": 1
-    }
-  }
-}

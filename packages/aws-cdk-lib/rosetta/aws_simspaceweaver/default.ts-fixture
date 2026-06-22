@@ -1,8 +1,0 @@
-import { Construct } from 'constructs';
-import { Stack } from 'aws-cdk-lib';
-
-class MyStack extends Stack {
-  constructor(scope: Construct, id: string) {
-    /// here
-  }
-}

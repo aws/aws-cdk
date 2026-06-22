@@ -1,1 +1,0 @@
-export * from './voiceid.generated';

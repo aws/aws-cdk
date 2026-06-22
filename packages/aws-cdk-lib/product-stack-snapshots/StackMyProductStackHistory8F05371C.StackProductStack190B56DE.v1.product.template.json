@@ -1,7 +1,0 @@
-{
-  "Resources": {
-    "SNSTopicProductStack2A8A6280F": {
-      "Type": "AWS::SNS::Topic"
-    }
-  }
-}

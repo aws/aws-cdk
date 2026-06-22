@@ -1,2 +1,0 @@
-#!/usr/bin/env node
-require('./check-peer-dependencies.js');
