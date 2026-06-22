@@ -45,7 +45,6 @@ import {
   ITaggable,
   PermissionsBoundary,
   CrossStackReferences,
-  GitSource,
   ReferenceStrength,
   RemovalPolicy,
   RemovalPolicies,
