@@ -1,8 +1,8 @@
 
-import * as child_process from 'child_process';
-import * as fs from 'fs';
-import * as os from 'os';
-import * as path from 'path';
+import child_process from 'child_process';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 import { version as delayVersion } from 'delay/package.json';
 import { Annotations } from '../../assertions';
 import { Architecture, Code, Runtime, RuntimeFamily } from '../../aws-lambda';
@@ -36,7 +36,7 @@ beforeEach(() => {
   jest.spyOn(DockerImage, 'fromBuild').mockReturnValue({
     image: 'built-image',
     cp: () => 'dest-path',
-    run: () => {},
+    run: () => { },
     toJSON: () => 'built-image',
   });
 });
@@ -78,7 +78,7 @@ test('esbuild bundling in Docker', () => {
     }),
   });
 
-  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/aws-lambda-nodejs\/lib$/), expect.objectContaining({
+  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/aws-lambda-nodejs\/lib\/docker$/), expect.objectContaining({
     buildArgs: expect.objectContaining({
       IMAGE: expect.stringMatching(/build-nodejs/),
     }),
@@ -202,8 +202,8 @@ test('esbuild bundling with externals and dependencies', () => {
         'bash', '-c',
         [
           `'esbuild' '--bundle' '/asset-input/test/bundling.test.ts' '--target=${STANDARD_TARGET}' '--platform=node' '--outfile=/asset-output/index.js' '--external:abc' '--external:delay'`,
-          `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > "/asset-output/package.json"`,
-          'cp "/asset-input/package-lock.json" "/asset-output/package-lock.json"',
+          `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > \'/asset-output/package.json\'`,
+          "cp '/asset-input/package-lock.json' '/asset-output/package-lock.json'",
           'cd "/asset-output"',
           'npm ci',
         ].join(' && '),
@@ -396,7 +396,7 @@ test('esbuild bundling source map default', () => {
 
 test.each([
   [Runtime.NODEJS_20_X, 'node20'],
-]) ('esbuild bundling without aws-sdk v3 and smithy with feature flag enabled using Node 18+', (runtime, target) => {
+])('esbuild bundling without aws-sdk v3 and smithy with feature flag enabled using Node 18+', (runtime, target) => {
   const cdkApp = new App({
     context: {
       '@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages': true,
@@ -472,7 +472,7 @@ test('esbuild bundling with feature flag enabled using Node Latest', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        '\'esbuild\' \'--bundle\' \'/asset-input/lib/handler.ts\' \'--target=node22\' \'--platform=node\' \'--outfile=/asset-output/index.js\'',
+        '\'esbuild\' \'--bundle\' \'/asset-input/lib/handler.ts\' \'--target=node24\' \'--platform=node\' \'--outfile=/asset-output/index.js\'',
       ],
     }),
   });
@@ -677,7 +677,7 @@ test('Detects pnpm-lock.yaml', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: expect.arrayContaining([
-        expect.stringMatching(/echo '' > "\/asset-output\/pnpm-workspace.yaml\".+pnpm-lock\.yaml.+pnpm install --config.node-linker=hoisted --config.package-import-method=clone-or-copy --no-prefer-frozen-lockfile && rm -f "\/asset-output\/node_modules\/.modules.yaml"/),
+        expect.stringMatching(/echo '' > '\/asset-output\/pnpm-workspace.yaml\'.+pnpm-lock\.yaml.+pnpm install --config.node-linker=hoisted --config.package-import-method=clone-or-copy --no-prefer-frozen-lockfile && rm -f "\/asset-output\/node_modules\/.modules.yaml"/),
       ]),
     }),
   });
@@ -742,7 +742,7 @@ test('with Docker build args', () => {
     forceDockerBundling: true,
   });
 
-  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/lib$/), expect.objectContaining({
+  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/lib\/docker$/), expect.objectContaining({
     buildArgs: expect.objectContaining({
       HELLO: 'WORLD',
     }),
@@ -924,8 +924,8 @@ test('esbuild bundling with projectRoot and externals and dependencies', () => {
         'bash', '-c',
         [
           `'esbuild' '--bundle' '/asset-input/packages/aws-cdk-lib/aws-lambda-nodejs/test/bundling.test.ts' '--target=${STANDARD_TARGET}' '--platform=node' '--outfile=/asset-output/index.js' '--external:abc' '--external:delay'`,
-          `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > "/asset-output/package.json"`,
-          'cp "/asset-input/common/package-lock.json" "/asset-output/package-lock.json"',
+          `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > \'/asset-output/package.json\'`,
+          "cp '/asset-input/common/package-lock.json' '/asset-output/package-lock.json'",
           'cd "/asset-output"',
           'npm ci',
         ].join(' && '),
@@ -1165,7 +1165,7 @@ test('bundling using NODEJS_LATEST doesn\'t externalize anything by default', ()
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        '\'esbuild\' \'--bundle\' \'/asset-input/lib/handler.ts\' \'--target=node22\' \'--platform=node\' \'--outfile=/asset-output/index.js\'',
+        '\'esbuild\' \'--bundle\' \'/asset-input/lib/handler.ts\' \'--target=node24\' \'--platform=node\' \'--outfile=/asset-output/index.js\'',
       ],
     }),
   });
@@ -1702,6 +1702,62 @@ test('Local bundling with pnpm uses fs for workspace yaml and cleanup', () => {
   copyFileSyncMock.mockRestore();
   existsSyncMock.mockRestore();
   rmSyncMock.mockRestore();
+});
+
+test('Docker bundling escapes shell metacharacters in nodeModules dependency versions does not cause injection', () => {
+  // A malicious (e.g. transitive) dependency version containing a single quote must not
+  // break out of the `echo '...'`.
+  const maliciousVersion = "1.0.0' && touch /asset-input/PWNED && echo '";
+  jest.spyOn(util, 'extractDependencies').mockReturnValue({ delay: maliciousVersion });
+
+  const packageLock = path.join(__dirname, '..', 'package-lock.json');
+  Bundling.bundle(stack, {
+    entry: __filename,
+    projectRoot: path.dirname(packageLock),
+    depsLockFilePath: packageLock,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    nodeModules: ['delay'],
+    forceDockerBundling: true,
+  });
+
+  const fromAssetCall = (Code.fromAsset as jest.Mock).mock.calls[0];
+  const bashScript: string = fromAssetCall[1].bundling.command[2];
+
+  const shellEscape = (s: string) => "'" + s.replace(/'/g, "'\\''") + "'";
+  const expectedArg = shellEscape(JSON.stringify({ dependencies: { delay: maliciousVersion } }));
+  expect(bashScript).toContain(`echo ${expectedArg} > `);
+
+  // The vulnerable (unescaped) breakout sequence must NOT be present.
+  expect(bashScript).not.toContain('1.0.0\' && touch');
+});
+
+test('Docker bundling escapes shell metacharacters in the nodeModules lock file path', () => {
+  jest.spyOn(util, 'extractDependencies').mockReturnValue({ delay: '5.0.0' });
+
+  const pkgRoot = path.join(__dirname, '..');
+
+  // The lock file path flows into `cp <src> ...` via OsCommand.copy
+  const depsLockPath = path.join(pkgRoot, '$(touch PWNED)', 'package-lock.json');
+  Bundling.bundle(stack, {
+    entry: __filename,
+    projectRoot: pkgRoot,
+    depsLockFilePath: depsLockPath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    nodeModules: ['delay'],
+    forceDockerBundling: true,
+  });
+
+  const fromAssetCall = (Code.fromAsset as jest.Mock).mock.calls[0];
+  const bashScript: string = fromAssetCall[1].bundling.command[2];
+
+  const shellEscape = (s: string) => "'" + s.replace(/'/g, "'\\''") + "'";
+  const src = path.join('/asset-input', path.relative(pkgRoot, depsLockPath));
+  expect(bashScript).toContain(`cp ${shellEscape(src)} `);
+
+  // The vulnerable double-quoted rendering (where `$(...)` would execute) must NOT be present.
+  expect(bashScript).not.toContain(`cp "${src}"`);
 });
 
 function findParentTsConfigPath(dir: string, depth: number = 1, limit: number = 5): string {
