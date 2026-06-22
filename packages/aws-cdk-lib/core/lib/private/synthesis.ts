@@ -148,6 +148,26 @@ function validateTemplates(root: IConstruct, outdir: string, assembly: private_c
   if (plugins.length === 0) return;
 
   const reports: NamedValidationPluginReport[] = doInvokeValidationPlugins(outdir, plugins, root);
+
+  // When the default validation plugin is not explicitly opted-in, downgrade
+  // its errors to warnings so synthesis does not fail.
+  const validateFlagExplicitlyEnabled = root.node.tryGetContext(cxapi.VALIDATE_AGAINST_DEFAULT_RULES) === true;
+  let warningifiedAnyErrors = false;
+  if (!validateFlagExplicitlyEnabled) {
+    for (const report of reports) {
+      if (report.pluginName !== CloudFormationValidatePlugin.PLUGIN_NAME) {
+        continue;
+      }
+      for (const v of report.violations) {
+        if (v.severity === 'error' || v.severity === 'fatal') {
+          mutable(v).severity = 'warning';
+          warningifiedAnyErrors = true;
+        }
+      }
+      mutable(report).success = true;
+    }
+  }
+
   const suppressedByReport: Map<number, SuppressedViolation[]> = collectSuppressions(root, reports);
 
   const formatter = new PolicyValidationReportFormatter(new ConstructTree(root));
@@ -172,6 +192,14 @@ function validateTemplates(root: IConstruct, outdir: string, assembly: private_c
     const output = formatValidationReports(process.cwd(), reportJson.pluginReports);
     // eslint-disable-next-line no-console
     console.error(output.join('\n\n'));
+
+    if (warningifiedAnyErrors) {
+      // eslint-disable-next-line no-console
+      console.error(
+        '\n[Warning] Template validation found issues in your templates (reported as warnings).'
+        + `\nSet feature flag "${cxapi.VALIDATE_AGAINST_DEFAULT_RULES}" to true to turn these into errors.`,
+      );
+    }
 
     const failed = reports.some(r => !r.success);
     if (failed) {
@@ -267,16 +295,6 @@ function doInvokeValidationPlugins(outdir: string, plugins: PendingPluginInvocat
     }
     if (hasModifiedPreExistingFiles(preExistingFileHashes)) {
       throw new AssumptionError(lit`IllegalOperationValidationPlugin`, `Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
-    }
-
-    // When the default plugin found issues but the flag is not explicitly enabled,
-    // nudge the user to opt in for stricter checking.
-    if (warningifiedAnyErrors) {
-      // eslint-disable-next-line no-console
-      console.error(
-        '\n[Warning] Template validation found issues in your templates (reported as warnings).'
-        + `\nSet feature flag "${cxapi.VALIDATE_AGAINST_DEFAULT_RULES}" to true to turn these into errors.`,
-      );
     }
   }
   return reports;
