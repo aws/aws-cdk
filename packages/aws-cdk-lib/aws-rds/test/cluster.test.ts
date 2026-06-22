@@ -1895,6 +1895,110 @@ describe('cluster new api', () => {
         MasterUserPassword: Match.absent(),
       });
     });
+
+    test('secret.grantRead() grants kms:Decrypt when a customer managed key is used', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const kmsKey = new kms.Key(stack, 'Key');
+      const cluster = new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        manageMasterUserPassword: true,
+        credentials: {
+          username: 'testuser',
+          encryptionKey: kmsKey,
+        },
+      });
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+
+      // WHEN
+      cluster.secret!.grantRead(role);
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+              Effect: 'Allow',
+            }),
+          ]),
+        },
+      });
+      template.hasResourceProperties('AWS::KMS::Key', {
+        KeyPolicy: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: 'kms:Decrypt',
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'kms:ViaService': 'secretsmanager.us-test-1.amazonaws.com',
+                },
+              },
+            }),
+          ]),
+        },
+      });
+    });
+
+    test('secret.grantRead() grants kms:Decrypt when a customer managed key is used with DatabaseClusterFromSnapshot', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const kmsKey = new kms.Key(stack, 'Key');
+      const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        snapshotIdentifier: 'my-snapshot',
+        manageMasterUserPassword: true,
+        snapshotCredentials: {
+          username: 'admin',
+          encryptionKey: kmsKey,
+          generatePassword: false,
+        },
+      });
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+
+      // WHEN
+      cluster.secret!.grantRead(role);
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+              Effect: 'Allow',
+            }),
+          ]),
+        },
+      });
+      template.hasResourceProperties('AWS::KMS::Key', {
+        KeyPolicy: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: 'kms:Decrypt',
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'kms:ViaService': 'secretsmanager.us-test-1.amazonaws.com',
+                },
+              },
+            }),
+          ]),
+        },
+      });
+    });
   });
 
   describe('manageMasterUserPassword validation errors for DatabaseCluster', () => {

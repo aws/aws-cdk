@@ -1420,11 +1420,10 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
 
     // Set up the secret reference
     if (props.manageMasterUserPassword) {
-      this.secret = secretsmanager.Secret.fromSecretCompleteArn(
-        this,
-        'ManagedSecret',
-        instance.attrMasterUserSecretSecretArn,
-      );
+      this.secret = secretsmanager.Secret.fromSecretAttributes(this, 'ManagedSecret', {
+        secretCompleteArn: instance.attrMasterUserSecretSecretArn,
+        encryptionKey: props.credentials?.encryptionKey,
+      });
     } else if (secret) {
       this.secret = secret.attach(this);
     }

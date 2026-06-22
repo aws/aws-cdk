@@ -2081,6 +2081,56 @@ describe('instance', () => {
 
       Template.fromStack(stack).resourceCountIs('AWS::SecretsManager::Secret', 0);
     });
+
+    test('secret.grantRead() grants kms:Decrypt when a customer managed key is used', () => {
+      // GIVEN
+      const kmsKey = new kms.Key(stack, 'Key');
+      const instance = new rds.DatabaseInstance(stack, 'Database', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        manageMasterUserPassword: true,
+        credentials: {
+          username: 'testuser',
+          encryptionKey: kmsKey,
+        },
+      });
+      const role = new Role(stack, 'Role', {
+        assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+      });
+
+      // WHEN
+      instance.secret!.grantRead(role);
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+              Effect: 'Allow',
+            }),
+          ]),
+        },
+      });
+      template.hasResourceProperties('AWS::KMS::Key', {
+        KeyPolicy: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: 'kms:Decrypt',
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'kms:ViaService': {
+                    'Fn::Join': ['', ['secretsmanager.', { Ref: 'AWS::Region' }, '.amazonaws.com']],
+                  },
+                },
+              },
+            }),
+          ]),
+        },
+      });
+    });
   });
 
   describe('manageMasterUserPassword validation errors', () => {

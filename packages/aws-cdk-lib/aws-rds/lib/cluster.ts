@@ -1549,11 +1549,10 @@ export class DatabaseCluster extends DatabaseClusterNew {
 
     // Set up the secret reference
     if (props.manageMasterUserPassword) {
-      this.secret = secretsmanager.Secret.fromSecretCompleteArn(
-        this,
-        'ManagedSecret',
-        cluster.attrMasterUserSecretSecretArn,
-      );
+      this.secret = secretsmanager.Secret.fromSecretAttributes(this, 'ManagedSecret', {
+        secretCompleteArn: cluster.attrMasterUserSecretSecretArn,
+        encryptionKey: props.credentials?.encryptionKey,
+      });
     } else if (secret) {
       this.secret = secret.attach(this);
     }
@@ -1778,11 +1777,10 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     this.clusterResourceIdentifier = cluster.attrDbClusterResourceId;
 
     if (props.manageMasterUserPassword) {
-      this.secret = secretsmanager.Secret.fromSecretCompleteArn(
-        this,
-        'ManagedSecret',
-        cluster.attrMasterUserSecretSecretArn,
-      );
+      this.secret = secretsmanager.Secret.fromSecretAttributes(this, 'ManagedSecret', {
+        secretCompleteArn: cluster.attrMasterUserSecretSecretArn,
+        encryptionKey: props.snapshotCredentials?.encryptionKey,
+      });
     } else if (credentials?.secret) {
       this.secret = credentials.secret.attach(this);
     }
