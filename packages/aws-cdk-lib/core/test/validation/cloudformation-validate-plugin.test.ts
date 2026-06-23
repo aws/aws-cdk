@@ -61,7 +61,7 @@ describe('CloudFormationValidatePlugin', () => {
 
     expect(process.exitCode).toBeUndefined();
     const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
-    expect(output).toContain('CloudFormation Validate found issues');
+    expect(output).toContain('Template validation found issues in your templates');
     expect(output).toContain(cxapi.VALIDATE_AGAINST_DEFAULT_RULES);
   });
 
