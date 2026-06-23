@@ -3,10 +3,12 @@ import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import { Duration, Stack } from '../../../core';
 import { AuthorizationType, IdentitySource, RequestAuthorizer, RestApi, TokenAuthorizer } from '../../lib';
+import { acknowledgeTestValidationRules } from '../validation-util';
 
 describe('lambda authorizer', () => {
   test('default token authorizer', () => {
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
 
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
@@ -81,6 +83,7 @@ describe('lambda authorizer', () => {
 
   test('default request authorizer', () => {
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
 
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
@@ -156,6 +159,7 @@ describe('lambda authorizer', () => {
 
   test('request authorizer with default cache TTL', () => {
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
 
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
@@ -183,6 +187,7 @@ describe('lambda authorizer', () => {
 
   test('invalid request authorizer config', () => {
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
 
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
@@ -199,6 +204,7 @@ describe('lambda authorizer', () => {
 
   test('token authorizer with all parameters specified', () => {
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
 
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
@@ -272,6 +278,7 @@ describe('lambda authorizer', () => {
 
   test('request authorizer with all parameters specified', () => {
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
 
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
@@ -343,6 +350,7 @@ describe('lambda authorizer', () => {
 
   test('token authorizer with assume role', () => {
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
 
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
@@ -433,6 +441,7 @@ describe('lambda authorizer', () => {
 
   test('request authorizer with assume role', () => {
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
 
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
@@ -525,6 +534,7 @@ describe('lambda authorizer', () => {
 
   test('token authorizer throws when not attached to a rest api', () => {
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
@@ -539,6 +549,7 @@ describe('lambda authorizer', () => {
 
   test('request authorizer throws when not attached to a rest api', () => {
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
@@ -554,6 +565,7 @@ describe('lambda authorizer', () => {
 
   test('rest api depends on the token authorizer when @aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId is enabled', () => {
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     stack.node.setContext('@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId', true);
 
     const func = new lambda.Function(stack, 'myfunction', {
@@ -582,6 +594,7 @@ describe('lambda authorizer', () => {
 
   test('rest api depends on the request authorizer when @aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId is enabled', () => {
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     stack.node.setContext('@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId', true);
 
     const func = new lambda.Function(stack, 'myfunction', {
@@ -613,6 +626,7 @@ describe('lambda authorizer', () => {
   test('a new deployment is created when a lambda function changes name and @aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId is enabled', () => {
     const createApiTemplate = (lambdaFunctionName: string) => {
       const stack = new Stack();
+      acknowledgeTestValidationRules(stack);
       stack.node.setContext('@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId', true);
 
       const func = new lambda.Function(stack, 'myfunction', {
@@ -649,6 +663,7 @@ describe('lambda authorizer', () => {
   test('a new deployment is created when an imported lambda function changes name and @aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId is enabled', () => {
     const createApiTemplate = (lambdaFunctionName: string) => {
       const stack = new Stack();
+      acknowledgeTestValidationRules(stack);
       stack.node.setContext('@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId', true);
 
       const func = lambda.Function.fromFunctionName(stack, 'myfunction', lambdaFunctionName);

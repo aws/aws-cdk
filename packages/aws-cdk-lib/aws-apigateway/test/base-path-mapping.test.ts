@@ -2,11 +2,13 @@ import { Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
 import * as cdk from '../../core';
 import * as apigw from '../lib';
+import { acknowledgeTestValidationRules } from './validation-util';
 
 describe('BasePathMapping', () => {
   test('default setup', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const api = new apigw.RestApi(stack, 'MyApi');
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
@@ -32,6 +34,7 @@ describe('BasePathMapping', () => {
   test('specify basePath property', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const api = new apigw.RestApi(stack, 'MyApi');
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
@@ -56,6 +59,7 @@ describe('BasePathMapping', () => {
   test('specify multi-level basePath property', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const api = new apigw.RestApi(stack, 'MyApi');
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
@@ -80,6 +84,7 @@ describe('BasePathMapping', () => {
   test('throws when basePath contains an invalid character', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const api = new apigw.RestApi(stack, 'MyApi');
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
@@ -104,6 +109,7 @@ describe('BasePathMapping', () => {
   test('throw error for basePath starting with /', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const api = new apigw.RestApi(stack, 'MyApi');
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
@@ -128,6 +134,7 @@ describe('BasePathMapping', () => {
   test('throw error for basePath ending with /', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const api = new apigw.RestApi(stack, 'MyApi');
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
@@ -152,6 +159,7 @@ describe('BasePathMapping', () => {
   test('throw error for basePath containing more than one consecutive /', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const api = new apigw.RestApi(stack, 'MyApi');
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
@@ -176,6 +184,7 @@ describe('BasePathMapping', () => {
   test('specify stage property', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const api = new apigw.RestApi(stack, 'MyApi');
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
@@ -206,6 +215,7 @@ describe('BasePathMapping', () => {
   test('specify attachToStage property', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const api = new apigw.RestApi(stack, 'MyApi');
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
@@ -230,6 +240,7 @@ describe('BasePathMapping', () => {
   test('works with imported domain name from attributes', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const api = new apigw.RestApi(stack, 'MyApi');
     api.root.addMethod('GET');
     const domain = apigw.DomainName.fromDomainNameAttributes(stack, 'Domain', {

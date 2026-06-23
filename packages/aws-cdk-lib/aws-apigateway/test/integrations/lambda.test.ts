@@ -2,11 +2,13 @@ import { Match, Template } from '../../../assertions';
 import * as lambda from '../../../aws-lambda';
 import * as cdk from '../../../core';
 import * as apigateway from '../../lib';
+import { acknowledgeTestValidationRules } from '../validation-util';
 
 describe('lambda', () => {
   test('minimal setup', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const api = new apigateway.RestApi(stack, 'my-api');
     const handler = new lambda.Function(stack, 'Handler', {
       runtime: lambda.Runtime.PYTHON_3_9,
@@ -53,6 +55,7 @@ describe('lambda', () => {
   test('"allowTestInvoke" can be used to disallow calling the API from the test UI', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'Handler', {
       runtime: lambda.Runtime.NODEJS_LATEST,
       code: lambda.Code.fromInline('foo'),
@@ -101,6 +104,7 @@ describe('lambda', () => {
   test('"allowTestInvoke" set to true allows calling the API from the test UI', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'Handler', {
       runtime: lambda.Runtime.NODEJS_LATEST,
       code: lambda.Code.fromInline('foo'),
@@ -137,6 +141,7 @@ describe('lambda', () => {
   test('"proxy" can be used to disable proxy mode', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'Handler', {
       runtime: lambda.Runtime.NODEJS_LATEST,
       code: lambda.Code.fromInline('foo'),
@@ -159,6 +164,7 @@ describe('lambda', () => {
 
   test('when "ANY" is used, lambda permission will include "*" for method', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const api = new apigateway.RestApi(stack, 'test-api');
 
     const handler = new lambda.Function(stack, 'MyFunc', {
@@ -222,6 +228,7 @@ describe('lambda', () => {
 
   test('works for imported RestApi', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const api = apigateway.RestApi.fromRestApiAttributes(stack, 'RestApi', {
       restApiId: 'imported-rest-api-id',
       rootResourceId: 'imported-root-resource-id',
@@ -245,6 +252,7 @@ describe('lambda', () => {
   test('fingerprint is computed when functionName is specified', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const restapi = new apigateway.RestApi(stack, 'RestApi');
     const method = restapi.root.addMethod('ANY');
     const handler = new lambda.Function(stack, 'MyFunc', {
@@ -266,6 +274,7 @@ describe('lambda', () => {
   test('fingerprint is not computed when functionName is not specified', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const restapi = new apigateway.RestApi(stack, 'RestApi');
     const method = restapi.root.addMethod('ANY');
     const handler = new lambda.Function(stack, 'MyFunc', {
@@ -285,6 +294,7 @@ describe('lambda', () => {
   test('bind works for integration with imported functions', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const restapi = new apigateway.RestApi(stack, 'RestApi');
     const method = restapi.root.addMethod('ANY');
     const handler = lambda.Function.fromFunctionArn(stack, 'MyFunc', 'arn:aws:lambda:region:account:function:myfunc');
@@ -301,6 +311,7 @@ describe('lambda', () => {
   test('scopePermissionToMethod set to false creates API-scoped permission', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const api = new apigateway.RestApi(stack, 'my-api');
     const handler = new lambda.Function(stack, 'Handler', {
       runtime: lambda.Runtime.PYTHON_3_9,
@@ -338,6 +349,7 @@ describe('lambda', () => {
   test('scopePermissionToMethod set to false reuses permission for multiple integrations', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const api = new apigateway.RestApi(stack, 'my-api');
     const handler = new lambda.Function(stack, 'Handler', {
       runtime: lambda.Runtime.PYTHON_3_9,
@@ -380,6 +392,7 @@ describe('lambda', () => {
   ])('responseTransferMode %s generates correct Uri path', (responseTransferMode, expectedVersion, expectedSuffix) => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const api = new apigateway.RestApi(stack, 'my-api');
     const handler = new lambda.Function(stack, 'Handler', {
       runtime: lambda.Runtime.PYTHON_3_9,

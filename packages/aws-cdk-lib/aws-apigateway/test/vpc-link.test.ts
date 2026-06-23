@@ -3,11 +3,13 @@ import * as ec2 from '../../aws-ec2';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as cdk from '../../core';
 import * as apigateway from '../lib';
+import { acknowledgeTestValidationRules } from './validation-util';
 
 describe('vpc link', () => {
   test('default setup', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const nlb = new elbv2.NetworkLoadBalancer(stack, 'NLB', {
       vpc,
@@ -29,6 +31,7 @@ describe('vpc link', () => {
   test('targets can be added using addTargets', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const nlb0 = new elbv2.NetworkLoadBalancer(stack, 'NLB0', { vpc });
     const nlb1 = new elbv2.NetworkLoadBalancer(stack, 'NLB1', { vpc });
@@ -57,6 +60,7 @@ describe('vpc link', () => {
   test('import', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     apigateway.VpcLink.fromVpcLinkId(stack, 'ImportedVpcLink', 'vpclink-id');
@@ -69,6 +73,7 @@ describe('vpc link', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new apigateway.VpcLink(stack, 'vpclink');

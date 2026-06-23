@@ -4,11 +4,13 @@ import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import * as apigw from '../lib';
 import { LambdaRestApi } from '../lib';
+import { acknowledgeTestValidationRules } from './validation-util';
 
 describe('lambda api', () => {
   test('LambdaRestApi defines a REST API with Lambda proxy integration', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
@@ -71,6 +73,7 @@ describe('lambda api', () => {
   test('LambdaRestApi supports function Alias', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
@@ -136,6 +139,7 @@ describe('lambda api', () => {
   test('when "proxy" is set to false, users need to define the model', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
@@ -173,6 +177,7 @@ describe('lambda api', () => {
   test('when "proxy" is false, AWS_PROXY is still used', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
@@ -200,6 +205,7 @@ describe('lambda api', () => {
   test('fails if options.defaultIntegration is also set', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
@@ -221,6 +227,7 @@ describe('lambda api', () => {
   test('LambdaRestApi defines a REST API with CORS enabled', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
@@ -275,6 +282,7 @@ describe('lambda api', () => {
   test('LambdaRestApi defines a REST API with CORS enabled and defaultMethodOptions', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
@@ -335,6 +343,7 @@ describe('lambda api', () => {
   test('LambdaRestApi allows passing GENERATE_IF_NEEDED as the physical name', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
@@ -355,6 +364,7 @@ describe('lambda api', () => {
   test('provided integrationOptions are applied', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
@@ -382,6 +392,7 @@ describe('lambda api', () => {
   test('setting integrationOptions.proxy to false retains {proxy+} path part', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
@@ -412,6 +423,7 @@ describe('lambda api', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app);
+    acknowledgeTestValidationRules(stack);
 
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
@@ -485,6 +497,7 @@ describe('LambdaRestApi inherits from RestApi prop injector test ', () => {
     });
     const stack = new cdk.Stack(app, 'MyStack', {
     });
+    acknowledgeTestValidationRules(stack);
     const cert1 = new cert.Certificate(stack, 'cert', {
       domainName: 'amazon.com',
     });
@@ -518,6 +531,7 @@ describe('LambdaRestApi inherits from RestApi prop injector test ', () => {
         new LambdaRestApiPropsInjector(),
       ],
     });
+    acknowledgeTestValidationRules(stack2);
     const fn2 = new lambda.Function(stack2, 'MyFunc', {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_LATEST,
@@ -539,6 +553,7 @@ describe('LambdaRestApi inherits from RestApi prop injector test ', () => {
     });
     const stack = new cdk.Stack(app, 'MyStack', {
     });
+    acknowledgeTestValidationRules(stack);
     const cert1 = new cert.Certificate(stack, 'cert', {
       domainName: 'amazon.com',
     });
@@ -568,6 +583,7 @@ describe('LambdaRestApi inherits from RestApi prop injector test ', () => {
         new LambdaRestApiPropsInjector(),
       ],
     });
+    acknowledgeTestValidationRules(stack2);
     const fn2 = new lambda.Function(stack2, 'MyFunc', {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_LATEST,
@@ -589,6 +605,7 @@ describe('LambdaRestApi inherits from RestApi prop injector test ', () => {
     });
     const stack = new cdk.Stack(app, 'MyStack', {
     });
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyFunc', {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_LATEST,
@@ -612,6 +629,7 @@ describe('LambdaRestApi inherits from RestApi prop injector test ', () => {
         new RestApiPropsInjector(),
       ],
     });
+    acknowledgeTestValidationRules(stack2);
     const fn2 = new lambda.Function(stack2, 'MyFunc', {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_LATEST,
