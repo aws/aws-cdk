@@ -1,0 +1,6 @@
+{
+  "$": "This cdk.json is here to control context flags when running cdk synth directly in this directory.",
+  "context": {
+    "@aws-cdk/core:strictCfnValidateErrors": true
+  }
+}

@@ -165,4 +165,12 @@ const IGNORE_RULES = new Set([
   // WHAT: 'DependsOn' already implied by a 'GetAtt', remove the DependsOn.
   // WHY: CDK adds both. It doesn't hurt to have both, and it's more effort to remove them.
   'W3005',
+
+  // WHAT: Condition can never be false.
+  // WHY: The engine assumes AWS::Partition can only ever equal 'aws', which is not true.
+  'W1028',
+
+  // WHAT: Unknown resource type
+  // WHY: Engine complains about AWS::CDK::Metadata, which is quite common in our templates :>
+  'E9001',
 ]);

@@ -157,18 +157,7 @@ function validateTemplates(root: IConstruct, outdir: string, assembly: private_c
   const validateFlagExplicitlyEnabled = root.node.tryGetContext(cxapi.VALIDATE_AGAINST_DEFAULT_RULES) === true;
   let warningifiedAnyErrors = false;
   if (!validateFlagExplicitlyEnabled) {
-    for (const report of reports) {
-      if (report.pluginName !== CloudFormationValidatePlugin.PLUGIN_NAME) {
-        continue;
-      }
-      for (const v of report.violations) {
-        if (v.severity === 'error' || v.severity === 'fatal') {
-          mutable(v).severity = 'warning';
-          warningifiedAnyErrors = true;
-        }
-      }
-      mutable(report).success = true;
-    }
+    warningifiedAnyErrors = downgradeCfnValidateErrorsToWarnings(reports);
   }
 
   const suppressedByReport: Map<number, SuppressedViolation[]> = collectSuppressions(root, reports);
@@ -192,7 +181,7 @@ function validateTemplates(root: IConstruct, outdir: string, assembly: private_c
     // eslint-disable-next-line no-console
     console.error(
       '\n[Warning] Template validation found issues in your templates (reported as warnings).'
-      + `\nSet feature flag "${cxapi.VALIDATE_AGAINST_DEFAULT_RULES}" to true to turn these into errors.`,
+      + `\nSet feature flag "${cxapi.VALIDATE_AGAINST_DEFAULT_RULES}" to true to turn these into errors.\n`,
     );
   }
 
@@ -206,12 +195,23 @@ function validateTemplates(root: IConstruct, outdir: string, assembly: private_c
       console.error(output.join('\n\n'));
     }
 
-    const failed = reports.some(r => !r.success);
+    let failed = reports.some(r => !r.success);
+
+    // If requested for "strict mode", also consider warnings as failed.
+    if (getBooleanContext(root, cxapi.STRICT_CFN_VALIDATE_ERRORS, false)) {
+      failed ||= reports.some(r => r.violations.some(v => v.severity === 'warning'));
+    }
+
     if (failed) {
       const reportPath = humanFriendlyFilename(process.cwd(), reportFile);
-      // eslint-disable-next-line no-console
-      console.error(`\nValidation failed. A copy of this report can be found in '${reportPath}'`);
-      process.exitCode = 1;
+
+      // This used to be `process.exitCode = 1`, but that doesn't do the same
+      // thing if synthesis happens in (1) unit tests (2) in-memory in the
+      // toolkit library. So we have to throw an error here to make sure we
+      // properly fail in all cases. Potentially we can optimize this to a
+      // "clean" exitCode if we know (via an environment variable) that we are
+      // being executed as a subprocess.
+      throw new UnscopedValidationError(lit`ValidationFailed`, `Validation failed. A copy of this report can be found in: ${reportPath}`);
     }
   }
 }
@@ -231,6 +231,23 @@ export interface ICustomSynthesis {
 interface PendingPluginInvocation {
   plugin: IPolicyValidationPlugin;
   templatePaths: string[];
+}
+
+function downgradeCfnValidateErrorsToWarnings(reports: NamedValidationPluginReport[]) {
+  let warningifiedAnyErrors = false;
+  for (const report of reports) {
+    if (report.pluginName !== CloudFormationValidatePlugin.PLUGIN_NAME) {
+      continue;
+    }
+    for (const v of report.violations) {
+      if (v.severity === 'error' || v.severity === 'fatal') {
+        mutable(v).severity = 'warning';
+        warningifiedAnyErrors = true;
+      }
+    }
+    mutable(report).success = true;
+  }
+  return warningifiedAnyErrors;
 }
 
 /**

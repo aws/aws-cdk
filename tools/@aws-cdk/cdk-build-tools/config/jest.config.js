@@ -8,6 +8,12 @@ if ('aws-cdk-lib' in thisPackagesPackageJson.devDependencies ?? {}) {
   setupFilesAfterEnv.push('./testhelpers/jest-autoclean.ts');
 }
 
+// Set context that will apply to all unit tests in this package.
+process.env.CDK_CONTEXT_JSON = JSON.stringify({
+  '@aws-cdk/core:strictCfnValidateErrors': true,
+});
+
+/** @type {import('ts-jest').JestConfigWithTsJest} */
 module.exports = {
   // The preset deals with preferring TS over JS
   moduleFileExtensions: [
