@@ -1,12 +1,14 @@
 import { Template } from '../../assertions';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
+import { acknowledgeTestValidationRules } from './util';
 
 describe('runtime', () => {
   test('Runtime Management Auto', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
+    acknowledgeTestValidationRules(stack);
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -24,6 +26,7 @@ describe('runtime', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
+    acknowledgeTestValidationRules(stack);
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -41,6 +44,7 @@ describe('runtime', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
+    acknowledgeTestValidationRules(stack);
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',

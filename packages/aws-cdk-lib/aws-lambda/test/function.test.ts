@@ -23,11 +23,13 @@ import * as cxapi from '../../cx-api';
 import * as lambda from '../lib';
 import { AdotLambdaLayerJavaSdkVersion } from '../lib/adot-layers';
 import { calculateFunctionHash } from '../lib/function-hash';
+import { acknowledgeTestValidationRules } from './util';
 
 describe('function', () => {
   const dockerLambdaHandlerPath = path.join(__dirname, 'docker-lambda-handler');
   test('default function', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
@@ -64,6 +66,7 @@ describe('function', () => {
 
   test('function without layers omits Layers property', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
@@ -78,6 +81,7 @@ describe('function', () => {
 
   test('adds policy permissions', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -130,6 +134,7 @@ describe('function', () => {
 
   test('fails if inline code is used for an invalid runtime', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     expect(() => new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'bar',
@@ -140,6 +145,7 @@ describe('function', () => {
   describe('addPermissions', () => {
     test('can be used to add permissions to the Lambda function', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const fn = newTestLambda(stack);
 
       fn.addPermission('S3Permission', {
@@ -203,6 +209,7 @@ describe('function', () => {
 
     test('can supply principalOrgID via permission property', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const fn = newTestLambda(stack);
       const org = new iam.OrganizationPrincipal('o-xxxxxxxxxx');
       const account = new iam.AccountPrincipal('123456789012');
@@ -228,6 +235,7 @@ describe('function', () => {
 
     test('fails if the principal is not a service, account, arn, or organization principal', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const fn = newTestLambda(stack);
 
       expect(() => fn.addPermission('F1', { principal: new iam.CanonicalUserPrincipal('org') }))
@@ -242,6 +250,7 @@ describe('function', () => {
     test('does not show warning if skipPermissions is set', () => {
       const app = new cdk.App();
       const stack = new cdk.Stack(app);
+      acknowledgeTestValidationRules(stack);
       const imported = lambda.Function.fromFunctionAttributes(stack, 'Imported', {
         functionArn: 'arn:aws:lambda:us-west-2:123456789012:function:my-function',
         skipPermissions: true,
@@ -257,6 +266,7 @@ describe('function', () => {
     test('shows warning if skipPermissions is not set', () => {
       const app = new cdk.App();
       const stack = new cdk.Stack(app);
+      acknowledgeTestValidationRules(stack);
       const imported = lambda.Function.fromFunctionAttributes(stack, 'Imported', {
         functionArn: 'arn:aws:lambda:us-west-2:123456789012:function:my-function',
       });
@@ -275,6 +285,7 @@ describe('function', () => {
 
     test('applies source account/ARN conditions if the principal has conditions', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const fn = newTestLambda(stack);
       const sourceAccount = 'some-account';
       const sourceArn = 'some-arn';
@@ -306,6 +317,7 @@ describe('function', () => {
 
     test('applies source arn condition if principal has conditions', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const fn = newTestLambda(stack);
       const sourceArn = 'some-arn';
       const service = 'my-service';
@@ -332,6 +344,7 @@ describe('function', () => {
 
     test('applies principal org id conditions if the principal has conditions', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const fn = newTestLambda(stack);
       const principalOrgId = 'org-xxxxxxxxxx';
       const service = 'my-service';
@@ -358,6 +371,7 @@ describe('function', () => {
 
     test('fails if the principal has conditions that are not supported', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const fn = newTestLambda(stack);
 
       expect(() => fn.addPermission('F1', {
@@ -385,6 +399,7 @@ describe('function', () => {
 
     test('fails if the principal has condition combinations that are not supported', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const fn = newTestLambda(stack);
 
       expect(() => fn.addPermission('F2', {
@@ -408,6 +423,7 @@ describe('function', () => {
         },
       });
       const stack = new cdk.Stack(app);
+      acknowledgeTestValidationRules(stack);
       const role = new iam.Role(stack, 'SomeRole', {
         assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       });
@@ -455,6 +471,7 @@ describe('function', () => {
         },
       });
       const stack = new cdk.Stack(app);
+      acknowledgeTestValidationRules(stack);
       const role = new iam.Role(stack, 'SomeRole', {
         assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       });
@@ -490,6 +507,7 @@ describe('function', () => {
   test('fromFunctionArn', () => {
     // GIVEN
     const stack2 = new cdk.Stack();
+    acknowledgeTestValidationRules(stack2);
 
     // WHEN
     const imported = lambda.Function.fromFunctionArn(stack2, 'Imported', 'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
@@ -502,6 +520,7 @@ describe('function', () => {
   test('Function.fromFunctionName', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     const imported = lambda.Function.fromFunctionName(stack, 'Imported', 'my-function');
@@ -543,6 +562,7 @@ describe('function', () => {
       stack = new cdk.Stack(app, 'Base', {
         env: { account: '111111111111', region: 'stack-region' },
       });
+      acknowledgeTestValidationRules(stack);
     });
 
     describe('for a function in a different account and region', () => {
@@ -571,6 +591,7 @@ describe('function', () => {
       const stack = new cdk.Stack(app, 'Imports', {
         env: { account: '123456789012', region: 'us-east-1' },
       });
+      acknowledgeTestValidationRules(stack);
 
       // WHEN
       const iFunc = lambda.Function.fromFunctionAttributes(stack, 'iFunc', {
@@ -588,6 +609,7 @@ describe('function', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'Imports');
+      acknowledgeTestValidationRules(stack);
 
       // WHEN
       const iFunc = lambda.Function.fromFunctionAttributes(stack, 'iFunc', {
@@ -605,6 +627,7 @@ describe('function', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'Imports');
+      acknowledgeTestValidationRules(stack);
 
       // WHEN
       const iFunc = lambda.Function.fromFunctionAttributes(stack, 'iFunc', {
@@ -625,6 +648,7 @@ describe('function', () => {
       const stack = new cdk.Stack(app, 'Base', {
         env: { account: '111111111111' },
       });
+      acknowledgeTestValidationRules(stack);
 
       // WHEN
       const iFunc = lambda.Function.fromFunctionAttributes(stack, 'iFunc', {
@@ -645,6 +669,7 @@ describe('function', () => {
       beforeEach(() => {
         warningMessage = 'AWS Lambda has changed their authorization strategy';
         stack = new cdk.Stack();
+        acknowledgeTestValidationRules(stack);
         fn = new lambda.Function(stack, 'MyLambda', {
           code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
           handler: 'index.handler',
@@ -807,6 +832,7 @@ describe('function', () => {
       },
     });
     const stack = new cdk.Stack(app);
+    acknowledgeTestValidationRules(stack);
     new lambda.Function(stack, 'MyLambda', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',
@@ -844,6 +870,7 @@ describe('function', () => {
       },
     });
     const stack = new cdk.Stack(app);
+    acknowledgeTestValidationRules(stack);
 
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
@@ -940,6 +967,7 @@ describe('function', () => {
       },
     });
     const stack = new cdk.Stack(app);
+    acknowledgeTestValidationRules(stack);
 
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
@@ -1032,6 +1060,7 @@ describe('function', () => {
 
   test('default function with SQS DLQ when client sets deadLetterQueueEnabled to true and functionName not defined by client', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
@@ -1058,6 +1087,7 @@ describe('function', () => {
 
   test('default function with SQS DLQ when client sets deadLetterQueueEnabled to false', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
@@ -1083,6 +1113,7 @@ describe('function', () => {
 
   test('default function with SQS DLQ when client provides Queue to be used as DLQ', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
       queueName: 'MyLambda_DLQ',
@@ -1128,6 +1159,7 @@ describe('function', () => {
 
   test('default function with SQS DLQ when client provides Queue to be used as DLQ and deadLetterQueueEnabled set to true', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
       queueName: 'MyLambda_DLQ',
@@ -1174,6 +1206,7 @@ describe('function', () => {
 
   test('error when default function with SQS DLQ when client provides Queue to be used as DLQ and deadLetterQueueEnabled set to false', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
       queueName: 'MyLambda_DLQ',
@@ -1191,6 +1224,7 @@ describe('function', () => {
 
   test('default function with SNS DLQ when client provides Topic to be used as DLQ', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     const dlTopic = new sns.Topic(stack, 'DeadLetterTopic');
 
@@ -1226,6 +1260,7 @@ describe('function', () => {
 
   test('error when default function with SNS DLQ when client provides Topic to be used as DLQ and deadLetterQueueEnabled set to false', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     const dlTopic = new sns.Topic(stack, 'DeadLetterTopic');
 
@@ -1240,6 +1275,7 @@ describe('function', () => {
 
   test('error when default function with SNS DLQ when client provides Topic to be used as DLQ and deadLetterQueueEnabled set to true', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     const dlTopic = new sns.Topic(stack, 'DeadLetterTopic');
 
@@ -1254,6 +1290,7 @@ describe('function', () => {
 
   test('error when both topic and queue are presented as DLQ', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     const dlQueue = new sqs.Queue(stack, 'DLQ');
     const dlTopic = new sns.Topic(stack, 'DeadLetterTopic');
@@ -1274,6 +1311,7 @@ describe('function', () => {
       },
     });
     const stack = new cdk.Stack(app);
+    acknowledgeTestValidationRules(stack);
 
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
@@ -1334,6 +1372,7 @@ describe('function', () => {
       },
     });
     const stack = new cdk.Stack(app);
+    acknowledgeTestValidationRules(stack);
 
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
@@ -1395,6 +1434,7 @@ describe('function', () => {
       },
     });
     const stack = new cdk.Stack(app);
+    acknowledgeTestValidationRules(stack);
 
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
@@ -1455,6 +1495,7 @@ describe('function', () => {
       },
     });
     const stack = new cdk.Stack(app);
+    acknowledgeTestValidationRules(stack);
 
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
@@ -1511,6 +1552,7 @@ describe('function', () => {
 
   test('default function with Disabled tracing', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
@@ -1543,6 +1585,7 @@ describe('function', () => {
 
   test('runtime and handler set to FROM_IMAGE are set to undefined in CloudFormation', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     new lambda.Function(stack, 'MyLambda', {
       code: lambda.Code.fromAssetImage(dockerLambdaHandlerPath),
@@ -1561,6 +1604,7 @@ describe('function', () => {
     test('adds iam:InvokeFunction', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const role = new iam.Role(stack, 'Role', {
         assumedBy: new iam.AccountPrincipal('1234'),
       });
@@ -1594,6 +1638,7 @@ describe('function', () => {
     test('adds grantInvokeLatestVersion ', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const role = new iam.Role(stack, 'Role', {
         assumedBy: new iam.AccountPrincipal('1234'),
       });
@@ -1627,6 +1672,7 @@ describe('function', () => {
     test('adds grantInvokeVersion ', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const role = new iam.Role(stack, 'Role', {
         assumedBy: new iam.AccountPrincipal('1234'),
       });
@@ -1660,6 +1706,7 @@ describe('function', () => {
     test('with a service principal', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromInline('xxx'),
         handler: 'index.handler',
@@ -1686,6 +1733,7 @@ describe('function', () => {
     test('with an account principal', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromInline('xxx'),
         handler: 'index.handler',
@@ -1712,6 +1760,7 @@ describe('function', () => {
     test('with an arn principal', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromInline('xxx'),
         handler: 'index.handler',
@@ -1738,6 +1787,7 @@ describe('function', () => {
     test('with an organization principal', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromInline('xxx'),
         handler: 'index.handler',
@@ -1765,6 +1815,7 @@ describe('function', () => {
     test('can be called twice for the same service principal', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromInline('xxx'),
         handler: 'index.handler',
@@ -1794,6 +1845,7 @@ describe('function', () => {
       const stack = new cdk.Stack(undefined, undefined, {
         env: { account: '123456789012' },
       });
+      acknowledgeTestValidationRules(stack);
       const fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromInline('xxx'),
         handler: 'index.handler',
@@ -1826,6 +1878,7 @@ describe('function', () => {
       const stack = new cdk.Stack(undefined, undefined, {
         env: { account: '3333' },
       });
+      acknowledgeTestValidationRules(stack);
       const fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromInline('xxx'),
         handler: 'index.handler',
@@ -1853,6 +1906,7 @@ describe('function', () => {
       const stack = new cdk.Stack(undefined, undefined, {
         env: { account: '123456789012' },
       });
+      acknowledgeTestValidationRules(stack);
       const fn = lambda.Function.fromFunctionArn(stack, 'Function', 'arn:aws:lambda:us-east-1:123456789012:function:MyFn');
 
       // WHEN
@@ -1868,6 +1922,7 @@ describe('function', () => {
 
     test('on an imported function (unresolved account)', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const fn = lambda.Function.fromFunctionArn(stack, 'Function', 'arn:aws:lambda:us-east-1:123456789012:function:MyFn');
 
       expect(
@@ -1878,6 +1933,7 @@ describe('function', () => {
     test('on an imported function (unresolved account & w/ allowPermissions)', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const fn = lambda.Function.fromFunctionAttributes(stack, 'Function', {
         functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
         sameEnvironment: true,
@@ -1899,6 +1955,7 @@ describe('function', () => {
       const stack = new cdk.Stack(undefined, undefined, {
         env: { account: '111111111111' }, // Different account
       });
+      acknowledgeTestValidationRules(stack);
       const fn = lambda.Function.fromFunctionArn(stack, 'Function', 'arn:aws:lambda:us-east-1:123456789012:function:MyFn');
 
       // THEN
@@ -1912,6 +1969,7 @@ describe('function', () => {
       const stack = new cdk.Stack(undefined, undefined, {
         env: { account: '111111111111' }, // Different account
       });
+      acknowledgeTestValidationRules(stack);
       const fn = lambda.Function.fromFunctionAttributes(stack, 'Function', {
         functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
         skipPermissions: true,
@@ -1928,6 +1986,7 @@ describe('function', () => {
     test('adds iam:InvokeFunction for a CompositePrincipal (two accounts)', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const compositePrincipal = new iam.CompositePrincipal(
         new iam.AccountPrincipal('1234'),
         new iam.AccountPrincipal('5678'),
@@ -1968,6 +2027,7 @@ describe('function', () => {
     test('adds iam:InvokeFunction for a CompositePrincipal (multiple types)', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const compositePrincipal = new iam.CompositePrincipal(
         new iam.AccountPrincipal('1234'),
         new iam.ServicePrincipal('apigateway.amazonaws.com'),
@@ -2032,6 +2092,7 @@ describe('function', () => {
   test('Can use metricErrors on a lambda Function', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('xxx'),
       handler: 'index.handler',
@@ -2051,6 +2112,7 @@ describe('function', () => {
   test('addEventSource calls bind', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('xxx'),
       handler: 'index.handler',
@@ -2075,6 +2137,7 @@ describe('function', () => {
   test('multi-tenant function accepts ApiEventSource', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'Function', {
       runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
@@ -2100,6 +2163,7 @@ describe('function', () => {
   test('multi-tenant function rejects non-API event sources', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'Function', {
       runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
@@ -2121,6 +2185,7 @@ describe('function', () => {
   test('layer is baked into the function version', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack');
+    acknowledgeTestValidationRules(stack);
     const bucket = new s3.Bucket(stack, 'Bucket');
     const code = new lambda.S3Code(bucket, 'ObjectKey');
 
@@ -2149,6 +2214,7 @@ describe('function', () => {
     // GIVEN
     const app = new cdk.App({ context: { [cxapi.LAMBDA_RECOGNIZE_LAYER_VERSION]: true } });
     const stack = new cdk.Stack(app, 'TestStack');
+    acknowledgeTestValidationRules(stack);
     const bucket = new s3.Bucket(stack, 'Bucket');
     const code = new lambda.S3Code(bucket, 'ObjectKey');
     const layer = new lambda.LayerVersion(stack, 'LayerVersion', {
@@ -2184,6 +2250,7 @@ describe('function', () => {
   test('using an incompatible layer', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack');
+    acknowledgeTestValidationRules(stack);
     const layer = lambda.LayerVersion.fromLayerVersionAttributes(stack, 'TestLayer', {
       layerVersionArn: 'arn:aws:...',
       compatibleRuntimes: [new lambda.Runtime('something2')],
@@ -2203,6 +2270,7 @@ describe('function', () => {
   test('using more than 5 layers', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack');
+    acknowledgeTestValidationRules(stack);
     const layers = new Array(6).fill(lambda.LayerVersion.fromLayerVersionAttributes(stack, 'TestLayer', {
       layerVersionArn: 'arn:aws:...',
       compatibleRuntimes: [lambda.Runtime.NODEJS_22_X],
@@ -2220,6 +2288,7 @@ describe('function', () => {
   test('environment variables work in China', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, undefined, { env: { region: 'cn-north-1' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new lambda.Function(stack, 'MyLambda', {
@@ -2244,6 +2313,7 @@ describe('function', () => {
   test('environment variables work in an unspecified region', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new lambda.Function(stack, 'MyLambda', {
@@ -2267,6 +2337,7 @@ describe('function', () => {
 
   test('support reserved concurrent executions', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
@@ -2283,6 +2354,7 @@ describe('function', () => {
   test('its possible to specify event sources upon creation', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     let bindCount = 0;
 
@@ -2317,6 +2389,7 @@ describe('function', () => {
   test('specify log retention', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new lambda.Function(stack, 'MyLambda', {
@@ -2348,6 +2421,7 @@ describe('function', () => {
   test('cannot use logRemovalPolicy and logGroup', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN/THEN
     expect(() => new lambda.Function(stack, 'fn', {
@@ -2363,6 +2437,7 @@ describe('function', () => {
     // GIVEN
     const app = new cdk.App({ context: { [cxapi.USE_CDK_MANAGED_LAMBDA_LOGGROUP]: true } });
     const stack = new cdk.Stack(app, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN/THEN
     expect(() => new lambda.Function(stack, 'fn', {
@@ -2376,6 +2451,7 @@ describe('function', () => {
   test('imported lambda with imported security group and allowAllOutbound set to false', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     const fn = lambda.Function.fromFunctionAttributes(stack, 'fn', {
       functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:my-function',
@@ -2396,6 +2472,7 @@ describe('function', () => {
   test('with event invoke config', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new lambda.Function(stack, 'fn', {
@@ -2434,6 +2511,7 @@ describe('function', () => {
   test('throws when calling configureAsyncInvoke on already configured function', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'fn', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -2448,6 +2526,7 @@ describe('function', () => {
   test('event invoke config on imported lambda', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = lambda.Function.fromFunctionAttributes(stack, 'fn', {
       functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:my-function',
     });
@@ -2468,6 +2547,7 @@ describe('function', () => {
   testDeprecated('add a version with event invoke config', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'fn', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -2497,6 +2577,7 @@ describe('function', () => {
   test('check edge compatibility with env vars that can be removed', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'fn', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -2516,6 +2597,7 @@ describe('function', () => {
   test('check edge compatibility with env vars that cannot be removed', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'fn', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -2533,6 +2615,7 @@ describe('function', () => {
   test('add incompatible layer', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack');
+    acknowledgeTestValidationRules(stack);
     const bucket = new s3.Bucket(stack, 'Bucket');
     const code = new lambda.S3Code(bucket, 'ObjectKey');
 
@@ -2554,6 +2637,7 @@ describe('function', () => {
   test('add compatible layer', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack');
+    acknowledgeTestValidationRules(stack);
     const bucket = new s3.Bucket(stack, 'Bucket');
     const code = new lambda.S3Code(bucket, 'ObjectKey');
 
@@ -2575,6 +2659,7 @@ describe('function', () => {
   test('add compatible layer for deep clone', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack');
+    acknowledgeTestValidationRules(stack);
     const bucket = new s3.Bucket(stack, 'Bucket');
     const code = new lambda.S3Code(bucket, 'ObjectKey');
 
@@ -2598,6 +2683,7 @@ describe('function', () => {
   test('empty inline code is not allowed', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN/THEN
     expect(() => new lambda.Function(stack, 'fn', {
@@ -2609,6 +2695,7 @@ describe('function', () => {
 
   test('logGroup is correctly returned', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'fn', {
       handler: 'foo',
       runtime: lambda.Runtime.NODEJS_LATEST,
@@ -2621,6 +2708,7 @@ describe('function', () => {
 
   test('dlq is returned when provided by user and is Queue', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
       queueName: 'MyLambda_DLQ',
@@ -2644,6 +2732,7 @@ describe('function', () => {
 
   test('dlq is returned when provided by user and is Topic', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     const dlTopic = new sns.Topic(stack, 'DeadLetterQueue', {
       topicName: 'MyLambda_DLQ',
@@ -2666,6 +2755,7 @@ describe('function', () => {
 
   test('dlq is returned when setup by cdk and is Queue', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'fn', {
       handler: 'foo',
       runtime: lambda.Runtime.NODEJS_LATEST,
@@ -2683,6 +2773,7 @@ describe('function', () => {
 
   test('dlq is undefined when not setup', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'fn', {
       handler: 'foo',
       runtime: lambda.Runtime.NODEJS_LATEST,
@@ -2697,6 +2788,7 @@ describe('function', () => {
 
   test('one and only one child LogRetention construct will be created', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'fn', {
       handler: 'foo',
       runtime: lambda.Runtime.NODEJS_LATEST,
@@ -2713,6 +2805,7 @@ describe('function', () => {
 
   test('fails when inline code is specified on an incompatible runtime', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     expect(() => new lambda.Function(stack, 'fn', {
       handler: 'foo',
       runtime: lambda.Runtime.PROVIDED,
@@ -2722,6 +2815,7 @@ describe('function', () => {
 
   test('multiple calls to latestVersion returns the same version', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
@@ -2746,6 +2840,7 @@ describe('function', () => {
   test('latestVersion functionRef ARN is the version ARN, not the plain ARN', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     const fn = new lambda.Function(stack, 'MyLambda', {
@@ -2761,6 +2856,7 @@ describe('function', () => {
   test('default function with kmsKeyArn, environmentEncryption passed as props', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const key: kms.IKey = new kms.Key(stack, 'EnvVarEncryptKey', {
       description: 'sample key',
     });
@@ -2795,6 +2891,7 @@ describe('function', () => {
   describe('profiling group', () => {
     test('default function with CDK created Profiling Group', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
@@ -2846,6 +2943,7 @@ describe('function', () => {
 
     test('default function with client provided Profiling Group', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
@@ -2897,6 +2995,7 @@ describe('function', () => {
 
     test('default function with client imported Profiling Group', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
@@ -2940,6 +3039,7 @@ describe('function', () => {
 
     test('default function with client provided Profiling Group but profiling set to false', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
@@ -2971,6 +3071,7 @@ describe('function', () => {
 
     test('default function with profiling enabled and client provided env vars', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
@@ -3028,6 +3129,7 @@ describe('function', () => {
 
     test('default function with client provided Profiling Group and client provided env vars', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
@@ -3085,6 +3187,7 @@ describe('function', () => {
 
     test('throws an error when used with an unsupported runtime', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
@@ -3102,6 +3205,7 @@ describe('function', () => {
     test('should be a cdk.Duration when defined', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       // WHEN
       const { timeout } = new lambda.Function(stack, 'MyFunction', {
@@ -3118,6 +3222,7 @@ describe('function', () => {
     test('should be optional', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       // WHEN
       const { timeout } = new lambda.Function(stack, 'MyFunction', {
@@ -3136,6 +3241,7 @@ describe('function', () => {
     test('logical id of version is based on the function hash', () => {
       // GIVEN
       const stack1 = new cdk.Stack();
+      acknowledgeTestValidationRules(stack1);
       const fn1 = new lambda.Function(stack1, 'MyFunction', {
         handler: 'foo',
         runtime: lambda.Runtime.NODEJS_LATEST,
@@ -3145,6 +3251,7 @@ describe('function', () => {
         },
       });
       const stack2 = new cdk.Stack();
+      acknowledgeTestValidationRules(stack2);
       const fn2 = new lambda.Function(stack2, 'MyFunction', {
         handler: 'foo',
         runtime: lambda.Runtime.NODEJS_LATEST,
@@ -3177,6 +3284,7 @@ describe('function', () => {
     test('mount efs filesystem', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc', {
         maxAzs: 3,
         natGateways: 1,
@@ -3231,6 +3339,7 @@ describe('function', () => {
     test('throw error mounting efs with no vpc', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc', {
         maxAzs: 3,
         natGateways: 1,
@@ -3255,6 +3364,7 @@ describe('function', () => {
     test('verify deps when mounting efs', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc', {
         maxAzs: 3,
         natGateways: 1,
@@ -3298,6 +3408,7 @@ describe('function', () => {
     test('validate localMountPath format when mounting efs', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc', {
         maxAzs: 3,
         natGateways: 1,
@@ -3328,6 +3439,7 @@ describe('function', () => {
     test('validate localMountPath length when mounting efs', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc', {
         maxAzs: 3,
         natGateways: 1,
@@ -3361,6 +3473,7 @@ describe('function', () => {
       const tokenizedLocalMountPath = cdk.Token.asString(new cdk.Intrinsic(realLocalMountPath));
 
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc', {
         maxAzs: 3,
         natGateways: 1,
@@ -3428,6 +3541,7 @@ describe('function', () => {
     test('mount s3files filesystem', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1 });
       const bucket = new s3.Bucket(stack, 'Bucket');
 
@@ -3506,6 +3620,7 @@ describe('function', () => {
 
     test('only one of inline, s3 or imageConfig are allowed', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       expect(() => new lambda.Function(stack, 'Fn1', {
         code: new MyCode({}),
@@ -3540,6 +3655,7 @@ describe('function', () => {
 
     test('handler must be FROM_IMAGE when image asset is specified', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       expect(() => new lambda.Function(stack, 'Fn1', {
         code: lambda.Code.fromAssetImage(dockerLambdaHandlerPath),
@@ -3556,6 +3672,7 @@ describe('function', () => {
 
     test('runtime must be FROM_IMAGE when image asset is specified', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       expect(() => new lambda.Function(stack, 'Fn1', {
         code: lambda.Code.fromAssetImage(dockerLambdaHandlerPath),
@@ -3572,6 +3689,7 @@ describe('function', () => {
 
     test('imageUri is correctly configured', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       new lambda.Function(stack, 'Fn1', {
         code: new MyCode({
@@ -3593,6 +3711,7 @@ describe('function', () => {
 
     test('imageConfig is correctly configured', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       new lambda.Function(stack, 'Fn1', {
         code: new MyCode({
@@ -3620,6 +3739,7 @@ describe('function', () => {
   describe('code signing config', () => {
     test('default', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       const signingProfile = new signer.SigningProfile(stack, 'SigningProfile', {
         platform: signer.Platform.AWS_LAMBDA_SHA384_ECDSA,
@@ -3649,6 +3769,7 @@ describe('function', () => {
 
   test('error when layers set in a container function', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const bucket = new s3.Bucket(stack, 'Bucket');
     const code = new lambda.S3Code(bucket, 'ObjectKey');
 
@@ -3664,6 +3785,7 @@ describe('function', () => {
 
   testDeprecated('specified architectures is recognized', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('foo'),
       runtime: lambda.Runtime.NODEJS_LATEST,
@@ -3679,6 +3801,7 @@ describe('function', () => {
 
   test('specified architecture is recognized', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('foo'),
       runtime: lambda.Runtime.NODEJS_LATEST,
@@ -3694,6 +3817,7 @@ describe('function', () => {
 
   testDeprecated('both architectures and architecture are not recognized', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     expect(() => new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('foo'),
       runtime: lambda.Runtime.NODEJS_LATEST,
@@ -3706,6 +3830,7 @@ describe('function', () => {
 
   testDeprecated('Only one architecture allowed', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     expect(() => new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('foo'),
       runtime: lambda.Runtime.NODEJS_LATEST,
@@ -3717,6 +3842,7 @@ describe('function', () => {
 
   test('Architecture is properly readable from the function', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('foo'),
       runtime: lambda.Runtime.NODEJS_LATEST,
@@ -3728,6 +3854,7 @@ describe('function', () => {
 
   test('Error when function name is longer than 64 chars', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     expect(() => new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('foo'),
       runtime: lambda.Runtime.NODEJS_LATEST,
@@ -3738,6 +3865,7 @@ describe('function', () => {
 
   test('Error when function name contains invalid characters', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     [' ', '\n', '\r', '[', ']', '<', '>', '$'].forEach(invalidChar => {
       expect(() => {
         new lambda.Function(stack, `foo${invalidChar}`, {
@@ -3752,6 +3880,7 @@ describe('function', () => {
 
   test('No error when function name is Tokenized and Unresolved', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     expect(() => {
       const realFunctionName = 'a'.repeat(141);
       const tokenizedFunctionName = cdk.Token.asString(new cdk.Intrinsic(realFunctionName));
@@ -3767,6 +3896,7 @@ describe('function', () => {
 
   test('Error when function description is longer than 256 chars', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     expect(() => new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('foo'),
       runtime: lambda.Runtime.NODEJS_LATEST,
@@ -3777,6 +3907,7 @@ describe('function', () => {
 
   test('No error when function name is Tokenized and Unresolved', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     expect(() => {
       const realFunctionDescription = 'a'.repeat(257);
       const tokenizedFunctionDescription = cdk.Token.asString(new cdk.Intrinsic(realFunctionDescription));
@@ -3794,6 +3925,7 @@ describe('function', () => {
     test('addFunctionUrl creates a function url with default options', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const fn = new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('hello()'),
         handler: 'index.hello',
@@ -3818,6 +3950,7 @@ describe('function', () => {
     test('addFunctionUrl creates a function url with all options', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const fn = new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('hello()'),
         handler: 'index.hello',
@@ -3864,6 +3997,7 @@ describe('function', () => {
     test('grantInvokeUrl: adds appropriate permissions', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const role = new iam.Role(stack, 'Role', {
         assumedBy: new iam.AccountPrincipal('1234'),
       });
@@ -3916,6 +4050,7 @@ describe('function', () => {
   describe('SnapStart', () => {
     test('set SnapStart to desired value', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       new lambda.CfnFunction(stack, 'MyLambda', {
         code: {
           zipFile: 'java11-test-function.zip',
@@ -3942,6 +4077,7 @@ describe('function', () => {
 
     test('function using SnapStart', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       // WHEN
       new lambda.Function(stack, 'MyLambda', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
@@ -3965,6 +4101,7 @@ describe('function', () => {
 
     test('runtime validation for snapStart', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
@@ -3976,6 +4113,7 @@ describe('function', () => {
 
     test('arm64 function using snapStart', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       // WHEN
       new lambda.Function(stack, 'MyLambda', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
@@ -4001,6 +4139,7 @@ describe('function', () => {
 
     test('EFS validation for snapStart', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc', {
         maxAzs: 3,
         natGateways: 1,
@@ -4023,6 +4162,7 @@ describe('function', () => {
 
     test('ephemeral storage limit validation for snapStart', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
@@ -4035,6 +4175,7 @@ describe('function', () => {
 
     test('multi-tenant function with snapStart should throw error', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
@@ -4049,6 +4190,7 @@ describe('function', () => {
   describe('Recursive Loop', () => {
     test('with recursive loop protection', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'bar',
@@ -4069,6 +4211,7 @@ describe('function', () => {
 
     test('without recursive loop protection', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'bar',
@@ -4089,6 +4232,7 @@ describe('function', () => {
 
     test('default recursive loop protection', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'bar',
@@ -4110,6 +4254,7 @@ describe('function', () => {
   test('called twice for the same service principal but with different conditions', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('xxx'),
       handler: 'index.handler',
@@ -4182,6 +4327,7 @@ describe('function', () => {
     const stack = new cdk.Stack(app, 'Base', {
       env: { account: '111111111111', region: 'us-west-2' },
     });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new lambda.Function(stack, 'MyLambda', {
@@ -4211,6 +4357,7 @@ describe('function', () => {
     const stack = new cdk.Stack(app, 'Base', {
       env: { account: '111111111111', region: 'us-west-2' },
     });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new lambda.Function(stack, 'MyLambda', {
@@ -4236,6 +4383,7 @@ describe('function', () => {
 
   test('Adot Instrumentation errors out when not using INSTRUMENT_HANDLER', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     expect(() => new lambda.Function(stack, 'Fn1', {
       code: new lambda.InlineCode('foo'),
@@ -4254,6 +4402,7 @@ describe('function', () => {
     const stack = new cdk.Stack(app, 'Base', {
       env: { account: '111111111111', region: 'us-west-2' },
     });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     expect(
@@ -4271,6 +4420,7 @@ describe('function', () => {
   describe('allowAllIpv6Outbound', () => {
     test('allowAllIpv6Outbound set to true', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       new lambda.Function(stack, 'MyLambda', {
@@ -4299,6 +4449,7 @@ describe('function', () => {
 
     test('throws when allowAllIpv6Outbound is defined without vpc', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
@@ -4310,6 +4461,7 @@ describe('function', () => {
 
     test('throws when both allowAllIpv6Outbound and securityGroup are defined', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc: vpc });
 
@@ -4325,6 +4477,7 @@ describe('function', () => {
 
     test('throws when both allowAllIpv6Outbound and securityGroups are defined', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc: vpc });
 
@@ -4341,6 +4494,7 @@ describe('function', () => {
 
   test('function with tenancy config PER_TENANT', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -4357,6 +4511,7 @@ describe('function', () => {
 
   test('function without tenancy config has no tenancy properties', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -4373,6 +4528,7 @@ describe('function', () => {
 
 test('throws if ephemeral storage size is out of bound', () => {
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   expect(() => new lambda.Function(stack, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
@@ -4383,6 +4539,7 @@ test('throws if ephemeral storage size is out of bound', () => {
 
 test('set ephemeral storage to desired size', () => {
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   new lambda.Function(stack, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
@@ -4405,6 +4562,7 @@ test('set ephemeral storage to desired size', () => {
 
 test('ephemeral storage allows unresolved tokens', () => {
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   expect(() => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
@@ -4418,6 +4576,7 @@ test('ephemeral storage allows unresolved tokens', () => {
 test('FunctionVersionUpgrade adds new description to function', () => {
   const app = new cdk.App({ context: { [cxapi.LAMBDA_RECOGNIZE_LAYER_VERSION]: true } });
   const stack = new cdk.Stack(app);
+  acknowledgeTestValidationRules(stack);
   new lambda.Function(stack, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
@@ -4440,6 +4599,7 @@ test('FunctionVersionUpgrade adds new description to function', () => {
 
 test('function using a reserved environment variable', () => {
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   expect(() => new lambda.Function(stack, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'index.handler',
@@ -4459,6 +4619,7 @@ test('test 2.87.0 version hash stability', () => {
     },
   });
   const stack = new cdk.Stack(app, 'Stack');
+  acknowledgeTestValidationRules(stack);
 
   // WHEN
   const layer = new lambda.LayerVersion(stack, 'MyLayer', {
@@ -4516,6 +4677,7 @@ test('test 2.87.0 version hash stability', () => {
 describe('VPC configuration', () => {
   test('with both securityGroup and securityGroups', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc', {
       maxAzs: 3,
       natGateways: 1,
@@ -4535,6 +4697,7 @@ describe('VPC configuration', () => {
 
   test('with allowAllOutbound and no VPC', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     expect(() => new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -4545,6 +4708,7 @@ describe('VPC configuration', () => {
 
   test('with allowAllOutbound and no VPC', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     expect(() => new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -4555,6 +4719,7 @@ describe('VPC configuration', () => {
 
   test('with securityGroup and no VPC', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc', {
       maxAzs: 3,
       natGateways: 1,
@@ -4573,6 +4738,7 @@ describe('VPC configuration', () => {
 
   test('with securityGroups and no VPC', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc', {
       maxAzs: 3,
       natGateways: 1,
@@ -4591,6 +4757,7 @@ describe('VPC configuration', () => {
 
   test('with vpcSubnets and no VPC', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     expect(() => new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -4601,6 +4768,7 @@ describe('VPC configuration', () => {
 
   test('with securityGroup and allowAllOutbound', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc', {
       maxAzs: 3,
       natGateways: 1,
@@ -4621,6 +4789,7 @@ describe('VPC configuration', () => {
 
   test('with securityGroups and allowAllOutbound', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc', {
       maxAzs: 3,
       natGateways: 1,
@@ -4641,6 +4810,7 @@ describe('VPC configuration', () => {
 
   test('with VPC and empty securityGroups creates a default security group', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     const vpc = new ec2.Vpc(stack, 'Vpc', {
       maxAzs: 3,
@@ -4659,6 +4829,7 @@ describe('VPC configuration', () => {
 
   test('with no VPC and empty securityGroups', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     expect(() => new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -4669,6 +4840,7 @@ describe('VPC configuration', () => {
 
   test('with empty securityGroups and allowAllOutbound', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc', {
       maxAzs: 3,
       natGateways: 1,
@@ -4685,6 +4857,7 @@ describe('VPC configuration', () => {
 
   test('with ipv6AllowedForDualStack and no VPC', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     expect(() => new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -4695,6 +4868,7 @@ describe('VPC configuration', () => {
 
   test('set ipv6AllowedForDualStack with VPC', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc', {
       maxAzs: 3,
       natGateways: 1,
@@ -4737,6 +4911,7 @@ describe('VPC configuration', () => {
 
   test('set ipv6AllowedForDualStack to False with VPC', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc', {
       maxAzs: 3,
       natGateways: 1,
@@ -4782,6 +4957,7 @@ describe('latest Lambda node runtime', () => {
   test('with region agnostic stack', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new lambda.Function(stack, 'Lambda', {
@@ -4801,6 +4977,7 @@ describe('latest Lambda node runtime', () => {
   test('with stack in commercial region', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new lambda.Function(stack, 'Lambda', {
@@ -4820,6 +4997,7 @@ describe('latest Lambda node runtime', () => {
   test('with stack in china region', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'Stack', { env: { region: 'cn-north-1' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new lambda.Function(stack, 'Lambda', {
@@ -4839,6 +5017,7 @@ describe('latest Lambda node runtime', () => {
   test('with stack in adc region', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'Stack', { env: { region: 'us-iso-east-1' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new lambda.Function(stack, 'Lambda', {
@@ -4858,6 +5037,7 @@ describe('latest Lambda node runtime', () => {
   test('with stack in govcloud region', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'Stack', { env: { region: 'us-gov-east-1' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new lambda.Function(stack, 'Lambda', {
@@ -4877,6 +5057,7 @@ describe('latest Lambda node runtime', () => {
   test('with stack in unsupported region', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'Stack', { env: { region: 'us-fake-1' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new lambda.Function(stack, 'Lambda', {
@@ -4898,6 +5079,7 @@ describe('latest Lambda node runtime', () => {
 describe('CMCMK', () => {
   test('set sourceKMSKeyArn using fromAsset', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const key = new kms.Key(stack, 'myImportedKey', {
       enableKeyRotation: true,
     });
@@ -4924,6 +5106,7 @@ describe('CMCMK', () => {
 
   test('no sourceKMSKey provided using fromAsset', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new lambda.Function(stack, 'Lambda', {
@@ -4944,6 +5127,7 @@ describe('CMCMK', () => {
 
   test('set sourceKMSKeyArn using fromBucket', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     // S3 Bucket
     const key = 'script';
     let bucket: s3.IBucket;
@@ -4976,6 +5160,7 @@ describe('CMCMK', () => {
 
   test('no sourceKMSKey provided using fromBucket', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     // S3 Bucket
     const key = 'script';
     let bucket: s3.IBucket;
@@ -5001,6 +5186,7 @@ describe('CMCMK', () => {
 
   test('set sourceKMSKeyArn using fromCfnParameters', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     // KMS
     const KMSkey = new kms.Key(stack, 'myImportedKey', {
       enableKeyRotation: true,
@@ -5027,6 +5213,7 @@ describe('CMCMK', () => {
 
   test('no sourceKMSKey provided using fromCfnParameters', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new lambda.Function(stack, 'Lambda', {
@@ -5062,6 +5249,7 @@ describe('CMCMK', () => {
     ]);
 
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     // KMS
     const KMSkey = new kms.Key(stack, 'myImportedKey', {
       enableKeyRotation: true,
@@ -5103,6 +5291,7 @@ describe('CMCMK', () => {
     ]);
 
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     // WHEN
     new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromCustomCommand('function.test.handler7.zip', ['node']),
@@ -5127,6 +5316,7 @@ describe('tag propagation to logGroup on FF USE_CDK_MANAGED_LAMBDA_LOGGROUP enab
   it('log group inherits tags from function when USE_CDK_MANAGED_LAMBDA_LOGGROUP is enabled', () => {
     const app = new cdk.App({ context: { [cxapi.USE_CDK_MANAGED_LAMBDA_LOGGROUP]: true } });
     const stack = new cdk.Stack(app, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('exports.handler = async () => {};'),
@@ -5153,6 +5343,7 @@ describe('USE_CDK_MANAGED_LAMBDA_LOGGROUP defaults to false when not specified',
     // GIVEN
     const app = new cdk.App(); // No context provided
     const stack = new cdk.Stack(app, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new lambda.Function(stack, 'Function', {
@@ -5171,6 +5362,7 @@ describe('Lambda Function log group behavior', () => {
   it('throws if both logRetention and logGroup are set', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'TestStack');
+    acknowledgeTestValidationRules(stack);
 
     expect(() => {
       new lambda.Function(stack, 'TestFunction', {
@@ -5186,6 +5378,7 @@ describe('Lambda Function log group behavior', () => {
   it('does not throw if only logRetention is set', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'TestStack');
+    acknowledgeTestValidationRules(stack);
 
     expect(() => {
       new lambda.Function(stack, 'LogRetentionOnlyFunction', {
@@ -5200,6 +5393,7 @@ describe('Lambda Function log group behavior', () => {
   it('does not throw if only logGroup is set', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'TestStack');
+    acknowledgeTestValidationRules(stack);
 
     expect(() => {
       new lambda.Function(stack, 'LogGroupOnlyFunction', {
@@ -5230,6 +5424,7 @@ describe('telemetry metadata', () => {
     const app = new cdk.App();
     app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);
     const stack = new cdk.Stack(app);
+    acknowledgeTestValidationRules(stack);
 
     const fn = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
@@ -5259,6 +5454,7 @@ describe('telemetry metadata', () => {
     const app = new cdk.App();
     app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, false);
     const stack = new cdk.Stack(app);
+    acknowledgeTestValidationRules(stack);
 
     const fn = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
@@ -5272,6 +5468,7 @@ describe('telemetry metadata', () => {
 describe('L1 Relationships', () => {
   it('simple union', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const role = new iam.Role(stack, 'SomeRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
@@ -5288,6 +5485,7 @@ describe('L1 Relationships', () => {
 
   it('array of unions', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const role = new iam.Role(stack, 'SomeRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
@@ -5314,6 +5512,7 @@ describe('L1 Relationships', () => {
 
   it('array reference should be valid', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const role = new iam.Role(stack, 'SomeRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
@@ -5340,6 +5539,7 @@ describe('L1 Relationships', () => {
 
   it('tokens should be passed as is', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const role = new iam.Role(stack, 'SomeRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });

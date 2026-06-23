@@ -5,6 +5,7 @@ import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 import { Arn, ArnFormat } from '../../core';
 import * as lambda from '../lib';
+import { acknowledgeTestValidationRules } from './util';
 
 describe('capacity provider', () => {
   let stack: cdk.Stack;
@@ -14,6 +15,7 @@ describe('capacity provider', () => {
 
   beforeEach(() => {
     stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     vpc = new ec2.Vpc(stack, 'Vpc');
     subnets = vpc.privateSubnets.slice(0, 2);
     securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });

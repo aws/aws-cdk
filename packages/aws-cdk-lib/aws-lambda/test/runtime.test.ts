@@ -1,4 +1,5 @@
 import * as lambda from '../lib';
+import { acknowledgeTestValidationRules } from './util';
 
 describe('runtime', () => {
   test('runtimes are equal for different instances', () => {

@@ -4,12 +4,14 @@ import * as sm from '../../aws-secretsmanager';
 import * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
+import { acknowledgeTestValidationRules } from './util';
 
 describe('params and secrets', () => {
   test('can provide arn to enable params and secrets with default config options', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
+    acknowledgeTestValidationRules(stack);
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
 
     // WHEN
@@ -45,6 +47,7 @@ describe('params and secrets', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
+    acknowledgeTestValidationRules(stack);
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
     const paramsAndSecrets = lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
       cacheEnabled: false,
@@ -91,6 +94,7 @@ describe('params and secrets', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new lambda.Function (stack, 'Function', {
@@ -125,6 +129,7 @@ describe('params and secrets', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new lambda.Function (stack, 'Function', {
@@ -169,6 +174,7 @@ describe('params and secrets', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new lambda.Function (stack, 'Function', {
@@ -204,6 +210,7 @@ describe('params and secrets', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new lambda.Function (stack, 'Function', {
@@ -249,6 +256,7 @@ describe('params and secrets', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
+    acknowledgeTestValidationRules(stack);
     const paramsAndSecrets = lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103, {
       cacheEnabled: false,
       cacheSize: 500,
@@ -295,6 +303,7 @@ describe('params and secrets', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', { env: { region: 'eu-central-2' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN/THEN
     expect(() => {
@@ -313,6 +322,7 @@ describe('params and secrets', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
+    acknowledgeTestValidationRules(stack);
     const secret = new sm.Secret(stack, 'Secret');
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
 
@@ -389,6 +399,7 @@ describe('params and secrets', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
+    acknowledgeTestValidationRules(stack);
     const encryptionKey = new kms.Key(stack, 'Key');
     const secret = new sm.Secret(stack, 'Secret', { encryptionKey });
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
@@ -593,6 +604,7 @@ describe('params and secrets', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
+    acknowledgeTestValidationRules(stack);
     const parameter = new ssm.StringParameter(stack, 'Parameter', {
       parameterName: 'name',
       stringValue: 'value',
@@ -677,6 +689,7 @@ describe('params and secrets', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
+    acknowledgeTestValidationRules(stack);
     const key = new kms.Key(stack, 'Key');
     // note: parameters of type SecureString cannot be created directly from a CDK application
     const parameter = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'Parameter', {
@@ -799,6 +812,7 @@ describe('params and secrets', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
+    acknowledgeTestValidationRules(stack);
     const secrets = [
       new sm.Secret(stack, 'Secret1'),
       new sm.Secret(stack, 'Secret2'),
@@ -923,6 +937,7 @@ describe('params and secrets', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
+    acknowledgeTestValidationRules(stack);
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
     const paramsAndSecrets = lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
       cacheSize: -1,
@@ -944,6 +959,7 @@ describe('params and secrets', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
+    acknowledgeTestValidationRules(stack);
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
     const paramsAndSecrets = lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
       cacheSize: 1001,
@@ -965,6 +981,7 @@ describe('params and secrets', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
+    acknowledgeTestValidationRules(stack);
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
     const paramsAndSecrets = lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
       httpPort: 0,
@@ -986,6 +1003,7 @@ describe('params and secrets', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
+    acknowledgeTestValidationRules(stack);
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
     const paramsAndSecrets = lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
       httpPort: 65536,
@@ -1007,6 +1025,7 @@ describe('params and secrets', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
+    acknowledgeTestValidationRules(stack);
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
     const paramsAndSecrets = lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
       maxConnections: 0,
@@ -1028,6 +1047,7 @@ describe('params and secrets', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
+    acknowledgeTestValidationRules(stack);
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
     const paramsAndSecrets = lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
       secretsManagerTtl: cdk.Duration.seconds(301),
@@ -1049,6 +1069,7 @@ describe('params and secrets', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
+    acknowledgeTestValidationRules(stack);
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
     const paramsAndSecrets = lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
       parameterStoreTtl: cdk.Duration.seconds(301),

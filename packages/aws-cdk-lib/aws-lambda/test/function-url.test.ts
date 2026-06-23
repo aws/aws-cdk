@@ -2,11 +2,13 @@ import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
+import { acknowledgeTestValidationRules } from './util';
 
 describe('FunctionUrl', () => {
   test('default function url', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -33,6 +35,7 @@ describe('FunctionUrl', () => {
   test('all function url options', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -91,6 +94,7 @@ describe('FunctionUrl', () => {
   test('function url with alias', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -121,6 +125,7 @@ describe('FunctionUrl', () => {
   test('throws when configured with Version', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -143,6 +148,7 @@ describe('FunctionUrl', () => {
   test('throws when configured with multi-tenant function', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -161,6 +167,7 @@ describe('FunctionUrl', () => {
   test('throws when CORS maxAge is greater than 86400 secs', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -181,6 +188,7 @@ describe('FunctionUrl', () => {
   test('DUAL AUTH: grantInvokeUrl: adds appropriate permissions', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const role = new iam.Role(stack, 'Role', {
       assumedBy: new iam.AccountPrincipal('1234'),
     });
@@ -234,6 +242,7 @@ describe('FunctionUrl', () => {
   test('DUAL AUTH: auth type None should add approprate resource policy', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -274,6 +283,7 @@ describe('FunctionUrl', () => {
   test('DUAL AUTH: auth type IAM with reference princial should add approprate resource policy', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -331,6 +341,7 @@ describe('FunctionUrl', () => {
   test('function url Invoke Mode', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -354,6 +365,7 @@ describe('FunctionUrl', () => {
   test('Invoke Mode add url', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',

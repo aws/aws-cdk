@@ -1,12 +1,14 @@
 import { Template } from '../../assertions';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
+import { acknowledgeTestValidationRules } from './util';
 
 describe('NODEJS_LATEST runtime resolution', () => {
   test('uses determineLatestNodeRuntime when runtime is NODEJS_LATEST', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'TestStack', { env: { region: 'us-east-1' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     const fn = new lambda.Function(stack, 'MyFunction', {
@@ -25,6 +27,7 @@ describe('NODEJS_LATEST runtime resolution', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'TestStack', { env: { region: 'us-east-1' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     const fn = new lambda.Function(stack, 'MyFunction', {
@@ -42,6 +45,7 @@ describe('NODEJS_LATEST runtime resolution', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'TestStack', { env: { region: 'us-east-1' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     const fn = new lambda.Function(stack, 'MyFunction', {
@@ -59,6 +63,7 @@ describe('NODEJS_LATEST runtime resolution', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'TestStack', { env: { region: 'us-east-1' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     const fn = new lambda.Function(stack, 'MyFunction', {
@@ -102,6 +107,7 @@ describe('NODEJS_LATEST runtime resolution', () => {
   test('NODEJS_LATEST uses correct version in environment-agnostic stack', () => {
     // GIVEN
     const stack = new cdk.Stack(); // No region specified
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new lambda.Function(stack, 'MyFunction', {

@@ -4,11 +4,13 @@ import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as lambda from '../lib';
+import { acknowledgeTestValidationRules } from './util';
 
 describe('layers', () => {
   test('creating a layer', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack');
+    acknowledgeTestValidationRules(stack);
     const bucket = new s3.Bucket(stack, 'Bucket');
     const code = new lambda.S3Code(bucket, 'ObjectKey');
 
@@ -31,6 +33,7 @@ describe('layers', () => {
   test('granting access to a layer', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack');
+    acknowledgeTestValidationRules(stack);
     const bucket = new s3.Bucket(stack, 'Bucket');
     const code = new lambda.S3Code(bucket, 'ObjectKey');
     const layer = new lambda.LayerVersion(stack, 'LayerVersion', {
@@ -59,6 +62,7 @@ describe('layers', () => {
   test('creating a layer with no runtimes compatible', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack');
+    acknowledgeTestValidationRules(stack);
     const bucket = new s3.Bucket(stack, 'Bucket');
     const code = new lambda.S3Code(bucket, 'ObjectKey');
 
@@ -75,6 +79,7 @@ describe('layers', () => {
       },
     });
     const stack = new cdk.Stack(app);
+    acknowledgeTestValidationRules(stack);
     stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
 
     // WHEN
@@ -95,6 +100,7 @@ describe('layers', () => {
   test('creating a layer with a removal policy', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new lambda.LayerVersion(stack, 'layer', {
@@ -111,6 +117,7 @@ describe('layers', () => {
 
   test('specified compatible architectures is recognized', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const bucket = new s3.Bucket(stack, 'Bucket');
     const code = new lambda.S3Code(bucket, 'ObjectKey');
     new lambda.LayerVersion(stack, 'MyLayer', {
@@ -129,6 +136,7 @@ describe('layers', () => {
   ])('%s by omitting compatibleRuntimes', (_, props) => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const bucket = new s3.Bucket(stack, 'Bucket');
     const code = new lambda.S3Code(bucket, 'ObjectKey');
 

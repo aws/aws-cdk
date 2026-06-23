@@ -3,11 +3,13 @@ import { Key } from '../../aws-kms';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
 import { Code, EventSourceMapping, Function, Alias, StartingPosition, FilterRule, FilterCriteria } from '../lib';
+import { acknowledgeTestValidationRules } from './util';
 
 let stack: cdk.Stack;
 let fn: Function;
 beforeEach(() => {
   stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   fn = new Function(stack, 'fn', {
     handler: 'index.handler',
     code: Code.fromInline('exports.handler = ${handler.toString()}'),
@@ -147,6 +149,7 @@ describe('event source mapping', () => {
 
   test('import event source mapping', () => {
     const stack2 = new cdk.Stack(undefined, undefined, { stackName: 'test-stack' });
+    acknowledgeTestValidationRules(stack2);
     const imported = EventSourceMapping.fromEventSourceMappingId(stack2, 'imported', '14e0db71-5d35-4eb5-b481-8945cf9d10c2');
 
     expect(imported.eventSourceMappingId).toEqual('14e0db71-5d35-4eb5-b481-8945cf9d10c2');

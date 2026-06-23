@@ -6,6 +6,7 @@ import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as lambda from '../lib';
+import { acknowledgeTestValidationRules } from './util';
 
 /* eslint-disable dot-notation */
 
@@ -127,6 +128,7 @@ describe('code', () => {
         },
       });
       const stack = new cdk.Stack(app, 'MyStack');
+      acknowledgeTestValidationRules(stack);
       const directoryAsset = lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler'));
 
       // WHEN
@@ -153,6 +155,7 @@ describe('code', () => {
     test('adds code asset metadata', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
 
       const location = path.join(__dirname, 'my-lambda-handler');
@@ -180,6 +183,7 @@ describe('code', () => {
 
       const app = new cdk.App();
       const stack1 = new cdk.Stack(app, 'Stack1');
+      acknowledgeTestValidationRules(stack1);
       new lambda.Function(stack1, 'Func', {
         code: asset,
         runtime: lambda.Runtime.NODEJS_LATEST,
@@ -187,6 +191,7 @@ describe('code', () => {
       });
 
       const stack2 = new cdk.Stack(app, 'Stack2');
+      acknowledgeTestValidationRules(stack2);
       expect(() => new lambda.Function(stack2, 'Func', {
         code: asset,
         runtime: lambda.Runtime.NODEJS_LATEST,
@@ -198,6 +203,7 @@ describe('code', () => {
   describe('lambda.Code.fromCfnParameters', () => {
     test("automatically creates the Bucket and Key parameters when it's used in a Function", () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const code = new lambda.CfnParametersCode();
       new lambda.Function(stack, 'Function', {
         code,
@@ -230,6 +236,7 @@ describe('code', () => {
 
     test('allows passing custom Parameters when creating it', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const bucketNameParam = new cdk.CfnParameter(stack, 'BucketNameParam', {
         type: 'String',
       });
@@ -266,6 +273,7 @@ describe('code', () => {
     test('can assign parameters', () => {
       // given
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const code = new lambda.CfnParametersCode({
         bucketNameParam: new cdk.CfnParameter(stack, 'BucketNameParam', {
           type: 'String',
@@ -291,6 +299,7 @@ describe('code', () => {
     test('repository uri is correctly identified', () => {
       // given
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const repo = new ecr.Repository(stack, 'Repo');
 
       // when
@@ -312,6 +321,7 @@ describe('code', () => {
     test('props are correctly resolved', () => {
       // given
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const repo = new ecr.Repository(stack, 'Repo');
 
       // when
@@ -342,6 +352,7 @@ describe('code', () => {
     test('digests are interpreted correctly', () => {
       // given
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const repo = new ecr.Repository(stack, 'Repo');
 
       // when
@@ -365,6 +376,7 @@ describe('code', () => {
     test('permission grants', () => {
       // given
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const repo = new ecr.Repository(stack, 'Repo');
 
       // when
@@ -399,6 +411,7 @@ describe('code', () => {
     test('props are correctly resolved', () => {
       // given
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       // when
       new lambda.Function(stack, 'Fn', {
@@ -424,6 +437,7 @@ describe('code', () => {
     test('adds code asset metadata', () => {
       // given
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
 
       const dockerfilePath = 'Dockerfile';
@@ -459,6 +473,7 @@ describe('code', () => {
     test('adds code asset metadata with default dockerfile path', () => {
       // given
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
 
       // when
@@ -481,6 +496,7 @@ describe('code', () => {
     test('cache disabled', () => {
       // given
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
 
       const dockerfilePath = 'Dockerfile';
@@ -522,6 +538,7 @@ describe('code', () => {
 
       // when
       const stack1 = new cdk.Stack(app, 'Stack1');
+      acknowledgeTestValidationRules(stack1);
       new lambda.Function(stack1, 'Fn', {
         code: asset,
         handler: lambda.Handler.FROM_IMAGE,
@@ -529,6 +546,7 @@ describe('code', () => {
       });
 
       const stack2 = new cdk.Stack(app, 'Stack2');
+      acknowledgeTestValidationRules(stack2);
 
       // then
       expect(() => new lambda.Function(stack2, 'Fn', {
@@ -560,6 +578,7 @@ describe('code', () => {
     test('can use the result of a Docker build as an asset', () => {
       // given
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
 
       // when
@@ -585,6 +604,7 @@ describe('code', () => {
     test('fromDockerBuild appends /. to an image path not ending with a /', () => {
       // given
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       // when
       new lambda.Function(stack, 'Fn', {
@@ -602,6 +622,7 @@ describe('code', () => {
     test('fromDockerBuild appends . to an image path ending with a /', () => {
       // given
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       // when
       new lambda.Function(stack, 'Fn', {
@@ -622,6 +643,7 @@ describe('code', () => {
       // given
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'Stack');
+      acknowledgeTestValidationRules(stack);
       const bucket = new s3.Bucket(stack, 'Bucket');
 
       // when
@@ -644,6 +666,7 @@ describe('code', () => {
       // given
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'Stack');
+      acknowledgeTestValidationRules(stack);
       const bucket = new s3.Bucket(stack, 'Bucket');
 
       // when
@@ -666,6 +689,7 @@ describe('code', () => {
       // given
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'Stack');
+      acknowledgeTestValidationRules(stack);
       const bucket = new s3.Bucket(stack, 'Bucket');
 
       // when
@@ -688,6 +712,7 @@ describe('code', () => {
       // given
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'Stack');
+      acknowledgeTestValidationRules(stack);
       const bucket = new s3.Bucket(stack, 'Bucket');
 
       // when
@@ -710,6 +735,7 @@ describe('code', () => {
 
 function defineFunction(code: lambda.Code, runtime: lambda.Runtime = lambda.Runtime.NODEJS_LATEST) {
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   return new lambda.Function(stack, 'Func', {
     handler: 'foom',
     code,

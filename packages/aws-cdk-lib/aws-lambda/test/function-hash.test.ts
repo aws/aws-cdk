@@ -6,6 +6,7 @@ import { App, CfnOutput, CfnResource, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
 import * as lambda from '../lib';
 import { calculateFunctionHash, trimFromStart, VERSION_LOCKED } from '../lib/function-hash';
+import { acknowledgeTestValidationRules } from './util';
 
 const THE_RUNTIME = new lambda.Runtime('nodejs99.x', lambda.RuntimeFamily.NODEJS, {
   supportsInlineCode: true,
@@ -34,6 +35,7 @@ describe('function hash', () => {
         },
       });
       const stack1 = new Stack(app, 'Stack1');
+      acknowledgeTestValidationRules(stack1);
       const fn1 = new lambda.Function(stack1, 'MyFunction1', {
         runtime: THE_RUNTIME,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
@@ -41,6 +43,7 @@ describe('function hash', () => {
       });
 
       const stack2 = new Stack(app, 'Stack2');
+      acknowledgeTestValidationRules(stack2);
       const fn2 = new lambda.Function(stack2, 'MyFunction1', {
         runtime: THE_RUNTIME,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
@@ -59,6 +62,7 @@ describe('function hash', () => {
       },
     });
     const stack1 = new Stack(app);
+    acknowledgeTestValidationRules(stack1);
     const fn1 = new lambda.Function(stack1, 'MyFunction1', {
       runtime: THE_RUNTIME,
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
@@ -76,6 +80,7 @@ describe('function hash', () => {
       },
     });
     const stack1 = new Stack(app, 'Stack1');
+    acknowledgeTestValidationRules(stack1);
     const fn1 = new lambda.Function(stack1, 'MyFunction', {
       runtime: THE_RUNTIME,
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
@@ -86,6 +91,7 @@ describe('function hash', () => {
     });
 
     const stack2 = new Stack(app);
+    acknowledgeTestValidationRules(stack2);
     const fn2 = new lambda.Function(stack2, 'MyFunction', {
       runtime: THE_RUNTIME,
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
@@ -106,6 +112,7 @@ describe('function hash', () => {
       },
     });
     const stack1 = new Stack(app, 'Stack1');
+    acknowledgeTestValidationRules(stack1);
     const fn1 = new lambda.Function(stack1, 'MyFunction', {
       runtime: THE_RUNTIME,
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
@@ -116,6 +123,7 @@ describe('function hash', () => {
     });
 
     const stack2 = new Stack(app);
+    acknowledgeTestValidationRules(stack2);
     const fn2 = new lambda.Function(stack2, 'MyFunction', {
       runtime: THE_RUNTIME,
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
@@ -131,6 +139,7 @@ describe('function hash', () => {
 
   test('inline code change impacts the hash', () => {
     const stack1 = new Stack();
+    acknowledgeTestValidationRules(stack1);
     const fn1 = new lambda.Function(stack1, 'MyFunction', {
       runtime: THE_RUNTIME,
       code: lambda.Code.fromInline('foo'),
@@ -138,6 +147,7 @@ describe('function hash', () => {
     });
 
     const stack2 = new Stack();
+    acknowledgeTestValidationRules(stack2);
     const fn2 = new lambda.Function(stack2, 'MyFunction', {
       runtime: THE_RUNTIME,
       code: lambda.Code.fromInline('foo bar'),
@@ -154,6 +164,7 @@ describe('function hash', () => {
     let layer2: lambda.LayerVersion;
     beforeAll(() => {
       stack1 = new Stack();
+      acknowledgeTestValidationRules(stack1);
       layer1 = new lambda.LayerVersion(stack1, 'MyLayer', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'layer-code')),
         compatibleRuntimes: [THE_RUNTIME],
@@ -170,6 +181,7 @@ describe('function hash', () => {
 
     test('same configuration yields the same hash', () => {
       const stack2 = new Stack();
+      acknowledgeTestValidationRules(stack2);
       const fn1 = new lambda.Function(stack2, 'MyFunction', {
         runtime: THE_RUNTIME,
         code: lambda.Code.fromInline('foo'),
@@ -178,6 +190,7 @@ describe('function hash', () => {
       });
 
       const stack3 = new Stack();
+      acknowledgeTestValidationRules(stack3);
       const fn2 = new lambda.Function(stack3, 'MyFunction', {
         runtime: THE_RUNTIME,
         code: lambda.Code.fromInline('foo'),
@@ -191,6 +204,7 @@ describe('function hash', () => {
 
     test('different layers impacts hash', () => {
       const stack2 = new Stack();
+      acknowledgeTestValidationRules(stack2);
       const fn1 = new lambda.Function(stack2, 'MyFunction', {
         runtime: THE_RUNTIME,
         code: lambda.Code.fromInline('foo'),
@@ -199,6 +213,7 @@ describe('function hash', () => {
       });
 
       const stack3 = new Stack();
+      acknowledgeTestValidationRules(stack3);
       const fn2 = new lambda.Function(stack3, 'MyFunction', {
         runtime: THE_RUNTIME,
         code: lambda.Code.fromInline('foo'),
@@ -213,6 +228,7 @@ describe('function hash', () => {
     describe('impact of lambda layer order on hash', () => {
       test('without feature flag, preserve old behavior to avoid unnecessary invalidation of templates', () => {
         const stack2 = new Stack();
+        acknowledgeTestValidationRules(stack2);
         const fn1 = new lambda.Function(stack2, 'MyFunction', {
           runtime: THE_RUNTIME,
           code: lambda.Code.fromInline('foo'),
@@ -221,6 +237,7 @@ describe('function hash', () => {
         });
 
         const stack3 = new Stack();
+        acknowledgeTestValidationRules(stack3);
         const fn2 = new lambda.Function(stack3, 'MyFunction', {
           runtime: THE_RUNTIME,
           code: lambda.Code.fromInline('foo'),
@@ -236,6 +253,7 @@ describe('function hash', () => {
         const app = new App({ context: { [cxapi.LAMBDA_RECOGNIZE_LAYER_VERSION]: true } });
 
         const stack2 = new Stack(app, 'stack2');
+        acknowledgeTestValidationRules(stack2);
         const fn1 = new lambda.Function(stack2, 'MyFunction', {
           runtime: THE_RUNTIME,
           code: lambda.Code.fromInline('foo'),
@@ -244,6 +262,7 @@ describe('function hash', () => {
         });
 
         const stack3 = new Stack(app, 'stack3');
+        acknowledgeTestValidationRules(stack3);
         const fn2 = new lambda.Function(stack3, 'MyFunction', {
           runtime: THE_RUNTIME,
           code: lambda.Code.fromInline('foo'),
@@ -259,6 +278,7 @@ describe('function hash', () => {
       const app = new App({ context: { [cxapi.LAMBDA_RECOGNIZE_LAYER_VERSION]: true } });
 
       const stack2 = new Stack(app, 'stack2');
+      acknowledgeTestValidationRules(stack2);
       const importedLayer1 = lambda.LayerVersion.fromLayerVersionArn(stack2, 'imported-layer', 'arn:aws:lambda:<region>:<account>:layer:<layer-name>:<version1>');
       const fn1 = new lambda.Function(stack2, 'MyFunction', {
         runtime: THE_RUNTIME,
@@ -268,6 +288,7 @@ describe('function hash', () => {
       });
 
       const stack3 = new Stack(app, 'stack3');
+      acknowledgeTestValidationRules(stack3);
       const importedLayer2 = lambda.LayerVersion.fromLayerVersionArn(stack3, 'imported-layer', 'arn:aws:lambda:<region>:<account>:layer:<layer-name>:<version2>');
       const fn2 = new lambda.Function(stack3, 'MyFunction', {
         runtime: THE_RUNTIME,
@@ -283,6 +304,7 @@ describe('function hash', () => {
   describe('impact of env variables order on hash', () => {
     test('without "currentVersion", we preserve old behavior to avoid unnecessary invalidation of templates', () => {
       const stack1 = new Stack();
+      acknowledgeTestValidationRules(stack1);
       const fn1 = new lambda.Function(stack1, 'MyFunction', {
         runtime: THE_RUNTIME,
         code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
@@ -294,6 +316,7 @@ describe('function hash', () => {
       });
 
       const stack2 = new Stack();
+      acknowledgeTestValidationRules(stack2);
       const fn2 = new lambda.Function(stack2, 'MyFunction', {
         runtime: THE_RUNTIME,
         code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
@@ -309,6 +332,7 @@ describe('function hash', () => {
 
     test('with "currentVersion", we sort env keys so order is consistent', () => {
       const stack1 = new Stack();
+      acknowledgeTestValidationRules(stack1);
       const fn1 = new lambda.Function(stack1, 'MyFunction', {
         runtime: THE_RUNTIME,
         code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
@@ -322,6 +346,7 @@ describe('function hash', () => {
       new CfnOutput(stack1, 'VersionArn', { value: fn1.currentVersion.functionArn });
 
       const stack2 = new Stack();
+      acknowledgeTestValidationRules(stack2);
       const fn2 = new lambda.Function(stack2, 'MyFunction', {
         runtime: THE_RUNTIME,
         code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
@@ -351,6 +376,7 @@ describe('function hash', () => {
 
     test('DependsOn does not impact function hash', () => {
       const stack1 = new Stack(app, 'Stack1');
+      acknowledgeTestValidationRules(stack1);
       const fn1 = new lambda.Function(stack1, 'MyFunction1', {
         runtime: THE_RUNTIME,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
@@ -358,6 +384,7 @@ describe('function hash', () => {
       });
 
       const stack2 = new Stack(app, 'Stack2');
+      acknowledgeTestValidationRules(stack2);
       const fn2 = new lambda.Function(stack2, 'MyFunction1', {
         runtime: THE_RUNTIME,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
@@ -377,6 +404,7 @@ describe('function hash', () => {
 
     test('properties not locked to the version do not impact function hash', () => {
       const stack1 = new Stack(app, 'Stack1');
+      acknowledgeTestValidationRules(stack1);
       const fn1 = new lambda.Function(stack1, 'MyFunction', {
         runtime: THE_RUNTIME,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
@@ -384,6 +412,7 @@ describe('function hash', () => {
       });
 
       const stack2 = new Stack(app, 'Stack2');
+      acknowledgeTestValidationRules(stack2);
       const fn2 = new lambda.Function(stack2, 'MyFunction', {
         runtime: THE_RUNTIME,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
@@ -398,6 +427,7 @@ describe('function hash', () => {
 
     test('unclassified property throws an error', () => {
       const stack = new Stack(app);
+      acknowledgeTestValidationRules(stack);
       const fn1 = new lambda.Function(stack, 'MyFunction1', {
         runtime: THE_RUNTIME,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
@@ -410,6 +440,7 @@ describe('function hash', () => {
 
     test('manual classification as version locked', () => {
       const stack = new Stack(app);
+      acknowledgeTestValidationRules(stack);
       const fn1 = new lambda.Function(stack, 'MyFunction1', {
         runtime: THE_RUNTIME,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
@@ -424,6 +455,7 @@ describe('function hash', () => {
 
     test('manual classification as not version locked', () => {
       const stack = new Stack(app);
+      acknowledgeTestValidationRules(stack);
       const fn1 = new lambda.Function(stack, 'MyFunction1', {
         runtime: THE_RUNTIME,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
@@ -456,6 +488,7 @@ test('imported layer hashes are consistent', () => {
 
   // WHEN
   const stack1 = new Stack(app, 'Stack1');
+  acknowledgeTestValidationRules(stack1);
   const param1 = ssm.StringParameter.fromStringParameterName(stack1, 'Param', 'ParamName');
   const fn1 = new lambda.Function(stack1, 'Fn', {
     code: lambda.Code.fromInline('asdf'),
@@ -469,6 +502,7 @@ test('imported layer hashes are consistent', () => {
   fn1.currentVersion; // Force creation of version
 
   const stack2 = new Stack(app, 'Stack2');
+  acknowledgeTestValidationRules(stack2);
   const param2 = ssm.StringParameter.fromStringParameterName(stack2, 'Param', 'ParamName');
   const fn2 = new lambda.Function(stack2, 'Fn', {
     code: lambda.Code.fromInline('asdf'),
@@ -494,6 +528,7 @@ test.each([false, true])('can invalidate version hash using invalidateVersionBas
 
   // WHEN
   const stack1 = new Stack(app, 'Stack1');
+  acknowledgeTestValidationRules(stack1);
   const fn1 = new lambda.Function(stack1, 'Fn', {
     code: lambda.Code.fromInline('asdf'),
     handler: 'index.handler',
@@ -505,6 +540,7 @@ test.each([false, true])('can invalidate version hash using invalidateVersionBas
   fn1.currentVersion; // Force creation of version
 
   const stack2 = new Stack(app, 'Stack2');
+  acknowledgeTestValidationRules(stack2);
   const fn2 = new lambda.Function(stack2, 'Fn', {
     code: lambda.Code.fromInline('asdf'),
     handler: 'index.handler',

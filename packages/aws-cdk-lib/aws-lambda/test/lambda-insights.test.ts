@@ -3,6 +3,7 @@ import * as ecr from '../../aws-ecr';
 import * as cdk from '../../core';
 import { Fact, FactName } from '../../region-info';
 import * as lambda from '../lib';
+import { acknowledgeTestValidationRules } from './util';
 
 /**
  * Boilerplate code to create a Function with a given insights version
@@ -41,6 +42,7 @@ describe('lambda-insights', () => {
   test('can provide arn to enable insights', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
+    acknowledgeTestValidationRules(stack);
     const layerArn = 'arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:14';
     functionWithInsightsVersion(stack, 'MyLambda', lambda.LambdaInsightsVersion.fromInsightVersionArn(layerArn));
 
@@ -59,6 +61,7 @@ describe('lambda-insights', () => {
     const stack = new cdk.Stack(app, 'Stack', {
       env: { account: '123456789012', region: 'us-east-1' },
     });
+    acknowledgeTestValidationRules(stack);
     functionWithInsightsVersion(stack, 'MyLambda', lambda.LambdaInsightsVersion.VERSION_1_0_54_0);
 
     verifyRoleHasCorrectPolicies(stack);
@@ -76,6 +79,7 @@ describe('lambda-insights', () => {
     const stack = new cdk.Stack(app, 'Stack', {
       env: { account: '123456789012', region: 'af-south-1' },
     });
+    acknowledgeTestValidationRules(stack);
 
     // AF-SOUTH-1 exists, 1.0.54.0 exists, but 1.0.54.0 isn't supported in AF-SOUTH-1
     expect(() => {
@@ -86,6 +90,7 @@ describe('lambda-insights', () => {
   test('using a specific version without providing a region', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
+    acknowledgeTestValidationRules(stack);
 
     functionWithInsightsVersion(stack, 'MyLambda', lambda.LambdaInsightsVersion.VERSION_1_0_98_0);
 
@@ -110,6 +115,7 @@ describe('lambda-insights', () => {
   test('can create two functions in a region agnostic stack with the same version', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
+    acknowledgeTestValidationRules(stack);
 
     functionWithInsightsVersion(stack, 'MyLambda1', lambda.LambdaInsightsVersion.VERSION_1_0_98_0);
     functionWithInsightsVersion(stack, 'MyLambda2', lambda.LambdaInsightsVersion.VERSION_1_0_98_0);
@@ -140,6 +146,7 @@ describe('lambda-insights', () => {
 
   test('insights layer is skipped for container images and the role is updated', () => {
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     new lambda.DockerImageFunction(stack, 'MyFunction', {
       code: lambda.DockerImageCode.fromEcr(ecr.Repository.fromRepositoryArn(stack, 'MyRepo',
         'arn:aws:ecr:us-east-1:123456789012:repository/MyRepo')),
@@ -175,6 +182,7 @@ describe('lambda-insights', () => {
     const stack = new cdk.Stack(app, 'Stack', {
       env: { account: '123456789012', region: 'us-east-1' },
     });
+    acknowledgeTestValidationRules(stack);
     functionWithInsightsVersion(stack, 'MyLambda', lambda.LambdaInsightsVersion.VERSION_1_0_119_0, lambda.Architecture.ARM_64);
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
@@ -190,6 +198,7 @@ describe('lambda-insights', () => {
     const stack = new cdk.Stack(app, 'Stack', {
       env: { account: '123456789012', region: 'us-east-1' },
     });
+    acknowledgeTestValidationRules(stack);
     expect(() => functionWithInsightsVersion(stack, 'MyLambda', lambda.LambdaInsightsVersion.VERSION_1_0_98_0, lambda.Architecture.ARM_64)).toThrow('Insights version 1.0.98.0 does not exist.');
   });
   test('throws if arm is available in this version, but not in this region', () => {
@@ -197,6 +206,7 @@ describe('lambda-insights', () => {
     const stack = new cdk.Stack(app, 'Stack', {
       env: { account: '123456789012', region: 'us-west-1' },
     });
+    acknowledgeTestValidationRules(stack);
 
     expect(() => {
       functionWithInsightsVersion(stack, 'MyLambda', lambda.LambdaInsightsVersion.VERSION_1_0_119_0, lambda.Architecture.ARM_64);
@@ -211,6 +221,7 @@ describe('lambda-insights', () => {
 
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
+    acknowledgeTestValidationRules(stack);
 
     functionWithInsightsVersion(stack, 'MyLambda1', lambda.LambdaInsightsVersion.VERSION_1_0_119_0);
     functionWithInsightsVersion(stack, 'MyLambda2', lambda.LambdaInsightsVersion.VERSION_1_0_119_0, lambda.Architecture.ARM_64);
@@ -244,6 +255,7 @@ describe('lambda-insights', () => {
     const stack = new cdk.Stack(app, 'Stack', {
       env: { account: '123456789012', region: 'us-east-1' },
     });
+    acknowledgeTestValidationRules(stack);
     functionWithInsightsVersion(stack, 'MyLambda', lambda.LambdaInsightsVersion.VERSION_1_0_143_0, lambda.Architecture.X86_64);
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {

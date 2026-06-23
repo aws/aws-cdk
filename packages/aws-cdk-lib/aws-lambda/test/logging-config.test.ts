@@ -2,12 +2,14 @@ import { Template } from '../../assertions';
 import * as logs from '../../aws-logs';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
+import { acknowledgeTestValidationRules } from './util';
 
 describe('logging Config', () => {
   test('Logging Config with LogGroup and no LogGroupName', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
+    acknowledgeTestValidationRules(stack);
     const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
@@ -29,6 +31,7 @@ describe('logging Config', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
+    acknowledgeTestValidationRules(stack);
     const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
       logGroupName: 'customLogGroup',
     });
@@ -52,6 +55,7 @@ describe('logging Config', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
+    acknowledgeTestValidationRules(stack);
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -70,6 +74,7 @@ describe('logging Config', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
+    acknowledgeTestValidationRules(stack);
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -88,6 +93,7 @@ describe('logging Config', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
+    acknowledgeTestValidationRules(stack);
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -106,6 +112,7 @@ describe('logging Config', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
+    acknowledgeTestValidationRules(stack);
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -124,6 +131,7 @@ describe('logging Config', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
+    acknowledgeTestValidationRules(stack);
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -146,6 +154,7 @@ describe('logging Config', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
+    acknowledgeTestValidationRules(stack);
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -168,6 +177,7 @@ describe('logging Config', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
+    acknowledgeTestValidationRules(stack);
     const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
       logGroupName: 'customLogGroup',
     });
@@ -185,6 +195,7 @@ describe('logging Config', () => {
   test('Throws when logGroup and LogRention are set', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
+    acknowledgeTestValidationRules(stack);
     expect(() => {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
@@ -201,6 +212,7 @@ describe('logging Config', () => {
   test('Throws when applicationLogLevel is specified with TEXT logFormat', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
+    acknowledgeTestValidationRules(stack);
     expect(() => {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
@@ -215,6 +227,7 @@ describe('logging Config', () => {
   test('Throws when systemLogLevel is specified with TEXT logFormat', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
+    acknowledgeTestValidationRules(stack);
     expect(() => {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
@@ -229,6 +242,7 @@ describe('logging Config', () => {
   test('Throws when applicationLogLevel is specified with TEXT loggingFormat', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
+    acknowledgeTestValidationRules(stack);
     expect(() => {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
@@ -243,6 +257,7 @@ describe('logging Config', () => {
   test('Throws when applicationLogLevel is specified if logFormat is undefined', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
+    acknowledgeTestValidationRules(stack);
     expect(() => {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
@@ -256,6 +271,7 @@ describe('logging Config', () => {
   test('Throws when systemLogLevel is specified if logFormat is undefined', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
+    acknowledgeTestValidationRules(stack);
     expect(() => {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
@@ -269,6 +285,7 @@ describe('logging Config', () => {
   test('Throws when loggingFormat and logFormat are both specified', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
+    acknowledgeTestValidationRules(stack);
     expect(() => {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
@@ -283,6 +300,7 @@ describe('logging Config', () => {
   test('Throws when applicationLogLevel and applicationLogLevelV2 are both specified', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
+    acknowledgeTestValidationRules(stack);
     expect(() => {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
@@ -298,6 +316,7 @@ describe('logging Config', () => {
   test('Throws when systemLogLevel and systemLogLevelV2 are both specified', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
+    acknowledgeTestValidationRules(stack);
     expect(() => {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
@@ -313,6 +332,7 @@ describe('logging Config', () => {
   test('Throws when systemLogLevelV2 is specified if loggingFormat is undefined', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
+    acknowledgeTestValidationRules(stack);
     expect(() => {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
@@ -326,6 +346,7 @@ describe('logging Config', () => {
   test('Throws when applicationLogLevelV2 is specified if loggingFormat is undefined', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
+    acknowledgeTestValidationRules(stack);
     expect(() => {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),

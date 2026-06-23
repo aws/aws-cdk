@@ -4,10 +4,12 @@ import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { Lazy, Stack } from '../../core';
 import * as lambda from '../lib';
+import { acknowledgeTestValidationRules } from './util';
 
 describe('alias', () => {
   testDeprecated('version and aliases', () => {
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -34,6 +36,7 @@ describe('alias', () => {
 
   test('can create an alias to $LATEST', () => {
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -55,6 +58,7 @@ describe('alias', () => {
 
   testDeprecated('can use newVersion to create a new Version', () => {
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -80,6 +84,7 @@ describe('alias', () => {
 
   testDeprecated('can add additional versions to alias', () => {
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
 
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
@@ -111,6 +116,7 @@ describe('alias', () => {
 
   testDeprecated('version and aliases with provisioned execution', () => {
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -143,6 +149,7 @@ describe('alias', () => {
 
   test('sanity checks on version weights', () => {
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
 
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
@@ -173,6 +180,7 @@ describe('alias', () => {
 
   test('metric adds Resource: aliasArn to dimensions', () => {
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
 
     // GIVEN
     const fn = new lambda.Function(stack, 'MyLambda', {
@@ -216,6 +224,7 @@ describe('alias', () => {
 
   testDeprecated('sanity checks provisionedConcurrentExecutions', () => {
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const pce = -1;
 
     const fn = new lambda.Function(stack, 'MyLambda', {
@@ -251,6 +260,7 @@ describe('alias', () => {
 
   test('alias exposes real Lambdas role', () => {
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
 
     // GIVEN
     const fn = new lambda.Function(stack, 'MyLambda', {
@@ -268,6 +278,7 @@ describe('alias', () => {
 
   test('functionName is derived from the aliasArn so that dependencies are sound', () => {
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
 
     // GIVEN
     const fn = new lambda.Function(stack, 'MyLambda', {
@@ -306,6 +317,7 @@ describe('alias', () => {
   test('with event invoke config', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'fn', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -352,6 +364,7 @@ describe('alias', () => {
   test('throws when calling configureAsyncInvoke on already configured alias', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'fn', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -374,6 +387,7 @@ describe('alias', () => {
   test('event invoke config on imported alias', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = lambda.Version.fromVersionArn(stack, 'Fn', 'arn:aws:lambda:region:account-id:function:function-name:version');
     const alias = lambda.Alias.fromAliasAttributes(stack, 'Alias', { aliasName: 'alias-name', aliasVersion: fn });
 
@@ -393,6 +407,7 @@ describe('alias', () => {
   testDeprecated('can enable AutoScaling on aliases', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -432,6 +447,7 @@ describe('alias', () => {
   test('can enable AutoScaling on aliases with Provisioned Concurrency set', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -478,6 +494,7 @@ describe('alias', () => {
   test('validation for utilizationTarget does not fail when using Tokens', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -508,6 +525,7 @@ describe('alias', () => {
   test('cannot enable AutoScaling twice on same property', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -529,6 +547,7 @@ describe('alias', () => {
   test('error when specifying invalid utilization value when AutoScaling on utilization', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -550,6 +569,7 @@ describe('alias', () => {
   test('can autoscale on a schedule', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -583,6 +603,7 @@ describe('alias', () => {
   test('scheduled scaling shows warning when minute is not defined in cron', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -608,6 +629,7 @@ describe('alias', () => {
   test('scheduled scaling shows no warning when minute is * in cron', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -634,6 +656,7 @@ describe('alias', () => {
   test('addFunctionUrl creates a function url', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -661,6 +684,7 @@ describe('alias', () => {
   test('alias\' implementation of IFunctionRef should point to the alias', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -681,6 +705,7 @@ describe('alias', () => {
   test('should throw error when alias has provisioned concurrency and function has tenancy config', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',

@@ -3,6 +3,7 @@ import { Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
+import { acknowledgeTestValidationRules } from './util';
 
 describe('lambda + vpc', () => {
   describe('lambda in vpc', () => {
@@ -15,6 +16,7 @@ describe('lambda + vpc', () => {
       // GIVEN
       app = new cdk.App();
       stack = new cdk.Stack(app, 'stack');
+      acknowledgeTestValidationRules(stack);
       vpc = new ec2.Vpc(stack, 'VPC');
 
       // WHEN
@@ -141,6 +143,7 @@ describe('lambda + vpc', () => {
     test('can still make Connections after export/import', () => {
       // GIVEN
       const stack2 = new cdk.Stack(app, 'stack2');
+      acknowledgeTestValidationRules(stack2);
       const securityGroup = new ec2.SecurityGroup(stack2, 'SomeSecurityGroup', { vpc });
       const somethingConnectable = new SomethingConnectable(new ec2.Connections({ securityGroups: [securityGroup] }));
 
@@ -186,6 +189,7 @@ describe('lambda + vpc', () => {
   test('lambda without VPC throws Error upon accessing connections', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const lambdaFn = new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -201,6 +205,7 @@ describe('lambda + vpc', () => {
   test('can pick public subnet for Lambda', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
@@ -230,6 +235,7 @@ describe('lambda + vpc', () => {
   test('can pick private subnet for Lambda', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
@@ -259,6 +265,7 @@ describe('lambda + vpc', () => {
   test('can pick isolated subnet for Lambda', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC', {
       subnetConfiguration: [
         {
@@ -295,6 +302,7 @@ describe('lambda + vpc', () => {
   test('picking public subnet type is not allowed if not overriding allowPublicSubnet', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC', {
       subnetConfiguration: [
         {
@@ -327,6 +335,7 @@ describe('lambda + vpc', () => {
   test('specifying vpcSubnets without a vpc throws an Error', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     expect(() => {
