@@ -1,17 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`validations multiple plugins 1`] = `
-"core/test/validation/validation.test.ts:319:19
+"core/test/validation/validation.test.ts:321:19
 ERROR do something (plugin1)
    Default/Fake (Fake) constructs.Construct
    Acknowledge with 'plugin1::rule-1'
 
-core/test/validation/validation.test.ts:319:19
+core/test/validation/validation.test.ts:321:19
 ERROR do another thing (plugin2)
    Default/Fake (Fake) constructs.Construct
    Acknowledge with 'plugin2::rule-2'
 
-core/test/validation/validation.test.ts:319:19
+core/test/validation/validation.test.ts:321:19
 WARNING Unknown resource type 'Test::Resource::Fake' (CloudFormation Validate)
    Default/Fake (Fake) constructs.Construct
    Acknowledge with 'CloudFormation-Validate::E9001'
@@ -23,12 +23,12 @@ Validation failed. A copy of this report can be found in '<assembly-directory>/v
 `;
 
 exports[`validations multiple plugins with mixed results 1`] = `
-"core/test/validation/validation.test.ts:345:19
+"core/test/validation/validation.test.ts:347:19
 ERROR do another thing (plugin2)
    Default/Fake (Fake) constructs.Construct
    Acknowledge with 'plugin2::rule-2'
 
-core/test/validation/validation.test.ts:345:19
+core/test/validation/validation.test.ts:347:19
 WARNING Unknown resource type 'Test::Resource::Fake' (CloudFormation Validate)
    Default/Fake (Fake) constructs.Construct
    Acknowledge with 'CloudFormation-Validate::E9001'
