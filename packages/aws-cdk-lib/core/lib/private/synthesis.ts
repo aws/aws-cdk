@@ -188,6 +188,14 @@ function validateTemplates(root: IConstruct, outdir: string, assembly: private_c
     );
   }
 
+  if (warningifiedAnyErrors) {
+    // eslint-disable-next-line no-console
+    console.error(
+      '\n[Warning] Template validation found issues in your templates (reported as warnings).'
+      + `\nSet feature flag "${cxapi.VALIDATE_AGAINST_DEFAULT_RULES}" to true to turn these into errors.`,
+    );
+  }
+
   // Whether the CDK app handles validation output (default true). The CLI can set this to false to take over the
   // responsibility of printing the validation report and setting the exit code.
   const cdkAppHandlesValidationReporting = getBooleanContext(root, cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT, true);
@@ -195,14 +203,6 @@ function validateTemplates(root: IConstruct, outdir: string, assembly: private_c
     const output = formatValidationReports(process.cwd(), reportJson.pluginReports);
     // eslint-disable-next-line no-console
     console.error(output.join('\n\n'));
-
-    if (warningifiedAnyErrors) {
-      // eslint-disable-next-line no-console
-      console.error(
-        '\n[Warning] Template validation found issues in your templates (reported as warnings).'
-        + `\nSet feature flag "${cxapi.VALIDATE_AGAINST_DEFAULT_RULES}" to true to turn these into errors.`,
-      );
-    }
 
     const failed = reports.some(r => !r.success);
     if (failed) {
