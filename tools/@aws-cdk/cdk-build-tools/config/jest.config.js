@@ -1,7 +1,5 @@
 const thisPackagesPackageJson = require(`${process.cwd()}/package.json`);
 const setupFilesAfterEnv = [];
-
-/*
 if ('aws-cdk-lib' in thisPackagesPackageJson.devDependencies ?? {}) {
   // If we depend on aws-cdk-lib, use the provided autoclean hook
   setupFilesAfterEnv.push('aws-cdk-lib/testhelpers/jest-autoclean');
@@ -9,7 +7,6 @@ if ('aws-cdk-lib' in thisPackagesPackageJson.devDependencies ?? {}) {
   // If we *ARE* aws-cdk-lib, use the hook in a slightly different way
   setupFilesAfterEnv.push('./testhelpers/jest-autoclean.ts');
 }
-*/
 
 module.exports = {
   // The preset deals with preferring TS over JS
