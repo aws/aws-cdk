@@ -55,6 +55,24 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
    * The default name of this plugin
    */
   public static readonly PLUGIN_NAME = 'CloudFormation Validate';
+
+  /**
+   * Return a global singleton instance of this plugin.
+   *
+   * This is used because initializing the engine is somewhat expensive, which makes
+   * a noticeable difference in tests.
+   *
+   * @internal
+   */
+  public static _singletonInstance() {
+    if (!CloudFormationValidatePlugin._instance) {
+      CloudFormationValidatePlugin._instance = new CloudFormationValidatePlugin();
+    }
+    return CloudFormationValidatePlugin._instance;
+  }
+
+  private static _instance: CloudFormationValidatePlugin | undefined;
+
   public readonly name = CloudFormationValidatePlugin.PLUGIN_NAME;
 
   private readonly engine: Engine;

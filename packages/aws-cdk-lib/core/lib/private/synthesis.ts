@@ -23,6 +23,7 @@ import type { ISynthesisSession } from '../stack-synthesizers/types';
 import type { StageSynthesisOptions } from '../stage';
 import { Stage } from '../stage';
 import type { IPolicyValidationPlugin } from '../validation';
+import { profileSpan } from './perf';
 import { CloudFormationValidatePlugin } from '../validation/cloudformation-validate-plugin';
 import { ConstructTree } from '../validation/private/construct-tree';
 import { formatValidationReports, humanFriendlyFilename } from '../validation/private/modern-formatter';
@@ -107,6 +108,8 @@ function getAssemblies(root: App, rootAssembly: private_cxapi.CloudAssembly): Ma
  */
 function validateTemplates(root: IConstruct, outdir: string, assembly: private_cxapi.CloudAssembly) {
   if (!App.isApp(root)) return;
+
+  using _span = profileSpan('validateTemplates', { telemetry: true });
   const assemblies = getAssemblies(root, assembly);
   const templatePathsByPlugin: Map<IPolicyValidationPlugin, string[]> = new Map();
   visitAssemblies(root, 'post', construct => {
@@ -134,7 +137,7 @@ function validateTemplates(root: IConstruct, outdir: string, assembly: private_c
   if (!hasUserRegisteredCloudFormationValidatePlugin(root)) {
     const defaultEnginePaths = assembly.stacksRecursively.map(s => s.templateFullPath);
     if (defaultEnginePaths.length > 0) {
-      plugins.push({ plugin: new CloudFormationValidatePlugin(), templatePaths: defaultEnginePaths });
+      plugins.push({ plugin: CloudFormationValidatePlugin._singletonInstance(), templatePaths: defaultEnginePaths });
     }
   }
   // 3. Construct annotations (as a plugin, only if there are annotations to report)
