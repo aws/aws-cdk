@@ -193,8 +193,10 @@ function validateTemplates(root: IConstruct, outdir: string, assembly: private_c
   const cdkAppHandlesValidationReporting = getBooleanContext(root, cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT, true);
   if (cdkAppHandlesValidationReporting) {
     const output = formatValidationReports(process.cwd(), reportJson.pluginReports);
-    // eslint-disable-next-line no-console
-    console.error(output.join('\n\n'));
+    if (output) {
+      // eslint-disable-next-line no-console
+      console.error(output.join('\n\n'));
+    }
 
     if (warningifiedAnyErrors) {
       // eslint-disable-next-line no-console
