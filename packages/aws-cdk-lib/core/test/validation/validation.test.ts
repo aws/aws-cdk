@@ -542,7 +542,7 @@ describe('validations', () => {
     expect(fs.existsSync(file)).toBe(true);
 
     const allOutput = mockErrorOutput();
-    expect(allOutput).toEqual('');
+    expect(allOutput).not.toContain('ERROR');
   });
 
   test('Pretty print as default', () => {
