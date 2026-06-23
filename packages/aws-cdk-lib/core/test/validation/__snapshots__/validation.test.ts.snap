@@ -1,7 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`validations multiple plugins 1`] = `
-"core/test/validation/validation.test.ts:321:19
+"
+[Warning] Template validation found issues in your templates (reported as warnings).
+Set feature flag "@aws-cdk/core:validateAgainstDefaultRules" to true to turn these into errors.
+core/test/validation/validation.test.ts:321:19
 ERROR do something (plugin1)
    Default/Fake (Fake) constructs.Construct
    Acknowledge with 'plugin1::rule-1'
@@ -16,14 +19,14 @@ WARNING Unknown resource type 'Test::Resource::Fake' (CloudFormation Validate)
    Default/Fake (Fake) constructs.Construct
    Acknowledge with 'CloudFormation-Validate::E9001'
 
-[Warning] Template validation found issues in your templates (reported as warnings).
-Set feature flag "@aws-cdk/core:validateAgainstDefaultRules" to true to turn these into errors.
-
 Validation failed. A copy of this report can be found in '<assembly-directory>/validation-report.json'"
 `;
 
 exports[`validations multiple plugins with mixed results 1`] = `
-"core/test/validation/validation.test.ts:347:19
+"
+[Warning] Template validation found issues in your templates (reported as warnings).
+Set feature flag "@aws-cdk/core:validateAgainstDefaultRules" to true to turn these into errors.
+core/test/validation/validation.test.ts:347:19
 ERROR do another thing (plugin2)
    Default/Fake (Fake) constructs.Construct
    Acknowledge with 'plugin2::rule-2'
@@ -33,14 +36,14 @@ WARNING Unknown resource type 'Test::Resource::Fake' (CloudFormation Validate)
    Default/Fake (Fake) constructs.Construct
    Acknowledge with 'CloudFormation-Validate::E9001'
 
-[Warning] Template validation found issues in your templates (reported as warnings).
-Set feature flag "@aws-cdk/core:validateAgainstDefaultRules" to true to turn these into errors.
-
 Validation failed. A copy of this report can be found in '<assembly-directory>/validation-report.json'"
 `;
 
 exports[`validations multiple stacks 1`] = `
-"core/test/validation/validation.test.ts:94:20
+"
+[Warning] Template validation found issues in your templates (reported as warnings).
+Set feature flag "@aws-cdk/core:validateAgainstDefaultRules" to true to turn these into errors.
+core/test/validation/validation.test.ts:94:20
 ERROR test recommendation (test-plugin)
    stack1/DefaultResource (DefaultResource) constructs.Construct
    Acknowledge with 'test-plugin::test-rule'
@@ -60,14 +63,14 @@ WARNING Unknown resource type 'Test::Resource::Fake' (CloudFormation Validate)
    stack2/DefaultResource (DefaultResource) constructs.Construct
    Acknowledge with 'CloudFormation-Validate::E9001'
 
-[Warning] Template validation found issues in your templates (reported as warnings).
-Set feature flag "@aws-cdk/core:validateAgainstDefaultRules" to true to turn these into errors.
-
 Validation failed. A copy of this report can be found in '<assembly-directory>/validation-report.json'"
 `;
 
 exports[`validations multiple stages 1`] = `
-"core/test/validation/validation.test.ts:162:20
+"
+[Warning] Template validation found issues in your templates (reported as warnings).
+Set feature flag "@aws-cdk/core:validateAgainstDefaultRules" to true to turn these into errors.
+core/test/validation/validation.test.ts:162:20
 ERROR do something (test-plugin2)
    Stage1/stack1/DefaultResource (DefaultResource) constructs.Construct
    Acknowledge with 'test-plugin2::test-rule2'
@@ -100,14 +103,14 @@ WARNING Unknown resource type 'Test::Resource::Fake' (CloudFormation Validate)
    Stage2/Stage3/stack3/DefaultResource (DefaultResource) constructs.Construct
    Acknowledge with 'CloudFormation-Validate::E9001'
 
-[Warning] Template validation found issues in your templates (reported as warnings).
-Set feature flag "@aws-cdk/core:validateAgainstDefaultRules" to true to turn these into errors.
-
 Validation failed. A copy of this report can be found in '<assembly-directory>/validation-report.json'"
 `;
 
 exports[`validations validation failure 1`] = `
-"core/test/validation/validation.test.ts:39:19
+"
+[Warning] Template validation found issues in your templates (reported as warnings).
+Set feature flag "@aws-cdk/core:validateAgainstDefaultRules" to true to turn these into errors.
+core/test/validation/validation.test.ts:39:19
 WARNING Unknown resource type 'Test::Resource::Fake' (CloudFormation Validate)
    Default/Fake (Fake) constructs.Construct
    Acknowledge with 'CloudFormation-Validate::E9001'
@@ -116,9 +119,6 @@ core/test/validation/validation.test.ts:39:19
 custom test recommendation (test-plugin)
    Default/Fake (Fake) constructs.Construct
    Acknowledge with 'test-plugin::test-rule'
-
-[Warning] Template validation found issues in your templates (reported as warnings).
-Set feature flag "@aws-cdk/core:validateAgainstDefaultRules" to true to turn these into errors.
 
 Validation failed. A copy of this report can be found in '<assembly-directory>/validation-report.json'"
 `;
