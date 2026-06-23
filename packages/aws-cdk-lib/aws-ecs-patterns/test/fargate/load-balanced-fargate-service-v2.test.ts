@@ -7,6 +7,7 @@ import { ApplicationProtocol, IpAddressType, SslPolicy } from '../../../aws-elas
 import { CompositePrincipal, Role, ServicePrincipal } from '../../../aws-iam';
 import { PublicHostedZone } from '../../../aws-route53';
 import { Duration, Stack } from '../../../core';
+import { acknowledgeTestValidationRules } from '../util';
 import { ApplicationLoadBalancedFargateService, ApplicationMultipleTargetGroupsFargateService, NetworkLoadBalancedFargateService, NetworkMultipleTargetGroupsFargateService } from '../../lib';
 
 const enableExecuteCommandPermissions = {
@@ -44,6 +45,7 @@ describe('Application Load Balancer', () => {
     test('construct with application load balancer name set', () => {
       // GIVEN
       const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
       const vpc = new Vpc(stack, 'VPC');
       const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -118,6 +120,7 @@ describe('Application Load Balancer', () => {
     test('dualstack application load balancer', () => {
       // GIVEN
       const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
       const vpc = new Vpc(stack, 'VPC', {
         ipProtocol: IpProtocol.DUAL_STACK,
       });
@@ -145,6 +148,7 @@ describe('Application Load Balancer', () => {
     test('construct with default settings', () => {
       // GIVEN
       const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
       const vpc = new Vpc(stack, 'VPC');
       const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -216,6 +220,7 @@ describe('Application Load Balancer', () => {
     test('construct with all settings', () => {
       // GIVEN
       const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
       const vpc = new Vpc(stack, 'VPC');
       const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -402,6 +407,7 @@ describe('Application Load Balancer', () => {
     test('errors if no essential container in pre-defined task definition', () => {
       // GIVEN
       const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
       const vpc = new Vpc(stack, 'VPC');
       const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -419,6 +425,7 @@ describe('Application Load Balancer', () => {
     test('errors when setting both taskDefinition and taskImageOptions', () => {
       // GIVEN
       const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
       const vpc = new Vpc(stack, 'VPC');
       const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'Ec2TaskDef');
@@ -438,6 +445,7 @@ describe('Application Load Balancer', () => {
     test('errors when setting neither taskDefinition nor taskImageOptions', () => {
       // GIVEN
       const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
       const vpc = new Vpc(stack, 'VPC');
       const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -452,6 +460,7 @@ describe('Application Load Balancer', () => {
     test('errors when idleTimeout is over 4000 seconds for multiAlbService', () => {
       // GIVEN
       const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
       const vpc = new Vpc(stack, 'VPC');
 
       // THEN
@@ -522,6 +531,7 @@ describe('Application Load Balancer', () => {
     test('errors when idleTimeout is under 1 seconds for multiAlbService', () => {
       // GIVEN
       const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
       const vpc = new Vpc(stack, 'VPC');
 
       // THEN
@@ -592,6 +602,7 @@ describe('Application Load Balancer', () => {
     test('passes when idleTimeout is between 1 and 4000 seconds for multiAlbService', () => {
       // GIVEN
       const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
       const vpc = new Vpc(stack, 'VPC');
 
       // THEN
@@ -662,6 +673,7 @@ describe('Application Load Balancer', () => {
     test('idletime is undefined when not set for multiAlbService', () => {
       // GIVEN
       const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
       const vpc = new Vpc(stack, 'VPC');
 
       // WHEN
@@ -742,6 +754,7 @@ describe('Network Load Balancer', () => {
     test('construct with custom port', () => {
       // GIVEN
       const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
       const vpc = new Vpc(stack, 'VPC');
       const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -769,6 +782,7 @@ describe('Network Load Balancer', () => {
     test('specify IPV6 address type for NLB', () => {
       // GIVEN
       const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
       const vpc = new Vpc(stack, 'VPC', { maxAzs: 2 });
 
       // WHEN
@@ -795,6 +809,7 @@ describe('Network Load Balancer', () => {
     test('construct with default settings', () => {
       // GIVEN
       const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
       const vpc = new Vpc(stack, 'VPC');
       const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -866,6 +881,7 @@ describe('Network Load Balancer', () => {
     test('construct with all settings', () => {
       // GIVEN
       const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
       const vpc = new Vpc(stack, 'VPC');
       const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1036,6 +1052,7 @@ describe('Network Load Balancer', () => {
     test('EnableExecuteCommand generates correct IAM Permissions', () => {
       // GIVEN
       const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
       const vpc = new Vpc(stack, 'VPC');
       const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1101,6 +1118,7 @@ describe('Network Load Balancer', () => {
     test('errors if no essential container in pre-defined task definition', () => {
       // GIVEN
       const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
       const vpc = new Vpc(stack, 'VPC');
       const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1118,6 +1136,7 @@ describe('Network Load Balancer', () => {
     test('errors when setting both taskDefinition and taskImageOptions', () => {
       // GIVEN
       const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
       const vpc = new Vpc(stack, 'VPC');
       const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'Ec2TaskDef');
@@ -1137,6 +1156,7 @@ describe('Network Load Balancer', () => {
     test('errors when setting neither taskDefinition nor taskImageOptions', () => {
       // GIVEN
       const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
       const vpc = new Vpc(stack, 'VPC');
       const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1151,6 +1171,7 @@ describe('Network Load Balancer', () => {
     test('construct with custom port', () => {
       // GIVEN
       const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
       const vpc = new Vpc(stack, 'VPC');
       const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1194,6 +1215,7 @@ describe('Network Load Balancer', () => {
     test('construct errors when container port range is set for essential container', () => {
       // GIVEN
       const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
       const vpc = new Vpc(stack, 'VPC');
       const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
