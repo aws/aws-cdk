@@ -22,11 +22,13 @@ import {
   GlobalTableSettingsReplicationMode,
   TableV2MultiAccountReplica,
 } from '../lib';
+import { acknowledgeTestValidationRules } from './util';
 
 describe('table', () => {
   test('with default properties', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -57,6 +59,7 @@ describe('table', () => {
   test('with dynamo stream', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -75,6 +78,7 @@ describe('table', () => {
   test('with sort key', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -98,6 +102,7 @@ describe('table', () => {
   test('with contributor insights', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -123,6 +128,7 @@ describe('table', () => {
   test('with deletion protection', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -146,6 +152,7 @@ describe('table', () => {
   test('with point-in-time recovery', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -171,6 +178,7 @@ describe('table', () => {
   test('with point-in-time-recovery-specification', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -199,6 +207,7 @@ describe('table', () => {
 
   test('both point-in-time-recovery-specification and point-in-time-recovery set', () => {
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
     expect(() => {
       new TableV2(stack, 'Table', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
@@ -213,6 +222,7 @@ describe('table', () => {
 
   test('recoveryPeriodInDays set out of bounds', () => {
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
     expect(() => {
       new TableV2(stack, 'Table', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
@@ -226,6 +236,7 @@ describe('table', () => {
 
   test('recoveryPeriodInDays set but pitr ENABLED', () => {
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
     expect(() => {
       new TableV2(stack, 'Table', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
@@ -240,6 +251,7 @@ describe('table', () => {
   test('with STANDARD table class', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -263,6 +275,7 @@ describe('table', () => {
   test('with STANDARD_INFREQUENT_ACCESS table class', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -286,6 +299,7 @@ describe('table', () => {
   test('with kinesis stream', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
     const kinesisStream = new Stream(stack, 'Stream');
 
     // WHEN
@@ -317,6 +331,7 @@ describe('table', () => {
   test('with table name', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -333,6 +348,7 @@ describe('table', () => {
   test('with TTL attribute', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -352,6 +368,7 @@ describe('table', () => {
   test('with removal policy as DESTROY', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -366,6 +383,7 @@ describe('table', () => {
   test('with on-demand billing', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -382,6 +400,7 @@ describe('table', () => {
   test('with provisioned billing and fixed read capacity', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -420,6 +439,7 @@ describe('table', () => {
   test('with provisioned billing and autoscaled read capacity', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -464,6 +484,7 @@ describe('table', () => {
   test('with non-default replica table', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -483,6 +504,7 @@ describe('table', () => {
   test('with global secondary index', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -536,6 +558,7 @@ describe('table', () => {
   test('with local secondary index', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -578,6 +601,7 @@ describe('table', () => {
   test('with encryption via dynamodb owned key', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -596,6 +620,7 @@ describe('table', () => {
   test('with encryption via aws managed key', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -615,6 +640,7 @@ describe('table', () => {
   test('with encryption via customer managed key', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    acknowledgeTestValidationRules(stack);
     const tableKey = new Key(stack, 'Key');
 
     // WHEN
@@ -635,6 +661,7 @@ describe('table', () => {
   test('with tags', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -660,6 +687,7 @@ describe('table', () => {
   test('with all properties configured', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    acknowledgeTestValidationRules(stack);
     const stream = new Stream(stack, 'Stream');
 
     const tableKey = new Key(stack, 'Key');
@@ -978,6 +1006,7 @@ describe('table', () => {
   test('can add global secondary index', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
     const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       sortKey: { name: 'sk', type: AttributeType.BINARY },
@@ -1031,6 +1060,7 @@ describe('table', () => {
   test('can add local secondary index', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
     const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       sortKey: { name: 'sk', type: AttributeType.BINARY },
@@ -1072,6 +1102,7 @@ describe('table', () => {
   test('multiple tables', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table1', {
@@ -1091,6 +1122,7 @@ describe('table', () => {
   test('throws if defining non-default replica table in region agnostic stack', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN / THEN
     expect(() => {
@@ -1104,6 +1136,7 @@ describe('table', () => {
   test('throws if getting replica table in region agnostic stack', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
     const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
@@ -1117,6 +1150,7 @@ describe('table', () => {
   test('with on-demand maximum throughput', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -1157,6 +1191,7 @@ describe('table', () => {
   test('with on-demand maximum throughput - read only', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -1193,6 +1228,7 @@ describe('table', () => {
   test('with on-demand maximum throughput - index', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -1273,6 +1309,7 @@ describe('grants', () => {
   test('grantReadData with AccountRootPrincipal uses wildcard resources', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const table = new TableV2(stack, 'Table', {
       partitionKey: {
         name: 'id',
@@ -1314,6 +1351,7 @@ describe('grants', () => {
   test('grant* with ServicePrincipal throws error', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
@@ -1326,6 +1364,7 @@ describe('grants', () => {
   test('grant with ServicePrincipal throws error', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
@@ -1338,6 +1377,7 @@ describe('grants', () => {
   test('grant* with wrapped ServicePrincipal (withConditions) throws error', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
@@ -1359,6 +1399,7 @@ describe('grants', () => {
   ])('grant* with allowlisted ServicePrincipal %s succeeds', (serviceName) => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
@@ -1373,6 +1414,7 @@ describe('grants', () => {
   test('grant* with wrapped allowlisted ServicePrincipal succeeds', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
@@ -1392,6 +1434,7 @@ describe('replica tables', () => {
   test('with fixed read capacity', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'GlobalTable', {
@@ -1427,6 +1470,7 @@ describe('replica tables', () => {
   test('with autoscaled read capacity', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'GlobalTable', {
@@ -1471,6 +1515,7 @@ describe('replica tables', () => {
   test('with tags', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -1498,6 +1543,7 @@ describe('replica tables', () => {
   test('with TagAspect', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     const table = new TableV2(stack, 'Table', {
@@ -1527,6 +1573,7 @@ describe('replica tables', () => {
   test('with TagAspect on parent scope', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -1556,6 +1603,7 @@ describe('replica tables', () => {
   test('replica tags override tag aspect tags', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     const table = new TableV2(stack, 'Table', {
@@ -1599,6 +1647,7 @@ describe('replica tables', () => {
   test('with per-replica kinesis stream', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    acknowledgeTestValidationRules(stack);
     const kinesisStream1 = new Stream(stack, 'Stream1');
     const kinesisStream2 = Stream.fromStreamArn(stack, 'Stream2', 'arn:aws:kinesis:us-east-1:123456789012:stream/my-stream');
 
@@ -1648,6 +1697,7 @@ describe('replica tables', () => {
   test('with per-replica contributor insights on global secondary index', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'GlobalTable', {
@@ -1753,6 +1803,7 @@ describe('replica tables', () => {
   test('with per-replica read capacity on global secondary index', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'GlobalTable', {
@@ -1869,6 +1920,7 @@ describe('replica tables', () => {
   test('throws if replica table region is a token', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    acknowledgeTestValidationRules(stack);
     const table = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
@@ -1882,6 +1934,7 @@ describe('replica tables', () => {
   test('throws if adding replica table in deployment region', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    acknowledgeTestValidationRules(stack);
     const table = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
@@ -1895,6 +1948,7 @@ describe('replica tables', () => {
   test('throws if adding duplicate replica table', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    acknowledgeTestValidationRules(stack);
     const table = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       replicas: [{ region: 'us-east-1' }],
@@ -1909,6 +1963,7 @@ describe('replica tables', () => {
   test('throws if read capacity is configured on replica table when billing mode is PAY_PER_REQUEST', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN / THEN
     expect(() => {
@@ -1927,6 +1982,7 @@ describe('replica tables', () => {
   test('throws if configuring options for non-existent global secondary index', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    acknowledgeTestValidationRules(stack);
     new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       globalSecondaryIndexes: [
@@ -1956,6 +2012,7 @@ describe('replica tables', () => {
   test('throws if read capacity is configured as global secondary index options when billing mode is PAY_PER_REQUEST', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    acknowledgeTestValidationRules(stack);
     new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       globalSecondaryIndexes: [
@@ -1987,6 +2044,7 @@ describe('secondary indexes', () => {
   test('with multiple global secondary indexes with different partition keys', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -2054,6 +2112,7 @@ describe('secondary indexes', () => {
   test('with multiple global secondary indexes with the same partition keys', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -2120,6 +2179,7 @@ describe('secondary indexes', () => {
   test('with multiple global secondary indexes with different sort keys', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -2192,6 +2252,7 @@ describe('secondary indexes', () => {
   test('with multiple global secondary indexes with the same sort keys', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -2263,6 +2324,7 @@ describe('secondary indexes', () => {
   test('with multiple local secondary indexes with different sort keys', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -2320,6 +2382,7 @@ describe('secondary indexes', () => {
   test('with multiple local secondary indexes with the same sort keys', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -2376,6 +2439,7 @@ describe('secondary indexes', () => {
   test('with global secondary index and local secondary index', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -2448,6 +2512,7 @@ describe('secondary indexes', () => {
   test('with global secondary index read capacity', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -2517,6 +2582,7 @@ describe('secondary indexes', () => {
   test('with global secondary index without read capacity inherits from table when billing mode is provisioned', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -2585,6 +2651,7 @@ describe('secondary indexes', () => {
   test('with global secondary index and KEYS_ONLY projection type', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -2636,6 +2703,7 @@ describe('secondary indexes', () => {
   test('with global secondary index and INCLUDE projection type', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -2689,6 +2757,7 @@ describe('secondary indexes', () => {
   test('with local secondary index and KEYS_ONLY projection type', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -2732,6 +2801,7 @@ describe('secondary indexes', () => {
   test('with local secondary index and INCLUDE projection type', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -2777,6 +2847,7 @@ describe('secondary indexes', () => {
   test('throws for duplicate global secondary index names', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN / THEN
     expect(() => {
@@ -2799,6 +2870,7 @@ describe('secondary indexes', () => {
   test('throws for duplicate local secondary index names', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN / THEN
     expect(() => {
@@ -2822,6 +2894,7 @@ describe('secondary indexes', () => {
   test('throws for duplicate index name in global secondary index and local secondary index', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN / THEN
     expect(() => {
@@ -2847,6 +2920,7 @@ describe('secondary indexes', () => {
   test('throws if attribute definition is re-defined in global secondary indexes', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN / THEN
     expect(() => {
@@ -2869,6 +2943,7 @@ describe('secondary indexes', () => {
   test('throws if attribute definition is re-defined in local secondary indexes', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN / THEN
     expect(() => {
@@ -2892,6 +2967,7 @@ describe('secondary indexes', () => {
   test('throws if attribute definition is re-defined across global secondary index and local secondary index', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN / THEN
     expect(() => {
@@ -2917,6 +2993,7 @@ describe('secondary indexes', () => {
   test('throws if attribute definition is re-defined across global secondary index and global table', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN / THEN
     expect(() => {
@@ -2935,6 +3012,7 @@ describe('secondary indexes', () => {
   test('throws if attribute definition is re-defined across local secondary index and global table', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN / THEN
     expect(() => {
@@ -2954,6 +3032,7 @@ describe('secondary indexes', () => {
   test('throws if global secondary index has read capacity when billing mode is PAY_PER_REQUEST', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN / THEN
     expect(() => {
@@ -2973,6 +3052,7 @@ describe('secondary indexes', () => {
   test('throws if global secondary index has write capacity when billing mode is PAY_PER_REQUEST', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN / THEN
     expect(() => {
@@ -2992,6 +3072,7 @@ describe('secondary indexes', () => {
   test('throws if global secondary index count is greater than 20', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     const globalSecondaryIndexes: GlobalSecondaryIndexPropsV2[] = [];
     for (let count = 0; count <= 20; count++) {
@@ -3013,6 +3094,7 @@ describe('secondary indexes', () => {
   test('throws if local secondary index count is greater than 5', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     const localSecondaryIndexes: LocalSecondaryIndexProps[] = [];
     for (let count = 0; count <= 5; count++) {
@@ -3035,6 +3117,7 @@ describe('secondary indexes', () => {
   test('throws if global secondary index has INCLUDE projection type and no non-key attributes', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN / THEN
     expect(() => {
@@ -3054,6 +3137,7 @@ describe('secondary indexes', () => {
   test('throws if global secondary index has ALL projection type and non-key attributes', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN / THEN
     expect(() => {
@@ -3074,6 +3158,7 @@ describe('secondary indexes', () => {
   test('throws if global secondary index has KEYS_ONLY projection type and non-key attributes', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN / THEN
     expect(() => {
@@ -3094,6 +3179,7 @@ describe('secondary indexes', () => {
   test('throws if local secondary index has INCLUDE projection type and no non-key attributes', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN / THEN
     expect(() => {
@@ -3114,6 +3200,7 @@ describe('secondary indexes', () => {
   test('throws if local secondary index has ALL projection type and non-key attributes', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN / THEN
     expect(() => {
@@ -3135,6 +3222,7 @@ describe('secondary indexes', () => {
   test('throws if local secondary index has KEYS_ONLY projection type and non-key attributes', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN / THEN
     expect(() => {
@@ -3156,6 +3244,7 @@ describe('secondary indexes', () => {
   test('throws if local secondary index is specified without sort key', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN / THEN
     expect(() => {
@@ -3176,6 +3265,7 @@ describe('imports', () => {
   test('can import a table by name', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2', account: '123456789012' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     const table = TableV2.fromTableName(stack, 'Table', 'my-table');
@@ -3199,6 +3289,7 @@ describe('imports', () => {
   test('can import a table by arn', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2', account: '123456789012' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     const table = TableV2.fromTableArn(stack, 'Table', 'arn:aws:dynamodb:us-east-2:123456789012:table/my-table');
@@ -3211,6 +3302,7 @@ describe('imports', () => {
   test('can import a table with attributes', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2', account: '123456789012' } });
+    acknowledgeTestValidationRules(stack);
     const tableKey = new Key(stack, 'Key');
 
     // WHEN
@@ -3230,6 +3322,7 @@ describe('imports', () => {
   test('throws if name or arn are not provided', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN / THEN
     expect(() => {
@@ -3242,6 +3335,7 @@ describe('imports', () => {
   test('throws if name and arn are both provided', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN / THEN
     expect(() => {
@@ -3255,6 +3349,7 @@ describe('imports', () => {
   test('throws for invalid arn format', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN / THEN
     expect(() => {
@@ -3268,6 +3363,7 @@ describe('imports', () => {
 test('Resource policy test', () => {
   // GIVEN
   const stack = new Stack(undefined, 'Stack');
+  acknowledgeTestValidationRules(stack);
 
   const doc = new PolicyDocument({
     statements: [
@@ -3320,6 +3416,7 @@ test('Resource policy is scoped to primary region only when resourcePolicyPerRep
     },
   });
   const stack = new Stack(app, 'Stack', { env: { region: 'eu-west-1' } });
+  acknowledgeTestValidationRules(stack);
 
   const doc = new PolicyDocument({
     statements: [
@@ -3365,6 +3462,7 @@ test('Resource policy is scoped to primary region only when resourcePolicyPerRep
 test('Warm Throughput test on-demand', () => {
   // GIVEN
   const stack = new Stack(undefined, 'Stack', { env: { region: 'eu-west-1' } });
+  acknowledgeTestValidationRules(stack);
 
   // WHEN
   new TableV2(stack, 'Table', {
@@ -3431,6 +3529,7 @@ describe('MRSC global tables', () => {
   test('with witness region', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -3455,6 +3554,7 @@ describe('MRSC global tables', () => {
   test('without witness region should not have GlobalTableWitnesses property', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -3480,6 +3580,7 @@ describe('MRSC global tables', () => {
   test('with witness region and strong consistency requirements', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -3530,6 +3631,7 @@ describe('MRSC global tables validation', () => {
   test('throws when witness region is used with eventual consistency', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN / THEN - Error should be thrown during construction
     expect(() => {
@@ -3545,6 +3647,7 @@ describe('MRSC global tables validation', () => {
   test('validates regions are in same region set for STRONG consistency', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN / THEN - Error should be thrown during construction
     expect(() => {
@@ -3560,6 +3663,7 @@ describe('MRSC global tables validation', () => {
   test('validates exactly 2 replicas with witness for STRONG consistency', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'eu-west-1' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN / THEN - Error should be thrown during construction
     expect(() => {
@@ -3575,6 +3679,7 @@ describe('MRSC global tables validation', () => {
   test('allows valid STRONG consistency configuration with witness', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new TableV2(stack, 'Table', {
@@ -3601,6 +3706,7 @@ describe('MRSC global tables validation', () => {
 test('TableV2 addToResourcePolicy works with wildcard resources', () => {
   // GIVEN
   const stack = new Stack();
+  acknowledgeTestValidationRules(stack);
 
   // WHEN
   const table = new TableV2(stack, 'Table', {
@@ -3644,6 +3750,7 @@ test('TableV2 addToResourcePolicy works with wildcard resources', () => {
 test('TableV2 addToResourcePolicy allows scoped ARN resources when table has explicit name', () => {
   // GIVEN
   const stack = new Stack(undefined, 'Stack');
+  acknowledgeTestValidationRules(stack);
 
   // WHEN - Create table with explicit name (enables scoped resource policies)
   const table = new TableV2(stack, 'Table', {
@@ -3693,6 +3800,7 @@ test('TableV2 addToResourcePolicy allows scoped ARN resources when table has exp
 
 test('Contributor Insights Specification - tableV2', () => {
   const stack = new Stack();
+  acknowledgeTestValidationRules(stack);
 
   new TableV2(stack, 'TableV2', {
     partitionKey: { name: 'hashKey', type: AttributeType.STRING },
@@ -3730,6 +3838,7 @@ test('Contributor Insights Specification - tableV2', () => {
 
 test('Contributor Insights Specification - tableV2 - without mode', () => {
   const stack = new Stack();
+  acknowledgeTestValidationRules(stack);
 
   new TableV2(stack, 'TableV2', {
     partitionKey: { name: 'hashKey', type: AttributeType.STRING },
@@ -3765,6 +3874,7 @@ test('Contributor Insights Specification - tableV2 - without mode', () => {
 
 test('Contributor Insights Specification - index', () => {
   const stack = new Stack(undefined, 'Stack', { env: { region: 'eu-west-1' } });
+  acknowledgeTestValidationRules(stack);
 
   new TableV2(stack, 'TableV2', {
     partitionKey: { name: 'hashKey', type: AttributeType.STRING },
@@ -3838,6 +3948,7 @@ test('Contributor Insights Specification - index', () => {
 
 test('ContributorInsightsSpecification && ContributorInsights - v2', () => {
   const stack = new Stack();
+  acknowledgeTestValidationRules(stack);
 
   expect(() => {
     new TableV2(stack, 'Tablev2', {
@@ -3856,6 +3967,7 @@ test('ContributorInsightsSpecification && ContributorInsights - v2', () => {
 
 test('grantMultiAccountReplicationTo adds required resource policy statements', () => {
   const stack = new Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'us-east-2' } });
+  acknowledgeTestValidationRules(stack);
   const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
   });
@@ -3907,6 +4019,7 @@ test('grantMultiAccountReplicationTo adds required resource policy statements', 
 
 test('grantMultiAccountReplicationTo grants KMS permissions for encrypted tables', () => {
   const stack = new Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'us-east-2' } });
+  acknowledgeTestValidationRules(stack);
   const key = new Key(stack, 'Key');
   const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
@@ -3938,6 +4051,7 @@ test('grantMultiAccountReplicationTo grants KMS permissions for encrypted tables
 
 test('grantMultiAccountReplicationFrom adds required resource policy statements', () => {
   const stack = new Stack(undefined, 'Stack', { env: { account: '222222222222', region: 'us-east-1' } });
+  acknowledgeTestValidationRules(stack);
   const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
   });
@@ -3978,6 +4092,7 @@ test('grantMultiAccountReplicationFrom adds required resource policy statements'
 
 test('grantMultiAccountReplicationFrom grants KMS permissions for encrypted tables', () => {
   const stack = new Stack(undefined, 'Stack', { env: { account: '222222222222', region: 'us-east-1' } });
+  acknowledgeTestValidationRules(stack);
   const key = new Key(stack, 'Key');
   const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
@@ -4010,7 +4125,9 @@ test('grantMultiAccountReplicationFrom grants KMS permissions for encrypted tabl
 test('TableV2MultiAccountReplica creates replica with permissions', () => {
   const app = new App();
   const sourceStack = new Stack(app, 'SourceStack', { env: { account: '111111111111', region: 'us-east-2' } });
+  acknowledgeTestValidationRules(sourceStack);
   const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+  acknowledgeTestValidationRules(replicaStack);
 
   const sourceTable = new TableV2(sourceStack, 'SourceTable', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
@@ -4084,6 +4201,7 @@ test('TableV2MultiAccountReplica creates replica with permissions', () => {
 test('TableV2MultiAccountReplica throws when same account', () => {
   const app = new App();
   const stack = new Stack(app, 'Stack', { env: { account: '111111111111', region: 'us-east-2' } });
+  acknowledgeTestValidationRules(stack);
 
   const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
@@ -4099,6 +4217,7 @@ test('TableV2MultiAccountReplica throws when same account', () => {
 test('TableV2MultiAccountReplica on imported table does not throw', () => {
   const app = new App();
   const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+  acknowledgeTestValidationRules(replicaStack);
 
   const importedTable = TableV2.fromTableArn(
     replicaStack,
@@ -4119,6 +4238,7 @@ test('TableV2MultiAccountReplica on imported table does not throw', () => {
 test('TableV2MultiAccountReplica works with fromTableArn without key schema', () => {
   const app = new App();
   const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+  acknowledgeTestValidationRules(replicaStack);
 
   // Import using fromTableArn - no key schema needed
   const importedTable = TableV2.fromTableArn(
@@ -4139,6 +4259,7 @@ test('TableV2MultiAccountReplica works with fromTableArn without key schema', ()
 
 test('grantMultiAccountReplicationTo validates ARN has account', () => {
   const stack = new Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'us-east-2' } });
+  acknowledgeTestValidationRules(stack);
   const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
   });
@@ -4150,6 +4271,7 @@ test('grantMultiAccountReplicationTo validates ARN has account', () => {
 
 test('grantMultiAccountReplicationFrom validates ARN has account', () => {
   const stack = new Stack(undefined, 'Stack', { env: { account: '222222222222', region: 'us-east-1' } });
+  acknowledgeTestValidationRules(stack);
   const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
   });
@@ -4162,7 +4284,9 @@ test('grantMultiAccountReplicationFrom validates ARN has account', () => {
 test('TableV2MultiAccountReplica throws error when replica is in same region', () => {
   const app = new App();
   const sourceStack = new Stack(app, 'SourceStack', { env: { account: '111111111111', region: 'us-east-1' } });
+  acknowledgeTestValidationRules(sourceStack);
   const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+  acknowledgeTestValidationRules(replicaStack);
 
   const table = new TableV2(sourceStack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
@@ -4178,7 +4302,9 @@ test('TableV2MultiAccountReplica throws error when replica is in same region', (
 test('TableV2MultiAccountReplica with all optional parameters', () => {
   const app = new App();
   const sourceStack = new Stack(app, 'SourceStack', { env: { account: '111111111111', region: 'us-east-2' } });
+  acknowledgeTestValidationRules(sourceStack);
   const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+  acknowledgeTestValidationRules(replicaStack);
 
   const sourceTable = new TableV2(sourceStack, 'SourceTable', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
@@ -4223,6 +4349,7 @@ test('TableV2MultiAccountReplica with all optional parameters', () => {
 test('TableV2MultiAccountReplica throws when replicaSourceTable is missing', () => {
   const app = new App();
   const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+  acknowledgeTestValidationRules(replicaStack);
 
   expect(() => {
     new TableV2MultiAccountReplica(replicaStack, 'Replica', {});
@@ -4232,7 +4359,9 @@ test('TableV2MultiAccountReplica throws when replicaSourceTable is missing', () 
 test('TableV2MultiAccountReplica with custom encryption', () => {
   const app = new App();
   const sourceStack = new Stack(app, 'SourceStack', { env: { account: '111111111111', region: 'us-east-2' } });
+  acknowledgeTestValidationRules(sourceStack);
   const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+  acknowledgeTestValidationRules(replicaStack);
 
   const sourceTable = new TableV2(sourceStack, 'SourceTable', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
@@ -4260,7 +4389,9 @@ test('TableV2MultiAccountReplica with custom encryption', () => {
 test('TableV2MultiAccountReplica does not throw when account/region are tokens', () => {
   const app = new App();
   const sourceStack = new Stack(app, 'SourceStack');
+  acknowledgeTestValidationRules(sourceStack);
   const replicaStack = new Stack(app, 'ReplicaStack');
+  acknowledgeTestValidationRules(replicaStack);
 
   const sourceTable = new TableV2(sourceStack, 'SourceTable', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
@@ -4276,6 +4407,7 @@ test('TableV2MultiAccountReplica does not throw when account/region are tokens',
 
 test('can add GSI with compound partition keys', () => {
   const stack = new Stack();
+  acknowledgeTestValidationRules(stack);
   const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
   });
@@ -4308,6 +4440,7 @@ test('can add GSI with compound partition keys', () => {
 
 test('can add GSI with multi-attribute sort keys', () => {
   const stack = new Stack();
+  acknowledgeTestValidationRules(stack);
   const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
   });
@@ -4337,6 +4470,7 @@ test('can add GSI with multi-attribute sort keys', () => {
 
 test('throws when both partitionKey and partitionKeys defined', () => {
   const stack = new Stack();
+  acknowledgeTestValidationRules(stack);
   const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
   });
@@ -4352,6 +4486,7 @@ test('throws when both partitionKey and partitionKeys defined', () => {
 
 test('throws when both sortKey and sortKeys defined', () => {
   const stack = new Stack();
+  acknowledgeTestValidationRules(stack);
   const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
   });
@@ -4367,6 +4502,7 @@ test('throws when both sortKey and sortKeys defined', () => {
 });
 test('throws when more than 4 partition keys', () => {
   const stack = new Stack();
+  acknowledgeTestValidationRules(stack);
   const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
   });
@@ -4387,6 +4523,7 @@ test('throws when more than 4 partition keys', () => {
 
 test('throws when more than 4 sort keys', () => {
   const stack = new Stack();
+  acknowledgeTestValidationRules(stack);
   const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
   });
@@ -4408,6 +4545,7 @@ test('throws when more than 4 sort keys', () => {
 
 test('throws when no partition key specified', () => {
   const stack = new Stack();
+  acknowledgeTestValidationRules(stack);
   const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
   });
@@ -4422,6 +4560,7 @@ test('throws when no partition key specified', () => {
 
 test('can add GSI with both multi-attribute partition and sort keys', () => {
   const stack = new Stack();
+  acknowledgeTestValidationRules(stack);
   const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
   });
@@ -4456,6 +4595,7 @@ test('can add GSI with both multi-attribute partition and sort keys', () => {
 test('stream resource policy on primary table', () => {
   // GIVEN
   const stack = new Stack(undefined, 'Stack');
+  acknowledgeTestValidationRules(stack);
 
   const doc = new PolicyDocument({
     statements: [
@@ -4510,6 +4650,7 @@ test('stream resource policy on primary table', () => {
 test('stream resource policy on replica table', () => {
   // GIVEN
   const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+  acknowledgeTestValidationRules(stack);
 
   const doc = new PolicyDocument({
     statements: [
@@ -4567,6 +4708,7 @@ test('stream resource policy on replica table', () => {
 test('addToStreamResourcePolicy on primary table', () => {
   // GIVEN
   const stack = new Stack(undefined, 'Stack');
+  acknowledgeTestValidationRules(stack);
 
   const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
@@ -4612,6 +4754,7 @@ test('addToStreamResourcePolicy on primary table', () => {
 test('no stream resource policy by default', () => {
   // GIVEN
   const stack = new Stack(undefined, 'Stack');
+  acknowledgeTestValidationRules(stack);
 
   // WHEN
   new TableV2(stack, 'Table', {
