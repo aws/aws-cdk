@@ -11,7 +11,6 @@ import type { IResource } from '../../core';
 import {
   Annotations,
   ArnFormat,
-  Lazy,
   RemovalPolicy,
   Resource,
   Stack,
@@ -25,8 +24,10 @@ import {
   ValidationError,
   UnscopedValidationError,
 } from '../../core';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import type { IArrayBox, IBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AutoDeleteImagesProvider } from '../../custom-resource-handlers/dist/aws-ecr/auto-delete-images-provider.generated';
@@ -657,6 +658,7 @@ export interface RepositoryAttributes {
  * Define an ECR repository
  */
 @propertyInjectable
+@noBoxStackTraces
 export class Repository extends RepositoryBase {
   /**
    * Uniquely identifies this class.
@@ -814,9 +816,9 @@ export class Repository extends RepositoryBase {
     }
   }
 
-  private readonly lifecycleRules = new Array<LifecycleRule>();
+  private readonly lifecycleRules: IArrayBox<LifecycleRule> = Box.fromArray([], { omitEmpty: false });
   private readonly registryId?: string;
-  private policyDocument?: iam.PolicyDocument;
+  private readonly _policyDocument: IBox<iam.PolicyDocument | undefined>;
   private readonly _resource: CfnRepository;
 
   @memoizedGetter
@@ -840,14 +842,16 @@ export class Repository extends RepositoryBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    this._policyDocument = Box.fromValue(undefined);
+
     Repository.validateRepositoryName(this.physicalName);
     this.validateTagMutability(props.imageTagMutability, props.imageTagMutabilityExclusionFilters);
 
     this._resource = new CfnRepository(this, 'Resource', {
       repositoryName: this.physicalName,
       // It says "Text", but they actually mean "Object".
-      repositoryPolicyText: Lazy.any({ produce: () => this.policyDocument }),
-      lifecyclePolicy: Lazy.any({ produce: () => this.renderLifecyclePolicy() }),
+      repositoryPolicyText: this._policyDocument,
+      lifecyclePolicy: this.lifecycleRules.derive(rules => this.renderLifecyclePolicy(rules)),
       imageScanningConfiguration: props.imageScanOnPush !== undefined ? { scanOnPush: props.imageScanOnPush } : undefined,
       imageTagMutability: props.imageTagMutability,
       imageTagMutabilityExclusionFilters: props.imageTagMutabilityExclusionFilters?.map(
@@ -873,7 +877,7 @@ export class Repository extends RepositoryBase {
       this.enableAutoDeleteImages();
     }
 
-    this.node.addValidation({ validate: () => this.policyDocument?.validateForResourcePolicy() ?? [] });
+    this.node.addValidation({ validate: () => this._policyDocument.get()?.validateForResourcePolicy() ?? [] });
   }
 
   /**
@@ -888,11 +892,11 @@ export class Repository extends RepositoryBase {
     if (statement.resources.length) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-ecr:noResourceStatements', 'ECR resource policy does not allow resource statements.');
     }
-    if (this.policyDocument === undefined) {
-      this.policyDocument = new iam.PolicyDocument();
+    if (this._policyDocument.get() === undefined) {
+      this._policyDocument.set(new iam.PolicyDocument());
     }
-    this.policyDocument.addStatements(statement);
-    return { statementAdded: true, policyDependable: this.policyDocument };
+    this._policyDocument.get()!.addStatements(statement);
+    return { statementAdded: true, policyDependable: this._policyDocument.get()! };
   }
 
   /**
@@ -932,7 +936,7 @@ export class Repository extends RepositoryBase {
       throw new ValidationError(lit`LifecycleRuleMustContainExactlyOneAgeOrCountProperty`, `Life cycle rule must contain exactly one of 'maxImageAge' and 'maxImageCount', got: ${JSON.stringify(rule)}`, this);
     }
 
-    if (rule.tagStatus === TagStatus.ANY && this.lifecycleRules.filter(r => r.tagStatus === TagStatus.ANY).length > 0) {
+    if (rule.tagStatus === TagStatus.ANY && this.lifecycleRules.some(r => r.tagStatus === TagStatus.ANY)) {
       throw new ValidationError(lit`LifecycleCanOnlyHaveOneAnyTagStatusRule`, 'Life cycle can only have one TagStatus.Any rule', this);
     }
 
@@ -974,15 +978,15 @@ export class Repository extends RepositoryBase {
   /**
    * Render the life cycle policy object
    */
-  private renderLifecyclePolicy(): CfnRepository.LifecyclePolicyProperty | undefined {
+  private renderLifecyclePolicy(rules: readonly LifecycleRule[]): CfnRepository.LifecyclePolicyProperty | undefined {
     const stack = Stack.of(this);
     let lifecyclePolicyText: any;
 
-    if (this.lifecycleRules.length === 0 && !this.registryId) { return undefined; }
+    if (rules.length === 0 && !this.registryId) { return undefined; }
 
-    if (this.lifecycleRules.length > 0) {
+    if (rules.length > 0) {
       lifecyclePolicyText = JSON.stringify(stack.resolve({
-        rules: this.orderedLifecycleRules().map(renderLifecycleRule),
+        rules: this.orderedLifecycleRules(rules).map(renderLifecycleRule),
       }));
     }
 
@@ -997,12 +1001,12 @@ export class Repository extends RepositoryBase {
    *
    * Also applies validation of the 'any' rule.
    */
-  private orderedLifecycleRules(): LifecycleRule[] {
-    if (this.lifecycleRules.length === 0) { return []; }
+  private orderedLifecycleRules(rules: readonly LifecycleRule[]): LifecycleRule[] {
+    if (rules.length === 0) { return []; }
 
-    const prioritizedRules = this.lifecycleRules.filter(r => r.rulePriority !== undefined && r.tagStatus !== TagStatus.ANY);
-    const autoPrioritizedRules = this.lifecycleRules.filter(r => r.rulePriority === undefined && r.tagStatus !== TagStatus.ANY);
-    const anyRules = this.lifecycleRules.filter(r => r.tagStatus === TagStatus.ANY);
+    const prioritizedRules = rules.filter(r => r.rulePriority !== undefined && r.tagStatus !== TagStatus.ANY);
+    const autoPrioritizedRules = rules.filter(r => r.rulePriority === undefined && r.tagStatus !== TagStatus.ANY);
+    const anyRules = rules.filter(r => r.tagStatus === TagStatus.ANY);
     if (anyRules.length > 0 && anyRules[0].rulePriority !== undefined && autoPrioritizedRules.length > 0) {
       // Supporting this is too complex for very little value. We just prohibit it.
       throw new ValidationError(lit`CannotCombinePrioritizedAnyRuleWithUnprioritizedRules`, "Cannot combine prioritized TagStatus.Any rule with unprioritized rules. Remove rulePriority from the 'Any' rule.", this);

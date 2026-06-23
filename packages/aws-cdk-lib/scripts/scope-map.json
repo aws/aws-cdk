@@ -206,6 +206,13 @@
       }
     ]
   },
+  "aws-awsexternalanthropic": {
+    "scopes": [
+      {
+        "namespace": "AWS::AWSExternalAnthropic"
+      }
+    ]
+  },
   "aws-b2bi": {
     "scopes": [
       {
@@ -234,10 +241,24 @@
       }
     ]
   },
+  "aws-bcm": {
+    "scopes": [
+      {
+        "namespace": "AWS::BCM"
+      }
+    ]
+  },
   "aws-bcmdataexports": {
     "scopes": [
       {
         "namespace": "AWS::BCMDataExports"
+      }
+    ]
+  },
+  "aws-bcmpricingcalculator": {
+    "scopes": [
+      {
+        "namespace": "AWS::BcmPricingCalculator"
       }
     ]
   },
@@ -273,6 +294,13 @@
     "scopes": [
       {
         "namespace": "AWS::BillingConductor"
+      }
+    ]
+  },
+  "aws-braket": {
+    "scopes": [
+      {
+        "namespace": "AWS::Braket"
       }
     ]
   },
@@ -315,6 +343,13 @@
     "scopes": [
       {
         "namespace": "AWS::Chatbot"
+      }
+    ]
+  },
+  "aws-chime": {
+    "scopes": [
+      {
+        "namespace": "AWS::Chime"
       }
     ]
   },
@@ -1341,6 +1376,13 @@
       }
     ]
   },
+  "aws-novaact": {
+    "scopes": [
+      {
+        "namespace": "AWS::NovaAct"
+      }
+    ]
+  },
   "aws-oam": {
     "scopes": [
       {
@@ -1558,6 +1600,13 @@
       }
     ]
   },
+  "aws-resiliencehubv2": {
+    "scopes": [
+      {
+        "namespace": "AWS::ResilienceHubV2"
+      }
+    ]
+  },
   "aws-resourceexplorer2": {
     "scopes": [
       {
@@ -1656,6 +1705,13 @@
       }
     ]
   },
+  "aws-s3files": {
+    "scopes": [
+      {
+        "namespace": "AWS::S3Files"
+      }
+    ]
+  },
   "aws-s3objectlambda": {
     "scopes": [
       {
@@ -1721,6 +1777,13 @@
     "scopes": [
       {
         "namespace": "AWS::SecretsManager"
+      }
+    ]
+  },
+  "aws-securityagent": {
+    "scopes": [
+      {
+        "namespace": "AWS::SecurityAgent"
       }
     ]
   },

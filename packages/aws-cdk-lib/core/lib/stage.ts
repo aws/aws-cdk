@@ -6,7 +6,8 @@ import { FeatureFlags } from './feature-flags';
 import type { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
 import { type IPropertyInjector, PropertyInjectors } from './prop-injectors';
-import type { IPolicyValidationPluginBeta1 } from './validation';
+import type { IPolicyValidationPlugin, IPolicyValidationPluginBeta1 } from './validation';
+import { _toBeta1Plugin } from './validation';
 import * as public_cxapi from '../../cx-api';
 import { _convertCloudAssembly, _convertCloudAssemblyBuilder } from '../../cx-api';
 import { lit } from './private/literal-string';
@@ -96,6 +97,7 @@ export interface StageProps {
    * synthesis will be interrupted and the report displayed to the user.
    *
    * @default - no validation plugins are used
+   * @deprecated Use `Validations.of(stage).addPlugins()` instead.
    */
   readonly policyValidationBeta1?: IPolicyValidationPluginBeta1[];
 
@@ -183,7 +185,11 @@ export class Stage extends Construct {
    *
    * @default - no validation plugins are used
    */
-  public readonly policyValidationBeta1: IPolicyValidationPluginBeta1[] = [];
+  public get policyValidationBeta1(): IPolicyValidationPluginBeta1[] {
+    return this._policyValidation.map(_toBeta1Plugin);
+  }
+
+  private readonly _policyValidation: IPolicyValidationPlugin[] = [];
 
   constructor(scope: Construct, id: string, props: StageProps = {}) {
     super(scope, id);
@@ -211,8 +217,26 @@ export class Stage extends Construct {
     this.stageName = [this.parentStage?.stageName, props.stageName ?? id].filter(x => x).join('-');
 
     if (props.policyValidationBeta1) {
-      this.policyValidationBeta1 = props.policyValidationBeta1;
+      this._policyValidation.push(...props.policyValidationBeta1);
     }
+  }
+
+  /**
+   * Register a validation plugin on this stage.
+   *
+   * @internal
+   */
+  public _addValidationPlugins(...plugins: IPolicyValidationPlugin[]): void {
+    this._policyValidation.push(...plugins);
+  }
+
+  /**
+   * Returns the raw validation plugins without Beta1 wrapping.
+   *
+   * @internal
+   */
+  public get _validationPlugins(): IPolicyValidationPlugin[] {
+    return [...this._policyValidation];
   }
 
   /**

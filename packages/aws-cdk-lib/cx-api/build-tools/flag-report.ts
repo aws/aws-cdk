@@ -125,9 +125,12 @@ function oldBehavior(flag: FlagInfo): string | undefined {
 }
 
 function recommendedJson() {
+  const sortedFlags = Object.fromEntries(
+    Object.entries(feats.CURRENTLY_RECOMMENDED_FLAGS).sort(([a], [b]) => a.localeCompare(b)),
+  );
   return [
     '```json',
-    JSON.stringify({ context: feats.CURRENTLY_RECOMMENDED_FLAGS }, undefined, 2),
+    JSON.stringify({ context: sortedFlags }, undefined, 2),
     '```',
   ].join('\n');
 }

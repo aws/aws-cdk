@@ -31,7 +31,7 @@ const startQueryExecutionJob = new AthenaStartQueryExecution(stack, 'Start Athen
 const chain = sfn.Chain.start(startQueryExecutionJob);
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
-  definition: chain,
+  definitionBody: sfn.DefinitionBody.fromChainable(chain),
   timeout: cdk.Duration.seconds(30),
 });
 
