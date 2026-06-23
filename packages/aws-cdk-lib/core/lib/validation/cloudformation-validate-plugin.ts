@@ -93,7 +93,10 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
   }
 
   public get ruleIds(): string[] | undefined {
-    return this.engine.listRules().map((r: RuleInfo) => r.id);
+    return this.engine.listRules()
+      // Pretend the ignored rules don't exist
+      .filter((r: RuleInfo) => !IGNORE_RULES.has(r.id))
+      .map((r: RuleInfo) => r.id);
   }
 
   public validate(context: IPolicyValidationContext): PolicyValidationPluginReport {
@@ -104,6 +107,10 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
       const report = this.engine.validateStandard(templateFile, {});
 
       for (const diagnostic of report.diagnostics) {
+        if (IGNORE_RULES.has(diagnostic.ruleId)) {
+          continue;
+        }
+
         const severity = mapSeverity(diagnostic.severity);
         if (severity === 'debug' || severity === 'informational') {
           continue;
@@ -151,3 +158,11 @@ function mapSeverity(severity: Severity): string {
     default: return 'warning';
   }
 }
+
+// Rules that the engine will report but we want to ignore because CDK creates
+// the violation and customers don't control it.
+const IGNORE_RULES = new Set([
+  // WHAT: 'DependsOn' already implied by a 'GetAtt', remove the DependsOn.
+  // WHY: CDK adds both. It doesn't hurt to have both, and it's more effort to remove them.
+  'W3005',
+]);
