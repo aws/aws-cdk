@@ -21,7 +21,7 @@ import {
   PropagatedTagSource,
 } from '../../lib/base/base-service';
 import { PlacementConstraint, PlacementStrategy } from '../../lib/placement';
-import { addDefaultCapacityProvider } from '../util';
+import { acknowledgeTestValidationRules, addDefaultCapacityProvider } from '../util';
 
 describe('ec2 service', () => {
   describe('When creating an EC2 Service', () => {
@@ -1179,10 +1179,7 @@ describe('ec2 service', () => {
         instanceType: new ec2.InstanceType('bogus'),
         machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
       });
-      cdk.Validations.of(autoScalingGroup).acknowledge(
-        { id: 'CloudFormation-Validate::E1152', reason: 'SSM parameter reference is resolved at deploy time' },
-        { id: 'CloudFormation-Validate::W3697', reason: 'LaunchConfiguration used intentionally in tests' },
-      );
+      acknowledgeTestValidationRules(stack);
 
       // WHEN
       const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provider', {
@@ -2932,9 +2929,6 @@ describe('ec2 service', () => {
             cluster,
             taskDefinition,
           });
-          cdk.Validations.of(stack).acknowledge(
-            { id: 'CloudFormation-Validate::F3004', reason: 'Circular dependency is intentional in these tests' },
-          );
         });
         test ('alarm name is undefined and alarm metric references service', () => {
           // This configuration will fail deployment
@@ -3273,9 +3267,7 @@ describe('ec2 service', () => {
         [ecs.NetworkMode.BRIDGE, ecs.NetworkMode.NAT].forEach((networkMode: ecs.NetworkMode) => {
           // GIVEN
           const stack = new cdk.Stack();
-          cdk.Validations.of(stack).acknowledge(
-            { id: 'CloudFormation-Validate::E3049', reason: 'HostPort 0 with dynamic port mapping is intentional' },
-          );
+          acknowledgeTestValidationRules(stack);
           const vpc = new ec2.Vpc(stack, 'MyVpc', {});
           const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
           addDefaultCapacityProvider(cluster, stack, vpc);
