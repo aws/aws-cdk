@@ -1,5 +1,6 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import type { Construct } from 'constructs';
+import { acknowledgeTestValidationRules } from './util';
 import { Annotations, Capture, Match, Template } from '../../assertions';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -40,7 +41,6 @@ import {
   TableGrants,
 } from '../lib';
 import { ReplicaProvider } from '../lib/replica-provider';
-import { acknowledgeTestValidationRules } from './util';
 
 jest.mock('../../custom-resources', () => {
   const autoMock = jest.createMockFromModule('../../custom-resources');

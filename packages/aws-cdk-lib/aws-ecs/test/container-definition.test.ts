@@ -14,7 +14,7 @@ describe('container definition', () => {
     test('add a container using default props', () => {
       // GIVEN
       const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
       new ecs.ContainerDefinition(stack, 'Container', {
@@ -39,7 +39,7 @@ describe('container definition', () => {
     test('container without optional array props omits those properties', () => {
       // GIVEN
       const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
       new ecs.ContainerDefinition(stack, 'Container', {
@@ -394,7 +394,7 @@ describe('container definition', () => {
     test('port mapping throws an error when appProtocol is set without name', () => {
       // GIVEN
       const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
       const container = new ecs.ContainerDefinition(stack, 'Container', {
@@ -432,7 +432,7 @@ describe('container definition', () => {
     test('multiple port mappings of the same name error out', () => {
       // GIVEN
       const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
 
       const container = new ecs.ContainerDefinition(stack, 'Container', {
@@ -459,7 +459,7 @@ describe('container definition', () => {
     test('empty string port mapping name throws', () => {
       // GIVEN
       const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
 
       const container = new ecs.ContainerDefinition(stack, 'Container', {
@@ -690,7 +690,7 @@ describe('container definition', () => {
     test('throws when MemoryLimit is less than MemoryReservationLimit', () => {
       // GIVEN
       const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
       // THEN
@@ -708,7 +708,7 @@ describe('container definition', () => {
       test('throws when Host port is different from container port', () => {
         // GIVEN
         const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.AWS_VPC,
         });
@@ -730,7 +730,7 @@ describe('container definition', () => {
       test('Host port is the same as container port', () => {
         // GIVEN
         const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.AWS_VPC,
         });
@@ -751,7 +751,7 @@ describe('container definition', () => {
       test('Host port can be empty ', () => {
         // GIVEN
         const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.AWS_VPC,
         });
@@ -774,7 +774,7 @@ describe('container definition', () => {
       test('throws when Host port is different from container port', () => {
         // GIVEN
         const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.HOST,
         });
@@ -796,7 +796,7 @@ describe('container definition', () => {
       test('when host port is the same as container port', () => {
         // GIVEN
         const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.HOST,
         });
@@ -817,7 +817,7 @@ describe('container definition', () => {
       test('Host port can be empty ', () => {
         // GIVEN
         const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.HOST,
         });
@@ -838,7 +838,7 @@ describe('container definition', () => {
       test('errors when adding links', () => {
         // GIVEN
         const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.HOST,
         });
@@ -862,7 +862,7 @@ describe('container definition', () => {
       test('service connect fields are not allowed', () => {
         // GIVEN
         const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.HOST,
         });
@@ -887,7 +887,7 @@ describe('container definition', () => {
       test('host post is forcefully set to 0 when both it and containerPortRange are not set', () => {
         // GIVEN
         const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.BRIDGE,
         });
@@ -907,7 +907,7 @@ describe('container definition', () => {
       test('host post is left unchanged when it is set already', () => {
         // GIVEN
         const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.BRIDGE,
         });
@@ -928,7 +928,7 @@ describe('container definition', () => {
       test('host post is left undefined when containerPortRange is set', () => {
         // GIVEN
         const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.BRIDGE,
         });
@@ -949,7 +949,7 @@ describe('container definition', () => {
       test('allows adding links', () => {
         // GIVEN
         const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.BRIDGE,
         });
@@ -973,7 +973,7 @@ describe('container definition', () => {
       test('produces undefined CF networkMode property', () => {
         // GIVEN
         const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
 
         // WHEN
         new ecs.TaskDefinition(stack, 'TD', {
@@ -993,7 +993,7 @@ describe('container definition', () => {
     test('should return the first container port in PortMappings', () => {
       // GIVEN
       const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
         networkMode: ecs.NetworkMode.AWS_VPC,
       });
@@ -1021,7 +1021,7 @@ describe('container definition', () => {
     test('throws when calling containerPort with no PortMappings', () => {
       // GIVEN
       const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
         networkMode: ecs.NetworkMode.AWS_VPC,
       });
@@ -1042,7 +1042,7 @@ describe('container definition', () => {
     test('throws when calling containerPort with the first PortMapping not exposing a single port', () => {
       // GIVEN
       const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
         networkMode: ecs.NetworkMode.AWS_VPC,
       });
@@ -1066,7 +1066,7 @@ describe('container definition', () => {
       test('Ingress port should be the same as container port', () => {
         // GIVEN
         const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.AWS_VPC,
         });
@@ -1090,7 +1090,7 @@ describe('container definition', () => {
       test('throws when calling ingressPort with no PortMappings', () => {
         // GIVEN
         const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.AWS_VPC,
         });
@@ -1112,7 +1112,7 @@ describe('container definition', () => {
     test('throws when calling ingressPort with the first PortMapping not exposing a single port', () => {
       // GIVEN
       const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
         networkMode: ecs.NetworkMode.AWS_VPC,
       });
@@ -1134,7 +1134,7 @@ describe('container definition', () => {
       test('Ingress port should be the same as container port', () => {
         // GIVEN
         const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.HOST,
         });
@@ -1160,7 +1160,7 @@ describe('container definition', () => {
       test('Ingress port should be the same as host port if supplied', () => {
         // GIVEN
         const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.BRIDGE,
         });
@@ -1185,7 +1185,7 @@ describe('container definition', () => {
       test('Ingress port should be 0 if not supplied', () => {
         // GIVEN
         const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.BRIDGE,
         });
@@ -1436,7 +1436,7 @@ describe('container definition', () => {
         // GIVEN
         const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
         const stack = new cdk.Stack(app);
-      acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
         // WHEN
@@ -1503,7 +1503,7 @@ describe('container definition', () => {
       test('can add s3 bucket environment file to the container definition', () => {
         // GIVEN
         const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const bucket = new s3.Bucket(stack, 'Bucket', {
           bucketName: 'test-bucket',
         });
@@ -1550,7 +1550,7 @@ describe('container definition', () => {
         // GIVEN
         const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
         const stack = new cdk.Stack(app);
-      acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
 
         // WHEN
@@ -1617,7 +1617,7 @@ describe('container definition', () => {
       test('can add s3 bucket environment file to the container definition', () => {
         // GIVEN
         const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const bucket = new s3.Bucket(stack, 'Bucket', {
           bucketName: 'test-bucket',
         });
@@ -1664,7 +1664,7 @@ describe('container definition', () => {
     test('will add resource requirements to container definition', () => {
       // GIVEN
       const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
       // WHEN
@@ -1695,7 +1695,7 @@ describe('container definition', () => {
     test('correctly adds resource requirements to container definition using inference accelerator resource property', () => {
       // GIVEN
       const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
 
       const inferenceAccelerators = [{
         deviceName: 'device1',
@@ -1739,7 +1739,7 @@ describe('container definition', () => {
     test('correctly adds resource requirements to container definition using both props and addInferenceAcceleratorResource method', () => {
       // GIVEN
       const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
 
       const inferenceAccelerators = [{
         deviceName: 'device1',
@@ -1795,7 +1795,7 @@ describe('container definition', () => {
     test('throws when the value of inference accelerator resource does not match any inference accelerators defined in the Task Definition', () => {
       // GIVEN
       const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
 
       const inferenceAccelerators = [{
         deviceName: 'device1',
@@ -2552,7 +2552,7 @@ describe('container definition', () => {
     test('when the props passed in is an essential container', () => {
       // GIVEN
       const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
       // WHEN
@@ -2569,7 +2569,7 @@ describe('container definition', () => {
     test('when the props passed in is not an essential container', () => {
       // GIVEN
       const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
       // WHEN
@@ -2588,7 +2588,7 @@ describe('container definition', () => {
     test('validation throws with out of range params', () => {
       // GIVEN
       const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
 
       const swappinessValues = [-1, 30.5, 101];
       swappinessValues.forEach(swappiness => expect(() =>
@@ -2599,7 +2599,7 @@ describe('container definition', () => {
     test('with only required properties set, it correctly sets default properties', () => {
       // GIVEN
       const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
       const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters');
@@ -2627,7 +2627,7 @@ describe('container definition', () => {
     test('before calling addContainer', () => {
       // GIVEN
       const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
       const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
@@ -2670,7 +2670,7 @@ describe('container definition', () => {
     test('after calling addContainer', () => {
       // GIVEN
       const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
       const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
@@ -2715,7 +2715,7 @@ describe('container definition', () => {
     test('with one or more host devices', () => {
       // GIVEN
       const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
       const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
@@ -2760,7 +2760,7 @@ describe('container definition', () => {
     test('with the tmpfs mount for a container', () => {
       // GIVEN
       const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
       const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {

@@ -3,8 +3,8 @@ import * as ec2 from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import * as events from '../../../aws-events';
 import * as cdk from '../../../core';
-import { acknowledgeTestValidationRules } from '../util';
 import { ScheduledFargateTask } from '../../lib';
+import { acknowledgeTestValidationRules } from '../util';
 
 test('Can create a scheduled Fargate Task - with only required props', () => {
   // GIVEN

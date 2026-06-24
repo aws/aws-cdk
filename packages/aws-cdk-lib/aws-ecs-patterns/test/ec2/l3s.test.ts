@@ -9,8 +9,8 @@ import { ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersio
 import { PublicHostedZone } from '../../../aws-route53';
 import * as cloudmap from '../../../aws-servicediscovery';
 import * as cdk from '../../../core';
-import { acknowledgeTestValidationRules } from '../util';
 import * as ecsPatterns from '../../lib';
+import { acknowledgeTestValidationRules } from '../util';
 
 describe('ApplicationLoadBalancedEc2Service', () => {
   test('ECS loadbalanced construct', () => {

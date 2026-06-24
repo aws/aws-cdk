@@ -2,6 +2,7 @@ import * as path from 'path';
 import { testDeprecated, bockfs } from '@aws-cdk/cdk-build-tools';
 import type * as constructs from 'constructs';
 import * as _ from 'lodash';
+import { acknowledgeTestValidationRules } from './util';
 import { Annotations, Match, Template } from '../../assertions';
 import { ProfilingGroup } from '../../aws-codeguruprofiler';
 import * as ec2 from '../../aws-ec2';
@@ -23,7 +24,6 @@ import * as cxapi from '../../cx-api';
 import * as lambda from '../lib';
 import { AdotLambdaLayerJavaSdkVersion } from '../lib/adot-layers';
 import { calculateFunctionHash } from '../lib/function-hash';
-import { acknowledgeTestValidationRules } from './util';
 
 describe('function', () => {
   const dockerLambdaHandlerPath = path.join(__dirname, 'docker-lambda-handler');

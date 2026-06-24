@@ -2596,7 +2596,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
         vpc,
@@ -2628,7 +2628,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const autoScalingGroup = autoscaling.AutoScalingGroup.fromAutoScalingGroupName(stack, 'ASG', 'my-asg');
 
       // THEN
@@ -2643,7 +2643,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const autoScalingGroup = autoscaling.AutoScalingGroup.fromAutoScalingGroupName(stack, 'ASG', 'my-asg');
 
       // WHEN
@@ -2671,7 +2671,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -2736,7 +2736,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -2803,7 +2803,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -2871,7 +2871,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -2940,7 +2940,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -3007,7 +3007,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -3074,7 +3074,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -3141,7 +3141,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -3207,7 +3207,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -3290,7 +3290,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -3357,7 +3357,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -3398,7 +3398,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -3434,7 +3434,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -3481,7 +3481,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -3528,7 +3528,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -3590,7 +3590,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -3644,7 +3644,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
@@ -3824,7 +3824,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const instanceRole = new iam.Role(stack, 'CustomInstanceRole', {
@@ -3873,7 +3873,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
@@ -3927,7 +3927,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
@@ -3972,7 +3972,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
@@ -4000,7 +4000,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
@@ -4040,7 +4040,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
@@ -4104,7 +4104,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
@@ -4141,7 +4141,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -4226,7 +4226,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -4311,7 +4311,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
-    acknowledgeTestValidationRules(stack);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {

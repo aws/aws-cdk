@@ -1,3 +1,4 @@
+import { acknowledgeTestValidationRules } from './util';
 import { Match, Template } from '../../assertions';
 import { EbsDeviceVolumeType } from '../../aws-ec2';
 import * as ecr from '../../aws-ecr';
@@ -5,7 +6,6 @@ import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import * as ecs from '../lib';
 import { ServiceManagedVolume } from '../lib/base/service-managed-volume';
-import { acknowledgeTestValidationRules } from './util';
 
 describe('task definition', () => {
   describe('When creating a new TaskDefinition', () => {
@@ -606,7 +606,7 @@ describe('task definition', () => {
       test('created successfully if the total CPU allocated to the task and the CPU allocated to the container are the same', () => {
         // GIVEN
         const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.TaskDefinition(stack, 'TaskDef', {
           cpu: '512',
           memoryMiB: '512',
@@ -631,7 +631,7 @@ describe('task definition', () => {
       test('throws an error if the total CPU allocated to the container exceeds the task CPU', () => {
         // GIVEN
         const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.TaskDefinition(stack, 'TaskDef', {
           cpu: '256',
           memoryMiB: '512',
@@ -658,7 +658,7 @@ describe('task definition', () => {
       test('created successfully if the total CPU allocated to the task and the CPU allocated to the container are the same', () => {
         // GIVEN
         const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.TaskDefinition(stack, 'TaskDef', {
           cpu: '512',
           memoryMiB: '512',
@@ -685,7 +685,7 @@ describe('task definition', () => {
       test('throws an error if the total CPU allocated to the container exceeds the task CPU', () => {
         // GIVEN
         const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.TaskDefinition(stack, 'TaskDef', {
           cpu: '256',
           memoryMiB: '512',

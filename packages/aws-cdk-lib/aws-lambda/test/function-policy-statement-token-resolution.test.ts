@@ -1,9 +1,9 @@
+import { acknowledgeTestValidationRules } from './util';
 import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam/index';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as lambda from '../lib/index';
-import { acknowledgeTestValidationRules } from './util';
 
 describe('addToRolePolicy token conflict detection', () => {
   test('consolidates homogeneous array token statements into ServiceRoleDefaultPolicy', () => {

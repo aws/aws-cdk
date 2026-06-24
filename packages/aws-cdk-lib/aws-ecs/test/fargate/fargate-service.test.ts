@@ -1445,7 +1445,7 @@ describe('fargate service', () => {
       beforeEach(() => {
         // GIVEN
         const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -2752,7 +2752,7 @@ describe('fargate service', () => {
       test('with default setting', () => {
         // GIVEN
         const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -2806,7 +2806,7 @@ describe('fargate service', () => {
       test('with TCP protocol and container hostPort unset', () => {
         // GIVEN
         const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -2844,7 +2844,7 @@ describe('fargate service', () => {
       test('with TCP protocol and container hostPort set', () => {
         // GIVEN
         const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -2884,7 +2884,7 @@ describe('fargate service', () => {
       test('with UDP protocol and container hostPort unset', () => {
         // GIVEN
         const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -2922,7 +2922,7 @@ describe('fargate service', () => {
       test('with UDP protocol and container hostPort set', () => {
         // GIVEN
         const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -2963,7 +2963,7 @@ describe('fargate service', () => {
       test('throws when protocol does not match', () => {
         // GIVEN
         const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -2998,7 +2998,7 @@ describe('fargate service', () => {
       test('throws when port does not match', () => {
         // GIVEN
         const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -3032,7 +3032,7 @@ describe('fargate service', () => {
       test('throws when container does not exist', () => {
         // GIVEN
         const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -3069,7 +3069,7 @@ describe('fargate service', () => {
         test('with default target group port and protocol', () => {
           // GIVEN
           const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
+          acknowledgeTestValidationRules(stack);
           const vpc = new ec2.Vpc(stack, 'MyVpc', {});
           const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
           const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -3118,7 +3118,7 @@ describe('fargate service', () => {
         test('with default target group port and HTTP protocol', () => {
           // GIVEN
           const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
+          acknowledgeTestValidationRules(stack);
           const vpc = new ec2.Vpc(stack, 'MyVpc', {});
           const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
           const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -3169,7 +3169,7 @@ describe('fargate service', () => {
         test('with default target group port and HTTPS protocol', () => {
           // GIVEN
           const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
+          acknowledgeTestValidationRules(stack);
           const vpc = new ec2.Vpc(stack, 'MyVpc', {});
           const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
           const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -3220,7 +3220,7 @@ describe('fargate service', () => {
         test('with any target group port and protocol', () => {
           // GIVEN
           const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
+          acknowledgeTestValidationRules(stack);
           const vpc = new ec2.Vpc(stack, 'MyVpc', {});
           const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
           const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -3272,7 +3272,7 @@ describe('fargate service', () => {
         test('throws when containerPortRange is used instead of containerPort', () => {
           // GIVEN
           const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
+          acknowledgeTestValidationRules(stack);
           const vpc = new ec2.Vpc(stack, 'MyVpc', {});
           const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
           const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -3307,7 +3307,7 @@ describe('fargate service', () => {
         test('with default target group port', () => {
           // GIVEN
           const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
+          acknowledgeTestValidationRules(stack);
           const vpc = new ec2.Vpc(stack, 'MyVpc', {});
           const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
           const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -3356,7 +3356,7 @@ describe('fargate service', () => {
         test('with any target group port', () => {
           // GIVEN
           const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
+          acknowledgeTestValidationRules(stack);
           const vpc = new ec2.Vpc(stack, 'MyVpc', {});
           const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
           const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -3407,7 +3407,7 @@ describe('fargate service', () => {
         test('throws when containerPortRange is used instead of containerPort', () => {
           // GIVEN
           const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
+          acknowledgeTestValidationRules(stack);
           const vpc = new ec2.Vpc(stack, 'MyVpc', {});
           const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
           const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -4026,7 +4026,7 @@ describe('fargate service', () => {
       test('when @aws-cdk/aws-ecs:arnFormatIncludesClusterName is disabled, use old ARN format', () => {
         // GIVEN
         const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
 
         // WHEN
         const service = ecs.FargateService.fromFargateServiceArn(stack, 'EcsService', new cdk.CfnParameter(stack, 'ARN').valueAsString);
@@ -4138,7 +4138,7 @@ describe('fargate service', () => {
       test('when @aws-cdk/aws-ecs:arnFormatIncludesClusterName is disabled, use old ARN format', () => {
         // GIVEN
         const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
         // WHEN
@@ -4264,7 +4264,7 @@ describe('fargate service', () => {
       test('when @aws-cdk/aws-ecs:arnFormatIncludesClusterName is disabled, use old ARN format', () => {
         // GIVEN
         const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
+        acknowledgeTestValidationRules(stack);
         const pseudo = new cdk.ScopedAws(stack);
         const cluster = new ecs.Cluster(stack, 'EcsCluster');
 

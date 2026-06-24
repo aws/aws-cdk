@@ -1,7 +1,7 @@
+import type { IConstruct } from 'constructs';
 import * as autoscaling from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
 import * as cdk from '../../core';
-import type { IConstruct } from 'constructs';
 import * as ecs from '../lib';
 
 /**

@@ -6,8 +6,8 @@ import * as ecs from '../../../aws-ecs';
 import { AsgCapacityProvider } from '../../../aws-ecs';
 import * as events from '../../../aws-events';
 import * as cdk from '../../../core';
-import { acknowledgeTestValidationRules } from '../util';
 import { ScheduledEc2Task } from '../../lib';
+import { acknowledgeTestValidationRules } from '../util';
 
 test('Can create a scheduled Ec2 Task - with only required props', () => {
   // GIVEN

@@ -1,5 +1,5 @@
-import * as cdk from '../../core';
 import type { IConstruct } from 'constructs';
+import * as cdk from '../../core';
 
 /**
  * Acknowledge validation rules that fire on aws-lambda test infrastructure patterns.

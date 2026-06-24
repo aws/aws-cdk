@@ -11,8 +11,8 @@ import * as route53 from '../../../aws-route53';
 import * as cloudmap from '../../../aws-servicediscovery';
 import * as cdk from '../../../core';
 import * as cxapi from '../../../cx-api';
-import { acknowledgeTestValidationRules } from '../util';
 import * as ecsPatterns from '../../lib';
+import { acknowledgeTestValidationRules } from '../util';
 
 describe('ApplicationLoadBalancedFargateService', () => {
   test('setting healthCheckGracePeriod works', () => {

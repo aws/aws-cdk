@@ -9,8 +9,8 @@ import * as ecs from '../../../aws-ecs';
 import * as sqs from '../../../aws-sqs';
 import { Queue } from '../../../aws-sqs';
 import * as cdk from '../../../core';
-import { acknowledgeTestValidationRules } from '../util';
 import * as ecsPatterns from '../../lib';
+import { acknowledgeTestValidationRules } from '../util';
 
 test('test ECS queue worker service construct - with only required props', () => {
   // GIVEN

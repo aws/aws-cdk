@@ -1,12 +1,12 @@
 import * as path from 'path';
 import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
+import { acknowledgeTestValidationRules } from './util';
 import { Template } from '../../assertions';
 import * as ssm from '../../aws-ssm';
 import { App, CfnOutput, CfnResource, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
 import * as lambda from '../lib';
 import { calculateFunctionHash, trimFromStart, VERSION_LOCKED } from '../lib/function-hash';
-import { acknowledgeTestValidationRules } from './util';
 
 const THE_RUNTIME = new lambda.Runtime('nodejs99.x', lambda.RuntimeFamily.NODEJS, {
   supportsInlineCode: true,

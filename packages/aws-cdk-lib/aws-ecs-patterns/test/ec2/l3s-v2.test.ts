@@ -20,8 +20,8 @@ import { CompositePrincipal, Role, ServicePrincipal } from '../../../aws-iam';
 import { PublicHostedZone } from '../../../aws-route53';
 import { NamespaceType } from '../../../aws-servicediscovery';
 import { Duration, Stack } from '../../../core';
-import { acknowledgeTestValidationRules } from '../util';
 import { ApplicationMultipleTargetGroupsEc2Service, NetworkMultipleTargetGroupsEc2Service } from '../../lib';
+import { acknowledgeTestValidationRules } from '../util';
 
 describe('ApplicationMultipleTargetGroupsEc2Service', () => {
   test('test ECS ALB construct with default settings', () => {
