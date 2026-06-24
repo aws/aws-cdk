@@ -1,15 +1,13 @@
-import { Template, Match } from '../../../../assertions';
+import { Match, Template } from '../../../../assertions';
 import { FoundationModel, FoundationModelIdentifier } from '../../../../aws-bedrock';
 import * as cloudwatch from '../../../../aws-cloudwatch';
 import * as iam from '../../../../aws-iam';
 import * as kms from '../../../../aws-kms';
 import * as s3 from '../../../../aws-s3';
 import * as sns from '../../../../aws-sns';
-import { Duration } from '../../../../core';
 import * as cdk from '../../../../core';
-import {
-  Memory,
-} from '../../../lib/memory/memory';
+import { Duration } from '../../../../core';
+import { Memory, } from '../../../lib/memory/memory';
 import { MemoryStrategy } from '../../../lib/memory/memory-strategy';
 
 // Create a test model using the stable FoundationModel
@@ -1443,7 +1441,6 @@ describe('BuiltInMemoryStrategy unit tests', () => {
       name: expect.stringMatching('semantic_builtin_cdkGen0001'),
       description: 'Extract general factual knowledge, concepts and meanings from raw conversations in a context-independent format.',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
-      type: 'SEMANTIC',
     });
   });
 
@@ -1456,7 +1453,6 @@ describe('BuiltInMemoryStrategy unit tests', () => {
       name: expect.stringMatching('preference_builtin_cdkGen0001'),
       description: 'Capture individual preferences, interaction patterns, and personalized settings to enhance future experiences.',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
-      type: 'USER_PREFERENCE',
     });
   });
 
@@ -2336,7 +2332,6 @@ describe('Episodic Memory Strategy unit tests', () => {
     expect((rendered as any).episodicMemoryStrategy).toMatchObject({
       name: expect.stringMatching('episodic_builtin_cdkGen0001'),
       namespaces: ['/strategy/{memoryStrategyId}/actor/{actorId}/session/{sessionId}'],
-      type: 'EPISODIC',
       reflectionConfiguration: {
         namespaces: ['/strategy/{memoryStrategyId}/actor/{actorId}'],
       },
