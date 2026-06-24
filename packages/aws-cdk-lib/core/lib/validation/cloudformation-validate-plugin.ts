@@ -164,13 +164,20 @@ function mapSeverity(severity: Severity): string {
 const IGNORE_RULES = new Set([
   // WHAT: 'DependsOn' already implied by a 'GetAtt', remove the DependsOn.
   // WHY: CDK adds both. It doesn't hurt to have both, and it's more effort to remove them.
+  // Will be silenced forever.
   'W3005',
 
   // WHAT: Condition can never be false.
-  // WHY: The engine assumes AWS::Partition can only ever equal 'aws', which is not true.
+  // WHY: The engine assumes AWS::Partition can only ever equal 'aws', which is not true. Should be removed.
   'W1028',
 
   // WHAT: Unknown resource type
   // WHY: Engine complains about AWS::CDK::Metadata, which is quite common in our templates :>
+  // Should be removed.
   'E9001',
+
+  // WHAT: Validate AMI format (must look like ami-xxxx)
+  // WHY: CDK uses `AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>` to resolve AMIs, which the engine doesn't understand.
+  // Should be removed.
+  'E1152',
 ]);
