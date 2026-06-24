@@ -1720,7 +1720,8 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     // SnapStart does not support Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB.
     // SnapStart doesn't support provisioned concurrency either, but that's configured at the version level,
     // so it can't be checked at function set up time
-    // SnapStart supports the Java 11 and Java 17 (java11 and java17) managed runtimes.
+    // Runtime eligibility is enforced via Runtime.supportsSnapStart; container images (FROM_IMAGE)
+    // are exempt because the runtime inside the image cannot be introspected and is validated by the service.
     // See https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html
     Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:snapStartRequirePublish', 'SnapStart only supports published Lambda versions. Ignore if function already has published versions.');
 

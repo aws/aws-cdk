@@ -4088,6 +4088,16 @@ describe('function', () => {
         snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
       })).toThrow('SnapStart is currently not supported using more than 512 MiB Ephemeral Storage');
     });
+
+    test('container image function with SnapStart and tenant isolation throws', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.DockerImageFunction(stack, 'MyLambda', {
+        code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-lambda-handler')),
+        tenancyConfig: lambda.TenancyConfig.PER_TENANT,
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+      })).toThrow('SnapStart is not supported for functions with tenant isolation mode');
+    });
   });
 
   describe('Recursive Loop', () => {
