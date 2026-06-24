@@ -8,8 +8,11 @@
       "violations": [
         {
           "ruleName": "@aws-cdk/core:crossStackReferencesDefaultStrong",
-          "description": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+          "description": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength)",
           "severity": "warning",
+          "ruleMetadata": {
+            "cdk:annotation": "true"
+          },
           "violatingConstructs": [
             {
               "constructPath": "test-rds-instance-manage-master-password/DefaultTest/DeployAssert",

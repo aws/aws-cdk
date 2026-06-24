@@ -2054,7 +2054,7 @@ describe('instance', () => {
         MasterUsername: 'testuser',
         ManageMasterUserPassword: true,
         MasterUserSecret: {
-          KmsKeyId: stack.resolve(kmsKey.keyId),
+          KmsKeyId: stack.resolve(kmsKey.keyArn),
         },
         MasterUserPassword: Match.absent(),
       });

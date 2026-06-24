@@ -1524,7 +1524,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
         : undefined;
       manageMasterUserPassword = canHaveCredentials ? props.manageMasterUserPassword : undefined;
       masterUserSecret = props.credentials?.encryptionKey && canHaveCredentials
-        ? { kmsKeyId: props.credentials.encryptionKey.keyId }
+        ? { kmsKeyId: props.credentials.encryptionKey.keyArn }
         : undefined;
     } else {
       // Standard approach: CDK creates and manages the Secret via DatabaseSecret
@@ -1769,7 +1769,7 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
         : credentials?.secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
       manageMasterUserPassword: props.manageMasterUserPassword || undefined,
       masterUserSecret: props.manageMasterUserPassword && props.snapshotCredentials?.encryptionKey
-        ? { kmsKeyId: props.snapshotCredentials.encryptionKey.keyId }
+        ? { kmsKeyId: props.snapshotCredentials.encryptionKey.keyArn }
         : undefined,
     });
 

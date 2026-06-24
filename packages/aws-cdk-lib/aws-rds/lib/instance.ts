@@ -1392,7 +1392,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
       masterUsername = props.credentials?.username ?? props.engine.defaultUsername ?? 'admin';
       manageMasterUserPassword = props.manageMasterUserPassword;
       masterUserSecret = props.credentials?.encryptionKey
-        ? { kmsKeyId: props.credentials.encryptionKey.keyId }
+        ? { kmsKeyId: props.credentials.encryptionKey.keyArn }
         : undefined;
     } else {
       // Standard approach: CDK creates and manages the Secret via DatabaseSecret

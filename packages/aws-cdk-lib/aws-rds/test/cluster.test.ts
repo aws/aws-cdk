@@ -1773,12 +1773,40 @@ describe('cluster new api', () => {
         MasterUsername: 'testuser',
         ManageMasterUserPassword: true,
         MasterUserSecret: {
-          KmsKeyId: stack.resolve(kmsKey.keyId),
+          KmsKeyId: stack.resolve(kmsKey.keyArn),
         },
         MasterUserPassword: Match.absent(),
       });
 
       template.resourceCountIs('AWS::SecretsManager::Secret', 0);
+    });
+
+    test('uses the full key ARN, not the bare key id, for an imported encryption key', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const importedKeyArn = 'arn:aws:kms:us-test-1:111122223333:key/abcd1234-ab12-cd34-ef56-abcdef123456';
+      const kmsKey = kms.Key.fromKeyArn(stack, 'ImportedKey', importedKeyArn);
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        manageMasterUserPassword: true,
+        credentials: {
+          username: 'testuser',
+          encryptionKey: kmsKey,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+        ManageMasterUserPassword: true,
+        MasterUserSecret: {
+          KmsKeyId: importedKeyArn,
+        },
+      });
     });
 
     test('with Credentials.fromUsername()', () => {
@@ -1805,7 +1833,7 @@ describe('cluster new api', () => {
         MasterUsername: 'testuser',
         ManageMasterUserPassword: true,
         MasterUserSecret: {
-          KmsKeyId: stack.resolve(kmsKey.keyId),
+          KmsKeyId: stack.resolve(kmsKey.keyArn),
         },
         MasterUserPassword: Match.absent(),
       });
@@ -1890,7 +1918,7 @@ describe('cluster new api', () => {
         SnapshotIdentifier: 'my-snapshot',
         ManageMasterUserPassword: true,
         MasterUserSecret: {
-          KmsKeyId: stack.resolve(kmsKey.keyId),
+          KmsKeyId: stack.resolve(kmsKey.keyArn),
         },
         MasterUserPassword: Match.absent(),
       });
@@ -2137,7 +2165,7 @@ describe('cluster new api', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
         ManageMasterUserPassword: true,
         MasterUserSecret: {
-          KmsKeyId: stack.resolve(kmsKey.keyId),
+          KmsKeyId: stack.resolve(kmsKey.keyArn),
         },
         MasterUserPassword: Match.absent(),
       });
