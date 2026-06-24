@@ -471,7 +471,7 @@ describe('log group', () => {
     });
   });
 
-  test('when added to log groups, IAM users are converted into account IDs in the resource policy', () => {
+  test('when added to log groups, IAM users are converted into the account root ARN in the resource policy', () => {
     // GIVEN
     const stack = new Stack();
     const lg = new LogGroup(stack, 'LogGroup');
@@ -484,8 +484,11 @@ describe('log group', () => {
     }));
 
     // THEN
+    // The principal is emitted as the account root ARN (not a bare account id)
+    // so the synthesized template matches the canonical form CloudFormation
+    // stores, avoiding a permanent drift-detection false positive (#37797).
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
-      PolicyDocument: '{"Statement":[{"Action":"logs:PutLogEvents","Effect":"Allow","Principal":{"AWS":"123456789012"},"Resource":"*"}],"Version":"2012-10-17"}',
+      PolicyDocument: '{"Statement":[{"Action":"logs:PutLogEvents","Effect":"Allow","Principal":{"AWS":"arn:aws:iam::123456789012:root"},"Resource":"*"}],"Version":"2012-10-17"}',
       PolicyName: 'LogGroupPolicy643B329C',
     });
   });
@@ -516,7 +519,7 @@ describe('log group', () => {
     });
   });
 
-  test('imported values are treated as if they are ARNs and converted to account IDs via CFN pseudo parameters', () => {
+  test('imported values are treated as if they are ARNs and converted to the account root ARN via CFN pseudo parameters', () => {
     // GIVEN
     const stack = new Stack();
     const lg = new LogGroup(stack, 'LogGroup');
@@ -529,22 +532,46 @@ describe('log group', () => {
     }));
 
     // THEN
+    // The account id (extracted from the imported ARN) is wrapped in the account
+    // root ARN using the stack partition pseudo parameter, matching the form
+    // CloudFormation stores on the deployed resource (#37797).
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
       PolicyDocument: {
         'Fn::Join': [
           '',
           [
-            '{\"Statement\":[{\"Action\":\"logs:PutLogEvents\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"',
+            '{\"Statement\":[{\"Action\":\"logs:PutLogEvents\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:',
+            { Ref: 'AWS::Partition' },
+            ':iam::',
             {
               'Fn::Select': [
                 4,
                 { 'Fn::Split': [':', { 'Fn::ImportValue': 'SomeRole' }] },
               ],
             },
-            '\"},\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}',
+            ':root\"},\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}',
           ],
         ],
       },
+    });
+  });
+
+  test('cross-account principals emit the canonical account root ARN to avoid drift false positives (#37797)', () => {
+    // GIVEN
+    const stack = new Stack();
+    const lg = new LogGroup(stack, 'LogGroup');
+
+    // WHEN - a concrete cross-account principal, as in logGroup.grantRead(crossAccountRole)
+    lg.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['logs:PutLogEvents'],
+      principals: [new iam.ArnPrincipal('arn:aws:iam::211125612616:role/SomeRole')],
+    }));
+
+    // THEN - the principal is the account root ARN, not a bare account id, so it
+    // matches what CloudFormation stores and drift detection stays clean.
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
+      PolicyDocument: '{"Statement":[{"Action":"logs:PutLogEvents","Effect":"Allow","Principal":{"AWS":"arn:aws:iam::211125612616:root"},"Resource":"*"}],"Version":"2012-10-17"}',
     });
   });
 
