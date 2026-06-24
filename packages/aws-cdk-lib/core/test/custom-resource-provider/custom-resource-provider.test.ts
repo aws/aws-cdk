@@ -5,13 +5,13 @@ import type { Construct } from 'constructs';
 import { Template } from '../../../assertions';
 import * as cxapi from '../../../cx-api';
 import type { AssetStaging, DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource, ISynthesisSession, CustomResourceProviderOptions } from '../../lib';
-import { App, CustomResourceProvider, Duration, Size, Stack, CfnResource, determineLatestNodeRuntimeName, CustomResourceProviderBase, CustomResourceProviderRuntime } from '../../lib';
+import { App, CustomResourceProvider, Duration, Size, Stack, CfnResource, determineLatestNodeRuntimeName, CustomResourceProviderBase, CustomResourceProviderRuntime, Validations } from '../../lib';
 import { CUSTOMIZE_ROLES_CONTEXT_KEY } from '../../lib/helpers-internal';
 import { toCloudFormation } from '../util';
 
 const TEST_HANDLER = `${__dirname}/mock-provider`;
 // current node runtime available in ALL AWS regions
-const DEFAULT_PROVIDER_RUNTIME = CustomResourceProviderRuntime.NODEJS_20_X;
+const DEFAULT_PROVIDER_RUNTIME = CustomResourceProviderRuntime.NODEJS_22_X;
 
 describe('custom resource provider', () => {
   describe('customize roles', () => {
@@ -41,6 +41,7 @@ describe('custom resource provider', () => {
       });
 
       // THEN
+      Validations.of(app).acknowledge({ id: 'CloudFormation-Validate::W9013', reason: 'Precreated role ARN uses Fn::Join with Ref:AccountId — not actually hardcoded' });
       const assembly = app.synth();
       const template = assembly.getStackByName('MyStack').template;
       const resourceTypes = Object.values(template.Resources).flatMap((value: any) => {
