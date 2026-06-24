@@ -185,4 +185,14 @@ const IGNORE_RULES = new Set([
   // WHY: AutoScaling is not too bad yet, but we can't silence on a per-service basis.
   // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/37>.
   'W3697',
+
+  // WHAT: Read only property 'XXX' should not be specified
+  // WHY: Read-only property determination is not reliable.
+  // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/38>.
+  'E3040',
+
+  // WHAT: That's not a valid attribute!
+  // WHY: The source of truth is too limited.
+  // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/39>.
+  'E9004',
 ]);
