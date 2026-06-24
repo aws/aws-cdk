@@ -593,6 +593,28 @@ export enum PerformanceInsightRetention {
 }
 
 /**
+ * The authentication type for the master user of a database cluster.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbcluster.html#cfn-rds-dbcluster-masteruserauthenticationtype
+ */
+export enum MasterUserAuthenticationType {
+  /**
+   * Use standard database authentication with a password.
+   *
+   * This is the default behavior.
+   */
+  PASSWORD = 'password',
+
+  /**
+   * Use IAM database authentication for the master user.
+   *
+   * When this is set, no master user password or secret is generated.
+   * The `iamAuthentication` property must also be enabled on the cluster.
+   */
+  IAM = 'iam-db-auth',
+}
+
+/**
  * Engine lifecycle support for Amazon RDS and Amazon Aurora
  */
 export enum EngineLifecycleSupport {
