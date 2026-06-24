@@ -180,4 +180,8 @@ const IGNORE_RULES = new Set([
   // WHY: CDK uses `AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>` to resolve AMIs, which the engine doesn't understand.
   // Should be removed.
   'E1152',
+
+  // WHAT: Service in maintenance mode
+  // WHY: AutoScaling is not too bad yet, but we can't silence on a per-service basis.
+  'W3697',
 ]);
