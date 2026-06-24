@@ -22,6 +22,11 @@ const config = {
   },
 
   testEnvironment: './testhelpers/jest-bufferedconsole.ts',
+
+  setupFilesAfterEnv: [
+    ...baseConfig.setupFilesAfterEnv ?? [],
+    './core/test/global-app-testhook.ts',
+  ],
 };
 
 module.exports = config;
