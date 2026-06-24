@@ -177,18 +177,29 @@ function validateTemplates(root: IConstruct, outdir: string, assembly: private_c
     );
   }
 
+  // Construct library strict mode -- everything is errors. This is intended for construct library testing.
+  // Its behavior is not intended to be user-facing, and behavior may change to suit our needs.
+  const constructLibStrictMode = getBooleanContext(root, cxapi.STRICT_CFN_VALIDATE_ERRORS, false);
+
   if (warningifiedAnyErrors) {
-    // eslint-disable-next-line no-console
-    console.error(
-      '\n[Warning] Template validation found issues in your templates (reported as warnings).'
-      + `\nSet feature flag "${cxapi.VALIDATE_AGAINST_DEFAULT_RULES}" to true to turn these into errors.\n`,
-    );
+    if (constructLibStrictMode) {
+      // eslint-disable-next-line no-console
+      console.error(
+        '\n[Warning] Template validation found issues in your templates. Construct library strict mode considers these errors.\n',
+      );
+    } else {
+      // eslint-disable-next-line no-console
+      console.error(
+        '\n[Warning] Template validation found issues in your templates (reported as warnings).'
+        + `\nSet feature flag "${cxapi.VALIDATE_AGAINST_DEFAULT_RULES}" to true to turn these into errors.\n`,
+      );
+    }
   }
 
   // Whether the CDK app handles validation output (default true). The CLI can set this to false to take over the
   // responsibility of printing the validation report and setting the exit code.
   const cdkAppHandlesValidationReporting = getBooleanContext(root, cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT, true);
-  if (cdkAppHandlesValidationReporting) {
+  if (cdkAppHandlesValidationReporting || constructLibStrictMode) {
     const output = formatValidationReports(process.cwd(), reportJson.pluginReports);
     if (output) {
       // eslint-disable-next-line no-console
@@ -196,9 +207,8 @@ function validateTemplates(root: IConstruct, outdir: string, assembly: private_c
     }
 
     let failed = reports.some(r => !r.success);
-
     // If requested for "strict mode", also consider warnings as failed.
-    if (getBooleanContext(root, cxapi.STRICT_CFN_VALIDATE_ERRORS, false)) {
+    if (constructLibStrictMode) {
       failed ||= reports.some(r => r.violations.some(v => v.severity === 'warning'));
     }
 
