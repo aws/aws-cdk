@@ -3268,6 +3268,7 @@ describe('ec2 service', () => {
           // GIVEN
           const stack = new cdk.Stack();
           acknowledgeTestValidationRules(stack);
+          cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3049', reason: 'HostPort 0 with dynamic port mapping is intentional in this test' });
           const vpc = new ec2.Vpc(stack, 'MyVpc', {});
           const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
           addDefaultCapacityProvider(cluster, stack, vpc);
