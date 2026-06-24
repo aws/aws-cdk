@@ -46,7 +46,9 @@ module.exports = {
     'html' // for local deep dive
   ],
   coveragePathIgnorePatterns: ['\\.generated\\.[jt]s$', '<rootDir>/test/', '.warnings.jsii.js$', '/node_modules/'],
-  reporters: ['default', ['jest-junit', { suiteName: 'jest tests', outputDirectory: 'coverage' }]],
+  reporters: [
+    'default',
+    ['jest-junit', { suiteName: 'jest tests', outputDirectory: 'coverage', suiteNameTemplate: '{filepath}' }]],
 
   setupFilesAfterEnv,
 };
