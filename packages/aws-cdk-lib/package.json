@@ -557,6 +557,7 @@
     "./recommended-feature-flags.json": "./recommended-feature-flags.json",
     "./region-info": "./region-info/index.js",
     "./testhelpers/jest-autoclean": "./testhelpers/jest-autoclean.js",
+    "./testhelpers/jest-global-app-testhook": "./testhelpers/jest-global-app-testhook.js",
     "./triggers": "./triggers/index.js"
   },
   "publishConfig": {
