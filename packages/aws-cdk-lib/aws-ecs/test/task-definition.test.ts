@@ -16,7 +16,7 @@ describe('task definition', () => {
 
       // WHEN
       new ecs.TaskDefinition(stack, 'TD', {
-        cpu: '512',
+        cpu: '256',
         memoryMiB: '512',
         compatibility: ecs.Compatibility.EC2_AND_FARGATE,
       });
@@ -55,7 +55,7 @@ describe('task definition', () => {
         assumedBy: new iam.AccountRootPrincipal(),
       });
       const taskDef = new ecs.TaskDefinition(stack, 'TD', {
-        cpu: '512',
+        cpu: '256',
         memoryMiB: '512',
         compatibility: ecs.Compatibility.EC2_AND_FARGATE,
       });
@@ -101,7 +101,7 @@ describe('task definition', () => {
         assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
       });
       const taskDef = new ecs.TaskDefinition(stack, 'TD', {
-        cpu: '512',
+        cpu: '256',
         memoryMiB: '512',
         compatibility: ecs.Compatibility.EC2_AND_FARGATE,
         executionRole: executionRole,
@@ -160,7 +160,7 @@ describe('task definition', () => {
         },
       );
       const taskDef = new ecs.TaskDefinition(stack, 'TD', {
-        cpu: '512',
+        cpu: '256',
         memoryMiB: '512',
         compatibility: ecs.Compatibility.EC2_AND_FARGATE,
       });
@@ -399,7 +399,7 @@ describe('task definition', () => {
         },
       );
       const taskDef = new ecs.TaskDefinition(stack, 'TD', {
-        cpu: '512',
+        cpu: '256',
         memoryMiB: '512',
         compatibility: ecs.Compatibility.EC2_AND_FARGATE,
       });
