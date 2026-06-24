@@ -1889,6 +1889,9 @@ describe('cluster new api', () => {
         ManageMasterUserPassword: true,
         MasterUserPassword: Match.absent(),
       });
+
+      // RDS manages the secret, so no CDK-owned secret (not even the deprecated-rendering one) should be created.
+      template.resourceCountIs('AWS::SecretsManager::Secret', 0);
     });
 
     test('with DatabaseClusterFromSnapshot and encryption key', () => {
@@ -2052,6 +2055,23 @@ describe('cluster new api', () => {
           },
         });
       }).toThrow(/When manageMasterUserPassword is enabled, only 'username' and 'encryptionKey' are allowed in credentials\. Found unsupported properties: excludeCharacters, password, replicaRegions, secretName, usernameAsString\./);
+    });
+
+    test('throws when manageMasterUserPassword is combined with replicationSourceIdentifier', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // THEN
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          vpc,
+          writer: ClusterInstance.serverlessV2('writer'),
+          manageMasterUserPassword: true,
+          replicationSourceIdentifier: 'identifier',
+        });
+      }).toThrow('cannot use `manageMasterUserPassword` with `replicationSourceIdentifier`; read replicas inherit credentials from the source cluster');
     });
   });
 

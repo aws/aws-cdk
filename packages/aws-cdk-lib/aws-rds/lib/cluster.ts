@@ -1506,9 +1506,16 @@ export class DatabaseCluster extends DatabaseClusterNew {
       validateManagedPasswordCredentials(this, props.credentials);
     }
 
-    this.manageMasterUserPassword = props.manageMasterUserPassword;
-
     const canHaveCredentials = props.replicationSourceIdentifier === undefined;
+
+    // A read replica inherits the master credentials from its source cluster, so RDS does not
+    // manage a master user secret for it. Reject the contradictory combination up front instead
+    // of silently dropping `ManageMasterUserPassword` from the template.
+    if (props.manageMasterUserPassword && !canHaveCredentials) {
+      throw new ValidationError(lit`ManagedPasswordIncompatibleWithReadReplica`, 'cannot use `manageMasterUserPassword` with `replicationSourceIdentifier`; read replicas inherit credentials from the source cluster', this);
+    }
+
+    this.manageMasterUserPassword = props.manageMasterUserPassword;
 
     // Prepare credential-specific configuration
     let secret: secretsmanager.ISecret | undefined;
@@ -1518,12 +1525,11 @@ export class DatabaseCluster extends DatabaseClusterNew {
     let masterUserSecret: { kmsKeyId: string } | undefined;
 
     if (props.manageMasterUserPassword) {
-      // RDS-managed approach: RDS creates and manages the Secret automatically
-      masterUsername = canHaveCredentials
-        ? (props.credentials?.username ?? props.engine.defaultUsername ?? 'admin')
-        : undefined;
-      manageMasterUserPassword = canHaveCredentials ? props.manageMasterUserPassword : undefined;
-      masterUserSecret = props.credentials?.encryptionKey && canHaveCredentials
+      // RDS-managed approach: RDS creates and manages the Secret automatically.
+      // `canHaveCredentials` is always true here because the read-replica combination is rejected above.
+      masterUsername = props.credentials?.username ?? props.engine.defaultUsername ?? 'admin';
+      manageMasterUserPassword = props.manageMasterUserPassword;
+      masterUserSecret = props.credentials?.encryptionKey
         ? { kmsKeyId: props.credentials.encryptionKey.keyArn }
         : undefined;
     } else {
@@ -1755,7 +1761,10 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
 
     this.manageMasterUserPassword = props.manageMasterUserPassword;
 
-    const deprecatedCredentials = !FeatureFlags.of(this).isEnabled(cxapi.RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS)
+    // When RDS manages the master password, the deprecated `credentials` rendering path must be
+    // skipped — otherwise it always creates an orphan DatabaseSecret that is never bound to the cluster.
+    const deprecatedCredentials = (!props.manageMasterUserPassword
+      && !FeatureFlags.of(this).isEnabled(cxapi.RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS))
       ? renderCredentials(this, props.engine, props.credentials)
       : undefined;
 
