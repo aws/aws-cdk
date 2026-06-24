@@ -13,7 +13,6 @@ export function acknowledgeTestValidationRules(scope: IConstruct) {
     { id: 'CloudFormation-Validate::F3003', reason: 'Duplicate primary identifiers are intentional in tests' },
     { id: 'CloudFormation-Validate::F3030', reason: 'Intentionally testing invalid enum values' },
     { id: 'CloudFormation-Validate::F3031', reason: 'Intentionally testing invalid pattern values' },
-    { id: 'CloudFormation-Validate::F3033', reason: 'Intentionally testing invalid string lengths' },
     { id: 'CloudFormation-Validate::W2001', reason: 'Unreferenced parameters are expected in test stacks' },
     { id: 'CloudFormation-Validate::W2530', reason: 'Hardcoded ARNs are expected in tests' },
     { id: 'CloudFormation-Validate::W2531', reason: 'Hardcoded ARNs are expected in tests' },

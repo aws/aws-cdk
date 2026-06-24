@@ -288,7 +288,7 @@ describe('function', () => {
       acknowledgeTestValidationRules(stack);
       const fn = newTestLambda(stack);
       const sourceAccount = 'some-account';
-      const sourceArn = 'some-arn';
+      const sourceArn = 'arn:aws:s3:::my-bucket';
       const service = 'my-service';
       const principal = new iam.PrincipalWithConditions(new iam.ServicePrincipal(service), {
         ArnLike: {
@@ -319,7 +319,7 @@ describe('function', () => {
       const stack = new cdk.Stack();
       acknowledgeTestValidationRules(stack);
       const fn = newTestLambda(stack);
-      const sourceArn = 'some-arn';
+      const sourceArn = 'arn:aws:s3:::my-bucket';
       const service = 'my-service';
       const principal = new iam.PrincipalWithConditions(new iam.ServicePrincipal(service), {
         ArnLike: {
@@ -4260,8 +4260,8 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_LATEST,
     });
-    const sourceArnA = 'some-arn-a';
-    const sourceArnB = 'some-arn-b';
+    const sourceArnA = 'arn:aws:s3:::bucket-a';
+    const sourceArnB = 'arn:aws:s3:::bucket-b';
     const service = 's3.amazonaws.com';
     const conditionalPrincipalA = new iam.PrincipalWithConditions(new iam.ServicePrincipal(service), {
       ArnLike: {
