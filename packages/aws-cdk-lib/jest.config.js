@@ -25,7 +25,6 @@ const config = {
 
   setupFilesAfterEnv: [
     ...baseConfig.setupFilesAfterEnv ?? [],
-    './testhelpers/jest-global-app-testhook.ts',
   ],
 };
 

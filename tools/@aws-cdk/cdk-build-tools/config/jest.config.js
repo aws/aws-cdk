@@ -7,6 +7,7 @@ if ('aws-cdk-lib' in thisPackagesPackageJson.devDependencies ?? {}) {
 } else if (thisPackagesPackageJson.name === 'aws-cdk-lib') {
   // If we *ARE* aws-cdk-lib, use the hook in a slightly different way
   setupFilesAfterEnv.push('./testhelpers/jest-autoclean.ts');
+  setupFilesAfterEnv.push('./testhelpers/jest-global-app-testhook.ts');
 }
 
 // Set context that will apply to all unit tests in this package.
