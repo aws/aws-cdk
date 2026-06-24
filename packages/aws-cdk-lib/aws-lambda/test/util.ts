@@ -9,7 +9,6 @@ export function acknowledgeTestValidationRules(scope: IConstruct) {
   cdk.Validations.of(scope).acknowledge(
     { id: 'CloudFormation-Validate::E2533', reason: 'Placeholder ARNs and values used in tests do not match patterns' },
     { id: 'CloudFormation-Validate::E3071', reason: 'Intentionally testing invalid runtime/code combinations' },
-    { id: 'CloudFormation-Validate::F0001', reason: 'Empty resource sections are expected in some tests' },
     { id: 'CloudFormation-Validate::F1020', reason: 'Intentionally testing missing required properties' },
     { id: 'CloudFormation-Validate::F3003', reason: 'Duplicate primary identifiers are intentional in tests' },
     { id: 'CloudFormation-Validate::F3030', reason: 'Intentionally testing invalid enum values' },

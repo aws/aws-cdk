@@ -21,7 +21,6 @@ export function acknowledgeTestValidationRules(scope: IConstruct) {
     { id: 'CloudFormation-Validate::W9002', reason: 'Deprecated properties used intentionally in tests' },
     { id: 'CloudFormation-Validate::W9007', reason: 'Deprecated runtimes used intentionally in tests' },
     { id: 'CloudFormation-Validate::E1150', reason: 'Hardcoded account IDs are expected in tests' },
-    { id: 'CloudFormation-Validate::F0001', reason: 'Empty resource sections are expected in some tests' },
     { id: 'CloudFormation-Validate::F3004', reason: 'Circular dependencies are intentional in some tests' },
   );
 }

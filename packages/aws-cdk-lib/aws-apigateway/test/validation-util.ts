@@ -10,7 +10,6 @@ export function acknowledgeTestValidationRules(scope: IConstruct) {
     { id: 'CloudFormation-Validate::E3019', reason: 'Ref values do not resolve to valid ARNs in test stacks' },
     { id: 'CloudFormation-Validate::E3660', reason: 'Mixing inline API definitions with Body/BodyS3Location is intentional in tests' },
     { id: 'CloudFormation-Validate::E9004', reason: 'Required property intentionally omitted in tests' },
-    { id: 'CloudFormation-Validate::F0001', reason: 'Empty resource sections are expected in some tests' },
     { id: 'CloudFormation-Validate::F3003', reason: 'Duplicate primary identifiers are intentional in tests' },
     { id: 'CloudFormation-Validate::W2001', reason: 'Unreferenced parameters are expected in test stacks' },
     { id: 'CloudFormation-Validate::W2531', reason: 'Hardcoded ARNs are expected in tests' },
