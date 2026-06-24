@@ -9,5 +9,6 @@ const APP_INIT_HOOK_SYMBOL = Symbol.for('@aws-cdk/core.App#initHook');
     { id: 'CloudFormation-Validate::F0001', reason: 'Empty resource sections are expected in some tests' },
     { id: 'CloudFormation-Validate::W7001', reason: 'Tests do not always reference mappings' },
     { id: 'CloudFormation-Validate::W9008', reason: 'Do not care about storage encryption of RDS instances in tests' },
+    { id: 'CloudFormation-Validate::W3010', reason: 'Tests hardcode availability zone strings' },
   );
 };
