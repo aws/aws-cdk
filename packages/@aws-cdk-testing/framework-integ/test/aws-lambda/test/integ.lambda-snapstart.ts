@@ -47,7 +47,7 @@ const containerImageFn = new DockerImageFunction(stack, 'ContainerImageSnapstart
   snapStart: SnapStartConf.ON_PUBLISHED_VERSIONS,
 });
 
-const version = containerImageFn.currentVersion;
+const _version = containerImageFn.currentVersion;
 
 new integ.IntegTest(app, 'lambda-runtime-management', {
   testCases: [stack],
