@@ -1,4 +1,5 @@
-import { Template } from '../../assertions';
+import { Template, Match } from '../../assertions';
+import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
 
@@ -154,6 +155,75 @@ describe('durable config', () => {
       ManagedPolicyArns: [
         { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] },
       ],
+    });
+  });
+
+  test('DurableConfig with kmsKey renders KMSKeyArn from a CDK-managed key and does not grant kms:Decrypt to the execution role', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack');
+    const key = new kms.Key(stack, 'DurableKey');
+
+    new lambda.Function(stack, 'Lambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      durableConfig: { executionTimeout: cdk.Duration.hours(1), kmsKey: key },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      DurableConfig: {
+        ExecutionTimeout: 3600,
+        KMSKeyArn: { 'Fn::GetAtt': [stack.getLogicalId(key.node.defaultChild as cdk.CfnElement), 'Arn'] },
+      },
+    });
+
+    // The Lambda service uses the CMK via the key's resource policy. CDK does
+    // not attach any KMS permissions to the execution role on the user's behalf
+    // — mirroring the AWS console behavior.
+    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Policy', {
+      PolicyDocument: Match.objectLike({
+        Statement: Match.arrayWith([Match.objectLike({ Action: Match.stringLikeRegexp('kms:.*') })]),
+      }),
+    }, 0);
+  });
+
+  test('DurableConfig with kmsKey renders KMSKeyArn from an imported key', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack');
+    const importedArn = 'arn:aws:kms:us-east-1:123456789012:key/abcd1234-12ab-34cd-56ef-1234567890ab';
+    const key = kms.Key.fromKeyArn(stack, 'ImportedKey', importedArn);
+
+    new lambda.Function(stack, 'Lambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      durableConfig: { executionTimeout: cdk.Duration.hours(1), kmsKey: key },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      DurableConfig: {
+        ExecutionTimeout: 3600,
+        KMSKeyArn: importedArn,
+      },
+    });
+  });
+
+  test('DurableConfig without kmsKey omits KMSKeyArn', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack');
+
+    new lambda.Function(stack, 'Lambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      durableConfig: { executionTimeout: cdk.Duration.hours(1) },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      DurableConfig: {
+        ExecutionTimeout: 3600,
+        KMSKeyArn: Match.absent(),
+      },
     });
   });
 });

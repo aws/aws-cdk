@@ -1,0 +1,176 @@
+{
+  "/aws-cdk-lambda-durable-config/DurableFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*",
+        "durableConfig": {
+          "executionTimeout": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:info",
+      "data": "Modifying an existing lambda to use durability will trigger a resource replacement [ack: aws-lambda:Function.DurableConfig]",
+      "trace": [
+        "Annotations.addMessage (/Volumes/workplace/CDKDurableKms/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addInfoV2 (/Volumes/workplace/CDKDurableKms/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:169:18)",
+        "WrappedClass.renderDurableConfig (/Volumes/workplace/CDKDurableKms/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1277:43)",
+        "new Function (/Volumes/workplace/CDKDurableKms/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:768:59)",
+        "new Function (/Volumes/workplace/CDKDurableKms/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/Volumes/workplace/CDKDurableKms/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.durable-config.js:42:1)",
+        "Module._compile (node:internal/modules/cjs/loader:1812:14)",
+        "Object..js (node:internal/modules/cjs/loader:1943:10)",
+        "Module.load (node:internal/modules/cjs/loader:1533:32)",
+        "Module._load (node:internal/modules/cjs/loader:1335:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    }
+  ],
+  "/aws-cdk-lambda-durable-config/DurableKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-lambda-durable-config/DurableFunctionWithCmk": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*",
+        "durableConfig": {
+          "executionTimeout": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:info",
+      "data": "Modifying an existing lambda to use durability will trigger a resource replacement [ack: aws-lambda:Function.DurableConfig]",
+      "trace": [
+        "Annotations.addMessage (/Volumes/workplace/CDKDurableKms/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addInfoV2 (/Volumes/workplace/CDKDurableKms/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:169:18)",
+        "WrappedClass.renderDurableConfig (/Volumes/workplace/CDKDurableKms/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1277:43)",
+        "new Function (/Volumes/workplace/CDKDurableKms/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:768:59)",
+        "new Function (/Volumes/workplace/CDKDurableKms/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/Volumes/workplace/CDKDurableKms/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.durable-config.js:49:1)",
+        "Module._compile (node:internal/modules/cjs/loader:1812:14)",
+        "Object..js (node:internal/modules/cjs/loader:1943:10)",
+        "Module.load (node:internal/modules/cjs/loader:1533:32)",
+        "Module._load (node:internal/modules/cjs/loader:1335:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    }
+  ],
+  "/aws-cdk-lambda-durable-config/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-lambda-durable-config/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-lambda-durable-config/DurableFunction/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-lambda-durable-config/DurableFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DurableFunction8FC9485F"
+    }
+  ],
+  "/aws-cdk-lambda-durable-config/DurableFunction/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-lambda-durable-config/DurableKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DurableKeyAD70383F"
+    }
+  ],
+  "/aws-cdk-lambda-durable-config/DurableFunctionWithCmk/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-lambda-durable-config/DurableFunctionWithCmk/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DurableFunctionWithCmk4AAC4848"
+    }
+  ],
+  "/aws-cdk-lambda-durable-config/DurableFunctionWithCmk/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-lambda-durable-config/DurableFunction/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DurableFunctionServiceRole4F9882F4"
+    }
+  ],
+  "/aws-cdk-lambda-durable-config/DurableFunction/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DurableFunctionLogGroup96FE3B84"
+    }
+  ],
+  "/aws-cdk-lambda-durable-config/DurableFunctionWithCmk/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DurableFunctionWithCmkServiceRoleA620C40E"
+    }
+  ],
+  "/aws-cdk-lambda-durable-config/DurableFunctionWithCmk/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DurableFunctionWithCmkLogGroupD880A6E6"
+    }
+  ]
+}
