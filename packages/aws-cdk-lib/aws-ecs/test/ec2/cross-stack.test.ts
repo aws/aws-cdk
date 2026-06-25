@@ -40,8 +40,6 @@ describe('cross stack', () => {
   });
 
   test('ALB next to Service', () => {
-    Validations.of(stack2).acknowledge({ id: 'CloudFormation-Validate::E3049', reason: 'HostPort 0 with dynamic port mapping is intentional in this test' });
-
     // WHEN
     const lb = new elbv2.ApplicationLoadBalancer(stack2, 'ALB', { vpc: cluster.vpc });
     const listener = lb.addListener('listener', { port: 80 });
