@@ -16,26 +16,26 @@ describe('domains', () => {
 
     // WHEN
     const regionalDomain = new apigw.DomainName(stack, 'my-domain', {
-      domainName: 'example.com',
+      domainName: 'example.com/region',
       certificate: cert,
       endpointType: apigw.EndpointType.REGIONAL,
     });
 
     const edgeDomain = new apigw.DomainName(stack, 'your-domain', {
-      domainName: 'example.com',
+      domainName: 'example.com/edge',
       certificate: cert,
       endpointType: apigw.EndpointType.EDGE,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
-      'DomainName': 'example.com',
+      'DomainName': 'example.com/region',
       'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' },
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
-      'DomainName': 'example.com',
+      'DomainName': 'example.com/edge',
       'EndpointConfiguration': { 'Types': ['EDGE'] },
       'CertificateArn': { 'Ref': 'Cert5C9FAEC1' },
     });

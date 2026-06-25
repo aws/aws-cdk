@@ -522,7 +522,7 @@ describe('CDK Include', () => {
     const cfnTemplate = includeTestTemplate(stack, 'bucket-with-parameters.json');
     const param = cfnTemplate.getParameter('BucketName');
     new s3.CfnBucket(stack, 'NewBucket', {
-      bucketName: param.valueAsString,
+      bucketNamePrefix: param.valueAsString,
     });
 
     const originalTemplate = loadTestFileToJsObject('bucket-with-parameters.json');
@@ -532,7 +532,7 @@ describe('CDK Include', () => {
         "NewBucket": {
           "Type": "AWS::S3::Bucket",
           "Properties": {
-            "BucketName": {
+            "BucketNamePrefix": {
               "Ref": "BucketName",
             },
           },
