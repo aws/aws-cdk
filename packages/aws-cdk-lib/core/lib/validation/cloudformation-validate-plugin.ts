@@ -205,4 +205,9 @@ const IGNORE_RULES = new Set([
   // WHY: In some cases, the engine reports this violation even when the AWS::AccountId was used.
   // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/41>.
   'W9013',
+
+  // WHAT: "Output value must be a string"
+  // WHY: The engine falsely flags the pattern `{"Fn::Join": ["||", {"Fn::GetAtt": ["ID", "SomeAttr"]}]}` as a case of output value being an array
+  // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/45>.
+  'W9013',
 ]);
