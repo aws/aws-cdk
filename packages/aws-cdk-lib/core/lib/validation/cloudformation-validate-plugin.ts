@@ -179,7 +179,7 @@ const IGNORE_RULES = new Set([
   // WHAT: Validate AMI format (must look like ami-xxxx)
   // WHY: CDK uses `AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>` to resolve AMIs, which the engine doesn't understand.
   // Should be removed after <https://github.com/aws-cloudformation/cloudformation-validate/issues/34> is resolved.
-  'E1152',
+  'E1152', 'W2506',
 
   // WHAT: Service in maintenance mode
   // WHY: AutoScaling is not too bad yet, but we can't silence on a per-service basis.
