@@ -1,9 +1,8 @@
 import { Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
 import { Bucket } from '../../aws-s3';
-import { Fn, Stack } from '../../core';
+import { Fn, Stack, Validations } from '../../core';
 import * as apigw from '../lib';
-import { acknowledgeTestValidationRules } from './validation-util';
 
 /* eslint-disable @stylistic/quote-props */
 
@@ -11,7 +10,6 @@ describe('domains', () => {
   test('can define either an EDGE or REGIONAL domain name', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
 
     // WHEN
@@ -49,7 +47,6 @@ describe('domains', () => {
   test('default endpoint type is REGIONAL', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
 
     // WHEN
@@ -69,7 +66,6 @@ describe('domains', () => {
   test('accepts different security policies', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
 
     // WHEN
@@ -116,7 +112,6 @@ describe('domains', () => {
   test('accepts TLS 1.3 security policies', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
 
     // WHEN
@@ -138,7 +133,6 @@ describe('domains', () => {
   test('allows TLS 1.3 for multi-level base paths', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
     const api = new apigw.RestApi(stack, 'api');
     api.root.addMethod('GET');
@@ -159,7 +153,6 @@ describe('domains', () => {
   test('allows multi-level base paths without security policy (defaults to TLS 1.2)', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
     const api = new apigw.RestApi(stack, 'api');
     api.root.addMethod('GET');
@@ -178,7 +171,6 @@ describe('domains', () => {
   test('accepts TLS 1.3 with post-quantum cryptography security policy', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
 
     // WHEN
@@ -200,7 +192,6 @@ describe('domains', () => {
   test('accepts endpointAccessMode property', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
 
     // WHEN
@@ -222,7 +213,6 @@ describe('domains', () => {
   test('throws if enhanced security policy is used without endpointAccessMode', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
 
     // THEN
@@ -239,7 +229,6 @@ describe('domains', () => {
   test('throws if endpointAccessMode is set with a legacy security policy', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
 
     // THEN
@@ -256,7 +245,6 @@ describe('domains', () => {
   test('throws if mTLS is used with enhanced security policy', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
     const bucket = Bucket.fromBucketName(stack, 'testBucket', 'example-bucket');
 
@@ -277,7 +265,6 @@ describe('domains', () => {
   test('allows mTLS with legacy security policy TLS_1_2', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
     const bucket = Bucket.fromBucketName(stack, 'testBucket', 'example-bucket');
 
@@ -303,7 +290,6 @@ describe('domains', () => {
   test('throws if regional-only security policy is used with EDGE endpoint', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
 
     // THEN
@@ -321,7 +307,6 @@ describe('domains', () => {
   test('throws if edge-only security policy is used with REGIONAL endpoint', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
 
     // THEN
@@ -339,7 +324,6 @@ describe('domains', () => {
   test('allows TLS 1.3 edge policy with EDGE endpoint', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
 
     // WHEN
@@ -363,7 +347,6 @@ describe('domains', () => {
   test('"mapping" can be used to automatically map this domain to the deployment stage of an API', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigw.RestApi(stack, 'api');
     api.root.addMethod('GET');
 
@@ -374,6 +357,7 @@ describe('domains', () => {
       endpointType: apigw.EndpointType.EDGE,
       mapping: api,
     });
+    Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::BasePathMapping', {
@@ -393,7 +377,6 @@ describe('domains', () => {
     test('can add a multi-level path', () => {
       // GIVEN
       const stack = new Stack();
-      acknowledgeTestValidationRules(stack);
       const api = new apigw.RestApi(stack, 'api');
       api.root.addMethod('GET');
 
@@ -405,6 +388,7 @@ describe('domains', () => {
         mapping: api,
         basePath: 'v1/api',
       });
+      Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::ApiMapping', {
@@ -424,7 +408,6 @@ describe('domains', () => {
     test('throws if endpointType is not REGIONAL', () => {
       // GIVEN
       const stack = new Stack();
-      acknowledgeTestValidationRules(stack);
       const api = new apigw.RestApi(stack, 'api');
       api.root.addMethod('GET');
 
@@ -443,7 +426,6 @@ describe('domains', () => {
     test('throws if securityPolicy is TLS_1_0', () => {
       // GIVEN
       const stack = new Stack();
-      acknowledgeTestValidationRules(stack);
       const api = new apigw.RestApi(stack, 'api');
       api.root.addMethod('GET');
 
@@ -462,7 +444,6 @@ describe('domains', () => {
     test('can use addApiMapping', () => {
       // GIVEN
       const stack = new Stack();
-      acknowledgeTestValidationRules(stack);
       const api = new apigw.RestApi(stack, 'api');
       api.root.addMethod('GET');
 
@@ -471,6 +452,8 @@ describe('domains', () => {
         domainName: 'foo.com',
         certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       });
+      Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
+
       domain.addApiMapping(api.deploymentStage);
       domain.addApiMapping(api.deploymentStage, { basePath: '//' });
       domain.addApiMapping(api.deploymentStage, {
@@ -533,7 +516,6 @@ describe('domains', () => {
     test('can use addDomainName', () => {
       // GIVEN
       const stack = new Stack();
-      acknowledgeTestValidationRules(stack);
       const api = new apigw.RestApi(stack, 'api');
       api.root.addMethod('GET');
 
@@ -541,6 +523,7 @@ describe('domains', () => {
         domainName: 'foo.com',
         certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       });
+      Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
       // WHEN
       domain.addApiMapping(api.deploymentStage, {
@@ -576,7 +559,6 @@ describe('domains', () => {
     test('throws if addBasePathMapping tries to add a mapping for a path that is already mapped', () => {
       // GIVEN
       const stack = new Stack();
-      acknowledgeTestValidationRules(stack);
       const api = new apigw.RestApi(stack, 'api');
       api.root.addMethod('GET');
 
@@ -600,7 +582,6 @@ describe('domains', () => {
   test('"addBasePathMapping" can be used to add base path mapping to the domain', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const api1 = new apigw.RestApi(stack, 'api1');
     const api2 = new apigw.RestApi(stack, 'api2');
     const domain = new apigw.DomainName(stack, 'my-domain', {
@@ -608,6 +589,7 @@ describe('domains', () => {
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       endpointType: apigw.EndpointType.REGIONAL,
     });
+    Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
     api1.root.addMethod('GET');
     api2.root.addMethod('GET');
 
@@ -647,7 +629,6 @@ describe('domains', () => {
     // GIVEN
     const domainName = 'my.domain.com';
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const certificate = new acm.Certificate(stack, 'cert', { domainName: 'my.domain.com' });
 
     // WHEN
@@ -686,7 +667,6 @@ describe('domains', () => {
     // GIVEN
     const domainName = 'my.domain.com';
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const certificate = new acm.Certificate(stack, 'cert', { domainName: 'my.domain.com' });
 
     // WHEN
@@ -726,7 +706,6 @@ describe('domains', () => {
     const domainName = 'my.domain.com';
     const basePath = 'users';
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const certificate = new acm.Certificate(stack, 'cert', { domainName: 'my.domain.com' });
 
     // WHEN
@@ -750,7 +729,6 @@ describe('domains', () => {
     const domainName = 'my.domain.com';
     const basePath = 'users';
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const certificate = new acm.Certificate(stack, 'cert', { domainName: 'my.domain.com' });
 
     // WHEN
@@ -781,7 +759,6 @@ describe('domains', () => {
   test('domain name cannot contain uppercase letters', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const certificate = new acm.Certificate(stack, 'cert', { domainName: 'someDomainWithUpercase.domain.com' });
 
     // WHEN & THEN
@@ -794,7 +771,6 @@ describe('domains', () => {
     // GIVEN
     const domainName = 'my.domain.com';
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const certificate = new acm.Certificate(stack, 'cert', { domainName: 'my.domain.com' });
 
     // WHEN
@@ -858,7 +834,6 @@ describe('domains', () => {
   test('"addBasePathMapping" can be used to add base path mapping to the domain with specific stage', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const api1 = new apigw.RestApi(stack, 'api1');
     const api2 = new apigw.RestApi(stack, 'api2');
     const domain = new apigw.DomainName(stack, 'my-domain', {
@@ -866,6 +841,8 @@ describe('domains', () => {
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       endpointType: apigw.EndpointType.REGIONAL,
     });
+    Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
+
     api1.root.addMethod('GET');
     api2.root.addMethod('GET');
 
@@ -909,7 +886,6 @@ describe('domains', () => {
 
   test('accepts a mutual TLS configuration', () => {
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const bucket = Bucket.fromBucketName(stack, 'testBucket', 'example-bucket');
     new apigw.DomainName(stack, 'another-domain', {
       domainName: 'example.com',
@@ -919,6 +895,7 @@ describe('domains', () => {
       },
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
     });
+    Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
       'DomainName': 'example.com',
@@ -930,7 +907,6 @@ describe('domains', () => {
 
   test('mTLS should allow versions to be set on the s3 bucket', () => {
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const bucket = Bucket.fromBucketName(stack, 'testBucket', 'example-bucket');
     new apigw.DomainName(stack, 'another-domain', {
       domainName: 'example.com',
@@ -941,6 +917,8 @@ describe('domains', () => {
         version: 'version',
       },
     });
+    Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
+
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
       'DomainName': 'example.com',
       'EndpointConfiguration': { 'Types': ['REGIONAL'] },
@@ -952,7 +930,6 @@ describe('domains', () => {
   test('base path mapping configures stage for RestApi creation', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     new apigw.RestApi(stack, 'restApiWithStage', {
       domainName: {
         domainName: 'example.com',
@@ -960,6 +937,7 @@ describe('domains', () => {
         endpointType: apigw.EndpointType.REGIONAL,
       },
     }).root.addMethod('GET');
+    Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::BasePathMapping', {
@@ -978,7 +956,6 @@ describe('domains', () => {
   test('base path mapping configures stage for SpecRestApi creation', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
 
     const definition = {
       key1: 'val1',
@@ -992,6 +969,7 @@ describe('domains', () => {
         endpointType: apigw.EndpointType.REGIONAL,
       },
     }).root.addMethod('GET');
+    Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::BasePathMapping', {
@@ -1010,7 +988,6 @@ describe('domains', () => {
   test('allows REST API to be mapped with enhanced security policy and multi-level base path', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigw.RestApi(stack, 'api');
     api.root.addMethod('GET');
 
@@ -1020,6 +997,7 @@ describe('domains', () => {
       securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
       endpointAccessMode: apigw.EndpointAccessMode.STRICT,
     });
+    Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // WHEN - should not throw
     expect(() => {
@@ -1038,7 +1016,6 @@ describe('domains', () => {
     test('allows token-based endpointAccessMode with enhanced security policy', () => {
       // GIVEN
       const stack = new Stack();
-      acknowledgeTestValidationRules(stack);
       const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
 
       // WHEN - using a token for endpointAccessMode (e.g., from CfnParameter)
@@ -1058,7 +1035,6 @@ describe('domains', () => {
     test('allows token-based securityPolicy with endpointAccessMode', () => {
       // GIVEN
       const stack = new Stack();
-      acknowledgeTestValidationRules(stack);
       const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
 
       // WHEN - using a token for securityPolicy (e.g., from CfnParameter)
@@ -1078,7 +1054,6 @@ describe('domains', () => {
     test('allows token-based endpointType with security policy validation', () => {
       // GIVEN
       const stack = new Stack();
-      acknowledgeTestValidationRules(stack);
       const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
 
       // WHEN - using a token for endpointType (e.g., from cross-stack reference)
@@ -1099,7 +1074,6 @@ describe('domains', () => {
     test('allows token-based endpointType with edge-only security policy', () => {
       // GIVEN
       const stack = new Stack();
-      acknowledgeTestValidationRules(stack);
       const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
 
       // WHEN - using a token for endpointType with edge-only policy
@@ -1120,7 +1094,6 @@ describe('domains', () => {
     test('accepts BASIC endpointAccessMode with enhanced security policy', () => {
       // GIVEN
       const stack = new Stack();
-      acknowledgeTestValidationRules(stack);
       const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
 
       // WHEN/THEN - BASIC is a valid value for enhanced security policies
@@ -1137,7 +1110,6 @@ describe('domains', () => {
     test('still validates non-token endpointType with incompatible security policy', () => {
       // GIVEN
       const stack = new Stack();
-      acknowledgeTestValidationRules(stack);
       const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
 
       // WHEN/THEN - non-token values should still be validated

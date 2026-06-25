@@ -2,13 +2,11 @@ import { Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
 import * as cdk from '../../core';
 import * as apigw from '../lib';
-import { acknowledgeTestValidationRules } from './validation-util';
 
 describe('BasePathMapping', () => {
   test('default setup', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigw.RestApi(stack, 'MyApi');
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
@@ -16,6 +14,7 @@ describe('BasePathMapping', () => {
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       endpointType: apigw.EndpointType.REGIONAL,
     });
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // WHEN
     new apigw.BasePathMapping(stack, 'MyBasePath', {
@@ -34,7 +33,6 @@ describe('BasePathMapping', () => {
   test('specify basePath property', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigw.RestApi(stack, 'MyApi');
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
@@ -42,6 +40,7 @@ describe('BasePathMapping', () => {
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       endpointType: apigw.EndpointType.REGIONAL,
     });
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // WHEN
     new apigw.BasePathMapping(stack, 'MyBasePath', {
@@ -59,7 +58,6 @@ describe('BasePathMapping', () => {
   test('specify multi-level basePath property', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigw.RestApi(stack, 'MyApi');
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
@@ -67,6 +65,7 @@ describe('BasePathMapping', () => {
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       endpointType: apigw.EndpointType.REGIONAL,
     });
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // WHEN
     new apigw.BasePathMapping(stack, 'MyBasePath', {
@@ -84,7 +83,6 @@ describe('BasePathMapping', () => {
   test('throws when basePath contains an invalid character', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigw.RestApi(stack, 'MyApi');
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
@@ -92,6 +90,7 @@ describe('BasePathMapping', () => {
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       endpointType: apigw.EndpointType.REGIONAL,
     });
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // WHEN
     const invalidBasePath = 'invalid-/base-path?';
@@ -109,7 +108,6 @@ describe('BasePathMapping', () => {
   test('throw error for basePath starting with /', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigw.RestApi(stack, 'MyApi');
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
@@ -117,6 +115,7 @@ describe('BasePathMapping', () => {
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       endpointType: apigw.EndpointType.REGIONAL,
     });
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // WHEN
     const invalidBasePath = '/invalid-base-path';
@@ -134,7 +133,6 @@ describe('BasePathMapping', () => {
   test('throw error for basePath ending with /', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigw.RestApi(stack, 'MyApi');
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
@@ -142,6 +140,7 @@ describe('BasePathMapping', () => {
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       endpointType: apigw.EndpointType.REGIONAL,
     });
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // WHEN
     const invalidBasePath = 'invalid-base-path/';
@@ -159,7 +158,6 @@ describe('BasePathMapping', () => {
   test('throw error for basePath containing more than one consecutive /', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigw.RestApi(stack, 'MyApi');
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
@@ -167,6 +165,7 @@ describe('BasePathMapping', () => {
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       endpointType: apigw.EndpointType.REGIONAL,
     });
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // WHEN
     const invalidBasePath = 'in//valid-base-path';
@@ -184,7 +183,6 @@ describe('BasePathMapping', () => {
   test('specify stage property', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigw.RestApi(stack, 'MyApi');
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
@@ -192,6 +190,8 @@ describe('BasePathMapping', () => {
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       endpointType: apigw.EndpointType.REGIONAL,
     });
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
+
     const stage = new apigw.Stage(stack, 'MyStage', {
       deployment: new apigw.Deployment(stack, 'MyDeplouyment', {
         api,
@@ -215,7 +215,6 @@ describe('BasePathMapping', () => {
   test('specify attachToStage property', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigw.RestApi(stack, 'MyApi');
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
@@ -223,6 +222,7 @@ describe('BasePathMapping', () => {
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       endpointType: apigw.EndpointType.REGIONAL,
     });
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // WHEN
     new apigw.BasePathMapping(stack, 'MyBasePath', {
@@ -240,7 +240,6 @@ describe('BasePathMapping', () => {
   test('works with imported domain name from attributes', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigw.RestApi(stack, 'MyApi');
     api.root.addMethod('GET');
     const domain = apigw.DomainName.fromDomainNameAttributes(stack, 'Domain', {

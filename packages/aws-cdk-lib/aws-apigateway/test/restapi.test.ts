@@ -9,12 +9,10 @@ import { App, CfnResource, Lazy, RemovalPolicy, Size, Stack } from '../../core';
 import { JSII_RUNTIME_SYMBOL } from '../../core/lib/constants';
 import * as cx_api from '../../cx-api';
 import * as apigw from '../lib';
-import { acknowledgeTestValidationRules } from './validation-util';
 
 let stack: Stack;
 beforeEach(() => {
   stack = new Stack();
-  acknowledgeTestValidationRules(stack);
 });
 
 describe('restapi', () => {
@@ -147,7 +145,6 @@ describe('restapi', () => {
     // GIVEN
     const app = new App();
     stack = new Stack(app, 'my-stack');
-    acknowledgeTestValidationRules(stack);
     const api = new apigw.RestApi(stack, 'API');
 
     // WHEN
@@ -349,7 +346,6 @@ describe('restapi', () => {
       },
     });
     stack = new Stack(app);
-    acknowledgeTestValidationRules(stack);
     const api = new apigw.RestApi(stack, 'myapi');
     api.root.addMethod('GET');
 
@@ -915,7 +911,6 @@ describe('restapi', () => {
     });
 
     stack = new Stack(app);
-    acknowledgeTestValidationRules(stack);
     const api = new apigw.RestApi(stack, 'RestApi', {
       minCompressionSize: Size.bytes(1024),
     });
@@ -939,7 +934,6 @@ describe('restapi', () => {
     });
 
     stack = new Stack(app);
-    acknowledgeTestValidationRules(stack);
     const api = new apigw.RestApi(stack, 'RestApi', {
       minimumCompressionSize: 1024,
     });
@@ -964,7 +958,6 @@ describe('restapi', () => {
 
     // WHEN
     stack = new Stack(app);
-    acknowledgeTestValidationRules(stack);
 
     // THEN
     expect(() => new apigw.RestApi(stack, 'RestApi', {
@@ -1139,7 +1132,6 @@ describe('SpecRestApi', () => {
     });
 
     stack = new Stack(app);
-    acknowledgeTestValidationRules(stack);
     const api = new apigw.SpecRestApi(stack, 'SpecRestApi', {
       apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
     });
@@ -1162,7 +1154,6 @@ describe('SpecRestApi', () => {
     });
 
     stack = new Stack(app);
-    acknowledgeTestValidationRules(stack);
     const api = new apigw.SpecRestApi(stack, 'SpecRestApi', {
       apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
       minCompressionSize: Size.bytes(1024),
@@ -1187,7 +1178,6 @@ describe('SpecRestApi', () => {
     });
 
     stack = new Stack(app);
-    acknowledgeTestValidationRules(stack);
     const api = new apigw.SpecRestApi(stack, 'SpecRestApi', {
       apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
       binaryMediaTypes: ['image/png', 'application/octet-stream'],
@@ -2040,7 +2030,6 @@ describe('telemetry metadata', () => {
     const app = new App();
     app.node.setContext(cx_api.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);
     stack = new Stack(app);
-    acknowledgeTestValidationRules(stack);
 
     const api = new apigw.RestApi(stack, 'myapi', {
       defaultMethodOptions: {
@@ -2067,7 +2056,6 @@ describe('telemetry metadata', () => {
     const app = new App();
     app.node.setContext(cx_api.ENABLE_ADDITIONAL_METADATA_COLLECTION, false);
     stack = new Stack(app);
-    acknowledgeTestValidationRules(stack);
 
     const api = new apigw.RestApi(stack, 'myapi', {
       defaultMethodOptions: {
