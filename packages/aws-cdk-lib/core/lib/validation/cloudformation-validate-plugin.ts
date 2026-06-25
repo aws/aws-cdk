@@ -215,4 +215,10 @@ const IGNORE_RULES = new Set([
   // WHY: The engine doesn't understand that the `ClusterSecurityGroupId` attribute of an EKS cluster returns a security group ID
   // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/46>.
   'E1150',
+
+  // WHAT: Passing an incorrect enum value is a FATAL error
+  // WHY: This should not be a FATAL; we can't assume that we know everything about every service going into the future.
+  // Fatals cannot be silenced, this is too broad.
+  // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/47>.
+  'F3030',
 ]);
