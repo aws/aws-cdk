@@ -40,6 +40,7 @@ import {
   KeyPair,
   UserData,
 } from '../lib';
+import { acknowledgeTestValidationRules } from "./util";
 
 describe('vpc', () => {
   describe('When creating a VPC', () => {
@@ -2850,7 +2851,9 @@ describe('vpc', () => {
 });
 
 function getTestStack(): Stack {
-  return new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
+  const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
+  acknowledgeTestValidationRules(stack);
+  return stack;
 }
 
 function toCfnTags(tags: any): Array<{Key: string; Value: string}> {
