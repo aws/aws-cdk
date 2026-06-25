@@ -10,5 +10,9 @@ const APP_INIT_HOOK_SYMBOL = Symbol.for('@aws-cdk/core.App#initHook');
     { id: 'CloudFormation-Validate::W7001', reason: 'Tests do not always reference mappings' },
     { id: 'CloudFormation-Validate::W9008', reason: 'Do not care about storage encryption of RDS instances in tests' },
     { id: 'CloudFormation-Validate::W3010', reason: 'Tests hardcode availability zone strings' },
+    { id: 'CloudFormation-Validate::W3696', reason: 'Service is about to get shut down, no reason not to test' },
+    { id: 'CloudFormation-Validate::F3031', reason: 'Some test value does not match the expected regex' },
+    { id: 'CloudFormation-Validate::E1151', reason: 'vpc-12345 is not a valid VPC ID' },
+    { id: 'CloudFormation-Validate::W2001', reason: 'Parameter is not used in the template' },
   );
 };

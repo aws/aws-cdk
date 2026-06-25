@@ -7,7 +7,7 @@ import * as s3 from '../../../../aws-s3';
 import * as sns from '../../../../aws-sns';
 import * as cdk from '../../../../core';
 import { Duration } from '../../../../core';
-import { Memory, } from '../../../lib/memory/memory';
+import { Memory } from '../../../lib/memory/memory';
 import { MemoryStrategy } from '../../../lib/memory/memory-strategy';
 
 // Create a test model using the stable FoundationModel

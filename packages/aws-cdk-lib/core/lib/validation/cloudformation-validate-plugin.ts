@@ -210,4 +210,9 @@ const IGNORE_RULES = new Set([
   // WHY: The engine falsely flags the pattern `{"Fn::Join": ["||", {"Fn::GetAtt": ["ID", "SomeAttr"]}]}` as a case of output value being an array
   // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/45>.
   'W9013',
+
+  // WHAT: Not a valid SecurityGroup Id
+  // WHY: The engine doesn't understand that the `ClusterSecurityGroupId` attribute of an EKS cluster returns a security group ID
+  // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/46>.
+  'E1150',
 ]);
