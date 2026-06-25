@@ -2,14 +2,12 @@ import { Template } from '../../assertions';
 import * as signer from '../../aws-signer';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
-import { acknowledgeTestValidationRules } from './util';
 
 let app: cdk.App;
 let stack: cdk.Stack;
 beforeEach( () => {
   app = new cdk.App( {} );
   stack = new cdk.Stack( app );
-  acknowledgeTestValidationRules(stack);
 } );
 
 describe('code signing config', () => {

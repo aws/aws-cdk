@@ -2,7 +2,6 @@ import { Template } from '../../assertions';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
-import { acknowledgeTestValidationRules } from './util';
 
 describe('ADOT Lambda Layer', () => {
   describe('when the stack region is specified and supported', () => {
@@ -11,7 +10,6 @@ describe('ADOT Lambda Layer', () => {
     beforeEach(() => {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'stack', { env: { region: 'us-west-2' } });
-      acknowledgeTestValidationRules(stack);
       const bucket = new s3.Bucket(stack, 'CodeBucket');
       fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromBucket(bucket, 'mock_key'),
@@ -43,7 +41,6 @@ describe('ADOT Lambda Layer', () => {
     beforeEach(() => {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'stack', { env: { region: 'us-west-2' } });
-      acknowledgeTestValidationRules(stack);
       const bucket = new s3.Bucket(stack, 'CodeBucket');
       fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromBucket(bucket, 'mock_key'),
@@ -73,7 +70,6 @@ describe('ADOT Lambda Layer', () => {
     test('throws error if the region is not supported', () => {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'stack', { env: { region: 'neverland' } });
-      acknowledgeTestValidationRules(stack);
       const bucket = new s3.Bucket(stack, 'CodeBucket');
       const fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromBucket(bucket, 'mock_key'),
@@ -93,7 +89,6 @@ describe('ADOT Lambda Layer', () => {
     test('is added properly', () => {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'region-agnostic-stack');
-      acknowledgeTestValidationRules(stack);
       const fn = new lambda.Function(stack, 'Function', {
         code: new lambda.InlineCode('FooBar'),
         handler: 'index.handler',

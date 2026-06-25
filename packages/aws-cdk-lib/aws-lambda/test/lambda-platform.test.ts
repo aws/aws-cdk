@@ -2,14 +2,12 @@ import * as path from 'path';
 import { Template } from '../../assertions';
 import * as cdk from '../../core';
 import { Architecture, DockerImageCode, DockerImageFunction } from '../lib';
-import { acknowledgeTestValidationRules } from './util';
 
 describe('lambda platform', () => {
   test('can choose lambda architecture arm64', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
-    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new DockerImageFunction(stack, 'Lambda', {
@@ -29,7 +27,6 @@ describe('lambda platform', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
-    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new DockerImageFunction(stack, 'Lambda', {

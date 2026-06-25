@@ -1,4 +1,3 @@
-import { acknowledgeTestValidationRules } from './util';
 import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam/index';
 import * as cdk from '../../core';
@@ -14,11 +13,10 @@ describe('addToRolePolicy token conflict detection', () => {
       },
     });
     const stack = new cdk.Stack(app);
-    acknowledgeTestValidationRules(stack);
 
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('test'),
-      runtime: lambda.Runtime.PYTHON_3_9,
+      runtime: lambda.Runtime.PYTHON_3_14,
       handler: 'index.test',
     });
 
@@ -60,7 +58,6 @@ describe('addToRolePolicy token conflict detection', () => {
       },
     });
     const stack = new cdk.Stack(app);
-    acknowledgeTestValidationRules(stack);
 
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('test'),
@@ -112,7 +109,6 @@ describe('addToRolePolicy token conflict detection', () => {
       },
     });
     const stack = new cdk.Stack(app);
-    acknowledgeTestValidationRules(stack);
 
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('test'),
@@ -178,7 +174,6 @@ describe('addToRolePolicy token conflict detection', () => {
       },
     });
     const stack = new cdk.Stack(app);
-    acknowledgeTestValidationRules(stack);
 
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('test'),
@@ -244,7 +239,6 @@ describe('addToRolePolicy token conflict detection', () => {
       },
     });
     const stack = new cdk.Stack(app);
-    acknowledgeTestValidationRules(stack);
 
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('test'),
@@ -290,7 +284,6 @@ describe('addToRolePolicy token conflict detection', () => {
       },
     });
     const stack = new cdk.Stack(app);
-    acknowledgeTestValidationRules(stack);
 
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('test'),

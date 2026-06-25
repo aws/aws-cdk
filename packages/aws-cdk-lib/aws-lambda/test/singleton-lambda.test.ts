@@ -5,13 +5,11 @@ import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
-import { acknowledgeTestValidationRules } from './util';
 
 describe('singleton lambda', () => {
   test('can add same singleton Lambda multiple times, only instantiated once in template', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
 
     // WHEN
     for (let i = 0; i < 5; i++) {
@@ -67,7 +65,6 @@ describe('singleton lambda', () => {
   test('dependencies are correctly added', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
       code: new lambda.InlineCode('def hello(): pass'),
@@ -97,7 +94,6 @@ describe('singleton lambda', () => {
       },
     });
     const stack = new cdk.Stack(app);
-    acknowledgeTestValidationRules(stack);
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
       code: new lambda.InlineCode('def hello(): pass'),
@@ -122,7 +118,6 @@ describe('singleton lambda', () => {
   test('Environment is added to Lambda, when .addEnvironment() is provided one key pair', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
       code: new lambda.InlineCode('def hello(): pass'),
@@ -147,7 +142,6 @@ describe('singleton lambda', () => {
   test('Layer is added to Lambda, when .addLayers() is provided a valid layer', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
       code: new lambda.InlineCode('def hello(): pass'),
@@ -175,7 +169,6 @@ describe('singleton lambda', () => {
   test('grantInvoke works correctly', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
       code: new lambda.InlineCode('def hello(): pass'),
@@ -204,7 +197,6 @@ describe('singleton lambda', () => {
   test('check edge compatibility', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
       code: new lambda.InlineCode('def hello(): pass'),
@@ -223,7 +215,6 @@ describe('singleton lambda', () => {
   test('logGroup is correctly returned', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
 
     // WHEN
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
@@ -242,7 +233,6 @@ describe('singleton lambda', () => {
   test('runtime is correctly returned', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
 
     // WHEN
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
@@ -260,7 +250,6 @@ describe('singleton lambda', () => {
   testDeprecated('current version of a singleton function', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
       code: new lambda.InlineCode('foo'),
@@ -283,7 +272,6 @@ describe('singleton lambda', () => {
   test('bind to vpc and access connections', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
     const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
       vpc: vpc,

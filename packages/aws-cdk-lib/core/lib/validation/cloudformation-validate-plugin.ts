@@ -226,4 +226,9 @@ const IGNORE_RULES = new Set([
   // WHY: The rule does not respect the default HealthCheckPort is 'traffic-port'
   // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/42>.
   'E3049',
+
+  // WHAT: Ref values match the consuming property
+  // WHY: Incorrect validation of Ref function when tokens are involved
+  // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/50>
+  'W1030',
 ]);
