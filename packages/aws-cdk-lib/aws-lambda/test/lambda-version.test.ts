@@ -13,6 +13,7 @@ describe('lambda version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     acknowledgeTestValidationRules(stack);
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
 
     // WHEN
     const version = lambda.Version.fromVersionArn(stack, 'Version', 'arn:aws:lambda:region:account-id:function:function-name:version');
@@ -41,6 +42,7 @@ describe('lambda version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     acknowledgeTestValidationRules(stack);
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
 
     // WHEN
     const func = new lambda.Function(stack, 'Fn', {
@@ -61,6 +63,7 @@ describe('lambda version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     acknowledgeTestValidationRules(stack);
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
     const fn = new lambda.Function(stack, 'Fn', {
       runtime: THE_RUNTIME,
       handler: 'index.handler',
@@ -94,6 +97,7 @@ describe('lambda version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     acknowledgeTestValidationRules(stack);
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
     const fn = new lambda.Function(stack, 'Fn', {
       runtime: THE_RUNTIME,
       handler: 'index.handler',
@@ -113,6 +117,7 @@ describe('lambda version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     acknowledgeTestValidationRules(stack);
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
     const version1 = lambda.Version.fromVersionArn(stack, 'Version1', 'arn:aws:lambda:region:account-id:function:function-name:version1');
     const version2 = lambda.Version.fromVersionArn(stack, 'Version2', 'arn:aws:lambda:region:account-id:function:function-name:version2');
 
@@ -141,6 +146,7 @@ describe('lambda version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     acknowledgeTestValidationRules(stack);
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
     const fn = new lambda.Function(stack, 'Fn', {
       runtime: THE_RUNTIME,
       handler: 'index.handler',
@@ -170,6 +176,7 @@ describe('lambda version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     acknowledgeTestValidationRules(stack);
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
     const fn = new lambda.Function(stack, 'Fn', {
       runtime: THE_RUNTIME,
       handler: 'index.handler',
@@ -185,6 +192,7 @@ describe('lambda version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     acknowledgeTestValidationRules(stack);
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
     const version = lambda.Version.fromVersionArn(stack, 'Version', 'arn:aws:lambda:region:account-id:function:function-name:$LATEST');
 
     // THEN
@@ -196,6 +204,7 @@ describe('lambda version', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
     acknowledgeTestValidationRules(stack);
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
     const fn = new lambda.Function(stack, 'Fn', {
       runtime: THE_RUNTIME,
       handler: 'index.handler',
@@ -224,6 +233,7 @@ describe('lambda version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     acknowledgeTestValidationRules(stack);
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -245,6 +255,7 @@ describe('lambda version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     acknowledgeTestValidationRules(stack);
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -264,6 +275,7 @@ describe('lambda version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     acknowledgeTestValidationRules(stack);
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -282,6 +294,7 @@ describe('lambda version', () => {
     test('version with min and max execution environments', () => {
       const stack = new cdk.Stack();
       acknowledgeTestValidationRules(stack);
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
       const fn = new lambda.Function(stack, 'Fn', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
@@ -305,6 +318,7 @@ describe('lambda version', () => {
     test('version with only min execution environments', () => {
       const stack = new cdk.Stack();
       acknowledgeTestValidationRules(stack);
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
       const fn = new lambda.Function(stack, 'Fn', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
@@ -326,6 +340,7 @@ describe('lambda version', () => {
     test('version with only max execution environments', () => {
       const stack = new cdk.Stack();
       acknowledgeTestValidationRules(stack);
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
       const fn = new lambda.Function(stack, 'Fn', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
@@ -347,6 +362,7 @@ describe('lambda version', () => {
     test('throws when minExecutionEnvironments is negative', () => {
       const stack = new cdk.Stack();
       acknowledgeTestValidationRules(stack);
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
       const fn = new lambda.Function(stack, 'Fn', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
@@ -364,6 +380,7 @@ describe('lambda version', () => {
     test('throws when maxExecutionEnvironments is negative', () => {
       const stack = new cdk.Stack();
       acknowledgeTestValidationRules(stack);
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
       const fn = new lambda.Function(stack, 'Fn', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
@@ -381,6 +398,7 @@ describe('lambda version', () => {
     test('throws when minExecutionEnvironments is greater than capacityProviderMaxExecutionEnvironments', () => {
       const stack = new cdk.Stack();
       acknowledgeTestValidationRules(stack);
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
       const fn = new lambda.Function(stack, 'Fn', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
@@ -399,6 +417,7 @@ describe('lambda version', () => {
     test('accepts tokens for execution environment scaling config', () => {
       const stack = new cdk.Stack();
       acknowledgeTestValidationRules(stack);
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
       const fn = new lambda.Function(stack, 'Fn', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',

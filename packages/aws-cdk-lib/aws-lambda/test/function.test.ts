@@ -2294,7 +2294,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       environment: {
         SOME: 'Variable',
       },
@@ -2319,7 +2319,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       environment: {
         SOME: 'Variable',
       },
@@ -2342,7 +2342,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       reservedConcurrentExecutions: 10,
     });
 
@@ -2395,7 +2395,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       logRetention: logs.RetentionDays.ONE_MONTH,
       logRemovalPolicy: cdk.RemovalPolicy.DESTROY,
     });
@@ -4053,7 +4053,8 @@ describe('function', () => {
       acknowledgeTestValidationRules(stack);
       new lambda.CfnFunction(stack, 'MyLambda', {
         code: {
-          zipFile: 'java11-test-function.zip',
+          s3Bucket: 'my-bucket',
+          s3Key: 'java11-test-function.zip',
         },
         functionName: 'MyCDK-SnapStart-Function',
         handler: 'example.Handler::handleRequest',
@@ -4065,7 +4066,7 @@ describe('function', () => {
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Properties:
         {
-          Code: { ZipFile: 'java11-test-function.zip' },
+          Code: { S3Bucket: 'my-bucket', S3Key: 'java11-test-function.zip' },
           Handler: 'example.Handler::handleRequest',
           Runtime: 'java11',
           SnapStart: {
@@ -4102,6 +4103,7 @@ describe('function', () => {
     test('runtime validation for snapStart', () => {
       const stack = new cdk.Stack();
       acknowledgeTestValidationRules(stack);
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W2531', reason: 'Intentionally testing on old runtime' });
 
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
@@ -5260,7 +5262,7 @@ describe('CMCMK', () => {
     new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromCustomCommand('function.test.handler7.zip', ['node'], commandOptions),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
@@ -5296,7 +5298,7 @@ describe('CMCMK', () => {
     new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromCustomCommand('function.test.handler7.zip', ['node']),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
@@ -5321,7 +5323,7 @@ describe('tag propagation to logGroup on FF USE_CDK_MANAGED_LAMBDA_LOGGROUP enab
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('exports.handler = async () => {};'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     cdk.Tags.of(fn).add('Environment', 'Test');
@@ -5349,7 +5351,7 @@ describe('USE_CDK_MANAGED_LAMBDA_LOGGROUP defaults to false when not specified',
     new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('exports.handler = async () => {};'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     // THEN
@@ -5368,7 +5370,7 @@ describe('Lambda Function log group behavior', () => {
       new lambda.Function(stack, 'TestFunction', {
         code: lambda.Code.fromInline('exports.handler = async () => {};'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_20_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         logRetention: logs.RetentionDays.ONE_WEEK,
         logGroup: new logs.LogGroup(stack, 'CustomLogGroup'),
       });
@@ -5384,7 +5386,7 @@ describe('Lambda Function log group behavior', () => {
       new lambda.Function(stack, 'LogRetentionOnlyFunction', {
         code: lambda.Code.fromInline('exports.handler = async () => {};'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_20_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         logRetention: logs.RetentionDays.ONE_WEEK,
       });
     }).not.toThrow();
@@ -5399,7 +5401,7 @@ describe('Lambda Function log group behavior', () => {
       new lambda.Function(stack, 'LogGroupOnlyFunction', {
         code: lambda.Code.fromInline('exports.handler = async () => {};'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_20_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         logGroup: new logs.LogGroup(stack, 'MyLogGroup'),
       });
     }).not.toThrow();
@@ -5429,7 +5431,7 @@ describe('telemetry metadata', () => {
     const fn = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     fn.addEnvironment('foo', '1234567890', {
@@ -5459,7 +5461,7 @@ describe('telemetry metadata', () => {
     const fn = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     expect(fn.node.metadata).toStrictEqual([]);
