@@ -2258,7 +2258,6 @@ describe('Runtime role validation tests', () => {
     expect(runtime.role).toBe(crossAccountRole);
 
     cdk.Validations.of(app).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'Testing hardcoded ARN for cross-account role' });
-    cdk.Validations.of(app).acknowledge({ id: 'CloudFormation-Validate::W9013', reason: 'Testing hardcoded account ID in cross-account role ARN' });
 
     const annotations = Annotations.fromStack(stack).findWarning('*', Match.stringLikeRegexp('.*different account.*cross-account.*'));
     expect(annotations.length).toBe(1);

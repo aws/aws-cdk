@@ -195,4 +195,14 @@ const IGNORE_RULES = new Set([
   // WHY: The source of truth is too limited.
   // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/39>.
   'E9004',
+
+  // WHAT: Action 'XXX' (category 'Deploy') has 0 input artifacts, expected at least 1
+  // WHY: There are valid cases in which an action may have 0 artifacts, such as `ActionMode: CHANGE_SET_EXECUTE`
+  // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/44>.
+  'E3702',
+
+  // WHAT: "Hardcoded account ID in ARN — use AWS::AccountId pseudo-parameter"
+  // WHY: In some cases, the engine reports this violation even when the AWS::AccountId was used.
+  // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/41>.
+  'W9013',
 ]);
