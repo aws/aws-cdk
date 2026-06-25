@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "ConfigurationSetAutoValidationInteg/DefaultTest": {
+      "stacks": [
+        "cdk-ses-configuration-set-auto-validation"
+      ],
+      "assertionStack": "ConfigurationSetAutoValidationInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "ConfigurationSetAutoValidationIntegDefaultTestDeployAssertDDE6AACC"
+    }
+  },
+  "minimumCliVersion": "2.1121.0"
+}
