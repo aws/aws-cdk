@@ -751,6 +751,46 @@ class TestHandler(unittest.TestCase):
         with open(os.path.join(workdir, "subfolder", "boom.txt"), "r") as file:
             self.assertEqual(file.read().rstrip(), "Another value1-source2 file with _marker2_ hey!\nLine 2 with value1-source2 again :-)")
 
+    def test_create_update_with_destination_bucket_region(self):
+        invoke_handler("Create", {
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
+            "DestinationBucketName": "<dest-bucket-name>",
+            "DestinationBucketRegion": "eu-south-2"
+        })
+
+        self.assertAwsCommands(
+            ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip", "--region", "eu-south-2"],
+            ["s3", "sync", "--delete", "contents.zip", "s3://<dest-bucket-name>/", "--region", "eu-south-2"]
+        )
+
+    def test_create_update_without_destination_bucket_region(self):
+        invoke_handler("Create", {
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
+            "DestinationBucketName": "<dest-bucket-name>"
+        })
+
+        self.assertAwsCommands(
+            ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
+            ["s3", "sync", "--delete", "contents.zip", "s3://<dest-bucket-name>/"]
+        )
+
+    def test_delete_with_destination_bucket_region(self):
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'GetBucketTagging':
+                return {"TagSet": []}
+
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            invoke_handler("Delete", {
+                "SourceBucketNames": ["<source-bucket>"],
+                "SourceObjectKeys": ["<source-object-key>"],
+                "DestinationBucketName": "<dest-bucket-name>",
+                "DestinationBucketRegion": "eu-south-2",
+                "RetainOnDelete": "false"
+            }, physical_id="<physicalid>")
+
+        self.assertAwsCommands(["s3", "rm", "s3://<dest-bucket-name>/", "--recursive", "--region", "eu-south-2"])
 
     # asserts that a given list of "aws xxx" commands have been invoked (in order)
     def assertAwsCommands(self, *expected):

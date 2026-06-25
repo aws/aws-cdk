@@ -1,0 +1,36 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
+      "displayName": "CrossRegionOptInToStandardDestinationRegionOmittedBucketStack/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
+      "source": {
+        "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "12345678-us-west-2-8ea3a5ef": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-us-west-2",
+          "objectKey": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip",
+          "region": "us-west-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-us-west-2"
+        }
+      }
+    },
+    "5091f6b25b260ae4987d38a6b4d53279451a24924918d6fde94696d6306997e8": {
+      "displayName": "CrossRegionOptInToStandardDestinationRegionOmittedBucketStack Template",
+      "source": {
+        "path": "CrossRegionOptInToStandardDestinationRegionOmittedBucketStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "12345678-us-west-2-fae58649": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-us-west-2",
+          "objectKey": "5091f6b25b260ae4987d38a6b4d53279451a24924918d6fde94696d6306997e8.json",
+          "region": "us-west-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-us-west-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
