@@ -1,16 +1,18 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import { FingerprintDiskCache } from './fingerprint-disk-cache';
 import { IgnoreStrategy } from './ignore';
 import type { FingerprintOptions } from './options';
 import { IgnoreMode, SymlinkFollowMode } from './options';
 import { UnscopedValidationError } from '../errors';
+import { Cache } from '../private/cache';
 import { lit } from '../private/literal-string';
 
 const CTRL_SOH = '\x01';
 const CTRL_SOT = '\x02';
 const CTRL_ETX = '\x03';
+
+const fingerprintCache = new Cache<string>();
 
 /**
  * Files are fingerprinted only the first time they are encountered, to save
@@ -18,8 +20,7 @@ const CTRL_ETX = '\x03';
  * necessary for some reason.
  */
 export function clearLargeFileFingerprintCache() {
-  // No-op: caches are now per-operation and scoped to the fingerprint() call.
-  // Retained for API compatibility.
+  fingerprintCache.clear();
 }
 
 /**
@@ -61,23 +62,14 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
 
   const ignoreStrategy = IgnoreStrategy.fromCopyOptions(options, fileOrDirectory);
 
-  // Per-operation disk cache scoped to this directory
-  const cache = new FingerprintDiskCache(resolvedRoot);
-
-  function _contentFingerprint(file: string): string {
-    const stats = fs.statSync(file, { bigint: true });
-    return contentFingerprintWithStats(file, stats, cache);
-  }
-
   // Dispatch based on whether the root is a file or directory
   if (isDir) {
     _processDirectory(fileOrDirectory, fileOrDirectory);
   } else {
     const hashComponent = path.relative(fileOrDirectory, fileOrDirectory).replace(/\\/g, '/');
-    _hashField(hash, `file:${hashComponent}`, _contentFingerprint(fileOrDirectory));
+    _hashField(hash, `file:${hashComponent}`, contentFingerprint(fileOrDirectory));
   }
 
-  cache.save();
   return hash.digest('hex');
 
   // --- Inlined shouldFollow logic (avoids per-call path.resolve + fs.existsSync overhead) ---
@@ -118,7 +110,7 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
           continue;
         }
         const hashComponent = path.relative(fileOrDirectory, childSymbolicPath).replace(/\\/g, '/');
-        _hashField(hash, `file:${hashComponent}`, _contentFingerprint(childRealPath));
+        _hashField(hash, `file:${hashComponent}`, contentFingerprint(childRealPath));
       } else if (entry.isDirectory()) {
         if (ignoreStrategy.completelyIgnores(childSymbolicPath)) {
           continue;
@@ -166,7 +158,7 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
         return;
       }
       const hashComponent = path.relative(fileOrDirectory, symbolicPath).replace(/\\/g, '/');
-      _hashField(hash, `file:${hashComponent}`, contentFingerprintWithStats(resolvedLinkTarget, targetStat, cache));
+      _hashField(hash, `file:${hashComponent}`, contentFingerprintWithStats(resolvedLinkTarget, targetStat));
     } else {
       throw new UnscopedValidationError(
         lit`UnableToUnableHashNeither`,
@@ -178,12 +170,18 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
 
 export function contentFingerprint(file: string): string {
   const stats = fs.statSync(file, { bigint: true });
-  return contentFingerprintWithStats(file, stats, undefined);
+  return contentFingerprintWithStats(file, stats);
 }
 
-function contentFingerprintWithStats(file: string, stats: fs.BigIntStats, cache: FingerprintDiskCache | undefined): string {
-  const cacheKey = `${stats.ino}|${stats.mtimeMs}|${stats.size}`;
-  return cache?.obtain(cacheKey, () => contentFingerprintMiss(file)) ?? contentFingerprintMiss(file);
+function contentFingerprintWithStats(file: string, stats: fs.BigIntStats): string {
+  const cacheKey = JSON.stringify({
+    mtime_unix: stats.mtime.toUTCString(),
+    mtime_ms: stats.mtimeMs.toString(),
+    inode: stats.ino.toString(),
+    size: stats.size.toString(),
+  });
+
+  return fingerprintCache.obtain(cacheKey, () => contentFingerprintMiss(file));
 }
 
 // Pre-compiled regex for CRLF normalization
