@@ -1,7 +1,7 @@
 import { Template } from '../../../assertions';
 import * as ec2 from '../../../aws-ec2';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
-import { App, Stack, Validations } from '../../../core';
+import { App, Stack } from '../../../core';
 import * as ecs from '../../lib';
 import { acknowledgeTestValidationRules, addDefaultCapacityProvider } from '../util';
 

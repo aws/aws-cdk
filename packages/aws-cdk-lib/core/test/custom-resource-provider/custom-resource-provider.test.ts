@@ -4,7 +4,7 @@ import * as path from 'path';
 import type { Construct } from 'constructs';
 import { Template } from '../../../assertions';
 import * as cxapi from '../../../cx-api';
-import {
+import type {
   AssetStaging,
   DockerImageAssetLocation,
   DockerImageAssetSource,
@@ -12,9 +12,19 @@ import {
   FileAssetSource,
   ISynthesisSession,
   CustomResourceProviderOptions,
-  Validations
 } from '../../lib';
-import { App, CustomResourceProvider, Duration, Size, Stack, CfnResource, determineLatestNodeRuntimeName, CustomResourceProviderBase, CustomResourceProviderRuntime } from '../../lib';
+import {
+  Validations,
+  App,
+  CustomResourceProvider,
+  Duration,
+  Size,
+  Stack,
+  CfnResource,
+  determineLatestNodeRuntimeName,
+  CustomResourceProviderBase,
+  CustomResourceProviderRuntime,
+} from '../../lib';
 import { CUSTOMIZE_ROLES_CONTEXT_KEY } from '../../lib/helpers-internal';
 import { toCloudFormation } from '../util';
 
