@@ -2,6 +2,49 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.260.0](https://github.com/aws/aws-cdk/compare/v2.259.0...v2.260.0) (2026-06-16)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#38151](https://github.com/aws/aws-cdk/issues/38151)) ([f266a47](https://github.com/aws/aws-cdk/commit/f266a47595832d6018b8a0d43dcae6afde511de6)), closes [/docs.aws.amazon.com/AmazonS3/latest/userguide/s3-files-prereq-policies.html#s3](https://github.com/aws//docs.aws.amazon.com/AmazonS3/latest/userguide/s3-files-prereq-policies.html/issues/s3)
+* **core:** add external traces to  ConstructError ([#38131](https://github.com/aws/aws-cdk/issues/38131)) ([e360dd9](https://github.com/aws/aws-cdk/commit/e360dd9b44d2111e28cd16ac683a813f33ed5793))
+* **core:** append external stack traces to metadata if available ([#38124](https://github.com/aws/aws-cdk/issues/38124)) ([c77a08c](https://github.com/aws/aws-cdk/commit/c77a08c19eb16a3734183f079e598b90383d28a3))
+
+
+### Bug Fixes
+
+* **bundling:** docker build can be skipped if already performed ([#38134](https://github.com/aws/aws-cdk/issues/38134)) ([2f9ae95](https://github.com/aws/aws-cdk/commit/2f9ae95d55cda7dc5011c8a04b66af7fca0c4f9d))
+* **core:** stack traces contain decorator paths ([#38130](https://github.com/aws/aws-cdk/issues/38130)) ([318f645](https://github.com/aws/aws-cdk/commit/318f645df3f0c903f64126975fb4a4a65c0a18d0))
+* **core:** weak cross-stack references fail for list attributes ([#37948](https://github.com/aws/aws-cdk/issues/37948)) ([6bb9d75](https://github.com/aws/aws-cdk/commit/6bb9d75f71c229d246e39942cdf37e7406dfd5cb)), closes [#37910](https://github.com/aws/aws-cdk/issues/37910)
+* **lambda-nodejs:** reuse posixShellEscape for Docker bundling file operations ([#38133](https://github.com/aws/aws-cdk/issues/38133)) ([baa9e1d](https://github.com/aws/aws-cdk/commit/baa9e1dff469306cc23b8f4bd232d703f98bf68a))
+
+## [2.259.0](https://github.com/aws/aws-cdk/compare/v2.258.1...v2.259.0) (2026-06-11)
+
+### ⚠ BREAKING CHANGES
+
+* **lambda:** `Runtime.NODEJS_LATEST` now resolves to `nodejs24.x` in every region. Customers who pin to a concrete runtime (`Runtime.NODEJS_22_X`, `useLatestRuntimeVersion: false` in `aws-lambda-nodejs.NodejsFunction`) are unaffected. Existing `AWS::Lambda::Function` resources synthesized with `NODEJS_LATEST` will see `Runtime: nodejs22.x` → `Runtime: nodejs24.x` on next deploy. Lambda accepts runtime updates **in place**.
+
+  **Customer-code compatibility — IMPORTANT**: Node.js 24 removes support for callback-style asynchronous handlers (`(event, context, callback) => {...}`) per the [launch blog](https://aws.amazon.com/blogs/compute/node-js-24-runtime-now-available-in-aws-lambda/). Customers whose Lambda code still uses callback-based handlers will see runtime errors after the bump. Customers should migrate to `async (event, context) => {...}` or pin to `Runtime.NODEJS_22_X` explicitly.
+
+### Features
+
+* **core:** recommend the use of weak references if no choice has been made ([#38070](https://github.com/aws/aws-cdk/issues/38070)) ([6e74e5e](https://github.com/aws/aws-cdk/commit/6e74e5ebbea3959a86af3aea038df0ab87aa27b6))
+* **ecs:** add forceNewDeployment option for Fargate and EC2 services ([#36797](https://github.com/aws/aws-cdk/issues/36797)) ([3d9c4df](https://github.com/aws/aws-cdk/commit/3d9c4df185026440f5668b82dd2adb47e0c366de)), closes [#27762](https://github.com/aws/aws-cdk/issues/27762)
+* **eks:** use the recommended AL2023 instead of AL2 AMI type (under feature flag) ([#37850](https://github.com/aws/aws-cdk/issues/37850)) ([6a2dcb7](https://github.com/aws/aws-cdk/commit/6a2dcb7ab6e2d4a69999625947ab6a152b82bc19)), closes [#32211](https://github.com/aws/aws-cdk/issues/32211)
+* **lambda:** upgrade lambda and custom resource default runtime to nodejs24.x ([#38031](https://github.com/aws/aws-cdk/issues/38031)) ([36c84c6](https://github.com/aws/aws-cdk/commit/36c84c6d6ef8a4772249afadec78c2d25c44cd90))
+
+
+
+### Bug Fixes
+
+* **spec2cdk:** sanitize hyphens in EventBridge event namespace names ([#38088](https://github.com/aws/aws-cdk/issues/38088)) ([b8f41bf](https://github.com/aws/aws-cdk/commit/b8f41bf4f2a8ef3556f3279c7fdd8259f3b6086b)), closes [40aws-cdk/spec2cdk/lib/naming/conventions.ts#L195](https://github.com/40aws-cdk/spec2cdk/lib/naming/conventions.ts/issues/L195)
+
+
+### Reverts
+
+* "chore(bundling): check if docker image is cached before building" ([#38116](https://github.com/aws/aws-cdk/issues/38116)) ([359f2fb](https://github.com/aws/aws-cdk/commit/359f2fbbebb58da0e911b0550b49033fcc84f371)), closes [aws/aws-cdk#37951](https://github.com/aws/aws-cdk/issues/37951)
+
 ## [2.258.1](https://github.com/aws/aws-cdk/compare/v2.258.0...v2.258.1) (2026-06-08)
 
 

@@ -6498,7 +6498,8 @@
       "nodejs16.x",
       "nodejs18.x",
       "nodejs20.x",
-      "nodejs22.x"
+      "nodejs22.x",
+      "nodejs24.x"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/core/lib/deps.ts": {
@@ -6638,7 +6639,8 @@
     "Runtime": [
       "nodejs18.x",
       "nodejs20.x",
-      "nodejs22.x"
+      "nodejs22.x",
+      "nodejs24.x"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/triggers/lib/trigger.ts": {
