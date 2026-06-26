@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { acknowledgeTestWarnings } from './test-warnings';
 import { Match, Template } from '../../assertions';
 import type * as s3 from '../../aws-s3';
 import * as core from '../../core';
@@ -13,9 +14,7 @@ let app: core.App;
 
 beforeEach(() => {
   app = new core.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
-  core.Validations.of(app).acknowledge(
-    { id: 'CloudFormation-Validate::F3014', reason: 'Our template supply mutex properties' },
-  );
+  acknowledgeTestWarnings(app);
 });
 
 describe('CDK Include for nested stacks', () => {

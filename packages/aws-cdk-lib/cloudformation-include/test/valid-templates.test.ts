@@ -1,11 +1,11 @@
 import * as path from 'path';
 import type * as constructs from 'constructs';
+import { acknowledgeTestWarnings } from './test-warnings';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import type * as ssm from '../../aws-ssm';
 import * as core from '../../core';
-import { Validations } from '../../core';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
 
@@ -18,12 +18,8 @@ describe('CDK Include', () => {
   let app: core.App;
   beforeEach(() => {
     app = new core.App();
+    acknowledgeTestWarnings(app);
     stack = new core.Stack(app, 'Stack');
-    Validations.of(stack).acknowledge(
-      { id: 'CloudFormation-Validate::F3002', reason: 'These tests validate the ingestion of templates into CDK. Whether the properties are valid or not is irrelevant' },
-      { id: 'CloudFormation-Validate::F3002', reason: 'These tests validate the ingestion of templates into CDK. Whether the properties are valid or not is irrelevant' },
-      { id: 'CloudFormation-Validate::F3014', reason: 'Our template supply mutex properties' },
-    );
   });
 
   test('can ingest a template with only an empty S3 Bucket, and output it unchanged', () => {
