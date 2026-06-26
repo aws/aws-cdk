@@ -15,5 +15,6 @@ const APP_INIT_HOOK_SYMBOL = Symbol.for('@aws-cdk/core.App#initHook');
     { id: 'CloudFormation-Validate::E1151', reason: 'vpc-12345 is not a valid VPC ID' },
     { id: 'CloudFormation-Validate::W2001', reason: 'Parameter is not used in the template' },
     { id: 'CloudFormation-Validate::E1156', reason: 'Many of our Role ARN literals are bogus' },
+    { id: 'CloudFormation-Validate::E3652', reason: 'Elasticsearch instance not available in that region' },
   );
 };

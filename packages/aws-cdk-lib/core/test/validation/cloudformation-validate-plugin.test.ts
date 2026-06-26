@@ -160,7 +160,12 @@ describe('CloudFormationValidatePlugin', () => {
     }));
 
     const plugin = new core.CloudFormationValidatePlugin();
-    const report = plugin.validate({ templatePaths: [templatePath], appConstruct: new Construct(undefined as any, '') });
+    const report = plugin.validate({
+      templatePaths: [templatePath],
+      appConstruct: new Construct(undefined as any, ''),
+      accountId: undefined,
+      region: undefined,
+    });
 
     expect(report.success).toBe(false);
     expect(report.violations.length).toBeGreaterThan(0);

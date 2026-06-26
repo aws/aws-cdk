@@ -104,7 +104,17 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
 
     for (const templatePath of context.templatePaths) {
       const templateFile = new TemplateFile(templatePath);
-      const report = this.engine.validateStandard(templateFile, {});
+      const report = this.engine.validateStandard(templateFile, {
+        pseudoParameterOverrides: {
+          accountId: context.accountId,
+          region: context.region,
+          notificationArns: undefined,
+          partition: undefined,
+          stackId: undefined,
+          stackName: undefined,
+          urlSuffix: undefined,
+        },
+      });
 
       for (const diagnostic of report.diagnostics) {
         if (IGNORE_RULES.has(diagnostic.ruleId)) {

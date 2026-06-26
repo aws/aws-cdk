@@ -309,6 +309,13 @@ export function mkPluginFailure(plugin: { name: string; version?: string }, e: E
   };
 }
 
+export function isPluginFailure(rep: NamedValidationPluginReport): string | undefined {
+  if (!rep.success && rep.violations.length === 0) {
+    return rep.metadata?.error;
+  }
+  return undefined;
+}
+
 /**
  * Report whether it is possible to suppress this violation.
  *
