@@ -11,6 +11,9 @@ describe('CDK Include', () => {
 
   beforeEach(() => {
     app = new core.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    core.Validations.of(app).acknowledge(
+      { id: 'CloudFormation-Validate::F3004', reason: 'There may be circular dependencies' },
+    );
     stack = new core.Stack(app);
   });
 
