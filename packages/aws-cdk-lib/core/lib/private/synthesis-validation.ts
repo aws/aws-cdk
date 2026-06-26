@@ -101,27 +101,32 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
   // responsibility of printing the validation report and setting the exit code.
   const cdkAppHandlesValidationReporting = getBooleanContext(root, cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT, true);
   if (cdkAppHandlesValidationReporting || constructLibStrictMode) {
-    const output = formatValidationReports(process.cwd(), reportJson.pluginReports);
-    if (output) {
-      // eslint-disable-next-line no-console
-      console.error(output.join('\n\n'));
-    }
+    // If we are running in a Node test environment,
+    const isTesting = process.env.NODE_ENV === 'test';
 
+    // See if we should fail synthesis
     let failed = reports.some(r => !r.success);
     // If requested for "strict mode", also consider warnings as failed.
     if (constructLibStrictMode) {
       failed ||= reports.some(r => r.violations.some(v => v.severity === 'warning'));
     }
 
+    const output = formatValidationReports(process.cwd(), reportJson.pluginReports);
+
+    // We print if we have something to print, and:
+    // - We are not in a test environment (because the report will go into the exception then)
+    // - Or we are not going to fail. No exception in that case, but we still want to send this somewhere.
+    if (output && (!failed || !isTesting)) {
+      // eslint-disable-next-line no-console
+      console.error(output.join('\n\n'));
+    }
+
     if (failed) {
       const reportPath = humanFriendlyFilename(process.cwd(), reportFile);
 
-      // If we are running in a Node test environment,
-      const isTesting = process.env.NODE_ENV === 'test';
-
-      // If we are running inside a test environment (Jest or similar) we probably
-      // want the report in the exception, it will be much easier to parse from
-      // test output rather than go chase back through stdout.
+      // If we are running inside a test environment (Jest or similar) we want
+      // the report in the exception, it will be much easier to parse from test
+      // output rather than go chase back through stderr.
       const errorMessage = isTesting
         ? `${output.join('\n')}\nA copy of this report can be found in: ${reportPath}`
         : `Validation failed. A copy of this report can be found in: ${reportPath}`;
