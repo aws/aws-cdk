@@ -265,4 +265,9 @@ const IGNORE_RULES = new Set([
   // WHAT: Hardcoded ARNs
   // WHY: Hardcoding an ARN is part of the behavior of some constructs (e.g., setting up multi-account DynamoDB table replicas)
   'W9002',
+
+  // WHAT: Invalid type of field
+  // WHY: { Fn::GetStackOutput } not recognized
+  // <https://github.com/aws-cloudformation/cloudformation-validate/issues/56>.
+  'F3012',
 ]);
