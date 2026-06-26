@@ -256,4 +256,9 @@ const IGNORE_RULES = new Set([
   // WHY: Something seems fishy about it
   // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/53>.
   'F3004',
+
+  // WHAT: Required property not supplied
+  // WHY: Engine hallucinates required properties
+  // <https://github.com/aws-cloudformation/cloudformation-validate/issues/54>
+  'F3003',
 ]);
