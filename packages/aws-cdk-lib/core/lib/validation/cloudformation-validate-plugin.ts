@@ -246,4 +246,9 @@ const IGNORE_RULES = new Set([
   // WHY: The engine assumes that the region is always 'us-east-1' when evaluating certain rules, which is not true.
   // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/49>.
   'E3620', 'E3652', 'E3628',
+
+  // WHAT: Duplicate Subnet IDs in array
+  // WHY: Different {Fn::ImportValue}s are considered the same.
+  // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/52>.
+  'W9007',
 ]);

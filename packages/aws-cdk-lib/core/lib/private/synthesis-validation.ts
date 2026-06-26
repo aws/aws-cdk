@@ -116,13 +116,23 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
     if (failed) {
       const reportPath = humanFriendlyFilename(process.cwd(), reportFile);
 
+      // If we are running in a Node test environment,
+      const isTesting = process.env.NODE_ENV === 'test';
+
+      // If we are running inside a test environment (Jest or similar) we probably
+      // want the report in the exception, it will be much easier to parse from
+      // test output rather than go chase back through stdout.
+      const errorMessage = isTesting
+        ? `${output.join('\n')}\nA copy of this report can be found in: ${reportPath}`
+        : `Validation failed. A copy of this report can be found in: ${reportPath}`;
+
       // This used to be `process.exitCode = 1`, but that doesn't do the same
       // thing if synthesis happens in (1) unit tests (2) in-memory in the
       // toolkit library. So we have to throw an error here to make sure we
       // properly fail in all cases. Potentially we can optimize this to a
       // "clean" exitCode if we know (via an environment variable) that we are
       // being executed as a subprocess.
-      throw new UnscopedValidationError(lit`ValidationFailed`, `Validation failed. A copy of this report can be found in: ${reportPath}`);
+      throw new UnscopedValidationError(lit`ValidationFailed`, errorMessage);
     }
   }
 }
