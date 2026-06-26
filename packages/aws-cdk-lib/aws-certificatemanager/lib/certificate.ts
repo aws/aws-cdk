@@ -330,7 +330,7 @@ export class Certificate extends CertificateBase implements ICertificate {
       throw new ValidationError(lit`DomainNameCharactersLess`, 'Domain name must be 64 characters or less', this);
     }
 
-    const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
+    const allDomainNames = [props.domainName].concat((props.subjectAlternativeNames || []).filter(x => x !== props.domainName));
 
     const certificateExport = (props.allowExport === true) ? 'ENABLED' : undefined;
 
