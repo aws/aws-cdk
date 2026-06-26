@@ -25,5 +25,6 @@ const APP_INIT_HOOK_SYMBOL = Symbol.for('@aws-cdk/core.App#initHook');
     { id: 'CloudFormation-Validate::W9002', reason: 'Hardcoded ARNs. Fine for tests.' },
     { id: 'CloudFormation-Validate::W9011', reason: 'Publicly accessible RDS instances are only for tests' },
     { id: 'CloudFormation-Validate::F3021', reason: 'Yes yes RDS passwords' },
+    { id: 'CloudFormation-Validate::W2531', reason: 'There are many deprecated Lambda runtimes' },
   );
 };
