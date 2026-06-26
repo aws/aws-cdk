@@ -1,12 +1,10 @@
 
 import { App, Stack } from '../../core';
 import * as lambda from '../lib';
-import { acknowledgeTestValidationRules } from './util';
 
 describe('architecture', () => {
   const app = new App();
   const stack = new Stack(app, 'stack');
-  acknowledgeTestValidationRules(stack);
 
   test('toString to return the architecture name', () => {
     // GIVEN

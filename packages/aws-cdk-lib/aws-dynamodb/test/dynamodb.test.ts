@@ -1,6 +1,5 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import type { Construct } from 'constructs';
-import { acknowledgeTestValidationRules } from './util';
 import { Annotations, Capture, Match, Template } from '../../assertions';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -108,7 +107,6 @@ describe('default properties', () => {
   let stack: Stack;
   beforeEach(() => {
     stack = new Stack();
-    acknowledgeTestValidationRules(stack);
   });
 
   test('hash key only', () => {
@@ -424,7 +422,6 @@ describe('default properties', () => {
 describe('L1 static factory methods', () => {
   test('fromTableArn', () => {
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = CfnTable.fromTableArn(stack, 'MyBucket', 'arn:aws:dynamodb:eu-west-1:123456789012:table/MyTable');
     expect(table.tableRef.tableName).toEqual('MyTable');
     expect(table.tableRef.tableArn).toEqual('arn:aws:dynamodb:eu-west-1:123456789012:table/MyTable');
@@ -441,7 +438,6 @@ describe('L1 static factory methods', () => {
     const stack = new Stack(app, 'MyStack', {
       env: { account: '23432424', region: 'us-east-1' },
     });
-    acknowledgeTestValidationRules(stack);
 
     const table = CfnTable.fromTableName(stack, 'Table', 'MyTable');
     const arnComponents = stack.splitArn(table.tableRef.tableArn, ArnFormat.SLASH_RESOURCE_NAME);
@@ -471,7 +467,6 @@ describe('L1 static factory methods', () => {
     const stack = new Stack(app, 'MyStack', {
       env: { account: '23432424', region: 'us-east-1' },
     });
-    acknowledgeTestValidationRules(stack);
 
     const table = CfnTable.fromTableName(stack, 'Table', 'MyTable');
     const arn = CfnTable.arnForTable(table);
@@ -484,7 +479,6 @@ describe('L1 static factory methods', () => {
     const stack = new Stack(app, 'MyStack', {
       env: { account: '23432424', region: 'us-east-1' },
     });
-    acknowledgeTestValidationRules(stack);
 
     const inputArn = 'arn:aws:dynamodb:us-east-2:123456789012:table/myDynamoDBTable';
     const table = CfnTable.fromTableArn(stack, 'Table', 'arn:aws:dynamodb:us-east-2:123456789012:table/myDynamoDBTable');
@@ -496,7 +490,6 @@ describe('L1 static factory methods', () => {
 
 testDeprecated('when specifying every property', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const stream = new kinesis.Stream(stack, 'MyStream');
   const table = new Table(stack, CONSTRUCT_NAME, {
     tableName: TABLE_NAME,
@@ -551,7 +544,6 @@ test('when replica removal policy is not specified', () => {
     },
   });
   const stack = new Stack(app);
-  acknowledgeTestValidationRules(stack);
   new Table(stack, CONSTRUCT_NAME, {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
@@ -571,7 +563,6 @@ test('when replica removal policy is not specified', () => {
     },
   });
   const stack = new Stack(app);
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
@@ -591,7 +582,6 @@ test('when replica and table removal policy is not specified', () => {
     },
   });
   const stack = new Stack(app);
-  acknowledgeTestValidationRules(stack);
   new Table(stack, CONSTRUCT_NAME, {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
@@ -610,7 +600,6 @@ test('when replica and table removal policy is not specified with feature flag t
     },
   });
   const stack = new Stack(app);
-  acknowledgeTestValidationRules(stack);
   new Table(stack, CONSTRUCT_NAME, {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
@@ -629,7 +618,6 @@ test('when table removal policy is specified with feature flag true', () => {
     },
   });
   const stack = new Stack(app);
-  acknowledgeTestValidationRules(stack);
   new Table(stack, CONSTRUCT_NAME, {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
@@ -649,7 +637,6 @@ test('when replica and table removal policy is not specified with feature flag f
     },
   });
   const stack = new Stack(app);
-  acknowledgeTestValidationRules(stack);
   new Table(stack, CONSTRUCT_NAME, {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
@@ -668,7 +655,6 @@ test('when replica is retain and table is destroy', () => {
     },
   });
   const stack = new Stack(app);
-  acknowledgeTestValidationRules(stack);
   new Table(stack, CONSTRUCT_NAME, {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
@@ -689,7 +675,6 @@ test('when replica is destory and table is retain', () => {
     },
   });
   const stack = new Stack(app);
-  acknowledgeTestValidationRules(stack);
   new Table(stack, CONSTRUCT_NAME, {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
@@ -705,7 +690,6 @@ test('when replica is destory and table is retain', () => {
 
 test('when specifying sse with customer managed CMK', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, {
     tableName: TABLE_NAME,
     encryption: TableEncryption.CUSTOMER_MANAGED,
@@ -729,7 +713,6 @@ test('when specifying sse with customer managed CMK', () => {
 
 test('when specifying only encryptionKey', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const encryptionKey = new kms.Key(stack, 'Key', {
     enableKeyRotation: true,
   });
@@ -756,7 +739,6 @@ test('when specifying only encryptionKey', () => {
 
 test('when specifying sse with customer managed CMK with encryptionKey provided by user', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const encryptionKey = new kms.Key(stack, 'Key', {
     enableKeyRotation: true,
   });
@@ -784,7 +766,6 @@ test('when specifying sse with customer managed CMK with encryptionKey provided 
 
 test('fails if encryption key is used with AWS managed CMK', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const encryptionKey = new kms.Key(stack, 'Key', {
     enableKeyRotation: true,
   });
@@ -798,7 +779,6 @@ test('fails if encryption key is used with AWS managed CMK', () => {
 
 test('fails if encryption key is used with default encryption', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const encryptionKey = new kms.Key(stack, 'Key', {
     enableKeyRotation: true,
   });
@@ -812,7 +792,6 @@ test('fails if encryption key is used with default encryption', () => {
 
 testDeprecated('fails if encryption key is used with serverSideEncryption', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const encryptionKey = new kms.Key(stack, 'Key', {
     enableKeyRotation: true,
   });
@@ -826,7 +805,6 @@ testDeprecated('fails if encryption key is used with serverSideEncryption', () =
 
 testDeprecated('fails if both encryption and serverSideEncryption is specified', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   expect(() => new Table(stack, 'Table A', {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
@@ -837,7 +815,6 @@ testDeprecated('fails if both encryption and serverSideEncryption is specified',
 
 test('fails if both replication regions used with customer managed CMK', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   expect(() => new Table(stack, 'Table A', {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
@@ -848,7 +825,6 @@ test('fails if both replication regions used with customer managed CMK', () => {
 
 test('if an encryption key is included, encrypt/decrypt permissions are added to the principal', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, 'Table A', {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
@@ -881,7 +857,6 @@ test('if an encryption key is included, encrypt/decrypt permissions are added to
 
 test('if an encryption key is included, encrypt/decrypt permissions are added to the principal for grantWriteData', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, 'Table A', {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
@@ -920,7 +895,6 @@ test('replica-handler permission check @aws-cdk/aws-lambda:createNewPoliciesWith
     },
   });
   const stack = new Stack(app, 'Stack');
-  acknowledgeTestValidationRules(stack);
 
   // WHEN
   const provider = ReplicaProvider.getOrCreate(stack, {
@@ -1023,7 +997,6 @@ test('replica-handler permission check @aws-cdk/aws-lambda:createNewPoliciesWith
     },
   });
   const stack = new Stack(app, 'Stack');
-  acknowledgeTestValidationRules(stack);
 
   // WHEN
   const provider = ReplicaProvider.getOrCreate(stack, {
@@ -1108,7 +1081,6 @@ test('replica-handler permission check @aws-cdk/aws-lambda:createNewPoliciesWith
 
 test('when specifying STANDARD_INFREQUENT_ACCESS table class', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   new Table(stack, CONSTRUCT_NAME, {
     partitionKey: TABLE_PARTITION_KEY,
     tableClass: TableClass.STANDARD_INFREQUENT_ACCESS,
@@ -1123,7 +1095,6 @@ test('when specifying STANDARD_INFREQUENT_ACCESS table class', () => {
 
 test('when specifying STANDARD table class', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   new Table(stack, CONSTRUCT_NAME, {
     partitionKey: TABLE_PARTITION_KEY,
     tableClass: TableClass.STANDARD,
@@ -1138,7 +1109,6 @@ test('when specifying STANDARD table class', () => {
 
 test('when specifying no table class', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   new Table(stack, CONSTRUCT_NAME, {
     partitionKey: TABLE_PARTITION_KEY,
   });
@@ -1152,7 +1122,6 @@ test('when specifying no table class', () => {
 
 test('when specifying PAY_PER_REQUEST billing mode', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   new Table(stack, CONSTRUCT_NAME, {
     tableName: TABLE_NAME,
     billingMode: BillingMode.PAY_PER_REQUEST,
@@ -1178,7 +1147,6 @@ describe('when billing mode is PAY_PER_REQUEST', () => {
 
   beforeEach(() => {
     stack = new Stack();
-    acknowledgeTestValidationRules(stack);
   });
 
   test('creating the Table fails when readCapacity is specified', () => {
@@ -1211,7 +1179,6 @@ describe('when billing mode is PAY_PER_REQUEST', () => {
 
   test('when specifying maximum throughput for on-demand', () => {
     stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     new Table(stack, CONSTRUCT_NAME, {
       tableName: TABLE_NAME,
       billingMode: BillingMode.PAY_PER_REQUEST,
@@ -1240,7 +1207,6 @@ describe('when billing mode is PAY_PER_REQUEST', () => {
 
   test('when specifying maximum throughput for on-demand-indexes', () => {
     stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, CONSTRUCT_NAME, {
       tableName: TABLE_NAME,
       billingMode: BillingMode.PAY_PER_REQUEST,
@@ -1287,7 +1253,6 @@ describe('schema details', () => {
 
   beforeEach(() => {
     stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     table = new Table(stack, 'Table A', {
       tableName: TABLE_NAME,
       partitionKey: TABLE_PARTITION_KEY,
@@ -1459,7 +1424,6 @@ describe('schema details', () => {
 
 test('when adding a global secondary index with hash key only', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
 
   const table = new Table(stack, CONSTRUCT_NAME, {
     partitionKey: TABLE_PARTITION_KEY,
@@ -1501,7 +1465,6 @@ test('when adding a global secondary index with hash key only', () => {
 
 test('when adding a global secondary index with hash + range key', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, {
     partitionKey: TABLE_PARTITION_KEY,
     sortKey: TABLE_SORT_KEY,
@@ -1546,7 +1509,6 @@ test('when adding a global secondary index with hash + range key', () => {
 
 test('when adding a global secondary index with projection type KEYS_ONLY', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, {
     partitionKey: TABLE_PARTITION_KEY,
     sortKey: TABLE_SORT_KEY,
@@ -1589,7 +1551,6 @@ test('when adding a global secondary index with projection type KEYS_ONLY', () =
 
 test('when adding a global secondary index with projection type INCLUDE', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
   const gsiNonKeyAttributeGenerator = NON_KEY_ATTRIBUTE_GENERATOR(GSI_NON_KEY);
   table.addGlobalSecondaryIndex({
@@ -1632,7 +1593,6 @@ test('when adding a global secondary index with projection type INCLUDE', () => 
 
 test('when adding a global secondary index on a table with PAY_PER_REQUEST billing mode', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   new Table(stack, CONSTRUCT_NAME, {
     billingMode: BillingMode.PAY_PER_REQUEST,
     partitionKey: TABLE_PARTITION_KEY,
@@ -1669,7 +1629,6 @@ test('when adding a global secondary index on a table with PAY_PER_REQUEST billi
 
 test('error when adding a global secondary index with projection type INCLUDE, but without specifying non-key attributes', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
   expect(() => table.addGlobalSecondaryIndex({
     indexName: GSI_NAME,
@@ -1681,7 +1640,6 @@ test('error when adding a global secondary index with projection type INCLUDE, b
 
 test('error when adding a global secondary index with projection type ALL, but with non-key attributes', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
   const gsiNonKeyAttributeGenerator = NON_KEY_ATTRIBUTE_GENERATOR(GSI_NON_KEY);
 
@@ -1694,7 +1652,6 @@ test('error when adding a global secondary index with projection type ALL, but w
 
 test('error when adding a global secondary index with projection type KEYS_ONLY, but with non-key attributes', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
   const gsiNonKeyAttributeGenerator = NON_KEY_ATTRIBUTE_GENERATOR(GSI_NON_KEY);
 
@@ -1708,7 +1665,6 @@ test('error when adding a global secondary index with projection type KEYS_ONLY,
 
 test('error when adding a global secondary index with projection type INCLUDE, but with more than 100 non-key attributes', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
   const gsiNonKeyAttributeGenerator = NON_KEY_ATTRIBUTE_GENERATOR(GSI_NON_KEY);
   const gsiNonKeyAttributes: string[] = [];
@@ -1727,7 +1683,6 @@ test('error when adding a global secondary index with projection type INCLUDE, b
 
 test('error when adding a global secondary index with read or write capacity on a PAY_PER_REQUEST table', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, {
     partitionKey: TABLE_PARTITION_KEY,
     billingMode: BillingMode.PAY_PER_REQUEST,
@@ -1756,7 +1711,6 @@ test('error when adding a global secondary index with read or write capacity on 
 
 test('when adding multiple global secondary indexes', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
   const gsiGenerator = GSI_GENERATOR();
   for (let i = 0; i < 5; i++) {
@@ -1827,7 +1781,6 @@ test('when adding multiple global secondary indexes', () => {
 
 test('when adding a global secondary index without specifying read and write capacity', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
 
   table.addGlobalSecondaryIndex({
@@ -1863,7 +1816,6 @@ test('when adding a global secondary index without specifying read and write cap
 
 test.each([true, false])('when adding a global secondary index with contributorInsightsEnabled %s', (contributorInsightsEnabled: boolean) => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, {
     partitionKey: TABLE_PARTITION_KEY,
     sortKey: TABLE_SORT_KEY,
@@ -1905,7 +1857,6 @@ test.each([true, false])('when adding a global secondary index with contributorI
 
 test('when adding a local secondary index with hash + range key', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
 
   table.addLocalSecondaryIndex({
@@ -1941,7 +1892,6 @@ test('when adding a local secondary index with hash + range key', () => {
 
 test('when adding a local secondary index with projection type KEYS_ONLY', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
   table.addLocalSecondaryIndex({
     indexName: LSI_NAME,
@@ -1977,7 +1927,6 @@ test('when adding a local secondary index with projection type KEYS_ONLY', () =>
 
 test('when adding a local secondary index with projection type INCLUDE', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
   const lsiNonKeyAttributeGenerator = NON_KEY_ATTRIBUTE_GENERATOR(LSI_NON_KEY);
   table.addLocalSecondaryIndex({
@@ -2015,7 +1964,6 @@ test('when adding a local secondary index with projection type INCLUDE', () => {
 
 test('error when adding more than 5 local secondary indexes', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
   const lsiGenerator = LSI_GENERATOR();
   for (let i = 0; i < 5; i++) {
@@ -2028,7 +1976,6 @@ test('error when adding more than 5 local secondary indexes', () => {
 
 test('error when adding a local secondary index with the name of a global secondary index', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
   table.addGlobalSecondaryIndex({
     indexName: 'SecondaryIndex',
@@ -2043,7 +1990,6 @@ test('error when adding a local secondary index with the name of a global second
 
 test('error when validating construct if a local secondary index exists without a sort key of the table', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY });
 
   table.addLocalSecondaryIndex({
@@ -2060,7 +2006,6 @@ test('error when validating construct if a local secondary index exists without 
 test('can enable Read AutoScaling', () => {
   // GIVEN
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, { readCapacity: 42, writeCapacity: 1337, partitionKey: TABLE_PARTITION_KEY });
 
   // WHEN
@@ -2085,7 +2030,6 @@ test('can enable Read AutoScaling', () => {
 test('can enable Write AutoScaling', () => {
   // GIVEN
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, { readCapacity: 42, writeCapacity: 1337, partitionKey: TABLE_PARTITION_KEY });
 
   // WHEN
@@ -2110,7 +2054,6 @@ test('can enable Write AutoScaling', () => {
 test('cannot enable AutoScaling twice on the same property', () => {
   // GIVEN
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, { readCapacity: 42, writeCapacity: 1337, partitionKey: TABLE_PARTITION_KEY });
   table.autoScaleReadCapacity({ minCapacity: 50, maxCapacity: 500 }).scaleOnUtilization({ targetUtilizationPercent: 75 });
 
@@ -2123,7 +2066,6 @@ test('cannot enable AutoScaling twice on the same property', () => {
 test('error when enabling AutoScaling on the PAY_PER_REQUEST table', () => {
   // GIVEN
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, { billingMode: BillingMode.PAY_PER_REQUEST, partitionKey: TABLE_PARTITION_KEY });
   table.addGlobalSecondaryIndex({
     indexName: GSI_NAME,
@@ -2146,7 +2088,6 @@ test('error when enabling AutoScaling on the PAY_PER_REQUEST table', () => {
 test('error when specifying Read Auto Scaling with invalid scalingTargetValue < 10', () => {
   // GIVEN
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, { readCapacity: 42, writeCapacity: 1337, partitionKey: TABLE_PARTITION_KEY });
 
   // THEN
@@ -2158,7 +2099,6 @@ test('error when specifying Read Auto Scaling with invalid scalingTargetValue < 
 test('error when specifying Read Auto Scaling with invalid minimumCapacity', () => {
   // GIVEN
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, { readCapacity: 42, writeCapacity: 1337, partitionKey: TABLE_PARTITION_KEY });
 
   // THEN
@@ -2169,7 +2109,6 @@ test('error when specifying Read Auto Scaling with invalid minimumCapacity', () 
 test('can autoscale on a schedule', () => {
   // GIVEN
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, {
     readCapacity: 42,
     writeCapacity: 1337,
@@ -2198,7 +2137,6 @@ test('can autoscale on a schedule', () => {
 test('scheduled scaling shows warning when minute is not defined in cron', () => {
   // GIVEN
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, {
     readCapacity: 42,
     writeCapacity: 1337,
@@ -2219,7 +2157,6 @@ test('scheduled scaling shows warning when minute is not defined in cron', () =>
 test('scheduled scaling shows no warning when minute is * in cron', () => {
   // GIVEN
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, CONSTRUCT_NAME, {
     readCapacity: 42,
     writeCapacity: 1337,
@@ -2242,7 +2179,6 @@ describe('metrics', () => {
   test('Can use metricConsumedReadCapacityUnits on a Dynamodb Table', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
@@ -2260,7 +2196,6 @@ describe('metrics', () => {
   test('Can use metricConsumedWriteCapacityUnits on a Dynamodb Table', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
@@ -2277,7 +2212,6 @@ describe('metrics', () => {
 
   test('Using metricSystemErrorsForOperations with no operations will default to all', () => {
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
@@ -2302,7 +2236,6 @@ describe('metrics', () => {
 
   testDeprecated('Can use metricSystemErrors without the TableName dimension', () => {
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
@@ -2315,7 +2248,6 @@ describe('metrics', () => {
 
   testDeprecated('Using metricSystemErrors without the Operation dimension will fail', () => {
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
@@ -2327,7 +2259,6 @@ describe('metrics', () => {
   test('Can use metricSystemErrorsForOperations on a Dynamodb Table', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
@@ -2369,7 +2300,6 @@ describe('metrics', () => {
   testDeprecated('Can use metricSystemErrors on a Dynamodb Table', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
@@ -2387,7 +2317,6 @@ describe('metrics', () => {
   test('Using metricUserErrors with dimensions will fail', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
@@ -2398,7 +2327,6 @@ describe('metrics', () => {
   test('Can use metricUserErrors on a Dynamodb Table', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
@@ -2416,7 +2344,6 @@ describe('metrics', () => {
   test('Can use metricConditionalCheckFailedRequests on a Dynamodb Table', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
@@ -2433,7 +2360,6 @@ describe('metrics', () => {
 
   test('Can use metricSuccessfulRequestLatency without the TableName dimension', () => {
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
@@ -2446,7 +2372,6 @@ describe('metrics', () => {
 
   test('Using metricSuccessfulRequestLatency without the Operation dimension will fail', () => {
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
@@ -2458,7 +2383,6 @@ describe('metrics', () => {
   test('Can use metricSuccessfulRequestLatency on a Dynamodb Table', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
@@ -2483,7 +2407,6 @@ describe('grants', () => {
   test('"grant" allows adding arbitrary actions associated with this table resource', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, 'my-table', {
       partitionKey: {
         name: 'id',
@@ -2553,7 +2476,6 @@ describe('grants', () => {
   test('grant* with ServicePrincipal throws error', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
@@ -2566,7 +2488,6 @@ describe('grants', () => {
   test('grant* with wrapped ServicePrincipal (withConditions) throws error', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
@@ -2588,7 +2509,6 @@ describe('grants', () => {
   ])('grant* with allowlisted ServicePrincipal %s succeeds', (serviceName) => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
@@ -2603,7 +2523,6 @@ describe('grants', () => {
   test('grant* with wrapped allowlisted ServicePrincipal succeeds', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
@@ -2621,7 +2540,6 @@ describe('grants', () => {
   testDeprecated('"Table.grantListStreams" allows principal to list all streams', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const user = new iam.User(stack, 'user');
 
     // WHEN
@@ -2646,7 +2564,6 @@ describe('grants', () => {
   test('"grantTableListStreams" should fail if streaming is not enabled on table"', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, 'my-table', {
       partitionKey: {
         name: 'id',
@@ -2662,7 +2579,6 @@ describe('grants', () => {
   test('"grantTableListStreams" allows principal to list all streams for this table', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, 'my-table', {
       partitionKey: {
         name: 'id',
@@ -2694,7 +2610,6 @@ describe('grants', () => {
   test('"grantStreamRead" should fail if streaming is not enabled on table"', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, 'my-table', {
       partitionKey: {
         name: 'id',
@@ -2710,7 +2625,6 @@ describe('grants', () => {
   test('"grantStreamRead" allows principal to read and describe the table stream"', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, 'my-table', {
       partitionKey: {
         name: 'id',
@@ -2756,7 +2670,6 @@ describe('grants', () => {
   test('if table has an index grant gives access to the index', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
 
     const table = new Table(stack, 'my-table', { partitionKey: { name: 'ID', type: AttributeType.STRING } });
     table.addGlobalSecondaryIndex({ indexName: 'MyIndex', partitionKey: { name: 'Age', type: AttributeType.NUMBER } });
@@ -2846,7 +2759,6 @@ describe('grants', () => {
   test('grant for an imported table', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = Table.fromTableName(stack, 'MyTable', 'my-table');
     const user = new iam.User(stack, 'user');
 
@@ -2899,7 +2811,6 @@ describe('secondary indexes', () => {
   test('attribute can be used as key attribute in one index, and non-key in another', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'pkey', type: AttributeType.NUMBER },
     });
@@ -2926,7 +2837,6 @@ describe('secondary indexes', () => {
 describe('import', () => {
   test('report error when importing an external/existing table from invalid arn missing resource name', () => {
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
 
     const tableArn = 'arn:aws:dynamodb:us-east-1::table/';
     // WHEN
@@ -2935,7 +2845,6 @@ describe('import', () => {
 
   test('static fromTableArn(arn) allows importing an external/existing table from arn', () => {
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
 
     const tableArn = 'arn:aws:dynamodb:us-east-1:11111111:table/MyTable';
     const table = Table.fromTableArn(stack, 'ImportedTable', tableArn);
@@ -2982,7 +2891,6 @@ describe('import', () => {
 
   test('static fromTableName(name) allows importing an external/existing table from table name', () => {
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
 
     const tableName = 'MyTable';
     const table = Table.fromTableName(stack, 'ImportedTable', tableName);
@@ -3072,7 +2980,6 @@ describe('import', () => {
   describe('stream permissions on imported tables', () => {
     test('throw if no tableStreamArn is specified', () => {
       const stack = new Stack();
-      acknowledgeTestValidationRules(stack);
 
       const tableName = 'MyTable';
       const table = Table.fromTableAttributes(stack, 'ImportedTable', { tableName });
@@ -3087,7 +2994,6 @@ describe('import', () => {
 
     test('creates the correct list streams grant', () => {
       const stack = new Stack();
-      acknowledgeTestValidationRules(stack);
 
       const tableName = 'MyTable';
       const tableStreamArn = 'arn:foo:bar:baz:TrustMeThisIsATableStream';
@@ -3116,7 +3022,6 @@ describe('import', () => {
 
     test('creates the correct stream read grant', () => {
       const stack = new Stack();
-      acknowledgeTestValidationRules(stack);
 
       const tableName = 'MyTable';
       const tableStreamArn = 'arn:foo:bar:baz:TrustMeThisIsATableStream';
@@ -3150,7 +3055,6 @@ describe('import', () => {
 
     test('if an encryption key is included, encrypt/decrypt permissions are added to the principal for grantStreamRead', () => {
       const stack = new Stack();
-      acknowledgeTestValidationRules(stack);
 
       const tableName = 'MyTable';
       const tableStreamArn = 'arn:foo:bar:baz:TrustMeThisIsATableStream';
@@ -3205,7 +3109,6 @@ describe('import', () => {
 
     test('creates the correct index grant if indexes have been provided when importing', () => {
       const stack = new Stack();
-      acknowledgeTestValidationRules(stack);
 
       const table = Table.fromTableAttributes(stack, 'ImportedTable', {
         tableName: 'MyTableName',
@@ -3293,7 +3196,6 @@ describe('import', () => {
 
     test('creates the index permissions if grantIndexPermissions is provided', () => {
       const stack = new Stack();
-      acknowledgeTestValidationRules(stack);
 
       const table = Table.fromTableAttributes(stack, 'ImportedTable', {
         tableName: 'MyTableName',
@@ -3384,7 +3286,6 @@ describe('global', () => {
   test('create replicas', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new Table(stack, 'Table', {
@@ -3435,7 +3336,6 @@ describe('global', () => {
   test('create replicas without waiting to finish replication', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new Table(stack, 'Table', {
@@ -3488,7 +3388,6 @@ describe('global', () => {
 
   test('grantReadData', () => {
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, 'Table', {
       partitionKey: {
         name: 'id',
@@ -3741,7 +3640,6 @@ describe('global', () => {
 
   test('grantReadData - global secondary index added after granting', () => {
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, 'Table', {
       partitionKey: {
         name: 'id',
@@ -3995,7 +3893,6 @@ describe('global', () => {
   test('grantReadData with AccountRootPrincipal uses wildcard resources', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new Table(stack, 'Table', {
       partitionKey: {
         name: 'id',
@@ -4036,7 +3933,6 @@ describe('global', () => {
     const stack1 = new Stack(app, 'Stack1', {
       env: { region: 'us-east-1' },
     });
-    acknowledgeTestValidationRules(stack1);
     const table = new Table(stack1, 'Table', {
       tableName: 'my-table',
       partitionKey: {
@@ -4058,7 +3954,6 @@ describe('global', () => {
     const stack2 = new Stack(app, 'Stack2', {
       env: { region: 'eu-west-2' },
     });
-    acknowledgeTestValidationRules(stack2);
     const user = new iam.User(stack2, 'User');
 
     // WHEN
@@ -4294,7 +4189,6 @@ describe('global', () => {
     const stack1 = new Stack(app, 'Stack1', {
       env: { region: 'us-east-1' },
     });
-    acknowledgeTestValidationRules(stack1);
     const table = new Table(stack1, 'Table', {
       tableName: 'my-table',
       partitionKey: {
@@ -4309,7 +4203,6 @@ describe('global', () => {
     const stack2 = new Stack(app, 'Stack2', {
       env: { region: 'eu-west-2' },
     });
-    acknowledgeTestValidationRules(stack2);
     const user = new iam.User(stack2, 'User');
 
     // WHEN
@@ -4333,7 +4226,6 @@ describe('global', () => {
   test('throws when PROVISIONED billing mode is used without auto-scaled writes', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new Table(stack, 'Table', {
@@ -4357,7 +4249,6 @@ describe('global', () => {
   test('throws when PROVISIONED billing mode is used with auto-scaled writes, but without a policy', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
 
     // WHEN
     const table = new Table(stack, 'Table', {
@@ -4385,7 +4276,6 @@ describe('global', () => {
   test('allows PROVISIONED billing mode when auto-scaled writes with a policy are specified', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
 
     // WHEN
     const table = new Table(stack, 'Table', {
@@ -4412,7 +4302,6 @@ describe('global', () => {
   test('throws when stream is set and not set to NEW_AND_OLD_IMAGES', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
 
     // THEN
     expect(() => new Table(stack, 'Table', {
@@ -4434,7 +4323,6 @@ describe('global', () => {
     const stack = new Stack(app, 'Stack', {
       env: { region: 'us-east-1' },
     });
-    acknowledgeTestValidationRules(stack);
 
     // THEN
     expect(() => new Table(stack, 'Table', {
@@ -4456,7 +4344,6 @@ describe('global', () => {
     const stack = new Stack(app, 'Stack', {
       env: { region: 'eu-west-1' },
     });
-    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new Table(stack, 'Table', {
@@ -4478,7 +4365,6 @@ describe('global', () => {
   test('can configure timeout', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new Table(stack, 'Table', {
@@ -4502,7 +4388,6 @@ test('L1 inside L2 expects removalpolicy to have been set', () => {
   // because we know DDB tables are stateful.
   const app = new App();
   const stack = new Stack(app, 'Stack');
-  acknowledgeTestValidationRules(stack);
 
   class FakeTableL2 extends Resource {
     constructor(scope: Construct, id: string) {
@@ -4525,7 +4410,6 @@ test('System errors metrics', () => {
   // GIVEN
   const app = new App();
   const stack = new Stack(app, 'Stack');
-  acknowledgeTestValidationRules(stack);
 
   // WHEN
   const table = new Table(stack, 'Table', {
@@ -4571,7 +4455,6 @@ test('Throttled requests metrics', () => {
   // GIVEN
   const app = new App();
   const stack = new Stack(app, 'Stack');
-  acknowledgeTestValidationRules(stack);
 
   // WHEN
   const table = new Table(stack, 'Table', {
@@ -4616,7 +4499,6 @@ test('Throttled requests metrics', () => {
 function testGrant(expectedActions: string[], invocation: (user: iam.IPrincipal, table: Table) => void) {
   // GIVEN
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const table = new Table(stack, 'my-table', { partitionKey: { name: 'ID', type: AttributeType.STRING } });
   const user = new iam.User(stack, 'user');
 
@@ -4668,7 +4550,6 @@ describe('deletionProtectionEnabled', () => {
   ])('gets passed to table', (state) => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new Table(stack, 'Table', {
@@ -4688,7 +4569,6 @@ describe('deletionProtectionEnabled', () => {
   test('is not passed when not set', () => {
     // GIVEN
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new Table(stack, 'Table', {
@@ -4711,7 +4591,6 @@ describe('import source', () => {
 
   beforeEach(() => {
     stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     bucket = new s3.Bucket(stack, 'Bucket');
   });
 
@@ -4858,7 +4737,6 @@ test('Resource policy test', () => {
   // GIVEN
   const app = new App();
   const stack = new Stack(app, 'Stack');
-  acknowledgeTestValidationRules(stack);
 
   const doc = new iam.PolicyDocument({
     statements: [
@@ -4909,7 +4787,6 @@ test('addToResourcePolicy allows scoped ARN resources when table has explicit na
   // GIVEN
   const app = new App();
   const stack = new Stack(app, 'Stack');
-  acknowledgeTestValidationRules(stack);
 
   // WHEN - Create table with explicit name (enables scoped resource policies)
   const table = new Table(stack, 'Table', {
@@ -4955,7 +4832,6 @@ test('addToResourcePolicy requires wildcard resources with auto-generated table 
   // GIVEN
   const app = new App();
   const stack = new Stack(app, 'Stack');
-  acknowledgeTestValidationRules(stack);
 
   const table = new Table(stack, 'Table', {
     partitionKey: { name: 'id', type: AttributeType.STRING },
@@ -4992,7 +4868,6 @@ test('addToResourcePolicy supports multiple statements with wildcard resources t
   // GIVEN
   const app = new App();
   const stack = new Stack(app, 'Stack');
-  acknowledgeTestValidationRules(stack);
 
   // WHEN
   const table = new Table(stack, 'Table', {
@@ -5045,7 +4920,6 @@ test('Warm Throughput test on-demand', () => {
   // GIVEN
   const app = new App();
   const stack = new Stack(app, 'Stack');
-  acknowledgeTestValidationRules(stack);
 
   // WHEN
   const table = new Table(stack, 'Table', {
@@ -5111,7 +4985,6 @@ test('Warm Throughput test provisioned', () => {
   // GIVEN
   const app = new App();
   const stack = new Stack(app, 'Stack');
-  acknowledgeTestValidationRules(stack);
 
   // WHEN
   const table = new Table(stack, 'Table', {
@@ -5186,7 +5059,6 @@ test('Kinesis Stream - precision timestamp', () => {
   // GIVEN
   const app = new App();
   const stack = new Stack(app, 'Stack');
-  acknowledgeTestValidationRules(stack);
 
   const stream = new kinesis.Stream(stack, 'Stream');
 
@@ -5216,7 +5088,6 @@ test('Kinesis Stream - precision timestamp', () => {
 
 test('Contributor Insights Specification - table', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
 
   new Table(stack, CONSTRUCT_NAME, {
     partitionKey: TABLE_PARTITION_KEY,
@@ -5248,7 +5119,6 @@ test('Contributor Insights Specification - table', () => {
 
 test('Contributor Insights Specification - table - without mode', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
 
   new Table(stack, CONSTRUCT_NAME, {
     partitionKey: TABLE_PARTITION_KEY,
@@ -5278,7 +5148,6 @@ test('Contributor Insights Specification - table - without mode', () => {
 
 test('Contributor Insights Specification - index', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
 
   const table = new Table(stack, CONSTRUCT_NAME, {
     partitionKey: TABLE_PARTITION_KEY,
@@ -5332,7 +5201,6 @@ test('Contributor Insights Specification - index', () => {
 
 test('ContributorInsightsSpecification && ContributorInsightsEnabled', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
 
   expect(() => {
     new Table(stack, 'Table', {
@@ -5349,7 +5217,6 @@ test('ContributorInsightsSpecification && ContributorInsightsEnabled', () => {
 
 test('Multi-attribute partition keys for global secondary index', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
 
   const table = new Table(stack, CONSTRUCT_NAME, {
     partitionKey: TABLE_PARTITION_KEY,
@@ -5389,7 +5256,6 @@ test('Multi-attribute partition keys for global secondary index', () => {
 
 test('Multi-attribute partition keys and standard sort key for global secondary index', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
 
   const table = new Table(stack, CONSTRUCT_NAME, {
     partitionKey: TABLE_PARTITION_KEY,
@@ -5432,7 +5298,6 @@ test('Multi-attribute partition keys and standard sort key for global secondary 
 
 test('Throws when multi-attribute partitionKeys and partitionKey are specified', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   expect(() => {
     const table = new Table(stack, CONSTRUCT_NAME, {
       partitionKey: TABLE_PARTITION_KEY,
@@ -5450,7 +5315,6 @@ test('Throws when multi-attribute partitionKeys and partitionKey are specified',
 
 test('Throws when multi-attribute sortKeys and sortKey are specified', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   expect(() => {
     const table = new Table(stack, CONSTRUCT_NAME, {
       partitionKey: TABLE_PARTITION_KEY,
@@ -5468,7 +5332,6 @@ test('Throws when multi-attribute sortKeys and sortKey are specified', () => {
 
 test('Throws when more than four multi-attribute partition keys are specified', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   expect(() => {
     const table = new Table(stack, CONSTRUCT_NAME, {
       partitionKey: TABLE_PARTITION_KEY,
@@ -5488,7 +5351,6 @@ test('Throws when more than four multi-attribute partition keys are specified', 
 
 test('Throws when more than four multi-attribute sort keys are specified', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   expect(() => {
     const table = new Table(stack, CONSTRUCT_NAME, {
       partitionKey: TABLE_PARTITION_KEY,
@@ -5509,7 +5371,6 @@ test('Throws when more than four multi-attribute sort keys are specified', () =>
 describe('L1 table grants', () => {
   test('grant read permission to service principal (L1) throws error', () => {
     const stack = new Stack();
-    acknowledgeTestValidationRules(stack);
     const table = new CfnTable(stack, 'Table', {
       keySchema: [{ attributeName: 'id', keyType: 'HASH' }],
       attributeDefinitions: [{ attributeName: 'id', attributeType: 'S' }],
@@ -5523,7 +5384,6 @@ describe('L1 table grants', () => {
 
 test('grant read permission to CfnTable with encryption adds KMS permissions', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const encryptionKey = new kms.Key(stack, 'Key');
   const table = new CfnTable(stack, 'Table', {
     keySchema: [{ attributeName: 'id', keyType: 'HASH' }],
@@ -5551,7 +5411,6 @@ test('grant read permission to CfnTable with encryption adds KMS permissions', (
 
 test('grant write permission to CfnTable with encryption adds KMS permissions', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const encryptionKey = new kms.Key(stack, 'Key');
   const table = new CfnTable(stack, 'Table', {
     keySchema: [{ attributeName: 'id', keyType: 'HASH' }],
@@ -5579,7 +5438,6 @@ test('grant write permission to CfnTable with encryption adds KMS permissions', 
 
 test('grant readWrite permission to CfnTable with encryption adds KMS permissions', () => {
   const stack = new Stack();
-  acknowledgeTestValidationRules(stack);
   const encryptionKey = new kms.Key(stack, 'Key');
   const table = new CfnTable(stack, 'Table', {
     keySchema: [{ attributeName: 'id', keyType: 'HASH' }],

@@ -4,13 +4,11 @@ import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as apigw from '../lib';
-import { acknowledgeTestValidationRules } from './validation-util';
 
 describe('api definition', () => {
   describe('apigateway.ApiDefinition.fromJson', () => {
     test('happy case', () => {
       const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
       const definition = {
         key1: 'val1',
       };
@@ -36,7 +34,6 @@ describe('api definition', () => {
     test('happy case', () => {
       const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
       const stack = new cdk.Stack(app);
-      acknowledgeTestValidationRules(stack);
       const config = apigw.ApiDefinition.fromAsset(path.join(__dirname, 'sample-definition.yaml')).bind(stack);
       expect(config.inlineDefinition).toBeUndefined();
       expect(config.s3Location).toBeDefined();
@@ -57,7 +54,6 @@ describe('api definition', () => {
       // GIVEN
       const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
       const stack = new cdk.Stack(app, 'MyStack');
-      acknowledgeTestValidationRules(stack);
       const directoryAsset = apigw.ApiDefinition.fromAsset(path.join(__dirname, 'sample-definition.yaml'));
 
       // WHEN
@@ -79,7 +75,6 @@ describe('api definition', () => {
 
     test('asset metadata added to RestApi resource that contains Asset Api Definition', () => {
       const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
       stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
       const assetApiDefinition = apigw.ApiDefinition.fromAsset(path.join(__dirname, 'sample-definition.yaml'));
       new apigw.SpecRestApi(stack, 'API', {
@@ -98,7 +93,6 @@ describe('api definition', () => {
   describe('apigateway.ApiDefinition.fromBucket', () => {
     test('happy case', () => {
       const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
       const bucket = new s3.Bucket(stack, 'my-bucket');
       const config = apigw.ApiDefinition.fromBucket(bucket, 'my-key', 'my-version').bind(stack);
       expect(config.inlineDefinition).toBeUndefined();
@@ -113,7 +107,6 @@ describe('api definition', () => {
 
 function defineRestApi(definition: apigw.ApiDefinition) {
   const stack = new cdk.Stack();
-  acknowledgeTestValidationRules(stack);
   return new apigw.SpecRestApi(stack, 'API', {
     apiDefinition: definition,
   });

@@ -4,13 +4,11 @@ import * as logs from '../../aws-logs';
 import * as cdk from '../../core';
 import * as apigateway from '../lib';
 import { ApiDefinition } from '../lib';
-import { acknowledgeTestValidationRules } from './validation-util';
 
 describe('stage', () => {
   test('minimal setup', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
     const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
     api.root.addMethod('GET');
@@ -76,7 +74,6 @@ describe('stage', () => {
   test('RestApi - stage depends on the CloudWatch role when it exists', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: true, deploy: false });
     const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
     api.root.addMethod('GET');
@@ -93,7 +90,6 @@ describe('stage', () => {
   test('SpecRestApi - stage depends on the CloudWatch role when it exists', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigateway.SpecRestApi(stack, 'test-api', { apiDefinition: apigateway.ApiDefinition.fromInline( { foo: 'bar' }) });
     const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
     api.root.addMethod('GET');
@@ -110,7 +106,6 @@ describe('stage', () => {
   test('common method settings can be set at the stage level', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
     const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
     api.root.addMethod('GET');
@@ -139,7 +134,6 @@ describe('stage', () => {
   test('"stageResourceArn" returns the ARN for the stage', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigateway.RestApi(stack, 'test-api');
     const deployment = new apigateway.Deployment(stack, 'test-deploymnet', {
       api,
@@ -172,7 +166,6 @@ describe('stage', () => {
   test('custom method settings can be set by their path', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
     const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
     api.root.addMethod('GET');
@@ -212,7 +205,6 @@ describe('stage', () => {
   test('default "cacheClusterSize" is 0.5 (if cache cluster is enabled)', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
     const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
     api.root.addMethod('GET');
@@ -233,7 +225,6 @@ describe('stage', () => {
   test('setting "cacheClusterSize" implies "cacheClusterEnabled"', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
     const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
     api.root.addMethod('GET');
@@ -254,7 +245,6 @@ describe('stage', () => {
   test('fails when "cacheClusterEnabled" is "false" and "cacheClusterSize" is set', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
     const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
     api.root.addMethod('GET');
@@ -270,7 +260,6 @@ describe('stage', () => {
   test('if "cachingEnabled" in method settings, implicitly enable cache cluster', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
     const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
     api.root.addMethod('GET');
@@ -300,7 +289,6 @@ describe('stage', () => {
   test('if caching cluster is explicitly disabled, do not auto-enable cache cluster when "cachingEnabled" is set in method options', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
     const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
     api.root.addMethod('GET');
@@ -316,7 +304,6 @@ describe('stage', () => {
   test('if only the custom log destination log group is set', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
     const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
     api.root.addMethod('GET');
@@ -346,7 +333,6 @@ describe('stage', () => {
   test('if the custom log destination log group and format is set', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
     const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
     api.root.addMethod('GET');
@@ -378,7 +364,6 @@ describe('stage', () => {
   test('if only the custom log destination firehose delivery stream is set', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
     const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
     api.root.addMethod('GET');
@@ -410,7 +395,6 @@ describe('stage', () => {
   test('if the custom log destination firehose delivery stream and format is set', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
     const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
     api.root.addMethod('GET');
@@ -445,7 +429,6 @@ describe('stage', () => {
     test('fails when access log format does not contain `contextRequestId()` or `contextExtendedRequestId()', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
       const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
       const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
       api.root.addMethod('GET');
@@ -465,7 +448,6 @@ describe('stage', () => {
     test('succeeds when access log format contains `contextRequestId()`', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
       const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
       const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
       api.root.addMethod('GET');
@@ -487,7 +469,6 @@ describe('stage', () => {
     test('succeeds when access log format contains `contextExtendedRequestId()`', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
       const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
       const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
       api.root.addMethod('GET');
@@ -509,7 +490,6 @@ describe('stage', () => {
     test('succeeds when access log format contains both `contextRequestId()` and `contextExtendedRequestId`', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
       const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
       const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
       api.root.addMethod('GET');
@@ -532,7 +512,6 @@ describe('stage', () => {
     test('fails when access log format contains `contextRequestIdXxx`', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
       const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
       const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
       api.root.addMethod('GET');
@@ -554,7 +533,6 @@ describe('stage', () => {
     test('does not fail when access log format is a token', () => {
     // GIVEN
       const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
       const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
       const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
       api.root.addMethod('GET');
@@ -574,7 +552,6 @@ describe('stage', () => {
     test('fails when access log destination is empty', () => {
     // GIVEN
       const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
       const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
       const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
       api.root.addMethod('GET');
@@ -592,7 +569,6 @@ describe('stage', () => {
     test('fails if firehose delivery stream name does not start with amazon-apigateway-', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
       const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
       const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
       api.root.addMethod('GET');
@@ -613,7 +589,6 @@ describe('stage', () => {
   test('default throttling settings', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     new apigateway.SpecRestApi(stack, 'testapi', {
       apiDefinition: ApiDefinition.fromInline({
         openapi: '3.0.2',
@@ -640,7 +615,6 @@ describe('stage', () => {
   test('addApiKey is supported', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false });
     api.root.addMethod('GET');
     const stage = new apigateway.Stage(stack, 'Stage', {
@@ -668,7 +642,6 @@ describe('stage', () => {
   test('addApiKey is supported on an imported stage', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false });
     api.root.addMethod('GET');
     const stage = apigateway.Stage.fromStageAttributes(stack, 'Stage', {
@@ -696,7 +669,6 @@ describe('stage', () => {
     test('metric', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
 
       // WHEN
       const api = new apigateway.RestApi(stack, 'test-api');
@@ -714,7 +686,6 @@ describe('stage', () => {
     test('metricClientError', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
 
       // WHEN
       const api = new apigateway.RestApi(stack, 'test-api');
@@ -731,7 +702,6 @@ describe('stage', () => {
     test('metricServerError', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
 
       // WHEN
       const api = new apigateway.RestApi(stack, 'test-api');
@@ -748,7 +718,6 @@ describe('stage', () => {
     test('metricCacheHitCount', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
 
       // WHEN
       const api = new apigateway.RestApi(stack, 'test-api');
@@ -765,7 +734,6 @@ describe('stage', () => {
     test('metricCacheMissCount', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
 
       // WHEN
       const api = new apigateway.RestApi(stack, 'test-api');
@@ -782,7 +750,6 @@ describe('stage', () => {
     test('metricCount', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
 
       // WHEN
       const api = new apigateway.RestApi(stack, 'test-api');
@@ -799,7 +766,6 @@ describe('stage', () => {
     test('metricIntegrationLatency', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
 
       // WHEN
       const api = new apigateway.RestApi(stack, 'test-api');
@@ -816,7 +782,6 @@ describe('stage', () => {
     test('metricLatency', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      acknowledgeTestValidationRules(stack);
 
       // WHEN
       const api = new apigateway.RestApi(stack, 'test-api');

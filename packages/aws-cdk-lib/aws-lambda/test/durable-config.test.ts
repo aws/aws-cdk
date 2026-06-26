@@ -1,14 +1,12 @@
 import { Template } from '../../assertions';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
-import { acknowledgeTestValidationRules } from './util';
 
 describe('durable config', () => {
   test('DurableConfig with execution timeout only', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
-    acknowledgeTestValidationRules(stack);
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -27,7 +25,6 @@ describe('durable config', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
-    acknowledgeTestValidationRules(stack);
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -46,7 +43,6 @@ describe('durable config', () => {
   test('Function validates execution timeout bounds', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
-    acknowledgeTestValidationRules(stack);
 
     expect(() => new lambda.Function(stack, 'Lambda1', {
       code: new lambda.InlineCode('foo'),
@@ -66,7 +62,6 @@ describe('durable config', () => {
   test('Function validates retention period bounds', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
-    acknowledgeTestValidationRules(stack);
 
     expect(() => new lambda.Function(stack, 'Lambda1', {
       code: new lambda.InlineCode('foo'),
@@ -86,7 +81,6 @@ describe('durable config', () => {
   test('DurableConfig allows valid boundary values', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
-    acknowledgeTestValidationRules(stack);
 
     // Should not throw
     expect(() => new lambda.Function(stack, 'Lambda1', {
@@ -121,7 +115,6 @@ describe('durable config', () => {
   test('Function validates retention period requires whole days', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
-    acknowledgeTestValidationRules(stack);
 
     expect(() => new lambda.Function(stack, 'Lambda1', {
       code: new lambda.InlineCode('foo'),
@@ -134,7 +127,6 @@ describe('durable config', () => {
   test('Durable function uses AWSLambdaBasicDurableExecutionRolePolicy instead of AWSLambdaBasicExecutionRole', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
-    acknowledgeTestValidationRules(stack);
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -152,7 +144,6 @@ describe('durable config', () => {
   test('Non-durable function uses AWSLambdaBasicExecutionRole', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
-    acknowledgeTestValidationRules(stack);
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
