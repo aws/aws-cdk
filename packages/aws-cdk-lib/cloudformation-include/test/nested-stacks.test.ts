@@ -9,11 +9,18 @@ import * as futils from '../lib/file-utils';
 /* eslint-disable @stylistic/quote-props */
 /* eslint-disable quotes */
 
+let app: core.App;
+
+beforeEach(() => {
+  app = new core.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+  core.Validations.of(app).acknowledge(
+    { id: 'CloudFormation-Validate::F3014', reason: 'Our template supply mutex properties' },
+  );
+});
+
 describe('CDK Include for nested stacks', () => {
   let stack: core.Stack;
-
   beforeEach(() => {
-    const app = new core.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     stack = new core.Stack(app);
   });
 
@@ -506,8 +513,7 @@ describe('CDK Include for nested stacks', () => {
     let childKeyParam: string;
 
     beforeAll(() => {
-      const app = new core.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
-      assetStack = new core.Stack(app);
+      assetStack = new core.Stack(app, 'Stack');
       parentTemplate = new inc.CfnInclude(assetStack, 'ParentStack', {
         templateFile: testTemplateFilePath('parent-one-child.json'),
         loadNestedStacks: {
@@ -689,7 +695,7 @@ describe('CDK Include for nested stacks', () => {
     let childStack: core.Stack;
 
     beforeAll(() => {
-      parentStack = new core.Stack();
+      parentStack = new core.Stack(app, 'ParentStack');
       const parentTemplate = new inc.CfnInclude(parentStack, 'ParentStack', {
         templateFile: testTemplateFilePath('parent-two-parameters.json'),
         loadNestedStacks: {
@@ -749,7 +755,7 @@ describe('CDK Include for nested stacks', () => {
     let childStack: core.Stack;
 
     beforeEach(() => {
-      parentStack = new core.Stack();
+      parentStack = new core.Stack(app, 'Stack');
     });
 
     test('dehydrated resources are included in child templates, even if they are otherwise invalid', () => {

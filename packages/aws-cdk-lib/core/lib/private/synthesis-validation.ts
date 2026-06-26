@@ -132,7 +132,7 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
         : `Validation failed. A copy of this report can be found in: ${reportPath}`;
 
       // This used to be `process.exitCode = 1`, but that doesn't do the same
-      // thing if synthesis happens in (1) unit tests (2) in-memory in the
+      // thing if synthesis happens in (2) unit tests (2) in-memory in the
       // toolkit library. So we have to throw an error here to make sure we
       // properly fail in all cases. Potentially we can optimize this to a
       // "clean" exitCode if we know (via an environment variable) that we are

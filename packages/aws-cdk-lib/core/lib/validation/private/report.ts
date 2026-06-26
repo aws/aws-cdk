@@ -226,8 +226,10 @@ export class PolicyValidationReportFormatter {
               propertyPaths: resource.locations.length > 0 ? resource.locations : undefined,
             }
             : undefined,
+
+          // TODO: Property-level stack trace
           stackTraces: constructPath
-            ? this.formatStackTraces(constructPath)
+            ? this.creationStackTrace(constructPath)
             : undefined,
         };
         return result;
@@ -269,18 +271,15 @@ export class PolicyValidationReportFormatter {
     return results;
   }
 
-  private formatStackTraces(constructPath: string): string[] | undefined {
-    const trace = this.reportTrace.formatJson(constructPath);
-    if (!trace) return undefined;
-    const lines: string[] = [];
-    let current: ConstructTrace | undefined = trace;
-    while (current) {
-      if (current.location) {
-        lines.push(current.location);
-      }
-      current = current.child;
-    }
-    return lines.length > 0 ? [lines.join('\n')] : undefined;
+  /**
+   * Returns all stack traces on the root path of the construct tree for the given construct path.
+   *
+   * First element of the array will be the stack trace of the root, the next
+   * the stack trace of the first stack, etc. The last element of the array will
+   * be the stack trace of the construct itself.
+   */
+  private creationStackTrace(constructPath: string): string[] | undefined {
+    return this.reportTrace.creationStackTraceByPath(constructPath);
   }
 }
 
