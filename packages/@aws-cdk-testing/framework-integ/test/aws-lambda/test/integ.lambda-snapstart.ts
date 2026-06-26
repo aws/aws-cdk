@@ -1,7 +1,7 @@
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as path from 'path';
-import { Code, DockerImageCode, DockerImageFunction, Function, Runtime, SnapStartConf } from 'aws-cdk-lib/aws-lambda';
+import { Alias, Code, DockerImageCode, DockerImageFunction, Function, Runtime, SnapStartConf } from 'aws-cdk-lib/aws-lambda';
 import { Platform } from 'aws-cdk-lib/aws-ecr-assets';
 
 const app = new App({
@@ -47,7 +47,10 @@ const containerImageFn = new DockerImageFunction(stack, 'ContainerImageSnapstart
   snapStart: SnapStartConf.ON_PUBLISHED_VERSIONS,
 });
 
-containerImageFn.currentVersion;
+new Alias(stack, 'ContainerImageSnapstartAlias', {
+  aliasName: 'live',
+  version: containerImageFn.currentVersion,
+});
 
 new integ.IntegTest(app, 'lambda-runtime-management', {
   testCases: [stack],
