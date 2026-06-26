@@ -270,4 +270,9 @@ const IGNORE_RULES = new Set([
   // WHY: { Fn::GetStackOutput } not recognized
   // <https://github.com/aws-cloudformation/cloudformation-validate/issues/56>.
   'F3012',
+
+  // WHAT: CloudFront origin doesn't exist
+  // WHY: It does exist, it's just very long.
+  // <https://github.com/aws-cloudformation/cloudformation-validate/issues/57>.
+  'F3057',
 ]);
