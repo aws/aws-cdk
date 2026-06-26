@@ -2,6 +2,7 @@ import * as path from 'path';
 import type * as constructs from 'constructs';
 import { Template } from '../../assertions';
 import * as core from '../../core';
+import { Validations } from '../../core';
 import * as cxapi from '../../cx-api';
 import * as inc from '../lib';
 
@@ -15,6 +16,10 @@ describe('CDK Include', () => {
       { id: 'CloudFormation-Validate::F3004', reason: 'There may be circular dependencies' },
     );
     stack = new core.Stack(app);
+    Validations.of(app).acknowledge(
+      { id: 'CloudFormation-Validate::F3002', reason: 'These tests are purposely creating invalid templates' },
+      { id: 'CloudFormation-Validate::F3003', reason: 'These tests are purposely creating invalid templates' },
+    );
   });
 
   test('throws a validation exception for a template with a missing required top-level resource property', () => {
@@ -387,6 +392,10 @@ describe('CDK Include', () => {
 
     app = new core.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     stack = new core.Stack(app);
+    Validations.of(app).acknowledge(
+      { id: 'CloudFormation-Validate::F3002', reason: 'This test is purposely creating invalid templates' },
+      { id: 'CloudFormation-Validate::F3003', reason: 'This test is purposely creating invalid templates' },
+    );
 
     // synth-time validation not run if resource is dehydrated
     includeTestTemplate(stack, 'intrinsics-tags-resource-validation.json', {

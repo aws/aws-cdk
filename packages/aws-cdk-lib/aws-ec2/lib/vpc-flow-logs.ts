@@ -7,7 +7,7 @@ import type * as firehose from '../../aws-kinesisfirehose';
 import * as logs from '../../aws-logs';
 import { toILogGroup } from '../../aws-logs/lib/private/ref-utils';
 import * as s3 from '../../aws-s3';
-import type { IResource } from '../../core';
+import { IResource, Validations } from '../../core';
 import {
   CfnResource,
   FeatureFlags,
@@ -990,5 +990,14 @@ export class FlowLog extends FlowLogBase {
 
     this.flowLogId = flowLog.ref;
     this.node.defaultChild = flowLog;
+
+    Validations.of(this).acknowledge({
+      id: 'CloudFormation-Validate::F3002',
+      reason: 'AWS::EC2::FlowLog DestinationOptions accepts properties in camelCase, even they are listed as PascalCase in the spec',
+    });
+    Validations.of(this).acknowledge({
+      id: 'CloudFormation-Validate::F3003',
+      reason: 'AWS::EC2::FlowLog DestinationOptions accepts properties in camelCase, even they are listed as PascalCase in the spec',
+    });
   }
 }

@@ -16,8 +16,20 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
+const originalContextJson = process.env.CDK_CONTEXT_JSON;
+
+beforeAll(() => {
+  // These tests validate the plugin's own behavior — strict mode would mask the signals
+  // by throwing before tests can assert on warnings/errors.
+  process.env.CDK_CONTEXT_JSON = JSON.stringify({
+    ...JSON.parse(originalContextJson ?? '{}'),
+    '@aws-cdk/core:strictCfnValidateErrors': false,
+  });
+});
+
 afterAll(() => {
   jest.resetAllMocks();
+  process.env.CDK_CONTEXT_JSON = originalContextJson;
 });
 
 describe('CloudFormationValidatePlugin', () => {
@@ -36,11 +48,7 @@ describe('CloudFormationValidatePlugin', () => {
       },
     });
 
-    app.synth();
-
-    expect(process.exitCode).toEqual(1);
-    const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
-    expect(output).toContain('BogusProperty');
+    expect(() => app.synth()).toThrow(/BogusProperty/);
   });
 
   test('downgrades errors to warnings when flag is not explicitly enabled', () => {
