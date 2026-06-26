@@ -11,11 +11,19 @@ import * as futils from '../lib/file-utils';
 /* eslint-disable @stylistic/quote-props */
 /* eslint-disable quotes */
 
+let app: core.App;
+beforeEach(() => {
+  app = new core.App();
+  core.Validations.of(app).acknowledge(
+    { id: 'CloudFormation-Validate::F3014', reason: 'Our template supply mutex properties' },
+  );
+});
+
 describe('CDK Include', () => {
   let stack: core.Stack;
 
   beforeEach(() => {
-    stack = new core.Stack();
+    stack = new core.Stack(app, 'Stack');
   });
 
   test('can ingest a template with only an empty S3 Bucket, and output it unchanged', () => {
@@ -752,7 +760,6 @@ describe('CDK Include', () => {
 
   test("correctly handles referencing the ingested template's resources across Stacks", () => {
     // for cross-stack sharing to work, we need an App
-    const app = new core.App();
     stack = new core.Stack(app, 'MyStack');
     const cfnTemplate = includeTestTemplate(stack, 'only-empty-bucket.json');
     const cfnBucket = cfnTemplate.getResource('Bucket') as s3.CfnBucket;
