@@ -19,5 +19,6 @@ const APP_INIT_HOOK_SYMBOL = Symbol.for('@aws-cdk/core.App#initHook');
     { id: 'CloudFormation-Validate::W2501', reason: 'Hardcoded credentials are only for tests' },
     { id: 'CloudFormation-Validate::E3027', reason: 'Cron expressions are not valid' },
     { id: 'CloudFormation-Validate::F1020', reason: 'Invalid {Ref} targets in tests' },
+    { id: 'CloudFormation-Validate::E1154', reason: 'Invalid subnet IDs in tests' },
   );
 };
