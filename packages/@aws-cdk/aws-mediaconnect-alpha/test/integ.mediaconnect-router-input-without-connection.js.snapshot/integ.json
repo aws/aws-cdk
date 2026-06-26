@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "testCases": {
     "cdk-integ-emx-router-input-without-connection/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "cdkintegemxrouterinputwithoutconnectionDefaultTestDeployAssert2D835C5A"
     }
   },
-  "minimumCliVersion": "2.1119.0"
+  "minimumCliVersion": "2.1126.0"
 }

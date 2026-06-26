@@ -57,7 +57,6 @@ const encryptedInput = new RouterInput(stack, 'routerInputFlowEncrypted', {
   maximumBitrate: cdk.Bitrate.mbps(10),
   routingScope: RoutingScope.GLOBAL,
   tier: RouterInputTier.INPUT_100,
-  regionName: 'us-east-1',
   configuration: RouterInputConfiguration.mediaConnectFlow({
     flow: sourceFlow,
     flowOutput: encryptedFlowOutput,
@@ -76,7 +75,6 @@ new RouterInput(stack, 'routerInputFlowSimple', {
   maximumBitrate: cdk.Bitrate.mbps(6),
   routingScope: RoutingScope.REGIONAL,
   tier: RouterInputTier.INPUT_50,
-  regionName: 'us-east-1',
   configuration: RouterInputConfiguration.mediaConnectFlow({
     flow: sourceFlow,
     flowOutput: simpleFlowOutput,

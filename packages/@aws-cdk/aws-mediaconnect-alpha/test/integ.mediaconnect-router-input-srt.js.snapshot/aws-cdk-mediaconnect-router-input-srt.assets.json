@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "54.0.0",
   "files": {
     "7309ce561f3b5a1bf0de0c09a49f6d78c8fa2bf1bb2490214d9ba774a3e76c59": {
       "displayName": "aws-cdk-mediaconnect-router-input-srt Template",

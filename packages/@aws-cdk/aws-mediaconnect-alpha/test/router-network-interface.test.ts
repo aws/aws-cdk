@@ -1,5 +1,5 @@
 import { App, Stack } from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Annotations, Match, Template } from 'aws-cdk-lib/assertions';
 import { Vpc, SecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import { RouterNetworkConfiguration, RouterNetworkInterface } from '../lib/router-network-interface';
 
@@ -115,4 +115,29 @@ test('imported router network interface has undefined createdAt and updatedAt', 
   const imported = RouterNetworkInterface.fromRouterNetworkInterfaceArn(stack, 'ImportedNI2', 'arn:aws:mediaconnect:us-east-1:123456789012:router-network-interface:test');
   expect(imported.createdAt).toBeUndefined();
   expect(imported.updatedAt).toBeUndefined();
+});
+
+describe('open public CIDR warning', () => {
+  test.each(['0.0.0.0/0', '::/0'])('warns when a public CIDR is fully open (%s)', (openCidr) => {
+    new RouterNetworkInterface(stack, 'network', {
+      routerNetworkInterfaceName: 'test-network',
+      configuration: RouterNetworkConfiguration.publicNetwork({ cidr: [openCidr] }),
+      regionName: 'us-west-2',
+    });
+
+    Annotations.fromStack(stack).hasWarning(
+      '*',
+      Match.stringLikeRegexp(`Router network interface public CIDR '${openCidr.replace('/', '\\/')}' allows traffic from any IP`),
+    );
+  });
+
+  test('does not warn for a narrow public CIDR', () => {
+    new RouterNetworkInterface(stack, 'network', {
+      routerNetworkInterfaceName: 'test-network',
+      configuration: RouterNetworkConfiguration.publicNetwork({ cidr: ['10.0.0.0/16'] }),
+      regionName: 'us-west-2',
+    });
+
+    Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('allows traffic from any IP'));
+  });
 });

@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "54.0.0",
   "files": {
     "d1be3244c5daa67e39a044bebfb715d880f90c58f87a2d22075f4bad37668333": {
       "displayName": "aws-cdk-mediaconnect-router-output-encryption Template",

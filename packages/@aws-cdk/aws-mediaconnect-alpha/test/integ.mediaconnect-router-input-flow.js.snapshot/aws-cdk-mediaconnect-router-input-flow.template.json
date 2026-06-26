@@ -154,7 +154,9 @@
     },
     "MaximumBitrate": 10000000,
     "Name": "flow-input-encrypted",
-    "RegionName": "us-east-1",
+    "RegionName": {
+     "Ref": "AWS::Region"
+    },
     "RoutingScope": "GLOBAL",
     "Tier": "INPUT_100",
     "TransitEncryption": {
@@ -198,7 +200,9 @@
     },
     "MaximumBitrate": 6000000,
     "Name": "flow-input-simple",
-    "RegionName": "us-east-1",
+    "RegionName": {
+     "Ref": "AWS::Region"
+    },
     "RoutingScope": "REGIONAL",
     "Tier": "INPUT_50",
     "TransitEncryption": {

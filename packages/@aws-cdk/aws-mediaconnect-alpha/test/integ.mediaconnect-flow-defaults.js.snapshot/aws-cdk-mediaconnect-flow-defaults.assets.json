@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "files": {
     "4a0001918aa787e9201ae07263021c9840d1668c23e40734c30ee3caceeac960": {
       "displayName": "aws-cdk-mediaconnect-flow-defaults Template",

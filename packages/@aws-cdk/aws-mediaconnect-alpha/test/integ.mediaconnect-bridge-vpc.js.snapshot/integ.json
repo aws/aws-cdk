@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "54.0.0",
   "testCases": {
     "cdk-integ-emx-bridge-vpc/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "cdkintegemxbridgevpcDefaultTestDeployAssert73CE197C"
     }
   },
-  "minimumCliVersion": "2.1107.0"
+  "minimumCliVersion": "2.1126.0"
 }

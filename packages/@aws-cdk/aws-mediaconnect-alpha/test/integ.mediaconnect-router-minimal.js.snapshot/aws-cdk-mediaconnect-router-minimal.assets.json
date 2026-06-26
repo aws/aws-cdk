@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "54.0.0",
   "files": {
     "32f2426a2cdbf6e38ac49d97ff78463abf43c1c090ac02f44032579903243620": {
       "displayName": "aws-cdk-mediaconnect-router-minimal Template",

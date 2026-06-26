@@ -22,7 +22,6 @@ new RouterInput(stack, 'routerInputMerge', {
   maximumBitrate: cdk.Bitrate.mbps(8),
   routingScope: RoutingScope.GLOBAL,
   tier: RouterInputTier.INPUT_20,
-  regionName: 'us-east-1',
   configuration: RouterInputConfiguration.merge({
     networkInterface,
     protocols: [

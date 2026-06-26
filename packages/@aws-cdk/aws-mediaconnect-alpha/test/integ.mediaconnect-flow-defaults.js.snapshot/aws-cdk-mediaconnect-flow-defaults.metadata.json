@@ -1,13 +1,4 @@
 {
-  "/aws-cdk-mediaconnect-flow-defaults": [
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-defaults.js:32:15)",
-        "...node internals..."
-      ]
-    }
-  ],
   "/aws-cdk-mediaconnect-flow-defaults/RistFlow": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -36,144 +27,48 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
-        "visit (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
-        "visit (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
-        "synthesizeTree (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
-        "synthesize (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
-        "App.synth (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-defaults.js:87:5)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-mediaconnect-flow-defaults/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
-        "visit (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
-        "visit (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
-        "synthesizeTree (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
-        "synthesize (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
-        "App.synth (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-defaults.js:87:5)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-mediaconnect-flow-defaults/RistFlow/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "RistFlowF5B66698"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Flow (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow.js:862:26)",
-        "new Flow (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-defaults.js:34:18)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-mediaconnect-flow-defaults/MergeFlow/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "MergeFlow70FCE4A4"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Flow (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow.js:862:26)",
-        "new Flow (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-defaults.js:44:19)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-mediaconnect-flow-defaults/OutputDefault/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "OutputDefault1A6CCE07"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new FlowOutput (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow-output.js:381:30)",
-        "new FlowOutput (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-defaults.js:56:1)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-mediaconnect-flow-defaults/EntitlementDefault/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "EntitlementDefault1C8A3CDE"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new FlowEntitlement (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow-entitlement.js:132:30)",
-        "new FlowEntitlement (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-defaults.js:63:1)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-mediaconnect-flow-defaults/Exports/Output{\"Fn::GetAtt\":[\"RistFlowF5B66698\",\"FlowArn\"]}": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputFnGetAttRistFlowF5B66698FlowArnB140E86D"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "Stack.exportValue (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
-        "createImportValue (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:213:33)",
-        "resolveValue (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:147:12)",
-        "resolveReferences (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:38:30)",
-        "prepareApp (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
-        "synthesize (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:36)",
-        "App.synth (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-defaults.js:87:5)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-mediaconnect-flow-defaults/Exports/Output{\"Fn::GetAtt\":[\"MergeFlow70FCE4A4\",\"FlowArn\"]}": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputFnGetAttMergeFlow70FCE4A4FlowArn9D1B246A"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "Stack.exportValue (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
-        "createImportValue (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:213:33)",
-        "resolveValue (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:147:12)",
-        "resolveReferences (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:38:30)",
-        "prepareApp (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
-        "synthesize (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:36)",
-        "App.synth (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-defaults.js:87:5)",
-        "...node internals..."
-      ]
     }
   ]
 }

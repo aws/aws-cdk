@@ -48,7 +48,9 @@
     },
     "MaximumBitrate": 8000000,
     "Name": "merge-input",
-    "RegionName": "us-east-1",
+    "RegionName": {
+     "Ref": "AWS::Region"
+    },
     "RoutingScope": "GLOBAL",
     "Tier": "INPUT_20",
     "TransitEncryption": {

@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "files": {
     "85ab144d18d48b06ddcfeb3e862b62b96f41a5fb64c87485a322831a4dae6575": {
       "displayName": "aws-cdk-mediaconnect-flow-rist Template",

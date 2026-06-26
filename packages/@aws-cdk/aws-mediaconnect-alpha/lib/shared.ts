@@ -316,6 +316,9 @@ export function toTitleCase(day: MaintenanceDay): string {
  * @internal
  */
 export function validateMaintenanceTime(time: string): void {
+  if (Token.isUnresolved(time)) {
+    return;
+  }
   if (!/^([01]\d|2[0-3]):00$/.test(time)) {
     throw new UnscopedValidationError(
       lit`MaintenanceTimeFormat`,
@@ -793,10 +796,10 @@ export class Framerate {
    * @param denominator Denominator of the rate.
    */
   public static of(numerator: number, denominator: number): Framerate {
-    if (!Number.isInteger(numerator) || numerator <= 0) {
+    if (!Token.isUnresolved(numerator) && (!Number.isInteger(numerator) || numerator <= 0)) {
       throw new UnscopedValidationError(lit`FramerateNumerator`, `Frame rate numerator must be a positive integer, got ${numerator}`);
     }
-    if (!Number.isInteger(denominator) || denominator <= 0) {
+    if (!Token.isUnresolved(denominator) && (!Number.isInteger(denominator) || denominator <= 0)) {
       throw new UnscopedValidationError(lit`FramerateDenominator`, `Frame rate denominator must be a positive integer, got ${denominator}`);
     }
     return new Framerate(numerator, denominator);
@@ -851,10 +854,10 @@ export class PixelAspectRatio {
    * @param denominator Denominator of the ratio.
    */
   public static of(numerator: number, denominator: number): PixelAspectRatio {
-    if (!Number.isInteger(numerator) || numerator <= 0) {
+    if (!Token.isUnresolved(numerator) && (!Number.isInteger(numerator) || numerator <= 0)) {
       throw new UnscopedValidationError(lit`PixelAspectRatioNumerator`, `Pixel aspect ratio numerator must be a positive integer, got ${numerator}`);
     }
-    if (!Number.isInteger(denominator) || denominator <= 0) {
+    if (!Token.isUnresolved(denominator) && (!Number.isInteger(denominator) || denominator <= 0)) {
       throw new UnscopedValidationError(lit`PixelAspectRatioDenominator`, `Pixel aspect ratio denominator must be a positive integer, got ${denominator}`);
     }
     return new PixelAspectRatio(numerator, denominator);
@@ -911,14 +914,13 @@ export function exceedsRouterTierBitrate(tierMbps: number | undefined, maximumBi
 }
 
 /**
- * Returns `true` when the given CIDR literal is the fully-open range
- * (`0.0.0.0/0` or a `/0` prefix that is equivalent). Token-encoded values and
- * IPv6 are treated as non-open so we don't warn on values we can't inspect.
+ * Returns `true` when the given CIDR literal is a fully-open range — any `/0`
+ * prefix, covering both IPv4 (`0.0.0.0/0`) and IPv6 (`::/0`). Callers are
+ * expected to pre-check for token-encoded values, since an unresolved token
+ * cannot be inspected.
  *
  * @internal
  */
 export function isOpenCidr(cidr: string): boolean {
-  if (cidr === undefined) return false;
-  const trimmed = cidr.trim();
-  return trimmed === '0.0.0.0/0' || /\/0$/.test(trimmed);
+  return /\/0$/.test(cidr.trim());
 }

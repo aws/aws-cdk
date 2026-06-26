@@ -1,30 +1,30 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "files": {
-    "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f": {
+    "bea78ce725e22a5e0d82378f6b49028c09ba86499286d6945a0506e820854e92": {
       "displayName": "aws-cdk-mediaconnect-flow-zixi-push/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
       "source": {
-        "path": "asset.55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f",
+        "path": "asset.bea78ce725e22a5e0d82378f6b49028c09ba86499286d6945a0506e820854e92",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region-65a3ca72": {
+        "current_account-current_region-fea3f0e7": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f.zip",
+          "objectKey": "bea78ce725e22a5e0d82378f6b49028c09ba86499286d6945a0506e820854e92.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "16af7b7ca894179d5cecc6e0733cc75c5d669c02d0ff076019d829165313cbdd": {
+    "0f11b84846f6ef61c77e741a5577d9f20add2d83e13a0fe5e5fab46d5ea830c4": {
       "displayName": "aws-cdk-mediaconnect-flow-zixi-push Template",
       "source": {
         "path": "aws-cdk-mediaconnect-flow-zixi-push.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-be2de581": {
+        "current_account-current_region-bc9cc577": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "16af7b7ca894179d5cecc6e0733cc75c5d669c02d0ff076019d829165313cbdd.json",
+          "objectKey": "0f11b84846f6ef61c77e741a5577d9f20add2d83e13a0fe5e5fab46d5ea830c4.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

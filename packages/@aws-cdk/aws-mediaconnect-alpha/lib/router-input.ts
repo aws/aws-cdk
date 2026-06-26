@@ -281,7 +281,11 @@ export interface RouterInputProps {
    */
   readonly maintenanceConfiguration?: MaintenanceConfiguration;
   /**
-   * AWS region where the Router Input will be created (i.e. us-east-1)
+   * AWS region where the Router Input will be created (i.e. us-east-1).
+   *
+   * Must match the region of the flows, flow outputs, and network interfaces it connects to —
+   * MediaConnect rejects a cross-region connection at deploy.
+   *
    * @default - Same as the stack's region
    */
   readonly regionName?: string;

@@ -1,6 +1,5 @@
 import { App, Bitrate, Duration, Stack } from 'aws-cdk-lib';
-import { Match, Template } from 'aws-cdk-lib/assertions';
-import { Vpc, IpAddresses, SubnetType, PrivateSubnet, SecurityGroup } from 'aws-cdk-lib/aws-ec2';
+import { Annotations, Match, Template } from 'aws-cdk-lib/assertions';import { Vpc, IpAddresses, SubnetType, PrivateSubnet, SecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import { Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 
@@ -2001,5 +2000,36 @@ test('grants.stop() adds correct IAM policy', () => {
         Resource: Match.anyValue(),
       }],
     },
+  });
+});
+
+describe('open source CIDR allowlist warning', () => {
+  test.each(['0.0.0.0/0', '::/0'])('warns when a public source allowlist is fully open (%s)', (openCidr) => {
+    new Flow(stack, 'flow', {
+      flowName: 'flow',
+      source: SourceConfiguration.rtp({
+        flowSourceName: 'source',
+        port: 5000,
+        network: NetworkConfiguration.publicNetwork(openCidr),
+      }),
+    });
+
+    Annotations.fromStack(stack).hasWarning(
+      '*',
+      Match.stringLikeRegexp(`Source CIDR allowlist '${openCidr.replace('/', '\\/')}' allows traffic from any IP`),
+    );
+  });
+
+  test('does not warn for a narrow public source allowlist', () => {
+    new Flow(stack, 'flow', {
+      flowName: 'flow',
+      source: SourceConfiguration.rtp({
+        flowSourceName: 'source',
+        port: 5000,
+        network: NetworkConfiguration.publicNetwork('10.0.0.0/16'),
+      }),
+    });
+
+    Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('allows traffic from any IP'));
   });
 });

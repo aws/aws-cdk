@@ -215,7 +215,7 @@ export interface MaintenanceWindow {
    */
   readonly maintenanceDay: MaintenanceDay;
   /**
-   * UTC time when the maintenance will happen. Use 24-hour HH:MM format. Minutes must be 00. Example: 13:00. The default value is 02:00.
+   * UTC time when the maintenance will happen. Use 24-hour HH:MM format. Minutes must be 00. Example: 13:00.
    */
   readonly maintenanceStartHour: string;
 }
@@ -446,7 +446,7 @@ export interface EncodingConfig {
    * The encoding profile to use when transcoding the NDI source content to a transport
    * stream. You can change this value while the flow is running.
    *
-   * @default EncodingProfile.DISTRIBUTION_H264_DEFAULT
+   * @default - the MediaConnect service default
    */
   readonly encodingProfile?: EncodingProfile;
 
@@ -729,7 +729,7 @@ export interface MediaStreamAudio extends MediaStreamBase {
   /**
    * The format of the audio channel.
    *
-   * @default AudioStreamOrderOptions.STANDARD_STEREO
+   * @default - the MediaConnect service default
    */
   readonly channelOrder?: AudioStreamOrderOptions;
   /**
@@ -847,6 +847,13 @@ export interface FlowProps {
 
   /**
    * Policy to apply when the flow is removed from the stack.
+   *
+   * Defaults to `RETAIN` because a flow is a live transport, not a data store, and MediaConnect
+   * won't delete an active flow — it must be stopped first. Retaining by default avoids an
+   * unplanned teardown of a running flow and everything wired to it.
+   *
+   * Trade-off: a destroyed stack leaves the flow behind (still running, still billing). Set
+   * `RemovalPolicy.DESTROY` if you want it removed together with the stack.
    *
    * @default RemovalPolicy.RETAIN
    */
@@ -1397,14 +1404,7 @@ export class Flow extends FlowBase implements IFlow {
     });
 
     // Validate flow name if provided
-    if (props.flowName != null && props.flowName !== '' && !Token.isUnresolved(props.flowName)) {
-      if (props.flowName.length < 1 || props.flowName.length > 64) {
-        throw new ValidationError(lit`FlowNameLength`, `Flow name must be between 1 and 64 characters, got ${props.flowName.length}`, this);
-      }
-      if (!/^[a-zA-Z0-9_-]+$/.test(props.flowName)) {
-        throw new ValidationError(lit`FlowNameFormat`, `Flow name must contain only alphanumeric characters, hyphens, and underscores, got '${props.flowName}'`, this);
-      }
-    }
+    this.validateName(props);
 
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
@@ -1414,46 +1414,12 @@ export class Flow extends FlowBase implements IFlow {
       validateMaintenanceTime(props.maintenance.maintenanceStartHour);
     }
 
-    // Validate monitoring threshold ranges (10-60 seconds)
-    const monitoring = props.sourceMonitoringConfig;
-    if (monitoring && (monitoring.silentAudio || monitoring.blackFrames || monitoring.frozenFrames)
-      && monitoring.contentQualityAnalysisState !== State.ENABLED) {
-      throw new ValidationError(
-        lit`MonitoringMetricsRequireContentQualityAnalysis`,
-        'silentAudio, blackFrames, and frozenFrames require contentQualityAnalysisState to be State.ENABLED',
-        this,
-      );
-    }
-    if (props.sourceMonitoringConfig?.silentAudio) {
-      const secs = props.sourceMonitoringConfig.silentAudio.threshold.toSeconds();
-      if (secs < 10 || secs > 60) {
-        throw new ValidationError(lit`SilentAudioThresholdRange`, `Silent audio threshold must be between 10 and 60 seconds, got ${secs}`, this);
-      }
-    }
-    if (props.sourceMonitoringConfig?.blackFrames) {
-      const secs = props.sourceMonitoringConfig.blackFrames.threshold.toSeconds();
-      if (secs < 10 || secs > 60) {
-        throw new ValidationError(lit`BlackFramesThresholdRange`, `Black frames threshold must be between 10 and 60 seconds, got ${secs}`, this);
-      }
-    }
-    if (props.sourceMonitoringConfig?.frozenFrames) {
-      const secs = props.sourceMonitoringConfig.frozenFrames.threshold.toSeconds();
-      if (secs < 10 || secs > 60) {
-        throw new ValidationError(lit`FrozenFramesThresholdRange`, `Frozen frames threshold must be between 10 and 60 seconds, got ${secs}`, this);
-      }
-    }
+    // Validate source monitoring thresholds and content-quality requirements
+    this.validateMonitoring(props);
 
     // Validate encoding config video max bitrate range (10-50 Mbps)
-    if (props.encodingConfig?.videoMaxBitrate) {
-      const mbps = props.encodingConfig.videoMaxBitrate.toMbps();
-      if (mbps < 10 || mbps > 50) {
-        throw new ValidationError(
-          lit`EncodingVideoMaxBitrateRange`,
-          `Encoding config videoMaxBitrate must be between 10 and 50 Mbps, got ${mbps}`,
-          this,
-        );
-      }
-    }
+    this.validateEncoding(props);
+
     // Only iterate a known-concrete vpcInterfaces list; skip tokenized lists to avoid
     // pushing the token marker into our internal collection.
     if (props.vpcInterfaces !== undefined && !Token.isUnresolved(props.vpcInterfaces)) {
@@ -1477,65 +1443,8 @@ export class Flow extends FlowBase implements IFlow {
       );
     }
 
-    // NDI discovery servers limit (service rejects >3 at deploy time)
-    const discoveryServers = props.ndiConfig?.ndiDiscoveryServers;
-    if (discoveryServers !== undefined && !Token.isUnresolved(discoveryServers) && discoveryServers.length > 3) {
-      throw new ValidationError(
-        lit`NdiMaxDiscoveryServers`,
-        `NDI config supports a maximum of 3 discovery servers, got ${discoveryServers.length}`,
-        this,
-      );
-    }
-
-    // NDI cannot coexist with CDI or JPEG XS — they require different flow sizes
-    if (props.ndiConfig?.ndiState === State.ENABLED
-      && (sourceConfig.protocol === SourceProtocol.CDI.value || sourceConfig.protocol === SourceProtocol.JPEGXS.value)) {
-      throw new ValidationError(
-        lit`NdiCdiConflict`,
-        'NDI cannot be used with CDI or JPEG XS protocols; NDI requires LARGE flow size while CDI and JPEG XS require LARGE_4X',
-        this,
-      );
-    }
-
-    // NDI requires LARGE flow size (not MEDIUM, not LARGE_4X)
-    if (props.ndiConfig?.ndiState === State.ENABLED
-      && props.flowSize?.value !== FlowSize.LARGE.value) {
-      throw new ValidationError(
-        lit`NdiFlowSizeRequired`,
-        'NDI requires LARGE flow size; set flowSize to FlowSize.LARGE',
-        this,
-      );
-    }
-
-    // NDI sources require NDI to be enabled on the flow
-    if (sourceConfig.protocol === SourceProtocol.NDI_SPEED_HQ.value
-      && props.ndiConfig?.ndiState !== State.ENABLED) {
-      throw new ValidationError(
-        lit`NdiSourceRequiresNdiConfig`,
-        'NDI sources require ndiConfig with ndiState set to State.ENABLED',
-        this,
-      );
-    }
-
-    // NDI sources require LARGE flow size
-    if (sourceConfig.protocol === SourceProtocol.NDI_SPEED_HQ.value
-      && props.flowSize?.value !== FlowSize.LARGE.value) {
-      throw new ValidationError(
-        lit`NdiSourceFlowSizeRequired`,
-        'NDI sources require LARGE flow size; set flowSize to FlowSize.LARGE',
-        this,
-      );
-    }
-
-    // NDI sources require encodingConfig to transcode into a transport stream
-    if (sourceConfig.protocol === SourceProtocol.NDI_SPEED_HQ.value
-      && !props.encodingConfig) {
-      throw new ValidationError(
-        lit`NdiSourceRequiresEncodingConfig`,
-        'NDI sources require encodingConfig to transcode the NDI source into a transport stream',
-        this,
-      );
-    }
+    // NDI constraints (discovery server limit, protocol conflicts, flow size, source requirements)
+    this.validateNdi(props, sourceConfig);
 
     // LARGE_4X only supports CDI and JPEG XS protocols
     if (props.flowSize?.value === FlowSize.LARGE_4X.value
@@ -1548,19 +1457,8 @@ export class Flow extends FlowBase implements IFlow {
       );
     }
 
-    // Skip EFA-count validation when the user passed a tokenized vpcInterfaces list;
-    // we can't inspect individual entries in that case.
-    const efaCount = props.vpcInterfaces !== undefined && !Token.isUnresolved(props.vpcInterfaces)
-      ? props.vpcInterfaces.filter(vpc => vpc.networkInterfaceType?.value === NetworkInterface.EFA.value).length
-      : 0;
-
-    if (efaCount > 1) {
-      throw new ValidationError(
-        lit`FlowMaxEfaInterfaces`,
-        `A flow can have a maximum of 1 EFA VPC interface, got ${efaCount}`,
-        this,
-      );
-    }
+    // VPC interface EFA-count limit
+    this.validateVpcEfaCount(props);
 
     const flow = new CfnFlow(this, 'Resource', {
       name: this.physicalName,
@@ -1630,6 +1528,149 @@ export class Flow extends FlowBase implements IFlow {
           : [];
       },
     });
+  }
+
+  /** Validate the flow name length and character set, when a concrete value is provided. */
+  private validateName(props: FlowProps): void {
+    if (props.flowName != null && props.flowName !== '' && !Token.isUnresolved(props.flowName)) {
+      if (props.flowName.length < 1 || props.flowName.length > 64) {
+        throw new ValidationError(lit`FlowNameLength`, `Flow name must be between 1 and 64 characters, got ${props.flowName.length}`, this);
+      }
+      if (!/^[a-zA-Z0-9_-]+$/.test(props.flowName)) {
+        throw new ValidationError(lit`FlowNameFormat`, `Flow name must contain only alphanumeric characters, hyphens, and underscores, got '${props.flowName}'`, this);
+      }
+    }
+  }
+
+  /**
+   * Validate source-monitoring thresholds (10-60 seconds) and that the per-metric checks are only
+   * used when content-quality analysis is enabled.
+   */
+  private validateMonitoring(props: FlowProps): void {
+    const monitoring = props.sourceMonitoringConfig;
+    if (monitoring && (monitoring.silentAudio || monitoring.blackFrames || monitoring.frozenFrames)
+      && monitoring.contentQualityAnalysisState !== State.ENABLED) {
+      throw new ValidationError(
+        lit`MonitoringMetricsRequireContentQualityAnalysis`,
+        'silentAudio, blackFrames, and frozenFrames require contentQualityAnalysisState to be State.ENABLED',
+        this,
+      );
+    }
+    if (monitoring?.silentAudio) {
+      const secs = monitoring.silentAudio.threshold.toSeconds();
+      if (secs < 10 || secs > 60) {
+        throw new ValidationError(lit`SilentAudioThresholdRange`, `Silent audio threshold must be between 10 and 60 seconds, got ${secs}`, this);
+      }
+    }
+    if (monitoring?.blackFrames) {
+      const secs = monitoring.blackFrames.threshold.toSeconds();
+      if (secs < 10 || secs > 60) {
+        throw new ValidationError(lit`BlackFramesThresholdRange`, `Black frames threshold must be between 10 and 60 seconds, got ${secs}`, this);
+      }
+    }
+    if (monitoring?.frozenFrames) {
+      const secs = monitoring.frozenFrames.threshold.toSeconds();
+      if (secs < 10 || secs > 60) {
+        throw new ValidationError(lit`FrozenFramesThresholdRange`, `Frozen frames threshold must be between 10 and 60 seconds, got ${secs}`, this);
+      }
+    }
+  }
+
+  /** Validate the encoding config's video max bitrate range (10-50 Mbps). */
+  private validateEncoding(props: FlowProps): void {
+    if (props.encodingConfig?.videoMaxBitrate) {
+      const mbps = props.encodingConfig.videoMaxBitrate.toMbps();
+      if (mbps < 10 || mbps > 50) {
+        throw new ValidationError(
+          lit`EncodingVideoMaxBitrateRange`,
+          `Encoding config videoMaxBitrate must be between 10 and 50 Mbps, got ${mbps}`,
+          this,
+        );
+      }
+    }
+  }
+
+  /**
+   * Validate NDI constraints: discovery-server limit, mutual exclusivity with CDI/JPEG XS, the
+   * required LARGE flow size, and the requirements an NDI source places on the flow.
+   */
+  private validateNdi(props: FlowProps, sourceConfig: CfnFlow.SourceProperty): void {
+    // NDI discovery servers limit (service rejects >3 at deploy time)
+    const discoveryServers = props.ndiConfig?.ndiDiscoveryServers;
+    if (discoveryServers !== undefined && !Token.isUnresolved(discoveryServers) && discoveryServers.length > 3) {
+      throw new ValidationError(
+        lit`NdiMaxDiscoveryServers`,
+        `NDI config supports a maximum of 3 discovery servers, got ${discoveryServers.length}`,
+        this,
+      );
+    }
+
+    // NDI cannot coexist with CDI or JPEG XS — they require different flow sizes
+    if (props.ndiConfig?.ndiState === State.ENABLED
+      && (sourceConfig.protocol === SourceProtocol.CDI.value || sourceConfig.protocol === SourceProtocol.JPEGXS.value)) {
+      throw new ValidationError(
+        lit`NdiCdiConflict`,
+        'NDI cannot be used with CDI or JPEG XS protocols; NDI requires LARGE flow size while CDI and JPEG XS require LARGE_4X',
+        this,
+      );
+    }
+
+    // NDI requires LARGE flow size (not MEDIUM, not LARGE_4X)
+    if (props.ndiConfig?.ndiState === State.ENABLED
+      && props.flowSize?.value !== FlowSize.LARGE.value) {
+      throw new ValidationError(
+        lit`NdiFlowSizeRequired`,
+        'NDI requires LARGE flow size; set flowSize to FlowSize.LARGE',
+        this,
+      );
+    }
+
+    // NDI sources require NDI to be enabled on the flow
+    if (sourceConfig.protocol === SourceProtocol.NDI_SPEED_HQ.value
+      && props.ndiConfig?.ndiState !== State.ENABLED) {
+      throw new ValidationError(
+        lit`NdiSourceRequiresNdiConfig`,
+        'NDI sources require ndiConfig with ndiState set to State.ENABLED',
+        this,
+      );
+    }
+
+    // NDI sources require LARGE flow size
+    if (sourceConfig.protocol === SourceProtocol.NDI_SPEED_HQ.value
+      && props.flowSize?.value !== FlowSize.LARGE.value) {
+      throw new ValidationError(
+        lit`NdiSourceFlowSizeRequired`,
+        'NDI sources require LARGE flow size; set flowSize to FlowSize.LARGE',
+        this,
+      );
+    }
+
+    // NDI sources require encodingConfig to transcode into a transport stream
+    if (sourceConfig.protocol === SourceProtocol.NDI_SPEED_HQ.value
+      && !props.encodingConfig) {
+      throw new ValidationError(
+        lit`NdiSourceRequiresEncodingConfig`,
+        'NDI sources require encodingConfig to transcode the NDI source into a transport stream',
+        this,
+      );
+    }
+  }
+
+  /** Validate the EFA VPC-interface count (at most one), when the list is concrete. */
+  private validateVpcEfaCount(props: FlowProps): void {
+    // Skip EFA-count validation when the user passed a tokenized vpcInterfaces list;
+    // we can't inspect individual entries in that case.
+    const efaCount = props.vpcInterfaces !== undefined && !Token.isUnresolved(props.vpcInterfaces)
+      ? props.vpcInterfaces.filter(vpc => vpc.networkInterfaceType?.value === NetworkInterface.EFA.value).length
+      : 0;
+
+    if (efaCount > 1) {
+      throw new ValidationError(
+        lit`FlowMaxEfaInterfaces`,
+        `A flow can have a maximum of 1 EFA VPC interface, got ${efaCount}`,
+        this,
+      );
+    }
   }
 
   /**

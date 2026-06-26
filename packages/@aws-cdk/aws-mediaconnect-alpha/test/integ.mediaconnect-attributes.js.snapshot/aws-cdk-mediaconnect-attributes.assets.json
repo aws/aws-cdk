@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "files": {
     "43c652ac53548c8a76f5c2bbc092a8bba3b5014142f2b9e95560c9431df756a0": {
       "displayName": "aws-cdk-mediaconnect-attributes Template",

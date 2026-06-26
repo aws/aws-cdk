@@ -1,5 +1,5 @@
-import { App, Bitrate, Duration, Stack } from 'aws-cdk-lib';
-import { Match, Template } from 'aws-cdk-lib/assertions';
+import { App, Bitrate, Duration, Stack, Token } from 'aws-cdk-lib';
+import { Annotations, Match, Template } from 'aws-cdk-lib/assertions';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 
@@ -148,6 +148,11 @@ test('Flow output with router integration', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::MediaConnect::FlowOutput', {
     FlowArn: { 'Fn::GetAtt': ['flowAF0E31A5', 'FlowArn'] },
+    RouterIntegrationState: 'ENABLED',
+    RouterIntegrationTransitEncryption: {
+      EncryptionKeyType: 'AUTOMATIC',
+      EncryptionKeyConfiguration: { Automatic: {} },
+    },
   });
 });
 
@@ -294,21 +299,45 @@ test('Flow output with router integration and transit encryption', () => {
     }),
   });
 
-  const role = Role.fromRoleName(stack, 'role', 'my-role');
-  const secret = Secret.fromSecretNameV2(stack, 'secret2', 'my-secret');
+  // No role supplied — the construct must auto-create RouterTransitEncryptionRole.
+  const secret = new Secret(stack, 'EncSecret');
 
   new FlowOutput(stack, 'output', {
     flow,
     outputConfig: OutputConfiguration.router({
-      encryption: ({
-        role,
-        secret,
-      }),
+      encryption: { secret },
     }),
   });
 
-  Template.fromStack(stack).hasResourceProperties('AWS::MediaConnect::FlowOutput', {
-    FlowArn: { 'Fn::GetAtt': ['flowAF0E31A5', 'FlowArn'] },
+  const template = Template.fromStack(stack);
+  // Auto-created encryption role with a confused-deputy guard scoped to the flow.
+  template.hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [{
+        Effect: 'Allow',
+        Principal: { Service: 'mediaconnect.amazonaws.com' },
+        Action: 'sts:AssumeRole',
+        Condition: {
+          StringEquals: { 'aws:SourceAccount': { Ref: 'AWS::AccountId' } },
+          ArnLike: { 'aws:SourceArn': Match.anyValue() },
+        },
+      }],
+      Version: '2012-10-17',
+    },
+  });
+  // Router integration enabled, with a SECRETS_MANAGER transit-encryption block referencing
+  // the auto-created role and the supplied secret.
+  template.hasResourceProperties('AWS::MediaConnect::FlowOutput', {
+    RouterIntegrationState: 'ENABLED',
+    RouterIntegrationTransitEncryption: {
+      EncryptionKeyType: 'SECRETS_MANAGER',
+      EncryptionKeyConfiguration: {
+        SecretsManager: {
+          RoleArn: Match.anyValue(),
+          SecretArn: Match.anyValue(),
+        },
+      },
+    },
   });
 });
 
@@ -483,5 +512,61 @@ test('SRT Caller output with SRT password encryption auto-creates a role when no
     Encryption: {
       KeyType: 'srt-password',
     },
+  });
+});
+
+describe('open output CIDR allow list warning', () => {
+  const makeFlow = () => new Flow(stack, 'flow', {
+    source: SourceConfiguration.rtp({
+      flowSourceName: 'source',
+      port: 5000,
+      network: NetworkConfiguration.publicNetwork('10.1.0.0/16'),
+    }),
+  });
+
+  test.each(['0.0.0.0/0', '::/0'])('warns when an output allow list is fully open (%s)', (openCidr) => {
+    new FlowOutput(stack, 'output', {
+      flow: makeFlow(),
+      outputConfig: OutputConfiguration.srtListener({
+        port: 7000,
+        cidrAllowList: [openCidr],
+      }),
+    });
+
+    Annotations.fromStack(stack).hasWarning(
+      '*',
+      Match.stringLikeRegexp(`Output CIDR allow list '${openCidr.replace('/', '\\/')}' allows pull requests from any IP`),
+    );
+  });
+
+  test('does not warn for a narrow output allow list', () => {
+    new FlowOutput(stack, 'output', {
+      flow: makeFlow(),
+      outputConfig: OutputConfiguration.srtListener({
+        port: 7000,
+        cidrAllowList: ['10.0.0.0/8'],
+      }),
+    });
+
+    Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('allows pull requests from any IP'));
+  });
+});
+
+describe('OutputConfiguration.ndi ndiSpeedHqQuality validation', () => {
+  test.each([100, 150, 200])('accepts an in-range quality (%i)', (quality) => {
+    expect(() => OutputConfiguration.ndi({ ndiSpeedHqQuality: quality })).not.toThrow();
+  });
+
+  test.each([99, 201, 0, -1])('fails for an out-of-range quality (%i)', (quality) => {
+    expect(() => OutputConfiguration.ndi({ ndiSpeedHqQuality: quality }))
+      .toThrow(/NDI Speed HQ quality must be between 100 and 200/);
+  });
+
+  test('does not validate a tokenized quality', () => {
+    expect(() => OutputConfiguration.ndi({ ndiSpeedHqQuality: Token.asNumber({ Ref: 'QualityParam' }) })).not.toThrow();
+  });
+
+  test('accepts ndi config with no quality set', () => {
+    expect(() => OutputConfiguration.ndi()).not.toThrow();
   });
 });

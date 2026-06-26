@@ -306,7 +306,7 @@ export interface NdiOutputConfig {
    * Valid range: 100-200. Higher values produce higher quality and larger bitrate.
    *
    * @see https://aws.amazon.com/about-aws/whats-new/2025/03/aws-elemental-mediaconnect-support-ndi-outputs/
-   * @default 100
+   * @default - the MediaConnect service default
    */
   readonly ndiSpeedHqQuality?: number;
 }
@@ -537,7 +537,7 @@ export class FlowOutput extends FlowOutputBase {
 
     // Validate flow output name if provided
     if (props.flowOutputName != null && props.flowOutputName !== '' && !Token.isUnresolved(props.flowOutputName)) {
-      if (props.flowOutputName.length < 1 || props.flowOutputName.length > 128) {
+      if (props.flowOutputName.length > 128) {
         throw new ValidationError(lit`FlowOutputNameLength`, `Flow output name must be between 1 and 128 characters, got ${props.flowOutputName.length}`, this);
       }
       if (!/^[a-zA-Z0-9-]+$/.test(props.flowOutputName)) {
@@ -568,7 +568,7 @@ export class FlowOutput extends FlowOutputBase {
       encryption: renderOutputEncryption(this, staticKeyEncryption, srtPasswordEncryption, props.flow.flowArn),
       name: this.physicalName,
       flowArn: props.flow.flowArn,
-      description: props.description ?? undefined,
+      description: props.description,
       outputStatus: props.outputStatus,
       routerIntegrationTransitEncryption: outputConfig.routerIntegrationState === State.ENABLED
         ? renderTransitEncryption(this, 'RouterTransitEncryptionRole', routerIntegrationTransitEncryption, props.flow.flowArn)

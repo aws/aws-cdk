@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "54.0.0",
   "testCases": {
     "cdk-integ-emx-router-input-failover/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "cdkintegemxrouterinputfailoverDefaultTestDeployAssertB96D33F8"
     }
   },
-  "minimumCliVersion": "2.1107.0"
+  "minimumCliVersion": "2.1126.0"
 }

@@ -1,13 +1,4 @@
 {
-  "/aws-cdk-mediaconnect-flow-zixi-push": [
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-zixi-push.js:25:15)",
-        "...node internals..."
-      ]
-    }
-  ],
   "/aws-cdk-mediaconnect-flow-zixi-push/StandardFlow": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -83,74 +74,24 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
-        "visit (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
-        "visit (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
-        "synthesizeTree (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
-        "synthesize (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
-        "App.synth (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-zixi-push.js:90:5)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-mediaconnect-flow-zixi-push/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
-        "visit (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
-        "visit (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
-        "synthesizeTree (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
-        "synthesize (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
-        "App.synth (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-zixi-push.js:90:5)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-mediaconnect-flow-zixi-push/StandardFlow/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "StandardFlow64B79D43"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Flow (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow.js:762:26)",
-        "new Flow (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-zixi-push.js:27:1)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-mediaconnect-flow-zixi-push/Vpc/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Vpc8378EB38"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Vpc (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:770:29)",
-        "new Vpc (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-zixi-push.js:38:13)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-mediaconnect-flow-zixi-push/Vpc/subnet1Subnet1": [
@@ -211,301 +152,90 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResourceProviderBase (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:99:25)",
-        "new RestrictDefaultSgProvider (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:24:9)",
-        "RestrictDefaultSgProvider.getOrCreateProvider (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:21:28)",
-        "WrappedClass.restrictDefaultSecurityGroup (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1072:99)",
-        "new Vpc (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:894:22)",
-        "new Vpc (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-zixi-push.js:38:13)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-mediaconnect-flow-zixi-push/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResourceProviderBase (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:115:24)",
-        "new RestrictDefaultSgProvider (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:24:9)",
-        "RestrictDefaultSgProvider.getOrCreateProvider (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:21:28)",
-        "WrappedClass.restrictDefaultSecurityGroup (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1072:99)",
-        "new Vpc (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:894:22)",
-        "new Vpc (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-zixi-push.js:38:13)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-mediaconnect-flow-zixi-push/Subnet/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Subnet53F41B8F"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-zixi-push.js:46:16)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-mediaconnect-flow-zixi-push/Subnet/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "SubnetRouteTableB722C9E4"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-zixi-push.js:46:16)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-mediaconnect-flow-zixi-push/Subnet/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "SubnetRouteTableAssociation3CCBAA31"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-zixi-push.js:46:16)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-mediaconnect-flow-zixi-push/VpcInterfaceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcInterfaceRole252AC56E"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-zixi-push.js:51:14)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-mediaconnect-flow-zixi-push/Sg/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "SgD4954771"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new SecurityGroup (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
-        "new SecurityGroup (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new SecurityGroup (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-zixi-push.js:73:22)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-mediaconnect-flow-zixi-push/VpcFlow/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcFlow3E1AA0B8"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Flow (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow.js:762:26)",
-        "new Flow (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-zixi-push.js:76:1)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-mediaconnect-flow-zixi-push/Vpc/subnet1Subnet1/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Vpcsubnet1Subnet1Subnet0FFD0C9D"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1057: (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1057:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
-        "new Vpc (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-zixi-push.js:38:13)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-mediaconnect-flow-zixi-push/Vpc/subnet1Subnet1/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Vpcsubnet1Subnet1RouteTableC3B5F609"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1057: (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1057:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
-        "new Vpc (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-zixi-push.js:38:13)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-mediaconnect-flow-zixi-push/Vpc/subnet1Subnet1/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Vpcsubnet1Subnet1RouteTableAssociation92EC655F"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1057: (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1057:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
-        "new Vpc (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-zixi-push.js:38:13)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-mediaconnect-flow-zixi-push/Vpc/subnet1Subnet2/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Vpcsubnet1Subnet2Subnet503C2C36"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1057: (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1057:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
-        "new Vpc (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-zixi-push.js:38:13)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-mediaconnect-flow-zixi-push/Vpc/subnet1Subnet2/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Vpcsubnet1Subnet2RouteTable61C665A9"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1057: (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1057:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
-        "new Vpc (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-zixi-push.js:38:13)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-mediaconnect-flow-zixi-push/Vpc/subnet1Subnet2/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Vpcsubnet1Subnet2RouteTableAssociationBDE9C145"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1057: (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1057:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
-        "new Vpc (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-zixi-push.js:38:13)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-mediaconnect-flow-zixi-push/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "WrappedClass.restrictDefaultSecurityGroup (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1091:13)",
-        "new Vpc (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:894:22)",
-        "new Vpc (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-zixi-push.js:38:13)",
-        "...node internals..."
-      ]
     }
   ]
 }

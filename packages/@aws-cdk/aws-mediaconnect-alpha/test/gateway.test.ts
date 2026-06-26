@@ -1,5 +1,5 @@
 import { App, Duration, Stack } from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Annotations, Match, Template } from 'aws-cdk-lib/assertions';
 import { Gateway } from '../lib/gateway';
 import { GatewayNetwork } from '../lib/shared';
 
@@ -128,5 +128,30 @@ describe('Gateway metrics', () => {
     const metric = gateway.metricEgressBridgeDroppedPackets({ statistic: 'avg', period: Duration.minutes(5) });
     expect(metric.statistic).toEqual('Average');
     expect(metric.period.toSeconds()).toEqual(300);
+  });
+});
+
+describe('open egress CIDR warning', () => {
+  test.each(['0.0.0.0/0', '::/0'])('warns when an egress block is fully open (%s)', (openCidr) => {
+    new Gateway(stack, 'gw', {
+      gatewayName: 'g',
+      egressCidrBlocks: [openCidr],
+      networks: [GatewayNetwork.define({ name: 'net', cidrBlock: '10.0.0.0/24' })],
+    });
+
+    Annotations.fromStack(stack).hasWarning(
+      '*',
+      Match.stringLikeRegexp(`Gateway egress CIDR '${openCidr.replace('/', '\\/')}' allows traffic from any IP`),
+    );
+  });
+
+  test('does not warn for a narrow egress block', () => {
+    new Gateway(stack, 'gw', {
+      gatewayName: 'g',
+      egressCidrBlocks: ['10.0.0.0/16'],
+      networks: [GatewayNetwork.define({ name: 'net', cidrBlock: '10.0.0.0/24' })],
+    });
+
+    Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('allows traffic from any IP'));
   });
 });
