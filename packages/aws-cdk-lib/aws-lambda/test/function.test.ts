@@ -5057,10 +5057,10 @@ describe('CMCMK', () => {
     bockfs({
       '/home/project/function.test.handler7.zip': '// nothing',
     });
-    const bockPath = bockfs.workingDirectory('/home/project');
+    using bockPath = bockfs.workingDirectory('/home/project');
     mockCallsites.mockImplementation(() => [
       { getFunctionName: () => 'NodejsFunction' },
-      { getFileName: () => bockPath`function.test.ts` },
+      { getFileName: () => bockPath.translate`function.test.ts` },
     ]);
 
     const stack = new cdk.Stack();
@@ -5098,10 +5098,10 @@ describe('CMCMK', () => {
     bockfs({
       '/home/project/function.test.handler7.zip': '// nothing',
     });
-    const bockPath = bockfs.workingDirectory('/home/project');
+    using bockPath = bockfs.workingDirectory('/home/project');
     mockCallsites.mockImplementation(() => [
       { getFunctionName: () => 'NodejsFunction' },
-      { getFileName: () => bockPath`function.test.ts` },
+      { getFileName: () => bockPath.translate`function.test.ts` },
     ]);
 
     const stack = new cdk.Stack();

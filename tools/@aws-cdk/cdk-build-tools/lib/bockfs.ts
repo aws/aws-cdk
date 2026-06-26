@@ -45,16 +45,22 @@ namespace bockfs {
    *
    * @returns A template literal function to turn a fake path into a real path. Relative paths are assumed to be in the working dir.
    */
-  export function workingDirectory(fakePath: string): (parts: TemplateStringsArray) => string {
+  export function workingDirectory(fakePath: string) {
+    const curDir = process.cwd();
     process.chdir(path(fakePath));
 
-    return function (elements: TemplateStringsArray) {
-      const fullPath = elements.join('');
-      if (!fullPath.startsWith('/')) {
-        return path(path_.join(fakePath, fullPath));
-      }
+    return {
+      translate(elements: TemplateStringsArray) {
+        const fullPath = elements.join('');
+        if (!fullPath.startsWith('/')) {
+          return path(path_.join(fakePath, fullPath));
+        }
 
-      return path(fullPath);
+        return path(fullPath);
+      },
+      [Symbol.dispose]() {
+        process.chdir(curDir);
+      },
     };
   }
 
@@ -69,7 +75,7 @@ namespace bockfs {
    */
   export function restore() {
     if (oldCwd) {
-      process.chdir(oldCwd);
+      // process.chdir(oldCwd);
     }
     fs.removeSync(bockFsRoot);
   }
