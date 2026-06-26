@@ -241,4 +241,9 @@ const IGNORE_RULES = new Set([
   // WHY: Incorrect validation of Ref function when tokens are involved
   // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/50>
   'W1030',
+
+  // WHAT: Regional inferences cannot be trusted
+  // WHY: The engine assumes that the region is always 'us-east-1' when evaluating certain rules, which is not true.
+  // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/49>.
+  'E3620', 'E3652',
 ]);
