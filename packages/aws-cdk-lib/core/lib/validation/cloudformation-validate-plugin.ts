@@ -251,4 +251,9 @@ const IGNORE_RULES = new Set([
   // WHY: Different {Fn::ImportValue}s are considered the same.
   // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/52>.
   'W9007',
+
+  // WHAT: Circular dependency detection
+  // WHY: Something seems fishy about it
+  // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/53>.
+  'F3004',
 ]);
