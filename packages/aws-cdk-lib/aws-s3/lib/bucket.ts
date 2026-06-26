@@ -31,6 +31,7 @@ import {
   Stack,
   Token,
   Tokenization,
+  Validations,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import type { IArrayBox, IBox } from '../../core/lib/helpers-internal';
@@ -2524,6 +2525,8 @@ export class Bucket extends BucketBase {
       this.parseOwnershipControls(props.accessControl),
     );
 
+    this.acknowledgeAccessControl();
+
     const resource = new CfnBucket(this, 'Resource', {
       bucketName: this.physicalName,
       bucketNamePrefix: props.bucketNamePrefix,
@@ -2614,6 +2617,18 @@ export class Bucket extends BucketBase {
 
     if (this.eventBridgeEnabled) {
       this.enableEventBridgeNotification();
+    }
+  }
+
+  /**
+   * If we are using the accessControl property (for historical reasons), silence the warning about it.
+   */
+  private acknowledgeAccessControl() {
+    if (this.accessControl.get() !== undefined) {
+      Validations.of(this).acknowledge({
+        id: 'CloudFormation-Validate::W3045',
+        reason: 'accessControl is deprecated, but we are still using it for historical reasons.',
+      });
     }
   }
 
@@ -3276,6 +3291,7 @@ export class Bucket extends BucketBase {
     } else {
       this.accessControl.set(BucketAccessControl.LOG_DELIVERY_WRITE);
       this.ownershipControls.set(this.parseOwnershipControls(BucketAccessControl.LOG_DELIVERY_WRITE));
+      this.acknowledgeAccessControl();
     }
   }
 
