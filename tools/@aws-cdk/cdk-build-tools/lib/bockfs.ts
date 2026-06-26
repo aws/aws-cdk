@@ -13,10 +13,8 @@ import * as path_ from 'path';
 import * as fs from 'fs-extra';
 
 const bockFsRoot = fs.realpathSync(fs.mkdtempSync(path_.join(os.tmpdir(), 'bockfs')));
-let oldCwd: string | undefined;
 
 function bockfs(files: Record<string, string>) {
-  oldCwd = process.cwd();
   for (const [fileName, contents] of Object.entries(files)) {
     bockfs.write(fileName, contents);
   }
@@ -74,9 +72,6 @@ namespace bockfs {
    * Remove all files and restore working directory
    */
   export function restore() {
-    if (oldCwd) {
-      // process.chdir(oldCwd);
-    }
     fs.removeSync(bockFsRoot);
   }
 }

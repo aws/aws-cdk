@@ -26,7 +26,7 @@ describe('findUp helpers', () => {
     bockPath = bockfs.workingDirectory('/home/project');
   });
 
-  afterAll(() => {
+  afterEach(() => {
     bockPath[Symbol.dispose]();
     bockfs.restore();
   });
