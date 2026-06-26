@@ -256,4 +256,8 @@ const IGNORE_RULES = new Set([
   // WHY: Something seems fishy about it
   // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/53>.
   'F3004',
+
+  // WHAT: Hardcoded ARNs
+  // WHY: Hardcoding an ARN is part of the behavior of some constructs (e.g., setting up multi-account DynamoDB table replicas)
+  'W9002',
 ]);
