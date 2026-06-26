@@ -16,5 +16,6 @@ const APP_INIT_HOOK_SYMBOL = Symbol.for('@aws-cdk/core.App#initHook');
     { id: 'CloudFormation-Validate::W2001', reason: 'Parameter is not used in the template' },
     { id: 'CloudFormation-Validate::E1156', reason: 'Many of our Role ARN literals are bogus' },
     { id: 'CloudFormation-Validate::E3652', reason: 'Elasticsearch instance not available in that region' },
+    { id: 'CloudFormation-Validate::W2501', reason: 'Hardcoded credentials are only for tests' },
   );
 };
