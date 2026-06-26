@@ -7,8 +7,9 @@ import type * as firehose from '../../aws-kinesisfirehose';
 import * as logs from '../../aws-logs';
 import { toILogGroup } from '../../aws-logs/lib/private/ref-utils';
 import * as s3 from '../../aws-s3';
-import { IResource, Validations } from '../../core';
+import type { IResource } from '../../core';
 import {
+  Validations,
   CfnResource,
   FeatureFlags,
   PhysicalName,
