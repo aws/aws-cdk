@@ -1350,6 +1350,54 @@ describe('validations', () => {
       }));
     });
 
+    test('acknowledge suppresses warnings added via Annotations.addWarningV2 with unqualified IDs', () => {
+      // GIVEN - warning added directly via Annotations (bare ID, no 'annotation::' prefix)
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      core.Annotations.of(construct).addWarningV2('@aws-cdk/aws-s3:bucketNotEncrypted', 'Bucket is not encrypted');
+
+      // WHEN - user acknowledges with the same bare ID via Validations
+      core.Validations.of(construct).acknowledge({ id: '@aws-cdk/aws-s3:bucketNotEncrypted', reason: 'Accepted risk' });
+
+      // THEN - the warning is removed (both the bare form stored by addWarningV2 and the
+      // qualified form stored by addWarning are suppressed)
+      const warningsAfterAck = construct.node.metadata.filter(m => m.type === 'aws:cdk:warning');
+      expect(warningsAfterAck).toHaveLength(0);
+    });
+
+    test('acknowledge with unqualified ID also records qualified form in metadata', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+
+      // WHEN
+      core.Validations.of(construct).acknowledge({ id: '@aws-cdk/aws-s3:bucketNotEncrypted', reason: 'Accepted risk' });
+
+      // THEN - metadata records the qualified ID for audit trail compatibility
+      const ackEntries = construct.node.metadata.filter(
+        m => m.type === core.Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
+      );
+      expect(ackEntries).toHaveLength(1);
+      expect(ackEntries[0].data).toEqual({ 'annotation::@aws-cdk/aws-s3:bucketNotEncrypted': 'Accepted risk' });
+    });
+
+    test('acknowledge with already-qualified ID does not double-acknowledge', () => {
+      // GIVEN - warning added via Validations.addWarning (stored as 'annotation::SomeWarning')
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      core.Validations.of(construct).addWarning('SomeWarning', 'This is a warning');
+
+      // WHEN - user passes the already-qualified form explicitly
+      core.Validations.of(construct).acknowledge({ id: 'annotation::SomeWarning', reason: 'Accepted risk' });
+
+      // THEN - warning is suppressed (qualified ID matches exactly)
+      const warningsAfterAck = construct.node.metadata.filter(m => m.type === 'aws:cdk:warning');
+      expect(warningsAfterAck).toHaveLength(0);
+    });
+
     test('acknowledge records to construct metadata', () => {
       // GIVEN
       const app = new NonStrictApp();
