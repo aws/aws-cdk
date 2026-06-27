@@ -1,0 +1,13 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "ValidationsAcknowledgeAnnotationsWarning/DefaultTest": {
+      "stacks": [
+        "core-validations-acknowledge-annotations-warning"
+      ],
+      "assertionStack": "ValidationsAcknowledgeAnnotationsWarning/DefaultTest/DeployAssert",
+      "assertionStackName": "ValidationsAcknowledgeAnnotationsWarningDefaultTestDeployAssertEDCA4EC4"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}

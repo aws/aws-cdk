@@ -1,0 +1,56 @@
+{
+  "/ValidationsAcknowledgeAnnotationsWarning/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\integ-tests-alpha\\lib\\assertions\\private\\deploy-assert.js:39:38)",
+        "new IntegTestCase (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\integ-tests-alpha\\lib\\test-case.js:27:24)",
+        "new IntegTest (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\integ-tests-alpha\\lib\\test-case.js:100:33)",
+        "<anonymous> (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk-testing\\framework-integ\\test\\core\\test\\integ.validations-acknowledge-annotations-warning.js:58:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ValidationsAcknowledgeAnnotationsWarning/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\stack-synthesizers\\stack-synthesizer.js:222:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\stack-synthesizers\\stack-synthesizer.js:140:9)",
+        "DefaultStackSynthesizer.synthesize (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\stack-synthesizers\\default-synthesizer.js:260:18)",
+        "C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.js:467: (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.js:467:3)",
+        "visit (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.js:524:9)",
+        "visit (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.js:521:9)",
+        "visit (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.js:521:9)",
+        "visit (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.js:521:9)",
+        "synthesizeTree (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.js:460:5)",
+        "synthesize (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.js:88:5)"
+      ]
+    }
+  ],
+  "/ValidationsAcknowledgeAnnotationsWarning/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\stack-synthesizers\\stack-synthesizer.js:230:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\stack-synthesizers\\stack-synthesizer.js:140:9)",
+        "DefaultStackSynthesizer.synthesize (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\stack-synthesizers\\default-synthesizer.js:260:18)",
+        "C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.js:467: (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.js:467:3)",
+        "visit (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.js:524:9)",
+        "visit (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.js:521:9)",
+        "visit (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.js:521:9)",
+        "visit (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.js:521:9)",
+        "synthesizeTree (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.js:460:5)",
+        "synthesize (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.js:88:5)"
+      ]
+    }
+  ]
+}
