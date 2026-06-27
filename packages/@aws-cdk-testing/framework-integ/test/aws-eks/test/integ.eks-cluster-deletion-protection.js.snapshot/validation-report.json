@@ -15,11 +15,11 @@
           },
           "violatingConstructs": [
             {
-              "constructPath": "aws-cdk-eks-default-capacity-al2023-test",
+              "constructPath": "aws-cdk-eks-cluster-deletion-protection",
               "constructFqn": "constructs.Construct",
               "libraryVersion": "10.6.0",
               "stackTraces": [
-                "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-default-capacity-al2023.js:72:15)"
+                "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:72:15)"
               ]
             }
           ]

@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "testCases": {
     "integ-test-bucket-deployment-empty-sources/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "integtestbucketdeploymentemptysourcesDefaultTestDeployAssertC4C02C78"
     }
   },
-  "minimumCliVersion": "2.1123.0"
+  "minimumCliVersion": "2.1126.0"
 }
