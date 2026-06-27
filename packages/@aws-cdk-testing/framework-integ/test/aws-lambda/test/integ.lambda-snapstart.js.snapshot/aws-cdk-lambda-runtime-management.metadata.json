@@ -160,6 +160,15 @@
       }
     }
   ],
+  "/aws-cdk-lambda-runtime-management/ContainerImageSnapstartAlias": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "aliasName": "*",
+        "version": "*"
+      }
+    }
+  ],
   "/aws-cdk-lambda-runtime-management/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -367,6 +376,27 @@
       }
     }
   ],
+  "/aws-cdk-lambda-runtime-management/ContainerImageSnapstartAlias/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ContainerImageSnapstartAliasF4D42E37"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alias (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/aws-cdk-lib/aws-lambda/lib/alias.js:230:26)",
+        "new Alias (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-snapstart.js:77:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-lambda-runtime-management/ContainerImageSnapstartAlias/ScalingRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
   "/aws-cdk-lambda-runtime-management/JavaSnapstartLambda/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -477,7 +507,7 @@
         "new Version (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/aws-cdk-lib/aws-lambda/lib/lambda-version.js:207:29)",
         "new Version (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "get currentVersion (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/aws-cdk-lib/aws-lambda/lib/function.js:307:36)",
-        "<anonymous> (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-snapstart.js:77:18)",
+        "<anonymous> (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-snapstart.js:79:31)",
         "...node internals..."
       ]
     }

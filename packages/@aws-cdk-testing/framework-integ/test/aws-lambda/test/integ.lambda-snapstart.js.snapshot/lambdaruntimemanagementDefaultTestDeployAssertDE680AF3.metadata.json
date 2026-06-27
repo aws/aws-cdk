@@ -6,7 +6,7 @@
         "new DeployAssert (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:39:38)",
         "new IntegTestCase (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
         "new IntegTest (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
-        "<anonymous> (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-snapstart.js:78:1)",
+        "<anonymous> (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-snapstart.js:81:1)",
         "...node internals..."
       ]
     }

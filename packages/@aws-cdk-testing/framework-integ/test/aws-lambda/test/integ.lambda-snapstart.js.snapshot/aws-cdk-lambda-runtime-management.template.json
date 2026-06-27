@@ -282,6 +282,21 @@
    "Metadata": {
     "aws:cdk:do-not-refactor": true
    }
+  },
+  "ContainerImageSnapstartAliasF4D42E37": {
+   "Type": "AWS::Lambda::Alias",
+   "Properties": {
+    "FunctionName": {
+     "Ref": "ContainerImageSnapstartLambdaA1A8D795"
+    },
+    "FunctionVersion": {
+     "Fn::GetAtt": [
+      "ContainerImageSnapstartLambdaCurrentVersion1F4901A42c47590495224991c3816c51ffc8ea8d",
+      "Version"
+     ]
+    },
+    "Name": "live"
+   }
   }
  },
  "Parameters": {
