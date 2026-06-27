@@ -107,7 +107,7 @@ export class Runtime {
   /** SQL Version 1.0 */
   public static readonly SQL_1_0 = Runtime.of('SQL-1_0');
 
-  /** Create a new Runtime with with an arbitrary Flink version string */
+  /** Create a new Runtime with an arbitrary Flink version string */
   public static of(value: string) {
     return new Runtime(value);
   }
