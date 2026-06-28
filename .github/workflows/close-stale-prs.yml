@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: automation
     steps:
-      - uses: cdklabs/close-stale-prs@main
+      - uses: cdklabs/close-stale-prs@61392ccb075b233a8887b4e19243fbbb53e2eea5 # main
         with:
           # Required
           # Must be PROJEN_GITHUB_TOKEN because the default GHA GitHub token will not have permissions to
