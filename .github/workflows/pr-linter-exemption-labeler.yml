@@ -15,6 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: automation
     steps:
-      - uses: cdklabs/pr-linter-exemption-labeler@main
+      - uses: cdklabs/pr-linter-exemption-labeler@9ad6c8b06f6a92a49b8529c8e493e0b1b6ba7111 # main
         with:
           github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
