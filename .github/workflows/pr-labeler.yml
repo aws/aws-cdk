@@ -24,7 +24,7 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - uses: cdklabs/pr-triage-manager@main
+      - uses: cdklabs/pr-triage-manager@1afffe19c43385a323d5c6203e33f4291a154f12 # main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
