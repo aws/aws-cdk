@@ -180,10 +180,10 @@ test('logEvent with defaults', () => {
         Id: 'Target0',
         InputTransformer: {
           InputPathsMap: {
-            'time': '$.time',
-            'detail-type': '$.detail-type',
+            'timestamp': '$.time',
+            'message': '$.detail-type',
           },
-          InputTemplate: '{"timestamp":<time>,"message":<detail-type>}',
+          InputTemplate: '{"timestamp":<timestamp>,"message":<message>}',
         },
       },
     ],
@@ -237,10 +237,10 @@ test('logEvent with defaults', () => {
         Id: 'Target0',
         InputTransformer: {
           InputPathsMap: {
-            'time': '$.time',
-            'detail-type': '$.detail-type',
+            'timestamp': '$.time',
+            'message': '$.detail-type',
           },
-          InputTemplate: '{"timestamp":<time>,"message":<detail-type>}',
+          InputTemplate: '{"timestamp":<timestamp>,"message":<message>}',
         },
       },
     ],
@@ -337,10 +337,10 @@ test('can use logEvent', () => {
         Id: 'Target0',
         InputTransformer: {
           InputPathsMap: {
-            time: '$.time',
-            f2: '$',
+            timestamp: '$.time',
+            message: '$',
           },
-          InputTemplate: '{"timestamp":<time>,"message":<f2>}',
+          InputTemplate: '{"timestamp":<timestamp>,"message":<message>}',
         },
       },
     ],
@@ -397,10 +397,10 @@ test('can use logEvent', () => {
         Id: 'Target0',
         InputTransformer: {
           InputPathsMap: {
-            time: '$.time',
-            f2: '$',
+            timestamp: '$.time',
+            message: '$',
           },
-          InputTemplate: '{"timestamp":<time>,"message":<f2>}',
+          InputTemplate: '{"timestamp":<timestamp>,"message":<message>}',
         },
       },
     ],
@@ -470,10 +470,10 @@ testDeprecated('specifying retry policy and dead letter queue', () => {
         Id: 'Target0',
         InputTransformer: {
           InputPathsMap: {
-            time: '$.time',
-            f2: '$',
+            timestamp: '$.time',
+            message: '$',
           },
-          InputTemplate: '{"timestamp":<time>,"message":<f2>}',
+          InputTemplate: '{"timestamp":<timestamp>,"message":<message>}',
         },
         RetryPolicy: {
           MaximumEventAgeInSeconds: 7200,
@@ -535,10 +535,10 @@ testDeprecated('specifying retry policy with 0 retryAttempts', () => {
         Id: 'Target0',
         InputTransformer: {
           InputPathsMap: {
-            time: '$.time',
-            f2: '$',
+            timestamp: '$.time',
+            message: '$',
           },
-          InputTemplate: '{"timestamp":<time>,"message":<f2>}',
+          InputTemplate: '{"timestamp":<timestamp>,"message":<message>}',
         },
         RetryPolicy: {
           MaximumRetryAttempts: 0,

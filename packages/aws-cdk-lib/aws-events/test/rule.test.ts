@@ -462,9 +462,9 @@ describe('rule', () => {
                 'Id': 'Target2',
                 'InputTransformer': {
                   'InputPathsMap': {
-                    'detail-bar': '$.detail.bar',
+                    'foo': '$.detail.bar',
                   },
-                  'InputTemplate': '{"foo":<detail-bar>}',
+                  'InputTemplate': '{"foo":<foo>}',
                 },
               },
               {

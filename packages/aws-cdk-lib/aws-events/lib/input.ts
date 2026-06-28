@@ -154,12 +154,32 @@ export class FieldAwareEventInput extends RuleTargetInput {
     const pathToKey = new Map<string, string>();
     const inputPathsMap: {[key: string]: string} = {};
 
+    // Pre-scan: collect user-specified key names for pure (non-concatenated) EventField values.
+    const userKeyForPath = new Map<string, string>();
+    if (
+      this.inputType === InputType.Object &&
+      typeof this.input === 'object' &&
+      this.input !== null &&
+      !Array.isArray(this.input)
+    ) {
+      for (const [userKey, value] of Object.entries(this.input as Record<string, unknown>)) {
+        if (typeof value === 'string') {
+          const fragments = Tokenization.reverseString(value);
+          if (fragments.length === 1 && fragments.firstToken !== undefined && isEventField(fragments.firstToken)) {
+            if (!userKeyForPath.has((fragments.firstToken as EventField).path)) {
+              userKeyForPath.set((fragments.firstToken as EventField).path, userKey);
+            }
+          }
+        }
+      }
+    }
+
     function keyForField(f: EventField) {
       const existing = pathToKey.get(f.path);
       if (existing !== undefined) { return existing; }
 
       fieldCounter += 1;
-      const key = f.displayHint || `f${fieldCounter}`;
+      const key = userKeyForPath.get(f.path) || f.displayHint || `f${fieldCounter}`;
       pathToKey.set(f.path, key);
       return key;
     }
