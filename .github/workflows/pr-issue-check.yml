@@ -10,13 +10,13 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
       - name: Install type dependencies
         run: yarn install --frozen-lockfile
       - name: Compile TypeScript
         run: npx tsc --project scripts/tsconfig.pr-issue-check.json
       - name: Check PR description for issue reference
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
