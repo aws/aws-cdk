@@ -1555,7 +1555,7 @@ export class Cluster extends ClusterBase {
    *
    * This method creates an `AccessEntry` construct that grants the specified IAM principal the cluster admin
    * access permissions. This allows the IAM principal to perform the actions permitted
-   * by the cluster admin acces.
+   * by the cluster admin access.
    * [disable-awslint:no-grants]
    *
    * @param id - The ID of the `AccessEntry` construct to be created.
