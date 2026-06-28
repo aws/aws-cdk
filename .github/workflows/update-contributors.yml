@@ -14,15 +14,15 @@ jobs:
     runs-on: ubuntu-latest
     environment: automation
     steps:
-      - uses: actions/checkout@v7
-      - uses: minicli/action-contributors@v3.3
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: minicli/action-contributors@20ec03af008cb51110a3137fbf77f59a4fd7ff5a # v3.3
         name: "Update a projects CONTRIBUTORS file"
         env:
           CONTRIB_REPOSITORY: "aws/aws-cdk"
           CONTRIB_OUTPUT_FILE: "CONTRIBUTORS.md"
           CONTRIB_IGNORE: "github-actions[bot],mergify[bot],dependabot[bot],dependabot-preview[bot],aws-cdk-automation"
       - name: Create a PR
-        uses: peter-evans/create-pull-request@v8
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8
         with:
           # Git commit details
           branch: automation/update-contributors

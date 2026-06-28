@@ -12,7 +12,7 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - uses: aws-github-ops/aws-issue-triage-manager@main
+      - uses: aws-github-ops/aws-issue-triage-manager@701b2b0b4ba8c03c587149c37519052c357a2a61 # main
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           target: "issues"
@@ -28,7 +28,7 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - uses: aws-github-ops/aws-issue-triage-manager@main
+      - uses: aws-github-ops/aws-issue-triage-manager@701b2b0b4ba8c03c587149c37519052c357a2a61 # main
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           target: "issues"
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: automation
     steps:
-      - uses: aws-github-ops/aws-issue-triage-manager@main
+      - uses: aws-github-ops/aws-issue-triage-manager@701b2b0b4ba8c03c587149c37519052c357a2a61 # main
         with:
           github-token: "${{ secrets.PROJEN_GITHUB_TOKEN }}"
           target: "pull-requests"

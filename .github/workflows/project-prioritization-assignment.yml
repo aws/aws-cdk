@@ -17,9 +17,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: automation
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
       - name: Add PR to Project & Set Priority
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
           github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           script: |
