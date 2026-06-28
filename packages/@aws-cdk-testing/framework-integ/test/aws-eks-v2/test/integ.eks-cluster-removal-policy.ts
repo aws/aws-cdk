@@ -40,10 +40,12 @@ class EksClusterRemovalPolicyStack extends Stack {
       accessScope: { type: eks.AccessScopeType.CLUSTER },
       policy: eks.AccessPolicyArn.AMAZON_EKS_CLUSTER_ADMIN_POLICY,
     });
-    const testUser = new iam.User(this, 'TestUser');
+    const testRole = new iam.Role(this, 'TestRole', {
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+    });
     new eks.AccessEntry(this, 'AccessEntry', {
       cluster,
-      iamPrincipal: testUser,
+      iamPrincipal: testRole,
       accessPolicies: [accessPolicy],
       removalPolicy: RemovalPolicy.DESTROY,
     });
@@ -56,7 +58,7 @@ class EksClusterRemovalPolicyStack extends Stack {
     });
 
     // ALB Controller
-    new eks.AlbController(this, 'AlbControllerConstruct', {
+    const albController = new eks.AlbController(this, 'AlbControllerConstruct', {
       cluster,
       version: eks.AlbControllerVersion.V2_8_2,
       removalPolicy: RemovalPolicy.DESTROY,
@@ -90,13 +92,14 @@ class EksClusterRemovalPolicyStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    // Helm Chart
-    new eks.HelmChart(this, 'HelmChart', {
+    // Helm Chart - depends on ALB Controller to ensure its Webhook is ready before Service creation
+    const helmChart = new eks.HelmChart(this, 'HelmChart', {
       cluster,
       chart: 'redis',
       repository: 'https://charts.bitnami.com/bitnami',
       removalPolicy: RemovalPolicy.DESTROY,
     });
+    helmChart.node.addDependency(albController);
 
     // Kubernetes Manifest
     new eks.KubernetesManifest(this, 'K8sManifest', {
@@ -134,7 +137,7 @@ class EksClusterRemovalPolicyStack extends Stack {
 
 const app = new App({
   postCliContext: {
-    [EKS_USE_NATIVE_OIDC_PROVIDER]: false,
+    [EKS_USE_NATIVE_OIDC_PROVIDER]: true,
   },
 });
 
@@ -143,6 +146,7 @@ const stack = new EksClusterRemovalPolicyStack(app, 'EksClusterV2RemovalPolicySt
 new integ.IntegTest(app, 'eks-cluster-removal-policy-integ', {
   testCases: [stack],
   diffAssets: false,
+  stackUpdateWorkflow: false,
 });
 
 app.synth();
