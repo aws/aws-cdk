@@ -2,13 +2,16 @@ name: Issue Sync
 
 on: [issues, issue_comment]
 
+permissions:
+  contents: read
+
 jobs:
   sync-issue:
     name: Sync Issue with Project Board
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
         uses: actions/setup-node@v6

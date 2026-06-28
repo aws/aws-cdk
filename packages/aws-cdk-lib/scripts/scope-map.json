@@ -206,6 +206,13 @@
       }
     ]
   },
+  "aws-awsexternalanthropic": {
+    "scopes": [
+      {
+        "namespace": "AWS::AWSExternalAnthropic"
+      }
+    ]
+  },
   "aws-b2bi": {
     "scopes": [
       {
@@ -234,10 +241,24 @@
       }
     ]
   },
+  "aws-bcm": {
+    "scopes": [
+      {
+        "namespace": "AWS::BCM"
+      }
+    ]
+  },
   "aws-bcmdataexports": {
     "scopes": [
       {
         "namespace": "AWS::BCMDataExports"
+      }
+    ]
+  },
+  "aws-bcmpricingcalculator": {
+    "scopes": [
+      {
+        "namespace": "AWS::BcmPricingCalculator"
       }
     ]
   },
@@ -255,6 +276,13 @@
       }
     ]
   },
+  "aws-bedrockmantle": {
+    "scopes": [
+      {
+        "namespace": "AWS::BedrockMantle"
+      }
+    ]
+  },
   "aws-billing": {
     "scopes": [
       {
@@ -266,6 +294,13 @@
     "scopes": [
       {
         "namespace": "AWS::BillingConductor"
+      }
+    ]
+  },
+  "aws-braket": {
+    "scopes": [
+      {
+        "namespace": "AWS::Braket"
       }
     ]
   },
@@ -308,6 +343,13 @@
     "scopes": [
       {
         "namespace": "AWS::Chatbot"
+      }
+    ]
+  },
+  "aws-chime": {
+    "scopes": [
+      {
+        "namespace": "AWS::Chime"
       }
     ]
   },
@@ -456,6 +498,13 @@
       }
     ]
   },
+  "aws-computeoptimizer": {
+    "scopes": [
+      {
+        "namespace": "AWS::ComputeOptimizer"
+      }
+    ]
+  },
   "aws-config": {
     "scopes": [
       {
@@ -575,6 +624,13 @@
       }
     ]
   },
+  "aws-directconnect": {
+    "scopes": [
+      {
+        "namespace": "AWS::DirectConnect"
+      }
+    ]
+  },
   "aws-directoryservice": {
     "scopes": [
       {
@@ -691,6 +747,13 @@
     "scopes": [
       {
         "namespace": "AWS::Elasticsearch"
+      }
+    ]
+  },
+  "aws-elementalinference": {
+    "scopes": [
+      {
+        "namespace": "AWS::ElementalInference"
       }
     ]
   },
@@ -901,6 +964,13 @@
     "scopes": [
       {
         "namespace": "AWS::InspectorV2"
+      }
+    ]
+  },
+  "aws-interconnect": {
+    "scopes": [
+      {
+        "namespace": "AWS::Interconnect"
       }
     ]
   },
@@ -1306,6 +1376,13 @@
       }
     ]
   },
+  "aws-novaact": {
+    "scopes": [
+      {
+        "namespace": "AWS::NovaAct"
+      }
+    ]
+  },
   "aws-oam": {
     "scopes": [
       {
@@ -1523,6 +1600,13 @@
       }
     ]
   },
+  "aws-resiliencehubv2": {
+    "scopes": [
+      {
+        "namespace": "AWS::ResilienceHubV2"
+      }
+    ]
+  },
   "aws-resourceexplorer2": {
     "scopes": [
       {
@@ -1555,6 +1639,13 @@
     "scopes": [
       {
         "namespace": "AWS::Route53"
+      }
+    ]
+  },
+  "aws-route53globalresolver": {
+    "scopes": [
+      {
+        "namespace": "AWS::Route53GlobalResolver"
       }
     ]
   },
@@ -1611,6 +1702,13 @@
     "scopes": [
       {
         "namespace": "AWS::S3Express"
+      }
+    ]
+  },
+  "aws-s3files": {
+    "scopes": [
+      {
+        "namespace": "AWS::S3Files"
       }
     ]
   },
@@ -1679,6 +1777,13 @@
     "scopes": [
       {
         "namespace": "AWS::SecretsManager"
+      }
+    ]
+  },
+  "aws-securityagent": {
+    "scopes": [
+      {
+        "namespace": "AWS::SecurityAgent"
       }
     ]
   },
@@ -1857,6 +1962,13 @@
     "scopes": [
       {
         "namespace": "AWS::Transfer"
+      }
+    ]
+  },
+  "aws-uxc": {
+    "scopes": [
+      {
+        "namespace": "AWS::UXC"
       }
     ]
   },

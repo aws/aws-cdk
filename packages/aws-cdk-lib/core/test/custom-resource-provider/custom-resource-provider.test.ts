@@ -464,11 +464,11 @@ describe('latest Lambda node runtime', () => {
     TestCustomResourceProvider.getOrCreateProvider(stack, 'TestCrProvider');
 
     // THEN
-    // Since all regions now have the same latest Node.js runtime (nodejs22.x),
+    // Since all regions now have the same latest Node.js runtime (nodejs24.x),
     // the CDK optimizes by using the literal value instead of creating a mapping
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -483,7 +483,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -498,7 +498,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -513,7 +513,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -526,10 +526,10 @@ describe('latest Lambda node runtime', () => {
     TestCustomResourceProvider.getOrCreateProvider(stack, 'TestCrProvider');
 
     // THEN
-    // ADC regions now also use nodejs22.x as the latest runtime
+    // ADC regions now also use nodejs24.x as the latest runtime
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -544,7 +544,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs18.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });

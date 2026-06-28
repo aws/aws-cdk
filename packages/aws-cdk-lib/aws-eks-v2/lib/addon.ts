@@ -1,4 +1,3 @@
-import type * as iam from 'aws-cdk-lib/aws-iam';
 import type { Construct } from 'constructs';
 import type { ICluster } from './cluster';
 import type { AddonReference, IAddonRef } from '../../aws-eks';
@@ -8,6 +7,7 @@ import { ArnFormat, Resource, Stack, Fn } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type * as iam from 'aws-cdk-lib/aws-iam';
 
 /**
  * Represents an Amazon EKS Add-On.

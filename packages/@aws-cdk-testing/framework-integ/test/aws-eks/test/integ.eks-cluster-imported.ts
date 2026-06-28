@@ -17,7 +17,7 @@ import * as eks from 'aws-cdk-lib/aws-eks';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-27';
 import type * as constructs from 'constructs';
-import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
+import { EKS_USE_NATIVE_OIDC_PROVIDER, IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
 class EksClusterStack extends Stack {
   private cluster: eks.Cluster;
@@ -40,12 +40,18 @@ class EksClusterStack extends Stack {
       assumedBy: new iam.AccountRootPrincipal(),
     });
 
-    // create the cluster with a default nodegroup capacity
+    // create the cluster with no default capacity — nodegroup added separately with AL2023 AMI
+    // (AL2 is not supported for Kubernetes 1.33+)
     this.cluster = new eks.Cluster(this, 'Cluster', {
       vpc: this.vpc,
-      defaultCapacity: 2,
+      defaultCapacity: 0,
       ...getClusterVersionConfig(this),
       mastersRole,
+    });
+
+    this.cluster.addNodegroupCapacity('DefaultCapacity', {
+      minSize: 2,
+      amiType: eks.NodegroupAmiType.AL2023_X86_64_STANDARD,
     });
 
     // import this cluster
@@ -168,12 +174,12 @@ class EksClusterStack extends Stack {
   }
 
   private assertSimpleHelmChart() {
-    // deploy the Kubernetes dashboard through a helm chart
+    // deploy metrics-server through a helm chart
+    // https://artifacthub.io/packages/helm/metrics-server/metrics-server
     this.importedCluster.addHelmChart('dashboard', {
-      chart: 'kubernetes-dashboard',
-      // https://artifacthub.io/packages/helm/k8s-dashboard/kubernetes-dashboard
-      version: '6.0.8',
-      repository: 'https://kubernetes.github.io/dashboard/',
+      chart: 'metrics-server',
+      version: '3.12.2',
+      repository: 'https://kubernetes-sigs.github.io/metrics-server/',
     });
   }
 
@@ -212,6 +218,7 @@ const app = new App({
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+    [EKS_USE_NATIVE_OIDC_PROVIDER]: false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });

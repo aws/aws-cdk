@@ -1,5 +1,5 @@
 
-import * as child_process from 'child_process';
+import child_process from 'child_process';
 import { bockfs } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Template, Match } from '../../assertions';
 import { Vpc } from '../../aws-ec2';
@@ -383,7 +383,7 @@ describe('Node 18+ runtimes', () => {
     new NodejsFunction(stackFF, 'handler1');
 
     Template.fromStack(stackFF).hasResourceProperties('AWS::Lambda::Function', {
-      Runtime: 'nodejs22.x',
+      Runtime: 'nodejs24.x',
     });
   });
 

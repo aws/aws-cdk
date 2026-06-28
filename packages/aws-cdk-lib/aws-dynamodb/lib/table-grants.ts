@@ -1,7 +1,9 @@
 import type { ITableRef } from './dynamodb.generated';
 import * as perms from './perms';
 import * as iam from '../../aws-iam';
-import { ArnFormat, Stack, ValidationError } from '../../core';
+import { ArnFormat, Lazy, Stack, ValidationError } from '../../core';
+import { isUnsupportedServicePrincipal } from './private/principal-utils';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Construction properties for TableGrants
@@ -71,20 +73,30 @@ export class TableGrants {
     this.policyResource = props.policyResource ?? iam.ResourceWithPolicies.of(this.table);
 
     const stack = Stack.of(this.table);
+    const table = this.table;
 
-    this.arns = [
-      this.table.tableRef.tableArn,
-      ...(props.regions ?? []).map((region) => stack.formatArn({
+    const formatRegionalTableArn = (region: string): string => {
+      return stack.formatArn({
         region,
         service: 'dynamodb',
         resource: 'table',
-        resourceName: this.table.tableRef.tableName,
-      })),
-    ];
+        resourceName: table.tableRef.tableName,
+      });
+    };
 
-    if (props.hasIndex) {
-      this.arns.push(...this.arns.map((arn) => `${arn}/index/*`));
-    }
+    const arnForIndex = (arn: string): string => Lazy.string({
+      produce() {
+        const hasIndex = props.hasIndex ?? (('hasIndex' in table) ? table.hasIndex as boolean : false);
+        return hasIndex ? `${arn}/index/*` : undefined;
+      },
+    });
+
+    this.arns = [
+      table.tableRef.tableArn,
+      ...(props.regions ?? []).map(formatRegionalTableArn),
+      arnForIndex(table.tableRef.tableArn),
+      ...(props.regions ?? []).map(region => arnForIndex(formatRegionalTableArn(region))),
+    ];
   }
 
   /**
@@ -98,6 +110,16 @@ export class TableGrants {
    * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
    */
   public actions(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    if (isUnsupportedServicePrincipal(grantee.grantPrincipal)) {
+      throw new ValidationError(
+        lit`ServicePrincipalGrantNotSupported`,
+        'DynamoDB grant* methods do not support ServicePrincipal grantees. ' +
+        'Use table.addToResourcePolicy() for an explicit service-specific table policy ' +
+        'with required service principal, actions, and conditions',
+        this.table,
+      );
+    }
+
     return this.policyResource ? iam.Grant.addToPrincipalOrResource({
       grantee,
       actions,
@@ -195,13 +217,13 @@ export class TableGrants {
    */
   public multiAccountReplicationTo(destinationReplicaArn: string): void {
     if (!this.policyResource) {
-      throw new ValidationError('Cannot grant multi-account replication permissions without a resource policy', this.table);
+      throw new ValidationError(lit`CannotGrantMultiAccountReplication`, 'Cannot grant multi-account replication permissions without a resource policy', this.table);
     }
 
     const stack = Stack.of(this.table);
     const arnComponents = stack.splitArn(destinationReplicaArn, ArnFormat.SLASH_RESOURCE_NAME);
     if (!arnComponents.account) {
-      throw new ValidationError(`Invalid table ARN: ${destinationReplicaArn}. ARN must include account ID.`, this.table);
+      throw new ValidationError(lit`InvalidTable`, `Invalid table ARN: ${destinationReplicaArn}. ARN must include account ID.`, this.table);
     }
 
     this.policyResource.addToResourcePolicy(new iam.PolicyStatement({
@@ -237,13 +259,13 @@ export class TableGrants {
    */
   public multiAccountReplicationFrom(sourceReplicaArn: string): void {
     if (!this.policyResource) {
-      throw new ValidationError('Cannot grant multi-account replication permissions without a resource policy', this.table);
+      throw new ValidationError(lit`CannotGrantMultiAccountReplication`, 'Cannot grant multi-account replication permissions without a resource policy', this.table);
     }
 
     const stack = Stack.of(this.table);
     const arnComponents = stack.splitArn(sourceReplicaArn, ArnFormat.SLASH_RESOURCE_NAME);
     if (!arnComponents.account) {
-      throw new ValidationError(`Invalid table ARN: ${sourceReplicaArn}. ARN must include account ID.`, this.table);
+      throw new ValidationError(lit`InvalidTable`, `Invalid table ARN: ${sourceReplicaArn}. ARN must include account ID.`, this.table);
     }
 
     this.policyResource.addToResourcePolicy(new iam.PolicyStatement({

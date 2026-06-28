@@ -1,29 +1,34 @@
+import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as private_cxapi from '@aws-cdk/cloud-assembly-api';
 import type { IConstruct } from 'constructs';
+import { AnnotationPlugin } from './annotation-plugin';
+import { collectAcknowledgedRuleIds } from './collect-acknowledged-rule-ids';
+import { collectAnnotationReport } from './collect-annotation-report';
+import { generateFeatureFlagReport } from './feature-flag-report';
+import { lit } from './literal-string';
 import { MetadataResource } from './metadata-resource';
 import { prepareApp } from './prepare-app';
 import { TreeMetadata } from './tree-metadata';
+import * as cxapi from '../../../cx-api';
 import { _convertCloudAssemblyBuilder } from '../../../cx-api/lib/legacy-moved';
 import { Annotations } from '../annotations';
 import { App } from '../app';
 import { _aspectTreeRevisionReader, AspectApplication, AspectPriority, Aspects } from '../aspect';
 import { AssumptionError, UnscopedValidationError } from '../errors';
-import { FileSystem } from '../fs';
+import { FeatureFlags } from '../feature-flags';
 import { Stack } from '../stack';
 import type { ISynthesisSession } from '../stack-synthesizers/types';
 import type { StageSynthesisOptions } from '../stage';
 import { Stage } from '../stage';
-import type { IPolicyValidationPluginBeta1 } from '../validation';
-import { generateFeatureFlagReport } from './feature-flag-report';
+import type { IPolicyValidationPlugin } from '../validation';
 import { ConstructTree } from '../validation/private/construct-tree';
-import type { NamedValidationPluginReport } from '../validation/private/report';
-import { PolicyValidationReportFormatter } from '../validation/private/report';
+import { formatValidationReports, humanFriendlyFilename } from '../validation/private/modern-formatter';
+import type { NamedValidationPluginReport, SuppressedViolation } from '../validation/private/report';
+import { isSuppressibleViolation, mkPluginFailure, PolicyValidationReportFormatter } from '../validation/private/report';
 
-const POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
-const VALIDATION_REPORT_PRETTY_CONTEXT = '@aws-cdk/core:validationReportPrettyPrint';
-const VALIDATION_REPORT_JSON_CONTEXT = '@aws-cdk/core:validationReportJson';
+const LEGACY_POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
 
 /**
  * Options for `synthesize()`
@@ -72,7 +77,7 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): p
 
   const assembly = builder.buildAssembly();
 
-  invokeValidationPlugins(root, builder.outdir, assembly);
+  validateTemplates(root, builder.outdir, assembly);
 
   return assembly;
 }
@@ -99,84 +104,73 @@ function getAssemblies(root: App, rootAssembly: private_cxapi.CloudAssembly): Ma
 /**
  * Invoke validation plugins for all stages in an App.
  */
-function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: private_cxapi.CloudAssembly) {
+function validateTemplates(root: IConstruct, outdir: string, assembly: private_cxapi.CloudAssembly) {
   if (!App.isApp(root)) return;
-  let hash: string | undefined;
   const assemblies = getAssemblies(root, assembly);
-  const templatePathsByPlugin: Map<IPolicyValidationPluginBeta1, string[]> = new Map();
+  const templatePathsByPlugin: Map<IPolicyValidationPlugin, string[]> = new Map();
   visitAssemblies(root, 'post', construct => {
     if (Stage.isStage(construct)) {
-      for (const plugin of construct.policyValidationBeta1) {
+      for (const plugin of construct._validationPlugins) {
         if (!templatePathsByPlugin.has(plugin)) {
           templatePathsByPlugin.set(plugin, []);
         }
         let assemblyToUse = assemblies.get(construct.artifactId);
-        if (!assemblyToUse) throw new AssumptionError(`Validation failed, cannot find cloud assembly for stage ${construct.stageName}`);
+        if (!assemblyToUse) throw new AssumptionError(lit`ValidationFailed`, `Validation failed, cannot find cloud assembly for stage ${construct.stageName}`);
         templatePathsByPlugin.get(plugin)!.push(...assemblyToUse.stacksRecursively.map(stack => stack.templateFullPath));
       }
     }
   });
 
-  const reports: NamedValidationPluginReport[] = [];
-  if (templatePathsByPlugin.size > 0) {
-    // eslint-disable-next-line no-console
-    console.log('Performing Policy Validations\n');
-  }
+  // Build the unified list of plugins to run
+  const plugins: Array<PendingPluginInvocation> = [];
 
-  if (templatePathsByPlugin.size > 0) {
-    hash = FileSystem.fingerprint(outdir);
-  }
-
+  // 1. User-registered plugins
   for (const [plugin, paths] of templatePathsByPlugin.entries()) {
-    try {
-      const report = plugin.validate({ templatePaths: paths });
-      reports.push({ ...report, pluginName: plugin.name });
-    } catch (e: any) {
-      reports.push({
-        success: false,
-        pluginName: plugin.name,
-        pluginVersion: plugin.version,
-        violations: [],
-        metadata: {
-          error: `Validation plugin '${plugin.name}' failed: ${e.message}`,
-        },
-      });
-    }
-    if (FileSystem.fingerprint(outdir) !== hash) {
-      throw new AssumptionError(`Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
+    plugins.push({ plugin, templatePaths: paths });
+  }
+
+  // 2. Construct annotations (as a plugin, only if there are annotations to report)
+  if (FeatureFlags.of(root).isEnabled(cxapi.ANNOTATIONS_IN_VALIDATION_REPORT)) {
+    const annotationReport = collectAnnotationReport(root, assembly.directory);
+    if (annotationReport) {
+      plugins.push({ plugin: new AnnotationPlugin(annotationReport), templatePaths: [] });
     }
   }
 
-  if (reports.length > 0) {
-    const tree = new ConstructTree(root);
-    const formatter = new PolicyValidationReportFormatter(tree);
-    let formatPretty = root.node.tryGetContext(VALIDATION_REPORT_PRETTY_CONTEXT) ?? false;
-    const formatJson = root.node.tryGetContext(VALIDATION_REPORT_JSON_CONTEXT) ?? false;
-    formatPretty = formatPretty || !(formatPretty || formatJson); // if neither is set, default to pretty print
-    const reportFile = path.join(assembly.directory, POLICY_VALIDATION_FILE_PATH);
-    if (formatPretty) {
-      const output = formatter.formatPrettyPrinted(reports);
-      // eslint-disable-next-line no-console
-      console.error(output);
-    }
-    if (formatJson) {
-      const output = formatter.formatJson(reports);
-      fs.writeFileSync(reportFile, JSON.stringify(output, undefined, 2));
-    }
+  if (plugins.length === 0) return;
+
+  const reports: NamedValidationPluginReport[] = doInvokeValidationPlugins(outdir, plugins, root);
+  const suppressedByReport: Map<number, SuppressedViolation[]> = collectSuppressions(root, reports);
+
+  const formatter = new PolicyValidationReportFormatter(new ConstructTree(root));
+  const reportJson = formatter.formatJson(reports, assembly.version, suppressedByReport);
+
+  // Always write validation report to disk
+  const reportFile = path.join(assembly.directory, cxapi.VALIDATION_REPORT_FILE);
+  fs.writeFileSync(reportFile, JSON.stringify(reportJson, undefined, 2));
+
+  // Write legacy report if requested
+  if (getBooleanContext(root, cxapi.VALIDATION_REPORT_JSON_CONTEXT, false)) {
+    fs.writeFileSync(
+      path.join(assembly.directory, LEGACY_POLICY_VALIDATION_FILE_PATH),
+      JSON.stringify(formatter.formatLegacyJson(reports), undefined, 2),
+    );
+  }
+
+  // Whether the CDK app handles validation output (default true). The CLI can set this to false to take over the
+  // responsibility of printing the validation report and setting the exit code.
+  const cdkAppHandlesValidationReporting = getBooleanContext(root, cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT, true);
+  if (cdkAppHandlesValidationReporting) {
+    const output = formatValidationReports(process.cwd(), reportJson.pluginReports);
+    // eslint-disable-next-line no-console
+    console.error(output.join('\n\n'));
+
     const failed = reports.some(r => !r.success);
     if (failed) {
-      let message = formatJson
-        ? `Validation failed. See the validation report in '${reportFile}' for details`
-        : 'Validation failed. See the validation report above for details';
-      if (formatPretty && formatJson) {
-        message = `Validation failed. See the validation report in '${reportFile}' and above for details`;
-      }
+      const reportPath = humanFriendlyFilename(process.cwd(), reportFile);
       // eslint-disable-next-line no-console
-      console.log(message);
+      console.error(`\nValidation failed. A copy of this report can be found in '${reportPath}'`);
       process.exitCode = 1;
-    } else {
-      // eslint-disable-next-line no-console
-      console.log('Policy Validation Successful!');
     }
   }
 }
@@ -191,6 +185,83 @@ export interface ICustomSynthesis {
    * Called when the construct is synthesized
    */
   onSynthesize(session: ISynthesisSession): void;
+}
+
+interface PendingPluginInvocation {
+  plugin: IPolicyValidationPlugin;
+  templatePaths: string[];
+}
+
+/**
+ * Filter out suppressed violations. Collect all acknowledged rule IDs
+ * from construct metadata across the tree, then remove matching violations
+ * from reports. Fatal violations cannot be suppressed.
+ *
+ * Rule matching: violations are matched as <pluginName>::<ruleName> with
+ * spaces replaced by dashes. Users suppress with:
+ *   Validations.of(x).acknowledge({ id: '<plugin-name>::<rule-id>' })
+ */
+function collectSuppressions(root: App, reports: NamedValidationPluginReport[]) {
+  const suppressedByReport: Map<number, SuppressedViolation[]> = new Map();
+  const acknowledgedRules = collectAcknowledgedRuleIds(root);
+
+  if (acknowledgedRules.size > 0) {
+    for (let i = 0; i < reports.length; i++) {
+      const pluginName = reports[i].pluginName.replace(/ /g, '-');
+      const active: typeof reports[0]['violations'] = [];
+      const suppressed: SuppressedViolation[] = [];
+      for (const v of reports[i].violations) {
+        if (!isSuppressibleViolation(v)) {
+          active.push(v);
+          continue;
+        }
+        const ruleId = `${pluginName}::${v.ruleName.replace(/ /g, '-')}`;
+        const ack = acknowledgedRules.get(ruleId);
+        if (ack) {
+          suppressed.push({
+            ...v,
+            acknowledgedId: ruleId,
+            reason: ack.reason,
+            acknowledgedAt: ack.constructPath,
+            acknowledgedStackTrace: ack.stackTrace,
+          });
+        } else {
+          active.push(v);
+        }
+      }
+      if (suppressed.length > 0) {
+        suppressedByReport.set(i, suppressed);
+        reports[i] = {
+          ...reports[i],
+          violations: active,
+          success: active.every(v => v.severity !== 'error' && v.severity !== 'fatal'),
+        };
+      }
+    }
+  }
+  return suppressedByReport;
+}
+
+/**
+ * Invoke all validation plugins, make sure they don't accidentally modify any files in the output directory (so they are strictly readonly).
+ */
+function doInvokeValidationPlugins(outdir: string, plugins: PendingPluginInvocation[], root: App) {
+  const preExistingFileHashes = snapshotFileHashes(outdir);
+
+  // Run all plugins through the same loop
+  const reports: NamedValidationPluginReport[] = [];
+  for (const { plugin, templatePaths } of plugins) {
+    try {
+      const report = plugin.validate({ templatePaths, appConstruct: root });
+      reports.push({ ...report, pluginName: plugin.name, pluginVersion: plugin.version });
+    } catch (e: any) {
+      reports.push(mkPluginFailure(plugin, e));
+    }
+    if (hasModifiedPreExistingFiles(preExistingFileHashes)) {
+      throw new AssumptionError(lit`IllegalOperationValidationPlugin`, `Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
+    }
+  }
+  return reports;
 }
 
 export function addCustomSynthesis(construct: IConstruct, synthesis: ICustomSynthesis): void {
@@ -294,7 +365,7 @@ function invokeAspectsV2(root: IConstruct) {
     }
   }
 
-  throw new UnscopedValidationError('We have detected a possible infinite loop while invoking Aspects. Please check your Aspects and verify there is no configuration that would cause infinite Aspect or Node creation.');
+  throw new UnscopedValidationError(lit`PossibleInfiniteLoopDetected`, 'We have detected a possible infinite loop while invoking Aspects. Please check your Aspects and verify there is no configuration that would cause infinite Aspect or Node creation.');
 
   function recurse(construct: IConstruct, inheritedAspects: AspectApplication[]): 'invoked' | 'abort-recursion' | 'nothing' {
     const node = construct.node;
@@ -317,7 +388,7 @@ function invokeAspectsV2(root: IConstruct) {
       // If the last invoked Aspect has a higher priority than the current one, throw an error:
       const lastInvokedAspect = invoked[invoked.length - 1];
       if (lastInvokedAspect && lastInvokedAspect.priority > aspectApplication.priority) {
-        throw new UnscopedValidationError(
+        throw new UnscopedValidationError(lit`CannotInvokeAspectWithLowerPriority`,
           `Cannot invoke Aspect ${aspectApplication.aspect.constructor.name} with priority ${aspectApplication.priority} on node ${node.path}: an Aspect ${lastInvokedAspect.aspect.constructor.name} with a lower priority (added at ${lastInvokedAspect.construct.node.path} with priority ${lastInvokedAspect.priority}) was already invoked on this node.`,
         );
       }
@@ -477,7 +548,7 @@ function validateTree(root: IConstruct) {
 
   if (errors.length > 0) {
     const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
-    throw new UnscopedValidationError(`Validation failed with the following errors:\n  ${errorList}`);
+    throw new UnscopedValidationError(lit`ValidationFailedWithErrors`, `Validation failed with the following errors:\n  ${errorList}`);
   }
 }
 
@@ -515,4 +586,48 @@ function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => v
   if (order === 'post') {
     cb(root);
   }
+}
+
+function getBooleanContext(root: IConstruct, key: string, defaultValue: boolean): boolean {
+  const raw = root.node.tryGetContext(key);
+  if (raw === undefined) return defaultValue;
+  return raw !== false && raw !== 'false';
+}
+
+function collectFilePaths(dir: string): string[] {
+  const results: string[] = [];
+  function walk(current: string) {
+    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+      const full = path.join(current, entry.name);
+      if (entry.isDirectory()) {
+        walk(full);
+      } else {
+        results.push(full);
+      }
+    }
+  }
+  walk(dir);
+  return results;
+}
+
+function hashFile(filePath: string): string {
+  const content = fs.readFileSync(filePath);
+  return crypto.createHash('sha256').update(content).digest('hex');
+}
+
+function snapshotFileHashes(dir: string): Map<string, string> {
+  const hashes = new Map<string, string>();
+  for (const filePath of collectFilePaths(dir)) {
+    hashes.set(filePath, hashFile(filePath));
+  }
+  return hashes;
+}
+
+function hasModifiedPreExistingFiles(snapshot: Map<string, string>): boolean {
+  for (const [filePath, originalHash] of snapshot) {
+    if (!fs.existsSync(filePath) || hashFile(filePath) !== originalHash) {
+      return true;
+    }
+  }
+  return false;
 }
