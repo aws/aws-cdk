@@ -38,7 +38,7 @@ class EksClusterInferenceStack extends Stack {
 const app = new App({
   postCliContext: {
     [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
-    [EKS_USE_NATIVE_OIDC_PROVIDER]: false,
+    [EKS_USE_NATIVE_OIDC_PROVIDER]: true,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },
@@ -48,6 +48,7 @@ new integ.IntegTest(app, 'aws-cdk-eks-cluster-interence-nodegroup-integ', {
   testCases: [stack],
   // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
   diffAssets: false,
+  stackUpdateWorkflow: false,
   cdkCommandOptions: {
     deploy: {
       args: {

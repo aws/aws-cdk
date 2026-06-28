@@ -9,8 +9,6 @@ import type { IRole } from '../../aws-iam';
 import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import type { IResource, RemovalPolicy } from '../../core';
 import { Resource, Annotations, withResolved, FeatureFlags, ValidationError, RemovalPolicies, UnscopedValidationError } from '../../core';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 import { isGpuInstanceType } from './private/nodegroup';
