@@ -8,7 +8,9 @@ import type { ISecurityGroup, SubnetSelection } from '../../aws-ec2';
 import type { IRole } from '../../aws-iam';
 import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import type { IResource, RemovalPolicy } from '../../core';
-import { Resource, withResolved, FeatureFlags, ValidationError, RemovalPolicies, UnscopedValidationError } from '../../core';
+import { Resource, Annotations, withResolved, FeatureFlags, ValidationError, RemovalPolicies, UnscopedValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 import { isGpuInstanceType } from './private/nodegroup';
@@ -479,7 +481,7 @@ export class Nodegroup extends Resource implements INodegroup {
        * 1. instance types of different CPU architectures are not mixed(e.g. X86 with ARM).
        * 2. user-specified amiType should be included in `possibleAmiTypes`.
        */
-      possibleAmiTypes = getPossibleAmiTypes(props.instanceTypes);
+      possibleAmiTypes = getPossibleAmiTypes(this, props.instanceTypes);
 
       // if the user explicitly configured an ami type, make sure it's included in the possibleAmiTypes
       if (props.amiType && !possibleAmiTypes.includes(props.amiType)) {
@@ -492,6 +494,16 @@ export class Nodegroup extends Resource implements INodegroup {
         throw new ValidationError(lit`InstanceTypeDoesNotSupportWindows`, 'The specified instanceType does not support Windows workloads. '
         + 'Amazon EC2 instance types C3, C4, D2, I2, M4 (excluding m4.16xlarge), M6a.x, and '
         + 'R3 instances aren\'t supported for Windows workloads.', this);
+      }
+
+      // Warn users when the EKS_DEFAULT_AL2023 flag is enabled and amiType is not set,
+      // then GPU instance types are intentionally NOT migrated to AL2023.
+      const useAL2023 = FeatureFlags.of(this).isEnabled(cxapi.EKS_DEFAULT_AL2023) ?? false;
+      const isGpuNodegroup = props.instanceTypes.some(isGpuInstanceType);
+      if (!props.amiType && useAL2023 && isGpuNodegroup) {
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:gpuInstancesUseAL2',
+          'GPU instance types will continue to use AL2 even with the @aws-cdk/aws-eks:defaultToAL2023 feature flag enabled because '
+          + 'AL2023 splits GPU support into AL2023_X86_64_NVIDIA and AL2023_X86_64_NEURON variants. To use AL2023, explicitly set amiType to the corresponding variant.');
       }
     }
 
@@ -532,9 +544,11 @@ export class Nodegroup extends Resource implements INodegroup {
        * Case 1: If launchTemplate is explicitly specified with custom AMI, we cannot specify amiType, or the node group deployment will fail.
        * As we don't know if the custom AMI is specified in the lauchTemplate, we just use props.amiType.
        *
-       * Case 2: If launchTemplate is not specified, we try to determine amiType from the instanceTypes and it could be either AL2 or Bottlerocket.
-       * To avoid breaking changes, we use possibleAmiTypes[0] if amiType is undefined and make sure AL2 is always the first element in possibleAmiTypes
-       * as AL2 is previously the `expectedAmi` and this avoids breaking changes.
+       * Case 2: If launchTemplate is not specified, we try to determine amiType from the instanceTypes and it could be either AL2, AL2023, or Bottlerocket.
+       * When `amiType` is undefined we fall back to `possibleAmiTypes[0]`. The first element
+       * depends on the `@aws-cdk/aws-eks:defaultToAL2023` feature flag: AL2 when the flag is
+       * off (default, for backwards compatibility), AL2023 when the flag is on. GPU instance types
+       * continue to use `AL2_X86_64_GPU` irrespective of the feature flag.
        *
        * That being said, users now either have to explicitly specify correct amiType or just leave it undefined.
        */
@@ -641,23 +655,35 @@ export class Nodegroup extends Resource implements INodegroup {
 }
 
 /**
- * AMI types of different architectures. Make sure AL2 is always the first element, which will be the default
+ * AMI types of different architectures. The first element is the default.
  * AmiType if amiType and launchTemplateSpec are both undefined.
  */
-const arm64AmiTypes: NodegroupAmiType[] = [
-  NodegroupAmiType.AL2_ARM_64,
-  NodegroupAmiType.AL2023_ARM_64_STANDARD,
-  NodegroupAmiType.BOTTLEROCKET_ARM_64,
-];
-const x8664AmiTypes: NodegroupAmiType[] = [
-  NodegroupAmiType.AL2_X86_64,
-  NodegroupAmiType.AL2023_X86_64_STANDARD,
-  NodegroupAmiType.BOTTLEROCKET_X86_64,
-  NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
-  NodegroupAmiType.WINDOWS_CORE_2022_X86_64,
-  NodegroupAmiType.WINDOWS_FULL_2019_X86_64,
-  NodegroupAmiType.WINDOWS_FULL_2022_X86_64,
-];
+const arm64AmiTypes = (useAL2023: boolean): NodegroupAmiType[] =>
+  [
+    ...(useAL2023 ? [
+      NodegroupAmiType.AL2023_ARM_64_STANDARD,
+      NodegroupAmiType.AL2_ARM_64,
+    ] : [
+      NodegroupAmiType.AL2_ARM_64,
+      NodegroupAmiType.AL2023_ARM_64_STANDARD,
+    ]),
+    NodegroupAmiType.BOTTLEROCKET_ARM_64,
+  ];
+const x8664AmiTypes = (useAL2023: boolean): NodegroupAmiType[] =>
+  [
+    ...(useAL2023 ? [
+      NodegroupAmiType.AL2023_X86_64_STANDARD,
+      NodegroupAmiType.AL2_X86_64,
+    ] : [
+      NodegroupAmiType.AL2_X86_64,
+      NodegroupAmiType.AL2023_X86_64_STANDARD,
+    ]),
+    NodegroupAmiType.BOTTLEROCKET_X86_64,
+    NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
+    NodegroupAmiType.WINDOWS_CORE_2022_X86_64,
+    NodegroupAmiType.WINDOWS_FULL_2019_X86_64,
+    NodegroupAmiType.WINDOWS_FULL_2022_X86_64,
+  ];
 const windowsAmiTypes: NodegroupAmiType[] = [
   NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
   NodegroupAmiType.WINDOWS_CORE_2022_X86_64,
@@ -695,13 +721,15 @@ type AmiArchitecture = InstanceArchitecture | 'GPU';
  * @param instanceTypes The instance types
  * @returns NodegroupAmiType[]
  */
-function getPossibleAmiTypes(instanceTypes: InstanceType[]): NodegroupAmiType[] {
+function getPossibleAmiTypes(scope: Construct, instanceTypes: InstanceType[]): NodegroupAmiType[] {
   function typeToArch(instanceType: InstanceType): AmiArchitecture {
     return isGpuInstanceType(instanceType) ? 'GPU' : instanceType.architecture;
   }
+
+  const useAL2023 = FeatureFlags.of(scope).isEnabled(cxapi.EKS_DEFAULT_AL2023) ?? false;
   const archAmiMap = new Map<AmiArchitecture, NodegroupAmiType[]>([
-    [InstanceArchitecture.ARM_64, arm64AmiTypes],
-    [InstanceArchitecture.X86_64, x8664AmiTypes],
+    [InstanceArchitecture.ARM_64, arm64AmiTypes(useAL2023)],
+    [InstanceArchitecture.X86_64, x8664AmiTypes(useAL2023)],
     ['GPU', gpuAmiTypes],
   ]);
   const architectures: Set<AmiArchitecture> = new Set(instanceTypes.map(typeToArch));

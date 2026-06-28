@@ -206,6 +206,13 @@
       }
     ]
   },
+  "aws-awsexternalanthropic": {
+    "scopes": [
+      {
+        "namespace": "AWS::AWSExternalAnthropic"
+      }
+    ]
+  },
   "aws-b2bi": {
     "scopes": [
       {
@@ -231,6 +238,13 @@
     "scopes": [
       {
         "namespace": "AWS::Batch"
+      }
+    ]
+  },
+  "aws-bcm": {
+    "scopes": [
+      {
+        "namespace": "AWS::BCM"
       }
     ]
   },
@@ -329,6 +343,13 @@
     "scopes": [
       {
         "namespace": "AWS::Chatbot"
+      }
+    ]
+  },
+  "aws-chime": {
+    "scopes": [
+      {
+        "namespace": "AWS::Chime"
       }
     ]
   },
@@ -1594,6 +1615,13 @@
     "scopes": [
       {
         "namespace": "AWS::ResilienceHub"
+      }
+    ]
+  },
+  "aws-resiliencehubv2": {
+    "scopes": [
+      {
+        "namespace": "AWS::ResilienceHubV2"
       }
     ]
   },

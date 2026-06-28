@@ -7,7 +7,10 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import type { IResolveContext, IResource, ResourceProps, SecretsManagerSecretOptions } from '../../core';
 import { ArnFormat, FeatureFlags, Fn, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token, TokenComparison, UnscopedValidationError, ValidationError } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
@@ -359,6 +362,7 @@ abstract class SecretBase extends Resource implements ISecret {
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
+    // eslint-disable-next-line no-restricted-syntax
     this._arnForPolicies = Lazy.uncachedString({
       produce: (context: IResolveContext) => {
         const consumingStack = Stack.of(context.scope);
@@ -534,6 +538,7 @@ abstract class SecretBase extends Resource implements ISecret {
  * Creates a new secret in AWS SecretsManager.
  */
 @propertyInjectable
+@noBoxStackTraces
 export class Secret extends SecretBase {
   /**
    * Uniquely identifies this class.
@@ -664,7 +669,7 @@ export class Secret extends SecretBase {
    */
   public readonly excludeCharacters?: string;
 
-  private replicaRegions: secretsmanager.CfnSecret.ReplicaRegionProperty[] = [];
+  private readonly _replicaRegions: IArrayBox<secretsmanager.CfnSecret.ReplicaRegionProperty>;
 
   protected readonly autoCreatePolicy = true;
 
@@ -674,6 +679,8 @@ export class Secret extends SecretBase {
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    this._replicaRegions = Box.fromArray();
 
     if (props.generateSecretString &&
         (props.generateSecretString.secretStringTemplate || props.generateSecretString.generateStringKey) &&
@@ -699,7 +706,7 @@ export class Secret extends SecretBase {
       generateSecretString: props.generateSecretString ?? (secretString ? undefined : {}),
       secretString,
       name: this.physicalName,
-      replicaRegions: Lazy.any({ produce: () => this.replicaRegions }, { omitEmptyArray: true }),
+      replicaRegions: this._replicaRegions,
     });
 
     resource.applyRemovalPolicy(props.removalPolicy, {
@@ -770,7 +777,7 @@ export class Secret extends SecretBase {
       throw new ValidationError(lit`CannotAddRegionStackDeployed`, 'Cannot add the region where this stack is deployed as a replica region.', this);
     }
 
-    this.replicaRegions.push({
+    this._replicaRegions.push({
       region,
       kmsKeyId: encryptionKey?.keyRef.keyArn,
     });
@@ -934,7 +941,7 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
     this.encryptionKey = this.attachedSecret.encryptionKey;
     this.secretName = this.attachedSecret.secretName;
 
-    // This allows to reference the secret after attachment (dependency).
+    // This allows you to reference the secret after attachment (dependency).
     this.secretArn = attachment.ref;
     this.secretTargetAttachmentSecretArn = attachment.ref;
   }

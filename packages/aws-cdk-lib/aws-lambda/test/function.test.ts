@@ -56,9 +56,23 @@ describe('function', () => {
         Code: { ZipFile: 'foo' },
         Handler: 'index.handler',
         Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
       DependsOn: ['MyLambdaServiceRole4539ECB6'],
+    });
+  });
+
+  test('function without layers omits Layers property', () => {
+    const stack = new cdk.Stack();
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Layers: Match.absent(),
     });
   });
 
@@ -108,7 +122,7 @@ describe('function', () => {
         Code: { ZipFile: 'foo' },
         Handler: 'index.handler',
         Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
       DependsOn: ['MyLambdaServiceRoleDefaultPolicy5BBC6F68', 'MyLambdaServiceRole4539ECB6'],
     });
@@ -902,7 +916,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
         DeadLetterConfig: {
           TargetArn: {
             'Fn::GetAtt': [
@@ -998,7 +1012,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
         DeadLetterConfig: {
           TargetArn: {
             'Fn::GetAtt': [
@@ -1063,7 +1077,7 @@ describe('function', () => {
           'Arn',
         ],
       },
-      Runtime: 'nodejs22.x',
+      Runtime: 'nodejs24.x',
     });
   });
 
@@ -1302,7 +1316,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
         TracingConfig: {
           Mode: 'Active',
         },
@@ -1362,7 +1376,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
         TracingConfig: {
           Mode: 'Active',
         },
@@ -1423,7 +1437,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
         TracingConfig: {
           Mode: 'PassThrough',
         },
@@ -1483,7 +1497,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
         TracingConfig: {
           Mode: 'PassThrough',
         },
@@ -1519,7 +1533,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
       DependsOn: [
         'MyLambdaServiceRole4539ECB6',
@@ -4047,7 +4061,7 @@ describe('function', () => {
         {
           Code: { ZipFile: 'foo' },
           Handler: 'bar',
-          Runtime: 'nodejs22.x',
+          Runtime: 'nodejs24.x',
           RecursiveLoop: 'Terminate',
         },
       });
@@ -4067,7 +4081,7 @@ describe('function', () => {
         {
           Code: { ZipFile: 'foo' },
           Handler: 'bar',
-          Runtime: 'nodejs22.x',
+          Runtime: 'nodejs24.x',
           RecursiveLoop: 'Allow',
         },
       });
@@ -4086,7 +4100,7 @@ describe('function', () => {
         {
           Code: { ZipFile: 'foo' },
           Handler: 'bar',
-          Runtime: 'nodejs22.x',
+          Runtime: 'nodejs24.x',
           // for default, if the property is not set up in stack it doesn't show up in the template.
         },
       });
@@ -4381,7 +4395,7 @@ test('set ephemeral storage to desired size', () => {
     {
       Code: { ZipFile: 'foo' },
       Handler: 'bar',
-      Runtime: 'nodejs22.x',
+      Runtime: 'nodejs24.x',
       EphemeralStorage: {
         Size: 1024,
       },
@@ -4418,7 +4432,7 @@ test('FunctionVersionUpgrade adds new description to function', () => {
     {
       Code: { ZipFile: 'foo' },
       Handler: 'bar',
-      Runtime: 'nodejs22.x',
+      Runtime: 'nodejs24.x',
       Description: Match.stringLikeRegexp('my description version-hash'),
     },
   });
@@ -4779,7 +4793,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -4798,7 +4812,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -4817,7 +4831,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -4836,7 +4850,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -4855,7 +4869,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -4874,7 +4888,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -5199,6 +5213,15 @@ describe('Lambda Function log group behavior', () => {
 });
 
 describe('telemetry metadata', () => {
+  beforeEach(() => {
+    // In case we didn't compile using jsii
+    if (!(lambda.Function as any).hasOwnProperty(JSII_RUNTIME_SYMBOL)) {
+      (lambda.Function as any)[JSII_RUNTIME_SYMBOL] = {
+        fqn: 'aws-cdk-lib.aws-lambda.Function',
+      };
+    }
+  });
+
   afterEach(() => {
     jest.restoreAllMocks();
   });
@@ -5207,15 +5230,6 @@ describe('telemetry metadata', () => {
     const app = new cdk.App();
     app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);
     const stack = new cdk.Stack(app);
-
-    const mockConstructor = {
-      [JSII_RUNTIME_SYMBOL]: {
-        fqn: 'aws-cdk-lib.aws-lambda.Function',
-      },
-    };
-    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
-      constructor: mockConstructor,
-    });
 
     const fn = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
@@ -5245,15 +5259,6 @@ describe('telemetry metadata', () => {
     const app = new cdk.App();
     app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, false);
     const stack = new cdk.Stack(app);
-
-    const mockConstructor = {
-      [JSII_RUNTIME_SYMBOL]: {
-        fqn: 'aws-cdk-lib.aws-lambda.Function',
-      },
-    };
-    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
-      constructor: mockConstructor,
-    });
 
     const fn = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),

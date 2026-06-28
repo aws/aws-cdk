@@ -13,3 +13,7 @@ export * from './property-reflection';
 export * from './traits';
 export { CfnPropsMixin, type CfnPropsMixinOptions } from './cfn-props-mixin';
 export * from '../private/literal-string';
+export * from './box';
+export { noBoxStackTraces } from '../no-box-stack-traces';
+export * from '../private/perf';
+export type { ForestFile, TreeFile } from '../private/tree-metadata';

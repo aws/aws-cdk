@@ -5,8 +5,11 @@ import { CfnIdentityPool, CfnIdentityPoolRoleAttachment } from '../../aws-cognit
 import type { IRole, IRoleRef, IOIDCProviderRef, ISAMLProviderRef } from '../../aws-iam';
 import { Role, FederatedPrincipal } from '../../aws-iam';
 import type { IResource } from '../../core';
-import { Resource, Stack, ArnFormat, Lazy, Token, ValidationError, UnscopedValidationError } from '../../core';
+import { Resource, Stack, ArnFormat, Token, ValidationError, UnscopedValidationError } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -367,6 +370,7 @@ export interface RoleMappingRule {
  * @resource AWS::Cognito::IdentityPool
  */
 @propertyInjectable
+@noBoxStackTraces
 export class IdentityPool extends Resource implements IIdentityPool {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cognito-identitypool.IdentityPool';
@@ -458,7 +462,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
   /**
    * List of Identity Providers added in constructor for use with property overrides
    */
-  private cognitoIdentityProviders: CfnIdentityPool.CognitoIdentityProviderProperty[] = [];
+  private readonly _cognitoIdentityProviders: IArrayBox<CfnIdentityPool.CognitoIdentityProviderProperty>;
 
   constructor(scope: Construct, id: string, props: IdentityPoolProps = {}) {
     super(scope, id, {
@@ -468,7 +472,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
     addConstructMetadata(this, props);
     const authProviders: IdentityPoolAuthenticationProviders = props.authenticationProviders || {};
     const providers = authProviders.userPools ? authProviders.userPools.map(userPool => userPool.bind(this, this)) : undefined;
-    if (providers && providers.length) this.cognitoIdentityProviders = providers;
+    this._cognitoIdentityProviders = Box.fromArray(providers || [], { omitEmpty: false });
     const openIdConnectProviderArns = authProviders.openIdConnectProviders ?
       authProviders.openIdConnectProviders.map(openIdProvider =>
         openIdProvider.oidcProviderRef.oidcProviderArn,
@@ -487,14 +491,14 @@ export class IdentityPool extends Resource implements IIdentityPool {
     if (!Object.keys(supportedLoginProviders).length) supportedLoginProviders = undefined;
 
     const cfnIdentityPool = new CfnIdentityPool(this, 'Resource', {
-      allowUnauthenticatedIdentities: props.allowUnauthenticatedIdentities ? true : false,
+      allowUnauthenticatedIdentities: Boolean(props.allowUnauthenticatedIdentities),
       allowClassicFlow: props.allowClassicFlow,
       identityPoolName: this.physicalName,
       developerProviderName: authProviders.customProvider,
       openIdConnectProviderArns,
       samlProviderArns,
       supportedLoginProviders,
-      cognitoIdentityProviders: Lazy.any({ produce: () => this.cognitoIdentityProviders }),
+      cognitoIdentityProviders: this._cognitoIdentityProviders,
     });
     this.identityPoolName = cfnIdentityPool.attrName;
     this.identityPoolId = cfnIdentityPool.ref;
@@ -524,7 +528,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
   @MethodMetadata()
   public addUserPoolAuthentication(userPool: IUserPoolAuthenticationProvider): void {
     const providers = userPool.bind(this, this);
-    this.cognitoIdentityProviders = this.cognitoIdentityProviders.concat(providers);
+    this._cognitoIdentityProviders.push(providers);
   }
 
   /**
