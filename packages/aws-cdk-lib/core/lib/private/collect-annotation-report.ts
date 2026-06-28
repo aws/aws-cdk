@@ -22,9 +22,8 @@ export function collectAnnotationReport(root: IConstruct, outdir: string): Named
         continue;
       }
 
-      const message = entry.data as string;
       const severity = entry.type === cxschema.ArtifactMetadataEntryType.ERROR ? 'error' : 'warning';
-      const ruleName = extractRuleName(message, severity);
+      const { message, ruleName } = splitDescriptionAndId(String(entry.data));
 
       let templatePath: string | undefined;
       try {
@@ -45,10 +44,13 @@ export function collectAnnotationReport(root: IConstruct, outdir: string): Named
         existing.violatingResources.push(violatingResource);
       } else {
         violationMap.set(key, {
-          ruleName,
+          ruleName: ruleName ?? `${severity}-annotation`,
           description: message,
           severity,
           violatingResources: [violatingResource],
+          ruleMetadata: {
+            'cdk:annotation': 'true',
+          },
         });
       }
     }
@@ -68,15 +70,23 @@ export function collectAnnotationReport(root: IConstruct, outdir: string): Named
 }
 
 /**
- * Extract a rule name from an annotation message.
+ * Annotations have IDs in two places:
  *
- * COUPLING NOTE: The `[ack: <id>]` format is produced by the `ackTag()` helper
- * in `annotations.ts`. If the tag format changes, this regex must be updated.
+ * - Warnings have `[ack:<id>]` in the message.
+ * - Errors have `(<namespace>::<id>)` in the message.
+ *
+ * Separate the rule name from the rest of the description.
  */
-function extractRuleName(message: string, severity: string): string {
+function splitDescriptionAndId(message: string): { message: string; ruleName?: string } {
   const ackMatch = message.match(/\[ack: ([^\]]+)\]/);
   if (ackMatch) {
-    return ackMatch[1];
+    return { message: message.replace(ackMatch[0], '').trim(), ruleName: ackMatch[1] };
   }
-  return `aws-cdk:${severity}`;
+
+  const idMatch = message.match(/\(([^()]+::[^()]+)\)$/);
+  if (idMatch) {
+    return { message: message.replace(idMatch[0], '').trim(), ruleName: idMatch[1] };
+  }
+
+  return { message };
 }

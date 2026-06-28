@@ -4,10 +4,9 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import type * as kms from 'aws-cdk-lib/aws-kms';
 import type { IResource } from 'aws-cdk-lib/core';
 import { Resource, Duration } from 'aws-cdk-lib/core';
-import type {
-  IServerlessCacheRef,
-  ServerlessCacheReference,
-} from 'aws-cdk-lib/interfaces/generated/aws-elasticache-interfaces.generated';
+import type { aws_elasticache } from 'aws-cdk-lib/interfaces';
+type IServerlessCacheRef = aws_elasticache.IServerlessCacheRef;
+type ServerlessCacheReference = aws_elasticache.ServerlessCacheReference;
 import { ServerlessCacheGrants } from './elasticache-grants.generated';
 import type { IUserGroup } from './user-group';
 

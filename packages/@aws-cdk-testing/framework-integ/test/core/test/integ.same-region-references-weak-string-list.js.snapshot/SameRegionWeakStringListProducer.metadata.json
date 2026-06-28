@@ -1,0 +1,99 @@
+{
+  "/SameRegionWeakStringListProducer": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/core/test/integ.same-region-references-weak-string-list.js:12:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SameRegionWeakStringListProducer/Vpc": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpc"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/core/test/integ.same-region-references-weak-string-list.js:17:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SameRegionWeakStringListProducer/SecondaryCidr": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SecondaryCidr"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/core/test/integ.same-region-references-weak-string-list.js:20:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SameRegionWeakStringListProducer/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:189:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:107:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:227:18)",
+        "/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:418: (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:418:3)",
+        "visit (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:9)",
+        "visit (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:472:9)",
+        "synthesizeTree (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:411:5)",
+        "synthesize (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
+        "App.synth (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:158:92)",
+        "App.synth (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:146:27)"
+      ]
+    }
+  ],
+  "/SameRegionWeakStringListProducer/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:197:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:107:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:227:18)",
+        "/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:418: (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:418:3)",
+        "visit (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:9)",
+        "visit (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:472:9)",
+        "synthesizeTree (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:411:5)",
+        "synthesize (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
+        "App.synth (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:158:92)",
+        "App.synth (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:146:27)"
+      ]
+    }
+  ],
+  "/SameRegionWeakStringListProducer/Publish/Output{\"Fn::GetAtt\":[\"Vpc\",\"CidrBlockAssociations\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputFnGetAttVpcCidrBlockAssociationsE3E339DA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "createGetStackOutput (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:395:22)",
+        "resolveValue (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:184:12)",
+        "resolveReferences (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:34)",
+        "synthesize (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:34)",
+        "App.synth (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:158:92)",
+        "App.synth (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:146:27)",
+        "process.<anonymous> (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:104:51)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
