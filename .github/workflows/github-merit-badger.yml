@@ -10,7 +10,7 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - uses: cdklabs/github-merit-badger@main
+      - uses: cdklabs/github-merit-badger@303de1a8953019e51957da361bcd0cbfed469d0c # main
         id: merit-badger
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
