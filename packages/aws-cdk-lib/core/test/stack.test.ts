@@ -110,6 +110,10 @@ describe('stack', () => {
   test('when stackResourceLimit is default, should give error', () => {
     // GIVEN
     const app = new App({});
+    Validations.of(app).acknowledge({
+      id: 'CloudFormation-Validate::F0007',
+      reason: 'We have our own validator',
+    });
 
     const stack = new Stack(app, 'MyStack');
 
@@ -2027,6 +2031,10 @@ describe('stack', () => {
   test('throw error if overrideLogicalId is used and logicalId is locked', () => {
     // GIVEN: manual
     const appM = new App();
+    Validations.of(appM).acknowledge({
+      id: 'CloudFormation-Validate::F0006',
+      reason: 'Yes this is an invalid logical ID',
+    });
     const producerM = new Stack(appM, 'Producer');
     const resourceM = new CfnResource(producerM, 'ResourceXXX', { type: 'AWS::Resource' });
     producerM.exportValue(resourceM.getAtt('Att'));
