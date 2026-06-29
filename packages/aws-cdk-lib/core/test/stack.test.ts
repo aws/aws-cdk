@@ -150,6 +150,10 @@ describe('stack', () => {
   test('when stackResourceLimit is 0, should not give error', () => {
     // GIVEN
     const app = makeCrossStackApp({ '@aws-cdk/core:stackResourceLimit': 0 });
+    Validations.of(app).acknowledge({
+      id: 'CloudFormation-Validate::F0007',
+      reason: 'The point of this test is exercising stacks with more than 500 resources',
+    });
 
     const stack = new Stack(app, 'MyStack');
 
