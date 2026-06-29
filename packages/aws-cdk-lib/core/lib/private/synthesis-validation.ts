@@ -78,66 +78,95 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
     );
   }
 
+  // We are ready to report on validation results here. This is somewhat complicated because the CDK library
+  // can operate in a variety of modes and reporting requirements.
+  //
+  // ENVIRONMENT
+  // -----------
+  // 1. The CDK library is running as an app in a subprocess (primary reporting method: stderr, exit code)
+  // 2. The CDK library is running in (unit) tests (primary reporting method: exception)
+  // 3. The CDK library is running as an app in-memory in the toolkit-lib (primary reporting method: stderr, exception)
+  // (4. We don't know where we are running -- could be legacy CLI; we treat this the same as 3).
+  //
+  // FAILURE CHECKS
+  // --------------
+  // It can be that the CDK app itself is responsible for checking the result of validation and reporting/failing,
+  // or it can be that the CDK app just reports validation failures to a file and the caller reads the report
+  // and does its own error checking (signaled by a context variable).
+  //
+  // WARNINGS
+  // --------
+  // If we only report warnings but we are supposed to report via an exception, then we have no choice but
+  // to report via stderr after all, because there is no exception to throw.
+
+  // First, a number of variables
+
   // Construct library strict mode -- everything is errors. This is intended for construct library testing.
   // Its behavior is not intended to be user-facing, and behavior may change to suit our needs.
-  const constructLibStrictMode = getBooleanContext(root, cxapi.STRICT_CFN_VALIDATE_ERRORS, false);
+  const cdkAppHandlesValidationReporting = getBooleanContext(root, cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT, true);
+  // Try to determine whether we are running unit tests from common environment variable. Best effort guess.
+  const appMode = cdkAppMode(root);
 
+  // See if we should fail synthesis. If any of our reports failed, or we are running in "strict mode"
+  // with warnings, we fail.
+  const constructLibStrictMode = getBooleanContext(root, cxapi.STRICT_CFN_VALIDATE_ERRORS, false);
+  const validationFails = reports.some(r => !r.success) || (constructLibStrictMode && reports.some(r => r.violations.some(v => v.severity === 'warning')));
+  const reportText = formatValidationReports(process.cwd(), reportJson.pluginReports);
+  const reportPath = humanFriendlyFilename(process.cwd(), reportFile);
+
+  let preamble = '';
   if (warningifiedAnyErrors) {
     if (constructLibStrictMode) {
-      // eslint-disable-next-line no-console
-      console.error(
-        '\n[Warning] Template validation found issues in your templates. Construct library strict mode considers these errors.\n',
-      );
+      preamble = '[Warning] Template validation found issues in your templates. Construct library strict mode considers these errors.';
     } else {
-      // eslint-disable-next-line no-console
-      console.error(
-        '\n[Warning] Template validation found issues in your templates (reported as warnings).'
-        + `\nSet feature flag "${cxapi.VALIDATE_AGAINST_DEFAULT_RULES}" to true to turn these into errors.\n`,
-      );
+      preamble = '[Warning] Template validation found issues in your templates (reported as warnings).'
+        + `\nSet feature flag "${cxapi.VALIDATE_AGAINST_DEFAULT_RULES}" to true to turn these into errors.`;
     }
   }
 
-  // Whether the CDK app handles validation output (default true). The CLI can set this to false to take over the
-  // responsibility of printing the validation report and setting the exit code.
-  const cdkAppHandlesValidationReporting = getBooleanContext(root, cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT, true);
-  if (cdkAppHandlesValidationReporting || constructLibStrictMode) {
-    // If we are running in a Node test environment,
-    const isTesting = process.env.NODE_ENV === 'test';
+  if (cdkAppHandlesValidationReporting) {
+    // The CDK app handles validation output (default true). The CLI can set
+    // this to false to take over the responsibility of printing the validation
+    // report and setting the exit code.
 
-    // See if we should fail synthesis
-    let failed = reports.some(r => !r.success);
-    // If requested for "strict mode", also consider warnings as failed.
-    if (constructLibStrictMode) {
-      failed ||= reports.some(r => r.violations.some(v => v.severity === 'warning'));
+    // In this case, we report either via an exception or via stderr+process.exitCode;
+    // or we print to stderr but do not fail if there are only warnings.
+    const throwException = validationFails && (appMode === 'inmemory' || appMode === 'unknown');
+    const exceptionContainsEverything = appMode === 'inmemory';
+
+    const validationMessage: string[] = [];
+    if (preamble) {
+      validationMessage.push(preamble);
     }
+    validationMessage.push(...reportText);
+    validationMessage.push(`A copy of this report can be found in: ${reportPath}`);
 
-    const output = formatValidationReports(process.cwd(), reportJson.pluginReports);
+    if (throwException && exceptionContainsEverything) {
+      // The exception contains all information.
+      throw new UnscopedValidationError(lit`ValidationFailed`, stripAnsi(validationMessage.join('\n\n')));
+    } else if (throwException && !exceptionContainsEverything) {
+      // We are running in some unclear mode. We get the best fidelity results
+      // from printing the report (in color) but also making sure to exit with an
+      // exception (= most reliable error reporting).
 
-    // We print if we have something to print, and:
-    // - We are not in a test environment (because the report will go into the exception then)
-    // - Or we are not going to fail. No exception in that case, but we still want to send this somewhere.
-    if (output && (!failed || !isTesting)) {
       // eslint-disable-next-line no-console
-      console.error(output.join('\n\n'));
+      console.error([
+        ...preamble ? [preamble] : [],
+        ...reportText,
+      ].join('\n\n'));
+      throw new UnscopedValidationError(lit`ValidationFailed`, `Validation failed. A copy of this report can be found in: ${reportPath}`);
+    } else {
+      // eslint-disable-next-line no-console
+      console.error(validationMessage.join('\n\n'));
     }
+  } else {
+    // The CLI handles validation. However, we don't have a good place to put the preamble
+    // (there is no field to put it into the report), so we just print it  to stderr here.
+    // TODO: Add a field to the report for this preamble, so the CLI can print it in a better place.
 
-    if (failed) {
-      const reportPath = humanFriendlyFilename(process.cwd(), reportFile);
-
-      // If we are running inside a test environment (Jest or similar) we want
-      // the report in the exception, it will be much easier to parse from test
-      // output rather than go chase back through stderr.
-      const errorMessage = isTesting
-        ? `${output.join('\n')}\nA copy of this report can be found in: ${reportPath}`
-        : `Validation failed. A copy of this report can be found in: ${reportPath}`;
-
-      // This used to be `process.exitCode = 1`, but that doesn't do the same
-      // thing if synthesis happens in (2) unit tests (2) in-memory in the
-      // toolkit library. So we have to throw an error here to make sure we
-      // properly fail in all cases. Potentially we can optimize this to a
-      // "clean" exitCode if we know (via an environment variable) that we are
-      // being executed as a subprocess.
-      throw new UnscopedValidationError(lit`ValidationFailed`, errorMessage);
+    if (preamble) {
+      // eslint-disable-next-line no-console
+      console.error(preamble);
     }
   }
 }
@@ -438,3 +467,33 @@ function mergeReports(reports: NamedValidationPluginReport[]): NamedValidationPl
   return ret;
 }
 
+function cdkAppMode(root: IConstruct): 'process' | 'inmemory' | 'unknown' {
+  const contextMode = root.node.tryGetContext(cxapi.CDK_APP_MODE_CONTEXT);
+  if (contextMode === 'process' || contextMode === 'inmemory') {
+    return contextMode;
+  }
+
+  const envMode = process.env[cxapi.CDK_APP_MODE_ENV];
+  if (envMode === 'process' || envMode === 'inmemory') {
+    return envMode;
+  }
+
+  // Try to guess whether we are running in a unit testing environment. In that case,
+  // default to inmemory mode.
+  if (process.env.NODE_ENV === 'test' || process.env.PYTEST_VERSION || process.env.PYTEST_CURRENT_TEST) {
+    return 'inmemory';
+  }
+
+  // Unknown mode, either a legacy CLI or running via toolkit-lib.
+  return 'unknown';
+}
+
+function stripAnsi(x: string) {
+  const pattern = [
+    '[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)',
+    '(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~]))',
+  ].join('|');
+
+  const re = new RegExp(pattern, 'g');
+  return x.replaceAll(re, '');
+}

@@ -95,3 +95,19 @@ export const VALIDATION_REPORT_JSON_CONTEXT = '@aws-cdk/core:validationReportJso
  */
 export const STRICT_CFN_VALIDATE_ERRORS = '@aws-cdk/core:strictCfnValidateErrors';
 
+/**
+ * Environment variable set by the CLI to indicate that the CDK app is running as a subprocess of the CLI, or not.
+ *
+ * Valid values: 'process' | 'inmemory'
+ *
+ * The app may make use this to producer nicer output for the given environment.
+ * For example, in a subprocess, print a nice error message and exit with a
+ * non-zero code, instead of throwing an exception.
+ */
+export const CDK_APP_MODE_ENV = 'CDK_APP_MODE';
+
+/**
+ * App mode, but configured via context
+ */
+export const CDK_APP_MODE_CONTEXT = '@aws-cdk/core:appMode';
+
