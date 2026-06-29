@@ -287,4 +287,9 @@ const IGNORE_RULES = new Set([
   // WHY: Using Fn::GetStackOutput as the argument for Default incorrectly triggers this rule
   // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/63>
   'E2001',
+
+  // WHAT: Mixing inline definitions with external body in RestAPI
+  // WHY: Resources like Deployment and Stage are needed to actually deploy a RestApi, even when the body comes from S3
+  // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/64>
+  'W3660',
 ]);
