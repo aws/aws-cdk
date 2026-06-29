@@ -114,8 +114,8 @@ describe('tests', () => {
         healthyHttpCodes: '255',
         interval: cdk.Duration.seconds(255),
         timeout: cdk.Duration.seconds(120),
-        healthyThresholdCount: 29,
-        unhealthyThresholdCount: 27,
+        healthyThresholdCount: 10,
+        unhealthyThresholdCount: 10,
         path: '/arbitrary',
       },
     });
@@ -126,12 +126,12 @@ describe('tests', () => {
       HealthCheckIntervalSeconds: 255,
       HealthCheckPath: '/arbitrary',
       HealthCheckTimeoutSeconds: 120,
-      HealthyThresholdCount: 29,
+      HealthyThresholdCount: 10,
       Matcher: {
         HttpCode: '255',
       },
       Port: 80,
-      UnhealthyThresholdCount: 27,
+      UnhealthyThresholdCount: 10,
     });
   });
 
@@ -252,8 +252,8 @@ describe('tests', () => {
         healthyGrpcCodes: '0-99',
         interval: cdk.Duration.seconds(255),
         timeout: cdk.Duration.seconds(120),
-        healthyThresholdCount: 29,
-        unhealthyThresholdCount: 27,
+        healthyThresholdCount: 10,
+        unhealthyThresholdCount: 10,
         path: '/arbitrary',
       },
     });
@@ -265,11 +265,11 @@ describe('tests', () => {
       HealthCheckIntervalSeconds: 255,
       HealthCheckPath: '/arbitrary',
       HealthCheckTimeoutSeconds: 120,
-      HealthyThresholdCount: 29,
+      HealthyThresholdCount: 10,
       Matcher: {
         GrpcCode: '0-99',
       },
-      UnhealthyThresholdCount: 27,
+      UnhealthyThresholdCount: 10,
     });
   });
 
