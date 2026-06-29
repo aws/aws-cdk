@@ -1,4 +1,4 @@
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 /*
@@ -13,8 +13,17 @@ new sfn.StateMachine(stack, 'StateMachine', {
   definitionBody: sfn.DefinitionBody.fromString('{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}'),
 });
 
-new IntegTest(app, 'IntegTest', {
+const smWithTimeout = new sfn.StateMachine(stack, 'StateMachineWithTimeout', {
+  definitionBody: sfn.DefinitionBody.fromString('{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}'),
+  timeout: cdk.Duration.hours(1),
+});
+
+const integ = new IntegTest(app, 'IntegTest', {
   testCases: [stack],
 });
 
-app.synth();
+integ.assertions.awsApiCall('StepFunctions', 'describeStateMachine', {
+  stateMachineArn: smWithTimeout.stateMachineArn,
+}).expect(ExpectedResult.objectLike({
+  definition: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}},"TimeoutSeconds":3600}',
+}));
