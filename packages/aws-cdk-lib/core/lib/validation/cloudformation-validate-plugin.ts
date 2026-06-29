@@ -162,7 +162,10 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
 
 function mapSeverity(severity: Severity): string {
   switch (severity) {
-    case 'FATAL': return 'fatal';
+    // FIXME: Temporarily map FATAL to ERROR; FATALs are not suppressible but there are still a lot
+    // of false positives in the engine, and we cannot afford to accidentally present a customer with
+    // an accidentally unsupressible fatal.
+    case 'FATAL': return 'error';
     case 'ERROR': return 'error';
     case 'WARN': return 'warning';
     case 'INFO': return 'informational';
