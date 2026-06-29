@@ -16,7 +16,7 @@ class MetricsDashboard extends cdk.Stack {
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
     });
     const cfnFunction = new lambda.CfnFunction(this, 'L1Function', {
-      runtime: 'nodejs22.x',
+      runtime: lambda.Runtime.NODEJS_LATEST.name,
       handler: 'index.handler',
       code: { zipFile: 'exports.handler = async () => ({ statusCode: 200 })' },
       role: role.roleArn,
