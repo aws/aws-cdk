@@ -1,10 +1,22 @@
-import { Construct } from 'constructs';
-import { CommonDestinationProps, BackupMode as S3BackupMode } from './common';
-import { DestinationBindOptions, DestinationConfig, IDestination } from './destination';
+import type { Construct } from 'constructs';
+import {
+  type CommonDestinationProps,
+  BackupMode as S3BackupMode,
+} from './common';
+import type {
+  DestinationBindOptions,
+  DestinationConfig,
+  IDestination,
+} from './destination';
 import * as iam from '../../aws-iam';
-import { createBackupConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
-import { ISecret } from '../../aws-secretsmanager';
-import { Duration, Size } from '../../core';
+import type { ISecret } from '../../aws-secretsmanager';
+import type { Duration, Size } from '../../core';
+import {
+  createBackupConfig,
+  createLoggingOptions,
+  createProcessingConfig,
+} from './private/helpers';
+import * as cdk from '../../core';
 
 /**
  * Kinesis Data Firehose uses the content encoding to compress the body of a request before sending the request to the destination.
@@ -72,7 +84,7 @@ export interface HTTPEndpointConfig {
    * The access key required for Kinesis Firehose to authenticate with the HTTP endpoint selected as the destination.
    * @default - None
    */
-  readonly accessKey?: string;
+  readonly accessKey?: cdk.SecretValue;
   /**
    * The secret required for Kinesis Firehose to authenticate with the HTTP endpoint selected as the destination.
    * @default - None
@@ -140,19 +152,29 @@ export interface HTTPEndpointProps extends CommonDestinationProps {
 export class HTTPEndpoint implements IDestination {
   constructor(private readonly props: HTTPEndpointProps) {}
   bind(scope: Construct, _options: DestinationBindOptions): DestinationConfig {
-    const role = this.props.role ?? new iam.Role(scope, 'HTTP Destination Role', {
-      assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
-    });
+    const role =
+      this.props.role ??
+			new iam.Role(scope, 'HTTP Destination Role', {
+			  assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
+			});
 
-    const { loggingOptions, dependables: loggingDependables } = createLoggingOptions(scope, {
-      loggingConfig: this.props.loggingConfig,
+    const { loggingOptions, dependables: loggingDependables } =
+      createLoggingOptions(scope, {
+        loggingConfig: this.props.loggingConfig,
+        role,
+        streamId: 'HTTPDestination',
+      }) ?? {};
+
+    const { backupConfig, dependables: backupDependables } = createBackupConfig(
+      scope,
       role,
-      streamId: 'HTTPDestination',
-    }) ?? {};
-
-    const { backupConfig, dependables: backupDependables } = createBackupConfig(scope, role, {
-      mode: this.props.backupMode === HTTPBackupMode.ALL ? S3BackupMode.ALL : S3BackupMode.FAILED,
-    })!;
+      {
+        mode:
+					this.props.backupMode === HTTPBackupMode.ALL
+					  ? S3BackupMode.ALL
+					  : S3BackupMode.FAILED,
+      },
+    )!;
 
     if (this.props.endpointConfig.secret) {
       this.props.endpointConfig.secret.grantRead(role);
@@ -162,40 +184,61 @@ export class HTTPEndpoint implements IDestination {
       httpEndpointDestinationConfiguration: {
         endpointConfiguration: {
           url: this.props.endpointConfig.url,
-          ...this.props.endpointConfig.accessKey && { accessKey: this.props.endpointConfig.accessKey },
-          ...this.props.endpointConfig.name && { name: this.props.endpointConfig.name },
+          ...(this.props.endpointConfig.accessKey && {
+            accessKey: this.props.endpointConfig.accessKey.unsafeUnwrap(),
+          }),
+          ...(this.props.endpointConfig.name && {
+            name: this.props.endpointConfig.name,
+          }),
         },
-        ...this.props.retryOptions && {
+        ...(this.props.retryOptions && {
           retryOptions: {
             durationInSeconds: this.props.retryOptions?.duration.toSeconds(),
           },
-        },
-        ...this.props.bufferingHints && {
+        }),
+        ...(this.props.bufferingHints && {
           bufferingHints: {
-            ...this.props.bufferingHints.interval && { intervalInSeconds: this.props.bufferingHints.interval.toSeconds() },
-            ...this.props.bufferingHints.size && { sizeInMBs: this.props.bufferingHints.size.toMebibytes() },
+            ...(this.props.bufferingHints.interval && {
+              intervalInSeconds: this.props.bufferingHints.interval.toSeconds(),
+            }),
+            ...(this.props.bufferingHints.size && {
+              sizeInMBs: this.props.bufferingHints.size.toMebibytes(),
+            }),
           },
-        },
+        }),
         requestConfiguration: {
-          contentEncoding: this.props.requestCompression ?? HTTPCompression.NONE,
-          ...this.props.attributes && {
-            commonAttributes: [...this.props.attributes.map(attr => ({ attributeName: attr.name, attributeValue: attr.value }))],
-          },
+          contentEncoding:
+						this.props.requestCompression ?? HTTPCompression.NONE,
+          ...(this.props.attributes && {
+            commonAttributes: [
+              ...this.props.attributes.map((attr) => ({
+                attributeName: attr.name,
+                attributeValue: attr.value,
+              })),
+            ],
+          }),
         },
         cloudWatchLoggingOptions: loggingOptions,
-        processingConfiguration: createProcessingConfig(scope, role, this.props.processor),
+        processingConfiguration: createProcessingConfig(
+          scope,
+          role,
+          this.props.processor,
+        ),
         roleArn: role.roleArn,
         s3BackupMode: this.props.backupMode ?? HTTPBackupMode.FAILED,
         s3Configuration: backupConfig,
-        ...this.props.endpointConfig.secret && {
+        ...(this.props.endpointConfig.secret && {
           secretsManagerConfiguration: {
             secretArn: this.props.endpointConfig.secret.secretArn,
             enabled: true,
             roleArn: role.roleArn,
           },
-        },
+        }),
       },
-      dependables: [...(loggingDependables ?? []), ...(backupDependables ?? [])],
+      dependables: [
+        ...(loggingDependables ?? []),
+        ...(backupDependables ?? []),
+      ],
     };
   }
 }
