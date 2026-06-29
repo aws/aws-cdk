@@ -150,6 +150,10 @@ describe('stack', () => {
   test('when stackResourceLimit is 0, should not give error', () => {
     // GIVEN
     const app = makeCrossStackApp({ '@aws-cdk/core:stackResourceLimit': 0 });
+    Validations.of(app).acknowledge({
+      id: 'CloudFormation-Validate::F0007',
+      reason: 'The point of this test is exercising stacks with more than 500 resources',
+    });
 
     const stack = new Stack(app, 'MyStack');
 
@@ -2052,26 +2056,26 @@ describe('stack', () => {
     const resourceM = new CfnResource(producerM, 'ResourceXXX', { type: 'AWS::Resource' });
 
     // THEN - producers are the same
-    resourceM.overrideLogicalId('OVERRIDE_LOGICAL_ID');
+    resourceM.overrideLogicalId('banana');
     producerM.exportValue(resourceM.getAtt('Att'));
 
     const template = appM.synth().getStackByName(producerM.stackName).template;
     expect(template).toMatchObject({
       Outputs: {
-        ExportsOutputFnGetAttOVERRIDELOGICALIDAtt2DD28019: {
+        ExportsOutputFnGetAttbananaAttF2F2ECCE: {
           Export: {
-            Name: 'Producer:ExportsOutputFnGetAttOVERRIDELOGICALIDAtt2DD28019',
+            Name: 'Producer:ExportsOutputFnGetAttbananaAttF2F2ECCE',
           },
           Value: {
             'Fn::GetAtt': [
-              'OVERRIDE_LOGICAL_ID',
+              'banana',
               'Att',
             ],
           },
         },
       },
       Resources: {
-        OVERRIDE_LOGICAL_ID: {
+        banana: {
           Type: 'AWS::Resource',
         },
       },

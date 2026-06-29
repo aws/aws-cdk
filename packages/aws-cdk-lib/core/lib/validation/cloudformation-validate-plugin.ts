@@ -221,7 +221,7 @@ const IGNORE_RULES = new Set([
   // WHAT: "Output value must be a string"
   // WHY: The engine falsely flags the pattern `{"Fn::Join": ["||", {"Fn::GetAtt": ["ID", "SomeAttr"]}]}` as a case of output value being an array
   // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/45>.
-  'W9013',
+  'F6101',
 
   // WHAT: Not a valid SecurityGroup Id
   // WHY: The engine doesn't understand that the `ClusterSecurityGroupId` attribute of an EKS cluster returns a security group ID
@@ -282,4 +282,9 @@ const IGNORE_RULES = new Set([
   // WHY: requirement seems to be hallucinated by the engine
   // <https://github.com/aws-cloudformation/cloudformation-validate/issues/62>
   'F3032',
+
+  // WHAT: Parameter 'X': Default must be a string
+  // WHY: Using Fn::GetStackOutput as the argument for Default incorrectly triggers this rule
+  // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/63>
+  'E2001',
 ]);
