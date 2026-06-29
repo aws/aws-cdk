@@ -1109,6 +1109,48 @@ test('enable deletion protection', () => {
   });
 });
 
+test('metricIncomingLogEvents returns metric with correct name', () => {
+  // GIVEN
+  const stack = new Stack();
+  const logGroup = new LogGroup(stack, 'LogGroup');
+
+  // WHEN
+  const metric = logGroup.metricIncomingLogEvents();
+
+  // THEN
+  expect(metric.namespace).toEqual('AWS/Logs');
+  expect(metric.metricName).toEqual('IncomingLogEvents');
+  expect(metric.statistic).toEqual('Sum');
+});
+
+test('metricIncomingBytes returns metric with correct name', () => {
+  // GIVEN
+  const stack = new Stack();
+  const logGroup = new LogGroup(stack, 'LogGroup');
+
+  // WHEN
+  const metric = logGroup.metricIncomingBytes();
+
+  // THEN
+  expect(metric.namespace).toEqual('AWS/Logs');
+  expect(metric.metricName).toEqual('IncomingBytes');
+  expect(metric.statistic).toEqual('Sum');
+});
+
+test('metric method returns metric with custom name', () => {
+  // GIVEN
+  const stack = new Stack();
+  const logGroup = new LogGroup(stack, 'LogGroup');
+
+  // WHEN
+  const metric = logGroup.metric('CustomMetric');
+
+  // THEN
+  expect(metric.namespace).toEqual('AWS/Logs');
+  expect(metric.metricName).toEqual('CustomMetric');
+  expect(metric.statistic).toEqual('Sum');
+});
+
 function dataDrivenTests(cases: string[], body: (suffix: string) => void): void {
   for (let i = 0; i < cases.length; i++) {
     const args = cases[i]; // Need to capture inside loop for safe use inside closure.
