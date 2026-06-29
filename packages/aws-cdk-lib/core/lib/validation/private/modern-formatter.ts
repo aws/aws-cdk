@@ -160,7 +160,7 @@ const SEVERITY_ORDER: Record<string, number> = {
 
 export function humanFriendlyFilename(root: string, filename: string): string {
   const absPath = filename;
-  const relPath = path.relative(root, filename);
+  const relPath = path.relative(root, filename).replace(/\\/g, '/');
   return relPath.length < absPath.length ? relPath : absPath;
 }
 
