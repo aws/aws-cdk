@@ -6,6 +6,8 @@ import * as core from '../../lib';
 
 let consoleErrorMock: jest.SpyInstance;
 beforeEach(() => {
+  // These tests were written against the "subprocess" behavior of validation
+  process.env.CDK_APP_MODE = 'process';
   process.env.NO_COLOR = '1';
   OUTPUT_REDACTIONS.clear();
   consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => { return true; });
@@ -569,7 +571,7 @@ describe('validations', () => {
     redactAsmDir(app.synth());
     expect(process.exitCode).toEqual(1);
     const consoleOut = mockErrorOutput();
-    expect(consoleOut).toContain('Validation failed. A copy of this report can be found in');
+    expect(consoleOut).toContain('A copy of this report can be found');
   });
 
   test('both formats enabled by default', () => {
@@ -744,7 +746,7 @@ describe('validations', () => {
       ],
     });
     const consoleOut = mockErrorOutput();
-    expect(consoleOut).toContain('Validation failed. A copy of this report can be found in');
+    expect(consoleOut).toContain('A copy of this report can be found');
   });
 
   test('a plugin implementing Beta1 is assignable to IPolicyValidationPlugin', () => {

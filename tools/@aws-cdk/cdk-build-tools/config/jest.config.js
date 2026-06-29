@@ -15,6 +15,10 @@ process.env.CDK_CONTEXT_JSON = JSON.stringify({
   '@aws-cdk/core:strictCfnValidateErrors': true,
 });
 
+// In VSCode's debug terminal: disable coverage and subprocess spawning,
+// so we can more easily attach the debugger to the subprocesses.
+const isVsCodeDebugTerminal = process.env.NODE_OPTIONS?.includes('ms-vscode.js-debug') ?? false;
+
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 module.exports = {
   // The preset deals with preferring TS over JS
@@ -41,7 +45,11 @@ module.exports = {
       statements: 80,
     },
   },
-  collectCoverage: true,
+  collectCoverage: !isVsCodeDebugTerminal,
+
+  // Not supported via config file :(
+  // runInBand: isVsCodeDebugTerminal ? true : undefined,
+
   coverageReporters: [
     'text-summary', // for console summary
     'cobertura', // for codecov. see https://docs.codecov.com/docs/code-coverage-with-javascript

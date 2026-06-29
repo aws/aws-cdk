@@ -99,8 +99,6 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
   // If we only report warnings but we are supposed to report via an exception, then we have no choice but
   // to report via stderr after all, because there is no exception to throw.
 
-  // First, a number of variables
-
   // Construct library strict mode -- everything is errors. This is intended for construct library testing.
   // Its behavior is not intended to be user-facing, and behavior may change to suit our needs.
   const cdkAppHandlesValidationReporting = getBooleanContext(root, cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT, true);
@@ -124,6 +122,11 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
     }
   }
 
+  // Execution on the settings before starts here
+  if (reportText.length === 0) {
+    return;
+  }
+
   if (cdkAppHandlesValidationReporting) {
     // The CDK app handles validation output (default true). The CLI can set
     // this to false to take over the responsibility of printing the validation
@@ -132,19 +135,19 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
     // In this case, we report either via an exception or via stderr+process.exitCode;
     // or we print to stderr but do not fail if there are only warnings.
     const throwException = validationFails && (appMode === 'inmemory' || appMode === 'unknown');
-    const exceptionContainsEverything = appMode === 'inmemory';
+    const exceptionContainsReport = appMode === 'inmemory';
 
-    const validationMessage: string[] = [];
+    const fullMessage: string[] = [];
     if (preamble) {
-      validationMessage.push(preamble);
+      fullMessage.push(preamble);
     }
-    validationMessage.push(...reportText);
-    validationMessage.push(`A copy of this report can be found in: ${reportPath}`);
+    fullMessage.push(...reportText);
+    fullMessage.push(`A copy of this report can be found in: ${reportPath}`);
 
-    if (throwException && exceptionContainsEverything) {
+    if (throwException && exceptionContainsReport) {
       // The exception contains all information.
-      throw new UnscopedValidationError(lit`ValidationFailed`, stripAnsi(validationMessage.join('\n\n')));
-    } else if (throwException && !exceptionContainsEverything) {
+      throw new UnscopedValidationError(lit`ValidationFailed`, stripAnsi(fullMessage.join('\n\n')));
+    } else if (throwException && !exceptionContainsReport) {
       // We are running in some unclear mode. We get the best fidelity results
       // from printing the report (in color) but also making sure to exit with an
       // exception (= most reliable error reporting).
@@ -157,7 +160,11 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
       throw new UnscopedValidationError(lit`ValidationFailed`, `Validation failed. A copy of this report can be found in: ${reportPath}`);
     } else {
       // eslint-disable-next-line no-console
-      console.error(validationMessage.join('\n\n'));
+      console.error(fullMessage.join('\n\n'));
+
+      if (validationFails) {
+        process.exitCode = 1;
+      }
     }
   } else {
     // The CLI handles validation. However, we don't have a good place to put the preamble
@@ -310,11 +317,14 @@ function doInvokeValidationPlugins(
         });
 
         if (hasModifiedPreExistingFiles(preExistingFileHashes)) {
-          throw new AssumptionError(lit`IllegalOperationValidationPlugin`, `Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
+          throw new AssumptionError(lit`IllegalPluginOperation`, `Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
         }
 
         return { ...report, pluginName: plugin.name, pluginVersion: plugin.version } satisfies NamedValidationPluginReport;
       } catch (e: any) {
+        if (e instanceof AssumptionError && e.name === 'IllegalPluginOperation') {
+          throw e;
+        }
         return mkPluginFailure(plugin, e);
       }
     });
