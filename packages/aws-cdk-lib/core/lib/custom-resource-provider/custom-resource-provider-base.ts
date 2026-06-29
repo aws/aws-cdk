@@ -1,15 +1,18 @@
 import * as path from 'path';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
-import { CustomResourceProviderOptions, INLINE_CUSTOM_RESOURCE_CONTEXT } from './shared';
+import type { CustomResourceProviderOptions } from './shared';
+import { INLINE_CUSTOM_RESOURCE_CONTEXT } from './shared';
 import * as cxapi from '../../../cx-api';
 import { AssetStaging } from '../asset-staging';
 import { FileAssetPackaging } from '../assets';
 import { CfnResource } from '../cfn-resource';
 import { Duration } from '../duration';
+import { ValidationError } from '../errors';
 import { FileSystem } from '../fs';
-import { PolicySynthesizer, getPrecreatedRoleConfig } from '../helpers-internal';
-import { Lazy } from '../lazy';
+import type { IArrayBox } from '../helpers-internal';
+import { Box, PolicySynthesizer, getPrecreatedRoleConfig } from '../helpers-internal';
+import { lit } from '../private/literal-string';
 import { Size } from '../size';
 import { Stack } from '../stack';
 import { Token } from '../token';
@@ -43,25 +46,25 @@ export abstract class CustomResourceProviderBase extends Construct {
    */
   public get codeHash(): string {
     if (!this._codeHash) {
-      throw new Error('This custom resource uses inlineCode: true and does not have a codeHash');
+      throw new ValidationError(lit`CustomResourceUsesInlineCode`, 'This custom resource uses inlineCode: true and does not have a codeHash', this);
     }
     return this._codeHash;
   }
 
   private _codeHash?: string;
-  private policyStatements?: any[];
+  private readonly policyStatements: IArrayBox<any> = Box.fromArray();
   private role?: CfnResource;
+  private handler?: CfnResource;
 
   /**
    * The ARN of the provider's AWS Lambda function which should be used as the `serviceToken` when defining a custom
    * resource.
    */
-  public readonly serviceToken: string;
+  public get serviceToken(): string {
+    return Token.asString(this.handler!.getAtt('Arn'));
+  }
 
-  /**
-   * The ARN of the provider's AWS Lambda function role.
-   */
-  public readonly roleArn: string;
+  private _roleArn: string = '';
 
   protected constructor(scope: Construct, id: string, props: CustomResourceProviderBaseProps) {
     super(scope, id);
@@ -70,7 +73,7 @@ export abstract class CustomResourceProviderBase extends Construct {
 
     // verify we have an index file there
     if (!fs.existsSync(path.join(props.codeDirectory, 'index.js'))) {
-      throw new Error(`cannot find ${props.codeDirectory}/index.js`);
+      throw new ValidationError(lit`CannotFind`, `cannot find ${props.codeDirectory}/index.js`, this);
     }
 
     if (props.policyStatements) {
@@ -85,9 +88,6 @@ export abstract class CustomResourceProviderBase extends Construct {
     const assumeRolePolicyDoc = [{ Action: 'sts:AssumeRole', Effect: 'Allow', Principal: { Service: 'lambda.amazonaws.com' } }];
     const managedPolicyArn = 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole';
 
-    // need to initialize this attribute, but there should never be an instance
-    // where config.enabled=true && config.preventSynthesis=true
-    this.roleArn = '';
     if (config.enabled) {
       // gives policyStatements a chance to resolve
       this.node.addValidation({
@@ -96,13 +96,13 @@ export abstract class CustomResourceProviderBase extends Construct {
             missing: !config.precreatedRoleName,
             roleName: config.precreatedRoleName ?? id+'Role',
             managedPolicies: [{ managedPolicyArn: managedPolicyArn }],
-            policyStatements: this.policyStatements ?? [],
+            policyStatements: [...this.policyStatements.get()],
             assumeRolePolicy: assumeRolePolicyDoc as any,
           });
           return [];
         },
       });
-      this.roleArn = Stack.of(this).formatArn({
+      this._roleArn = Stack.of(this).formatArn({
         region: '',
         service: 'iam',
         resource: 'role',
@@ -120,16 +120,21 @@ export abstract class CustomResourceProviderBase extends Construct {
           ManagedPolicyArns: [
             { 'Fn::Sub': managedPolicyArn },
           ],
-          Policies: Lazy.any({ produce: () => this.renderPolicies() }),
+          Policies: this.policyStatements.derive(stmts => stmts.length === 0 ? undefined : [{
+            PolicyName: 'Inline',
+            PolicyDocument: {
+              Version: '2012-10-17',
+              Statement: stmts,
+            },
+          }]),
         },
       });
-      this.roleArn = Token.asString(this.role.getAtt('Arn'));
     }
 
     const timeout = props.timeout ?? Duration.minutes(15);
     const memory = props.memorySize ?? Size.mebibytes(128);
 
-    const handler = new CfnResource(this, 'Handler', {
+    this.handler = new CfnResource(this, 'Handler', {
       type: 'AWS::Lambda::Function',
       properties: {
         Code: code,
@@ -144,14 +149,22 @@ export abstract class CustomResourceProviderBase extends Construct {
     });
 
     if (this.role) {
-      handler.addDependency(this.role);
+      this.handler.addDependency(this.role);
     }
 
     if (metadata) {
-      Object.entries(metadata).forEach(([k, v]) => handler.addMetadata(k, v));
+      Object.entries(metadata).forEach(([k, v]) => this.handler!.addMetadata(k, v));
     }
+  }
 
-    this.serviceToken = Token.asString(handler.getAtt('Arn'));
+  /**
+   * The ARN of the provider's AWS Lambda function role.
+   */
+  public get roleArn(): string {
+    if (this.role) {
+      return Token.asString(this.role.getAtt('Arn'));
+    }
+    return this._roleArn;
   }
 
   /**
@@ -172,26 +185,7 @@ export abstract class CustomResourceProviderBase extends Construct {
    * });
    */
   public addToRolePolicy(statement: any): void {
-    if (!this.policyStatements) {
-      this.policyStatements = [];
-    }
     this.policyStatements.push(statement);
-  }
-
-  private renderPolicies() {
-    if (!this.policyStatements) {
-      return undefined;
-    }
-
-    const policies = [{
-      PolicyName: 'Inline',
-      PolicyDocument: {
-        Version: '2012-10-17',
-        Statement: this.policyStatements,
-      },
-    }];
-
-    return policies;
   }
 
   private renderEnvironmentVariables(env?: { [key: string]: string }) {

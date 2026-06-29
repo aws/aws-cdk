@@ -1,16 +1,16 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "files": {
-    "640af62fe52ca8caf35ad61505a1d3a643ad36212c3de71d9c22595d1d94afee": {
+    "74c935e8ed3d829b92a606ab4ae8e851920005ae51e2bfddde87ef0a79f3498f": {
       "displayName": "EgressOnlyIgwVpc Template",
       "source": {
         "path": "aws-cdk-routev2-egressonlyigw-alpha.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-88e0d581": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "640af62fe52ca8caf35ad61505a1d3a643ad36212c3de71d9c22595d1d94afee.json",
+          "objectKey": "74c935e8ed3d829b92a606ab4ae8e851920005ae51e2bfddde87ef0a79f3498f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "SearchExpressionIntegTest/DefaultTest": {
+      "stacks": [
+        "SearchExpressionStack"
+      ],
+      "assertionStack": "SearchExpressionIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SearchExpressionIntegTestDefaultTestDeployAssert9E90EDA4"
+    }
+  },
+  "minimumCliVersion": "2.1020.1"
+}

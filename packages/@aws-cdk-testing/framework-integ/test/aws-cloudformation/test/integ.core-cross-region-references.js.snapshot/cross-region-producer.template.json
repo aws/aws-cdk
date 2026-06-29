@@ -132,7 +132,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "3ea02d32123ecd935a42a15cebb9022338000fbc3eaa4f1700001dce79df9b8c.zip"
+     "S3Key": "38af6bef46fcecadaa51c97aa0273f8c76ba8246511e0fc8604ef868ef2fc5ae.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -143,7 +143,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1"

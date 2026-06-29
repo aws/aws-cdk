@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "lambda-policy-with-token-resolution/DefaultTest": {
+      "stacks": [
+        "stack"
+      ],
+      "assertionStack": "lambda-policy-with-token-resolution/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdapolicywithtokenresolutionDefaultTestDeployAssertDAA69E83"
+    }
+  },
+  "minimumCliVersion": "2.1020.1"
+}

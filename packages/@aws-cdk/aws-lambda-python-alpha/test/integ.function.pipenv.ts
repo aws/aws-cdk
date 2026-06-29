@@ -2,10 +2,11 @@
 // python bundling changes the asset hash pretty frequently
 /// !cdk-integ pragma:disable-update-workflow
 import * as path from 'path';
-import { Runtime } from 'aws-cdk-lib/aws-lambda';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import type { Construct } from 'constructs';
 import * as lambda from '../lib';
 
 /*
@@ -18,54 +19,43 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const pythonFunction39 = new lambda.PythonFunction(this, 'my_handler_inline', {
+    const pythonFunction310 = new lambda.PythonFunction(this, 'my_handler_python_310', {
       entry: path.join(__dirname, 'lambda-handler-pipenv'),
-      runtime: Runtime.PYTHON_3_9,
+      runtime: Runtime.PYTHON_3_10,
     });
-    this.functionNames.push(pythonFunction39.functionName);
+    this.functionNames.push(pythonFunction310.functionName);
 
-    const pythonFunction38 = new lambda.PythonFunction(this, 'my_handler_python_38', {
+    const pythonFunction311 = new lambda.PythonFunction(this, 'my_handler_python_311', {
       entry: path.join(__dirname, 'lambda-handler-pipenv'),
-      runtime: Runtime.PYTHON_3_8,
+      runtime: Runtime.PYTHON_3_11,
     });
-    this.functionNames.push(pythonFunction38.functionName);
+    this.functionNames.push(pythonFunction311.functionName);
 
-    const pythonFunction37 = new lambda.PythonFunction(this, 'my_handler_python_37', {
+    const pythonFunction310Excludes = new lambda.PythonFunction(this, 'my_handler_python_310_excludes', {
       entry: path.join(__dirname, 'lambda-handler-pipenv'),
-      runtime: Runtime.PYTHON_3_7,
-    });
-    this.functionNames.push(pythonFunction37.functionName);
-
-    const pythonFunction39Excludes = new lambda.PythonFunction(this, 'my_handler_inline_excludes', {
-      entry: path.join(__dirname, 'lambda-handler-pipenv'),
-      runtime: Runtime.PYTHON_3_9,
+      runtime: Runtime.PYTHON_3_10,
       bundling: {
         assetExcludes: ['.ignorefile'],
       },
     });
-    this.functionNames.push(pythonFunction39Excludes.functionName);
+    this.functionNames.push(pythonFunction310Excludes.functionName);
 
-    const pythonFunction38Excludes = new lambda.PythonFunction(this, 'my_handler_python_38_excludes', {
+    const pythonFunction311Excludes = new lambda.PythonFunction(this, 'my_handler_python_311_excludes', {
       entry: path.join(__dirname, 'lambda-handler-pipenv'),
-      runtime: Runtime.PYTHON_3_8,
+      runtime: Runtime.PYTHON_3_11,
       bundling: {
         assetExcludes: ['.ignorefile'],
       },
     });
-    this.functionNames.push(pythonFunction38Excludes.functionName);
-
-    const pythonFunction37Excludes = new lambda.PythonFunction(this, 'my_handler_python_37_excludes', {
-      entry: path.join(__dirname, 'lambda-handler-pipenv'),
-      runtime: Runtime.PYTHON_3_7,
-      bundling: {
-        assetExcludes: ['.ignorefile'],
-      },
-    });
-    this.functionNames.push(pythonFunction37Excludes.functionName);
+    this.functionNames.push(pythonFunction311Excludes.functionName);
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const testCase = new TestStack(app, 'integ-lambda-python-pipenv');
 const integ = new IntegTest(app, 'pipenv', {
   testCases: [testCase],

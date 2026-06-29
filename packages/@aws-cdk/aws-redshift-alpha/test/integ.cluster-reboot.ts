@@ -2,7 +2,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Match } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import * as redshift from '../lib';
 
 /**
@@ -16,9 +16,11 @@ import * as redshift from '../lib';
 
 const app = new cdk.App({
   postCliContext: {
-    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },
 });
+
+const stack = new cdk.Stack(app, 'MultiAzRedshift');
 
 interface RedshiftRebootStackProps extends cdk.StackProps {
   parameterGroupParams: { [name: string]: string };
@@ -59,11 +61,11 @@ class RedshiftRebootStack extends cdk.Stack {
   }
 }
 
-const createStack = new RedshiftRebootStack(app, 'aws-cdk-redshift-cluster-create', {
+const createStack = new RedshiftRebootStack(stack, 'aws-cdk-redshift-cluster-create', {
   parameterGroupParams: { enable_user_activity_logging: 'true' },
 });
 
-const updateStack = new RedshiftRebootStack(app, 'aws-cdk-redshift-cluster-update', {
+const updateStack = new RedshiftRebootStack(stack, 'aws-cdk-redshift-cluster-update', {
   parameterGroupParams: { enable_user_activity_logging: 'false', use_fips_ssl: 'true' },
 });
 
@@ -121,8 +123,6 @@ describeEngineDefaultParams.expect(integ.ExpectedResult.objectLike({
     Match.objectLike({ ParameterName: 'require_ssl', ParameterValue: 'false' }),
     Match.objectLike({ ParameterName: 'search_path', ParameterValue: '$user, public' }),
     Match.objectLike({ ParameterName: 'statement_timeout', ParameterValue: '0' }),
-    Match.objectLike({ ParameterName: 'wlm_json_configuration', ParameterValue: '[{"auto_wlm":true}]' }),
+    Match.objectLike({ ParameterName: 'wlm_json_configuration', ParameterValue: '[{\"auto_wlm\":true}]' }),
   ]),
 }));
-
-app.synth();

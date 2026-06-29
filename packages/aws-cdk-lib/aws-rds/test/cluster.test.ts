@@ -6,17 +6,18 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import { Secret } from '../../aws-secretsmanager';
+import type { Stack } from '../../core';
 import * as cdk from '../../core';
-import { RemovalPolicy, Stack, Annotations as CoreAnnotations } from '../../core';
+import { RemovalPolicy, Annotations as CoreAnnotations } from '../../core';
 import {
   RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS,
   AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS,
 } from '../../cx-api';
+import type { IClusterEngine } from '../lib';
 import {
-  AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
+  AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
   DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup, DatabaseSecret,
   DatabaseInstanceEngine, SqlServerEngineVersion, SnapshotCredentials, InstanceUpdateBehaviour, NetworkType, ClusterInstance, CaCertificate,
-  IClusterEngine,
   ClusterScalabilityType,
   ClusterScailabilityType,
   DBClusterStorageType,
@@ -140,6 +141,29 @@ describe('cluster new api', () => {
     });
 
     test.each([
+      -1, 16,
+    ])('when promotionTier is %s', (promotionTier) => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        // WHEN
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          vpc,
+          writer: ClusterInstance.provisioned('writer'),
+          readers: [
+            ClusterInstance.provisioned('reader', {
+              promotionTier,
+            }),
+          ],
+        });
+        // THEN
+      }).toThrow(/promotionTier must be between 0-15/);
+    });
+
+    test.each([
       [0.5, 300, /serverlessV2MaxCapacity must be >= 1 & <= 256/],
       [0.5, 0, /serverlessV2MaxCapacity must be >= 1 & <= 256/],
       [-1, 1, /serverlessV2MinCapacity must be >= 0 & <= 256/],
@@ -164,6 +188,27 @@ describe('cluster new api', () => {
         });
         // THEN
       }).toThrow(errorMessage);
+    });
+
+    test.each([
+      [cdk.Duration.seconds(299)],
+      [cdk.Duration.seconds(86401)],
+    ])('when serverlessV2 auto-pause duration is incorrect', (serverlessV2AutoPauseDuration) => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        // WHEN
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_08_0 }),
+          vpc,
+          vpcSubnets: vpc.selectSubnets( { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS } ),
+          serverlessV2AutoPauseDuration,
+          iamAuthentication: true,
+        });
+        // THEN
+      }).toThrow('serverlessV2AutoPause must be between 300 seconds (5 minutes) and 86,400 seconds (24 hours)');
     });
   });
 
@@ -507,6 +552,59 @@ describe('cluster new api', () => {
     });
 
     test.each([
+      ['MySQL', DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_08_0 })],
+      ['PostgreSQL', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_17_4 })],
+    ])('with serverlessV2 auto-pause configuration for Aurora %s', (type: string, engine: IClusterEngine) => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, type, {
+        engine,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        serverlessV2AutoPauseDuration: cdk.Duration.hours(1),
+        iamAuthentication: true,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::RDS::DBCluster', {
+        ServerlessV2ScalingConfiguration: {
+          SecondsUntilAutoPause: 3600,
+        },
+      });
+    });
+
+    test.each([
+      // For prerequisites of engine version, see
+      // https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html#auto-pause-prereqs
+      ['MySQL 2.12.5', DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_2_12_5 })],
+      ['MySQL 3.07.0', DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_0 })],
+      ['PostgreSQL 12.22', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_12_22 })],
+      ['PostgreSQL 13.14', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_13_14 })],
+      ['PostgreSQL 14.11', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_14_11 })],
+      ['PostgreSQL 15.6', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_15_6 })],
+      ['PostgreSQL 16.2', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_16_2 })],
+    ])('throws when serverlessV2 auto-pause is not supported for Aurora %s', (type: string, engine: IClusterEngine) => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // THEN
+      expect(() => {
+        new DatabaseCluster(stack, type, {
+          engine,
+          vpc,
+          writer: ClusterInstance.serverlessV2('writer'),
+          serverlessV2AutoPauseDuration: cdk.Duration.hours(1),
+          iamAuthentication: true,
+        });
+      }).toThrow('serverlessV2 auto-pause feature is not supported');
+    });
+
+    test.each([
       ['MySQL', DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_0 })],
       ['PostgreSQL', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_16_4 })],
     ])('set enableLocalWriteForwarding for aurora %s', (type: string, engine: IClusterEngine) => {
@@ -636,6 +734,27 @@ describe('cluster new api', () => {
       // maintenance window is set
       template.hasResourceProperties('AWS::RDS::DBInstance', Match.objectLike({
         PreferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
+      }));
+    });
+
+    test.each([true, false])('deleteAutomatedBackups set to %s', (deleteAutomatedBackups) => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        instanceProps: {
+          vpc,
+        },
+        deleteAutomatedBackups,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::RDS::DBCluster', Match.objectLike({
+        DeleteAutomatedBackups: deleteAutomatedBackups,
       }));
     });
   });
@@ -985,7 +1104,7 @@ describe('cluster new api', () => {
 
       // THEN
       expect(cluster.instanceEndpoints).toHaveLength(2);
-      expect(stack.resolve(cluster.instanceEndpoints)).toEqual([{
+      expect(stack.resolve(cluster.instanceEndpoints.map(e => ({ hostname: e.hostname, port: e.port, socketAddress: e.socketAddress })))).toEqual([{
         hostname: {
           'Fn::GetAtt': ['Databasewriter2462CC03', 'Endpoint.Address'],
         },
@@ -1033,7 +1152,7 @@ describe('cluster new api', () => {
 
       // THEN
       expect(cluster.instanceEndpoints).toHaveLength(2);
-      expect(stack.resolve(cluster.instanceEndpoints)).toEqual([{
+      expect(stack.resolve(cluster.instanceEndpoints.map(e => ({ hostname: e.hostname, port: e.port, socketAddress: e.socketAddress })))).toEqual([{
         hostname: {
           'Fn::GetAtt': ['Databasewriter2462CC03', 'Endpoint.Address'],
         },
@@ -1628,6 +1747,579 @@ describe('cluster new api', () => {
       });
     });
   });
+  describe('manageMasterUserPassword', () => {
+    test('with username and KMS encryption key', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const kmsKey = new kms.Key(stack, 'Key');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        manageMasterUserPassword: true,
+        credentials: {
+          username: 'testuser',
+          encryptionKey: kmsKey,
+        },
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::RDS::DBCluster', {
+        Engine: 'aurora-mysql',
+        MasterUsername: 'testuser',
+        ManageMasterUserPassword: true,
+        MasterUserSecret: {
+          KmsKeyId: stack.resolve(kmsKey.keyArn),
+        },
+        MasterUserPassword: Match.absent(),
+      });
+
+      template.resourceCountIs('AWS::SecretsManager::Secret', 0);
+    });
+
+    test('uses the full key ARN, not the bare key id, for an imported encryption key', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const importedKeyArn = 'arn:aws:kms:us-test-1:111122223333:key/abcd1234-ab12-cd34-ef56-abcdef123456';
+      const kmsKey = kms.Key.fromKeyArn(stack, 'ImportedKey', importedKeyArn);
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        manageMasterUserPassword: true,
+        credentials: {
+          username: 'testuser',
+          encryptionKey: kmsKey,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+        ManageMasterUserPassword: true,
+        MasterUserSecret: {
+          KmsKeyId: importedKeyArn,
+        },
+      });
+    });
+
+    test('with Credentials.fromUsername()', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const kmsKey = new kms.Key(stack, 'Key');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        manageMasterUserPassword: true,
+        credentials: Credentials.fromUsername('testuser', {
+          encryptionKey: kmsKey,
+        }),
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::RDS::DBCluster', {
+        Engine: 'aurora-mysql',
+        MasterUsername: 'testuser',
+        ManageMasterUserPassword: true,
+        MasterUserSecret: {
+          KmsKeyId: stack.resolve(kmsKey.keyArn),
+        },
+        MasterUserPassword: Match.absent(),
+      });
+
+      template.resourceCountIs('AWS::SecretsManager::Secret', 0);
+    });
+
+    test('without username (uses engine default)', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        manageMasterUserPassword: true,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::RDS::DBCluster', {
+        Engine: 'aurora-mysql',
+        MasterUsername: 'admin', // engine default username
+        ManageMasterUserPassword: true,
+        MasterUserPassword: Match.absent(),
+        MasterUserSecret: Match.absent(),
+      });
+
+      template.resourceCountIs('AWS::SecretsManager::Secret', 0);
+    });
+
+    test('with DatabaseClusterFromSnapshot', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseClusterFromSnapshot(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        snapshotIdentifier: 'my-snapshot',
+        manageMasterUserPassword: true,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::RDS::DBCluster', {
+        Engine: 'aurora-mysql',
+        SnapshotIdentifier: 'my-snapshot',
+        ManageMasterUserPassword: true,
+        MasterUserPassword: Match.absent(),
+      });
+
+      // RDS manages the secret, so no CDK-owned secret (not even the deprecated-rendering one) should be created.
+      template.resourceCountIs('AWS::SecretsManager::Secret', 0);
+    });
+
+    test('with DatabaseClusterFromSnapshot and encryption key', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const kmsKey = new kms.Key(stack, 'Key');
+
+      // WHEN
+      new DatabaseClusterFromSnapshot(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        snapshotIdentifier: 'my-snapshot',
+        manageMasterUserPassword: true,
+        snapshotCredentials: {
+          username: 'admin',
+          encryptionKey: kmsKey,
+          generatePassword: false,
+        },
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::RDS::DBCluster', {
+        Engine: 'aurora-mysql',
+        SnapshotIdentifier: 'my-snapshot',
+        ManageMasterUserPassword: true,
+        MasterUserSecret: {
+          KmsKeyId: stack.resolve(kmsKey.keyArn),
+        },
+        MasterUserPassword: Match.absent(),
+      });
+    });
+
+    test('secret.grantRead() grants kms:Decrypt when a customer managed key is used', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const kmsKey = new kms.Key(stack, 'Key');
+      const cluster = new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        manageMasterUserPassword: true,
+        credentials: {
+          username: 'testuser',
+          encryptionKey: kmsKey,
+        },
+      });
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+
+      // WHEN
+      cluster.secret!.grantRead(role);
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+              Effect: 'Allow',
+            }),
+          ]),
+        },
+      });
+      template.hasResourceProperties('AWS::KMS::Key', {
+        KeyPolicy: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: 'kms:Decrypt',
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'kms:ViaService': 'secretsmanager.us-test-1.amazonaws.com',
+                },
+              },
+            }),
+          ]),
+        },
+      });
+    });
+
+    test('secret.grantRead() grants kms:Decrypt when a customer managed key is used with DatabaseClusterFromSnapshot', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const kmsKey = new kms.Key(stack, 'Key');
+      const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        snapshotIdentifier: 'my-snapshot',
+        manageMasterUserPassword: true,
+        snapshotCredentials: {
+          username: 'admin',
+          encryptionKey: kmsKey,
+          generatePassword: false,
+        },
+      });
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+
+      // WHEN
+      cluster.secret!.grantRead(role);
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+              Effect: 'Allow',
+            }),
+          ]),
+        },
+      });
+      template.hasResourceProperties('AWS::KMS::Key', {
+        KeyPolicy: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: 'kms:Decrypt',
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'kms:ViaService': 'secretsmanager.us-test-1.amazonaws.com',
+                },
+              },
+            }),
+          ]),
+        },
+      });
+    });
+  });
+
+  describe('manageMasterUserPassword validation errors for DatabaseCluster', () => {
+    test('should reject all unsupported credential properties', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // THEN
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          vpc,
+          writer: ClusterInstance.serverlessV2('writer'),
+          manageMasterUserPassword: true,
+          credentials: {
+            username: 'testuser',
+            password: cdk.SecretValue.unsafePlainText('password'),
+            excludeCharacters: '"@/\\',
+            secretName: 'my-secret',
+            replicaRegions: [{ region: 'us-west-2' }],
+            usernameAsString: true,
+          },
+        });
+      }).toThrow(/When manageMasterUserPassword is enabled, only 'username' and 'encryptionKey' are allowed in credentials\. Found unsupported properties: excludeCharacters, password, replicaRegions, secretName, usernameAsString\./);
+    });
+
+    test('throws when manageMasterUserPassword is combined with replicationSourceIdentifier', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // THEN
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          vpc,
+          writer: ClusterInstance.serverlessV2('writer'),
+          manageMasterUserPassword: true,
+          replicationSourceIdentifier: 'identifier',
+        });
+      }).toThrow('cannot use `manageMasterUserPassword` with `replicationSourceIdentifier`; read replicas inherit credentials from the source cluster');
+    });
+  });
+
+  describe('manageMasterUserPassword validation errors for DatabaseClusterFromSnapshot', () => {
+    test('rejects snapshotCredentials created with SnapshotCredentials.fromGeneratedSecret()', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const kmsKey = new kms.Key(stack, 'Key');
+
+      // THEN
+      expect(() => {
+        new DatabaseClusterFromSnapshot(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          vpc,
+          writer: ClusterInstance.serverlessV2('writer'),
+          snapshotIdentifier: 'my-snapshot',
+          manageMasterUserPassword: true,
+          snapshotCredentials: SnapshotCredentials.fromGeneratedSecret('admin', {
+            encryptionKey: kmsKey,
+          }),
+        });
+      }).toThrow(/When manageMasterUserPassword is enabled, only 'username' and 'encryptionKey' are allowed in snapshotCredentials\. Found unsupported properties: generatePassword, replaceOnPasswordCriteriaChanges\./);
+    });
+
+    test('rejects snapshotCredentials created with SnapshotCredentials.fromPassword()', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // THEN
+      expect(() => {
+        new DatabaseClusterFromSnapshot(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          vpc,
+          writer: ClusterInstance.serverlessV2('writer'),
+          snapshotIdentifier: 'my-snapshot',
+          manageMasterUserPassword: true,
+          snapshotCredentials: SnapshotCredentials.fromPassword(cdk.SecretValue.unsafePlainText('password')),
+        });
+      }).toThrow(/When manageMasterUserPassword is enabled, only 'username' and 'encryptionKey' are allowed in snapshotCredentials\. Found unsupported properties: password\./);
+    });
+
+    test('rejects snapshotCredentials created with SnapshotCredentials.fromSecret()', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const secret = new DatabaseSecret(stack, 'Secret', { username: 'admin' });
+
+      // THEN
+      expect(() => {
+        new DatabaseClusterFromSnapshot(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          vpc,
+          writer: ClusterInstance.serverlessV2('writer'),
+          snapshotIdentifier: 'my-snapshot',
+          manageMasterUserPassword: true,
+          snapshotCredentials: SnapshotCredentials.fromSecret(secret),
+        });
+      }).toThrow(/When manageMasterUserPassword is enabled, only 'username' and 'encryptionKey' are allowed in snapshotCredentials\. Found unsupported properties: password, secret\./);
+    });
+
+    test('rejects all unsupported snapshotCredentials properties at once', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const secret = new DatabaseSecret(stack, 'Secret', { username: 'admin' });
+
+      // THEN
+      expect(() => {
+        new DatabaseClusterFromSnapshot(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          vpc,
+          writer: ClusterInstance.serverlessV2('writer'),
+          snapshotIdentifier: 'my-snapshot',
+          manageMasterUserPassword: true,
+          snapshotCredentials: {
+            username: 'admin',
+            generatePassword: true,
+            replaceOnPasswordCriteriaChanges: true,
+            password: cdk.SecretValue.unsafePlainText('password'),
+            secret,
+            excludeCharacters: '"@/\\',
+            replicaRegions: [{ region: 'us-west-2' }],
+          },
+        });
+      }).toThrow(/When manageMasterUserPassword is enabled, only 'username' and 'encryptionKey' are allowed in snapshotCredentials\. Found unsupported properties: excludeCharacters, generatePassword, password, replaceOnPasswordCriteriaChanges, replicaRegions, secret\./);
+    });
+
+    test('accepts snapshotCredentials with only username and encryptionKey', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const kmsKey = new kms.Key(stack, 'Key');
+
+      // WHEN - should not throw
+      new DatabaseClusterFromSnapshot(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        snapshotIdentifier: 'my-snapshot',
+        manageMasterUserPassword: true,
+        snapshotCredentials: {
+          username: 'admin',
+          encryptionKey: kmsKey,
+          generatePassword: false,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+        ManageMasterUserPassword: true,
+        MasterUserSecret: {
+          KmsKeyId: stack.resolve(kmsKey.keyArn),
+        },
+        MasterUserPassword: Match.absent(),
+      });
+    });
+
+    test('does not validate snapshotCredentials when manageMasterUserPassword is not enabled', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN - should not throw; password-related snapshotCredentials are allowed without manageMasterUserPassword
+      new DatabaseClusterFromSnapshot(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        snapshotIdentifier: 'my-snapshot',
+        snapshotCredentials: SnapshotCredentials.fromGeneratedSecret('admin'),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+        SnapshotIdentifier: 'my-snapshot',
+        ManageMasterUserPassword: Match.absent(),
+      });
+    });
+  });
+
+  describe('manageMasterUserPassword rotation conflict', () => {
+    test('addRotationSingleUser throws when manageMasterUserPassword is enabled', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const cluster = new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        manageMasterUserPassword: true,
+      });
+
+      // THEN
+      expect(() => cluster.addRotationSingleUser()).toThrow(/Cannot add rotation when `manageMasterUserPassword` is enabled\. RDS automatically rotates the master password when it manages the secret\./);
+    });
+
+    test('addRotationMultiUser throws when manageMasterUserPassword is enabled', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const cluster = new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        manageMasterUserPassword: true,
+      });
+      const userSecret = new DatabaseSecret(stack, 'UserSecret', { username: 'user' });
+
+      // THEN
+      expect(() => cluster.addRotationMultiUser('user', { secret: userSecret.attach(cluster) }))
+        .toThrow(/Cannot add rotation when `manageMasterUserPassword` is enabled\. RDS automatically rotates the master password when it manages the secret\./);
+    });
+
+    test('addRotationSingleUser on DatabaseClusterFromSnapshot throws when manageMasterUserPassword is enabled', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        snapshotIdentifier: 'my-snapshot',
+        manageMasterUserPassword: true,
+      });
+
+      // THEN
+      expect(() => cluster.addRotationSingleUser()).toThrow(/Cannot add rotation when `manageMasterUserPassword` is enabled\./);
+    });
+
+    test('addRotationMultiUser on DatabaseClusterFromSnapshot throws when manageMasterUserPassword is enabled', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        snapshotIdentifier: 'my-snapshot',
+        manageMasterUserPassword: true,
+      });
+      const userSecret = new DatabaseSecret(stack, 'UserSecret', { username: 'user' });
+
+      // THEN
+      expect(() => cluster.addRotationMultiUser('user', { secret: userSecret.attach(cluster) }))
+        .toThrow(/Cannot add rotation when `manageMasterUserPassword` is enabled\./);
+    });
+
+    test('addRotationSingleUser works when manageMasterUserPassword is not enabled (regression)', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const cluster = new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+      });
+
+      // WHEN - should not throw
+      cluster.addRotationSingleUser();
+
+      // THEN
+      Template.fromStack(stack).resourceCountIs('AWS::SecretsManager::RotationSchedule', 1);
+    });
+  });
+});
+
+describe('instance', () => {
+  test('creating an CfnDBInstance does not throw any errors', () => {
+    // We want to make sure we are using the jsii compiled code
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const generated = require('../lib/rds.generated.js');
+
+    try {
+      process.env.JSII_DEPRECATED = 'fail';
+
+      const stack = testStack();
+      new generated.CfnDBInstance(stack, 'Instance', {
+        allowMajorVersionUpgrade: true,
+      });
+
+      // Since we didn't pass any deprecated property to the constructor,
+      // no error should be thrown.
+      expect(() => Template.fromStack(stack)).not.toThrow();
+    } finally {
+      delete process.env.JSII_DEPRECATED;
+    }
+  });
 });
 
 describe('cluster', () => {
@@ -1723,7 +2415,8 @@ describe('cluster', () => {
     });
 
     expect(cluster.instanceEndpoints).toHaveLength(1);
-    expect(stack.resolve(cluster.instanceEndpoints[0])).toEqual({
+    const ep = cluster.instanceEndpoints[0];
+    expect(stack.resolve({ hostname: ep.hostname, port: ep.port, socketAddress: ep.socketAddress })).toEqual({
       hostname: {
         'Fn::GetAtt': ['DatabaseInstance1844F58FD', 'Endpoint.Address'],
       },
@@ -2912,6 +3605,58 @@ describe('cluster', () => {
       dimensions: { DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' } },
       namespace: 'AWS/RDS',
       metricName: 'CPUUtilization',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average',
+      account: '12345',
+      region: 'us-test-1',
+    });
+  });
+
+  test('cluster supports VolumeReadIOPs metric', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
+      credentials: {
+        username: 'admin',
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
+      },
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    expect(stack.resolve(cluster.metricVolumeReadIOPs())).toEqual({
+      dimensions: { DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' } },
+      namespace: 'AWS/RDS',
+      metricName: 'VolumeReadIOPs',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average',
+      account: '12345',
+      region: 'us-test-1',
+    });
+  });
+
+  test('cluster supports VolumeWriteIOPs metric', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
+      credentials: {
+        username: 'admin',
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
+      },
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    expect(stack.resolve(cluster.metricVolumeWriteIOPs())).toEqual({
+      dimensions: { DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' } },
+      namespace: 'AWS/RDS',
+      metricName: 'VolumeWriteIOPs',
       period: cdk.Duration.minutes(5),
       statistic: 'Average',
       account: '12345',
@@ -4362,12 +5107,12 @@ describe('cluster', () => {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
       },
-      cloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit'],
+      cloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit', 'instance', 'iam-db-auth-error'],
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
-      EnableCloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit'],
+      EnableCloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit', 'instance', 'iam-db-auth-error'],
     });
   });
 
@@ -4570,7 +5315,10 @@ describe('cluster', () => {
     });
 
     expect(cluster.instanceEndpoints).toHaveLength(2);
-    expect(stack.resolve(cluster.instanceEndpoints[0])).toEqual({
+
+    const ep = cluster.instanceEndpoints[0];
+
+    expect(stack.resolve({ hostname: ep.hostname, port: ep.port, socketAddress: ep.socketAddress })).toEqual({
       hostname: {
         'Fn::GetAtt': ['DatabaseInstance1844F58FD', 'Endpoint.Address'],
       },

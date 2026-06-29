@@ -1,9 +1,11 @@
-import { IResource, Resource } from 'aws-cdk-lib/core';
 import { CfnTransitGatewayRouteTablePropagation } from 'aws-cdk-lib/aws-ec2';
-import { Construct } from 'constructs';
-import { ITransitGatewayAttachment } from './transit-gateway-attachment';
-import { ITransitGatewayRouteTable } from './transit-gateway-route-table';
+import type { IResource } from 'aws-cdk-lib/core';
+import { Resource } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import type { ITransitGatewayAttachment } from './transit-gateway-attachment';
+import type { ITransitGatewayRouteTable } from './transit-gateway-route-table';
 
 /**
  * Represents a Transit Gateway Route Table Propagation.
@@ -43,7 +45,10 @@ export interface TransitGatewayRouteTablePropagationProps {
  *
  * @resource AWS::EC2::TransitGatewayRouteTablePropagation
  */
+@propertyInjectable
 export class TransitGatewayRouteTablePropagation extends Resource implements ITransitGatewayRouteTablePropagation {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.TransitGatewayRouteTablePropagation';
   /**
    * The ID of the transit gateway route table propagation.
    */

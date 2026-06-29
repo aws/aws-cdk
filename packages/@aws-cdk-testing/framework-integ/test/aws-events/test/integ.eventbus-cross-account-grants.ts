@@ -4,7 +4,11 @@ import { Runtime, Function, Code } from 'aws-cdk-lib/aws-lambda';
 import { EventBus } from 'aws-cdk-lib/aws-events';
 import { AccountPrincipal } from 'aws-cdk-lib/aws-iam';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 /*
 How to run this integ test:

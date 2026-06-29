@@ -2,7 +2,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as cdk from 'aws-cdk-lib';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 
 export class FakeNotificationTarget implements autoscaling.ILifecycleHookTarget {
@@ -46,7 +46,7 @@ export class TestStack extends cdk.Stack {
       vpc,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(), // get the latest Amazon Linux image
-      healthCheck: autoscaling.HealthCheck.ec2(),
+      healthChecks: autoscaling.HealthChecks.ec2(),
     });
 
     // no role or notificationTarget

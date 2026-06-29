@@ -1,7 +1,7 @@
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as apigw from 'aws-cdk-lib/aws-apigateway';
 
 /**
@@ -20,7 +20,7 @@ class StepFunctionsRestApiDeploymentStack extends cdk.Stack {
     });
 
     const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-      definition: passTask,
+      definitionBody: sfn.DefinitionBody.fromChainable(passTask),
       stateMachineType: sfn.StateMachineType.EXPRESS,
     });
 

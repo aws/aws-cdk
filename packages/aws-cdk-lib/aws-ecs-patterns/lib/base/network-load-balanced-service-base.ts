@@ -1,14 +1,21 @@
 import { Construct } from 'constructs';
-import { IVpc } from '../../../aws-ec2';
-import {
-  AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
+import type { IVpc } from '../../../aws-ec2';
+import type {
+  BaseService, CloudMapOptions, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
   ICluster, LogDriver, PropagatedTagSource, Secret, CapacityProviderStrategy,
 } from '../../../aws-ecs';
-import { IListenerCertificate, INetworkLoadBalancer, IpAddressType, NetworkListener, NetworkLoadBalancer, NetworkLoadBalancerProps, NetworkTargetGroup } from '../../../aws-elasticloadbalancingv2';
-import { IRole } from '../../../aws-iam';
-import { ARecord, CnameRecord, IHostedZone, RecordTarget } from '../../../aws-route53';
+import {
+  AwsLogDriver, Cluster,
+} from '../../../aws-ecs';
+import type { IListenerCertificate, INetworkLoadBalancer, IpAddressType, NetworkListener, NetworkLoadBalancerProps, NetworkTargetGroup } from '../../../aws-elasticloadbalancingv2';
+import { NetworkLoadBalancer } from '../../../aws-elasticloadbalancingv2';
+import type { IRole } from '../../../aws-iam';
+import type { IHostedZone } from '../../../aws-route53';
+import { ARecord, CnameRecord, RecordTarget } from '../../../aws-route53';
 import { LoadBalancerTarget } from '../../../aws-route53-targets';
 import * as cdk from '../../../core';
+import { ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 
 /**
  * Describes the type of DNS record the service should create
@@ -329,7 +336,7 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
    */
   public get loadBalancer(): NetworkLoadBalancer {
     if (!this._networkLoadBalancer) {
-      throw new Error('.loadBalancer can only be accessed if the class was constructed with an owned, not imported, load balancer');
+      throw new ValidationError(lit`LoadBalancerAccessedClassConstructed`, '.loadBalancer can only be accessed if the class was constructed with an owned, not imported, load balancer', this);
     }
     return this._networkLoadBalancer;
   }
@@ -357,12 +364,12 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
     super(scope, id);
 
     if (props.cluster && props.vpc) {
-      throw new Error('You can only specify either vpc or cluster. Alternatively, you can leave both blank');
+      throw new ValidationError(lit`SpecifyVpcClusterAlternativelyLeave`, 'You can only specify either vpc or cluster. Alternatively, you can leave both blank', this);
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
     if (props.desiredCount !== undefined && props.desiredCount < 1) {
-      throw new Error('You must specify a desiredCount greater than 0');
+      throw new ValidationError(lit`SpecifyDesiredCountGreater`, 'You must specify a desiredCount greater than 0', this);
     }
 
     this.desiredCount = props.desiredCount || 1;
@@ -392,7 +399,7 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
 
     if (typeof props.domainName !== 'undefined') {
       if (typeof props.domainZone === 'undefined') {
-        throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
+        throw new ValidationError(lit`RouteHostedDomainZoneName`, 'A Route53 hosted domain zone name is required to configure the specified domain name', this);
       }
 
       switch (props.recordType ?? NetworkLoadBalancedServiceRecordType.ALIAS) {

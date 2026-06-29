@@ -2,6 +2,7 @@ import { Match, Template } from '../../assertions';
 import { AccountRootPrincipal, Role } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
+import { SizeRoundingBehavior } from '../../core';
 import * as cxapi from '../../cx-api';
 import {
   AmazonLinuxGeneration,
@@ -1295,7 +1296,7 @@ describe('volume', () => {
 
     // Test: iops in range
     for (const testData of [
-      [EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3, 3000, 16000],
+      [EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3, 3000, 80000],
       [EbsDeviceVolumeType.PROVISIONED_IOPS_SSD, 100, 64000],
       [EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2, 100, 256000],
     ]) {
@@ -1473,7 +1474,7 @@ describe('volume', () => {
     }
   });
 
-  test.each([124, 1001])('throws if throughput is set less than 125 or more than 1000', (throughput) => {
+  test.each([124, 2001])('throws if throughput is set less than 125 or more than 2000', (throughput) => {
     const stack = new cdk.Stack();
     expect(() => {
       new Volume(stack, 'Volume', {
@@ -1482,7 +1483,7 @@ describe('volume', () => {
         volumeType: EbsDeviceVolumeType.GP3,
         throughput,
       });
-    }).toThrow(/throughput property takes a minimum of 125 and a maximum of 1000/);
+    }).toThrow(/throughput property takes a minimum of 125 and a maximum of 2000/);
   });
 
   test.each([
@@ -1515,5 +1516,48 @@ describe('volume', () => {
         throughput: 751,
       });
     }).toThrow('Throughput (MiBps) to iops ratio of 0.25033333333333335 is too high; maximum is 0.25 MiBps per iops');
+  });
+
+  describe('volume initialization rate', () => {
+    test('set valid initialization rate', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new Volume(stack, 'Volume', {
+        availabilityZone: 'us-east-1a',
+        size: cdk.Size.gibibytes(500),
+        volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
+        volumeInitializationRate: cdk.Size.mebibytes(100),
+        snapshotId: 'snap-0123456789abcdefABCDEF',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
+        VolumeInitializationRate: 100,
+        SnapshotId: 'snap-0123456789abcdefABCDEF',
+      });
+    });
+
+    test.each([
+      cdk.Size.mebibytes(99),
+      cdk.Size.mebibytes(301),
+      cdk.Size.kibibytes(1),
+      cdk.Size.gibibytes(1),
+    ])('throws if initialization rate is not between 100 and 300 MiB/s', (rate) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN/THEN
+      expect(() => {
+        new Volume(stack, 'Volume', {
+          availabilityZone: 'us-east-1a',
+          size: cdk.Size.gibibytes(500),
+          volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
+          volumeInitializationRate: rate,
+          snapshotId: 'snap-0123456789abcdefABCDEF',
+        });
+      }).toThrow(`volumeInitializationRate must be between 100 and 300 MiB/s, got: ${rate.toMebibytes({ rounding: SizeRoundingBehavior.NONE })} MiB/s`);
+    });
   });
 });

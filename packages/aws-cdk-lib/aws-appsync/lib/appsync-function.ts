@@ -1,12 +1,17 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnFunctionConfiguration } from './appsync.generated';
-import { Code } from './code';
-import { BaseDataSource, LambdaDataSource } from './data-source';
-import { IGraphqlApi } from './graphqlapi-base';
-import { MappingTemplate } from './mapping-template';
-import { FunctionRuntime } from './runtime';
-import { Resource, IResource, Lazy, Fn, ValidationError } from '../../core';
+import type { Code } from './code';
+import type { BaseDataSource } from './data-source';
+import { LambdaDataSource } from './data-source';
+import type { IGraphqlApi } from './graphqlapi-base';
+import type { MappingTemplate } from './mapping-template';
+import type { FunctionRuntime } from './runtime';
+import type { IResource } from '../../core';
+import { Resource, Lazy, Fn, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IFunctionConfigurationRef, FunctionConfigurationReference } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
 /**
  * the base properties for AppSync Functions
@@ -90,7 +95,7 @@ export interface AppsyncFunctionAttributes {
 /**
  * Interface for AppSync Functions
  */
-export interface IAppsyncFunction extends IResource {
+export interface IAppsyncFunction extends IResource, IFunctionConfigurationRef {
   /**
    * the name of this AppSync Function
    *
@@ -112,7 +117,11 @@ export interface IAppsyncFunction extends IResource {
  *
  * @resource AWS::AppSync::FunctionConfiguration
  */
+@propertyInjectable
 export class AppsyncFunction extends Resource implements IAppsyncFunction {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appsync.AppsyncFunction';
+
   /**
    * Import Appsync Function from arn
    */
@@ -124,6 +133,11 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
       public readonly functionArn = attrs.functionArn;
       constructor(s: Construct, i: string) {
         super(s, i);
+      }
+      public get functionConfigurationRef(): FunctionConfigurationReference {
+        return {
+          functionArn: this.functionArn,
+        };
       }
     }
     return new Import(scope, id);
@@ -163,15 +177,15 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
 
     // If runtime is specified, code must also be
     if (props.runtime && !props.code) {
-      throw new ValidationError('Code is required when specifying a runtime', scope);
+      throw new ValidationError(lit`CodeRequiredSpecifyingRuntime`, 'Code is required when specifying a runtime', scope);
     }
 
     if (props.code && (props.requestMappingTemplate || props.responseMappingTemplate)) {
-      throw new ValidationError('Mapping templates cannot be used alongside code', scope);
+      throw new ValidationError(lit`MappingTemplatesCannotAlongsideCode`, 'Mapping templates cannot be used alongside code', scope);
     }
 
     if (props.maxBatchSize && !(props.dataSource instanceof LambdaDataSource)) {
-      throw new ValidationError('maxBatchSize can only be set for the data source of type \LambdaDataSource\'', scope);
+      throw new ValidationError(lit`MaxbatchsizeOnlyDataSource`, 'maxBatchSize can only be set for the data source of type \LambdaDataSource\'', scope);
     }
 
     const code = props.code?.bind(this);
@@ -195,5 +209,11 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
 
     this.function.addDependency(this.dataSource.ds);
     props.api.addSchemaDependency(this.function);
+  }
+
+  public get functionConfigurationRef(): FunctionConfigurationReference {
+    return {
+      functionArn: this.functionArn,
+    };
   }
 }

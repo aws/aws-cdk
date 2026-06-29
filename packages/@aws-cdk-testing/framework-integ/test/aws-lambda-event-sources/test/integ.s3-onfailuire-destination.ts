@@ -2,7 +2,8 @@ import { TestFunction } from './test-function';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { AuthenticationMethod, SelfManagedKafkaEventSource, S3OnFailureDestination, KinesisEventSource, DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { App, StackProps, Stack, RemovalPolicy, SecretValue, CfnOutput, Duration } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack, RemovalPolicy, SecretValue, CfnOutput, Duration } from 'aws-cdk-lib';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
@@ -65,7 +66,6 @@ export class S3OnFailureDestinationStack extends Stack {
   }
 }
 async function handler(event: any) {
-  // eslint-disable-next-line no-console
   console.log('event:', JSON.stringify(event, undefined, 2));
   throw new Error();
 }
@@ -124,7 +124,11 @@ class DynamoWithS3OnFailureDestinationStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new S3OnFailureDestinationStack(app, 'lambda-event-source-s3ofd');
 const stack2 = new KinesisWithS3OnFailureDestinationStack(app, 'kinesis-with-s3ofd');
 const stack3 = new DynamoWithS3OnFailureDestinationStack(app, 'dynamo-with-s3ofd');

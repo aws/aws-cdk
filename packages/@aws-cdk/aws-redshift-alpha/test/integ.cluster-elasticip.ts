@@ -1,7 +1,7 @@
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import * as constructs from 'constructs';
+import * as cdk from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import type * as constructs from 'constructs';
 import * as redshift from '../lib';
 
 const app = new cdk.App();
@@ -20,6 +20,7 @@ const vpc = new ec2.Vpc(stack, 'Vpc', {
   restrictDefaultSecurityGroup: false,
   enableDnsHostnames: true,
   enableDnsSupport: true,
+  maxAzs: 3,
 });
 new redshift.Cluster(stack, 'Cluster', {
   vpc: vpc,
@@ -36,5 +37,3 @@ new redshift.Cluster(stack, 'Cluster', {
 new integ.IntegTest(app, 'aws-cdk-redshift-elastic-ip-test', {
   testCases: [stack],
 });
-
-app.synth();

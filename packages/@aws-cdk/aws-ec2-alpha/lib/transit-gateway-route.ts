@@ -1,9 +1,11 @@
-import { IResource, Resource } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
 import { CfnTransitGatewayRoute } from 'aws-cdk-lib/aws-ec2';
-import { ITransitGatewayRouteTable } from './transit-gateway-route-table';
-import { ITransitGatewayAttachment } from './transit-gateway-attachment';
+import type { IResource } from 'aws-cdk-lib/core';
+import { Resource } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import type { ITransitGatewayAttachment } from './transit-gateway-attachment';
+import type { ITransitGatewayRouteTable } from './transit-gateway-route-table';
 
 /**
  * Represents a Transit Gateway Route.
@@ -77,7 +79,10 @@ abstract class TransitGatewayRouteBase extends Resource implements ITransitGatew
  *
  * @resource AWS::EC2::TransitGatewayRoute
  */
+@propertyInjectable
 export class TransitGatewayRoute extends TransitGatewayRouteBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.TransitGatewayRoute';
   public readonly routeTable: ITransitGatewayRouteTable;
   public readonly destinationCidrBlock: string;
 
@@ -109,7 +114,10 @@ export class TransitGatewayRoute extends TransitGatewayRouteBase {
  *
  * @resource AWS::EC2::TransitGatewayRoute
  */
+@propertyInjectable
 export class TransitGatewayBlackholeRoute extends TransitGatewayRouteBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.TransitGatewayBlackholeRoute';
   public readonly routeTable: ITransitGatewayRouteTable;
   public readonly destinationCidrBlock: string;
 

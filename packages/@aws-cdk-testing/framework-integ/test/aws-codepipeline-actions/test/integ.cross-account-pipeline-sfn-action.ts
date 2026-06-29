@@ -1,6 +1,7 @@
-import { App, Fn, PhysicalName, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Fn, PhysicalName, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
@@ -24,9 +25,9 @@ class StepFunctionStack extends Stack {
 
     // Create a simple Step Function
     this.stateMachine = new sfn.StateMachine(this, 'CrossAccountStateMachine', {
-      definition: new sfn.Pass(this, 'PassState', {
+      definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Pass(this, 'PassState', {
         result: sfn.Result.fromObject({ message: 'Hello from cross-account Step Function!' }),
-      }),
+      })),
       stateMachineName: 'CrossAccountStateMachine',
     });
 
@@ -139,6 +140,7 @@ class PipelineStack extends Stack {
 
 const app = new App({
   postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/pipelines:reduceStageRoleTrustScope': true,
   },
 });

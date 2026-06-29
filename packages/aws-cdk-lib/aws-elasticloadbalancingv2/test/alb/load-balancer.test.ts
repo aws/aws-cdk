@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Match, Template } from '../../../assertions';
-import { Metric } from '../../../aws-cloudwatch';
+import type { Metric } from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import { Key } from '../../../aws-kms';
 import * as s3 from '../../../aws-s3';
@@ -28,7 +28,7 @@ describe('tests', () => {
     });
   });
 
-  test.each([-1, 99, 100.5, 1501])('throw error for invalid range minimum capacity unit', (minimumCapacityUnit) => {
+  test.each([-1, 99, 100.5])('throw error for invalid range minimum capacity unit', (minimumCapacityUnit) => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -40,7 +40,7 @@ describe('tests', () => {
         vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
         minimumCapacityUnit,
       });
-    }).toThrow(`'minimumCapacityUnit' must be a positive integer between 100 and 1500 for Application Load Balancer, got: ${minimumCapacityUnit}.`);
+    }).toThrow(`'minimumCapacityUnit' must be a positive integer greater than or equal to 100 for Application Load Balancer, got: ${minimumCapacityUnit}.`);
   });
 
   test('Trivial construction: internet facing', () => {
@@ -568,7 +568,7 @@ describe('tests', () => {
 
     test('bucket with KMS throws validation error', () => {
       // GIVEN
-      const { stack, bucket, lb } = loggingSetup(true);
+      const { bucket, lb } = loggingSetup(true);
 
       // WHEN
       const logAccessLogFunctionTest = () => lb.logAccessLogs(bucket);
@@ -904,7 +904,7 @@ describe('tests', () => {
 
     test('bucket with KMS throws validation error', () => {
       // GIVEN
-      const { stack, bucket, lb } = loggingSetup(true);
+      const { bucket, lb } = loggingSetup(true);
 
       // WHEN
       const logConnectionLogFunctionTest = () => lb.logConnectionLogs(bucket);

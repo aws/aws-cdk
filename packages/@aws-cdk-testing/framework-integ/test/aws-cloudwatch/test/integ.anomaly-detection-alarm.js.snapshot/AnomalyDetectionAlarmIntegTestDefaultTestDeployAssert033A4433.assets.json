@@ -1,0 +1,33 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "7131a84a4415494610e808e07b00bedc7d2578a973f5069309ad6a8a74cf00db": {
+      "source": {
+        "path": "asset.7131a84a4415494610e808e07b00bedc7d2578a973f5069309ad6a8a74cf00db.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-99e46378": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7131a84a4415494610e808e07b00bedc7d2578a973f5069309ad6a8a74cf00db.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "2d9ab528254bdbf23333f9ffbd83fc509281e60c39609de6f3314f3d6329191b": {
+      "displayName": "AnomalyDetectionAlarmIntegTestDefaultTestDeployAssert033A4433 Template",
+      "source": {
+        "path": "AnomalyDetectionAlarmIntegTestDefaultTestDeployAssert033A4433.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-6e9b2692": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2d9ab528254bdbf23333f9ffbd83fc509281e60c39609de6f3314f3d6329191b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

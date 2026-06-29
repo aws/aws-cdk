@@ -1,7 +1,8 @@
-import { CfnIPAM, CfnIPAMPool, CfnIPAMPoolCidr, CfnIPAMScope } from 'aws-cdk-lib/aws-ec2';
-import { Construct } from 'constructs';
 import { Lazy, Names, Resource, Stack, Tags } from 'aws-cdk-lib';
+import { CfnIPAM, CfnIPAMPool, CfnIPAMPoolCidr, CfnIPAMScope } from 'aws-cdk-lib/aws-ec2';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
 
 /**
  * Represents the address family for IP addresses in an IPAM pool.
@@ -59,7 +60,7 @@ export interface IpamProps {
    * The operating Regions for an IPAM.
    * Operating Regions are AWS Regions where the IPAM is allowed to manage IP address CIDRs
    * For more information about operating Regions, see [Create an IPAM](https://docs.aws.amazon.com//vpc/latest/ipam/create-ipam.html) in the *Amazon VPC IPAM User Guide* .
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipam.html#cfn-ec2-ipam-operatingregions
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipam.html#cfn-ec2-ipam-operatingregions
    *
    * @default - Stack.region if defined in the stack
    */
@@ -112,7 +113,7 @@ export interface PoolOptions {
    *  Only resources in the same Region as the locale of the pool can get IP address allocations from the pool.
    * You can only allocate a CIDR for a VPC, for example, from an IPAM pool that shares a locale with the VPC’s Region.
    * Note that once you choose a Locale for a pool, you cannot modify it. If you choose an AWS Region for locale that has not been configured as an operating Region for the IPAM, you'll get an error.
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampool.html#cfn-ec2-ipampool-locale
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampool.html#cfn-ec2-ipampool-locale
    *
    * @default - Current operating region of IPAM
    */
@@ -132,7 +133,7 @@ export interface PoolOptions {
    *
    * "ec2", for example, allows users to use space for Elastic IP addresses and VPCs.
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampool.html#cfn-ec2-ipampool-awsservice
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampool.html#cfn-ec2-ipampool-awsservice
    *
    * @default - required in case of an IPv6, throws an error if not provided.
    */
@@ -311,7 +312,10 @@ export interface IIpamScopeBase {
  * @resource AWS::EC2::IPAMPool
  * @internal
  */
+@propertyInjectable
 class IpamPool extends Resource implements IIpamPool {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.IpamPool';
   /**
    * Pool ID to be passed to the VPC construct
    * @attribute IpamPoolId
@@ -390,7 +394,10 @@ class IpamPool extends Resource implements IIpamPool {
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipamscope.html
  * @resource AWS::EC2::IPAMScope
  */
+@propertyInjectable
 class IpamScope extends Resource implements IIpamScopeBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.IpamScope';
   /**
    * Stores the reference to newly created Resource
    */
@@ -472,7 +479,10 @@ class IpamScopeBase implements IIpamScopeBase {
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipamscope.html
  * @resource AWS::EC2::IPAM
  */
+@propertyInjectable
 export class Ipam extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.Ipam';
   /**
    * Provides access to default public IPAM scope through add pool method.
    * Usage: To add an Ipam Pool to a default public scope
@@ -507,7 +517,7 @@ export class Ipam extends Resource {
 
   /**
    * IPAM name to be used for tagging
-   * @default no tag specified
+   * @default - no tag specified
    * @attribute IpamName
    */
   public readonly ipamName?: string;

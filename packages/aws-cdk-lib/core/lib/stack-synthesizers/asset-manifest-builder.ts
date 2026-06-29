@@ -1,11 +1,15 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { ISynthesisSession } from './types';
+import type { ISynthesisSession } from './types';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { FileAssetSource, FileAssetPackaging, DockerImageAssetSource } from '../assets';
+import type { FileAssetSource, DockerImageAssetSource } from '../assets';
+import { FileAssetPackaging } from '../assets';
+import { UnscopedValidationError } from '../errors';
 import { resolvedOr } from '../helpers-internal/string-specializer';
-import { Stack } from '../stack';
+import type { Stack } from '../stack';
 import { Token } from '../token';
+import { contentHash } from './_shared';
+import { lit } from '../private/literal-string';
 
 /**
  * Build an asset manifest from assets added to a stack
@@ -69,6 +73,7 @@ export class AssetManifestBuilder {
       executable: asset.executable,
       directory: asset.directoryName,
       dockerBuildArgs: asset.dockerBuildArgs,
+      dockerBuildContexts: asset.dockerBuildContexts,
       dockerBuildSecrets: asset.dockerBuildSecrets,
       dockerBuildSsh: asset.dockerBuildSsh,
       dockerBuildTarget: asset.dockerBuildTarget,
@@ -102,7 +107,14 @@ export class AssetManifestBuilder {
         destinations: {},
       };
     }
-    this.files[sourceHash].destinations[this.manifestEnvName(stack)] = dest;
+
+    // Create destination key by appending hash of destination properties to manifestEnvName
+    // This ensures assets with same content but different destinations are published separately
+    const baseEnvName = this.manifestEnvName(stack);
+    const destHash = contentHash(JSON.stringify(dest)).slice(0, 8);
+    const destinationKey = `${baseEnvName}-${destHash}`;
+
+    this.files[sourceHash].destinations[destinationKey] = dest;
     return dest;
   }
 
@@ -125,7 +137,14 @@ export class AssetManifestBuilder {
         destinations: {},
       };
     }
-    this.dockerImages[sourceHash].destinations[this.manifestEnvName(stack)] = dest;
+
+    // Create destination key by appending hash of destination properties to manifestEnvName
+    // This ensures assets with same content but different destinations are published separately
+    const baseEnvName = this.manifestEnvName(stack);
+    const destHash = contentHash(JSON.stringify(dest)).slice(0, 8);
+    const destinationKey = `${baseEnvName}-${destHash}`;
+
+    this.dockerImages[sourceHash].destinations[destinationKey] = dest;
     return dest;
   }
 
@@ -284,35 +303,36 @@ export interface RoleOptions {
 
 function validateFileAssetSource(asset: FileAssetSource) {
   if (!!asset.executable === !!asset.fileName) {
-    throw new Error(`Exactly one of 'fileName' or 'executable' is required, got: ${JSON.stringify(asset)}`);
+    throw new UnscopedValidationError(lit`IsRequiredExactlyFilenameExecutable`, `Exactly one of 'fileName' or 'executable' is required, got: ${JSON.stringify(asset)}`);
   }
 
   if (!!asset.packaging !== !!asset.fileName) {
-    throw new Error(`'packaging' is expected in combination with 'fileName', got: ${JSON.stringify(asset)}`);
+    throw new UnscopedValidationError(lit`PackagingExpectedCombinationFilename`, `'packaging' is expected in combination with 'fileName', got: ${JSON.stringify(asset)}`);
   }
 
   if (Token.isUnresolved(asset.displayName)) {
-    throw new Error(`'displayName' may not contain a Token, got: ${JSON.stringify(asset.displayName)}`);
+    throw new UnscopedValidationError(lit`DisplaynameContainToken`, `'displayName' may not contain a Token, got: ${JSON.stringify(asset.displayName)}`);
   }
 }
 
 function validateDockerImageAssetSource(asset: DockerImageAssetSource) {
   if (!!asset.executable === !!asset.directoryName) {
-    throw new Error(`Exactly one of 'directoryName' or 'executable' is required, got: ${JSON.stringify(asset)}`);
+    throw new UnscopedValidationError(lit`IsRequiredExactlyDirectorynameExecutable`, `Exactly one of 'directoryName' or 'executable' is required, got: ${JSON.stringify(asset)}`);
   }
 
   if (Token.isUnresolved(asset.displayName)) {
-    throw new Error(`'displayName' may not contain a Token, got: ${JSON.stringify(asset.displayName)}`);
+    throw new UnscopedValidationError(lit`DisplaynameContainToken`, `'displayName' may not contain a Token, got: ${JSON.stringify(asset.displayName)}`);
   }
 
   check('dockerBuildArgs');
+  check('dockerBuildContexts');
   check('dockerBuildTarget');
   check('dockerOutputs');
   check('dockerFile');
 
   function check<K extends keyof DockerImageAssetSource>(key: K) {
     if (asset[key] && !asset.directoryName) {
-      throw new Error(`'${key}' is only allowed in combination with 'directoryName', got: ${JSON.stringify(asset)}`);
+      throw new UnscopedValidationError(lit`OnlyAllowedCombinationDirectoryname`, `'${key}' is only allowed in combination with 'directoryName', got: ${JSON.stringify(asset)}`);
     }
   }
 }

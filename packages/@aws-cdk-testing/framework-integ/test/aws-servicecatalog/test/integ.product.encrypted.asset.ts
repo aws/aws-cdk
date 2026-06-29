@@ -8,10 +8,15 @@ import * as sns from 'aws-cdk-lib/aws-sns';
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as servicecatalog from 'aws-cdk-lib/aws-servicecatalog';
-import { ProductStackHistory, ProductStackProps } from 'aws-cdk-lib/aws-servicecatalog';
+import type { ProductStackProps } from 'aws-cdk-lib/aws-servicecatalog';
+import { ProductStackHistory } from 'aws-cdk-lib/aws-servicecatalog';
 import { ServerSideEncryption } from 'aws-cdk-lib/aws-s3-deployment';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'integ-servicecatalog-product-encrypted-asset', {
   env: {
     account: process.env.CDK_INTEG_ACCOUNT ?? process.env.CDK_DEFAULT_ACCOUNT,
@@ -40,13 +45,13 @@ class TestAssetProductStack extends servicecatalog.ProductStack {
 
     new lambda.Function(this, 'HelloHandler', {
       runtime: lambda.Runtime.PYTHON_3_9,
-      code: lambda.Code.fromAsset('./assets'),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'assets')),
       handler: 'index.handler',
     });
 
     new lambda.Function(this, 'HelloHandler2', {
       runtime: lambda.Runtime.PYTHON_3_9,
-      code: lambda.Code.fromAsset('./assetsv2'),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'assetsv2')),
       handler: 'index.handler',
     });
   }

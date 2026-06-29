@@ -31,7 +31,11 @@ import { STANDARD_NODEJS_RUNTIME } from '../../config';
  * -- bash verify.integ.graphql-iam.sh --clean             -- clean dependencies/deploy  --
  */
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new Stack(app, 'aws-appsync-integ');
 const userPool = new UserPool(stack, 'Pool', {
   userPoolName: 'myPool',
@@ -39,7 +43,9 @@ const userPool = new UserPool(stack, 'Pool', {
 
 const api = new GraphqlApi(stack, 'Api', {
   name: 'Integ_Test_IAM',
-  schema: SchemaFile.fromAsset(join(__dirname, 'integ.graphql-iam.graphql')),
+  definition: {
+    schema: SchemaFile.fromAsset(join(__dirname, 'integ.graphql-iam.graphql')),
+  },
   authorizationConfig: {
     defaultAuthorization: {
       authorizationType: AuthorizationType.USER_POOL,

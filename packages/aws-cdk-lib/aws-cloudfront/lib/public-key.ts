@@ -1,12 +1,16 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
+import type { IPublicKeyRef, PublicKeyReference } from './cloudfront.generated';
 import { CfnPublicKey } from './cloudfront.generated';
-import { IResource, Names, Resource, Token, ValidationError } from '../../core';
+import type { IResource } from '../../core';
+import { Names, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents a Public Key
  */
-export interface IPublicKey extends IResource {
+export interface IPublicKey extends IResource, IPublicKeyRef {
   /**
    * The ID of the key group.
    * @attribute
@@ -44,15 +48,23 @@ export interface PublicKeyProps {
  *
  * @resource AWS::CloudFront::PublicKey
  */
+@propertyInjectable
 export class PublicKey extends Resource implements IPublicKey {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.PublicKey';
+
   /** Imports a Public Key from its id. */
   public static fromPublicKeyId(scope: Construct, id: string, publicKeyId: string): IPublicKey {
     return new class extends Resource implements IPublicKey {
       public readonly publicKeyId = publicKeyId;
+      public readonly publicKeyRef = {
+        publicKeyId: publicKeyId,
+      };
     }(scope, id);
   }
 
   public readonly publicKeyId: string;
+  public readonly publicKeyRef: PublicKeyReference;
 
   constructor(scope: Construct, id: string, props: PublicKeyProps) {
     super(scope, id);
@@ -60,7 +72,7 @@ export class PublicKey extends Resource implements IPublicKey {
     addConstructMetadata(this, props);
 
     if (!Token.isUnresolved(props.encodedKey) && !/^-----BEGIN PUBLIC KEY-----/.test(props.encodedKey)) {
-      throw new ValidationError(`Public key must be in PEM format (with the BEGIN/END PUBLIC KEY lines); got ${props.encodedKey}`, scope);
+      throw new ValidationError(lit`PublicKeyMustBeInPemFormat`, `Public key must be in PEM format (with the BEGIN/END PUBLIC KEY lines); got ${props.encodedKey}`, scope);
     }
 
     const resource = new CfnPublicKey(this, 'Resource', {
@@ -72,6 +84,7 @@ export class PublicKey extends Resource implements IPublicKey {
       },
     });
 
+    this.publicKeyRef = resource.publicKeyRef;
     this.publicKeyId = resource.ref;
   }
 

@@ -34,6 +34,12 @@
     "AvailabilityZone": "us-west-2a",
     "CidrBlock": "10.1.1.0/24",
     "Ipv6CidrBlock": "2600:f0f0:8:1::/64",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "VPCintegtest1EBA1CB75",
@@ -88,6 +94,12 @@
     "AvailabilityZone": "us-west-2a",
     "CidrBlock": "10.1.0.0/24",
     "Ipv6CidrBlock": "2600:f0f0:8:0::/64",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "VPCintegtest1EBA1CB75",

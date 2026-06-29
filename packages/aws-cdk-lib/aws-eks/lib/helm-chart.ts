@@ -1,8 +1,10 @@
 import { Construct } from 'constructs';
-import { ICluster } from './cluster';
+import type { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
-import { Asset } from '../../aws-s3-assets';
-import { CustomResource, Duration, Names, Stack } from '../../core';
+import type { Asset } from '../../aws-s3-assets';
+import type { Duration, RemovalPolicy } from '../../core';
+import { CustomResource, Names, Stack, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Helm Chart options.
@@ -91,6 +93,20 @@ export interface HelmChartOptions {
    * @default - CRDs are installed if not already present
    */
   readonly skipCrds?: boolean;
+
+  /**
+   * The removal policy applied to the custom resource that manages the Helm chart.
+   *
+   * The removal policy controls what happens to the resource if it stops being managed by CloudFormation.
+   * This can happen in one of three situations:
+   *
+   * - The resource is removed from the template, so CloudFormation stops managing it
+   * - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it
+   * - The stack is deleted, so CloudFormation stops managing all resources in it
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -137,16 +153,17 @@ export class HelmChart extends Construct {
 
     const timeout = props.timeout?.toSeconds();
     if (timeout && timeout > 900) {
-      throw new Error('Helm chart timeout cannot be higher than 15 minutes.');
+      throw new ValidationError(lit`HelmChartTimeoutCannotHigher`, 'Helm chart timeout cannot be higher than 15 minutes.', this);
     }
 
     if (!this.chart && !this.chartAsset) {
-      throw new Error("Either 'chart' or 'chartAsset' must be specified to install a helm chart");
+      throw new ValidationError(lit`MustBeEitherChartChartasset`, "Either 'chart' or 'chartAsset' must be specified to install a helm chart", this);
     }
 
     if (this.chartAsset && (this.repository || this.version)) {
-      throw new Error(
-        "Neither 'repository' nor 'version' can be used when configuring 'chartAsset'",
+      throw new ValidationError(
+        lit`ChartAssetRepositoryVersionConflict`,
+        "Neither 'repository' nor 'version' can be used when configuring 'chartAsset'", this,
       );
     }
 
@@ -159,11 +176,12 @@ export class HelmChart extends Construct {
     // default to set atomic as false
     const atomic = props.atomic ?? false;
 
-    this.chartAsset?.grantRead(provider.handlerRole);
+    const grant = this.chartAsset?.bucket.grantRead(provider.handlerRole);
 
-    new CustomResource(this, 'Resource', {
+    const customResource = new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
       resourceType: HelmChart.RESOURCE_TYPE,
+      removalPolicy: props.removalPolicy,
       properties: {
         ClusterName: props.cluster.clusterName,
         RoleArn: provider.roleArn, // TODO: bake into the provider's environment
@@ -181,5 +199,9 @@ export class HelmChart extends Construct {
         Atomic: atomic || undefined, // props are stringified so we encode “false” as undefined
       },
     });
+
+    // Ensure the IAM policy granting S3 read access to the chart asset
+    // is created before the custom resource executes.
+    grant?.applyBefore(customResource);
   }
 }

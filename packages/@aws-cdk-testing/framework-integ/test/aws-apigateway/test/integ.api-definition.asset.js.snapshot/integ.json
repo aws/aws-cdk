@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "44.0.0",
   "testCases": {
     "restapi-fromdefinition/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "restapi-fromdefinition/DefaultTest/DeployAssert",
       "assertionStackName": "restapifromdefinitionDefaultTestDeployAssertDF3B0845"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

@@ -1,24 +1,31 @@
 import { createHash } from 'crypto';
-import { Construct, Node } from 'constructs';
-import { AliasOptions } from './alias';
-import { Architecture } from './architecture';
-import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
-import { IEventSource } from './event-source';
-import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
-import { FunctionUrlAuthType, FunctionUrlOptions, FunctionUrl } from './function-url';
-import { IVersion } from './lambda-version';
+import type { Construct, Node } from 'constructs';
+import type { AliasOptions } from './alias';
+import type { Architecture } from './architecture';
+import type { EventInvokeConfigOptions } from './event-invoke-config';
+import { EventInvokeConfig } from './event-invoke-config';
+import type { IEventSource } from './event-source';
+import type { EventSourceMappingOptions } from './event-source-mapping';
+import { EventSourceMapping } from './event-source-mapping';
+import type { FunctionUrlOptions } from './function-url';
+import { FunctionUrl, FunctionUrlAuthType } from './function-url';
+import type { IVersion } from './lambda-version';
+import type { FunctionReference, IFunctionRef, VersionReference } from './lambda.generated';
 import { CfnPermission } from './lambda.generated';
-import { Permission } from './permission';
+import type { Permission } from './permission';
+import type { TenancyConfig } from './tenancy-config';
 import { addAlias, flatMap } from './util';
-import * as cloudwatch from '../../aws-cloudwatch';
-import * as ec2 from '../../aws-ec2';
+import type * as cloudwatch from '../../aws-cloudwatch';
+import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import { Annotations, ArnFormat, IResource, Resource, Token, Stack, FeatureFlags } from '../../core';
+import type { IResource } from '../../core';
+import { Annotations, ArnFormat, FeatureFlags, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import * as cxapi from '../../cx-api';
 
-export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
+export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable, IFunctionRef {
 
   /**
    * The name of the function.
@@ -42,7 +49,7 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   /**
    * Whether or not this Lambda function was bound to a VPC
    *
-   * If this is is `false`, trying to access the `connections` object will fail.
+   * If this is `false`, trying to access the `connections` object will fail.
    */
   readonly isBoundToVpc: boolean;
 
@@ -62,6 +69,11 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
    * The construct node where permissions are attached.
    */
   readonly permissionsNode: Node;
+
+  /**
+   * The tenancy configuration for this function.
+   */
+  readonly tenancyConfig?: TenancyConfig;
 
   /**
    * The system architectures compatible with this lambda function.
@@ -239,6 +251,12 @@ export interface FunctionAttributes {
    * @default - Architecture.X86_64
    */
   readonly architecture?: Architecture;
+
+  /**
+   * The tenancy configuration of this Lambda Function.
+   * @default - Tenant isolation is not enabled
+   */
+  readonly tenancyConfig?: TenancyConfig;
 }
 
 export abstract class FunctionBase extends Resource implements IFunction, ec2.IClientVpnConnectionHandler {
@@ -273,6 +291,11 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    * The architecture of this Lambda Function.
    */
   public abstract readonly architecture: Architecture;
+
+  /**
+   * The tenancy configuration for this function.
+   */
+  public abstract readonly tenancyConfig?: TenancyConfig;
 
   /**
    * Whether the addPermission() call adds any permissions
@@ -331,6 +354,25 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   private _policyCounter: number = 0;
 
   /**
+   * Track whether we've added statements with literal resources to the role's default policy
+   * @internal
+   */
+  private _hasAddedLiteralStatements: boolean = false;
+
+  /**
+   * Track whether we've added statements with array token resources to the role's default policy
+   * @internal
+   */
+  private _hasAddedArrayTokenStatements: boolean = false;
+
+  public get functionRef(): FunctionReference {
+    return {
+      functionName: this.functionName,
+      functionArn: this.functionArn,
+    };
+  }
+
+  /**
    * A warning will be added to functions under the following conditions:
    * - permissions that include `lambda:InvokeFunction` are added to the unqualified function.
    * - function.currentVersion is invoked before or after the permission is created.
@@ -365,7 +407,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   public addPermission(id: string, permission: Permission) {
     if (!this.canCreatePermissions) {
       if (!this._skipPermissions) {
-        Annotations.of(this).addWarningV2('UnclearLambdaEnvironment', `addPermission() has no effect on a Lambda Function with region=${this.env.region}, account=${this.env.account}, in a Stack with region=${Stack.of(this).region}, account=${Stack.of(this).account}. Suppress this warning if this is is intentional, or pass sameEnvironment=true to fromFunctionAttributes() if you would like to add the permissions.`);
+        Annotations.of(this).addWarningV2('UnclearLambdaEnvironment', `addPermission() has no effect on a Lambda Function with region=${this.env.region}, account=${this.env.account}, in a Stack with region=${Stack.of(this).region}, account=${Stack.of(this).account}. Suppress this warning if this is intentional, or pass sameEnvironment=true to fromFunctionAttributes() if you would like to add the permissions.`);
       }
       return;
     }
@@ -388,6 +430,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       sourceArn: permission.sourceArn ?? sourceArn,
       principalOrgId: permission.organizationId ?? principalOrgID,
       functionUrlAuthType: permission.functionUrlAuthType,
+      invokedViaFunctionUrl: permission.invokedViaFunctionUrl,
     });
   }
 
@@ -400,13 +443,28 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       return;
     }
 
-    if (useCreateNewPolicies) {
+    const hasArrayTokens = this.statementHasArrayTokens(statement);
+
+    // Check if mixing different token types would cause CloudFormation resolution conflicts
+    // Array tokens and literal resources cannot be safely merged in the same policy document
+    const wouldCauseConflict = (hasArrayTokens && this._hasAddedLiteralStatements) ||
+      (!hasArrayTokens && this._hasAddedArrayTokenStatements);
+
+    if (useCreateNewPolicies || wouldCauseConflict) {
+      // Create separate policy to avoid CloudFormation token resolution conflicts
       const policyToAdd = new iam.Policy(this, `inlinePolicyAddedToExecutionRole-${this._policyCounter++}`, {
         statements: [statement],
       });
       this.role.attachInlinePolicy(policyToAdd);
     } else {
+      // Safe to merge - track what type of resources we're adding to the default policy
       this.role.addToPrincipalPolicy(statement);
+
+      if (hasArrayTokens) {
+        this._hasAddedArrayTokenStatements = true;
+      } else {
+        this._hasAddedLiteralStatements = true;
+      }
     }
   }
 
@@ -417,8 +475,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      // eslint-disable-next-line max-len
-      throw new ValidationError('Only VPC-associated Lambda Functions have security groups to manage. Supply the "vpc" parameter when creating the Lambda, or "securityGroupId" when importing it.', this);
+      throw new ValidationError(lit`OnlyVpcAssociatedLambdaFunctionsHaveSecurityGroups`, 'Only VPC-associated Lambda Functions have security groups to manage. Supply the "vpc" parameter when creating the Lambda, or "securityGroupId" when importing it.', this);
     }
     return this._connections;
   }
@@ -433,7 +490,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   /**
    * Whether or not this Lambda function was bound to a VPC
    *
-   * If this is is `false`, trying to access the `connections` object will fail.
+   * If this is `false`, trying to access the `connections` object will fail.
    */
   public get isBoundToVpc(): boolean {
     return !!this._connections;
@@ -448,6 +505,8 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
   /**
    * Grant the given identity permissions to invoke this Lambda
+   *
+   * [disable-awslint:no-grants]
    */
   public grantInvoke(grantee: iam.IGrantable): iam.Grant {
     const hash = createHash('sha256')
@@ -470,6 +529,8 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   /**
    * Grant the given identity permissions to invoke the $LATEST version or
    * unqualified version of this Lambda
+   *
+   * [disable-awslint:no-grants]
    */
   public grantInvokeLatestVersion(grantee: iam.IGrantable): iam.Grant {
     return this.grantInvokeVersion(grantee, this.latestVersion);
@@ -477,6 +538,8 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
   /**
    * Grant the given identity permissions to invoke the given version of this Lambda
+   *
+   * [disable-awslint:no-grants]
    */
   public grantInvokeVersion(grantee: iam.IGrantable, version: IVersion): iam.Grant {
     const hash = createHash('sha256')
@@ -503,16 +566,53 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
   /**
    * Grant the given identity permissions to invoke this Lambda Function URL
+   *
+   * [disable-awslint:no-grants]
    */
   public grantInvokeUrl(grantee: iam.IGrantable): iam.Grant {
     const identifier = `InvokeFunctionUrl${grantee.grantPrincipal}`; // calls the .toString() of the principal
+    const identifierDualAuth = `${identifier}-DualAuth`;
 
     // Memoize the result so subsequent grantInvoke() calls are idempotent
     let grant = this._functionUrlInvocationGrants[identifier];
     if (!grant) {
-      grant = this.grant(grantee, identifier, 'lambda:InvokeFunctionUrl', [this.functionArn], {
-        functionUrlAuthType: FunctionUrlAuthType.AWS_IAM,
-      });
+      // Build conditions for function URL with AWS_IAM auth type
+      const functionUrlConditions: Record<string, Record<string, unknown>> = {
+        StringEquals: {
+          'lambda:FunctionUrlAuthType': FunctionUrlAuthType.AWS_IAM,
+        },
+      };
+
+      grant = this.grant(
+        grantee,
+        identifier,
+        'lambda:InvokeFunctionUrl',
+        [this.functionArn],
+        {
+          functionUrlAuthType: FunctionUrlAuthType.AWS_IAM,
+        },
+        functionUrlConditions,
+      );
+
+      // Build conditions for dual auth (invoked via function URL)
+      const dualAuthConditions: Record<string, Record<string, unknown>> = {
+        Bool: {
+          'lambda:InvokedViaFunctionUrl': true,
+        },
+      };
+
+      // proceed to grant invokefunction for FURL Dual auth
+      grant = this.grant(
+        grantee,
+        identifierDualAuth,
+        'lambda:InvokeFunction',
+        [this.functionArn],
+        {
+          invokedViaFunctionUrl: true,
+        },
+        dualAuthConditions,
+      );
+
       this._functionUrlInvocationGrants[identifier] = grant;
     }
     return grant;
@@ -520,18 +620,23 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
   /**
    * Grant multiple principals the ability to invoke this Lambda via CompositePrincipal
+   *
+   * [disable-awslint:no-grants]
    */
   public grantInvokeCompositePrincipal(compositePrincipal: iam.CompositePrincipal): iam.Grant[] {
     return compositePrincipal.principals.map((principal) => this.grantInvoke(principal));
   }
 
   public addEventSource(source: IEventSource) {
+    if (this.tenancyConfig?.tenancyConfigProperty?.tenantIsolationMode !== undefined && source.constructor.name !== 'ApiEventSource') {
+      throw new ValidationError(lit`EventSourceNotSupportedForTenantIsolation`, `Event source ${source.constructor.name} is not supported for functions with tenant isolation mode`, this);
+    }
     source.bind(this);
   }
 
   public configureAsyncInvoke(options: EventInvokeConfigOptions): void {
     if (this.node.tryFindChild('EventInvokeConfig') !== undefined) {
-      throw new ValidationError(`An EventInvokeConfig has already been configured for the function at ${this.node.path}`, this);
+      throw new ValidationError(lit`EventInvokeConfigAlreadyConfigured`, `An EventInvokeConfig has already been configured for the function at ${this.node.path}`, this);
     }
 
     new EventInvokeConfig(this, 'EventInvokeConfig', {
@@ -583,11 +688,13 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     action: string,
     resourceArns: string[],
     permissionOverrides?: Partial<Permission>,
+    conditions?: Record<string, Record<string, unknown>>,
   ): iam.Grant {
     const grant = iam.Grant.addToPrincipalOrResource({
       grantee,
       actions: [action],
       resourceArns,
+      conditions,
 
       // Fake resource-like object on which to call addToResourcePolicy(), which actually
       // calls addPermission()
@@ -602,16 +709,13 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
           const permissionNode = this._functionNode().tryFindChild(identifier);
           if (!permissionNode && !this._skipPermissions) {
-            throw new ValidationError('Cannot modify permission to lambda function. Function is either imported or $LATEST version.\n'
+            throw new ValidationError(lit`CannotModifyLambdaPermission`, 'Cannot modify permission to lambda function. Function is either imported or $LATEST version.\n'
               + 'If the function is imported from the same account use `fromFunctionAttributes()` API with the `sameEnvironment` flag.\n'
               + 'If the function is imported from a different account and already has the correct permissions use `fromFunctionAttributes()` API with the `skipPermissions` flag.', this);
           }
           return { statementAdded: true, policyDependable: permissionNode };
         },
-        node: this.node,
-        stack: this.stack,
         env: this.env,
-        applyRemovalPolicy: x => this.applyRemovalPolicy(x),
       },
     });
 
@@ -670,7 +774,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       }
     }
 
-    throw new ValidationError(`Invalid principal type for Lambda permission statement: ${principal.constructor.name}. ` +
+    throw new ValidationError(lit`InvalidPrincipalTypeForLambdaPermission`, `Invalid principal type for Lambda permission statement: ${principal.constructor.name}. ` +
       'Supported: AccountPrincipal, ArnPrincipal, ServicePrincipal, OrganizationPrincipal', this);
 
     /**
@@ -699,7 +803,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
     // PrincipalOrgID cannot be combined with any other conditions
     if (principalOrgID && (sourceArn || sourceAccount)) {
-      throw new ValidationError('PrincipalWithConditions had unsupported condition combinations for Lambda permission statement: principalOrgID cannot be set with other conditions.', this);
+      throw new ValidationError(lit`PrincipalOrgIdCannotBeCombinedWithOtherConditions`, 'PrincipalWithConditions had unsupported condition combinations for Lambda permission statement: principalOrgID cannot be set with other conditions.', this);
     }
 
     return {
@@ -723,8 +827,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       const supportedPrincipalConditions = [{
         operator: 'ArnLike',
         key: 'aws:SourceArn',
-      },
-      {
+      }, {
         operator: 'StringEquals',
         key: 'aws:SourceAccount',
       }, {
@@ -741,7 +844,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       if (unsupportedConditions.length == 0) {
         return conditions;
       } else {
-        throw new ValidationError(`PrincipalWithConditions had unsupported conditions for Lambda permission statement: ${JSON.stringify(unsupportedConditions)}. ` +
+        throw new ValidationError(lit`UnsupportedConditionsForLambdaPermission`, `PrincipalWithConditions had unsupported conditions for Lambda permission statement: ${JSON.stringify(unsupportedConditions)}. ` +
           `Supported operator/condition pairs: ${JSON.stringify(supportedPrincipalConditions)}`, this);
       }
     }
@@ -751,6 +854,29 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
   private isPrincipalWithConditions(principal: iam.IPrincipal): boolean {
     return Object.keys(principal.policyFragment.conditions).length > 0;
+  }
+
+  /**
+   * Check if a policy statement contains array tokens that would cause CloudFormation
+   * resolution conflicts when mixed with literal arrays in the same policy document.
+   *
+   * Array tokens are created by CloudFormation intrinsic functions that return arrays,
+   * such as Fn::Split, Fn::GetAZs, etc. These cannot be safely merged with literal
+   * resource arrays due to CloudFormation's token resolution limitations.
+   *
+   * Individual string tokens within literal arrays (e.g., `["arn:${token}:..."]`) are
+   * safe and do not cause conflicts, so they are not detected by this method.
+   * @internal
+   */
+  private statementHasArrayTokens(statement: iam.PolicyStatement): boolean {
+    const resources = statement.resources;
+    if (!resources) {
+      return false;
+    }
+
+    // Detect when the entire resources property is an unresolved token that will
+    // resolve to an array at CloudFormation deployment time.
+    return Token.isUnresolved(resources);
   }
 }
 
@@ -771,13 +897,17 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
     return this.lambda.latestVersion;
   }
 
+  public get tenancyConfig() {
+    return this.lambda.tenancyConfig;
+  }
+
   public get resourceArnsForGrantInvoke() {
     return [this.functionArn];
   }
 
   public configureAsyncInvoke(options: EventInvokeConfigOptions): void {
     if (this.node.tryFindChild('EventInvokeConfig') !== undefined) {
-      throw new ValidationError(`An EventInvokeConfig has already been configured for the qualified function at ${this.node.path}`, this);
+      throw new ValidationError(lit`EventInvokeConfigAlreadyConfiguredForQualifiedFunction`, `An EventInvokeConfig has already been configured for the qualified function at ${this.node.path}`, this);
     }
 
     new EventInvokeConfig(this, 'EventInvokeConfig', {
@@ -808,6 +938,19 @@ class LatestVersion extends FunctionBase implements IVersion {
     this.lambda = lambda;
   }
 
+  public get versionRef(): VersionReference {
+    return {
+      functionArn: this.functionArn,
+    };
+  }
+
+  public get functionRef(): FunctionReference {
+    return {
+      functionArn: this.functionArn,
+      functionName: this.functionName,
+    };
+  }
+
   public get functionArn() {
     return `${this.lambda.functionArn}:${this.version}`;
   }
@@ -832,8 +975,12 @@ class LatestVersion extends FunctionBase implements IVersion {
     return this.lambda.role;
   }
 
+  public get tenancyConfig() {
+    return this.lambda.tenancyConfig;
+  }
+
   public get edgeArn(): never {
-    throw new ValidationError('$LATEST function version cannot be used for Lambda@Edge', this);
+    throw new ValidationError(lit`LatestVersionCannotBeUsedForLambdaEdge`, '$LATEST function version cannot be used for Lambda@Edge', this);
   }
 
   public get resourceArnsForGrantInvoke() {

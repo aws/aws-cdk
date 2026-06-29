@@ -1,21 +1,28 @@
 /* eslint-disable import/order */
 import * as fs from 'fs';
 import * as path from 'path';
-import { Construct, IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
 import { CfnConfigurationProfile, CfnHostedConfigurationVersion } from './appconfig.generated';
-import { IApplication } from './application';
-import { DeploymentStrategy, IDeploymentStrategy, RolloutStrategy } from './deployment-strategy';
-import { IEnvironment } from './environment';
-import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
-import * as cp from '../../aws-codepipeline';
+import type { IApplication } from './application';
+import type { IDeploymentStrategy } from './deployment-strategy';
+import { DeploymentStrategy, RolloutStrategy } from './deployment-strategy';
+import type { IEnvironment } from './environment';
+import type { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible } from './extension';
+import { ExtensibleBase } from './extension';
+import type { IDeploymentStrategyRef } from '../../interfaces/generated/aws-appconfig-interfaces.generated';
+import { toIDeploymentStrategy } from './private/ref-utils';
+import type * as cp from '../../aws-codepipeline';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import * as lambda from '../../aws-lambda';
-import * as s3 from '../../aws-s3';
-import * as sm from '../../aws-secretsmanager';
-import * as ssm from '../../aws-ssm';
-import { PhysicalName, Stack, ArnFormat, Names, RemovalPolicy } from '../../core';
+import type * as kms from '../../aws-kms';
+import type * as lambda from '../../aws-lambda';
+import type * as s3 from '../../aws-s3';
+import type * as sm from '../../aws-secretsmanager';
+import type * as ssm from '../../aws-ssm';
+import { PhysicalName, Stack, ArnFormat, Names, RemovalPolicy, ValidationError } from '../../core';
 import * as mimeTypes from 'mime-types';
+import type { DeletionProtectionCheck } from './util';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Options for the Configuration construct
@@ -27,7 +34,7 @@ export interface ConfigurationOptions {
    * @default - A deployment strategy with the rollout strategy set to
    * RolloutStrategy.CANARY_10_PERCENT_20_MINUTES
    */
-  readonly deploymentStrategy?: IDeploymentStrategy;
+  readonly deploymentStrategy?: IDeploymentStrategyRef;
 
   /**
    * The name of the configuration.
@@ -76,6 +83,17 @@ export interface ConfigurationOptions {
    * @default - None.
    */
   readonly deploymentKey?: kms.IKey;
+
+  /**
+   * A parameter to configure deletion protection.
+   * Deletion protection prevents a user from deleting a configuration profile if your application has called
+   * either `GetLatestConfiguration` or `GetConfiguration` for the configuration profile during the specified interval.
+   *
+   * @see https://docs.aws.amazon.com/appconfig/latest/userguide/deletion-protection.html
+   *
+   * @default DeletionProtectionCheck.ACCOUNT_DEFAULT
+   */
+  readonly deletionProtectionCheck?: DeletionProtectionCheck;
 }
 
 /**
@@ -179,13 +197,18 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
    */
   public readonly deploymentKey?: kms.IKey;
 
+  private readonly _deploymentStrategy?: IDeploymentStrategyRef;
+
   /**
    * The deployment strategy for the configuration.
    */
-  readonly deploymentStrategy?: IDeploymentStrategy;
+  public get deploymentStrategy(): IDeploymentStrategy | undefined {
+    return this._deploymentStrategy ? toIDeploymentStrategy(this._deploymentStrategy) : undefined;
+  }
 
   protected applicationId: string;
   protected extensible!: ExtensibleBase;
+  protected deletionProtectionCheck?: DeletionProtectionCheck;
 
   constructor(scope: Construct, id: string, props: ConfigurationProps) {
     super(scope, id);
@@ -201,7 +224,8 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
     this.description = props.description;
     this.deployTo = props.deployTo;
     this.deploymentKey = props.deploymentKey;
-    this.deploymentStrategy = props.deploymentStrategy || new DeploymentStrategy(this, 'DeploymentStrategy', {
+    this.deletionProtectionCheck = props.deletionProtectionCheck;
+    this._deploymentStrategy = props.deploymentStrategy || new DeploymentStrategy(this, 'DeploymentStrategy', {
       rolloutStrategy: RolloutStrategy.CANARY_10_PERCENT_20_MINUTES,
     });
   }
@@ -383,6 +407,13 @@ export interface HostedConfigurationProps extends ConfigurationProps {
    * @default - None.
    */
   readonly versionLabel?: string;
+
+  /**
+   * The customer managed key to encrypt hosted configuration.
+   *
+   * @default None
+   */
+  readonly kmsKey?: kms.IKeyRef;
 }
 
 /**
@@ -395,7 +426,15 @@ export class HostedConfiguration extends ConfigurationBase {
   public readonly content: string;
 
   /**
-   * The content type of the hosted configuration.
+   * The configuration content type, specified as a standard MIME type.
+   * Supported examples include:
+   * - `text/plain`
+   * - `application/json`
+   * - `application/octet-stream`
+   * - `application/x-yaml`
+   *
+   * For an up-to-date list of valid MIME types, see:
+   * https://www.iana.org/assignments/media-types/media-types.xhtml
    */
   public readonly contentType?: string;
 
@@ -442,6 +481,8 @@ export class HostedConfiguration extends ConfigurationBase {
       description: this.description,
       type: this.type,
       validators: this.validators,
+      deletionProtectionCheck: this.deletionProtectionCheck,
+      kmsKeyIdentifier: props.kmsKey?.keyRef.keyArn,
     });
     this.configurationProfileId = this._cfnConfigurationProfile.ref;
     this.configurationProfileArn = Stack.of(this).formatArn({
@@ -500,7 +541,7 @@ export interface SourcedConfigurationOptions extends ConfigurationOptions {
    *
    * @default - A role is generated.
    */
-  readonly retrievalRole?: iam.IRole;
+  readonly retrievalRole?: iam.IRoleRef;
 }
 
 /**
@@ -525,7 +566,7 @@ export interface SourcedConfigurationProps extends ConfigurationProps {
    *
    * @default - Auto generated if location type is not ConfigurationSourceType.CODE_PIPELINE otherwise no role specified.
    */
-  readonly retrievalRole?: iam.IRole;
+  readonly retrievalRole?: iam.IRoleRef;
 }
 
 /**
@@ -542,11 +583,6 @@ export class SourcedConfiguration extends ConfigurationBase {
    * The version number of the configuration to deploy.
    */
   public readonly versionNumber?: string;
-
-  /**
-   * The IAM role to retrieve the configuration.
-   */
-  public readonly retrievalRole?: iam.IRole;
 
   /**
    * The key to decrypt the configuration if applicable. This key
@@ -567,15 +603,16 @@ export class SourcedConfiguration extends ConfigurationBase {
 
   private readonly locationUri: string;
   private readonly _cfnConfigurationProfile: CfnConfigurationProfile;
+  private readonly _retrievalRole?: iam.IRoleRef;
 
-  constructor (scope: Construct, id: string, props: SourcedConfigurationProps) {
+  constructor(scope: Construct, id: string, props: SourcedConfigurationProps) {
     super(scope, id, props);
 
     this.location = props.location;
     this.locationUri = this.location.locationUri;
     this.versionNumber = props.versionNumber;
     this.sourceKey = this.location.key;
-    this.retrievalRole = props.retrievalRole ?? this.getRetrievalRole();
+    this._retrievalRole = props.retrievalRole ?? this.getRetrievalRole();
     this._cfnConfigurationProfile = new CfnConfigurationProfile(this, 'Resource', {
       applicationId: this.applicationId,
       locationUri: this.locationUri,
@@ -584,6 +621,7 @@ export class SourcedConfiguration extends ConfigurationBase {
       retrievalRoleArn: this.retrievalRole?.roleArn,
       type: this.type,
       validators: this.validators,
+      deletionProtectionCheck: this.deletionProtectionCheck,
     });
 
     this.configurationProfileId = this._cfnConfigurationProfile.ref;
@@ -596,6 +634,19 @@ export class SourcedConfiguration extends ConfigurationBase {
 
     this.addExistingEnvironmentsToApplication();
     this.deployConfigToEnvironments();
+  }
+
+  /**
+   * The IAM role to retrieve the configuration.
+   */
+  public get retrievalRole(): iam.IRole | undefined {
+    if (!this._retrievalRole) {
+      return undefined;
+    }
+    if ('grant' in this._retrievalRole) {
+      return this._retrievalRole as iam.IRole;
+    }
+    throw new ValidationError(lit`InvalidRetrievalRoleInterface`, `Retrieval role does not implement IRole: ${this._retrievalRole.constructor.name}`, this);
   }
 
   private getRetrievalRole(): iam.Role | undefined {
@@ -815,7 +866,15 @@ export abstract class ConfigurationContent {
    * Defines the hosted configuration content from a file.
    *
    * @param inputPath The path to the file that defines configuration content
-   * @param contentType The content type of the configuration
+   * @param contentType The configuration content type, specified as a standard MIME type.
+   * Supported examples include:
+   * - `text/plain`
+   * - `application/json`
+   * - `application/octet-stream`
+   * - `application/x-yaml`
+   *
+   * For an up-to-date list of valid MIME types, see:
+   * https://www.iana.org/assignments/media-types/media-types.xhtml
    */
   public static fromFile(inputPath: string, contentType?: string): ConfigurationContent {
     return {
@@ -828,7 +887,15 @@ export abstract class ConfigurationContent {
    * Defines the hosted configuration content from inline code.
    *
    * @param content The inline code that defines the configuration content
-   * @param contentType The content type of the configuration
+   * @param contentType The configuration content type, specified as a standard MIME type.
+   * Supported examples include:
+   * - `text/plain`
+   * - `application/json`
+   * - `application/octet-stream`
+   * - `application/x-yaml`
+   *
+   * For an up-to-date list of valid MIME types, see:
+   * https://www.iana.org/assignments/media-types/media-types.xhtml
    */
   public static fromInline(content: string, contentType?: string): ConfigurationContent {
     return {
@@ -841,7 +908,15 @@ export abstract class ConfigurationContent {
    * Defines the hosted configuration content as JSON from inline code.
    *
    * @param content The inline code that defines the configuration content
-   * @param contentType The content type of the configuration
+   * @param contentType The configuration content type, specified as a standard MIME type.
+   * Supported examples include:
+   * - `text/plain`
+   * - `application/json`
+   * - `application/octet-stream`
+   * - `application/x-yaml`
+   *
+   * For an up-to-date list of valid MIME types, see:
+   * https://www.iana.org/assignments/media-types/media-types.xhtml
    */
   public static fromInlineJson(content: string, contentType?: string): ConfigurationContent {
     return {
@@ -880,7 +955,15 @@ export abstract class ConfigurationContent {
   public abstract readonly content: string;
 
   /**
-   * The configuration content type.
+   * The configuration content type, specified as a standard MIME type.
+   * Supported examples include:
+   * - `text/plain`
+   * - `application/json`
+   * - `application/octet-stream`
+   * - `application/x-yaml`
+   *
+   * For an up-to-date list of valid MIME types, see:
+   * https://www.iana.org/assignments/media-types/media-types.xhtml
    */
   public abstract readonly contentType: string;
 }
@@ -948,9 +1031,9 @@ export abstract class ConfigurationSource {
    *
    * @param pipeline The pipeline where the configuration is stored
    */
-  public static fromPipeline(pipeline: cp.IPipeline): ConfigurationSource {
+  public static fromPipeline(pipeline: cp.IPipelineRef): ConfigurationSource {
     return {
-      locationUri: `codepipeline://${pipeline.pipelineName}`,
+      locationUri: `codepipeline://${pipeline.pipelineRef.pipelineName}`,
       type: ConfigurationSourceType.CODE_PIPELINE,
     };
   }

@@ -60,24 +60,27 @@
   "testapiDeployment356D2C358af14d7f8fefbad1c57a65ea01cc6136": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
+    "Description": "Automatically created by the RestApi construct",
     "RestApiId": {
      "Ref": "testapiD6451F70"
-    },
-    "Description": "Automatically created by the RestApi construct"
+    }
    },
    "DependsOn": [
     "testapipetsGET25A78130",
     "testapipets981F319E"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "testapiDeploymentStageprod5C9E92A4": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
-    "RestApiId": {
-     "Ref": "testapiD6451F70"
-    },
     "DeploymentId": {
      "Ref": "testapiDeployment356D2C358af14d7f8fefbad1c57a65ea01cc6136"
+    },
+    "RestApiId": {
+     "Ref": "testapiD6451F70"
     },
     "StageName": "prod"
    }
@@ -100,16 +103,16 @@
   "testapipetsGET25A78130": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
+    "AuthorizationType": "NONE",
     "HttpMethod": "GET",
+    "Integration": {
+     "Type": "MOCK"
+    },
     "ResourceId": {
      "Ref": "testapipets981F319E"
     },
     "RestApiId": {
      "Ref": "testapiD6451F70"
-    },
-    "AuthorizationType": "NONE",
-    "Integration": {
-     "Type": "MOCK"
     }
    }
   }

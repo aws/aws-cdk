@@ -1,6 +1,6 @@
 import { validateWeight } from './_util';
-import * as ec2 from '../../aws-ec2';
-import * as ga from '../../aws-globalaccelerator';
+import type * as ec2 from '../../aws-ec2';
+import type * as ga from '../../aws-globalaccelerator';
 
 /**
  * Properties for a NetworkLoadBalancerEndpoint
@@ -36,7 +36,7 @@ export class InstanceEndpoint implements ga.IEndpoint {
   public readonly region?: string;
 
   constructor(private readonly instance: ec2.IInstance, private readonly options: InstanceEndpointProps = {}) {
-    validateWeight(options.weight);
+    validateWeight(instance, options.weight);
 
     this.region = instance.env.region;
   }

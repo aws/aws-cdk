@@ -173,7 +173,7 @@ describe('basic pipeline', () => {
         BuildSpec: Match.serializedJson(Match.objectLike({
           phases: {
             build: {
-              commands: Match.arrayWith([`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region"`]),
+              commands: Match.arrayWith([`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region-3d50c90e"`]),
             },
           },
         })),
@@ -594,7 +594,7 @@ describe('pipeline with single asset publisher', () => {
         Name: 'Assets',
         Actions: [
           // Only one file asset action
-          Match.objectLike({ RunOrder: 1, Name: 'Asset1' }),
+          Match.objectLike({ RunOrder: 1, Name: 'FileAssets' }),
         ],
       }]),
     });
@@ -611,8 +611,8 @@ describe('pipeline with single asset publisher', () => {
     const actualFileName = buildSpecName.asString();
 
     const buildSpec = JSON.parse(fs.readFileSync(path.join(assembly.directory, actualFileName), { encoding: 'utf-8' }));
-    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region"`);
-    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH2}:current_account-current_region"`);
+    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region-3d50c90e"`);
+    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH2}:current_account-current_region-8b0ef02d"`);
   });
 });
 
@@ -643,7 +643,7 @@ describe('pipeline with custom asset publisher BuildSpec', () => {
         Name: 'Assets',
         Actions: [
           // Only one file asset action
-          Match.objectLike({ RunOrder: 1, Name: 'Asset1' }),
+          Match.objectLike({ RunOrder: 1, Name: 'FileAssets' }),
         ],
       }]),
     });
@@ -658,8 +658,8 @@ describe('pipeline with custom asset publisher BuildSpec', () => {
 
     const assembly = synthesize(pipelineStack);
     const buildSpec = JSON.parse(fs.readFileSync(path.join(assembly.directory, buildSpecName.asString())).toString());
-    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region"`);
-    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH2}:current_account-current_region"`);
+    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region-3d50c90e"`);
+    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH2}:current_account-current_region-8b0ef02d"`);
     expect(buildSpec.phases.pre_install.commands).toContain('preinstall');
     expect(buildSpec.cache.paths).toContain('node_modules');
   });

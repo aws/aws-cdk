@@ -5,7 +5,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
@@ -62,7 +62,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const testCase = new TestStack(app, 'aws-cdk-apigw-alias-integ');
 new IntegTest(app, 'apigateway-domain-name', {
   testCases: [testCase],

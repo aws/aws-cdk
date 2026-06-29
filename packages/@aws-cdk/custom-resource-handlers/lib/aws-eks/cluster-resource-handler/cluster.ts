@@ -1,9 +1,9 @@
-/* eslint-disable no-console */
-// eslint-disable-next-line import/no-extraneous-dependencies
-import * as EKS from '@aws-sdk/client-eks';
-import { EksClient, ResourceEvent, ResourceHandler } from './common';
+
+import type * as EKS from '@aws-sdk/client-eks';
+import type { EksClient, ResourceEvent } from './common';
+import { ResourceHandler } from './common';
 import { compareLoggingProps } from './compareLogging';
-import { IsCompleteResponse, OnEventResponse } from '../../copied-from-aws-cdk-lib/provider-framework-types';
+import type { IsCompleteResponse, OnEventResponse } from '../../copied-from-aws-cdk-lib/provider-framework-types';
 
 const MAX_CLUSTER_NAME_LEN = 100;
 
@@ -44,7 +44,10 @@ export class ClusterResourceHandler extends ResourceHandler {
     const resp = await this.eks.createCluster({
       ...this.newProps,
       name: clusterName,
-    });
+      // deletionProtection is not yet in the SDK types, so we need to explicitly
+      // pass it to prevent SDK v3 from stripping the unknown property during serialization.
+      deletionProtection: (this.newProps as any).deletionProtection,
+    } as any);
 
     if (!resp.cluster) {
       throw new Error(`Error when trying to create cluster ${clusterName}: CreateCluster returned without cluster information`);
@@ -116,7 +119,8 @@ export class ClusterResourceHandler extends ResourceHandler {
     // if there is an update that requires replacement, go ahead and just create
     // a new cluster with the new config. The old cluster will automatically be
     // deleted by cloudformation upon success.
-    if (updates.replaceName || updates.replaceRole || updates.updateBootstrapClusterCreatorAdminPermissions ) {
+    if (updates.replaceName || updates.replaceRole ||
+          updates.updateBootstrapClusterCreatorAdminPermissions || updates.updateBootstrapSelfManagedAddons) {
       // if we are replacing this cluster and the cluster has an explicit
       // physical name, the creation of the new cluster will fail with "there is
       // already a cluster with that name". this is a common behavior for
@@ -195,7 +199,7 @@ export class ClusterResourceHandler extends ResourceHandler {
       return this.updateClusterVersion(this.newProps.version);
     }
 
-    if (updates.updateLogging || updates.updateAccess || updates.updateVpc || updates.updateAuthMode) {
+    if (updates.updateLogging || updates.updateAccess || updates.updateVpc || updates.updateAuthMode || updates.updateDeletionProtection) {
       const config: EKS.UpdateClusterConfigCommandInput = {
         name: this.clusterName,
       };
@@ -260,6 +264,10 @@ export class ClusterResourceHandler extends ResourceHandler {
           subnetIds: this.newProps.resourcesVpcConfig?.subnetIds,
           securityGroupIds: this.newProps.resourcesVpcConfig?.securityGroupIds,
         };
+      }
+
+      if (updates.updateDeletionProtection) {
+        (config as any).deletionProtection = (this.newProps as any).deletionProtection;
       }
 
       const updateResponse = await this.eks.updateClusterConfig(config);
@@ -400,6 +408,22 @@ function parseProps(props: any): EKS.CreateClusterCommandInput {
     parsed.logging.clusterLogging[0].enabled = parsed.logging.clusterLogging[0].enabled === 'true';
   }
 
+  if (parsed.bootstrapSelfManagedAddons) {
+    if (typeof (parsed.bootstrapSelfManagedAddons) === 'string') {
+      parsed.bootstrapSelfManagedAddons = parsed.bootstrapSelfManagedAddons === 'true';
+    }
+  }
+
+  if (parsed.accessConfig?.bootstrapClusterCreatorAdminPermissions) {
+    if (typeof (parsed.accessConfig.bootstrapClusterCreatorAdminPermissions) === 'string') {
+      parsed.accessConfig.bootstrapClusterCreatorAdminPermissions = parsed.accessConfig.bootstrapClusterCreatorAdminPermissions === 'true';
+    }
+  }
+
+  if (typeof (parsed.deletionProtection) === 'string') {
+    parsed.deletionProtection = parsed.deletionProtection === 'true';
+  }
+
   return parsed;
 }
 
@@ -415,6 +439,8 @@ interface UpdateMap {
   updateBootstrapClusterCreatorAdminPermissions: boolean; // accessConfig.bootstrapClusterCreatorAdminPermissions
   updateVpc: boolean; // resourcesVpcConfig.subnetIds and securityGroupIds
   updateTags: boolean; // tags
+  updateBootstrapSelfManagedAddons: boolean; // cluster with default networking add-ons
+  updateDeletionProtection: boolean; // deletionProtection
 }
 
 function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProps: EKS.CreateClusterCommandInput): UpdateMap {
@@ -431,6 +457,11 @@ function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProp
   const newAccessConfig = newProps.accessConfig || {};
   const oldAccessConfig = oldProps.accessConfig || {};
 
+  // Helper function to compare values where undefined and true are considered equal
+  const compareUndefinedOrTrue = (val1: boolean | undefined, val2: boolean | undefined): boolean => {
+    return (val1 ?? true) === (val2 ?? true);
+  };
+
   return {
     replaceName: newProps.name !== oldProps.name,
     updateVpc:
@@ -445,9 +476,16 @@ function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProp
     updateEncryption: JSON.stringify(newEnc) !== JSON.stringify(oldEnc),
     updateLogging: JSON.stringify(newProps.logging) !== JSON.stringify(oldProps.logging),
     updateAuthMode: JSON.stringify(newAccessConfig.authenticationMode) !== JSON.stringify(oldAccessConfig.authenticationMode),
-    updateBootstrapClusterCreatorAdminPermissions: JSON.stringify(newAccessConfig.bootstrapClusterCreatorAdminPermissions) !==
-      JSON.stringify(oldAccessConfig.bootstrapClusterCreatorAdminPermissions),
+    updateBootstrapClusterCreatorAdminPermissions: !compareUndefinedOrTrue(
+      newAccessConfig.bootstrapClusterCreatorAdminPermissions,
+      oldAccessConfig.bootstrapClusterCreatorAdminPermissions,
+    ),
     updateTags: JSON.stringify(newProps.tags) !== JSON.stringify(oldProps.tags),
+    updateBootstrapSelfManagedAddons: !compareUndefinedOrTrue(
+      newProps.bootstrapSelfManagedAddons,
+      oldProps.bootstrapSelfManagedAddons,
+    ),
+    updateDeletionProtection: (newProps as any).deletionProtection !== (oldProps as any).deletionProtection,
   };
 }
 

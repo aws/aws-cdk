@@ -135,7 +135,7 @@ export class CfnReference extends Reference {
     const token = this.replacementTokens.get(consumingStack);
 
     // if (!token && this.isCrossStackReference(consumingStack) && !context.preparing) {
-    // eslint-disable-next-line max-len
+
     //   throw new Error(`Cross-stack reference (${context.scope.node.path} -> ${this.target.node.path}) has not been assigned a value--call prepare() first`);
     // }
 
@@ -156,11 +156,11 @@ export class CfnReference extends Reference {
 
   public assignValueForStack(stack: Stack, value: IResolvable) {
     if (stack === this.targetStack) {
-      throw new Error('cannot assign a value for the same stack');
+      throw new UnscopedValidationError(lit`CannotAssignValueStack`, 'cannot assign a value for the same stack');
     }
 
     if (this.hasValueForStack(stack)) {
-      throw new Error('Cannot assign a reference value twice to the same stack. Use hasValueForStack to check first');
+      throw new UnscopedValidationError(lit`CannotAssignReferenceValueTwice`, 'Cannot assign a reference value twice to the same stack. Use hasValueForStack to check first');
     }
 
     this.replacementTokens.set(stack, value);
@@ -175,9 +175,11 @@ export class CfnReference extends Reference {
   }
 }
 
-import { Construct, IConstruct } from 'constructs';
-import { CfnElement } from '../cfn-element';
-import { IResolvable, IResolveContext } from '../resolvable';
+import type { Construct, IConstruct } from 'constructs';
+import type { CfnElement } from '../cfn-element';
+import type { IResolvable, IResolveContext } from '../resolvable';
 import { Stack } from '../stack';
 import { Token } from '../token';
-import { ResolutionTypeHint } from '../type-hints';
+import type { ResolutionTypeHint } from '../type-hints';import { UnscopedValidationError } from '../errors';
+import { lit } from './literal-string';
+

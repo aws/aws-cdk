@@ -1,9 +1,11 @@
-import { IVpc } from 'aws-cdk-lib/aws-ec2';
-import { Resource, Token } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import { IFirewallRuleGroup } from './firewall-rule-group';
+import type { IVpc } from 'aws-cdk-lib/aws-ec2';
 import { CfnFirewallRuleGroupAssociation } from 'aws-cdk-lib/aws-route53resolver';
+import { Resource, Token, ValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import type { IFirewallRuleGroup } from './firewall-rule-group';
 
 /**
  * Options for a Firewall Rule Group Association
@@ -53,7 +55,10 @@ export interface FirewallRuleGroupAssociationProps extends FirewallRuleGroupAsso
 /**
  * A Firewall Rule Group Association
  */
+@propertyInjectable
 export class FirewallRuleGroupAssociation extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-route53resolver-alpha.FirewallRuleGroupAssociation';
   /**
    * The ARN (Amazon Resource Name) of the association
    * @attribute
@@ -111,7 +116,7 @@ export class FirewallRuleGroupAssociation extends Resource {
     addConstructMetadata(this, props);
 
     if (!Token.isUnresolved(props.priority) && (props.priority <= 100 || props.priority >= 9000)) {
-      throw new Error(`Priority must be greater than 100 and less than 9000, got ${props.priority}`);
+      throw new ValidationError(lit`InvalidPriority`, `Priority must be greater than 100 and less than 9000, got ${props.priority}`, this);
     }
 
     const association = new CfnFirewallRuleGroupAssociation(this, 'Resource', {

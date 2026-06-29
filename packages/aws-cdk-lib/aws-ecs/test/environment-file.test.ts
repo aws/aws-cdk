@@ -3,8 +3,6 @@ import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as ecs from '../lib';
 
-/* eslint-disable dot-notation */
-
 describe('environment file', () => {
   describe('ecs.EnvironmentFile.fromAsset', () => {
     test('fails if asset is not a single file', () => {

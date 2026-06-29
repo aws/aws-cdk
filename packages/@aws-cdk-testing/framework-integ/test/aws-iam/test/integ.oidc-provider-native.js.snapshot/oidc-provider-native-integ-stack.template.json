@@ -1,0 +1,119 @@
+{
+ "Resources": {
+  "Provider2281708E": {
+   "Type": "AWS::IAM::OIDCProvider",
+   "Properties": {
+    "ClientIdList": [
+     "foo",
+     "bar"
+    ],
+    "ThumbprintList": [
+     "aa00aa1122aa00aa1122aa00aa1122aa00aa1122",
+     "aa00aa1122aa00aa1122aa00aa1122aa00aa1111"
+    ],
+    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test1"
+   }
+  },
+  "Minimal107EFE55": {
+   "Type": "AWS::IAM::OIDCProvider",
+   "Properties": {
+    "ThumbprintList": [
+     "aa00aa1122aa00aa1122aa00aa1122aa00aa1122"
+    ],
+    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test2"
+   }
+  }
+ },
+ "Outputs": {
+  "Arn": {
+   "Value": {
+    "Ref": "Provider2281708E"
+   }
+  },
+  "Issuer": {
+   "Value": {
+    "Fn::Select": [
+     1,
+     {
+      "Fn::Split": [
+       ":oidc-provider/",
+       {
+        "Ref": "Provider2281708E"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "MinimalArn": {
+   "Value": {
+    "Ref": "Minimal107EFE55"
+   }
+  },
+  "MinimalIssuer": {
+   "Value": {
+    "Fn::Select": [
+     1,
+     {
+      "Fn::Split": [
+       ":oidc-provider/",
+       {
+        "Ref": "Minimal107EFE55"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "ExportsOutputRefProvider2281708E9B27F851": {
+   "Value": {
+    "Ref": "Provider2281708E"
+   },
+   "Export": {
+    "Name": "oidc-provider-native-integ-stack:ExportsOutputRefProvider2281708E9B27F851"
+   }
+  },
+  "ExportsOutputRefMinimal107EFE55C8EECFEF": {
+   "Value": {
+    "Ref": "Minimal107EFE55"
+   },
+   "Export": {
+    "Name": "oidc-provider-native-integ-stack:ExportsOutputRefMinimal107EFE55C8EECFEF"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

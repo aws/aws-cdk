@@ -1,9 +1,14 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
+import type { IKeyPairRef, KeyPairReference } from './ec2.generated';
 import { CfnKeyPair } from './ec2.generated';
 import { OperatingSystemType } from './machine-image';
-import { StringParameter, IStringParameter } from '../../aws-ssm';
-import { Resource, ResourceProps, Names, Lazy, IResource, ValidationError } from '../../core';
+import type { IStringParameter } from '../../aws-ssm';
+import { StringParameter } from '../../aws-ssm';
+import type { IResource, ResourceProps } from '../../core';
+import { Lazy, Names, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * The format of the Key Pair
@@ -95,7 +100,7 @@ export interface KeyPairAttributes {
 /**
  * An EC2 Key Pair.
  */
-export interface IKeyPair extends IResource {
+export interface IKeyPair extends IResource, IKeyPairRef {
   /**
    * The name of the key pair.
    *
@@ -121,7 +126,11 @@ export interface IKeyPair extends IResource {
  *
  * @resource AWS::EC2::KeyPair
  */
+@propertyInjectable
 export class KeyPair extends Resource implements IKeyPair {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.KeyPair';
+
   /**
    * Imports a key pair based on the name.
    */
@@ -141,6 +150,12 @@ export class KeyPair extends Resource implements IKeyPair {
         super(scope, id);
         this.keyPairName = attrs.keyPairName;
         this.type = attrs.type;
+      }
+
+      public get keyPairRef(): KeyPairReference {
+        return {
+          keyName: this.keyPairName,
+        };
       }
 
       /**
@@ -207,7 +222,7 @@ export class KeyPair extends Resource implements IKeyPair {
     addConstructMetadata(this, props);
 
     if (props?.publicKeyMaterial && props?.type) {
-      throw new ValidationError('Cannot specify \'type\' for keys with imported material', this);
+      throw new ValidationError(lit`CannotSpecifyTypeKeysImported`, 'Cannot specify \'type\' for keys with imported material', this);
     }
 
     this._isImport = !!props?.publicKeyMaterial;
@@ -229,6 +244,12 @@ export class KeyPair extends Resource implements IKeyPair {
     this.format = keyFormat;
   }
 
+  public get keyPairRef(): KeyPairReference {
+    return {
+      keyName: this.keyPairName,
+    };
+  }
+
   /**
    * Whether the key material was imported.
    *
@@ -244,7 +265,7 @@ export class KeyPair extends Resource implements IKeyPair {
    */
   public get privateKey(): IStringParameter {
     if (this._isImport) {
-      throw new ValidationError('An SSM parameter with private key material is not created for imported keys', this);
+      throw new ValidationError(lit`ParameterPrivateKeyMaterialCreated`, 'An SSM parameter with private key material is not created for imported keys', this);
     }
     if (!this._privateKeySsm) {
       // This parameter is created by the underlying CloudFormation resource with a defined

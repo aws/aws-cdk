@@ -34,12 +34,8 @@
   "myauthorizer23CB99DD": {
    "Type": "AWS::ApiGateway::Authorizer",
    "Properties": {
-    "Name": "CognitoUserPoolsAuthorizerIntegmyauthorizer10C804C1",
-    "RestApiId": {
-     "Ref": "myrestapi551C8392"
-    },
-    "Type": "COGNITO_USER_POOLS",
     "IdentitySource": "method.request.header.Authorization",
+    "Name": "CognitoUserPoolsAuthorizerIntegmyauthorizer10C804C1",
     "ProviderARNs": [
      {
       "Fn::GetAtt": [
@@ -47,7 +43,11 @@
        "Arn"
       ]
      }
-    ]
+    ],
+    "RestApiId": {
+     "Ref": "myrestapi551C8392"
+    },
+    "Type": "COGNITO_USER_POOLS"
    }
   },
   "myrestapi551C8392": {
@@ -108,24 +108,27 @@
   "myrestapiDeployment419B1464d5146a3a0aa3a9f79024a52930571dc6": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
+    "Description": "Automatically created by the RestApi construct",
     "RestApiId": {
      "Ref": "myrestapi551C8392"
-    },
-    "Description": "Automatically created by the RestApi construct"
+    }
    },
    "DependsOn": [
     "myauthorizer23CB99DD",
     "myrestapiANY94B0497F"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "myrestapiDeploymentStageprodA9250EA4": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
-    "RestApiId": {
-     "Ref": "myrestapi551C8392"
-    },
     "DeploymentId": {
      "Ref": "myrestapiDeployment419B1464d5146a3a0aa3a9f79024a52930571dc6"
+    },
+    "RestApiId": {
+     "Ref": "myrestapi551C8392"
     },
     "StageName": "prod"
    },
@@ -136,20 +139,11 @@
   "myrestapiANY94B0497F": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "ANY",
-    "ResourceId": {
-     "Fn::GetAtt": [
-      "myrestapi551C8392",
-      "RootResourceId"
-     ]
-    },
-    "RestApiId": {
-     "Ref": "myrestapi551C8392"
-    },
     "AuthorizationType": "COGNITO_USER_POOLS",
     "AuthorizerId": {
      "Ref": "myauthorizer23CB99DD"
     },
+    "HttpMethod": "ANY",
     "Integration": {
      "IntegrationResponses": [
       {
@@ -166,7 +160,16 @@
      {
       "StatusCode": "200"
      }
-    ]
+    ],
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "myrestapi551C8392",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "myrestapi551C8392"
+    }
    }
   }
  },

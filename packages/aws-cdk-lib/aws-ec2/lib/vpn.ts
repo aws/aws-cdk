@@ -1,17 +1,24 @@
 import * as net from 'net';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
+import type {
+  IVPNConnectionRef,
+  IVPNGatewayRef, VPNConnectionReference, VPNGatewayReference,
+} from './ec2.generated';
 import {
   CfnCustomerGateway,
   CfnVPNConnection,
   CfnVPNConnectionRoute,
   CfnVPNGateway,
 } from './ec2.generated';
-import { IVpc, SubnetSelection } from './vpc';
+import type { IVpc, SubnetSelection } from './vpc';
 import * as cloudwatch from '../../aws-cloudwatch';
-import { IResource, Resource, SecretValue, Token, ValidationError } from '../../core';
+import type { IResource, SecretValue } from '../../core';
+import { Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
-export interface IVpnConnection extends IResource {
+export interface IVpnConnection extends IResource, IVPNConnectionRef {
   /**
    * The id of the VPN connection.
    * @attribute VpnConnectionId
@@ -37,7 +44,7 @@ export interface IVpnConnection extends IResource {
 /**
  * The virtual private gateway interface
  */
-export interface IVpnGateway extends IResource {
+export interface IVpnGateway extends IResource, IVPNGatewayRef {
 
   /**
    * The virtual private gateway Id
@@ -162,11 +169,16 @@ export enum VpnConnectionType {
  *
  * @resource AWS::EC2::VPNGateway
  */
+@propertyInjectable
 export class VpnGateway extends Resource implements IVpnGateway {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.VpnGateway';
   /**
    * The virtual private gateway Id
    */
   public readonly gatewayId: string;
+
+  public readonly vpnGatewayRef: VPNGatewayReference;
 
   constructor(scope: Construct, id: string, props: VpnGatewayProps) {
     super(scope, id);
@@ -178,6 +190,7 @@ export class VpnGateway extends Resource implements IVpnGateway {
     // to be created for the CfnVPNGateway (and 'Resource' would not do that).
     const vpnGW = new CfnVPNGateway(this, 'Default', props);
     this.gatewayId = vpnGW.ref;
+    this.vpnGatewayRef = vpnGW.vpnGatewayRef;
   }
 }
 
@@ -216,6 +229,12 @@ export abstract class VpnConnectionBase extends Resource implements IVpnConnecti
   public abstract readonly customerGatewayId: string;
   public abstract readonly customerGatewayIp: string;
   public abstract readonly customerGatewayAsn: number;
+
+  public get vpnConnectionRef(): VPNConnectionReference {
+    return {
+      vpnConnectionId: this.customerGatewayId,
+    };
+  }
 }
 
 /**
@@ -223,7 +242,11 @@ export abstract class VpnConnectionBase extends Resource implements IVpnConnecti
  *
  * @resource AWS::EC2::VPNConnection
  */
+@propertyInjectable
 export class VpnConnection extends VpnConnectionBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.VpnConnection';
+
   /**
    * Import a VPN connection by supplying all attributes directly
    */
@@ -294,7 +317,7 @@ export class VpnConnection extends VpnConnectionBase {
     }
 
     if (!Token.isUnresolved(props.ip) && !net.isIPv4(props.ip)) {
-      throw new ValidationError(`The \`ip\` ${props.ip} is not a valid IPv4 address.`, this);
+      throw new ValidationError(lit`InvalidIpv4Address`, `The \`ip\` ${props.ip} is not a valid IPv4 address.`, this);
     }
 
     const type = VpnConnectionType.IPSEC_1;
@@ -313,34 +336,31 @@ export class VpnConnection extends VpnConnectionBase {
     // Validate tunnel options
     if (props.tunnelOptions) {
       if (props.tunnelOptions.length > 2) {
-        throw new ValidationError('Cannot specify more than two `tunnelOptions`', this);
+        throw new ValidationError(lit`TooManyTunnelOptions`, 'Cannot specify more than two `tunnelOptions`', this);
       }
 
       if (props.tunnelOptions.length === 2 &&
         props.tunnelOptions[0].tunnelInsideCidr === props.tunnelOptions[1].tunnelInsideCidr &&
         props.tunnelOptions[0].tunnelInsideCidr !== undefined) {
-        throw new ValidationError(`Same ${props.tunnelOptions[0].tunnelInsideCidr} \`tunnelInsideCidr\` cannot be used for both tunnels.`, this);
+        throw new ValidationError(lit`DuplicateTunnelInsideCidr`, `Same ${props.tunnelOptions[0].tunnelInsideCidr} \`tunnelInsideCidr\` cannot be used for both tunnels.`, this);
       }
 
       props.tunnelOptions.forEach((options, index) => {
         if (options.preSharedKey && options.preSharedKeySecret) {
-          throw new ValidationError("Specify at most one of 'preSharedKey' and 'preSharedKeySecret'.", this);
+          throw new ValidationError(lit`ConflictingPreSharedKeyOptions`, "Specify at most one of 'preSharedKey' and 'preSharedKeySecret'.", this);
         }
 
         if (options.preSharedKey && !Token.isUnresolved(options.preSharedKey) && !/^[a-zA-Z1-9._][a-zA-Z\d._]{7,63}$/.test(options.preSharedKey)) {
-          /* eslint-disable max-len */
-          throw new ValidationError(`The \`preSharedKey\` ${options.preSharedKey} for tunnel ${index + 1} is invalid. Allowed characters are alphanumeric characters and ._. Must be between 8 and 64 characters in length and cannot start with zero (0).`, this);
-          /* eslint-enable max-len */
+          throw new ValidationError(lit`InvalidPreSharedKeyFormat`, `The \`preSharedKey\` ${options.preSharedKey} for tunnel ${index + 1} is invalid. Allowed characters are alphanumeric characters and ._. Must be between 8 and 64 characters in length and cannot start with zero (0).`, this);
         }
 
         if (options.tunnelInsideCidr) {
           if (RESERVED_TUNNEL_INSIDE_CIDR.includes(options.tunnelInsideCidr)) {
-            throw new ValidationError(`The \`tunnelInsideCidr\` ${options.tunnelInsideCidr} for tunnel ${index + 1} is a reserved inside CIDR.`, this);
+            throw new ValidationError(lit`ReservedTunnelInsideCidr`, `The \`tunnelInsideCidr\` ${options.tunnelInsideCidr} for tunnel ${index + 1} is a reserved inside CIDR.`, this);
           }
 
           if (!/^169\.254\.\d{1,3}\.\d{1,3}\/30$/.test(options.tunnelInsideCidr)) {
-            /* eslint-disable-next-line max-len */
-            throw new ValidationError(`The \`tunnelInsideCidr\` ${options.tunnelInsideCidr} for tunnel ${index + 1} is not a size /30 CIDR block from the 169.254.0.0/16 range.`, this);
+            throw new ValidationError(lit`InvalidTunnelInsideCidrFormat`, `The \`tunnelInsideCidr\` ${options.tunnelInsideCidr} for tunnel ${index + 1} is not a size /30 CIDR block from the 169.254.0.0/16 range.`, this);
           }
         }
       });

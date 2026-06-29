@@ -1,8 +1,9 @@
-import * as core from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import { IChannel } from './channel';
 import { CfnStreamKey } from 'aws-cdk-lib/aws-ivs';
+import * as core from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import type { IChannel } from './channel';
 
 /**
  * Represents an IVS Stream Key
@@ -29,7 +30,10 @@ export interface StreamKeyProps {
 /**
  * A new IVS Stream Key
  */
+@propertyInjectable
 export class StreamKey extends core.Resource implements IStreamKey {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ivs-alpha.StreamKey';
   public readonly streamKeyArn: string;
 
   /**

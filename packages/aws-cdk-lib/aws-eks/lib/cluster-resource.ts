@@ -1,12 +1,14 @@
 import { Construct } from 'constructs';
 import { CLUSTER_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
-import { CfnCluster } from './eks.generated';
-import * as ec2 from '../../aws-ec2';
+import type { CfnCluster } from './eks.generated';
+import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import * as lambda from '../../aws-lambda';
-import { ArnComponents, CustomResource, Token, Stack, Lazy } from '../../core';
+import type * as kms from '../../aws-kms';
+import type * as lambda from '../../aws-lambda';
+import type { ArnComponents } from '../../core';
+import { CustomResource, Token, Stack, Lazy, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 export interface ClusterResourceProps {
   readonly resourcesVpcConfig: CfnCluster.ResourcesVpcConfigProperty;
@@ -21,13 +23,15 @@ export interface ClusterResourceProps {
   readonly vpc: ec2.IVpc;
   readonly environment?: { [key: string]: string };
   readonly subnets?: ec2.ISubnet[];
-  readonly secretsEncryptionKey?: kms.IKey;
+  readonly secretsEncryptionKey?: kms.IKeyRef;
   readonly onEventLayer?: lambda.ILayerVersion;
   readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
   readonly tags?: { [key: string]: string };
   readonly logging?: { [key: string]: [ { [key: string]: any } ] };
   readonly accessconfig?: CfnCluster.AccessConfigProperty;
   readonly remoteNetworkConfig?: CfnCluster.RemoteNetworkConfigProperty;
+  readonly bootstrapSelfManagedAddons?: boolean;
+  readonly deletionProtection?: boolean;
 }
 
 /**
@@ -41,22 +45,17 @@ export interface ClusterResourceProps {
  * manifest and IAM role/user RBAC mapping.
  */
 export class ClusterResource extends Construct {
-  public readonly attrEndpoint: string;
-  public readonly attrArn: string;
-  public readonly attrCertificateAuthorityData: string;
-  public readonly attrClusterSecurityGroupId: string;
-  public readonly attrEncryptionConfigKeyArn: string;
-  public readonly attrOpenIdConnectIssuerUrl: string;
-  public readonly attrOpenIdConnectIssuer: string;
   public readonly ref: string;
 
   public readonly adminRole: iam.Role;
+
+  private readonly resource: CustomResource;
 
   constructor(scope: Construct, id: string, props: ClusterResourceProps) {
     super(scope, id);
 
     if (!props.roleArn) {
-      throw new Error('"roleArn" is required');
+      throw new ValidationError(lit`IsRequiredRolearnRequired`, '"roleArn" is required', this);
     }
 
     const provider = ClusterResourceProvider.getOrCreate(this, {
@@ -69,7 +68,7 @@ export class ClusterResource extends Construct {
 
     this.adminRole = this.createAdminRole(provider, props);
 
-    const resource = new CustomResource(this, 'Resource', {
+    this.resource = new CustomResource(this, 'Resource', {
       resourceType: CLUSTER_RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
       properties: {
@@ -92,6 +91,8 @@ export class ClusterResource extends Construct {
           logging: props.logging,
           accessConfig: props.accessconfig,
           remoteNetworkConfig: props.remoteNetworkConfig,
+          bootstrapSelfManagedAddons: props.bootstrapSelfManagedAddons,
+          deletionProtection: props.deletionProtection,
         },
         AssumeRoleArn: this.adminRole.roleArn,
 
@@ -100,20 +101,41 @@ export class ClusterResource extends Construct {
         // doesn't contain XXX key in object" (see #8276) by incrementing this
         // number, you will effectively cause a "no-op update" to the cluster
         // which will return the new set of attribute.
-        AttributesRevision: 4,
+        AttributesRevision: 5,
       },
     });
 
-    resource.node.addDependency(this.adminRole);
+    this.resource.node.addDependency(this.adminRole);
 
-    this.ref = resource.ref;
-    this.attrEndpoint = Token.asString(resource.getAtt('Endpoint'));
-    this.attrArn = Token.asString(resource.getAtt('Arn'));
-    this.attrCertificateAuthorityData = Token.asString(resource.getAtt('CertificateAuthorityData'));
-    this.attrClusterSecurityGroupId = Token.asString(resource.getAtt('ClusterSecurityGroupId'));
-    this.attrEncryptionConfigKeyArn = Token.asString(resource.getAtt('EncryptionConfigKeyArn'));
-    this.attrOpenIdConnectIssuerUrl = Token.asString(resource.getAtt('OpenIdConnectIssuerUrl'));
-    this.attrOpenIdConnectIssuer = Token.asString(resource.getAtt('OpenIdConnectIssuer'));
+    this.ref = this.resource.ref;
+  }
+
+  public get attrEndpoint(): string {
+    return Token.asString(this.resource.getAtt('Endpoint'));
+  }
+
+  public get attrArn(): string {
+    return Token.asString(this.resource.getAtt('Arn'));
+  }
+
+  public get attrCertificateAuthorityData(): string {
+    return Token.asString(this.resource.getAtt('CertificateAuthorityData'));
+  }
+
+  public get attrClusterSecurityGroupId(): string {
+    return Token.asString(this.resource.getAtt('ClusterSecurityGroupId'));
+  }
+
+  public get attrEncryptionConfigKeyArn(): string {
+    return Token.asString(this.resource.getAtt('EncryptionConfigKeyArn'));
+  }
+
+  public get attrOpenIdConnectIssuerUrl(): string {
+    return Token.asString(this.resource.getAtt('OpenIdConnectIssuerUrl'));
+  }
+
+  public get attrOpenIdConnectIssuer(): string {
+    return Token.asString(this.resource.getAtt('OpenIdConnectIssuer'));
   }
 
   private createAdminRole(provider: ClusterResourceProvider, props: ClusterResourceProps) {
@@ -210,7 +232,7 @@ export class ClusterResource extends Construct {
           'kms:DescribeKey',
           'kms:CreateGrant',
         ],
-        resources: [props.secretsEncryptionKey.keyArn],
+        resources: [props.secretsEncryptionKey.keyRef.keyArn],
       }));
     }
 

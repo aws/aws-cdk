@@ -1,5 +1,6 @@
 /// !cdk-integ pragma:disable-update-workflow
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import * as eks from 'aws-cdk-lib/aws-eks';
@@ -17,7 +18,7 @@ class EksFargateClusterStack extends Stack {
     this.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
     this.vpc = props?.vpc ?? this.createDummyVpc();
     new eks.FargateCluster(this, 'FargateCluster', {
-      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_30),
+      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_35),
       prune: false,
       authenticationMode: props?.authMode,
       vpc: this.vpc,
@@ -30,6 +31,7 @@ class EksFargateClusterStack extends Stack {
 
 const app = new App({
   postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
@@ -49,5 +51,3 @@ new integ.IntegTest(app, 'aws-cdk-eks-fargate-cluster', {
   // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
   diffAssets: false,
 });
-
-app.synth();

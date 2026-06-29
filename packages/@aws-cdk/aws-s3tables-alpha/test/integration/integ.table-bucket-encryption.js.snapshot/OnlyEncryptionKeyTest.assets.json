@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "7fcc56d2d76068041a26a7eb195a7123a2080f59e47e3064be079312f36be91d": {
+      "displayName": "OnlyEncryptionKeyTest Template",
+      "source": {
+        "path": "OnlyEncryptionKeyTest.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7fcc56d2d76068041a26a7eb195a7123a2080f59e47e3064be079312f36be91d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

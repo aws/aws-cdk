@@ -63,14 +63,17 @@ class SnsToLambda extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 new SnsToLambda(app, 'aws-cdk-sns-lambda');
 
 app.synth();
 
 function handler(event: any, _context: any, callback: any) {
-  /* eslint-disable no-console */
   console.log('====================================================');
   console.log(JSON.stringify(event, undefined, 2));
   console.log('====================================================');

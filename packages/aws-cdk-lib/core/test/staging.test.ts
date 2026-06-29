@@ -1,12 +1,14 @@
-import { execSync } from 'child_process';
+
+import { spawnSync, execSync } from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import * as fs from 'fs-extra';
-import * as sinon from 'sinon';
+import fs from 'fs-extra';
+import sinon from 'sinon';
 import { FileAssetPackaging } from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
-import { App, AssetHashType, AssetStaging, DockerImage, BundlingOptions, BundlingOutput, FileSystem, Stack, Stage, BundlingFileAccess } from '../lib';
+import type { BundlingOptions } from '../lib';
+import { App, AssetHashType, AssetStaging, DockerImage, BundlingOutput, FileSystem, Stack, NestedStack, Stage, BundlingFileAccess } from '../lib';
 
 const STUB_INPUT_FILE = '/tmp/docker-stub.input';
 const STUB_INPUT_CONCAT_FILE = '/tmp/docker-stub.input.concat';
@@ -33,6 +35,7 @@ const ARCHIVE_TARBALL_TEST_HASH = '3e948ff54a277d6001e2452fdbc4a9ef61f916ff662ba
 
 const userInfo = os.userInfo();
 const USER_ARG = `-u ${userInfo.uid}:${userInfo.gid}`;
+const delegated = isSeLinux() ? 'z,delegated' : 'delegated';
 
 describe('staging', () => {
   beforeAll(() => {
@@ -228,6 +231,7 @@ describe('staging', () => {
       'asset.af10ac04b3b607b0f8659c8f0cee8c343025ee75baf0b146f10f0e5311d2c46b.tar.gz',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -311,12 +315,13 @@ describe('staging', () => {
     const assembly = app.synth();
     expect(
       readDockerStubInput()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      `run --rm ${USER_ARG} -v /input:/asset-input:${delegated} -v /output:/asset-output:${delegated} -w /asset-input alpine DOCKER_STUB_SUCCESS`,
     );
     expect(fs.readdirSync(assembly.directory)).toEqual([
       'asset.b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -348,6 +353,7 @@ describe('staging', () => {
       'asset.b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -390,13 +396,14 @@ describe('staging', () => {
     // We're testing that docker was run exactly once even though there are two bundling assets.
     expect(
       readDockerStubInputConcat()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      `run --rm ${USER_ARG} -v /input:/asset-input:${delegated} -v /output:/asset-output:${delegated} -w /asset-input alpine DOCKER_STUB_SUCCESS`,
     );
 
     expect(fs.readdirSync(assembly.directory)).toEqual([
       'asset.b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -435,13 +442,14 @@ describe('staging', () => {
     // and that the hash is based on the output
     expect(
       readDockerStubInputConcat()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      `run --rm ${USER_ARG} -v /input:/asset-input:${delegated} -v /output:/asset-output:${delegated} -w /asset-input alpine DOCKER_STUB_SUCCESS`,
     );
 
     expect(fs.readdirSync(assembly.directory)).toEqual([
       'asset.33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -483,8 +491,8 @@ describe('staging', () => {
     // operating on the same source asset.
     expect(
       readDockerStubInputConcat()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS\n` +
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated --env UNIQUE_ENV_VAR=SOMEVALUE -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      `run --rm ${USER_ARG} -v /input:/asset-input:${delegated} -v /output:/asset-output:${delegated} -w /asset-input alpine DOCKER_STUB_SUCCESS\n` +
+      `run --rm ${USER_ARG} -v /input:/asset-input:${delegated} -v /output:/asset-output:${delegated} --env UNIQUE_ENV_VAR=SOMEVALUE -w /asset-input alpine DOCKER_STUB_SUCCESS`,
     );
 
     expect(fs.readdirSync(assembly.directory)).toEqual([
@@ -492,6 +500,7 @@ describe('staging', () => {
       'asset.e80bb8f931b87e84975de193f5a7ecddd7558d3caf3d35d3a536d9ae6539234f', // 'AssetWithDifferentBundlingOptions'
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -532,13 +541,14 @@ describe('staging', () => {
     // We're testing that docker was run once, only for the first Asset, since the only difference is the token.
     expect(
       readDockerStubInputConcat()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated --env PIP_INDEX_URL=https://aws:MY_SECRET_TOKEN@your-code-repo.d.codeartifact.us-west-2.amazonaws.com/pypi/python/simple/ -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      `run --rm ${USER_ARG} -v /input:/asset-input:${delegated} -v /output:/asset-output:${delegated} --env PIP_INDEX_URL=https://aws:MY_SECRET_TOKEN@your-code-repo.d.codeartifact.us-west-2.amazonaws.com/pypi/python/simple/ -w /asset-input alpine DOCKER_STUB_SUCCESS`,
     );
 
     expect(fs.readdirSync(assembly.directory)).toEqual([
       'asset.2de2347dd01e3f43a463652635acaae09539cdf32769d9a60ac0ad4622b1e943', // 'Asset'
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -593,6 +603,7 @@ describe('staging', () => {
       'asset.33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f', // 'Asset'
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -663,7 +674,7 @@ describe('staging', () => {
 
     expect(
       readDockerStubInputConcat()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      `run --rm ${USER_ARG} -v /input:/asset-input:${delegated} -v /output:/asset-output:${delegated} -w /asset-input alpine DOCKER_STUB_SUCCESS`,
     );
 
     expect(appAssembly.directory).toEqual(app2Assembly.directory);
@@ -671,6 +682,7 @@ describe('staging', () => {
       'asset.b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -692,7 +704,7 @@ describe('staging', () => {
         },
       });
       throw new Error('We expected the above command to fail');
-    } catch (e) {
+    } catch (e: any) {
       // We expect the command to be terminated with a signal, which sometimes shows
       // as 'signal' is set to SIGTERM, and on some Linuxes as exitCode = 128 + 15 = 143
       if (e.signal === 'SIGTERM' || e.status === 143) {
@@ -763,7 +775,7 @@ describe('staging', () => {
 
     expect(
       readDockerStubInputConcat()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated --env PIP_EXTRA_INDEX_URL=https://aws:MY_SECRET_TOKEN@your-code-repo.d.codeartifact.us-west-2.amazonaws.com/pypi/python/simple/ -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      `run --rm ${USER_ARG} -v /input:/asset-input:${delegated} -v /output:/asset-output:${delegated} --env PIP_EXTRA_INDEX_URL=https://aws:MY_SECRET_TOKEN@your-code-repo.d.codeartifact.us-west-2.amazonaws.com/pypi/python/simple/ -w /asset-input alpine DOCKER_STUB_SUCCESS`,
     );
 
     expect(appAssembly.directory).toEqual(app2Assembly.directory);
@@ -771,6 +783,7 @@ describe('staging', () => {
       'asset.ec1d4062c578dacd630d64166a7d1efcd472e570e085a63f8857f6c674491bac',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -793,7 +806,7 @@ describe('staging', () => {
 
     expect(
       readDockerStubInput()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS_NO_OUTPUT`,
+      `run --rm ${USER_ARG} -v /input:/asset-input:${delegated} -v /output:/asset-output:${delegated} -w /asset-input alpine DOCKER_STUB_SUCCESS_NO_OUTPUT`,
     );
   });
 
@@ -816,7 +829,7 @@ describe('staging', () => {
     // THEN
     expect(
       readDockerStubInput()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      `run --rm ${USER_ARG} -v /input:/asset-input:${delegated} -v /output:/asset-output:${delegated} -w /asset-input alpine DOCKER_STUB_SUCCESS`,
     );
     expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
   });
@@ -841,7 +854,7 @@ describe('staging', () => {
     // THEN
     expect(
       readDockerStubInput()).toEqual(
-      `run --rm --security-opt no-new-privileges ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      `run --rm --security-opt no-new-privileges ${USER_ARG} -v /input:/asset-input:${delegated} -v /output:/asset-output:${delegated} -w /asset-input alpine DOCKER_STUB_SUCCESS`,
     );
     expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
   });
@@ -866,7 +879,7 @@ describe('staging', () => {
     // THEN
     expect(
       readDockerStubInput()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input --entrypoint DOCKER_STUB_SUCCESS alpine DOCKER_STUB_SUCCESS`,
+      `run --rm ${USER_ARG} -v /input:/asset-input:${delegated} -v /output:/asset-output:${delegated} -w /asset-input --entrypoint DOCKER_STUB_SUCCESS alpine DOCKER_STUB_SUCCESS`,
     );
     expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
   });
@@ -984,7 +997,7 @@ describe('staging', () => {
     })).toThrow(/Failed to bundle asset stack\/Asset/);
     expect(
       readDockerStubInput()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input this-is-an-invalid-docker-image DOCKER_STUB_FAIL`,
+      `run --rm ${USER_ARG} -v /input:/asset-input:${delegated} -v /output:/asset-output:${delegated} -w /asset-input this-is-an-invalid-docker-image DOCKER_STUB_FAIL`,
     );
   });
 
@@ -1145,6 +1158,48 @@ describe('staging', () => {
     expect(dockerStubInput).not.toMatch(DockerStubCommand.MULTIPLE_FILES);
   });
 
+  test('correctly skips bundling with stack under stage and nested stack', () => {
+    // GIVEN
+    const app = new App();
+
+    const stage = new Stage(app, 'Stage');
+    stage.node.setContext(cxapi.BUNDLING_STACKS, ['Stage/Stack1']);
+
+    const stack1 = new Stack(stage, 'Stack1', { stackName: 'unrelated-stack1-name' });
+    const stack1Nested = new NestedStack(stack1, 'Stack1Nest');
+
+    const stack2 = new Stack(stage, 'Stack2', { stackName: 'unrelated-stack2-name' });
+    const stack2Nested = new NestedStack(stack2, 'Stack2Nest');
+
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    new AssetStaging(stack1Nested, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+      },
+    });
+
+    new AssetStaging(stack2Nested, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.MULTIPLE_FILES],
+      },
+    });
+
+    // THEN
+    const dockerStubInput = readDockerStubInputConcat();
+    // Docker ran for the asset in Stack1
+    expect(dockerStubInput).toMatch(DockerStubCommand.SUCCESS);
+    // Docker did not run for the asset in Stack2
+    expect(dockerStubInput).not.toMatch(DockerStubCommand.MULTIPLE_FILES);
+  });
+
   test('correctly bundles with stack under stage and the default stack pattern', () => {
     // GIVEN
     const app = new App();
@@ -1275,7 +1330,7 @@ describe('staging', () => {
 
     expect(
       readDockerStubInput()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      `run --rm ${USER_ARG} -v /input:/asset-input:${delegated} -v /output:/asset-output:${delegated} -w /asset-input alpine DOCKER_STUB_SUCCESS`,
     );
     expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f'); // hash of MyStack/Asset
   });
@@ -1299,7 +1354,7 @@ describe('staging', () => {
 
     expect(
       readDockerStubInput()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      `run --rm ${USER_ARG} -v /input:/asset-input:${delegated} -v /output:/asset-output:${delegated} -w /asset-input alpine DOCKER_STUB_SUCCESS`,
     );
     expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f'); // hash of MyStack/Asset
   });
@@ -1326,6 +1381,7 @@ describe('staging', () => {
       'asset.f43148c61174f444925231b5849b468f21e93b5d1469cd07c53625ffd039ef48.zip',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -1404,6 +1460,7 @@ describe('staging', () => {
       'asset.86ec07746e1d859290cfd8b9c648e581555649c75f51f741f11e22cab6775abc',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -1451,6 +1508,7 @@ describe('staging', () => {
       'asset.adb7bb3f9419564842d16f48e6b90468f63ec759d2775e8e40d6a87e6b8e3469.txt',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -1482,6 +1540,7 @@ describe('staging', () => {
       'asset.95c924c84f5d023be4edee540cb2cb401a49f115d01ed403b288f6cb412771df.txt',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -1513,6 +1572,7 @@ describe('staging', () => {
       'asset.ef734136dc22840a94140575a2f98cbc061074e09535589d1cd2c11a4ac2fd75_noext',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -1545,6 +1605,7 @@ describe('staging', () => {
       'asset.f81c5ba9e81eebb202881a8e61a83ab4b69f6bee261989eb93625c9cf5d35335_noext',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -1597,6 +1658,7 @@ describe('staging with docker cp', () => {
       'asset.0ec371a2022d29dfd83f5df104e0f01b34233a4e3e839c3c4ec62008f0b9a0e8.zip',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -1644,6 +1706,7 @@ describe('staging with docker cp', () => {
       'asset.93bd4079bff7440a725991ecf249416ae9ad73cb639f4a8d9e8f3ad8d491e89f_noext',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -1677,6 +1740,7 @@ describe('staging with docker cp', () => {
       'asset.53a51b4c68874a8e831e24e8982120be2a608f50b2e05edb8501143b3305baa8_noext',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -1701,4 +1765,29 @@ function readDockerStubInput(file?: string) {
 // Concatenated docker inputs since last teardown
 function readDockerStubInputConcat(file?: string) {
   return readAndCleanDockerStubInput(file ?? STUB_INPUT_CONCAT_FILE);
+}
+
+function isSeLinux(): boolean {
+  if (process.platform != 'linux') {
+    return false;
+  }
+  const prog = 'selinuxenabled';
+  const proc = spawnSync(prog, [], {
+    stdio: [ // show selinux status output
+      'pipe', // get value of stdio
+      process.stderr, // redirect stdout to stderr
+      'inherit', // inherit stderr
+    ],
+  });
+  if (proc.error) {
+    // selinuxenabled not a valid command, therefore not enabled
+    return false;
+  }
+  if (proc.status == 0) {
+    // selinux enabled
+    return true;
+  } else {
+    // selinux not enabled
+    return false;
+  }
 }

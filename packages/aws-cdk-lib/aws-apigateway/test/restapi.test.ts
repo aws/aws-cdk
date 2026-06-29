@@ -1,12 +1,13 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { cx_api } from '../..';
 import { Template, Match } from '../../assertions';
 import { UserPool } from '../../aws-cognito';
 import { GatewayVpcEndpoint } from '../../aws-ec2';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import { App, CfnElement, CfnResource, Lazy, RemovalPolicy, Size, Stack } from '../../core';
+import type { CfnElement } from '../../core';
+import { App, CfnResource, Lazy, RemovalPolicy, Size, Stack } from '../../core';
 import { JSII_RUNTIME_SYMBOL } from '../../core/lib/constants';
+import * as cx_api from '../../cx-api';
 import * as apigw from '../lib';
 
 let stack: Stack;
@@ -541,6 +542,39 @@ describe('restapi', () => {
     })).toThrow(/Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed/);
   });
 
+  test.each([
+    apigw.IpAddressType.IPV4,
+    apigw.IpAddressType.DUAL_STACK,
+  ])('configure ip address type', (ipAddressType) => {
+    // WHEN
+    const api = new apigw.RestApi(stack, 'api', {
+      endpointConfiguration: {
+        types: [apigw.EndpointType.EDGE],
+        ipAddressType,
+      },
+    });
+
+    api.root.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      EndpointConfiguration: {
+        Types: ['EDGE'],
+        IpAddressType: ipAddressType,
+      },
+    });
+  });
+
+  test('throw error for configuring IPv4 for private endpoint', () => {
+    // THEN
+    expect(() => new apigw.RestApi(stack, 'api', {
+      endpointConfiguration: {
+        types: [apigw.EndpointType.PRIVATE],
+        ipAddressType: apigw.IpAddressType.IPV4,
+      },
+    })).toThrow('Private APIs can only have a dualstack IP address type.');
+  });
+
   test('"cloneFrom" can be used to clone an existing API', () => {
     const cloneFrom = apigw.RestApi.fromRestApiId(stack, 'RestApi', 'foobar');
 
@@ -700,6 +734,55 @@ describe('restapi', () => {
         title: 'test',
         type: 'object',
         properties: { message: { type: 'string' } },
+      },
+    });
+  });
+
+  test('addModel supports additionalItems as boolean and object', () => {
+    const api = new apigw.RestApi(stack, 'myapi-additionalitems');
+    api.root.addMethod('OPTIONS');
+
+    // WHEN: additionalItems as boolean
+    api.addModel('modelWithAdditionalItemsTrue', {
+      schema: {
+        schema: apigw.JsonSchemaVersion.DRAFT4,
+        title: 'test-true',
+        type: apigw.JsonSchemaType.ARRAY,
+        items: { type: apigw.JsonSchemaType.STRING },
+        additionalItems: true,
+      },
+    });
+
+    // WHEN: additionalItems as object
+    api.addModel('modelWithAdditionalItemsObject', {
+      schema: {
+        schema: apigw.JsonSchemaVersion.DRAFT4,
+        title: 'test-object',
+        type: apigw.JsonSchemaType.ARRAY,
+        items: { type: apigw.JsonSchemaType.STRING },
+        additionalItems: { type: apigw.JsonSchemaType.NUMBER },
+      },
+    });
+
+    // THEN: boolean case
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Model', {
+      Schema: {
+        $schema: 'http://json-schema.org/draft-04/schema#',
+        title: 'test-true',
+        type: 'array',
+        items: { type: 'string' },
+        additionalItems: true,
+      },
+    });
+
+    // THEN: object case
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Model', {
+      Schema: {
+        $schema: 'http://json-schema.org/draft-04/schema#',
+        title: 'test-object',
+        type: 'array',
+        items: { type: 'string' },
+        additionalItems: { type: 'number' },
       },
     });
   });
@@ -1083,6 +1166,30 @@ describe('SpecRestApi', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
       Name: 'SpecRestApi',
       MinimumCompressionSize: 1024,
+    });
+  });
+
+  test('SpecRestApi binaryMediaTypes', () => {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/aws-apigateway:disableCloudWatchRole': true,
+      },
+    });
+
+    stack = new Stack(app);
+    const api = new apigw.SpecRestApi(stack, 'SpecRestApi', {
+      apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+      binaryMediaTypes: ['image/png', 'application/octet-stream'],
+    });
+
+    // WHEN
+    api.root.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      Name: 'SpecRestApi',
+      BinaryMediaTypes: ['image/png', 'application/octet-stream'],
     });
   });
 
@@ -1705,7 +1812,7 @@ describe('SpecRestApi', () => {
       const api = apigw.RestApi.fromRestApiId(stack, 'Api', 'api-id');
 
       // THEN
-      const result = api.addToResourcePolicy(new iam.PolicyStatement({
+      const result = (api as any).addToResourcePolicy(new iam.PolicyStatement({
         actions: ['execute-api:Invoke'],
         resources: [Stack.of(stack).formatArn({
           service: 'execute-api',
@@ -1725,7 +1832,7 @@ describe('SpecRestApi', () => {
       });
 
       // THEN
-      const result = api.addToResourcePolicy(new iam.PolicyStatement({
+      const result = (api as any).addToResourcePolicy(new iam.PolicyStatement({
         actions: ['execute-api:Invoke'],
         resources: [Stack.of(stack).formatArn({
           service: 'execute-api',
@@ -1910,19 +2017,19 @@ describe('SpecRestApi', () => {
 });
 
 describe('telemetry metadata', () => {
+  beforeEach(() => {
+    // In case we didn't compile using jsii
+    if (!(apigw.RestApi as any).hasOwnProperty(JSII_RUNTIME_SYMBOL)) {
+      (apigw.RestApi as any)[JSII_RUNTIME_SYMBOL] = {
+        fqn: 'aws-cdk-lib.aws-apigateway.RestApi',
+      };
+    }
+  });
+
   it('redaction happens when feature flag is enabled', () => {
     const app = new App();
     app.node.setContext(cx_api.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);
     stack = new Stack(app);
-
-    const mockConstructor = {
-      [JSII_RUNTIME_SYMBOL]: {
-        fqn: 'aws-cdk-lib.aws-apigateway.RestApi',
-      },
-    };
-    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
-      constructor: mockConstructor,
-    });
 
     const api = new apigw.RestApi(stack, 'myapi', {
       defaultMethodOptions: {
@@ -1949,15 +2056,6 @@ describe('telemetry metadata', () => {
     const app = new App();
     app.node.setContext(cx_api.ENABLE_ADDITIONAL_METADATA_COLLECTION, false);
     stack = new Stack(app);
-
-    const mockConstructor = {
-      [JSII_RUNTIME_SYMBOL]: {
-        fqn: 'aws-cdk-lib.aws-apigateway.RestApi',
-      },
-    };
-    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
-      constructor: mockConstructor,
-    });
 
     const api = new apigw.RestApi(stack, 'myapi', {
       defaultMethodOptions: {

@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "aws-cdk-asg-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cc56cf10db6f9a8d08a1dd3ac11545a658835fe20afe0105866946e153d2d173.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bc013a08b2de90e77fe02236b6cfab6ee59d7facb23b70876fa1779583e9d251.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,57 @@
         "aws-cdk-asg-integ.assets"
       ],
       "metadata": {
+        "/aws-cdk-asg-integ/role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-asg-integ/role/Importrole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-asg-integ/role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "roleC7B7E775"
+          }
+        ],
+        "/aws-cdk-asg-integ/MainLT": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "instanceType": "*",
+              "machineImage": "*",
+              "role": "*"
+            }
           }
         ],
         "/aws-cdk-asg-integ/MainLT/Profile": [
@@ -58,6 +105,15 @@
             "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
+        "/aws-cdk-asg-integ/T4gLT": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "instanceType": "*",
+              "machineImage": "*"
+            }
+          }
+        ],
         "/aws-cdk-asg-integ/T4gLT/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -70,10 +126,55 @@
             "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmarm64gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
+        "/aws-cdk-asg-integ/VPC": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "restrictDefaultSecurityGroup": false,
+              "maxAzs": "*"
+            }
+          }
+        ],
         "/aws-cdk-asg-integ/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/aws-cdk-asg-integ/VPC/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
           }
         ],
         "/aws-cdk-asg-integ/VPC/PublicSubnet1/Subnet": [
@@ -112,6 +213,42 @@
             "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
+        "/aws-cdk-asg-integ/VPC/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/aws-cdk-asg-integ/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -148,6 +285,34 @@
             "data": "VPCPublicSubnet2NATGateway3C070193"
           }
         ],
+        "/aws-cdk-asg-integ/VPC/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/aws-cdk-asg-integ/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -170,6 +335,34 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+          }
+        ],
+        "/aws-cdk-asg-integ/VPC/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           }
         ],
         "/aws-cdk-asg-integ/VPC/PrivateSubnet2/Subnet": [
@@ -210,6 +403,17 @@
         ],
         "/aws-cdk-asg-integ/AsgFromLT": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "launchTemplate": "*",
+              "minCapacity": "*",
+              "maxCapacity": "*",
+              "desiredCapacity": "*",
+              "ssmSessionPermissions": true
+            }
+          },
+          {
             "type": "aws:cdk:warning",
             "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215 [ack: @aws-cdk/aws-autoscaling:desiredCapacitySet]"
           }
@@ -220,6 +424,16 @@
             "data": "AsgFromLTASG089B7C3A"
           }
         ],
+        "/aws-cdk-asg-integ/AsgWithDefaultInstanceWarmup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "launchTemplate": "*",
+              "defaultInstanceWarmup": "*"
+            }
+          }
+        ],
         "/aws-cdk-asg-integ/AsgWithDefaultInstanceWarmup/ASG": [
           {
             "type": "aws:cdk:logicalId",
@@ -227,6 +441,33 @@
           }
         ],
         "/aws-cdk-asg-integ/AsgFromMip": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "mixedInstancesPolicy": {
+                "instancesDistribution": {
+                  "onDemandPercentageAboveBaseCapacity": "*"
+                },
+                "launchTemplate": "*",
+                "launchTemplateOverrides": [
+                  {
+                    "instanceType": "*"
+                  },
+                  {
+                    "instanceType": "*"
+                  },
+                  {
+                    "instanceType": "*"
+                  }
+                ]
+              },
+              "minCapacity": "*",
+              "maxCapacity": "*",
+              "desiredCapacity": "*",
+              "ssmSessionPermissions": true
+            }
+          },
           {
             "type": "aws:cdk:warning",
             "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215 [ack: @aws-cdk/aws-autoscaling:desiredCapacitySet]"
@@ -240,6 +481,29 @@
         ],
         "/aws-cdk-asg-integ/AsgFromMipWithoutDistribution": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "mixedInstancesPolicy": {
+                "launchTemplate": "*",
+                "launchTemplateOverrides": [
+                  {
+                    "instanceType": "*"
+                  },
+                  {
+                    "instanceType": "*"
+                  },
+                  {
+                    "instanceType": "*"
+                  }
+                ]
+              },
+              "minCapacity": "*",
+              "maxCapacity": "*",
+              "desiredCapacity": "*"
+            }
+          },
+          {
             "type": "aws:cdk:warning",
             "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215 [ack: @aws-cdk/aws-autoscaling:desiredCapacitySet]"
           }
@@ -251,6 +515,23 @@
           }
         ],
         "/aws-cdk-asg-integ/AsgFromMipWithInstanceRequirements": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "mixedInstancesPolicy": {
+                "launchTemplate": "*",
+                "launchTemplateOverrides": [
+                  {
+                    "instanceRequirements": "*"
+                  }
+                ]
+              },
+              "minCapacity": "*",
+              "maxCapacity": "*",
+              "desiredCapacity": "*"
+            }
+          },
           {
             "type": "aws:cdk:warning",
             "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215 [ack: @aws-cdk/aws-autoscaling:desiredCapacitySet]"
@@ -264,14 +545,59 @@
         ],
         "/aws-cdk-asg-integ/AsgWithGp3Blockdevice": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "minCapacity": "*",
+              "maxCapacity": "*",
+              "desiredCapacity": "*",
+              "instanceType": "*",
+              "machineImage": "*",
+              "blockDevices": [
+                {
+                  "deviceName": "*",
+                  "mappingEnabled": true,
+                  "volume": "*"
+                }
+              ],
+              "vpc": "*"
+            }
+          },
+          {
             "type": "aws:cdk:warning",
             "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215 [ack: @aws-cdk/aws-autoscaling:desiredCapacitySet]"
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgWithGp3Blockdevice/InstanceSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "allowAllOutbound": true
+            }
           }
         ],
         "/aws-cdk-asg-integ/AsgWithGp3Blockdevice/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AsgWithGp3BlockdeviceInstanceSecurityGroup54D76206"
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgWithGp3Blockdevice/InstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgWithGp3Blockdevice/InstanceRole/ImportInstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-asg-integ/AsgWithGp3Blockdevice/InstanceRole/Resource": [
@@ -284,6 +610,29 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AsgWithGp3BlockdeviceInstanceProfile2FC414A5"
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgWithGp3Blockdevice/LaunchTemplate": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "machineImage": "*",
+              "instanceType": "*",
+              "detailedMonitoring": false,
+              "securityGroup": "*",
+              "userData": "*",
+              "associatePublicIpAddress": "*",
+              "spotOptions": "*",
+              "blockDevices": [
+                {
+                  "deviceName": "*",
+                  "mappingEnabled": true,
+                  "volume": "*"
+                }
+              ],
+              "instanceProfile": "*",
+              "keyPair": "*"
+            }
           }
         ],
         "/aws-cdk-asg-integ/AsgWithGp3Blockdevice/LaunchTemplate/Resource": [
@@ -304,10 +653,48 @@
             "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
+        "/aws-cdk-asg-integ/AsgWithIMDSv2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "instanceType": "*",
+              "machineImage": "*",
+              "requireImdsv2": true,
+              "vpc": "*"
+            }
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgWithIMDSv2/InstanceSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "allowAllOutbound": true
+            }
+          }
+        ],
         "/aws-cdk-asg-integ/AsgWithIMDSv2/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AsgWithIMDSv2InstanceSecurityGroupDE233317"
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgWithIMDSv2/InstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgWithIMDSv2/InstanceRole/ImportInstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-asg-integ/AsgWithIMDSv2/InstanceRole/Resource": [
@@ -320,6 +707,23 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AsgWithIMDSv2InstanceProfile0D43F696"
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgWithIMDSv2/LaunchTemplate": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "machineImage": "*",
+              "instanceType": "*",
+              "detailedMonitoring": false,
+              "securityGroup": "*",
+              "userData": "*",
+              "associatePublicIpAddress": "*",
+              "spotOptions": "*",
+              "blockDevices": "*",
+              "instanceProfile": "*",
+              "keyPair": "*"
+            }
           }
         ],
         "/aws-cdk-asg-integ/AsgWithIMDSv2/LaunchTemplate/Resource": [
@@ -338,6 +742,22 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgFromMigrationToLT": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "launchTemplate": "*",
+              "updatePolicy": "*"
+            }
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgFromMigrationToLT/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgFromMigrationToLTASGDEC25774"
           }
         ],
         "/aws-cdk-asg-integ/BootstrapVersion": [
@@ -361,5 +781,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

@@ -7,7 +7,6 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "projectReferences": true,
     "metadata": {
       "jsii": {
         "rosetta": {
@@ -35,8 +34,14 @@
         "namespace": "Amazon.CDK.AppStagingSynthesizer.Alpha",
         "packageId": "Amazon.CDK.AppStagingSynthesizer.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go",
+        "packageName": "appstagingsynthesizeralpha"
       }
-    }
+    },
+    "tsconfig": "tsconfig.json",
+    "validateTsconfig": "minimal"
   },
   "repository": {
     "type": "git",
@@ -48,7 +53,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "integ": "integ-runner --language javascript",
+    "integ": "integ-runner --unstable=toolkit-lib-engine --language javascript",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -71,7 +76,7 @@
   "license": "Apache-2.0",
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 14.15.0"
+    "node": ">= 20.0.0"
   },
   "stability": "experimental",
   "maturity": "experimental",
@@ -85,15 +90,15 @@
   },
   "devDependencies": {
     "aws-cdk-lib": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.186.0",
+    "@aws-cdk/integ-runner": "^2.199.0",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
-    "constructs": "^10.0.0",
+    "constructs": "^10.5.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^0.0.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.5.0"
   },
   "publishConfig": {
     "tag": "latest"

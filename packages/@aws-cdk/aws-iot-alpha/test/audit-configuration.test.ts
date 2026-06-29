@@ -1,5 +1,5 @@
-import { Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as iot from '../lib';
 
@@ -15,6 +15,12 @@ test('Default property', () => {
       CaCertificateExpiringCheck: { Enabled: true },
       CaCertificateKeyQualityCheck: { Enabled: true },
       ConflictingClientIdsCheck: { Enabled: true },
+      DeviceCertificateAgeCheck: {
+        Enabled: true,
+        Configuration: {
+          CertAgeThresholdInDays: '365',
+        },
+      },
       DeviceCertificateExpiringCheck: { Enabled: true },
       DeviceCertificateKeyQualityCheck: { Enabled: true },
       DeviceCertificateSharedCheck: { Enabled: true },
@@ -127,6 +133,29 @@ test('configure check configuration', () => {
       CaCertificateExpiringCheck: { Enabled: true },
     },
   });
+});
+
+test('throw error for configuring duration without enabling deviceCertificateAgeCheck', () => {
+  const stack = new cdk.Stack();
+  expect(() => new iot.AccountAuditConfiguration(stack, 'AccountAuditConfiguration', {
+    checkConfiguration: {
+      deviceCertificateAgeCheck: false,
+      deviceCertificateAgeCheckDuration: cdk.Duration.days(1229),
+    },
+  })).toThrow('You cannot specify a value for `deviceCertificateAgeCheckDuration` if `deviceCertificateAgeCheck` is set to `false`.');
+});
+
+test.each([
+  cdk.Duration.days(29),
+  cdk.Duration.days(3651),
+])('throw error for invalid duration %s', (duration) => {
+  const stack = new cdk.Stack();
+  expect(() => new iot.AccountAuditConfiguration(stack, 'AccountAuditConfiguration', {
+    checkConfiguration: {
+      deviceCertificateAgeCheck: true,
+      deviceCertificateAgeCheckDuration: duration,
+    },
+  })).toThrow(`The device certificate age check threshold must be between 30 and 3650 days. got: ${duration.toDays()} days.`);
 });
 
 test('import by Account ID', () => {

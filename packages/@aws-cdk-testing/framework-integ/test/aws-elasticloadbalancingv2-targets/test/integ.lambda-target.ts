@@ -2,7 +2,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App, Stack } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as targets from 'aws-cdk-lib/aws-elasticloadbalancingv2-targets';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
@@ -41,7 +41,11 @@ def handler(event, context):
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const testCase = new TestStack(app, 'TestStack');
 const integ = new IntegTest(app, 'integ-test', {
   testCases: [testCase],

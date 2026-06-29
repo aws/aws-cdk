@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CustomResourceProviderBase } from './custom-resource-provider-base';
-import { CustomResourceProviderOptions } from './shared';
+import type { CustomResourceProviderOptions } from './shared';
 import { FactName } from '../../../region-info';
 import { Stack } from '../stack';
 
@@ -46,11 +46,13 @@ export enum CustomResourceProviderRuntime {
 
   /**
    * Node.js 16.x
+   * @deprecated Use latest version
    */
   NODEJS_16_X = 'nodejs16.x',
 
   /**
    * Node.js 18.x
+   * @deprecated Use latest version
    */
   NODEJS_18_X = 'nodejs18.x',
 
@@ -58,6 +60,16 @@ export enum CustomResourceProviderRuntime {
    * Node.js 20.x
    */
   NODEJS_20_X = 'nodejs20.x',
+
+  /**
+   * Node.js 22.x
+   */
+  NODEJS_22_X = 'nodejs22.x',
+
+  /**
+   * Node.js 24.x
+   */
+  NODEJS_24_X = 'nodejs24.x',
 }
 
 /**
@@ -140,6 +152,10 @@ function customResourceProviderRuntimeToString(x: CustomResourceProviderRuntime)
       return 'nodejs18.x';
     case CustomResourceProviderRuntime.NODEJS_20_X:
       return 'nodejs20.x';
+    case CustomResourceProviderRuntime.NODEJS_22_X:
+      return 'nodejs22.x';
+    case CustomResourceProviderRuntime.NODEJS_24_X:
+      return 'nodejs24.x';
   }
 }
 
@@ -147,5 +163,5 @@ function customResourceProviderRuntimeToString(x: CustomResourceProviderRuntime)
  * The name of the latest Lambda node runtime available by AWS region.
  */
 export function determineLatestNodeRuntimeName(scope: Construct): string {
-  return Stack.of(scope).regionalFact(FactName.LATEST_NODE_RUNTIME, 'nodejs18.x');
+  return Stack.of(scope).regionalFact(FactName.LATEST_NODE_RUNTIME, 'nodejs24.x');
 }

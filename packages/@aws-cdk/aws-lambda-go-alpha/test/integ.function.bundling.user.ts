@@ -1,9 +1,10 @@
 import * as path from 'path';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
-import * as lambda from '../lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
+import type { IFunction } from 'aws-cdk-lib/aws-lambda';
+import type { Construct } from 'constructs';
+import * as lambda from '../lib';
 
 /*
  * Stack verification steps:
@@ -35,7 +36,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new TestStack(app, 'cdk-integ-lambda-golang');
 
 const integTest = new integ.IntegTest(app, 'cdk-integ-lambda-golang-bundling-user-test', {

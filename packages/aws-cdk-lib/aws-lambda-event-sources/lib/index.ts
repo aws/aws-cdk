@@ -1,6 +1,7 @@
 export * from './api';
 export * from './dynamodb';
 export * from './kafka';
+export * from './kafka-dlq';
 export * from './kinesis';
 export * from './s3';
 export * from './sns';
@@ -9,3 +10,5 @@ export * from './stream';
 export * from './sqs';
 export * from './sqs-dlq';
 export * from './s3-onfailuire-destination';
+export * from './confluent-schema-registry';
+export * from './glue-schema-registry';

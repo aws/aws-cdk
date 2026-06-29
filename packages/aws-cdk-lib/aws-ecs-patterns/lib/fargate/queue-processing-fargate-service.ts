@@ -1,10 +1,14 @@
-import { Construct } from 'constructs';
-import * as ec2 from '../../../aws-ec2';
-import { FargateService, FargateTaskDefinition, HealthCheck } from '../../../aws-ecs';
-import { FeatureFlags } from '../../../core';
+import type { Construct } from 'constructs';
+import type * as ec2 from '../../../aws-ec2';
+import type { HealthCheck } from '../../../aws-ecs';
+import { FargateService, FargateTaskDefinition } from '../../../aws-ecs';
+import type { Duration } from '../../../core';
+import { FeatureFlags, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import * as cxapi from '../../../cx-api';
-import { FargateServiceBaseProps } from '../base/fargate-service-base';
-import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
+import type { FargateServiceBaseProps } from '../base/fargate-service-base';
+import type { QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
+import { QueueProcessingServiceBase } from '../base/queue-processing-service-base';
 
 /**
  * The properties for the QueueProcessingFargateService service.
@@ -47,6 +51,14 @@ export interface QueueProcessingFargateServiceProps extends QueueProcessingServi
    * @default false
    */
   readonly assignPublicIp?: boolean;
+
+  /**
+   * The period of time, in seconds, that the Amazon ECS service scheduler ignores unhealthy
+   * Elastic Load Balancing target health checks after a task has first started.
+   *
+   * @default - defaults to 60 seconds if at least one load balancer is in-use and it is not already set
+   */
+  readonly healthCheckGracePeriod?: Duration;
 }
 
 /**
@@ -69,7 +81,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
     super(scope, id, props);
 
     if (props.taskDefinition && props.image) {
-      throw new Error('You must specify only one of taskDefinition or image');
+      throw new ValidationError(lit`SpecifyOneTaskDefinitionImage`, 'You must specify only one of taskDefinition or image', this);
     } else if (props.taskDefinition) {
       this.taskDefinition = props.taskDefinition;
     } else if (props.image) {
@@ -92,7 +104,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
         healthCheck: props.healthCheck,
       });
     } else {
-      throw new Error('You must specify one of: taskDefinition or image');
+      throw new ValidationError(lit`SpecifyOneTaskDefinitionImage`, 'You must specify one of: taskDefinition or image', this);
     }
 
     // The desiredCount should be removed from the fargate service when the feature flag is removed.
@@ -117,6 +129,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       circuitBreaker: props.circuitBreaker,
       capacityProviderStrategies: props.capacityProviderStrategies,
       enableExecuteCommand: props.enableExecuteCommand,
+      healthCheckGracePeriod: props.healthCheckGracePeriod,
     });
 
     this.configureAutoscalingForService(this.service);

@@ -1,12 +1,20 @@
 {
-  "version": "38.0.1",
+  "version": "50.0.0",
   "testCases": {
     "Integ/DefaultTest": {
       "stacks": [
         "cdk-integ-opensearch-instance-store"
       ],
+      "regions": [
+        "us-east-1",
+        "us-east-2",
+        "us-west-2",
+        "eu-west-1",
+        "ca-central-1"
+      ],
       "assertionStack": "Integ/DefaultTest/DeployAssert",
       "assertionStackName": "IntegDefaultTestDeployAssert4E6713E1"
     }
-  }
+  },
+  "minimumCliVersion": "2.1105.0"
 }

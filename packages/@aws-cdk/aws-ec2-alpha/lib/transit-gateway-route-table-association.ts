@@ -1,9 +1,11 @@
-import { ITransitGatewayAttachment } from './transit-gateway-attachment';
-import { ITransitGatewayRouteTable } from './transit-gateway-route-table';
 import { CfnTransitGatewayRouteTableAssociation } from 'aws-cdk-lib/aws-ec2';
-import { Construct } from 'constructs';
-import { ITransitGatewayAssociation, TransitGatewayAssociationBase } from './transit-gateway-association';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import type { ITransitGatewayAssociation } from './transit-gateway-association';
+import { TransitGatewayAssociationBase } from './transit-gateway-association';
+import type { ITransitGatewayAttachment } from './transit-gateway-attachment';
+import type { ITransitGatewayRouteTable } from './transit-gateway-route-table';
 
 /**
  * Represents a Transit Gateway Route Table Association.
@@ -37,7 +39,10 @@ export interface TransitGatewayRouteTableAssociationProps {
  *
  * @resource AWS::EC2::TransitGatewayRouteTableAssociation
  */
+@propertyInjectable
 export class TransitGatewayRouteTableAssociation extends TransitGatewayAssociationBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.TransitGatewayRouteTableAssociation';
   /**
    * The ID of the transit gateway route table association.
    */

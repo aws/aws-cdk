@@ -1,6 +1,6 @@
 import { validateWeight } from './_util';
-import * as ec2 from '../../aws-ec2';
-import * as ga from '../../aws-globalaccelerator';
+import type * as ec2 from '../../aws-ec2';
+import type * as ga from '../../aws-globalaccelerator';
 import { Stack } from '../../core';
 
 /**
@@ -24,7 +24,7 @@ export class CfnEipEndpoint implements ga.IEndpoint {
   public readonly region?: string;
 
   constructor(private readonly eip: ec2.CfnEIP, private readonly options: CfnEipEndpointProps = {}) {
-    validateWeight(options.weight);
+    validateWeight(eip, options.weight);
 
     this.region = Stack.of(eip).region;
   }

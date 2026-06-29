@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnElement } from './cfn-element';
 
 export interface CfnOutputProps {
@@ -48,7 +48,7 @@ export class CfnOutput extends CfnElement {
   private _exportName?: string;
 
   /**
-   * Creates an CfnOutput value for this stack.
+   * Creates a CfnOutput value for this stack.
    * @param scope The parent construct.
    * @param props CfnOutput properties.
    */
@@ -56,11 +56,11 @@ export class CfnOutput extends CfnElement {
     super(scope, id);
 
     if (props.value === undefined) {
-      throw new Error(`Missing value for CloudFormation output at path "${this.node.path}"`);
+      throw new ValidationError(lit`MissingValueCloudFormationOutput`, `Missing value for CloudFormation output at path "${this.node.path}"`, this);
     } else if (Array.isArray(props.value)) {
       // `props.value` is a string, but because cross-stack exports allow passing any,
       // we need to check for lists here.
-      throw new Error(`CloudFormation output was given a string list instead of a string at path "${this.node.path}"`);
+      throw new ValidationError(lit`CloudformationOutputGivenString`, `CloudFormation output was given a string list instead of a string at path "${this.node.path}"`, this);
     }
 
     this._description = props.description;
@@ -147,13 +147,14 @@ export class CfnOutput extends CfnElement {
    */
   public get importValue() {
     // We made _exportName mutable so this will have to be lazy.
+    // eslint-disable-next-line no-restricted-syntax
     return Fn.importValue(Lazy.uncachedString({
       produce: (ctx) => {
         if (Stack.of(ctx.scope) === this.stack) {
-          throw new Error(`'importValue' property of '${this.node.path}' should only be used in a different Stack`);
+          throw new ValidationError(lit`ImportvaluePropertyShouldOnly`, `'importValue' property of '${this.node.path}' should only be used in a different Stack`, this);
         }
         if (!this._exportName) {
-          throw new Error(`Add an exportName to the CfnOutput at '${this.node.path}' in order to use 'output.importValue'`);
+          throw new ValidationError(lit`ExportnameCfnoutputOrderOutput`, `Add an exportName to the CfnOutput at '${this.node.path}' in order to use 'output.importValue'`, this);
         }
 
         return this._exportName;
@@ -195,9 +196,11 @@ export class CfnOutput extends CfnElement {
 }
 
 /* eslint-disable import/order */
-import { CfnCondition } from './cfn-condition';
+import type { CfnCondition } from './cfn-condition';
 import { Fn } from './cfn-fn';
 import { Lazy } from './lazy';
 import { Stack } from './stack';
 import { Token } from './token';
+import { ValidationError } from './errors';
+import { lit } from './private/literal-string';
 

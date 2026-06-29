@@ -3,17 +3,14 @@ import * as path from 'path';
 import * as feats from '../lib/features';
 import { MAGIC_V2NEXT, compareVersions } from '../lib/private/flag-modeling';
 
-test('all future flags have defaults configured', () => {
-  Object.keys(feats.FLAGS).forEach(flag => {
-    expect(typeof (feats.futureFlagDefault(flag))).toEqual('boolean');
-  });
-});
-
 test('futureFlagDefault returns false if non existent flag was given', () => {
   expect(feats.futureFlagDefault('non-existent-flag')).toEqual(false);
 });
 
 test('feature flag defaults may not be changed anymore', () => {
+  // Below comments may be misread. Whenever you add a feature flag in features.ts with
+  // defaults: { v2: true }
+  // make sure you add it in the list below for the test to pass.
   // In principle, these flags were decided upon during the v2 alpha period, and they are now frozen
   // and may not be changed anymore.
   //
@@ -41,9 +38,20 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: true,
     [feats.PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE]: true,
     [feats.PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE]: true,
-    // Add new disabling feature flags below this line
     [feats.ASPECT_STABILIZATION]: true,
+    [feats.STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT]: true,
+    // Add new disabling feature flags below this line
     [feats.LOG_USER_POOL_CLIENT_SECRET_VALUE]: false,
+    [feats.USE_RESOURCEID_FOR_VPCV2_MIGRATION]: false,
+    [feats.USE_CDK_MANAGED_LAMBDA_LOGGROUP]: false,
+    [feats.SIGNER_PROFILE_NAME_PASSED_TO_CFN]: false,
+    [feats.ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER]: false,
+    [feats.AUTOMATIC_L1_TRAITS]: true,
+    [feats.DEFAULT_CROSS_STACK_REFERENCES]: 'strong',
+    [feats.BATCH_DEFAULT_AL2023]: false,
+    [feats.EKS_DEFAULT_AL2023]: false,
+    [feats.ANNOTATIONS_IN_VALIDATION_REPORT]: false,
+
   });
 });
 

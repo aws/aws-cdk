@@ -1,11 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Function, FunctionOptions, Runtime, RuntimeFamily } from 'aws-cdk-lib/aws-lambda';
+import type { FunctionOptions, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Function, RuntimeFamily } from 'aws-cdk-lib/aws-lambda';
 import { Stack } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import { Bundling } from './bundling';
-import { BundlingOptions } from './types';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import { Bundling } from './bundling';
+import type { BundlingOptions } from './types';
 
 /**
  * Properties for a PythonFunction
@@ -48,7 +50,11 @@ export interface PythonFunctionProps extends FunctionOptions {
 /**
  * A Python Lambda function
  */
+@propertyInjectable
 export class PythonFunction extends Function {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-lambda-python-alpha.PythonFunction';
+
   constructor(scope: Construct, id: string, props: PythonFunctionProps) {
     const { index = 'index.py', handler = 'handler', runtime } = props;
     if (props.index && !/\.py$/.test(props.index)) {

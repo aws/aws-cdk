@@ -1,8 +1,18 @@
-import { Construct } from 'constructs';
-import { CfnVPCEndpointService, CfnVPCEndpointServicePermissions } from './ec2.generated';
-import { ArnPrincipal } from '../../aws-iam';
-import { Aws, Fn, IResource, Resource, Stack, Token, ValidationError } from '../../core';
+import type { Construct } from 'constructs';
+import type {
+  IVPCEndpointServiceRef,
+  VPCEndpointServiceReference,
+} from './ec2.generated';
+import {
+  CfnVPCEndpointService,
+  CfnVPCEndpointServicePermissions,
+} from './ec2.generated';
+import type { ArnPrincipal } from '../../aws-iam';
+import type { IResource } from '../../core';
+import { Aws, Fn, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { RegionInfo } from '../../region-info';
 
 /**
@@ -37,7 +47,7 @@ export interface IVpcEndpointServiceLoadBalancer {
  * A VPC endpoint service.
  *
  */
-export interface IVpcEndpointService extends IResource {
+export interface IVpcEndpointService extends IResource, IVPCEndpointServiceRef {
   /**
    * The service name of the VPC Endpoint Service that clients use to connect to,
    * like com.amazonaws.vpce.<region>.vpce-svc-xxxxxxxxxxxxxxxx
@@ -60,7 +70,10 @@ export interface IVpcEndpointService extends IResource {
  * @resource AWS::EC2::VPCEndpointService
  *
  */
+@propertyInjectable
 export class VpcEndpointService extends Resource implements IVpcEndpointService {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.VpcEndpointService';
   /**
    * The default value for a VPC Endpoint Service name prefix, useful if you do
    * not have a synthesize-time region literal available (all you have is
@@ -130,7 +143,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
     addConstructMetadata(this, props);
 
     if (props.vpcEndpointServiceLoadBalancers === undefined || props.vpcEndpointServiceLoadBalancers.length === 0) {
-      throw new ValidationError('VPC Endpoint Service must have at least one load balancer specified.', this);
+      throw new ValidationError(lit`EndpointServiceLeastOneLoad`, 'VPC Endpoint Service must have at least one load balancer specified.', this);
     }
 
     this.vpcEndpointServiceLoadBalancers = props.vpcEndpointServiceLoadBalancers;
@@ -140,7 +153,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
     this.allowedRegions = props.allowedRegions;
 
     if (props.allowedPrincipals && props.whitelistedPrincipals) {
-      throw new ValidationError('`whitelistedPrincipals` is deprecated; please use `allowedPrincipals` instead', this);
+      throw new ValidationError(lit`DeprecatedPleaseInstead`, '`whitelistedPrincipals` is deprecated; please use `allowedPrincipals` instead', this);
     }
     this.allowedPrincipals = props.allowedPrincipals ?? props.whitelistedPrincipals ?? [];
     this.whitelistedPrincipals = this.allowedPrincipals;
@@ -167,6 +180,10 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
         allowedPrincipals: this.allowedPrincipals.map(x => x.arn),
       });
     }
+  }
+
+  public get vpcEndpointServiceRef(): VPCEndpointServiceReference {
+    return this.endpointService.vpcEndpointServiceRef;
   }
 }
 

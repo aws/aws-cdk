@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "897e05a93aa38fdfc1b1b999073fd7fdbe0195cff25c7302159c298fd5003636": {
+      "displayName": "CloudWatchLogsExportsStack Template",
+      "source": {
+        "path": "CloudWatchLogsExportsStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-ee95ec78": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "897e05a93aa38fdfc1b1b999073fd7fdbe0195cff25c7302159c298fd5003636.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

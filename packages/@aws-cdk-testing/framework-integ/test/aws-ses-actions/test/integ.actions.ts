@@ -29,7 +29,11 @@ const TEST_WORKMAIL_DOMAIN = 'cdk-test-123.awsapps.com';
 const TEST_ORGANIZATION_ARN = 'arn:aws:workmail:us-east-1:339712719728:organization/m-5ea60ed9e37442c388898996f05c17ac';
 const TEST_EMAIL = `test@${TEST_WORKMAIL_DOMAIN}`;
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'aws-cdk-ses-receipt');
 

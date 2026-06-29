@@ -1,18 +1,17 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "files": {
-    "c1f4b75d2d3f2e854e49bd6ff47d0b000d55d12ca8041aeb501a416acd0ee010": {
+    "a1826e5b728b387e1b5c379282c984ee03c9c6427aaec35e2830c0a5efd25b01": {
       "displayName": "vpcv2-import-integ-test Template",
       "source": {
         "path": "vpcv2-import-integ-test.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-us-west-2": {
-          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
-          "objectKey": "c1f4b75d2d3f2e854e49bd6ff47d0b000d55d12ca8041aeb501a416acd0ee010.json",
-          "region": "us-west-2",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
+        "current_account-current_region-f2323198": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a1826e5b728b387e1b5c379282c984ee03c9c6427aaec35e2830c0a5efd25b01.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     }

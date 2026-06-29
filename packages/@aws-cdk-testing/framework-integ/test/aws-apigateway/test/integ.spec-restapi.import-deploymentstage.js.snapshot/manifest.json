@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "integtest-specrestapi-import-deployment-stage.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/963d95f2b946c101b476b2c2b3faa935244354f27c8cef2c0d0a8215cc5f816b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2971ff35b309c85a20be3464f72007a0171b324dbdbe2aaa7a094100aacadb87.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,42 @@
         "integtest-specrestapi-import-deployment-stage.assets"
       ],
       "metadata": {
+        "/integtest-specrestapi-import-deployment-stage/my-api": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deploy": false,
+              "apiDefinition": "*"
+            }
+          }
+        ],
         "/integtest-specrestapi-import-deployment-stage/my-api/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myapi4C7BF186"
+          }
+        ],
+        "/integtest-specrestapi-import-deployment-stage/my-api/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integtest-specrestapi-import-deployment-stage/MyManualDeployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "api": "*",
+              "stageName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
           }
         ],
         "/integtest-specrestapi-import-deployment-stage/MyManualDeployment/Resource": [
@@ -115,5 +147,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

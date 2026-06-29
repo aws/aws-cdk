@@ -21,13 +21,16 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "AuditConfiguration": {
@@ -43,7 +46,10 @@
                     "path": "IotAuditConfigurationTestStack/AuditConfiguration/AuditRole/ImportAuditRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -82,13 +88,16 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "NotificationRole": {
@@ -100,7 +109,10 @@
                     "path": "IotAuditConfigurationTestStack/AuditConfiguration/NotificationRole/ImportNotificationRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -142,13 +154,16 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "Resource": {
@@ -172,6 +187,12 @@
                       },
                       "conflictingClientIdsCheck": {
                         "enabled": true
+                      },
+                      "deviceCertificateAgeCheck": {
+                        "enabled": true,
+                        "configuration": {
+                          "certAgeThresholdInDays": "1229"
+                        }
                       },
                       "deviceCertificateExpiringCheck": {
                         "enabled": true
@@ -234,13 +255,16 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-iot-alpha.AccountAuditConfiguration",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "DailyAudit": {
@@ -261,13 +285,16 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-iot-alpha.ScheduledAudit",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "WeeklyAudit": {
@@ -289,13 +316,16 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-iot-alpha.ScheduledAudit",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "MonthlyAudit": {
@@ -328,13 +358,16 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-iot-alpha.ScheduledAudit",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "BootstrapVersion": {
@@ -342,7 +375,7 @@
             "path": "IotAuditConfigurationTestStack/BootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "CheckBootstrapVersion": {
@@ -350,13 +383,13 @@
             "path": "IotAuditConfigurationTestStack/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           }
         },
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       },
       "IotAuditConfigurationTest": {
@@ -372,7 +405,7 @@
                 "path": "IotAuditConfigurationTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -384,7 +417,7 @@
                     "path": "IotAuditConfigurationTest/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "CheckBootstrapVersion": {
@@ -392,13 +425,13 @@
                     "path": "IotAuditConfigurationTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               }
             },
@@ -418,13 +451,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },
     "constructInfo": {
       "fqn": "constructs.Construct",
-      "version": "10.3.0"
+      "version": "10.4.2"
     }
   }
 }

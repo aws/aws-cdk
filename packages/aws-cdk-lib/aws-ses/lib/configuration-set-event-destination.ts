@@ -1,17 +1,20 @@
-import { Construct } from 'constructs';
-import { IConfigurationSet } from './configuration-set';
+import type { Construct } from 'constructs';
 import { CfnConfigurationSetEventDestination } from './ses.generated';
-import * as events from '../../aws-events';
+import type * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as firehose from '../../aws-kinesisfirehose';
-import * as sns from '../../aws-sns';
-import { Aws, IResource, Resource, Stack, ValidationError } from '../../core';
+import type * as firehose from '../../aws-kinesisfirehose';
+import type * as sns from '../../aws-sns';
+import type { IResource } from '../../core';
+import { Aws, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IConfigurationSetRef, IConfigurationSetEventDestinationRef, ConfigurationSetEventDestinationReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
 /**
  * A configuration set event destination
  */
-export interface IConfigurationSetEventDestination extends IResource {
+export interface IConfigurationSetEventDestination extends IResource, IConfigurationSetEventDestinationRef {
   /**
    * The ID of the configuration set event destination
    *
@@ -72,7 +75,7 @@ export abstract class EventDestination {
   /**
    * Use Event Bus as event destination
    */
-  public static eventBus(eventBus: events.IEventBus): EventDestination {
+  public static eventBus(eventBus: events.IEventBusRef): EventDestination {
     return { bus: eventBus };
   }
 
@@ -102,7 +105,7 @@ export abstract class EventDestination {
    *
    * @default - do not send events to Event bus
    */
-  public abstract readonly bus?: events.IEventBus;
+  public abstract readonly bus?: events.IEventBusRef;
 
   /**
    * Use Firehose Delivery Stream
@@ -119,7 +122,7 @@ export interface ConfigurationSetEventDestinationProps extends ConfigurationSetE
   /**
    * The configuration set that contains the event destination.
    */
-  readonly configurationSet: IConfigurationSet;
+  readonly configurationSet: IConfigurationSetRef;
 }
 
 /**
@@ -265,7 +268,11 @@ export interface FirehoseDeliveryStreamDestination {
 /**
  * A configuration set event destination
  */
+@propertyInjectable
 export class ConfigurationSetEventDestination extends Resource implements IConfigurationSetEventDestination {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ses.ConfigurationSetEventDestination';
+
   /**
    * Use an existing configuration set
    */
@@ -275,11 +282,23 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
     configurationSetEventDestinationId: string): IConfigurationSetEventDestination {
     class Import extends Resource implements IConfigurationSetEventDestination {
       public readonly configurationSetEventDestinationId = configurationSetEventDestinationId;
+
+      public get configurationSetEventDestinationRef(): ConfigurationSetEventDestinationReference {
+        return {
+          configurationSetEventDestinationId: this.configurationSetEventDestinationId,
+        };
+      }
     }
     return new Import(scope, id);
   }
 
   public readonly configurationSetEventDestinationId: string;
+
+  public get configurationSetEventDestinationRef(): ConfigurationSetEventDestinationReference {
+    return {
+      configurationSetEventDestinationId: this.configurationSetEventDestinationId,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: ConfigurationSetEventDestinationProps) {
     super(scope, id, {
@@ -290,13 +309,13 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
 
     if (
       props.destination.bus &&
-      props.destination.bus.eventBusArn != Stack.of(scope).formatArn({
+      props.destination.bus.eventBusRef.eventBusArn != Stack.of(scope).formatArn({
         service: 'events',
         resource: 'event-bus',
         resourceName: 'default',
       })
     ) {
-      throw new ValidationError(`Only the default bus can be used as an event destination. Got ${props.destination.bus.eventBusArn}`, this);
+      throw new ValidationError(lit`DefaultBusEventDestination`, `Only the default bus can be used as an event destination. Got ${props.destination.bus.eventBusRef.eventBusArn}`, this);
     }
 
     let firehoseDeliveryStreamIamRoleArn = '';
@@ -312,7 +331,7 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
               'AWS:SourceArn': Stack.of(scope).formatArn({
                 service: 'ses',
                 resource: 'configuration-set',
-                resourceName: props.configurationSet.configurationSetName,
+                resourceName: props.configurationSet.configurationSetRef.configurationSetName,
               }),
             },
           },
@@ -334,7 +353,7 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
     }
 
     const configurationSet = new CfnConfigurationSetEventDestination(this, 'Resource', {
-      configurationSetName: props.configurationSet.configurationSetName,
+      configurationSetName: props.configurationSet.configurationSetRef.configurationSetName,
       eventDestination: {
         name: this.physicalName,
         enabled: props.enabled ?? true,
@@ -349,7 +368,7 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
             })),
           }
           : undefined,
-        eventBridgeDestination: props.destination.bus ? { eventBusArn: props.destination.bus.eventBusArn } : undefined,
+        eventBridgeDestination: props.destination.bus ? { eventBusArn: props.destination.bus.eventBusRef.eventBusArn } : undefined,
         kinesisFirehoseDestination: props.destination.stream
           ? {
             deliveryStreamArn: props.destination.stream.deliveryStream.deliveryStreamArn,
@@ -369,7 +388,7 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
         conditions: {
           StringEquals: {
             'AWS:SourceAccount': this.env.account,
-            'AWS:SourceArn': `arn:${Aws.PARTITION}:ses:${this.env.region}:${this.env.account}:configuration-set/${props.configurationSet.configurationSetName}`,
+            'AWS:SourceArn': `arn:${Aws.PARTITION}:ses:${this.env.region}:${this.env.account}:configuration-set/${props.configurationSet.configurationSetRef.configurationSetName}`,
           },
         },
       }));

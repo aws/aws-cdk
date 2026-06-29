@@ -1,7 +1,7 @@
 import { Template } from '../../../assertions';
 import * as apigateway from '../../../aws-apigateway';
 import { Certificate } from '../../../aws-certificatemanager';
-import { Metric } from '../../../aws-cloudwatch';
+import type { Metric } from '../../../aws-cloudwatch';
 import * as logs from '../../../aws-logs';
 import { Lazy, Stack } from '../../../core';
 import { DomainName, HttpApi, HttpStage, LogGroupLogDestination } from '../../lib';
@@ -254,6 +254,27 @@ describe('HttpStage', () => {
           format: testFormat,
         },
       })).not.toThrow();
+    });
+  });
+  test('can add stage variables after creation', () => {
+    // WHEN
+    const stage = new HttpStage(stack, 'DefaultStage', {
+      httpApi: api,
+      stageVariables: {
+        env: 'prod',
+      },
+    });
+
+    stage.addStageVariable('timeout', '300');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
+      ApiId: stack.resolve(api.apiId),
+      StageName: '$default',
+      StageVariables: {
+        env: 'prod',
+        timeout: '300',
+      },
     });
   });
 });

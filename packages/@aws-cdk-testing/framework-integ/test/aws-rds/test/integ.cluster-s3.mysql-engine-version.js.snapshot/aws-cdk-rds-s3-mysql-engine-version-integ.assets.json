@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "f85e3cb5fb3e839e9deea352312ec9619ee35a69712876f83634a5a76b54b01b": {
+      "displayName": "aws-cdk-rds-s3-mysql-engine-version-integ Template",
+      "source": {
+        "path": "aws-cdk-rds-s3-mysql-engine-version-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-c3a3862c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f85e3cb5fb3e839e9deea352312ec9619ee35a69712876f83634a5a76b54b01b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

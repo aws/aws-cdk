@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
-import { FunctionUrlAuthType } from './function-url';
-import * as iam from '../../aws-iam';
+import type { Construct } from 'constructs';
+import type { FunctionUrlAuthType } from './function-url';
+import type * as iam from '../../aws-iam';
 
 /**
  * Represents a permission statement that can be added to a Lambda function's
@@ -88,4 +88,13 @@ export interface Permission {
    * @default - No functionUrlAuthType
    */
   readonly functionUrlAuthType?: FunctionUrlAuthType;
+
+  /**
+   * The condition key for limiting the scope of lambda:InvokeFunction action to Function URL only.
+   * When set to true, it restricts the principal in this policy to perform invokes for the resource only via Function URLs.
+   *
+   * @default - false
+   */
+  readonly invokedViaFunctionUrl?: boolean;
+
 }

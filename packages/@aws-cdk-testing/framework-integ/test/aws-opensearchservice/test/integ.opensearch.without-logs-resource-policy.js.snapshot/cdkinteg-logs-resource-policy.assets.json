@@ -1,7 +1,8 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "files": {
     "b28947aeeba66bf4f0536d9f9247536550ef76df37056fd2b87a5b1abaadefa9": {
+      "displayName": "cdkinteg-logs-resource-policy Template",
       "source": {
         "path": "cdkinteg-logs-resource-policy.template.json",
         "packaging": "file"

@@ -1,4 +1,6 @@
-import { FlagInfo, FlagType } from './private/flag-modeling';
+/* eslint-disable @cdklabs/no-throw-default-error */
+import type { FlagInfo } from './private/flag-modeling';
+import { FlagType } from './private/flag-modeling';
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -77,8 +79,10 @@ export const APIGATEWAY_DISABLE_CLOUDWATCH_ROLE = '@aws-cdk/aws-apigateway:disab
 export const ENABLE_PARTITION_LITERALS = '@aws-cdk/core:enablePartitionLiterals';
 export const EVENTS_TARGET_QUEUE_SAME_ACCOUNT = '@aws-cdk/aws-events:eventsTargetQueueSameAccount';
 export const ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER = '@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker';
+export const ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER = '@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener';
 export const S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY = '@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy';
 export const ROUTE53_PATTERNS_USE_CERTIFICATE = '@aws-cdk/aws-route53-patters:useCertificate';
+export const ROUTE53_PATTERNS_USE_DISTRIBUTION = '@aws-cdk/aws-route53-patterns:useDistribution';
 export const AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT = '@aws-cdk/customresources:installLatestAwsSdkDefault';
 export const DATABASE_PROXY_UNIQUE_RESOURCE_NAME = '@aws-cdk/aws-rds:databaseProxyUniqueResourceName';
 export const CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP = '@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup';
@@ -91,6 +95,7 @@ export const EC2_RESTRICT_DEFAULT_SECURITY_GROUP = '@aws-cdk/aws-ec2:restrictDef
 export const APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID = '@aws-cdk/aws-apigateway:requestValidatorUniqueId';
 export const INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION = '@aws-cdk/core:includePrefixInUniqueNameGeneration';
 export const KMS_ALIAS_NAME_REF = '@aws-cdk/aws-kms:aliasNameRef';
+export const KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL = '@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal';
 export const EFS_DENY_ANONYMOUS_ACCESS = '@aws-cdk/aws-efs:denyAnonymousAccess';
 export const EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID = '@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId';
 export const AUTOSCALING_GENERATE_LAUNCH_TEMPLATE = '@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig';
@@ -106,11 +111,14 @@ export const CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2 = '@aws-cdk/aws-codepipeli
 export const KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE = '@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope';
 export const PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceAssetRoleTrustScope';
 export const EKS_NODEGROUP_NAME = '@aws-cdk/aws-eks:nodegroupNameAttribute';
+export const EKS_USE_NATIVE_OIDC_PROVIDER = '@aws-cdk/aws-eks:useNativeOidcProvider';
+export const ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID = '@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId';
 export const EBS_DEFAULT_GP3 = '@aws-cdk/aws-ec2:ebsDefaultGp3Volume';
 export const ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM = '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm';
 export const LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT = '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault';
 export const S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET = '@aws-cdk/aws-s3:keepNotificationInImportedBucket';
 export const USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK = '@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask';
+export const EXPLICIT_STACK_TAGS = '@aws-cdk/core:explicitStackTags';
 export const REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS = '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions';
 export const DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA = '@aws-cdk/aws-dynamodb:resourcePolicyPerReplica';
 export const EC2_SUM_TIMEOUT_ENABLED = '@aws-cdk/aws-ec2:ec2SumTImeoutEnabled';
@@ -122,9 +130,8 @@ export const STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY = '@aws-cdk/aws-stepfun
 export const STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2 = '@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2';
 export const BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT = '@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault';
 export const ASPECT_STABILIZATION = '@aws-cdk/core:aspectStabilization';
+export const SIGNER_PROFILE_NAME_PASSED_TO_CFN = '@aws-cdk/aws-signer:signingProfileNamePassedToCfn';
 export const USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE = '@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource';
-export const Enable_IMDS_Blocking_Deprecated_Feature = '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature';
-export const Disable_ECS_IMDS_Blocking = '@aws-cdk/aws-ecs:disableEcsImdsBlocking';
 export const ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT = '@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault';
 export const IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS = '@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections';
 export const ENABLE_ADDITIONAL_METADATA_COLLECTION = '@aws-cdk/core:enableAdditionalMetadataCollection';
@@ -136,8 +143,40 @@ export const ASPECT_PRIORITIES_MUTATING = '@aws-cdk/core:aspectPrioritiesMutatin
 export const DYNAMODB_TABLE_RETAIN_TABLE_REPLICA = '@aws-cdk/aws-dynamodb:retainTableReplica';
 export const LOG_USER_POOL_CLIENT_SECRET_VALUE = '@aws-cdk/cognito:logUserPoolClientSecretValue';
 export const PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope';
+export const S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS = '@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions';
+export const EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY = '@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway';
+export const USE_RESOURCEID_FOR_VPCV2_MIGRATION = '@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration';
+export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccessBlockedByDefault';
+export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
+export const NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT = '@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault';
+export const STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT = '@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint';
+export const CLOUDFRONT_FUNCTION_DEFAULT_RUNTIME_V2_0 = '@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0';
+export const ELB_USE_POST_QUANTUM_TLS_POLICY = '@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy';
+export const AUTOMATIC_L1_TRAITS = '@aws-cdk/core:automaticL1Traits';
+export const BATCH_DEFAULT_AL2023 = '@aws-cdk/aws-batch:defaultToAL2023';
+export const EKS_DEFAULT_AL2023 = '@aws-cdk/aws-eks:defaultToAL2023';
+export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInValidationReport';
+export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackReferences';
 
 export const FLAGS: Record<string, FlagInfo> = {
+  //////////////////////////////////////////////////////////////////////
+  [SIGNER_PROFILE_NAME_PASSED_TO_CFN]: {
+    type: FlagType.BugFix,
+    summary: 'Pass signingProfileName to CfnSigningProfile',
+    detailsMd: `
+      When enabled, the \`signingProfileName\` property is passed to the L1 \`CfnSigningProfile\` construct,
+      which ensures that the AWS Signer profile is created with the specified name.
+
+      When disabled, the \`signingProfileName\` is not passed to CloudFormation, maintaining backward
+      compatibility with existing deployments where CloudFormation auto-generated profile names.
+
+      This feature flag is needed because enabling it can cause existing signing profiles to be
+      replaced during deployment if a \`signingProfileName\` was specified but not previously used
+      in the CloudFormation template.`,
+    introducedIn: { v2: '2.212.0' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+  },
   //////////////////////////////////////////////////////////////////////
   [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: {
     type: FlagType.ApiDefault,
@@ -149,7 +188,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       of the stack.`,
     recommendedValue: true,
     introducedIn: { v1: '1.16.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     compatibilityWithOldBehaviorMd: 'Pass stack identifiers to the CLI instead of stack names.',
   },
 
@@ -169,7 +208,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       * \`--fail\` => status code == 1
       * \`--no-fail\` => status code == 0`,
     introducedIn: { v1: '1.19.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Specify `--fail` to the CLI.',
   },
@@ -182,7 +221,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       If this flag is specified, all \`Stack\`s will use the \`DefaultStackSynthesizer\` by
       default. If it is not set, they will use the \`LegacyStackSynthesizer\`.`,
     introducedIn: { v1: '1.39.0', v2: '2.0.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
   },
 
@@ -196,7 +235,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       the location of the stack in the construct tree (specifically, moving the Stack
       into a Stage).`,
     introducedIn: { v1: '1.58.0', v2: '2.0.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
   },
 
@@ -212,7 +251,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       This is a feature flag as the old behavior was technically incorrect but
       users may have come to depend on it.`,
     introducedIn: { v1: '1.73.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Update your `.dockerignore` file to match standard Docker ignore rules, if necessary.',
   },
@@ -228,7 +267,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       If this flag is not set, Secret.secretName will include the SecretsManager suffix, which cannot be directly
       used by SecretsManager.DescribeSecret, and must be parsed by the user first (e.g., Fn:Join, Fn:Select, Fn:Split).`,
     introducedIn: { v1: '1.77.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Use `parseArn(secret.secretName).resourceName` to emulate the incorrect old parsing.',
   },
@@ -250,7 +289,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       Additionally, if this flag is not set and the user supplies a custom key policy, this will be appended
       to the key's default policy (rather than replacing it).`,
     introducedIn: { v1: '1.78.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Pass `trustAccountIdentities: false` to `Key` construct to restore the old behavior.',
   },
@@ -266,7 +305,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       Use a feature flag to make sure existing customers who might be relying
       on the overly-broad permissions are not broken.`,
     introducedIn: { v1: '1.85.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Call `bucket.grantPutAcl()` in addition to `bucket.grantWrite()` to grant ACL permissions.',
   },
@@ -286,9 +325,28 @@ export const FLAGS: Record<string, FlagInfo> = {
       desiredCount of 1, if one is not provided. If true, a default will not be defined for
       CfnService.desiredCount and as such desiredCount will be undefined, if one is not provided.`,
     introducedIn: { v1: '1.92.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'You can pass `desiredCount: 1` explicitly, but you should never need this.',
+  },
+
+  [ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER]: {
+    type: FlagType.ApiDefault,
+    summary: 'Disable implicit openListener when custom security groups are provided',
+    detailsMd: `
+      ApplicationLoadBalancedServiceBase currently defaults openListener to true, which creates
+      security group rules allowing ingress from 0.0.0.0/0. This can be a security risk when
+      users provide custom security groups on their load balancer, expecting those to be the
+      only ingress rules.
+
+      If this flag is not set, openListener will always default to true for backward compatibility.
+      If true, openListener will default to false when custom security groups are detected on the
+      load balancer, and true otherwise. Users can still explicitly set openListener: true to
+      override this behavior.`,
+    introducedIn: { v2: '2.214.0' },
+    unconfiguredBehavesLike: { v2: false },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'You can pass `openListener: true` explicitly to maintain the old behavior.',
   },
 
   //////////////////////////////////////////////////////////////////////
@@ -306,7 +364,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       would lead CloudFormation to think the name was changed and would trigger a cluster replacement
       (losing data!).`,
     introducedIn: { v1: '1.97.0', v2: '2.0.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
   },
 
@@ -328,7 +386,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       In effect, there is no way to get out of this mess in a backwards compatible way, while supporting existing stacks.
       This flag changes the logical id layout of UsagePlanKey to not be sensitive to order.`,
     introducedIn: { v1: '1.98.0', v2: '2.0.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
   },
 
@@ -340,7 +398,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       Encryption can also be configured explicitly using the \`encrypted\` property.
       `,
     introducedIn: { v1: '1.98.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Pass the `encrypted: false` property to the `FileSystem` construct to disable encryption.',
   },
@@ -355,7 +413,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       See 'currentVersion' section in the aws-lambda module's README for more details.`,
     introducedIn: { v1: '1.106.0', v2: '2.0.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
   },
 
@@ -378,7 +436,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
       The security policy can also be configured explicitly using the \`minimumProtocolVersion\` property.`,
     introducedIn: { v1: '1.117.0', v2: '2.0.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
   },
 
@@ -611,7 +669,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
   [IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME]: {
     type: FlagType.BugFix,
-    summary: 'Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in.',
+    summary: 'Enable this feature to create default policy names for imported roles that depend on the stack the role is in.',
     detailsMd: `
       Without this, importing the same role in multiple places could lead to the permissions given for one version of the imported role
       to overwrite permissions given to the role at a different place where it was imported. This was due to all imported instances
@@ -628,7 +686,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.BugFix,
     summary: 'Use S3 Bucket Policy instead of ACLs for Server Access Logging',
     detailsMd: `
-      Enable this feature flag to use S3 Bucket Policy for granting permission fo Server Access Logging
+      Enable this feature flag to use S3 Bucket Policy for granting permission for Server Access Logging
       rather than using the canned \`LogDeliveryWrite\` ACL. ACLs do not work when Object Ownership is
       enabled on the bucket.
 
@@ -841,6 +899,20 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 
   //////////////////////////////////////////////////////////////////////
+  [KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL]: {
+    type: FlagType.BugFix,
+    summary: 'Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition',
+    detailsMd: `
+      This flag enables the grant methods (grant, grantDecrypt, grantEncrypt, etc.) on Aliases imported
+      by name to grant permissions based on the 'kms:ResourceAliases' condition rather than no-op grants.
+      When disabled, grant calls on imported aliases will be dropped (no-op) to maintain compatibility.
+    `,
+    introducedIn: { v2: '2.202.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Remove calls to the grant* methods on the aliases referenced by name',
+  },
+
+  //////////////////////////////////////////////////////////////////////
   [AUTOSCALING_GENERATE_LAUNCH_TEMPLATE]: {
     type: FlagType.BugFix,
     summary: 'Generate a launch template when creating an AutoScalingGroup',
@@ -913,7 +985,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     summary: 'Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default',
     detailsMd: `
       If this is set, and a \`runtime\` prop is not passed to, Lambda NodeJs
-      functions will us the latest version of the runtime provided by the Lambda
+      functions will use the latest version of the runtime provided by the Lambda
       service. Do not use this if you your lambda function is reliant on dependencies
       shipped as part of the runtime environment.
     `,
@@ -1065,7 +1137,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is disabled, it will keep the root account principal in the trust policy.
     `,
     introducedIn: { v2: '2.141.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
   },
@@ -1080,6 +1152,24 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: '2.139.0' },
     recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EKS_USE_NATIVE_OIDC_PROVIDER]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider).',
+    detailsMd: `
+      When this feature flag is enabled, EKS clusters will use the native AWS::IAM::OIDCProvider
+      CloudFormation resource instead of the custom resource provider for creating OIDC providers.
+
+			WARNING: Enabling this flag on a cluster with an existing OIDC provider created by the custom resource (iam.OpenIDConnectProvider)
+			will cause the OIDC provider to be replaced with the native resource, which may lead to disruption.
+
+			To migrate in place without disruption, follow the guide at: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-eks/README.md#migrating-from-the-deprecated-eksopenidconnectprovider-to-eksoidcprovidernative
+    `,
+    introducedIn: { v2: '2.237.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to use the custom resource provider.',
   },
 
   //////////////////////////////////////////////////////////////////////
@@ -1099,7 +1189,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.ApiDefault,
     summary: 'When enabled, remove default deployment alarm settings',
     detailsMd: `
-      When this featuer flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
+      When this feature flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
     `,
     introducedIn: { v2: '2.143.0' },
     recommendedValue: true,
@@ -1151,47 +1241,31 @@ export const FLAGS: Record<string, FlagInfo> = {
 
     `,
     introducedIn: { v2: '2.156.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to use input and output path fields for s3 URI',
   },
 
   //////////////////////////////////////////////////////////////////////
-  [Enable_IMDS_Blocking_Deprecated_Feature]: {
-    type: FlagType.Temporary,
-    summary: 'When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated ' +
-      'commands will be added to UserData to block container accessing IMDS. ' +
-      '**Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**',
+  [EXPLICIT_STACK_TAGS]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, stack tags need to be assigned explicitly on a Stack.',
     detailsMd: `
-    In an ECS Cluster with \`MachineImageType.AMAZON_LINUX_2\`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
-    accessing IMDS. Set this flag to true in order to use new and updated commands. Please note that this
-    feature alone with this feature flag will be deprecated by <ins>**end of 2025**</ins> as CDK cannot
-    guarantee the correct execution of the feature in all platforms. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
-    It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
-    `,
-    introducedIn: { v2: '2.175.0' },
-    recommendedValue: false,
-    compatibilityWithOldBehaviorMd: 'Set this flag to false in order to continue using old and outdated commands. ' +
-      'However, it is **not** recommended.',
-  },
+    Without this feature flag enabled, if tags are added to a Stack using
+    \`Tags.of(scope).add(...)\`, they will be added to both the stack and all resources
+    in the stack template.
 
-  //////////////////////////////////////////////////////////////////////
-  [Disable_ECS_IMDS_Blocking]: {
-    type: FlagType.Temporary,
-    summary: 'When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false.' +
-      ' **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**',
-    detailsMd: `
-    In an ECS Cluster with \`MachineImageType.AMAZON_LINUX_2\`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
-    accessing IMDS. CDK cannot guarantee the correct execution of the feature in all platforms. Setting this feature flag
-    to true will ensure CDK does not attempt to implement IMDS blocking. By <ins>**end of 2025**</ins>, CDK will remove the
-    IMDS blocking feature. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
+    That leads to the tags being applied twice: once in the template, and once
+    again automatically by CloudFormation, which will apply all stack tags to
+    all resources in the stack. This leads to loss of control, as the
+    \`excludeResourceTypes\` option of the Tags API will not have any effect.
 
-    It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
+    With this flag enabled, tags added to a stack using \`Tags.of(...)\` are ignored,
+    and Stack tags must be configured explicitly on the Stack object.
     `,
-    introducedIn: { v2: '2.175.0' },
+    introducedIn: { v2: '2.205.0' },
     recommendedValue: true,
-    compatibilityWithOldBehaviorMd: 'It is strongly recommended to set this flag to true. However, if necessary, set ' +
-      'this flag to false to continue using the old implementation.',
+    compatibilityWithOldBehaviorMd: 'Configure stack-level tags using `new Stack(..., { tags: { ... } })`.',
   },
 
   //////////////////////////////////////////////////////////////////////
@@ -1332,12 +1406,12 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.VisibleContext,
     summary: 'When enabled, a stabilization loop will be run when invoking Aspects during synthesis.',
     detailsMd: `
-      Currently, when Aspects are invoked in one single pass of the construct tree.
-      This means that the Aspects that create other Aspects are not run and Aspects that create new nodes of the tree sometimes do not inherit their parent Aspects.
+      Previously, Aspects were invoked in a single pass of the construct tree.
+      This meant that Aspects which created other Aspects were not run, and Aspects that created new nodes in the tree sometimes did not inherit their parent Aspects.
 
       When this feature flag is enabled, a stabilization loop is run to recurse the construct tree multiple times when invoking Aspects.
     `,
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     introducedIn: { v2: '2.172.0' },
     recommendedValue: true,
   },
@@ -1441,7 +1515,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       If you are providing a custom role, you will need to ensure 'roleName' is specified or set to PhysicalName.GENERATE_IF_NEEDED.
     `,
     introducedIn: { v2: '2.184.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
   },
@@ -1523,14 +1597,14 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.ApiDefault,
     summary: 'When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs.',
     detailsMd: `
-      When this feature flag is enabled, the SDK API call response to desribe user pool client values will be logged in the custom
+      When this feature flag is enabled, the SDK API call response to describe user pool client values will be logged in the custom
       resource lambda function logs.
 
       When this feature flag is disabled, the SDK API call response to describe user pool client values will not be logged in the custom
       resource lambda function logs.
     `,
     introducedIn: { v2: '2.187.0' },
-    defaults: { v2: false },
+    unconfiguredBehavesLike: { v2: false },
     recommendedValue: false,
     compatibilityWithOldBehaviorMd: 'Enable the feature flag to keep the old behavior and log the client secret values',
   },
@@ -1545,11 +1619,12 @@ export const FLAGS: Record<string, FlagInfo> = {
         When this feature flag is disabled, it will keep the root account principal in the trust policy.
       `,
     introducedIn: { v2: '2.189.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
   },
 
+  //////////////////////////////////////////////////////////////////////
   [STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2]: {
     type: FlagType.ApiDefault,
     summary: 'When enabled, the resultWriterV2 property of DistributedMap will be used insted of resultWriter',
@@ -1561,9 +1636,288 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag and set resultWriter in DistributedMap',
   },
+
+  //////////////////////////////////////////////////////////////////////
+  [S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS]: {
+    type: FlagType.BugFix,
+    summary: 'Add an S3 trust policy to a KMS key resource policy for SNS subscriptions.',
+    detailsMd: `
+      When this feature flag is enabled, a S3 trust policy will be added to the KMS key resource policy for encrypted SNS subscriptions.
+          `,
+    introducedIn: { v2: '2.195.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the EgressOnlyGateway resource is only created if private subnets are defined in the dual-stack VPC.',
+    detailsMd: `
+      When this feature flag is enabled, EgressOnlyGateway resource will not be created when you create a vpc with only public subnets.
+          `,
+    introducedIn: { v2: '2.196.0' },
+    recommendedValue: true,
+  },
+
+  /// ///////////////////////////////////////////////////////////////////
+  [USE_RESOURCEID_FOR_VPCV2_MIGRATION]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, use resource IDs for VPC V2 migration',
+    detailsMd: `
+        When this feature flag is enabled, the VPC V2 migration will use resource IDs instead of getAtt references
+        for migrating resources from VPC V1 to VPC V2. This helps ensure a smoother migration path between
+        the two versions.
+      `,
+    introducedIn: { v2: '2.196.0' },
+    recommendedValue: false,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to use getAtt references for VPC V2 migration',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined.',
+    detailsMd: `
+      When BlockPublicAccess is not set at all, s3's default behavior will be to set all options to true in aws console.
+      The previous behavior in cdk before this feature was; if only some of the BlockPublicAccessOptions were set (not all 4), then the ones undefined would default to false.
+      This is counter intuitive to the console behavior where the options would start in true state and a user would uncheck the boxes as needed.
+      The new behavior from this feature will allow a user, for example, to set 1 of the 4 BlockPublicAccessOpsions to false, and on deployment the other 3 will remain true.
+    `,
+    introducedIn: { v2: '2.196.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [USE_CDK_MANAGED_LAMBDA_LOGGROUP]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, CDK creates and manages loggroup for the lambda function',
+    detailsMd: `
+        When this feature flag is enabled, CDK will create a loggroup for lambda function with default properties
+        which supports CDK features Tag propagation, Property Injectors, Aspects
+        if the cdk app doesnt pass a 'logRetention' or 'logGroup' explicitly.
+        LogGroups created via 'logRetention' do not support Tag propagation, Property Injectors, Aspects.
+        LogGroups created via 'logGroup' created in CDK support Tag propagation, Property Injectors, Aspects.
+
+        When this feature flag is disabled, a loggroup is created by Lambda service on first invocation
+        of the function (existing behavior).
+        LogGroups created in this way do not support Tag propagation, Property Injectors, Aspects.
+
+        DO NOT ENABLE: If you have an existing app defining a lambda function and
+        have not supplied a logGroup or logRetention prop and your lambda function has
+        executed at least once, the logGroup has been already created with the same name
+        so your deployment will start failing.
+        Refer aws-lambda/README.md for more details on Customizing Log Group creation.
+      `,
+    introducedIn: { v2: '2.200.0' },
+    unconfiguredBehavesLike: { v2: false },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to let lambda service create logGroup or specify logGroup or logRetention',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, Network Load Balancer will be created with a security group by default.',
+    detailsMd: `
+      When this feature flag is enabled, Network Load Balancer will be created with a security group by default.
+    `,
+    introducedIn: { v2: '2.222.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to create Network Load Balancer without a security group by default.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.',
+    detailsMd: `
+      When this feature flag is enabled, the JSONPath apiEndpoint value will be resolved dynamically at runtime, while slightly increasing the size of the state machine definition.
+      When disabled, the JSONPath apiEndpoint property will only support a static string value.
+    `,
+    introducedIn: { v2: '2.221.0' },
+    unconfiguredBehavesLike: { v2: true },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement',
+    detailsMd: `
+      When this feature flag is enabled, ECS patterns will generate unique target group IDs that include
+      both the load balancer type (public/private) and load balancer name. This prevents CloudFormation
+      conflicts when switching between public and private load balancers or when changing load balancer names.
+
+      Without this flag, target groups use generic IDs like 'ECS' which can cause conflicts when the
+      underlying load balancer is replaced due to changes in internetFacing or loadBalancerName properties.
+
+      This is a breaking change as it will cause target group replacement when the flag is enabled.
+    `,
+    introducedIn: { v2: '2.221.0' },
+    recommendedValue: true,
+  },
+
+  [ROUTE53_PATTERNS_USE_DISTRIBUTION]: {
+    type: FlagType.ApiDefault,
+    summary: 'Use the `Distribution` resource instead of `CloudFrontWebDistribution`',
+    detailsMd: `
+      Enable this feature flag to use the new \`Distribution\` resource instead
+      of the deprecated \`CloudFrontWebDistribution\` construct.
+      `,
+    introducedIn: { v2: '2.233.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Define a `CloudFrontWebDistribution` explicitly',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CLOUDFRONT_FUNCTION_DEFAULT_RUNTIME_V2_0]: {
+    type: FlagType.ApiDefault,
+    summary: 'Use cloudfront-js-2.0 as the default runtime for CloudFront Functions',
+    detailsMd: `
+      When enabled, CloudFront Functions will use cloudfront-js-2.0 runtime by default instead of cloudfront-js-1.0.
+      The runtime can still be configured explicitly using the \`runtime\` property.
+
+      If \`keyValueStore\` is specified, the runtime will always be cloudfront-js-2.0 regardless of this flag.`,
+    introducedIn: { v2: '2.245.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Set `runtime: FunctionRuntime.JS_1_0` explicitly to use the v1.0 runtime.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ELB_USE_POST_QUANTUM_TLS_POLICY]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default',
+    detailsMd: `
+      When this feature flag is enabled, HTTPS and TLS listeners that do not have an explicit
+      \`sslPolicy\` will use the post-quantum cryptography policy
+      \`ELBSecurityPolicy-TLS13-1-2-PQ-2025-09\` by default.
+
+      This policy uses the non-restricted variant (without -Res-) to maintain AES-CBC cipher support
+      for TLS 1.2 clients, ensuring nearly 100% backward compatibility with the previous CDK default.
+      Post-quantum policies provide protection against "Harvest Now, Decrypt Later" attacks using
+      hybrid ML-KEM key exchange.
+
+      When disabled (default), no explicit SSL policy is set, preserving the existing CDK behavior
+      where \`RECOMMENDED_TLS\` (\`ELBSecurityPolicy-TLS13-1-2-2021-06\`) is used.
+    `,
+    introducedIn: { v2: '2.245.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable this feature flag to preserve existing behavior where no explicit SSL policy is set.',
+  },
+
+  [AUTOMATIC_L1_TRAITS]: {
+    type: FlagType.ApiDefault,
+    summary: 'Automatically use the default L1 traits for L1 constructs`',
+    detailsMd: `
+      When enabled, the construct library will apply default L1 traits for types that
+      have no traits defined yet. Traits regulate behaviors such as how to create
+      resource policies, or how to find an encryption key for a given L1 construct.
+      `,
+    introducedIn: { v2: '2.239.0' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: true },
+    compatibilityWithOldBehaviorMd: 'Register traits explicitly for each resource type',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [BATCH_DEFAULT_AL2023]: {
+    type: FlagType.ApiDefault,
+    summary: 'Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2',
+    detailsMd: `
+      When enabled, EC2 Batch compute environments (both ECS and EKS) that do not specify an \`imageType\`
+      will default to \`ECS_AL2023\` or \`EKS_AL2023\` instead of the deprecated \`ECS_AL2\` or \`EKS_AL2\`
+      (Amazon Linux 2, reaching EOL June 2026 for ECS; already EOL for EKS).
+
+      For EKS compute environments with a launch template, \`userdataType\` will automatically be set
+      to \`EKS_NODEADM\` when an AL2023 image type is used, as required by the AWS Batch API.
+
+      When disabled, the default \`imageType\` remains \`ECS_AL2\` / \`EKS_AL2\` for backward compatibility.`,
+    introducedIn: { v2: '2.249.0' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: `Explicitly set \`imageType\` to \`ECS_AL2\` or \`EKS_AL2\` in your compute environment images configuration.
+
+**Warning**: Enabling this flag on existing stacks may cause compute environment replacement, which terminates running jobs. To migrate safely, first pin existing environments to their current imageType explicitly, then enable the flag.`,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EKS_DEFAULT_AL2023]: {
+    type: FlagType.ApiDefault,
+    summary: 'Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2',
+    detailsMd: `
+      When enabled, EKS managed node groups that do not specify an \`amiType\` will default to
+      AL2023 AMI types (AL2023_x86_64_STANDARD, AL2023_ARM_64_STANDARD) instead of the deprecated
+      AL2 types (AL2_x86_64, AL2_ARM_64).
+
+      This only affects non-GPU instance types. GPU instances continue to default to AL2_x86_64_GPU
+      because AL2023 splits GPU support into separate NVIDIA and Neuron AMI variants.
+
+      Amazon Linux 2 reached end of support on November 26, 2025. AL2023 is the AWS-recommended default.
+
+      When disabled, the default AMI types remain AL2 for backward compatibility.`,
+    introducedIn: { v2: '2.259.0' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: `Explicitly set \`amiType\` to the desired AL2 type (e.g., \`NodegroupAmiType.AL2_X86_64\`) in your nodegroup configuration.
+
+**Warning**: Enabling this flag on existing stacks will cause node group replacement, which terminates running pods. To migrate safely, first pin existing node groups to their current amiType explicitly, then enable the flag for new node groups.`,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ANNOTATIONS_IN_VALIDATION_REPORT]: {
+    type: FlagType.VisibleContext,
+    summary: 'Include construct annotations (warnings and errors) in the policy validation report',
+    detailsMd: `
+      When enabled, construct annotations added via \`Annotations.of()\` or \`Validations.of()\`
+      are collected post-synthesis and included in the policy validation report alongside
+      plugin violations. Annotations appear under a "Construct Annotations" source entry.
+
+      When disabled, annotations are only displayed through the CLI's standard metadata
+      output (e.g. \`[Warning at /path] message\`) and do not appear in the validation report.
+
+      Note: enabling this flag may cause annotations to appear twice — once in the CLI's
+      standard output and once in the validation report — until the CLI is updated to
+      consolidate both displays.`,
+    introducedIn: { v2: '2.253.0' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [DEFAULT_CROSS_STACK_REFERENCES]: {
+    type: FlagType.VisibleContext,
+    summary: 'Controls whether cross-region stack references are strong, weak, or both',
+    detailsMd: `
+      Controls the default type of cross-region stack references. Accepted values are
+      \`"strong"\`, \`"weak"\`, and \`"both"\`. This setting only affects same-account,
+      cross-region references. Cross-account references are always weak, and same-region
+      references are always strong (Fn::ImportValue).
+
+      The flag is read from the **consumer** stack's context, not the producer's.
+
+      - \`"strong"\` (default): Uses ExportWriter/ExportReader custom resources that
+        write values to SSM Parameters in the consuming region. This prevents the
+        producing stack from being deleted while consumers exist.
+      - \`"weak"\`: Uses Fn::GetStackOutput to read an output directly from the
+        producing stack. Simpler (no extra infrastructure), but the producing stack
+        can be deleted independently of consumers.
+      - \`"both"\`: A transitional state for migrating from strong to weak. The producer
+        keeps the ExportWriter (continues writing to SSM) and also adds an Output. The
+        consumer switches to Fn::GetStackOutput. This allows removing the ExportReader
+        without breaking anything.
+
+      **Migration from strong to weak**: set to \`"both"\` and deploy, then set to
+      \`"weak"\` and deploy again.
+
+      **Migration from weak to strong**: set directly to \`"strong"\` (single deployment).`,
+    introducedIn: { v2: '2.254.0' },
+    recommendedValue: 'weak',
+    unconfiguredBehavesLike: { v2: 'strong' },
+  },
 };
 
-const CURRENT_MV = 'v2';
+export const CURRENT_MV = 'v2';
 
 /**
  * The list of future flags that are now expired. This is going to be used to identify
@@ -1576,18 +1930,16 @@ export const CURRENT_VERSION_EXPIRED_FLAGS: string[] = Object.entries(FLAGS)
 /**
  * Flag values that should apply for new projects
  *
- * Add a flag in here (typically with the value `true`), to enable
- * backwards-breaking behavior changes only for new projects.  New projects
- * generated through `cdk init` will include these flags in their generated
- * project config.
+ * This contains flags that satisfy both criteria of:
  *
- * Tests must cover the default (disabled) case and the future (enabled) case.
- *
- * Going forward, this should *NOT* be consumed directly anymore.
+ * - They are configurable for the current major version line.
+ * - The recommended value is different from the unconfigured value (i.e.,
+ *   configuring a flag is useful)
  */
 export const CURRENTLY_RECOMMENDED_FLAGS = Object.fromEntries(
   Object.entries(FLAGS)
-    .filter(([_, flag]) => flag.recommendedValue !== flag.defaults?.[CURRENT_MV] && flag.introducedIn[CURRENT_MV])
+    .filter(([_, flag]) => flag.introducedIn[CURRENT_MV] !== undefined)
+    .filter(([_, flag]) => flag.recommendedValue !== flag.unconfiguredBehavesLike?.[CURRENT_MV])
     .map(([name, flag]) => [name, flag.recommendedValue]),
 );
 
@@ -1601,14 +1953,14 @@ export const CURRENTLY_RECOMMENDED_FLAGS = Object.fromEntries(
  * major version!
  */
 export const CURRENT_VERSION_FLAG_DEFAULTS = Object.fromEntries(Object.entries(FLAGS)
-  .filter(([_, flag]) => flag.defaults?.[CURRENT_MV] !== undefined)
-  .map(([name, flag]) => [name, flag.defaults?.[CURRENT_MV]]));
+  .filter(([_, flag]) => flag.unconfiguredBehavesLike?.[CURRENT_MV] !== undefined)
+  .map(([name, flag]) => [name, flag.unconfiguredBehavesLike?.[CURRENT_MV]]));
 
 export function futureFlagDefault(flag: string): boolean {
   const value = CURRENT_VERSION_FLAG_DEFAULTS[flag] ?? false;
   if (typeof value !== 'boolean') {
     // This should never happen, if this error is thrown it's a bug
-    // eslint-disable-next-line @cdklabs/no-throw-default-error
+
     throw new Error(`futureFlagDefault: default type of flag '${flag}' should be boolean, got '${typeof value}'`);
   }
   return value;

@@ -1,9 +1,11 @@
-import * as cdk from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import { IFleet } from './fleet-base';
-import { IGameSessionQueueDestination } from './game-session-queue';
 import { CfnAlias } from 'aws-cdk-lib/aws-gamelift';
+import * as cdk from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import type { IFleet } from './fleet-base';
+import type { IGameSessionQueueDestination } from './game-session-queue';
 
 /**
  * Represents a Gamelift Alias for a Gamelift fleet destination.
@@ -133,7 +135,11 @@ export abstract class AliasBase extends cdk.Resource implements IAlias {
  *
  * @resource AWS::GameLift::Alias
  */
+@propertyInjectable
 export class Alias extends AliasBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-gamelift-alpha.Alias';
+
   /**
    * Import an existing alias from its identifier.
    */
@@ -182,19 +188,11 @@ export class Alias extends AliasBase {
   }
 
   /**
-   * The Identifier of the alias.
-   */
-  public readonly aliasId: string;
-
-  /**
-   * The ARN of the alias.
-   */
-  public readonly aliasArn: string;
-
-  /**
    * A fleet that the alias points to.
    */
   public readonly fleet?: IFleet;
+
+  private resource: CfnAlias;
 
   constructor(scope: Construct, id: string, props: AliasProps) {
     super(scope, id, {
@@ -223,14 +221,21 @@ export class Alias extends AliasBase {
       throw new Error('Either a terminal message or a fleet must be binded to this Alias, not both.');
     }
 
-    const resource = new CfnAlias(this, 'Resource', {
+    this.resource = new CfnAlias(this, 'Resource', {
       name: props.aliasName,
       description: props.description,
       routingStrategy: this.parseRoutingStrategy(props),
     });
+  }
 
-    this.aliasId = this.getResourceNameAttribute(resource.ref);
-    this.aliasArn = cdk.Stack.of(scope).formatArn({
+  @memoizedGetter
+  public get aliasId(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get aliasArn(): string {
+    return cdk.Stack.of(this).formatArn({
       service: 'gamelift',
       resource: 'alias',
       resourceName: this.aliasId,

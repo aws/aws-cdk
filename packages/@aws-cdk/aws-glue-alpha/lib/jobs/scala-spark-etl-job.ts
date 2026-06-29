@@ -1,9 +1,14 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
-import { Construct } from 'constructs';
-import { JobType, GlueVersion, JobLanguage, WorkerType } from '../constants';
-import { Code } from '../code';
-import { SparkJob, SparkJobProps } from './spark-job';
+import { ValidationError } from 'aws-cdk-lib/core';
+import type * as cdk from 'aws-cdk-lib/core';
+import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import type { Code } from '../code';
+import { JobType, GlueVersion, JobLanguage, WorkerType } from '../constants';
+import type { SparkJobProps } from './spark-job';
+import { SparkJob } from './spark-job';
 
 /**
  * Properties for creating a Scala Spark ETL job
@@ -15,6 +20,13 @@ export interface ScalaSparkEtlJobProps extends SparkJobProps {
    * Java scripts
    **/
   readonly className: string;
+
+  /**
+   * Specifies configuration properties of a notification (optional).
+   * After a job run starts, the number of minutes to wait before sending a job run delay notification.
+   * @default - undefined
+   */
+  readonly notifyDelayAfter?: cdk.Duration;
 
   /**
    * Additional files, such as configuration files that AWS Glue copies to the working directory of your script before executing it.
@@ -66,9 +78,11 @@ export interface ScalaSparkEtlJobProps extends SparkJobProps {
  * You can find more details about version, worker type and other features
  * in Glue's public documentation.
  */
+@propertyInjectable
 export class ScalaSparkEtlJob extends SparkJob {
-  public readonly jobArn: string;
-  public readonly jobName: string;
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.ScalaSparkEtlJob';
+  private resource: CfnJob;
 
   /**
    * ScalaSparkEtlJob constructor
@@ -85,10 +99,10 @@ export class ScalaSparkEtlJob extends SparkJob {
     };
 
     if ((!props.workerType && props.numberOfWorkers !== undefined) || (props.workerType && props.numberOfWorkers === undefined)) {
-      throw new Error('Both workerType and numberOfWorkers must be set');
+      throw new ValidationError(lit`WorkerTypeAndNumberOfWorkersMustBothBeSet`, 'Both workerType and numberOfWorkers must be set', this);
     }
 
-    const jobResource = new CfnJob(this, 'Resource', {
+    this.resource = new CfnJob(this, 'Resource', {
       name: props.jobName,
       description: props.description,
       role: this.role.roleArn,
@@ -101,6 +115,7 @@ export class ScalaSparkEtlJob extends SparkJob {
       numberOfWorkers: props.numberOfWorkers ? props.numberOfWorkers : 10,
       maxRetries: props.jobRunQueuingEnabled ? 0 : props.maxRetries,
       jobRunQueuingEnabled: props.jobRunQueuingEnabled ? props.jobRunQueuingEnabled : false,
+      notificationProperty: props.notifyDelayAfter ? { notifyDelayAfter: props.notifyDelayAfter.toMinutes() } : undefined,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
       timeout: props.timeout?.toMinutes(),
       connections: props.connections ? { connections: props.connections.map((connection) => connection.connectionName) } : undefined,
@@ -108,10 +123,16 @@ export class ScalaSparkEtlJob extends SparkJob {
       tags: props.tags,
       defaultArguments,
     });
+  }
 
-    const resourceName = this.getResourceNameAttribute(jobResource.ref);
-    this.jobArn = this.buildJobArn(this, resourceName);
-    this.jobName = resourceName;
+  @memoizedGetter
+  public get jobArn(): string {
+    return this.buildJobArn(this, this.jobName);
+  }
+
+  @memoizedGetter
+  public get jobName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
   }
 
   /**

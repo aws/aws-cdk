@@ -22,7 +22,11 @@ class MultiStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const testCase = new MultiStack(app, 'restapi-multiuse-example');
 
 new IntegTest(app, 'restapi-multiuse', {

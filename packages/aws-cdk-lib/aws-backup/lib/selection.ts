@@ -1,12 +1,17 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnBackupSelection } from './backup.generated';
 import { BackupableResourcesCollector } from './backupable-resources-collector';
-import { IBackupPlan } from './plan';
-import { BackupResource, TagOperation } from './resource';
+import type { BackupResource } from './resource';
+import { TagOperation } from './resource';
 import * as iam from '../../aws-iam';
-import { Lazy, Resource, Aspects } from '../../core';
+import { Resource, Aspects, Token } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IBackupPlanRef } from '../../interfaces/generated/aws-backup-interfaces.generated';
 
 /**
  * Options for a BackupSelection
@@ -62,13 +67,17 @@ export interface BackupSelectionProps extends BackupSelectionOptions {
   /**
    * The backup plan for this selection
    */
-  readonly backupPlan: IBackupPlan;
+  readonly backupPlan: IBackupPlanRef;
 }
 
 /**
  * A backup selection
  */
+@propertyInjectable
+@noBoxStackTraces
 export class BackupSelection extends Resource implements iam.IGrantable {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-backup.BackupSelection';
   /**
    * The identifier of the backup plan.
    *
@@ -88,8 +97,8 @@ export class BackupSelection extends Resource implements iam.IGrantable {
    */
   public readonly grantPrincipal: iam.IPrincipal;
 
-  private listOfTags: CfnBackupSelection.ConditionResourceTypeProperty[] = [];
-  private resources: string[] = [];
+  private readonly listOfTags: IArrayBox<CfnBackupSelection.ConditionResourceTypeProperty> = Box.fromArray();
+  private readonly resources: IArrayBox<string> = Box.fromArray([], { omitEmpty: false });
   private readonly backupableResourcesCollector = new BackupableResourcesCollector();
 
   constructor(scope: Construct, id: string, props: BackupSelectionProps) {
@@ -109,16 +118,18 @@ export class BackupSelection extends Resource implements iam.IGrantable {
     this.grantPrincipal = role;
 
     const selection = new CfnBackupSelection(this, 'Resource', {
-      backupPlanId: props.backupPlan.backupPlanId,
+      backupPlanId: props.backupPlan.backupPlanRef.backupPlanId,
       backupSelection: {
         iamRoleArn: role.roleArn,
         selectionName: props.backupSelectionName || this.node.id,
-        listOfTags: Lazy.any({
-          produce: () => this.listOfTags,
-        }, { omitEmptyArray: true }),
-        resources: Lazy.list({
-          produce: () => [...this.resources, ...this.backupableResourcesCollector.resources],
-        }, { omitEmpty: true }),
+        listOfTags: this.listOfTags,
+        resources: Token.asList(
+          this.resources.derive(r => {
+            const all = [...r, ...this.backupableResourcesCollector.resources];
+            return all.length > 0 ? all : undefined;
+          }),
+          { displayHint: 'resources' },
+        ),
       },
     });
 

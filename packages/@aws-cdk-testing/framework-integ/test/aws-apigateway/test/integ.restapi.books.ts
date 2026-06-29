@@ -47,7 +47,11 @@ class BookStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const testCase = new BookStack(app, 'restapi-books-example');
 new IntegTest(app, 'restapi-books', {

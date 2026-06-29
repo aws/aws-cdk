@@ -62,7 +62,10 @@
     }
    },
    "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "MyLambdaCurrentVersionEventInvokeConfigD120DC68": {
    "Type": "AWS::Lambda::EventInvokeConfig",

@@ -19,8 +19,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
  */
 const app = new cdk.App({
   postCliContext: {
-    '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
-    '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
@@ -67,7 +66,7 @@ const definition = new sfn.Pass(stack, 'Start', {
 );
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
-  definition,
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
 });
 
 new cdk.CfnOutput(stack, 'stateMachineArn', {

@@ -1,8 +1,9 @@
-import { Construct } from 'constructs';
-import { ITrustStore } from './trust-store';
-import { IBucket } from '../../../aws-s3';
+import type { Construct } from 'constructs';
+import type { IBucketRef } from '../../../aws-s3';
 import { Resource } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { CfnTrustStoreRevocation } from '../elasticloadbalancingv2.generated';
 
 /**
@@ -13,7 +14,7 @@ export interface TrustStoreRevocationProps {
   /**
    * The trust store
    */
-  readonly trustStore: ITrustStore;
+  readonly trustStore: aws_elasticloadbalancingv2.ITrustStoreRef;
 
   /**
    * The revocation file to add
@@ -35,7 +36,7 @@ export interface RevocationContent {
   /**
    * The Amazon S3 bucket for the revocation file
    */
-  readonly bucket: IBucket;
+  readonly bucket: IBucketRef;
 
   /**
    * The Amazon S3 path for the revocation file
@@ -63,17 +64,21 @@ export enum RevocationType {
 /**
  * A new Trust Store Revocation
  */
+@propertyInjectable
 export class TrustStoreRevocation extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.TrustStoreRevocation';
+
   constructor(scope: Construct, id: string, props: TrustStoreRevocationProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
     new CfnTrustStoreRevocation(this, 'Resource', {
-      trustStoreArn: props.trustStore.trustStoreArn,
+      trustStoreArn: props.trustStore.trustStoreRef.trustStoreArn,
       revocationContents: props.revocationContents?.map(content => ({
         revocationType: content.revocationType,
-        s3Bucket: content.bucket.bucketName,
+        s3Bucket: content.bucket.bucketRef.bucketName,
         s3Key: content.key,
         s3ObjectVersion: content.version,
       })),

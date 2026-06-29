@@ -103,6 +103,12 @@ new ses.AllowListReceiptFilter(this, 'AllowList', {
 
 This will first create a block all filter and then create allow filters for the listed ip addresses.
 
+### AWS Service Principal permissions
+
+When adding an s3 action to a receipt rule, the CDK will automatically create a policy statement that allows the ses service principal to get write access to the bucket. This is done with the `SourceAccount` condition key, which is automatically added to the policy statement.
+Previously, the policy used the `Referer` condition key, which caused confused deputy problems when the bucket policy allowed access to the bucket for all principals.
+See more information in [this github issue](https://github.com/aws/aws-cdk/issues/29811)
+
 ## Email sending
 
 ### Dedicated IP pools
@@ -139,7 +145,6 @@ import { Duration } from 'aws-cdk-lib';
 declare const myPool: ses.IDedicatedIpPool;
 
 new ses.ConfigurationSet(this, 'ConfigurationSet', {
-  customTrackingRedirectDomain: 'track.cdk.dev',
   tlsPolicy: ses.ConfigurationSetTlsPolicy.REQUIRE,
   dedicatedIpPool: myPool,
   // Specify maximum delivery time
@@ -200,6 +205,20 @@ myConfigurationSet.addEventDestination('ToFirehose', {
 })
 ```
 
+#### Tracking options
+
+You can specify to use a custom redirect domain to handle open and click tracking for email sent with this configuration set by using `customTrackingRedirectDomain` and `customTrackingHttpsPolicy`.
+Detail can be found in [Custom tracking domain](https://docs.aws.amazon.com/ses/latest/dg/configure-custom-open-click-domains.html).
+
+```ts
+new ses.ConfigurationSet(this, 'ConfigurationSet', {
+  customTrackingRedirectDomain: 'track.cdk.dev',
+  customTrackingHttpsPolicy: ses.HttpsPolicy.REQUIRE,
+});
+```
+
+**Note**: The custom tracking redirect domain must be verified in Amazon SES. To create verified identities, you can use the [`EmailIdentity` construct](#email-identity).
+
 ### Override account-level suppression list settings
 
 You can customize account-level suppression list separately for different configuration sets by overriding it
@@ -233,6 +252,33 @@ new ses.ConfigurationSet(this, 'ConfigurationSet', {
 // Both bounces and complaints will be suppressed.
 new ses.ConfigurationSet(this, 'ConfigurationSet', {
   suppressionReasons: ses.SuppressionReasons.BOUNCES_AND_COMPLAINTS,
+});
+```
+
+#### Auto Validation threshold
+
+Auto validation automatically reviews all outbound email addresses before sending and only delivers messages to recipients meeting your selected validation threshold. This protects sender reputation by preventing sends to invalid or risky addresses.
+
+You can override the account-level Auto Validation settings at the configuration set level using `autoValidationThreshold`:
+
+- `MANAGED` - Amazon SES automatically optimizes threshold based on sending patterns and reputation (recommended)
+- `HIGH` - Only addresses with high delivery likelihood (maximum reputation protection)
+- `MEDIUM` - Addresses with medium or high delivery likelihood (balances protection with reach)
+
+For more details, see [Auto Validation](https://docs.aws.amazon.com/ses/latest/dg/email-validation-auto.html).
+
+```ts
+new ses.ConfigurationSet(this, 'ConfigurationSet', {
+  autoValidationThreshold: ses.AutoValidationThreshold.HIGH,
+});
+```
+
+Use `disableAutoValidation` to turn the feature on or off for this configuration set, regardless of the account-level setting:
+
+```ts
+// Explicitly disable Auto Validation for this configuration set.
+new ses.ConfigurationSet(this, 'NoAutoValidation', {
+  disableAutoValidation: true,
 });
 ```
 

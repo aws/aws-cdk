@@ -1,11 +1,13 @@
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
-import * as cdk from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import { Content } from './content';
 import { CfnBuild } from 'aws-cdk-lib/aws-gamelift';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import type * as s3 from 'aws-cdk-lib/aws-s3';
+import type * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
+import * as cdk from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import { Content } from './content';
 
 /**
  * Your custom-built game server software that runs on GameLift and hosts game sessions for your players.
@@ -169,7 +171,7 @@ export interface BuildProps {
    *
    * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/integration-custom-intro.html
    *
-   * @default - 4.0.2
+   * @default '4.0.2'
    */
   readonly serverSdkVersion?: string;
 }
@@ -182,7 +184,11 @@ export interface BuildProps {
  *
  * @resource AWS::GameLift::Build
  */
+@propertyInjectable
 export class Build extends BuildBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-gamelift-alpha.Build';
+
   /**
    * Create a new Build from s3 content
    */
@@ -251,16 +257,6 @@ export class Build extends BuildBase {
   }
 
   /**
-   * The Identifier of the build.
-   */
-  public readonly buildId: string;
-
-  /**
-   * The ARN of the build.
-   */
-  public readonly buildArn: string;
-
-  /**
    * The IAM role GameLift assumes to acccess server build content.
    */
   public readonly role: iam.IRole;
@@ -269,6 +265,8 @@ export class Build extends BuildBase {
    * The principal this GameLift Build is using.
    */
   public readonly grantPrincipal: iam.IPrincipal;
+
+  private resource: CfnBuild;
 
   constructor(scope: Construct, id: string, props: BuildProps) {
     super(scope, id, {
@@ -291,7 +289,7 @@ export class Build extends BuildBase {
     this.grantPrincipal = this.role;
     const content = props.content.bind(this, this.role);
 
-    const resource = new CfnBuild(this, 'Resource', {
+    this.resource = new CfnBuild(this, 'Resource', {
       name: props.buildName,
       version: props.buildVersion,
       operatingSystem: props.operatingSystem,
@@ -304,10 +302,17 @@ export class Build extends BuildBase {
       serverSdkVersion: props.serverSdkVersion,
     });
 
-    resource.node.addDependency(this.role);
+    this.resource.node.addDependency(this.role);
+  }
 
-    this.buildId = this.getResourceNameAttribute(resource.ref);
-    this.buildArn = cdk.Stack.of(scope).formatArn({
+  @memoizedGetter
+  public get buildId(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get buildArn(): string {
+    return cdk.Stack.of(this).formatArn({
       service: 'gamelift',
       resource: 'build',
       resourceName: this.buildId,

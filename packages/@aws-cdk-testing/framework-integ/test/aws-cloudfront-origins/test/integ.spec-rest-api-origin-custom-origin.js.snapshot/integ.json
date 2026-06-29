@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "44.0.0",
   "testCases": {
     "rest-api-origin-custom-origin-path/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "rest-api-origin-custom-origin-path/DefaultTest/DeployAssert",
       "assertionStackName": "restapiorigincustomoriginpathDefaultTestDeployAssertCD227A2A"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

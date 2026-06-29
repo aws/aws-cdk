@@ -14,7 +14,11 @@ import { STANDARD_NODEJS_RUNTIME } from '../../../config';
  * * aws stepfunctions describe-execution --execution-arn <execution-arn generated before> --query 'output': should return the string \"hello, world!\"
  */
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'CallRestApiInteg');
 const restApi = new apigateway.RestApi(stack, 'MyRestApi', { cloudWatchRole: true });
 
@@ -36,7 +40,7 @@ const callEndpointJob = new CallApiGatewayRestApiEndpoint(stack, 'Call APIGW', {
 const chain = sfn.Chain.start(callEndpointJob);
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
-  definition: chain,
+  definitionBody: sfn.DefinitionBody.fromChainable(chain),
   timeout: cdk.Duration.seconds(30),
 });
 

@@ -1,13 +1,17 @@
-import { Construct } from 'constructs';
-import { ICluster } from './cluster';
+import type { Construct } from 'constructs';
+import type { ICluster } from './cluster';
+import type { AddonReference, IAddonRef } from './eks.generated';
 import { CfnAddon } from './eks.generated';
-import { ArnFormat, IResource, Resource, Stack, Fn } from '../../core';
+import type { IResource, RemovalPolicy } from '../../core';
+import { ArnFormat, Resource, Stack, Fn } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents an Amazon EKS Add-On.
  */
-export interface IAddon extends IResource {
+export interface IAddon extends IResource, IAddonRef {
   /**
    * Name of the Add-On.
    * @attribute
@@ -48,6 +52,27 @@ export interface AddonProps {
    * @default true
    */
   readonly preserveOnDelete?: boolean;
+
+  /**
+   * The configuration values for the Add-on.
+   *
+   * @default - Use default configuration.
+   */
+  readonly configurationValues?: Record<string, any>;
+
+  /**
+   * The removal policy applied to the EKS add-on.
+   *
+   * The removal policy controls what happens to the resource if it stops being managed by CloudFormation.
+   * This can happen in one of three situations:
+   *
+   * - The resource is removed from the template, so CloudFormation stops managing it
+   * - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it
+   * - The stack is deleted, so CloudFormation stops managing all resources in it
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -68,7 +93,11 @@ export interface AddonAttributes {
 /**
  * Represents an Amazon EKS Add-On.
  */
+@propertyInjectable
 export class Addon extends Resource implements IAddon {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks.Addon';
+
   /**
    * Creates an `IAddon` instance from the given addon attributes.
    *
@@ -85,6 +114,14 @@ export class Addon extends Resource implements IAddon {
         resource: 'addon',
         resourceName: `${attrs.clusterName}/${attrs.addonName}`,
       });
+
+      public get addonRef(): AddonReference {
+        return {
+          addonArn: this.addonArn,
+          addonName: this.addonName,
+          clusterName: attrs.clusterName,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -102,6 +139,17 @@ export class Addon extends Resource implements IAddon {
     class Import extends Resource implements IAddon {
       public readonly addonName = Fn.select(1, splitResourceName);
       public readonly addonArn = addonArn;
+
+      public get addonRef(): AddonReference {
+        return {
+          addonArn: this.addonArn,
+          addonName: this.addonName,
+          get clusterName(): string {
+            // eslint-disable-next-line @cdklabs/no-throw-default-error
+            throw new Error('Cannot access clusterName, addon has been created without knowledge of its cluster');
+          },
+        };
+      }
     }
 
     return new Import(scope, id);
@@ -110,12 +158,22 @@ export class Addon extends Resource implements IAddon {
   /**
    * Name of the addon.
    */
-  public readonly addonName: string;
-  /**
-   * Arn of the addon.
-   */
-  public readonly addonArn: string;
   private readonly clusterName: string;
+  private readonly resource: CfnAddon;
+
+  @memoizedGetter
+  public get addonName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get addonArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'eks',
+      resource: 'addon',
+      resourceName: `${this.clusterName}/${this.addonName}/`,
+    });
+  }
 
   /**
    * Creates a new Amazon EKS Add-On.
@@ -131,20 +189,25 @@ export class Addon extends Resource implements IAddon {
     addConstructMetadata(this, props);
 
     this.clusterName = props.cluster.clusterName;
-    this.addonName = props.addonName;
 
-    const resource = new CfnAddon(this, 'Resource', {
+    this.resource = new CfnAddon(this, 'Resource', {
       addonName: props.addonName,
       clusterName: this.clusterName,
       addonVersion: props.addonVersion,
       preserveOnDelete: props.preserveOnDelete,
+      configurationValues: this.stack.toJsonString(props.configurationValues),
     });
 
-    this.addonName = this.getResourceNameAttribute(resource.ref);
-    this.addonArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'eks',
-      resource: 'addon',
-      resourceName: `${this.clusterName}/${this.addonName}/`,
-    });
+    if (props.removalPolicy) {
+      this.resource.applyRemovalPolicy(props.removalPolicy);
+    }
+  }
+
+  public get addonRef(): AddonReference {
+    return {
+      addonArn: this.addonArn,
+      addonName: this.addonName,
+      clusterName: this.clusterName,
+    };
   }
 }

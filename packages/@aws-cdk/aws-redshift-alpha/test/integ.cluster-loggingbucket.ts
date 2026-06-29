@@ -1,9 +1,10 @@
 #!/usr/bin/env node
+import * as integ from '@aws-cdk/integ-tests-alpha';
+import type { StackProps } from 'aws-cdk-lib';
+import { Stack, App } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { Stack, App, StackProps } from 'aws-cdk-lib';
-import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as redshift from '../lib';
 
 class RedshiftEnv extends Stack {
@@ -30,9 +31,10 @@ class RedshiftEnv extends Stack {
 }
 
 const app = new App();
+const stack = new Stack(app, 'aws-cdk-redshift-cluster-database');
+
+new RedshiftEnv(stack, 'redshift-loggingbucket-integ');
 
 new integ.IntegTest(app, 'LoggingBucketInteg', {
-  testCases: [new RedshiftEnv(app, 'redshift-loggingbucket-integ')],
+  testCases: [stack],
 });
-
-app.synth();

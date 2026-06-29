@@ -1,5 +1,5 @@
 {
-  "version": "29.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "appsync-opensearch.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "appsync-opensearch.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f8a2a9f9e0d429354b6c00646ad4364f5e46ab6ceecf270d2ff59b9befcba8b5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ec70adc86ef367784671172c386edad90d4a3fc5d82ea6e4ef9db0fe99775dc7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,16 +34,59 @@
         "appsync-opensearch.assets"
       ],
       "metadata": {
+        "/appsync-opensearch/User": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/appsync-opensearch/User/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "User00B015A1"
           }
         ],
+        "/appsync-opensearch/Domain": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "version": "*",
+              "removalPolicy": "destroy",
+              "fineGrainedAccessControl": {
+                "masterUserArn": "*"
+              },
+              "encryptionAtRest": {
+                "enabled": true
+              },
+              "nodeToNodeEncryption": true,
+              "enforceHttps": true,
+              "capacity": {
+                "multiAzWithStandbyEnabled": false
+              }
+            }
+          }
+        ],
         "/appsync-opensearch/Domain/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Domain66AC69E0"
+          }
+        ],
+        "/appsync-opensearch/api": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "name": "*",
+              "schema": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addSchemaDependency": [
+                "*"
+              ]
+            }
           }
         ],
         "/appsync-opensearch/api/Resource": [
@@ -63,10 +107,81 @@
             "data": "apiDefaultApiKey6AB8D7C4"
           }
         ],
+        "/appsync-opensearch/api/ds/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/appsync-opensearch/api/ds/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/appsync-opensearch/api/ds/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "apidsServiceRoleBDB08107"
+          }
+        ],
+        "/appsync-opensearch/api/ds/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/appsync-opensearch/api/ds/ServiceRole/DefaultPolicy/Resource": [
@@ -115,6 +230,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "opensearch23stackDefaultTestDeployAssert16E12129.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -155,5 +271,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

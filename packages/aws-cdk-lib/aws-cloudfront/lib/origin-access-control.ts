@@ -1,12 +1,15 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnOriginAccessControl } from './cloudfront.generated';
-import { IResource, Resource, Names } from '../../core';
+import type { IResource } from '../../core';
+import { Resource, Names } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IOriginAccessControlRef, OriginAccessControlReference } from '../../interfaces/generated/aws-cloudfront-interfaces.generated';
 
 /**
  * Represents a CloudFront Origin Access Control
  */
-export interface IOriginAccessControl extends IResource {
+export interface IOriginAccessControl extends IResource, IOriginAccessControlRef {
   /**
    * The unique identifier of the origin access control.
    * @attribute
@@ -75,6 +78,11 @@ export interface S3OriginAccessControlProps extends OriginAccessControlBaseProps
  * Properties for creating a Lambda Function URL Origin Access Control resource.
  */
 export interface FunctionUrlOriginAccessControlProps extends OriginAccessControlBaseProps { }
+
+/**
+ * Properties for creating a MediaPackage V2 Origin Access Control resource.
+ */
+export interface MediaPackageV2OriginAccessControlProps extends OriginAccessControlBaseProps { }
 
 /**
  * Origin types supported by Origin Access Control.
@@ -177,6 +185,12 @@ export abstract class OriginAccessControlBase extends Resource implements IOrigi
    * @attribute
    */
   public abstract readonly originAccessControlId: string;
+
+  public get originAccessControlRef(): OriginAccessControlReference {
+    return {
+      originAccessControlId: this.originAccessControlId,
+    };
+  }
 }
 
 /**
@@ -184,7 +198,11 @@ export abstract class OriginAccessControlBase extends Resource implements IOrigi
  * @resource AWS::CloudFront::OriginAccessControl
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-originaccesscontrol.html
  */
+@propertyInjectable
 export class S3OriginAccessControl extends OriginAccessControlBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.S3OriginAccessControl';
+
   /**
    * Imports an S3 origin access control from its id.
    */
@@ -192,6 +210,12 @@ export class S3OriginAccessControl extends OriginAccessControlBase {
     class Import extends Resource implements IOriginAccessControl {
       public readonly originAccessControlId = originAccessControlId;
       public readonly originAccessControlOriginType = OriginAccessControlOriginType.S3;
+
+      public get originAccessControlRef(): OriginAccessControlReference {
+        return {
+          originAccessControlId: this.originAccessControlId,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -228,7 +252,11 @@ export class S3OriginAccessControl extends OriginAccessControlBase {
  * @resource AWS::CloudFront::OriginAccessControl
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-originaccesscontrol.html
  */
+@propertyInjectable
 export class FunctionUrlOriginAccessControl extends OriginAccessControlBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.FunctionUrlOriginAccessControl';
+
   /**
    * Imports a Lambda Function URL origin access control from its id.
    */
@@ -236,6 +264,12 @@ export class FunctionUrlOriginAccessControl extends OriginAccessControlBase {
     class Import extends Resource implements IOriginAccessControl {
       public readonly originAccessControlId = originAccessControlId;
       public readonly originAccessControlOriginType = OriginAccessControlOriginType.LAMBDA;
+
+      public get originAccessControlRef(): OriginAccessControlReference {
+        return {
+          originAccessControlId: this.originAccessControlId,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -258,6 +292,58 @@ export class FunctionUrlOriginAccessControl extends OriginAccessControlBase {
         signingBehavior: props.signing?.behavior ?? SigningBehavior.ALWAYS,
         signingProtocol: props.signing?.protocol ?? SigningProtocol.SIGV4,
         originAccessControlOriginType: OriginAccessControlOriginType.LAMBDA, // Lambda specific OAC
+      },
+    });
+
+    this.originAccessControlId = resource.attrId;
+  }
+}
+
+/**
+ * An Origin Access Control for AWS Elemental MediaPackage V2 origins.
+ * @resource AWS::CloudFront::OriginAccessControl
+ * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-mediapackage.html
+ */
+@propertyInjectable
+export class MediaPackageV2OriginAccessControl extends OriginAccessControlBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.MediaPackageV2OriginAccessControl';
+
+  /**
+   * Imports a MediaPackage V2 origin access control from its id.
+   */
+  public static fromOriginAccessControlId(scope: Construct, id: string, originAccessControlId: string): IOriginAccessControl {
+    class Import extends Resource implements IOriginAccessControl {
+      public readonly originAccessControlId = originAccessControlId;
+      public readonly originAccessControlOriginType = OriginAccessControlOriginType.MEDIAPACKAGEV2;
+
+      public get originAccessControlRef(): OriginAccessControlReference {
+        return {
+          originAccessControlId: this.originAccessControlId,
+        };
+      }
+    }
+    return new Import(scope, id);
+  }
+
+  /**
+   * The unique identifier of this Origin Access Control.
+   * @attribute
+   */
+  public readonly originAccessControlId: string;
+
+  constructor(scope: Construct, id: string, props: MediaPackageV2OriginAccessControlProps = {}) {
+    super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    const resource = new CfnOriginAccessControl(this, 'Resource', {
+      originAccessControlConfig: {
+        description: props.description,
+        name: props.originAccessControlName ?? Names.uniqueResourceName(this, { maxLength: 64 }),
+        signingBehavior: props.signing?.behavior ?? SigningBehavior.ALWAYS,
+        signingProtocol: props.signing?.protocol ?? SigningProtocol.SIGV4,
+        originAccessControlOriginType: OriginAccessControlOriginType.MEDIAPACKAGEV2,
       },
     });
 

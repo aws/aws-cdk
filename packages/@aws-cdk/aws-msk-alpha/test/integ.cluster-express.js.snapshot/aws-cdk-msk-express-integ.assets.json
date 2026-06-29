@@ -1,0 +1,36 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "cacbae65717103d06f41c1e2d810143b3469d00294d9bbef4b39a6bce1660214": {
+      "displayName": "AWS679f53fac002430cb0da5b7982bd2287/Code",
+      "source": {
+        "path": "asset.cacbae65717103d06f41c1e2d810143b3469d00294d9bbef4b39a6bce1660214",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "12345678-test-region-fd8ea829": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
+          "objectKey": "cacbae65717103d06f41c1e2d810143b3469d00294d9bbef4b39a6bce1660214.zip",
+          "region": "test-region",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
+        }
+      }
+    },
+    "bf52a107f89e74715af012cbfc453d9b0075dfec6d9535a074f2698543511b9f": {
+      "displayName": "aws-cdk-msk-express-integ Template",
+      "source": {
+        "path": "aws-cdk-msk-express-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "12345678-test-region-41b79fb1": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
+          "objectKey": "bf52a107f89e74715af012cbfc453d9b0075dfec6d9535a074f2698543511b9f.json",
+          "region": "test-region",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

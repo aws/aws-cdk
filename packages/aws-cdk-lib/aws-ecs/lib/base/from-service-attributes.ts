@@ -1,8 +1,10 @@
-import { Construct } from 'constructs';
-import { ArnFormat, FeatureFlags, Fn, Resource, Stack, Token } from '../../../core';
+import type { Construct } from 'constructs';
+import { ArnFormat, FeatureFlags, Fn, Resource, Stack, Token, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '../../../cx-api';
-import { IBaseService } from '../base/base-service';
-import { ICluster } from '../cluster';
+import type { IBaseService } from '../base/base-service';
+import type { ICluster } from '../cluster';
+import type { ServiceReference } from '../ecs.generated';
 
 /**
  * The properties to import from the service.
@@ -30,7 +32,7 @@ export interface ServiceAttributes {
 
 export function fromServiceAttributes(scope: Construct, id: string, attrs: ServiceAttributes): IBaseService {
   if ((attrs.serviceArn && attrs.serviceName) || (!attrs.serviceArn && !attrs.serviceName)) {
-    throw new Error('You can only specify either serviceArn or serviceName.');
+    throw new ValidationError(lit`OnlySpecifyEitherServiceArn`, 'You can only specify either serviceArn or serviceName.', scope);
   }
 
   const newArnFormat = FeatureFlags.of(scope).isEnabled(ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME);
@@ -57,6 +59,12 @@ export function fromServiceAttributes(scope: Construct, id: string, attrs: Servi
     public readonly serviceArn = arn;
     public readonly serviceName = name;
     public readonly cluster = attrs.cluster;
+
+    public get serviceRef(): ServiceReference {
+      return {
+        serviceArn: this.serviceArn,
+      };
+    }
   }
   return new Import(scope, id, {
     environmentFromArn: arn,

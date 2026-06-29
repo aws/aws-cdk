@@ -1,7 +1,9 @@
-import { IConstruct, MetadataEntry } from 'constructs';
+import type { IConstruct, MetadataEntry } from 'constructs';
 import { App } from './app';
+import { UnscopedValidationError } from './errors';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
+import { lit, type LiteralString } from './private/literal-string';
 
 /**
  * Includes API for attaching annotations such as warning messages to constructs.
@@ -59,6 +61,8 @@ export class Annotations {
    * If the warning is acknowledged using `acknowledgeWarning()`, it will not be shown by
    * the CLI, and will not cause `--strict` mode to fail synthesis.
    *
+   * Prefer using `Validations.of(scope).addWarning()` instead.
+   *
    * @example
    * declare const myConstruct: Construct;
    * Annotations.of(myConstruct).addWarningV2('my-library:Construct.someWarning', 'Some message explaining the warning');
@@ -73,7 +77,7 @@ export class Annotations {
   }
 
   /**
-   * Adds a warning metadata entry to this construct. Prefer using `addWarningV2`.
+   * Adds a warning metadata entry to this construct. Prefer using `Validations.of(scope).addWarning()`.
    *
    * The CLI will display the warning when an app is synthesized, or fail if run
    * in `--strict` mode.
@@ -86,6 +90,51 @@ export class Annotations {
    */
   public addWarning(message: string) {
     this.addMessage(cxschema.ArtifactMetadataEntryType.WARN, message);
+  }
+
+  /**
+   * Acknowledge a info. When a info is acknowledged for a scope
+   * all infos that match the id will be ignored.
+   *
+   * The acknowledgement will apply to all child scopes
+   *
+   * @example
+   * declare const myConstruct: Construct;
+   * Annotations.of(myConstruct).acknowledgeInfo('SomeInfoId', 'This info can be ignored because...');
+   *
+   * @param id - the id of the info message to acknowledge
+   * @param message optional message to explain the reason for acknowledgement
+   */
+  public acknowledgeInfo(id: string, message?: string): void {
+    Acknowledgements.of(this.scope).add(this.scope, id);
+
+    // We don't use message currently, but encouraging people to supply it is good for documentation
+    // purposes, and we can always add a report on it in the future.
+    void(message);
+
+    // Iterate over the construct and remove any existing instances of this info
+    // (addInfoV2 will prevent future instances of it)
+    removeInfoDeep(this.scope, id);
+  }
+
+  /**
+   * Adds an acknowledgeable info metadata entry to this construct.
+   *
+   * The CLI will display the info when an app is synthesized.
+   *
+   * If the info is acknowledged using `acknowledgeInfo()`, it will not be shown by the CLI.
+   *
+   * @example
+   * declare const myConstruct: Construct;
+   * Annotations.of(myConstruct).addInfoV2('my-library:Construct.someInfo', 'Some message explaining the info');
+   *
+   * @param id the unique identifier for the info. This can be used to acknowledge the info
+   * @param message The info message.
+   */
+  public addInfoV2(id: string, message: string) {
+    if (!Acknowledgements.of(this.scope).has(this.scope, id)) {
+      this.addMessage(cxschema.ArtifactMetadataEntryType.INFO, `${message} ${ackTag(id)}`);
+    }
   }
 
   /**
@@ -102,10 +151,34 @@ export class Annotations {
   /**
    * Adds an { "error": <message> } metadata entry to this construct.
    * The toolkit will fail deployment of any stack that has errors reported against it.
+   * Prefer using `Validations.of(scope).addError()` instead.
    * @param message The error message.
    */
   public addError(message: string) {
     this.addMessage(cxschema.ArtifactMetadataEntryType.ERROR, message);
+  }
+
+  /**
+   * Add an error annotation to this construct, along with a tracking ID
+   *
+   * The toolkit will fail deployment of any stack that has errors reported against it.
+   *
+   * The error code will be tracked by telemetry; this method should only be used
+   * by CDK source code.
+   *
+   * @param id The error ID.
+   * @param message The error message.
+   * @internal
+   */
+  public _addTrackableError(id: LiteralString, message: string) {
+    this.addError(message);
+
+    const type = 'aws:cdk:error-code';
+
+    const isNew = !this.scope.node.metadata.find((x) => x.type === type && x.data === id);
+    if (isNew) {
+      this.scope.node.addMetadata(type, id);
+    }
   }
 
   /**
@@ -127,7 +200,7 @@ export class Annotations {
 
     // throw if CDK_BLOCK_DEPRECATIONS is set
     if (process.env.CDK_BLOCK_DEPRECATIONS) {
-      throw new Error(`${this.scope.node.path}: ${text}`);
+      throw new UnscopedValidationError(lit`ValidationError`, `${this.scope.node.path}: ${text}`);
     }
 
     this.addWarningV2(`Deprecated:${api}`, text);
@@ -251,6 +324,42 @@ function removeWarning(construct: IConstruct, id: string) {
   while (i < meta.length) {
     const m = meta[i];
     if (m.type === cxschema.ArtifactMetadataEntryType.WARN && (m.data as string).includes(ackTag(id))) {
+      meta.splice(i, 1);
+    } else {
+      i += 1;
+    }
+  }
+}
+
+/**
+ * Remove info metadata from all constructs in a given scope
+ *
+ * No recursion to avoid blowing out the stack.
+ */
+function removeInfoDeep(construct: IConstruct, id: string) {
+  const stack = [construct];
+
+  while (stack.length > 0) {
+    const next = stack.pop()!;
+    removeInfo(next, id);
+    stack.push(...next.node.children);
+  }
+}
+
+/**
+ * Remove metadata from a construct node.
+ *
+ * This uses private APIs for now; we could consider adding this functionality
+ * to the constructs library itself.
+ */
+function removeInfo(construct: IConstruct, id: string) {
+  const meta: MetadataEntry[] | undefined = (construct.node as any)._metadata;
+  if (!meta) { return; }
+
+  let i = 0;
+  while (i < meta.length) {
+    const m = meta[i];
+    if (m.type === cxschema.ArtifactMetadataEntryType.INFO && (m.data as string).includes(ackTag(id))) {
       meta.splice(i, 1);
     } else {
       i += 1;

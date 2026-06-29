@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+ 
 const crypto = require('crypto');
 
 async function handler() {

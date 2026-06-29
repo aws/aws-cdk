@@ -1,0 +1,140 @@
+{
+ "Resources": {
+  "TestGuardrailMyGuardrail0493303A": {
+   "Type": "AWS::Bedrock::Guardrail",
+   "Properties": {
+    "BlockedInputMessaging": "Sorry, your query violates our usage policy.",
+    "BlockedOutputsMessaging": "Sorry, I am unable to answer your question because of our usage policy.",
+    "ContentPolicyConfig": {
+     "ContentFiltersTierConfig": {
+      "TierName": "CLASSIC"
+     },
+     "FiltersConfig": [
+      {
+       "InputAction": "BLOCK",
+       "InputEnabled": true,
+       "InputStrength": "LOW",
+       "OutputAction": "BLOCK",
+       "OutputEnabled": true,
+       "OutputStrength": "LOW",
+       "Type": "MISCONDUCT"
+      }
+     ]
+    },
+    "ContextualGroundingPolicyConfig": {
+     "FiltersConfig": [
+      {
+       "Action": "BLOCK",
+       "Enabled": true,
+       "Threshold": 0.99,
+       "Type": "GROUNDING"
+      }
+     ]
+    },
+    "Description": "This is a test guardrail",
+    "Name": "TestGuardrail",
+    "SensitiveInformationPolicyConfig": {
+     "PiiEntitiesConfig": [
+      {
+       "Action": "ANONYMIZE",
+       "InputAction": "BLOCK",
+       "InputEnabled": true,
+       "OutputAction": "BLOCK",
+       "OutputEnabled": true,
+       "Type": "ADDRESS"
+      }
+     ],
+     "RegexesConfig": [
+      {
+       "Action": "ANONYMIZE",
+       "Description": "This is a test regex filter",
+       "InputAction": "BLOCK",
+       "InputEnabled": true,
+       "Name": "TestRegexFilter",
+       "OutputAction": "BLOCK",
+       "OutputEnabled": true,
+       "Pattern": "/^[A-Z]{2}d{6}$/"
+      }
+     ]
+    },
+    "TopicPolicyConfig": {
+     "TopicsConfig": [
+      {
+       "Definition": "'Discussions that involve providing guidance, recommendations, or suggestions related to managing, investing, or handling finances, investments, or assets.",
+       "Examples": [
+        "Can you suggest some good stocks to invest in right now?",
+        "What's the best way to save for retirement?",
+        "Should I put my money in a high-risk investment?",
+        "How can I maximize my returns on investments?",
+        "Is it a good time to buy real estate?"
+       ],
+       "InputAction": "BLOCK",
+       "InputEnabled": true,
+       "Name": "Financial_Advice",
+       "OutputAction": "BLOCK",
+       "OutputEnabled": true,
+       "Type": "DENY"
+      }
+     ],
+     "TopicsTierConfig": {
+      "TierName": "CLASSIC"
+     }
+    },
+    "WordPolicyConfig": {
+     "ManagedWordListsConfig": [
+      {
+       "InputAction": "BLOCK",
+       "InputEnabled": true,
+       "OutputAction": "NONE",
+       "OutputEnabled": true,
+       "Type": "PROFANITY"
+      }
+     ],
+     "WordsConfig": [
+      {
+       "InputAction": "BLOCK",
+       "InputEnabled": true,
+       "OutputAction": "NONE",
+       "OutputEnabled": true,
+       "Text": "reggaeton"
+      }
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

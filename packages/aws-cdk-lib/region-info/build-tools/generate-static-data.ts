@@ -1,3 +1,4 @@
+
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import {
@@ -18,9 +19,9 @@ import {
 import { AWS_CDK_METADATA } from './metadata';
 import {
   AWS_REGIONS,
-  before,
   RULE_S3_WEBSITE_REGIONAL_SUBDOMAIN,
   RULE_CLASSIC_PARTITION_BECOMES_OPT_IN,
+  AWS_REGIONS_AND_RULES,
 } from '../lib/aws-entities';
 
 export async function main(): Promise<void> {
@@ -35,7 +36,7 @@ export async function main(): Promise<void> {
   const lines = [
     "import { Fact, FactName } from './fact';",
     '',
-    '/* eslint-disable quote-props */',
+    '/* eslint-disable @stylistic/quote-props */',
     '/* eslint-disable max-len */',
     '',
     '/**',
@@ -169,12 +170,25 @@ function checkRegionsSubMap(map: Record<string, Record<string, Record<string, un
   }
 }
 
-export function after(region: string, ruleOrRegion: string | symbol) {
+function after(region: string, ruleOrRegion: string | symbol) {
   return region !== ruleOrRegion && !before(region, ruleOrRegion);
 }
 
+/**
+ * Whether or not a region predates a given rule (or region).
+ *
+ * Unknown region => we have to assume no.
+ */
+function before(region: string, ruleOrRegion: string | symbol) {
+  const ruleIx = AWS_REGIONS_AND_RULES.indexOf(ruleOrRegion);
+  if (ruleIx === -1) {
+    throw new Error(`Unknown rule: ${String(ruleOrRegion)}`);
+  }
+  const regionIx = AWS_REGIONS_AND_RULES.indexOf(region);
+  return regionIx === -1 ? false : regionIx < ruleIx;
+}
+
 main().catch(e => {
-  // eslint-disable-next-line no-console
   console.error(e);
   process.exit(-1);
 });

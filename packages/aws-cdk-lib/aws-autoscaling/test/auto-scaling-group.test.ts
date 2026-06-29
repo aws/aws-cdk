@@ -3,7 +3,8 @@ import { Annotations, Match, Template } from '../../assertions';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import { AmazonLinuxCpuType, AmazonLinuxGeneration, AmazonLinuxImage, InstanceType, LaunchTemplate } from '../../aws-ec2';
-import { ApplicationListener, ApplicationLoadBalancer, ApplicationTargetGroup } from '../../aws-elasticloadbalancingv2';
+import type { ApplicationListener } from '../../aws-elasticloadbalancingv2';
+import { ApplicationLoadBalancer, ApplicationTargetGroup } from '../../aws-elasticloadbalancingv2';
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import * as ssm from '../../aws-ssm';
@@ -12,7 +13,7 @@ import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
 import * as autoscaling from '../lib';
 import { OnDemandAllocationStrategy, SpotAllocationStrategy } from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('auto scaling group', () => {
   test('default fleet', () => {
@@ -1170,7 +1171,7 @@ describe('auto scaling group', () => {
     }).toThrow(/maxInstanceLifetime must be between 1 and 365 days \(inclusive\)/);
   });
 
-  test.each([124, 1001])('throws if throughput is set less than 125 or more than 1000', (throughput) => {
+  test.each([124, 2001])('throws if throughput is set less than 125 or more than 2000', (throughput) => {
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
 
@@ -1188,7 +1189,7 @@ describe('auto scaling group', () => {
           }),
         }],
       });
-    }).toThrow(/throughput property takes a minimum of 125 and a maximum of 1000/);
+    }).toThrow(/throughput property takes a minimum of 125 and a maximum of 2000/);
   });
 
   test.each([
@@ -3086,6 +3087,47 @@ describe('InstanceMaintenancePolicy', () => {
   });
 });
 
+test('throws if updatePolicy is not set when migrateToLaunchTemplate is true', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  stack.node.setContext(AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, true);
+  const vpc = mockVpc(stack);
+  const lt = LaunchTemplate.fromLaunchTemplateAttributes(stack, 'imported-lt', {
+    launchTemplateId: 'test-lt-id',
+    versionNumber: '0',
+  });
+
+  // THEN
+  expect(() => {
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      vpc,
+      launchTemplate: lt,
+      migrateToLaunchTemplate: true,
+    });
+  }).toThrow(/When migrateToLaunchTemplate is true, you must use AutoScalingRollingUpdate to ensure instances are properly replaced during migration. This prevents instances from referencing a deleted IAM instance profile./);
+});
+
+test('throws if updatePolicy is set with AutoScalingReplacingUpdate when migrateToLaunchTemplate is true', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  stack.node.setContext(AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, true);
+  const vpc = mockVpc(stack);
+  const lt = LaunchTemplate.fromLaunchTemplateAttributes(stack, 'imported-lt', {
+    launchTemplateId: 'test-lt-id',
+    versionNumber: '0',
+  });
+
+  // THEN
+  expect(() => {
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      vpc,
+      launchTemplate: lt,
+      migrateToLaunchTemplate: true,
+      updatePolicy: autoscaling.UpdatePolicy.replacingUpdate(),
+    });
+  }).toThrow(/When migrateToLaunchTemplate is true, you must use AutoScalingRollingUpdate to ensure instances are properly replaced during migration. This prevents instances from referencing a deleted IAM instance profile./);
+});
+
 function mockSecurityGroup(stack: cdk.Stack) {
   return ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySG', 'most-secure');
 }
@@ -3093,3 +3135,54 @@ function mockSecurityGroup(stack: cdk.Stack) {
 function getTestStack(): cdk.Stack {
   return new cdk.Stack(undefined, 'TestStack', { env: { account: '1234', region: 'us-east-1' } });
 }
+
+test.each([
+  [autoscaling.TerminateHookAbandonAction.RETAIN, 'retain'],
+  [autoscaling.TerminateHookAbandonAction.TERMINATE, 'terminate'],
+  [undefined, Match.absent()],
+])('can configure instanceLifecyclePolicy with %s', (terminateHookAbandon, expectedValue) => {
+  const stack = new cdk.Stack();
+  const vpc = mockVpc(stack);
+
+  new autoscaling.AutoScalingGroup(stack, `MyASG-${expectedValue}`, {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+    machineImage: new ec2.AmazonLinuxImage(),
+    vpc,
+    instanceLifecyclePolicy: {
+      retentionTriggers: {
+        terminateHookAbandon,
+      },
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+    InstanceLifecyclePolicy: {
+      RetentionTriggers: {
+        TerminateHookAbandon: expectedValue,
+      },
+    },
+  });
+});
+
+test.each([
+  [autoscaling.DeletionProtection.NONE, 'none'],
+  [autoscaling.DeletionProtection.PREVENT_FORCE_DELETION, 'prevent-force-deletion'],
+  [autoscaling.DeletionProtection.PREVENT_ALL_DELETION, 'prevent-all-deletion'],
+])('can configure deletion protection with %s', (deletionProtection, expectedValue) => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = mockVpc(stack);
+
+  // WHEN
+  new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+    machineImage: new ec2.AmazonLinuxImage(),
+    vpc,
+    deletionProtection,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+    DeletionProtection: expectedValue,
+  });
+});

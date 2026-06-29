@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "ZoneDelegationIam/DefaultTest": {
+      "stacks": [
+        "ZoneDelegationStack"
+      ],
+      "assertionStack": "ZoneDelegationIam/DefaultTest/DeployAssert",
+      "assertionStackName": "ZoneDelegationIamDefaultTestDeployAssert7D0B25D2"
+    }
+  },
+  "minimumCliVersion": "2.1123.0"
+}

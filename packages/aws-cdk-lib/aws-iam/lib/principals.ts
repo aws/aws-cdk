@@ -1,11 +1,14 @@
-import { IDependable } from 'constructs';
-import { IOpenIdConnectProvider } from './oidc-provider';
-import { PolicyDocument } from './policy-document';
-import { Condition, Conditions, PolicyStatement } from './policy-statement';
+import type { IDependable } from 'constructs';
+import type { IOIDCProviderRef, ISAMLProviderRef } from './iam.generated';
+import type { PolicyDocument } from './policy-document';
+import type { Condition, Conditions } from './policy-statement';
+import { PolicyStatement } from './policy-statement';
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { LITERAL_STRING_KEY, mergePrincipal } from './private/util';
-import { ISamlProvider } from './saml-provider';
+import type { ISamlProvider } from './saml-provider';
 import * as cdk from '../../core';
+import { UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 import { RegionInfo } from '../../region-info';
 
 /**
@@ -224,11 +227,14 @@ export abstract class PrincipalBase implements IAssumeRolePrincipal, IComparable
  * Base class for Principals that wrap other principals
  */
 abstract class PrincipalAdapter extends PrincipalBase {
-  public readonly assumeRoleAction = this.wrapped.assumeRoleAction;
-  public readonly principalAccount = this.wrapped.principalAccount;
+  public readonly assumeRoleAction: IPrincipal['assumeRoleAction'];
+  public readonly principalAccount: IPrincipal['principalAccount'];
 
   constructor(protected readonly wrapped: IPrincipal) {
     super();
+
+    this.assumeRoleAction = this.wrapped.assumeRoleAction;
+    this.principalAccount = this.wrapped.principalAccount;
   }
 
   public get policyFragment(): PrincipalPolicyFragment { return this.wrapped.policyFragment; }
@@ -266,7 +272,7 @@ export class PrincipalWithConditions extends PrincipalAdapter {
   public addToAssumeRolePolicy(doc: PolicyDocument) {
     // Lazy import to avoid circular import dependencies during startup
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/consistent-type-imports
     const adapter: typeof import('./private/policydoc-adapter') = require('./private/policydoc-adapter');
 
     defaultAddPrincipalToAssumeRole(this.wrapped, new adapter.MutatingPolicyDocumentAdapter(doc, (statement) => {
@@ -354,7 +360,7 @@ export class PrincipalWithConditions extends PrincipalAdapter {
       // if either the existing condition or the new one contain unresolved
       // tokens, fail the merge. this is as far as we go at this point.
       if (cdk.Token.isUnresolved(condition) || cdk.Token.isUnresolved(existing)) {
-        throw new Error(`multiple "${operator}" conditions cannot be merged if one of them contains an unresolved token`);
+        throw new UnscopedValidationError(lit`MultipleConditionsCannotMerged`, `multiple "${operator}" conditions cannot be merged if one of them contains an unresolved token`);
       }
 
       validateConditionObject(existing);
@@ -380,7 +386,7 @@ export class SessionTagsPrincipal extends PrincipalAdapter {
   public addToAssumeRolePolicy(doc: PolicyDocument) {
     // Lazy import to avoid circular import dependencies during startup
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/consistent-type-imports
     const adapter: typeof import('./private/policydoc-adapter') = require('./private/policydoc-adapter');
 
     defaultAddPrincipalToAssumeRole(this.wrapped, new adapter.MutatingPolicyDocumentAdapter(doc, (statement) => {
@@ -479,7 +485,7 @@ export class AccountPrincipal extends ArnPrincipal {
   constructor(public readonly accountId: any) {
     super(new StackDependentToken(stack => `arn:${stack.partition}:iam::${accountId}:root`).toString());
     if (!cdk.Token.isUnresolved(accountId) && typeof accountId !== 'string') {
-      throw new Error('accountId should be of type string');
+      throw new UnscopedValidationError(lit`ShouldBeAccountidShouldType`, 'accountId should be of type string');
     }
     this.principalAccount = accountId;
   }
@@ -617,7 +623,7 @@ export class OrganizationPrincipal extends PrincipalBase {
     // We can only validate if it's a literal string (not a token)
     if (!cdk.Token.isUnresolved(organizationId)) {
       if (!organizationId.match(/^o-[a-z0-9]{10,32}$/)) {
-        throw new Error(`Expected Organization ID must match regex pattern ^o-[a-z0-9]{10,32}$, received ${organizationId}`);
+        throw new UnscopedValidationError(lit`ExpectedOrganizationMatchRegex`, `Expected Organization ID must match regex pattern ^o-[a-z0-9]{10,32}$, received ${organizationId}`);
       }
     }
   }
@@ -755,8 +761,8 @@ export class OpenIdConnectPrincipal extends WebIdentityPrincipal {
    * @param conditions The conditions under which the policy is in effect.
    *   See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
    */
-  constructor(openIdConnectProvider: IOpenIdConnectProvider, conditions: Conditions = {}) {
-    super(openIdConnectProvider.openIdConnectProviderArn, conditions ?? {});
+  constructor(openIdConnectProvider: IOIDCProviderRef, conditions: Conditions = {}) {
+    super(openIdConnectProvider.oidcProviderRef.oidcProviderArn, conditions ?? {});
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
@@ -772,8 +778,8 @@ export class OpenIdConnectPrincipal extends WebIdentityPrincipal {
  * Principal entity that represents a SAML federated identity provider
  */
 export class SamlPrincipal extends FederatedPrincipal {
-  constructor(samlProvider: ISamlProvider, conditions: Conditions) {
-    super(samlProvider.samlProviderArn, conditions, 'sts:AssumeRoleWithSAML');
+  constructor(samlProvider: ISAMLProviderRef, conditions: Conditions) {
+    super(samlProvider.samlProviderRef.samlProviderArn, conditions, 'sts:AssumeRoleWithSAML');
   }
 
   public toString() {
@@ -790,7 +796,7 @@ export class SamlConsolePrincipal extends SamlPrincipal {
     super(samlProvider, {
       ...conditions,
       StringEquals: {
-        'SAML:aud': RegionInfo.get(samlProvider.stack.region).samlSignOnUrl ?? 'https://signin.aws.amazon.com/saml',
+        'SAML:aud': RegionInfo.get(cdk.Stack.of(samlProvider).region).samlSignOnUrl ?? 'https://signin.aws.amazon.com/saml',
       },
     });
   }
@@ -874,7 +880,7 @@ export class CompositePrincipal extends PrincipalBase {
   constructor(...principals: IPrincipal[]) {
     super();
     if (principals.length === 0) {
-      throw new Error('CompositePrincipals must be constructed with at least 1 Principal but none were passed.');
+      throw new UnscopedValidationError(lit`CompositePrincipalsConstructedLeastPrincipal`, 'CompositePrincipals must be constructed with at least 1 Principal but none were passed.');
     }
     this.assumeRoleAction = principals[0].assumeRoleAction;
     this.addPrincipals(...principals);
@@ -903,8 +909,8 @@ export class CompositePrincipal extends PrincipalBase {
     for (const p of this._principals) {
       const fragment = p.policyFragment;
       if (fragment.conditions && Object.keys(fragment.conditions).length > 0) {
-        throw new Error(
-          'Components of a CompositePrincipal must not have conditions. ' +
+        throw new UnscopedValidationError(
+          lit`CompositePrincipalComponentsCannotHaveConditions`, 'Components of a CompositePrincipal must not have conditions. ' +
           `Tried to add the following fragment: ${JSON.stringify(fragment)}`);
       }
     }
@@ -940,9 +946,9 @@ export class CompositePrincipal extends PrincipalBase {
  * A lazy token that requires an instance of Stack to evaluate
  */
 class StackDependentToken implements cdk.IResolvable {
-  public readonly creationStack: string[];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
+
   constructor(private readonly fn: (stack: cdk.Stack) => any) {
-    this.creationStack = cdk.captureStackTrace();
   }
 
   public resolve(context: cdk.IResolveContext) {
@@ -964,11 +970,11 @@ class StackDependentToken implements cdk.IResolvable {
 }
 
 class ServicePrincipalToken implements cdk.IResolvable {
-  public readonly creationStack: string[];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
+
   constructor(
     private readonly service: string,
     private readonly opts: ServicePrincipalOpts) {
-    this.creationStack = cdk.captureStackTrace();
   }
 
   public resolve(ctx: cdk.IResolveContext) {
@@ -1022,6 +1028,6 @@ class ServicePrincipalToken implements cdk.IResolvable {
  */
 export function validateConditionObject(x: unknown): asserts x is Record<string, unknown> {
   if (!x || typeof x !== 'object' || Array.isArray(x)) {
-    throw new Error('A Condition should be represented as a map of operator to value');
+    throw new UnscopedValidationError(lit`ShouldBeConditionShouldRepresented`, 'A Condition should be represented as a map of operator to value');
   }
 }

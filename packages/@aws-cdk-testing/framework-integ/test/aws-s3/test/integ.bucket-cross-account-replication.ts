@@ -1,7 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
-import { AwsApiCall, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import type { AwsApiCall } from '@aws-cdk/integ-tests-alpha';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { SET_UNIQUE_REPLICATION_ROLE_NAME } from 'aws-cdk-lib/cx-api';
 
 /**

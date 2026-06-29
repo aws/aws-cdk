@@ -1,0 +1,24 @@
+#
+#####################################
+##        KINESIS GUARD RULES       ##
+#####################################
+# Rule: KINESIS_ENCRYPTION_ENABLED
+# Service: Amazon Kinesis
+# Coverage: Stream Encryption
+
+let kinesis_streams = Resources.*[
+  Type == 'AWS::Kinesis::Stream'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "KINESIS_ENCRYPTION_ENABLED"
+]
+
+# Kinesis stream encryption must be enabled
+rule KINESIS_ENCRYPTION_ENABLED when %kinesis_streams !empty {
+    %kinesis_streams {
+        Properties.StreamEncryption exists
+        Properties.StreamEncryption.EncryptionType exists
+        Properties.StreamEncryption.EncryptionType == "KMS"
+        Properties.StreamEncryption.KeyId exists
+            <<##ERROR:Kinesis stream must have encryption enabled. Set 'StreamEncryption.EncryptionType' to 'KMS' and provide a 'KeyId'.##>>
+    }
+}

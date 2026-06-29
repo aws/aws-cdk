@@ -13,46 +13,76 @@ working with you to improve the AWS CDK for everyone. ❤️
 The AWS CDK is released under the [Apache license](http://aws.amazon.com/apache2.0/).
 Any code that you submit will be released under that license.
 
-- [What are contributions?](#what-are-contributions)
-- [How contributions work](#how-contributions-work)
-- [Where To Contribute](#where-to-contribute)
-  - [Demonstrating Value](#demonstrating-value)
-  - [Publishing Your Own Package](#publishing-your-own-package)
-    - [Trust and Third Party Packages](#trust-and-third-party-packages)
-    - [Third Party Package Administration](#third-party-package-administration)
-- [Quick Start](#quick-start)
-- [Getting Started](#getting-started)
-  - [Local setup](#setup)
-  - [Dev Container](#dev-container)
-- [Pull Requests](#pull-requests)
-  - [Step 1: Find something to work on](#step-1-find-something-to-work-on)
-  - [Step 2: Design (optional)](#step-2-design)
-  - [Step 3: Work your Magic](#step-3-work-your-magic)
-  - [Step 4: Pull Request](#step-4-pull-request)
-  - [Step 5: Merge](#step-5-merge)
-- [Breaking Changes](#breaking-changes)
-- [Documentation](#documentation)
-  - [Rosetta](#rosetta)
-- [Tools](#tools-advanced)
-  - [Linters](#linters)
-  - [scripts/foreach.sh](#scriptsforeachsh)
-  - [JetBrains support (WebStorm/IntelliJ)](#jetbrains-support-webstormintellij)
-  - [Linking against this repository](#linking-against-this-repository)
-  - [Running integration tests in parallel](#running-integration-tests-in-parallel)
-  - [Visualizing dependencies in a CloudFormation Template](#visualizing-dependencies-in-a-cloudformation-template)
-  - [Find dependency cycles between packages](#find-dependency-cycles-between-packages)
-- [Running CLI integration tests](#running-cli-integration-tests)
-- [Building aws-cdk-lib](#building-aws-cdk-lib)
-- [Building and testing v2 -alpha packages](#building-and-testing-v2--alpha-packages)
-- [Changing the Cloud Assembly Schema](#changing-cloud-assembly-schema)
-- [Feature Flags](#feature-flags)
-- [Versioning and Release](#versioning-and-release)
-- [Troubleshooting](#troubleshooting)
-- [Debugging](#debugging)
-  - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
-  - [Run a CDK unit test in the debugger](#run-a-cdk-unit-test-in-the-debugger)
-- [Badges (Pilot Program)](#badges-pilot-program)
-- [Related Repositories](#related-repositories)
+- [Contributing to the AWS Cloud Development Kit](#contributing-to-the-aws-cloud-development-kit)
+  - [What are contributions?](#what-are-contributions)
+  - [How contributions work](#how-contributions-work)
+  - [Where to Contribute](#where-to-contribute)
+    - [Demonstrating Value](#demonstrating-value)
+    - [Publishing Your Own Package](#publishing-your-own-package)
+      - [Trust and Third Party Packages](#trust-and-third-party-packages)
+      - [Third Party Package Administration](#third-party-package-administration)
+  - [Quick Start](#quick-start)
+    - [Setup](#setup)
+    - [Testing](#testing)
+    - [Linking](#linking)
+  - [Getting Started](#getting-started)
+    - [Setup](#setup-1)
+    - [Repo Layout](#repo-layout)
+    - [Building aws-cdk-lib](#building-aws-cdk-lib)
+    - [Pack](#pack)
+    - [Dev Container](#dev-container)
+    - [Gitpod](#gitpod)
+    - [Amazon CodeCatalyst Dev Environments](#amazon-codecatalyst-dev-environments)
+  - [Pull Requests](#pull-requests)
+    - [Step 1: Find something to work on](#step-1-find-something-to-work-on)
+    - [Step 2: Design](#step-2-design)
+    - [Step 3: Work your Magic](#step-3-work-your-magic)
+      - [Integration Tests](#integration-tests)
+      - [yarn watch (Optional)](#yarn-watch-optional)
+      - [Verify your fix by deployment](#verify-your-fix-by-deployment)
+    - [Step 4: Pull Request](#step-4-pull-request)
+      - [Getting a review from a maintainer](#getting-a-review-from-a-maintainer)
+      - [Adding construct runtime dependencies](#adding-construct-runtime-dependencies)
+      - [Adding new unconventional dependencies](#adding-new-unconventional-dependencies)
+    - [Addressing Code Coverage Gaps](#addressing-code-coverage-gaps)
+    - [Step 5: Merge](#step-5-merge)
+  - [Breaking Changes](#breaking-changes)
+    - [API surface changes](#api-surface-changes)
+      - [Dealing with breaking API surface changes](#dealing-with-breaking-api-surface-changes)
+    - [Behavior changes](#behavior-changes)
+      - [Dealing with breaking behavior changes](#dealing-with-breaking-behavior-changes)
+    - [Adding new experimental ("preview") APIs](#adding-new-experimental-preview-apis)
+  - [Documentation](#documentation)
+    - [Rosetta](#rosetta)
+      - [Recommendations](#recommendations)
+  - [Tools (Advanced)](#tools-advanced)
+    - [scripts/foreach.sh](#scriptsforeachsh)
+    - [Linters](#linters)
+      - [ESLint](#eslint)
+      - [pkglint](#pkglint)
+      - [awslint](#awslint)
+    - [JetBrains support (WebStorm/IntelliJ)](#jetbrains-support-webstormintellij)
+    - [Linking against this repository](#linking-against-this-repository)
+    - [Running integration tests in parallel](#running-integration-tests-in-parallel)
+    - [Visualizing dependencies in a CloudFormation Template](#visualizing-dependencies-in-a-cloudformation-template)
+    - [Find dependency cycles between packages](#find-dependency-cycles-between-packages)
+  - [Building and testing v2 -alpha packages](#building-and-testing-v2--alpha-packages)
+  - [Changing Cloud Assembly Schema](#changing-cloud-assembly-schema)
+  - [Feature Flags](#feature-flags)
+  - [Versioning and Release](#versioning-and-release)
+  - [Common Issues](#common-issues)
+    - [Import errors](#import-errors)
+      - [The compiler is throwing errors on files that I renamed/it's running old tests that I meant to remove/code coverage is low and I didn't change anything.](#the-compiler-is-throwing-errors-on-files-that-i-renamedits-running-old-tests-that-i-meant-to-removecode-coverage-is-low-and-i-didnt-change-anything)
+      - [I added a dependency but it's not being picked up by the build](#i-added-a-dependency-but-its-not-being-picked-up-by-the-build)
+      - [I added a dependency but it's not being picked up by a `watch` background compilation run.](#i-added-a-dependency-but-its-not-being-picked-up-by-a-watch-background-compilation-run)
+      - [I added a dependency but it's not being picked up by Visual Studio Code (I still get red underlines).](#i-added-a-dependency-but-its-not-being-picked-up-by-visual-studio-code-i-still-get-red-underlines)
+      - [I'm doing refactorings between packages and compile times are killing me/I need to switch between differently-versioned branches a lot and rebuilds because of version errors are taking too long.](#im-doing-refactorings-between-packages-and-compile-times-are-killing-mei-need-to-switch-between-differently-versioned-branches-a-lot-and-rebuilds-because-of-version-errors-are-taking-too-long)
+      - [The check-lfs Github action fails on my PR](#the-check-lfs-github-action-fails-on-my-pr)
+  - [Debugging](#debugging)
+    - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
+    - [Run a CDK unit test in the debugger](#run-a-cdk-unit-test-in-the-debugger)
+  - [Badges (Pilot Program)](#badges-pilot-program)
+  - [Related Repositories](#related-repositories)
 
 ## What are contributions?
 
@@ -198,9 +228,7 @@ If you would like to test your code changes against a CDK App, create the App an
 $ mkdir cdkApp # in parent dir of aws-cdk
 $ cd cdkApp
 $ npx cdk init app --language typescript
-$ npx cdk --version # shows the latest CDK version e.g. 2.155.0 (build 34dcc5a)
 $ ../aws-cdk/link-all.sh # link the aws-cdk repo with your cdkApp
-$ npx cdk --version # verify linked cdk version 0.0.0
 # Define the resource that uses your aws-cdk changes in cdkApp lib folder
 $ npx cdk deploy # deploy successfully
 ```
@@ -217,13 +245,15 @@ See [Gitpod section](#gitpod) on how to set up the CDK repo on Gitpod.
 
 The following tools need to be installed on your system prior to installing the CDK:
 
-- [Node.js >= 14.15.0](https://nodejs.org/download/release/latest-v14.x/)
+- [Node.js >= 20.x](https://nodejs.org/en/download)
   - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
 - [Yarn >= 1.19.1, < 2](https://yarnpkg.com/lang/en/docs/install)
-- [.NET SDK >= 6.0.x](https://www.microsoft.com/net/download)
+- [.NET SDK >= 8.0.x](https://www.microsoft.com/net/download)
 - [Python >= 3.8.0, < 4.0](https://www.python.org/downloads/release/python-380/)
 - Either [Docker >= 19.03](https://docs.docker.com/get-docker/), [Finch >= 0.3.0](https://runfinch.com/), or another Docker replacement
   - If using a Docker replacement, the `CDK_DOCKER` environment variable must be set to the replacement command's name (e.g. `export CDK_DOCKER=finch`)
+  - For some Docker replacements like Podman, you may also need to set the `DOCKER_HOST` environment variable to specify the socket path
+    - For Podman: `export DOCKER_HOST=$(podman machine inspect --format 'unix://{{.ConnectionInfo.PodmanSocket.Path}}')`
   - The Docker or replacement daemon must be running
 - [git-lfs](https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage)
   - Without this, you'll get the message that the clone succeeded but the checkout failed when you initially clone the repo.
@@ -444,6 +474,8 @@ In some cases, it is useful to seek feedback by iterating on a design document. 
 
 In many cases, the comments section of the relevant GitHub issue is sufficient for such discussion, and can be a good place to socialize and get feedback on what you plan to do. If the changes are significant in scope, require a longer form medium to communicate, or you just want to ensure that the core team agrees with your planned implementation before you submit it for review to avoid wasted work, there are a few different strategies you can pursue.
 
+When designing new features, consider whether the functionality is best implemented as a [Mixin, Facade, or Trait](./docs/DESIGN_GUIDELINES.md#mixins-facades-and-traits) rather than as a traditional L2 property or method. New features must prefer these composable building blocks, which work across L1 and L2 constructs. See the [Mixins Design Guidelines](./docs/MIXINS_DESIGN_GUIDELINES.md) and [Facades and Traits Design Guidelines](./docs/FACADES_AND_TRAITS_DESIGN_GUIDELINES.md) for implementation details.
+
 1. README driven development - This is the core team's preferred method for reviewing new APIs. Submit a draft PR with updates to the README for the package that you intend to change that clearly describes how the functionality will be used. For new L2s, include usage examples that cover common use cases and showcase the features of the API you're designing. The most important thing to consider for any feature is the public API and this will help to give a clear picture of what changes users can expect.
 1. Write an [RFC](https://github.com/aws/aws-cdk-rfcs) - This is a process for discussing new functionality that is large in scope, may incur breaking changes, or may otherwise warrant discussion from multiple stakeholders on the core team or within the community. Specifically, it is a good place to discuss new features in the core CDK framework or the CLI that are unable to be decoupled from the core cdk codebase.
 1. Publish a package - A separate package is the best place to demonstrate the value of new functionality that you believe should be included within the CDK core libraries. It not only illustrates a complete solution with its entire API surface area available to review, it also proves that your design works! When publishing a package with the goal for eventual inclusion within aws-cdk-lib, make sure to follow our [design guidelines](./docs/DESIGN_GUIDELINES.md) wherever relevant.
@@ -461,6 +493,10 @@ Work your magic. Here are some guidelines:
     construct library with a single construct.
   * We have a number of linters that run during standard build that will enforce coding consistency and correctness.
     Watch out for their error messages and adjust your code accordingly.
+* For new features, prefer implementing as a [Mixin, Facade, or Trait](./docs/DESIGN_GUIDELINES.md#mixins-facades-and-traits)
+  over adding properties or methods directly to L2 constructs. This makes the feature available to both L1 and L2 users.
+  See the [Mixins Design Guidelines](./docs/MIXINS_DESIGN_GUIDELINES.md) for how to implement Mixins and the
+  [Facades and Traits Design Guidelines](./docs/FACADES_AND_TRAITS_DESIGN_GUIDELINES.md) for how to implement Facades and Traits.
 * Every change requires a unit test
 * If you change APIs, make sure to update the module's README file
   * When you add new examples to the module's README file, you must also ensure they compile - the PR build will fail
@@ -532,14 +568,14 @@ CDK integration tests.
 We've added a watch feature to the CDK that builds your code as you type it. Start this by running `yarn watch` for
 each module that you are modifying.
 
-For example, watch the aws-cdk-lib and aws-cdk modules in a second terminal session:
+For example, watch the aws-cdk-lib module in a second terminal session:
 
 ```console
 $ cd packages/aws-cdk-lib
 $ yarn watch & # runs in the background
-$ cd packages/aws-cdk
-$ yarn watch & # runs in the background
 ```
+
+> **Note:** The AWS CDK CLI has been moved to a separate repository. If you need to watch the CLI package, please refer to the [AWS CDK CLI repository](https://github.com/aws/aws-cdk-cli).
 
 #### Verify your fix by deployment
 
@@ -988,55 +1024,37 @@ finalized, will be added to the AWS CDK with a specific suffix: `BetaX`. APIs
 with the preview suffix will never be removed, instead they will be deprecated
 and replaced by either the stable version (without the suffix), or by a newer
 preview version. For example, assume we add the method
-`grantAwesomePowerBeta1`:
+`addSecondaryResourceBeta1()` to a class:
 
 ```ts
 /**
- * This method grants awesome powers
+ * This method adds a secondary resource to the main one
  */
-grantAwesomePowerBeta1();
+addSecondaryResourceBeta1(res: SomeResource);
 ```
 
 Times goes by, we get feedback that this method will actually be much better
-if it accepts a `Principal`. Since adding a required property is a breaking
-change, we will add `grantAwesomePowerBeta2()` and deprecate
-`grantAwesomePowerBeta1`:
+if it accepts an additional required `options` parameter. Since adding a required 
+parameter to a method is a breaking change, we will add `addSecondaryResourceBeta2()`
+and deprecate `addSecondaryResourceBeta1`:
 
 ```ts
 /**
-* This method grants awesome powers to the given principal
+* This method adds a secondary resource, with more options
 *
 * @param grantee The principal to grant powers to
 */
-grantAwesomePowerBeta2(grantee: iam.IGrantable)
+addSecondaryResourceBeta2(res: SomeResource, options: SecondaryResourceOptions);
 
 /**
-* This method grants awesome powers
-* @deprecated use grantAwesomePowerBeta2
+ * This method adds a secondary resource to the main one
+* @deprecated use addSecondaryResourceBeta1
 */
-grantAwesomePowerBeta1()
+addSecondaryResourceBeta1(res: SomeResource);
 ```
 
 When we decide it's time to graduate the API, the latest preview version will
-be deprecated and the final version - `grantAwesomePower` will be added.
-
-### Adding new experimental CLI features
-
-In order to move fast when developing new CLI features, we may decide to release 
-functionality as "experimental" or "incremental." In this scenario we can utilize
-explicit opt-in via an `--unstable` flag.
-
-Explicit opt-ins would look something like this:
-
-```bash
-cdk new-command --unstable='new-command'
-
-cdk bootstrap --unstable='new-funky-bootstrap'
-```
-
-And can be simply added as an additional flag on the CLI command that is being worked on.
-When the time comes to stabilize the command, we remove the requirement that such a flag
-is set.
+be deprecated and the final version - `addSecondaryResource` will be added.
 
 ## Documentation
 
@@ -1274,13 +1292,6 @@ $ cdk -a some.app.js synth | $awscdk/scripts/template-deps-to-dot | dot -Tpng > 
 
 You can use `find-cycles` to print a list of internal dependency cycles:
 
-## Running CLI integration tests
-
-The CLI package (`packages/aws-cdk`) has some integration tests that aren't
-run as part of the regular build, since they have some particular requirements.
-See the [CLI CONTRIBUTING.md file](packages/aws-cdk/CONTRIBUTING.md) for
-more information on running those tests.
-
 ## Building and testing v2 -alpha packages
 
 Modules that are not stable are vended separately from `aws-cdk-lib`. These packages are found in the
@@ -1341,6 +1352,28 @@ Adding a new flag looks as follows:
     - Double negatives should be avoided. If you want to add a flag that disables something that was previously
       enabled, set `default.v2` to `true` and the `recommendedValue` to `false`. You will need to update
       a test in `features.test.ts` -- this is okay if you have a good reason.
+    - A note on the fields
+      - default.v2: This is the boolean value used by the cdk commands at runtime unless its specified in `cdk.json`.
+      - recommendedValue: This is the boolean value will be set in `cdk.json` on `cdk init` when you init a new application.
+    - As a contributor, if you are advised to introduce a feature flag, consider the following scenarios when determining how your feature should behave for
+      - Customers who are creating new app (`cdk init`). `cdk.json` will now contain the new feature flag set to the `recommendedValue`.
+      - Customers who have an existing app. `cdk.json` doesnt contain the `new` feature flag. The value of the new feature flag set to the `default.v2` value in context of cdk commands.
+      - E.g. in the following case, unless overridden in `cdk.json`
+        - New apps will get [USE_CDK_MANAGED_LAMBDA_LOGGROUP]: true
+        - Existing apps on cdk v2 will get [USE_CDK_MANAGED_LAMBDA_LOGGROUP]: false
+        ```typescript
+        [USE_CDK_MANAGED_LAMBDA_LOGGROUP]: {
+            type: FlagType.ApiDefault,
+            summary: 'When enabled, CDK creates and manages loggroup for the lambda function',
+            detailsMd: `
+                ...
+              `,
+            introducedIn: { v2: 'V2_NEXT' },
+            defaults: { v2: false },
+            recommendedValue: true,
+            compatibilityWithOldBehaviorMd: 'Disable the feature flag to let lambda service create logGroup or specify logGroup or logRetention',
+        },
+        ```
 2. Use `FeatureFlags.of(construct).isEnabled(cxapi.ENABLE_XXX)` to check if this feature is enabled
    in your code. If it is not defined, revert to the legacy behavior.
 3. Add your feature flag to the `FLAGS` map in
@@ -1369,18 +1402,27 @@ Adding a new flag looks as follows:
 See [release.md](./docs/release.md) for details on how CDK versions are maintained and how
 to trigger a new release
 
-## Troubleshooting
+## Common Issues
 
-Most build issues can be solved by doing a full clean rebuild:
+### Import errors
 
-```shell
-$ git clean -fqdx .
-$ yarn install
-$ yarn build
+An error similar to the below can happen while trying to consume the changed library in the example (or production) CDK app:
+
+```ts
+node_modules/ts-node/src/index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+
+aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/aws-api.ts:7:27 - error TS2732: Cannot find module '../../custom-resources/lib/helpers-internal/sdk-v3-metadata.json'. Consider using '--resolveJsonModule' to import module with '.json' extension.
+
+7 import * as metadata from '../../custom-resources/lib/helpers-internal/sdk-v3-metadata.json';
 ```
 
-However, this will be time consuming. In this section we'll describe some common issues you may encounter and some more
-targeted commands you can run to resolve your issue.
+This is most probably caused by the fact that your CDK app is using `--prefer-ts-exts` option (which is the [default in new CDK TS-based apps]([url](https://github.com/aws/aws-cdk/issues/7475))). To fix this, try one of the following:
+- Don't compile aws-cdk-lib. You can do this by removing `--prefer-ts-exts` from your app command in `cdk.json` - this means you will have to run a build in the lib repo every time you make a change (or use `npm run watch / yarn watch`).
+- Update your `tsconfig.json`. In this case it's going to be adding `"resolveJsonModule": true` as suggested by the error to the `"compilerOptions"` section. If you change the test app, different or more errors might come up that will have a similar resolution.
+
 
 #### The compiler is throwing errors on files that I renamed/it's running old tests that I meant to remove/code coverage is low and I didn't change anything.
 
@@ -1435,6 +1477,17 @@ have to disable the built-in rebuild functionality of `lerna run test`:
 ```shell
 $ CDK_TEST_BUILD=false lr test
 ```
+
+#### The check-lfs Github action fails on my PR
+
+This happens if your PR has files that should have been a Git LFS pointer but were not. You should verify
+that you have Git LFS installed with `git lfs`, if not you can install it with `git lfs install`.
+Once Git LFS is installed, use the following command:
+
+```shell
+$ git lfs migrate import --no-rewrite <path to files that make the gh action fail>
+```
+This will create a new commit that you can push to your branch to make the Github action pass.
 
 ## Debugging
 
@@ -1528,6 +1581,7 @@ The badges have the following meaning:
 
 ## Related Repositories
 
+* [AWS CDK CLI](https://github.com/aws/aws-cdk-cli): the AWS CDK command-line interface (moved to a separate repository)
 * [Samples](https://github.com/aws-samples/aws-cdk-examples): includes sample code in multiple languages
 * [Workshop](https://github.com/aws-samples/aws-cdk-intro-workshop): source for https://cdkworkshop.com
 * [Developer Guide](https://github.com/awsdocs/aws-cdk-guide): markdown source for developer guide

@@ -1,11 +1,13 @@
 {
-  "version": "20.0.0",
+  "version": "44.0.0",
   "testCases": {
     "rest-api-origin/DefaultTest": {
       "stacks": [
         "integ-cloudfront-rest-api-origin"
       ],
-      "assertionStack": "rest-api-origin/DefaultTest/DeployAssert"
+      "assertionStack": "rest-api-origin/DefaultTest/DeployAssert",
+      "assertionStackName": "restapioriginDefaultTestDeployAssert6BBA15BA"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

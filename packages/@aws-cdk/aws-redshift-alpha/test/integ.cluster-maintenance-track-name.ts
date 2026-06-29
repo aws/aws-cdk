@@ -1,7 +1,8 @@
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { Stack, App, StackProps, RemovalPolicy } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { Stack, App, RemovalPolicy } from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import type { Construct } from 'constructs';
 import * as redshift from '../lib';
 
 class RedshiftStack extends Stack {
@@ -14,7 +15,7 @@ class RedshiftStack extends Stack {
       vpc: vpc,
       masterUser: {
         masterUsername: 'admin',
-        excludeCharacters: '"@/\\\ \'`',
+        excludeCharacters: '"@/\\ \'`',
       },
       defaultDatabaseName: 'database',
       maintenanceTrackName: redshift.MaintenanceTrackName.TRAILING,
@@ -24,13 +25,21 @@ class RedshiftStack extends Stack {
     new redshift.User(this, 'User', {
       cluster,
       databaseName: 'database',
-      excludeCharacters: '"@/\\\ \'`',
+      excludeCharacters: '"@/\\ \'`',
     });
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
-new integ.IntegTest(app, 'RedshiftMaintenanceTrackNameInteg', {
-  testCases: [new RedshiftStack(app, 'RedshiftMaintenanceTrackNameIntegStack')],
+const stack = new Stack(app, 'aws-cdk-redshift-cluster-database');
+
+new RedshiftStack(stack, 'RedshiftMaintenanceTrackNameIntegStack');
+
+new integ.IntegTest(stack, 'RedshiftMaintenanceTrackNameInteg', {
+  testCases: [stack],
 });

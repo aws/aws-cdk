@@ -1,14 +1,19 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
+import type { IPlacementGroupRef, PlacementGroupReference } from './ec2.generated';
 import { CfnPlacementGroup } from './ec2.generated';
-import { IResource, Resource, ValidationError } from '../../core';
+import type { IResource } from '../../core';
+import { Resource, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Determines where your instances are placed on the underlying hardware according to the specified PlacementGroupStrategy
  *
  * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
  */
-export interface IPlacementGroup extends IResource {
+export interface IPlacementGroup extends IResource, IPlacementGroupRef {
   /**
    * The name of this placement group
    *
@@ -148,13 +153,22 @@ export enum PlacementGroupStrategy {
  * Defines a placement group. Placement groups give you fine-grained control over
  * where your instances are provisioned.
  */
+@propertyInjectable
 export class PlacementGroup extends Resource implements IPlacementGroup {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.PlacementGroup';
+
   /**
    * Import a PlacementGroup by its arn
    */
   public static fromPlacementGroupName(scope: Construct, id: string, placementGroupName: string): IPlacementGroup {
     class Import extends Resource implements IPlacementGroup {
       public readonly placementGroupName = placementGroupName;
+      public get placementGroupRef(): PlacementGroupReference {
+        return {
+          groupName: this.placementGroupName,
+        };
+      }
     }
 
     return new Import(scope, id);
@@ -164,7 +178,16 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
   public readonly spreadLevel?: PlacementGroupSpreadLevel;
   public readonly strategy?: PlacementGroupStrategy;
 
-  public readonly placementGroupName: string;
+  private readonly resource: CfnPlacementGroup;
+
+  @memoizedGetter
+  public get placementGroupName(): string {
+    return this.getResourceArnAttribute(this.resource.attrGroupName, {
+      service: 'batch',
+      resource: 'compute-environment',
+      resourceName: this.physicalName,
+    });
+  }
 
   constructor(scope: Construct, id: string, props?: PlacementGroupProps) {
     super(scope, id, {
@@ -179,7 +202,7 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
 
     if (this.partitions && this.strategy) {
       if (this.strategy !== PlacementGroupStrategy.PARTITION) {
-        throw new ValidationError(`PlacementGroup '${id}' can only specify 'partitions' with the 'PARTITION' strategy`, this);
+        throw new ValidationError(lit`PlacementgroupOnlySpecifyPartitions`, `PlacementGroup '${id}' can only specify 'partitions' with the 'PARTITION' strategy`, this);
       }
     } else if (this.partitions && !this.strategy) {
       this.strategy = PlacementGroupStrategy.PARTITION;
@@ -190,20 +213,20 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
         this.strategy = PlacementGroupStrategy.SPREAD;
       }
       if (this.strategy !== PlacementGroupStrategy.SPREAD) {
-        throw new ValidationError(`PlacementGroup '${id}' can only specify 'spreadLevel' with the 'SPREAD' strategy`, this);
+        throw new ValidationError(lit`PlacementgroupOnlySpecifySpreadlevel`, `PlacementGroup '${id}' can only specify 'spreadLevel' with the 'SPREAD' strategy`, this);
       }
     }
 
-    const resource = new CfnPlacementGroup(this, 'Resource', {
+    this.resource = new CfnPlacementGroup(this, 'Resource', {
       partitionCount: this.partitions,
       spreadLevel: this.spreadLevel,
       strategy: this.strategy,
     });
+  }
 
-    this.placementGroupName = this.getResourceArnAttribute(resource.attrGroupName, {
-      service: 'batch',
-      resource: 'compute-environment',
-      resourceName: this.physicalName,
-    });
+  public get placementGroupRef(): PlacementGroupReference {
+    return {
+      groupName: this.placementGroupName,
+    };
   }
 }

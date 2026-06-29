@@ -1,7 +1,8 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "files": {
-    "eb6e93c17ce84da302f80abe024243e559721864a62a25a653dfbe134c6e1686": {
+    "d37eae9b51dadb242e45d63755eb120db18d4104a66f4243bedf7482953f92a7": {
+      "displayName": "aws-events-targets-api-gateway-integ Template",
       "source": {
         "path": "aws-events-targets-api-gateway-integ.template.json",
         "packaging": "file"
@@ -9,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "eb6e93c17ce84da302f80abe024243e559721864a62a25a653dfbe134c6e1686.json",
+          "objectKey": "d37eae9b51dadb242e45d63755eb120db18d4104a66f4243bedf7482953f92a7.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1,4 +1,4 @@
-import { Duration } from '../../core';
+import type { Duration } from '../../core';
 
 /**
  * Declaration of a Life cycle rule
@@ -88,7 +88,7 @@ export interface LifecycleRule {
   /**
    * One or more transition rules that specify when non-current objects transition to a specified storage class.
    *
-   * Only for for buckets with versioning enabled (or suspended).
+   * Only for buckets with versioning enabled (or suspended).
    *
    * If you specify a transition and expiration time, the expiration time
    * must be later than the transition time.

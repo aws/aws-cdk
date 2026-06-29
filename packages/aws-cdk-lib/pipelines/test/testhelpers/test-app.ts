@@ -1,10 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as ecr_assets from '../../../aws-ecr-assets';
 import * as s3 from '../../../aws-s3';
 import * as s3_assets from '../../../aws-s3-assets';
-import { App, AppProps, Environment, CfnOutput, Stage, StageProps, Stack, StackProps, ValidationError } from '../../../core';
+import type { AppProps, Environment, StageProps, StackProps } from '../../../core';
+import { App, CfnOutput, Stage, Stack, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { assemblyBuilderOf } from '../../lib/private/construct-internals';
 
 export const PIPELINE_ENV: Environment = {
@@ -71,7 +73,7 @@ export class AppWithOutput extends Stage {
     super(scope, id, props);
 
     const stack = new BucketStack(this, props.stackId ?? 'Stack');
-    this.theOutput = new CfnOutput(stack, 'MyOutput', { value: stack.bucket.bucketName });
+    this.theOutput = new CfnOutput(stack, 'MyOutput', { value: stack.bucket.bucketRef.bucketName });
   }
 }
 
@@ -122,7 +124,7 @@ export class ThreeStackApp extends Stage {
  * It contains a single Bucket. Such robust. Much uptime.
  */
 export class BucketStack extends Stack {
-  public readonly bucket: s3.IBucket;
+  public readonly bucket: s3.IBucketRef;
 
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -165,7 +167,7 @@ export class StageWithStackOutput extends Stage {
     const stack = new BucketStack(this, 'Stack');
 
     this.output = new CfnOutput(stack, 'BucketName', {
-      value: stack.bucket.bucketName,
+      value: stack.bucket.bucketRef.bucketName,
     });
   }
 }
@@ -204,14 +206,14 @@ export class MultipleFileAssetsApp extends Stage {
 
     const fileNames = ['test-file-asset.txt', 'test-file-asset-two.txt', 'test-file-asset-three.txt'];
     if (props.displayNames && props.displayNames.length !== props.n) {
-      throw new Error('Incorrect displayNames lenght');
+      throw new Error('Incorrect displayNames length');
     }
 
     for (let i = 0; i < props.n; i++) {
       const displayName = props.displayNames ? props.displayNames[i] : undefined;
       const fn = fileNames[i];
       if (!fn) {
-        throw new ValidationError(`Got more displayNames than we have fileNames: ${i + 1}`, this);
+        throw new ValidationError(lit`DisplayNamesFileNames`, `Got more displayNames than we have fileNames: ${i + 1}`, this);
       }
 
       new s3_assets.Asset(stack, `Asset${i + 1}`, {

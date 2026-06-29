@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "44.0.0",
   "testCases": {
     "GrantExecuteTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "GrantExecuteTest/DefaultTest/DeployAssert",
       "assertionStackName": "GrantExecuteTestDefaultTestDeployAssertA66B6F20"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

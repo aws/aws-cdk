@@ -1,14 +1,21 @@
-import { Construct } from 'constructs';
-import { IGroup } from './group';
+import type { Construct } from 'constructs';
+import type { IGroup } from './group';
+import type { IPolicyRef, PolicyReference } from './iam.generated';
 import { CfnPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';
-import { PolicyStatement } from './policy-statement';
-import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
-import { generatePolicyName, undefinedIfEmpty } from './private/util';
-import { IRole } from './role';
-import { IUser } from './user';
-import { IResource, Lazy, Resource } from '../../core';
+import type { PolicyStatement } from './policy-statement';
+import type { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { ArnPrincipal } from './principals';
+import { generatePolicyName } from './private/util';
+import type { IRole } from './role';
+import type { IUser } from './user';
+import type { IResource } from '../../core';
+import { Token, Lazy, Resource, ValidationError } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -16,7 +23,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
  *
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_manage.html
  */
-export interface IPolicy extends IResource {
+export interface IPolicy extends IResource, IPolicyRef {
   /**
    * The name of this policy.
    *
@@ -101,10 +108,11 @@ export interface PolicyProps {
 /**
  * The AWS::IAM::Policy resource associates an [inline](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#inline)
  * IAM policy with IAM users, roles, or groups. For more information about IAM policies, see
- * [Overview of IAM Policies](http://docs.aws.amazon.com/IAM/latest/UserGuide/policies_overview.html)
+ * [Overview of IAM Policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/policies_overview.html)
  * in the IAM User Guide guide.
  */
 @propertyInjectable
+@noBoxStackTraces
 export class Policy extends Resource implements IPolicy, IGrantable {
   /**
    * Uniquely identifies this class.
@@ -117,6 +125,10 @@ export class Policy extends Resource implements IPolicy, IGrantable {
   public static fromPolicyName(scope: Construct, id: string, policyName: string): IPolicy {
     class Import extends Resource implements IPolicy {
       public readonly policyName = policyName;
+
+      public get policyRef(): PolicyReference {
+        throw new ValidationError(lit`CannotUseImportedPolicy`, 'Cannot use a Policy.fromPolicyName() here.', this);
+      }
     }
 
     return new Import(scope, id);
@@ -128,11 +140,12 @@ export class Policy extends Resource implements IPolicy, IGrantable {
   public readonly document = new PolicyDocument();
 
   public readonly grantPrincipal: IPrincipal;
+  public readonly policyRef: PolicyReference;
 
   private readonly _policyName: string;
-  private readonly roles = new Array<IRole>();
-  private readonly users = new Array<IUser>();
-  private readonly groups = new Array<IGroup>();
+  private readonly roles: IArrayBox<IRole> = Box.fromArray();
+  private readonly users: IArrayBox<IUser> = Box.fromArray();
+  private readonly groups: IArrayBox<IGroup> = Box.fromArray();
   private readonly force: boolean;
   private referenceTaken = false;
 
@@ -167,10 +180,14 @@ export class Policy extends Resource implements IPolicy, IGrantable {
     const resource = new CfnPolicyConditional(this, 'Resource', {
       policyDocument: this.document,
       policyName: this.physicalName,
-      roles: undefinedIfEmpty(() => this.roles.map(r => r.roleName)),
-      users: undefinedIfEmpty(() => this.users.map(u => u.userName)),
-      groups: undefinedIfEmpty(() => this.groups.map(g => g.groupName)),
+      roles: Token.asList(this.roles.map(r => r.roleName)),
+      users: Token.asList(this.users.map(u => u.userName)),
+      groups: Token.asList(this.groups.map(g => g.groupName)),
     });
+
+    this.policyRef = {
+      policyId: resource.attrId,
+    };
 
     this._policyName = this.physicalName!;
     this.force = props.force ?? false;
@@ -281,20 +298,29 @@ export class Policy extends Resource implements IPolicy, IGrantable {
 }
 
 class PolicyGrantPrincipal implements IPrincipal {
-  public readonly assumeRoleAction = 'sts:AssumeRole';
-  public readonly grantPrincipal: IPrincipal;
+  public readonly policyFragment: PrincipalPolicyFragment;
   public readonly principalAccount?: string;
+  public readonly grantPrincipal: IPrincipal = this;
 
   constructor(private _policy: Policy) {
-    this.grantPrincipal = this;
+    // lambda.Function.grantInvoke() wants policyFragment to be readable to use as a dedupe hash.
+    // The ARN is referenced to add policy statements as a resource-based policy.
+    // We should fail to synth because a managed policy cannot be used as a principal of a policy document.
+    // cf. https://github.com/aws/aws-cdk/issues/32980
+    const arn = Lazy.string({
+      produce: () => {
+        throw new ValidationError(lit`GrantOperationNeedsAddResource`, 'This grant operation needs to add a resource policy so needs access to a principal. Grant permissions to a Role or User, instead of a Policy.', _policy);
+      },
+    });
+    this.policyFragment = new ArnPrincipal(arn).policyFragment;
     this.principalAccount = _policy.env.account;
   }
 
-  public get policyFragment(): PrincipalPolicyFragment {
-    // This property is referenced to add policy statements as a resource-based policy.
+  public get assumeRoleAction(): string {
+    // This property is referenced to add policy statements as a trust policy.
     // We should fail because a policy cannot be used as a principal of a policy document.
     // cf. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html#Principal_specifying
-    throw new Error(`Cannot use a Policy '${this._policy.node.path}' as the 'Principal' or 'NotPrincipal' in an IAM Policy`);
+    throw new ValidationError(lit`GrantOperationNeedsAddResource`, 'This grant operation needs to add a resource policy so needs access to a principal. Grant permissions to a Role or User, instead of a Policy.', this._policy);
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
@@ -304,5 +330,9 @@ class PolicyGrantPrincipal implements IPrincipal {
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     this._policy.addStatements(statement);
     return { statementAdded: true, policyDependable: this._policy };
+  }
+
+  public toString(): string {
+    return `Policy(${this._policy.node.path})`;
   }
 }

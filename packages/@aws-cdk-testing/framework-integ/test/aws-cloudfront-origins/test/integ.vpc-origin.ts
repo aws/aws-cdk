@@ -7,7 +7,11 @@ import * as cr from 'aws-cdk-lib/custom-resources';
 import * as cdk from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'integ-cloudfront-vpc-origin');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', {
@@ -133,7 +137,7 @@ instance.connections.allowFrom(sgVpcOrigins, ec2.Port.HTTP);
 alb.connections.allowFrom(sgVpcOrigins, ec2.Port.HTTP);
 nlb.connections.allowFrom(sgVpcOrigins, ec2.Port.HTTP);
 
-const integ = new IntegTest(stack, 'cloudfront-vpc-origin-test', {
+const integ = new IntegTest(app, 'cloudfront-vpc-origin-test', {
   testCases: [stack],
 });
 

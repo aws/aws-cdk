@@ -1,9 +1,9 @@
 import { Annotations, Match, Template } from 'aws-cdk-lib/assertions';
+import { SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { Stack } from 'aws-cdk-lib/core';
 import * as vpc from '../lib';
-import { TransitGateway } from '../lib/transit-gateway';
 import * as subnet from '../lib/subnet-v2';
-import { SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { TransitGateway } from '../lib/transit-gateway';
 
 describe('TransitGatewayVpcAttachment', () => {
   let stack: Stack;

@@ -1,9 +1,11 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { INTEG_TEST_LATEST_AURORA_POSTGRES_LIMITLESS } from './db-versions';
 import * as cdk from 'aws-cdk-lib';
-import { AuroraPostgresEngineVersion, ClusterScailabilityType, DatabaseCluster, DatabaseClusterEngine, DBClusterStorageType, PerformanceInsightRetention } from 'aws-cdk-lib/aws-rds';
+import { IntegTestBaseStack } from './integ-test-base-stack';
+import { ClusterScalabilityType, DatabaseCluster, DatabaseClusterEngine, DBClusterStorageType, PerformanceInsightRetention } from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-class TestStack extends cdk.Stack {
+class TestStack extends IntegTestBaseStack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -11,10 +13,10 @@ class TestStack extends cdk.Stack {
 
     new DatabaseCluster(this, 'DatabaseCluster', {
       engine: DatabaseClusterEngine.auroraPostgres({
-        version: AuroraPostgresEngineVersion.VER_16_4_LIMITLESS,
+        version: INTEG_TEST_LATEST_AURORA_POSTGRES_LIMITLESS,
       }),
       vpc,
-      clusterScailabilityType: ClusterScailabilityType.LIMITLESS,
+      clusterScalabilityType: ClusterScalabilityType.LIMITLESS,
       enablePerformanceInsights: true,
       performanceInsightRetention: PerformanceInsightRetention.MONTHS_1,
       monitoringInterval: cdk.Duration.minutes(1),

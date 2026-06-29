@@ -3,7 +3,11 @@ import * as custom_resources from 'aws-cdk-lib/custom-resources';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-custom-resource-assume-role');
 
 const assumedRole = new cdk.aws_iam.Role(stack, 'AssumedRole', {

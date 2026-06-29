@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1720680926516"
+    "salt": "1771534013258"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -102,6 +102,15 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "route53:GetHealthCheck"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -112,20 +121,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": {
-     "Fn::FindInMap": [
-      "LatestNodeRuntimeMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    },
+    "Runtime": "nodejs22.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "eafc02f6925151c95ac6a6ae81a3e36d4cf4e77db52eec8e467ce2a69454a41a.zip"
+     "S3Key": "4dc53751ed80274daf175efeff9265dbc5cca7f749c3bdceaf70bc630eaec6d1.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -164,7 +165,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1720680926517"
+    "salt": "1771534013260"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -196,7 +197,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1720680926517"
+    "salt": "1771534013261"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -212,22 +213,7 @@
     },
     "service": "Route53",
     "api": "GetHealthCheck",
-    "expected": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"$ObjectLike\":{\"HealthCheck\":{\"HealthCheckConfig\":{\"Type\":\"CALCULATED\",\"ChildHealthChecks\":{\"$ArrayWith\":[\"",
-       {
-        "Fn::ImportValue": "aws-cdk-route53-health-check:ExportsOutputRefHealthCheckHttp45CD8FAC4B1BEEC9"
-       },
-       "\",\"",
-       {
-        "Fn::ImportValue": "aws-cdk-route53-health-check:ExportsOutputRefHealthCheckHttpsE7EFCB6287C5ACD7"
-       },
-       "\"]},\"HealthThreshold\":2,\"Inverted\":false,\"Disabled\":false}}}}"
-      ]
-     ]
-    },
+    "expected": "{\"$ObjectLike\":{\"HealthCheck\":{\"HealthCheckConfig\":{\"Type\":\"CALCULATED\",\"HealthThreshold\":2,\"Inverted\":false,\"Disabled\":false}}}}",
     "parameters": {
      "HealthCheckId": {
       "Fn::Join": [
@@ -243,7 +229,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1720680926517"
+    "salt": "1771534013261"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -294,7 +280,50 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1720680926517"
+    "salt": "1771534013261"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallRoute53GetHealthCheck9c4268d031c39633336a64d4d0b4067c": {
+   "Type": "Custom::DeployAssert@SdkCallRoute53GetHealthCheck",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Route53",
+    "api": "GetHealthCheck",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"HealthCheck\":{\"HealthCheckConfig\":{\"Type\":\"RECOVERY_CONTROL\",\"RoutingControlArn\":\"",
+       {
+        "Fn::ImportValue": "aws-cdk-route53-health-check:ExportsOutputFnGetAttRoutingControlRoutingControlArnDB738AE3"
+       },
+       "\",\"Inverted\":false,\"Disabled\":false}}}}"
+      ]
+     ]
+    },
+    "parameters": {
+     "HealthCheckId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-route53-health-check:ExportsOutputRefHealthCheckRecoveryControl984D4A84E3A8C585"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1771534013262"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -340,129 +369,13 @@
      "assertion"
     ]
    }
-  }
- },
- "Mappings": {
-  "LatestNodeRuntimeMap": {
-   "af-south-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs20.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs20.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-4": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-5": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-7": {
-    "value": "nodejs20.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs20.x"
-   },
-   "ca-west-1": {
-    "value": "nodejs20.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs20.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs20.x"
-   },
-   "eu-isoe-west-1": {
-    "value": "nodejs18.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs20.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs20.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs20.x"
-   },
-   "il-central-1": {
-    "value": "nodejs20.x"
-   },
-   "me-central-1": {
-    "value": "nodejs20.x"
-   },
-   "me-south-1": {
-    "value": "nodejs20.x"
-   },
-   "mx-central-1": {
-    "value": "nodejs20.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs20.x"
-   },
-   "us-east-1": {
-    "value": "nodejs20.x"
-   },
-   "us-east-2": {
-    "value": "nodejs20.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs20.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs20.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-west-1": {
-    "value": "nodejs20.x"
-   },
-   "us-west-2": {
-    "value": "nodejs20.x"
+  },
+  "AssertionResultsAwsApiCallRoute53GetHealthCheck9c4268d031c39633336a64d4d0b4067c": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallRoute53GetHealthCheck9c4268d031c39633336a64d4d0b4067c",
+     "assertion"
+    ]
    }
   }
  },

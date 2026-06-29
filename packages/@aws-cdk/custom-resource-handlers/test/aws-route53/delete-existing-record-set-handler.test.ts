@@ -114,7 +114,7 @@ test('update request', async () => {
     ...event,
     RequestType: 'Update',
     PhysicalResourceId: 'id',
-    OldResourceProperties: {},
+    OldResourceProperties: { ServiceToken: 'x' },
   });
 
   expect(mockRoute53.changeResourceRecordSets).not.toHaveBeenCalled();

@@ -3,7 +3,11 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as path from 'path';
 import { Code, Function, Runtime, SnapStartConf } from 'aws-cdk-lib/aws-lambda';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const stack = new Stack(app, 'aws-cdk-lambda-runtime-management');
 
@@ -29,7 +33,7 @@ new Function(stack, 'Python313SnapstartLambda', {
 });
 
 new Function(stack, 'DotnetSnapstartLambda', {
-  code: Code.fromAsset('dotnet-handler'),
+  code: Code.fromAsset(path.join(__dirname, 'dotnet-handler')),
   handler: 'Handler',
   runtime: Runtime.DOTNET_8,
   snapStart: SnapStartConf.ON_PUBLISHED_VERSIONS,

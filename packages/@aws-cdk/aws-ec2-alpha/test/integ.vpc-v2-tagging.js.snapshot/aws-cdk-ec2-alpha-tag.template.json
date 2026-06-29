@@ -33,7 +33,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "CDKIntegTestTagIGW"
+      "Value": "CDKintegTestVPC"
      }
     ]
    }
@@ -118,7 +118,6 @@
     ]
    },
    "DependsOn": [
-    "testsubnetRouteTableAssociationC106676D",
     "VPCintegtesttagVpnGatewayIGW22B9A571",
     "VPCintegtesttagVpnGatewayRoutePropagation4E2BFD4D",
     "VPCintegtesttagVpnGatewayVPCVPNGW8D48C216"
@@ -170,16 +169,23 @@
   "testsubnetSubnetDD417829": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "us-west-2b",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
     "CidrBlock": "10.1.0.0/24",
     "Tags": [
      {
-      "Key": "Name",
+      "Key": "aws-cdk:subnet-name",
       "Value": "CDKIntegTestSubnet"
      },
      {
-      "Key": "VpcName",
-      "Value": "CDKintegTestVPC"
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
      }
     ],
     "VpcId": {
@@ -215,7 +221,9 @@
    "Properties": {
     "OperatingRegions": [
      {
-      "RegionName": "us-west-2"
+      "RegionName": {
+       "Ref": "AWS::Region"
+      }
      }
     ],
     "Tags": [

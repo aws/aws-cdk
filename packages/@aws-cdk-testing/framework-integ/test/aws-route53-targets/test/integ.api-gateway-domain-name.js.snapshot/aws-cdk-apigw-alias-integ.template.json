@@ -44,7 +44,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "HandlerServiceRoleFCDC14AE"
@@ -117,7 +117,10 @@
     "apiproxyANY7F13F09C",
     "apiproxy4EA44110",
     "apiANYB3DF8C3C"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "apiDeploymentStageprod896C8101": {
    "Type": "AWS::ApiGateway::Stage",

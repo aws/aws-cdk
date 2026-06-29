@@ -1,13 +1,14 @@
 {
-  "version": "41.0.0",
+  "version": "54.0.0",
   "testCases": {
-    "integ-test-bucket-deployments/DefaultTest": {
+    "integ-test-bucket-deployment-deployed-bucket/DefaultTest": {
       "stacks": [
         "test-bucket-deployment-deployed-bucket"
       ],
       "diffAssets": true,
-      "assertionStack": "integ-test-bucket-deployments/DefaultTest/DeployAssert",
-      "assertionStackName": "integtestbucketdeploymentsDefaultTestDeployAssertCF25A2DF"
+      "assertionStack": "integ-test-bucket-deployment-deployed-bucket/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestbucketdeploymentdeployedbucketDefaultTestDeployAssert294FD933"
     }
-  }
+  },
+  "minimumCliVersion": "2.1126.0"
 }

@@ -1,13 +1,16 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
+import type { IVpcLinkRef, VpcLinkReference } from './apigateway.generated';
 import { CfnVpcLink } from './apigateway.generated';
-import * as elbv2 from '../../aws-elasticloadbalancingv2';
-import { IResource, Lazy, Names, Resource } from '../../core';
+import type * as elbv2 from '../../aws-elasticloadbalancingv2';
+import type { IResource } from '../../core';
+import { Lazy, Names, Resource } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents an API Gateway VpcLink
  */
-export interface IVpcLink extends IResource {
+export interface IVpcLink extends IResource, IVpcLinkRef {
   /**
    * Physical ID of the VpcLink resource
    * @attribute
@@ -44,13 +47,20 @@ export interface VpcLinkProps {
  * Define a new VPC Link
  * Specifies an API Gateway VPC link for a RestApi to access resources in an Amazon Virtual Private Cloud (VPC).
  */
+@propertyInjectable
 export class VpcLink extends Resource implements IVpcLink {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.VpcLink';
+
   /**
    * Import a VPC Link by its Id
    */
   public static fromVpcLinkId(scope: Construct, id: string, vpcLinkId: string): IVpcLink {
     class Import extends Resource implements IVpcLink {
       public vpcLinkId = vpcLinkId;
+      public vpcLinkRef = {
+        vpcLinkId: vpcLinkId,
+      };
     }
 
     return new Import(scope, id);
@@ -61,6 +71,8 @@ export class VpcLink extends Resource implements IVpcLink {
    * @attribute
    */
   public readonly vpcLinkId: string;
+
+  public readonly vpcLinkRef: VpcLinkReference;
 
   private readonly _targets = new Array<elbv2.INetworkLoadBalancer>();
 
@@ -78,6 +90,7 @@ export class VpcLink extends Resource implements IVpcLink {
       targetArns: Lazy.list({ produce: () => this.renderTargets() }),
     });
 
+    this.vpcLinkRef = cfnResource.vpcLinkRef;
     this.vpcLinkId = cfnResource.ref;
 
     if (props.targets) {

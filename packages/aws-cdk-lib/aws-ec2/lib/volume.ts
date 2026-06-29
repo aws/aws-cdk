@@ -1,11 +1,29 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
+import type { IInstanceRef, IVolumeRef, VolumeReference } from './ec2.generated';
 import { CfnVolume } from './ec2.generated';
-import { IInstance } from './instance';
-import { AccountRootPrincipal, Grant, IGrantable } from '../../aws-iam';
-import { IKey, ViaServicePrincipal } from '../../aws-kms';
-import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names, RemovalPolicy, FeatureFlags, UnscopedValidationError, ValidationError } from '../../core';
+import type { IGrantable } from '../../aws-iam';
+import { AccountRootPrincipal, Grant } from '../../aws-iam';
+import type { IKey } from '../../aws-kms';
+import { ViaServicePrincipal } from '../../aws-kms';
+import type {
+  IResource,
+  RemovalPolicy,
+  Size,
+} from '../../core';
+import {
+  FeatureFlags,
+  Names,
+  Resource,
+  SizeRoundingBehavior,
+  Stack,
+  Tags,
+  Token,
+  UnscopedValidationError,
+  ValidationError,
+} from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
@@ -76,7 +94,7 @@ export interface EbsDeviceOptionsBase {
   /**
    * The throughput to provision for a `gp3` volume.
    *
-   * Valid Range: Minimum value of 125. Maximum value of 1000.
+   * Valid Range: Minimum value of 125. Maximum value of 2000.
    *
    * `gp3` volumes deliver a consistent baseline throughput performance of 125 MiB/s.
    * You can provision additional throughput for an additional cost at a ratio of 0.25 MiB/s per provisioned IOPS.
@@ -172,7 +190,7 @@ export class BlockDeviceVolume {
    */
   public static ephemeral(volumeIndex: number) {
     if (volumeIndex < 0) {
-      throw new UnscopedValidationError(`volumeIndex must be a number starting from 0, got "${volumeIndex}"`);
+      throw new UnscopedValidationError(lit`VolumeIndexMustBeNonNegative`, `volumeIndex must be a number starting from 0, got "${volumeIndex}"`);
     }
 
     return new this(undefined, `ephemeral${volumeIndex}`);
@@ -265,7 +283,7 @@ export enum EbsDeviceVolumeType {
 /**
  * An EBS Volume in AWS EC2.
  */
-export interface IVolume extends IResource {
+export interface IVolume extends IResource, IVolumeRef {
   /**
    * The EBS Volume's ID
    *
@@ -297,7 +315,7 @@ export interface IVolume extends IResource {
    *                 volume to. If not specified, then permission is granted to attach
    *                 to all instances in this account.
    */
-  grantAttachVolume(grantee: IGrantable, instances?: IInstance[]): Grant;
+  grantAttachVolume(grantee: IGrantable, instances?: IInstanceRef[]): Grant;
 
   /**
    * Grants permission to attach the Volume by a ResourceTag condition. If you are looking to
@@ -328,7 +346,7 @@ export interface IVolume extends IResource {
    *                 volume from. If not specified, then permission is granted to detach
    *                 from all instances in this account.
    */
-  grantDetachVolume(grantee: IGrantable, instances?: IInstance[]): Grant;
+  grantDetachVolume(grantee: IGrantable, instances?: IInstanceRef[]): Grant;
 
   /**
    * Grants permission to detach the Volume by a ResourceTag condition.
@@ -351,7 +369,7 @@ export interface VolumeProps {
   /**
    * The value of the physicalName property of this resource.
    *
-   * @default The physical name will be allocated by CloudFormation at deployment time
+   * @default - The physical name will be allocated by CloudFormation at deployment time
    */
   readonly volumeName?: string;
 
@@ -365,14 +383,14 @@ export interface VolumeProps {
    * See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html
    * for details on the allowable size for each type of volume.
    *
-   * @default If you're creating the volume from a snapshot and don't specify a volume size, the default is the snapshot size.
+   * @default - If you're creating the volume from a snapshot and don't specify a volume size, the default is the snapshot size.
    */
   readonly size?: Size;
 
   /**
    * The snapshot from which to create the volume. You must specify either a snapshot ID or a volume size.
    *
-   * @default The EBS volume is not created from a snapshot.
+   * @default - The EBS volume is not created from a snapshot.
    */
   readonly snapshotId?: string;
 
@@ -422,7 +440,7 @@ export interface VolumeProps {
    *       }
    *     }
    *
-   * @default The default KMS key for the account, region, and EC2 service is used.
+   * @default - The default KMS key for the account, region, and EC2 service is used.
    */
   readonly encryptionKey?: IKey;
 
@@ -463,11 +481,25 @@ export interface VolumeProps {
 
   /**
    * The throughput that the volume supports, in MiB/s
-   * Takes a minimum of 125 and maximum of 1000.
+   * Takes a minimum of 125 and maximum of 2000.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-throughput
    * @default - 125 MiB/s. Only valid on gp3 volumes.
    */
   readonly throughput?: number;
+
+  /**
+   * Specifies the Amazon EBS Provisioned Rate for Volume Initialization (volume initialization rate),
+   * at which to download the snapshot blocks from Amazon S3 to the volume.
+   *
+   * Valid range is between 100 and 300 MiB/s.
+   *
+   * This parameter is supported only for volumes created from snapshots.
+   *
+   * @see https://docs.aws.amazon.com/ebs/latest/userguide/initalize-volume.html#volume-initialization-rate
+   *
+   * @default undefined - The volume initialization rate is not set.
+   */
+  readonly volumeInitializationRate?: Size;
 }
 
 /**
@@ -500,7 +532,16 @@ abstract class VolumeBase extends Resource implements IVolume {
   public abstract readonly availabilityZone: string;
   public abstract readonly encryptionKey?: IKey;
 
-  public grantAttachVolume(grantee: IGrantable, instances?: IInstance[]): Grant {
+  public get volumeRef(): VolumeReference {
+    return {
+      volumeId: this.volumeId,
+    };
+  }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
+  public grantAttachVolume(grantee: IGrantable, instances?: IInstanceRef[]): Grant {
     const result = Grant.addToPrincipal({
       grantee,
       actions: ['ec2:AttachVolume'],
@@ -527,6 +568,9 @@ abstract class VolumeBase extends Resource implements IVolume {
     return result;
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantAttachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant {
     const tagValue = this.calculateResourceTagValue([this, ...constructs]);
     const tagKey = `VolumeGrantAttach-${tagKeySuffix ?? tagValue.slice(0, 10).toUpperCase()}`;
@@ -546,7 +590,10 @@ abstract class VolumeBase extends Resource implements IVolume {
     return result;
   }
 
-  public grantDetachVolume(grantee: IGrantable, instances?: IInstance[]): Grant {
+  /**
+   * [disable-awslint:no-grants]
+   */
+  public grantDetachVolume(grantee: IGrantable, instances?: IInstanceRef[]): Grant {
     const result = Grant.addToPrincipal({
       grantee,
       actions: ['ec2:DetachVolume'],
@@ -556,6 +603,9 @@ abstract class VolumeBase extends Resource implements IVolume {
     return result;
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantDetachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant {
     const tagValue = this.calculateResourceTagValue([this, ...constructs]);
     const tagKey = `VolumeGrantDetach-${tagKeySuffix ?? tagValue.slice(0, 10).toUpperCase()}`;
@@ -575,14 +625,14 @@ abstract class VolumeBase extends Resource implements IVolume {
     return result;
   }
 
-  private collectGrantResourceArns(instances?: IInstance[]): string[] {
+  private collectGrantResourceArns(instances?: IInstanceRef[]): string[] {
     const stack = Stack.of(this);
     const resourceArns: string[] = [
       `arn:${stack.partition}:ec2:${stack.region}:${stack.account}:volume/${this.volumeId}`,
     ];
     const instanceArnPrefix = `arn:${stack.partition}:ec2:${stack.region}:${stack.account}:instance`;
     if (instances) {
-      instances.forEach(instance => resourceArns.push(`${instanceArnPrefix}/${instance?.instanceId}`));
+      instances.forEach(instance => resourceArns.push(`${instanceArnPrefix}/${instance?.instanceRef.instanceId}`));
     } else {
       resourceArns.push(`${instanceArnPrefix}/*`);
     }
@@ -619,7 +669,7 @@ export class Volume extends VolumeBase {
     }
     // Check that the provided volumeId looks like it could be valid.
     if (!Token.isUnresolved(attrs.volumeId) && !/^vol-[0-9a-fA-F]+$/.test(attrs.volumeId)) {
-      throw new ValidationError('`volumeId` does not match expected pattern. Expected `vol-<hexadecmial value>` (ex: `vol-05abe246af`) or a Token', scope);
+      throw new ValidationError(lit`VolumeIdPatternMismatch`, '`volumeId` does not match expected pattern. Expected `vol-<hexadecmial value>` (ex: `vol-05abe246af`) or a Token', scope);
     }
     return new Import(scope, id);
   }
@@ -650,6 +700,7 @@ export class Volume extends VolumeBase {
       volumeType: props.volumeType ??
         (FeatureFlags.of(this).isEnabled(cxapi.EBS_DEFAULT_GP3) ?
           EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3 : EbsDeviceVolumeType.GENERAL_PURPOSE_SSD),
+      volumeInitializationRate: props.volumeInitializationRate?.toMebibytes(),
     });
     resource.applyRemovalPolicy(props.removalPolicy);
 
@@ -681,15 +732,15 @@ export class Volume extends VolumeBase {
 
   protected validateProps(props: VolumeProps) {
     if (!(props.size || props.snapshotId)) {
-      throw new ValidationError('Must provide at least one of `size` or `snapshotId`', this);
+      throw new ValidationError(lit`SizeOrSnapshotRequired`, 'Must provide at least one of `size` or `snapshotId`', this);
     }
 
     if (props.snapshotId && !Token.isUnresolved(props.snapshotId) && !/^snap-[0-9a-fA-F]+$/.test(props.snapshotId)) {
-      throw new ValidationError('`snapshotId` does not match expected pattern. Expected `snap-<hexadecmial value>` (ex: `snap-05abe246af`) or Token', this);
+      throw new ValidationError(lit`SnapshotIdPatternMismatch`, '`snapshotId` does not match expected pattern. Expected `snap-<hexadecmial value>` (ex: `snap-05abe246af`) or Token', this);
     }
 
     if (props.encryptionKey && !props.encrypted) {
-      throw new ValidationError('`encrypted` must be true when providing an `encryptionKey`.', this);
+      throw new ValidationError(lit`EncryptedRequiredWithKey`, '`encrypted` must be true when providing an `encryptionKey`.', this);
     }
 
     if (
@@ -701,6 +752,7 @@ export class Volume extends VolumeBase {
       !props.iops
     ) {
       throw new ValidationError(
+        lit`IopsRequiredForProvisionedVolumes`,
         '`iops` must be specified if the `volumeType` is `PROVISIONED_IOPS_SSD` or `PROVISIONED_IOPS_SSD_IO2`.',
         this,
       );
@@ -716,6 +768,7 @@ export class Volume extends VolumeBase {
         ].includes(volumeType)
       ) {
         throw new ValidationError(
+          lit`IopsOnlyForSpecificVolumeTypes`,
           '`iops` may only be specified if the `volumeType` is `PROVISIONED_IOPS_SSD`, `PROVISIONED_IOPS_SSD_IO2` or `GENERAL_PURPOSE_SSD_GP3`.',
           this,
         );
@@ -723,12 +776,12 @@ export class Volume extends VolumeBase {
       // Enforce minimum & maximum IOPS:
       // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html
       const iopsRanges: { [key: string]: { Min: number; Max: number } } = {};
-      iopsRanges[EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3] = { Min: 3000, Max: 16000 };
+      iopsRanges[EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3] = { Min: 3000, Max: 80000 };
       iopsRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD] = { Min: 100, Max: 64000 };
       iopsRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = { Min: 100, Max: 256000 };
       const { Min, Max } = iopsRanges[volumeType];
       if (props.iops < Min || props.iops > Max) {
-        throw new ValidationError(`\`${volumeType}\` volumes iops must be between ${Min} and ${Max}.`, this);
+        throw new ValidationError(lit`IopsOutOfRange`, `\`${volumeType}\` volumes iops must be between ${Min} and ${Max}.`, this);
       }
 
       // Enforce maximum ratio of IOPS/GiB:
@@ -739,7 +792,7 @@ export class Volume extends VolumeBase {
       maximumRatios[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = 500;
       const maximumRatio = maximumRatios[volumeType];
       if (props.size && (props.iops > maximumRatio * props.size.toGibibytes({ rounding: SizeRoundingBehavior.FAIL }))) {
-        throw new ValidationError(`\`${volumeType}\` volumes iops has a maximum ratio of ${maximumRatio} IOPS/GiB.`, this);
+        throw new ValidationError(lit`IopsToSizeRatioExceeded`, `\`${volumeType}\` volumes iops has a maximum ratio of ${maximumRatio} IOPS/GiB.`, this);
       }
 
       const maximumThroughputRatios: { [key: string]: number } = {};
@@ -748,7 +801,7 @@ export class Volume extends VolumeBase {
       if (props.throughput && props.iops) {
         const iopsRatio = (props.throughput / props.iops);
         if (iopsRatio > maximumThroughputRatio) {
-          throw new ValidationError(`Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops`, this);
+          throw new ValidationError(lit`ThroughputToIopsRatioExceeded`, `Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops`, this);
         }
       }
     }
@@ -761,7 +814,7 @@ export class Volume extends VolumeBase {
           EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2,
         ].includes(volumeType)
       ) {
-        throw new ValidationError('multi-attach is supported exclusively on `PROVISIONED_IOPS_SSD` and `PROVISIONED_IOPS_SSD_IO2` volumes.', this);
+        throw new ValidationError(lit`MultiAttachOnlyForProvisionedIops`, 'multi-attach is supported exclusively on `PROVISIONED_IOPS_SSD` and `PROVISIONED_IOPS_SSD_IO2` volumes.', this);
       }
     }
 
@@ -780,24 +833,39 @@ export class Volume extends VolumeBase {
       const volumeType = props.volumeType ?? EbsDeviceVolumeType.GENERAL_PURPOSE_SSD;
       const { Min, Max } = sizeRanges[volumeType];
       if (size < Min || size > Max) {
-        throw new ValidationError(`\`${volumeType}\` volumes must be between ${Min} GiB and ${Max} GiB in size.`, this);
+        throw new ValidationError(lit`VolumeSizeOutOfRange`, `\`${volumeType}\` volumes must be between ${Min} GiB and ${Max} GiB in size.`, this);
       }
     }
 
     if (props.throughput) {
-      const throughputRange = { Min: 125, Max: 1000 };
+      const throughputRange = { Min: 125, Max: 2000 };
       const { Min, Max } = throughputRange;
       if (props.volumeType != EbsDeviceVolumeType.GP3) {
         throw new ValidationError(
+          lit`ThroughputRequiresGp3`,
           'throughput property requires volumeType: EbsDeviceVolumeType.GP3',
           this,
         );
       }
       if (props.throughput < Min || props.throughput > Max) {
         throw new ValidationError(
+          lit`ThroughputOutOfRange`,
           `throughput property takes a minimum of ${Min} and a maximum of ${Max}`,
           this,
         );
+      }
+    }
+
+    if (props.volumeInitializationRate) {
+      if (!props.snapshotId) {
+        throw new ValidationError(lit`VolumeInitializationRateRequiresSnapshot`, 'volumeInitializationRate can only be specified when creating a volume from a snapshot.', this);
+      }
+
+      if (!props.volumeInitializationRate.isUnresolved()) {
+        const rateMiBs = props.volumeInitializationRate.toMebibytes({ rounding: SizeRoundingBehavior.NONE });
+        if (rateMiBs < 100 || rateMiBs > 300) {
+          throw new ValidationError(lit`VolumeInitializationRateOutOfRange`, `volumeInitializationRate must be between 100 and 300 MiB/s, got: ${rateMiBs} MiB/s`, this);
+        }
       }
     }
   }

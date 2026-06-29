@@ -1,9 +1,14 @@
-import { Construct, IConstruct } from 'constructs';
-import { AwsAuthMapping } from './aws-auth-mapping';
-import { Cluster, AuthenticationMode } from './cluster';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
+import type { AwsAuthMapping } from './aws-auth-mapping';
+import type { Cluster } from './cluster';
+import { AuthenticationMode } from './cluster';
 import { KubernetesManifest } from './k8s-manifest';
-import * as iam from '../../aws-iam';
-import { Lazy, Stack } from '../../core';
+import type * as iam from '../../aws-iam';
+import { Stack, ValidationError } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Configuration props for the AwsAuth construct.
@@ -24,9 +29,9 @@ export interface AwsAuthProps {
  */
 export class AwsAuth extends Construct {
   private readonly stack: Stack;
-  private readonly roleMappings = new Array<{ role: iam.IRole; mapping: AwsAuthMapping }>();
-  private readonly userMappings = new Array<{ user: iam.IUser; mapping: AwsAuthMapping }>();
-  private readonly accounts = new Array<string>();
+  private readonly roleMappings: IArrayBox<{ role: iam.IRole; mapping: AwsAuthMapping }> = Box.fromArray([], { omitEmpty: false });
+  private readonly userMappings: IArrayBox<{ user: iam.IUser; mapping: AwsAuthMapping }> = Box.fromArray([], { omitEmpty: false });
+  private readonly accounts: IArrayBox<string> = Box.fromArray([], { omitEmpty: false });
 
   constructor(scope: Construct, id: string, props: AwsAuthProps) {
     super(scope, id);
@@ -45,7 +50,7 @@ export class AwsAuth extends Construct {
     const supportConfigMap = props.cluster.authenticationMode !== AuthenticationMode.API ? true : false;
 
     if (!supportConfigMap) {
-      throw new Error('ConfigMap not supported in the AuthenticationMode');
+      throw new ValidationError(lit`ConfigMapSupportedAuthenticationMode`, 'ConfigMap not supported in the AuthenticationMode', this);
     }
 
     this.stack = Stack.of(this);
@@ -123,33 +128,27 @@ export class AwsAuth extends Construct {
       // a dependency on the cluster, allowing those resources to be in a different stack,
       // will create a circular dependency. granted, it won't always be the case,
       // but we opted for the more cautious and restrictive approach for now.
-      throw new Error(`${construct.node.path} should be defined in the scope of the ${thisStack.stackName} stack to prevent circular dependencies`);
+      throw new ValidationError(lit`DefinedInWrongStack`, `${construct.node.path} should be defined in the scope of the ${thisStack.stackName} stack to prevent circular dependencies`, this);
     }
   }
 
   private synthesizeMapRoles() {
-    return Lazy.any({
-      produce: () => this.stack.toJsonString(this.roleMappings.map(m => ({
-        rolearn: m.role.roleArn,
-        username: m.mapping.username ?? m.role.roleArn,
-        groups: m.mapping.groups,
-      }))),
-    });
+    return this.roleMappings.derive(mappings => this.stack.toJsonString(mappings.map(m => ({
+      rolearn: m.role.roleArn,
+      username: m.mapping.username ?? m.role.roleArn,
+      groups: m.mapping.groups,
+    }))));
   }
 
   private synthesizeMapUsers() {
-    return Lazy.any({
-      produce: () => this.stack.toJsonString(this.userMappings.map(m => ({
-        userarn: m.user.userArn,
-        username: m.mapping.username ?? m.user.userArn,
-        groups: m.mapping.groups,
-      }))),
-    });
+    return this.userMappings.derive(mappings => this.stack.toJsonString(mappings.map(m => ({
+      userarn: m.user.userArn,
+      username: m.mapping.username ?? m.user.userArn,
+      groups: m.mapping.groups,
+    }))));
   }
 
   private synthesizeMapAccounts() {
-    return Lazy.any({
-      produce: () => this.stack.toJsonString(this.accounts),
-    });
+    return this.accounts.derive(accts => this.stack.toJsonString([...accts]));
   }
 }

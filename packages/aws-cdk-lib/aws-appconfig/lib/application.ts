@@ -1,12 +1,19 @@
 /* eslint-disable @cdklabs/no-literal-partition */
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnApplication } from './appconfig.generated';
-import { HostedConfiguration, HostedConfigurationOptions, SourcedConfiguration, SourcedConfigurationOptions } from './configuration';
-import { Environment, EnvironmentOptions, IEnvironment } from './environment';
-import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
+import type { HostedConfigurationOptions, SourcedConfigurationOptions } from './configuration';
+import { HostedConfiguration, SourcedConfiguration } from './configuration';
+import type { EnvironmentOptions, IEnvironment } from './environment';
+import { Environment } from './environment';
+import type { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible } from './extension';
+import { ExtensibleBase } from './extension';
 import * as ecs from '../../aws-ecs';
 import * as cdk from '../../core';
+import { toIEnvironment } from './private/ref-utils';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IApplicationRef, IEnvironmentRef, ApplicationReference } from '../../interfaces/generated/aws-appconfig-interfaces.generated';
 
 /**
  * Defines the platform for the AWS AppConfig Lambda extension.
@@ -16,7 +23,7 @@ export enum Platform {
   ARM_64 = 'ARM64',
 }
 
-export interface IApplication extends cdk.IResource {
+export interface IApplication extends cdk.IResource, IApplicationRef {
   /**
    * The description of the application.
    */
@@ -68,7 +75,7 @@ export interface IApplication extends cdk.IResource {
    *
    * @param environment The environment
    */
-  addExistingEnvironment(environment: IEnvironment): void;
+  addExistingEnvironment(environment: IEnvironmentRef): void;
 
   /**
    * Returns the list of associated environments.
@@ -186,8 +193,14 @@ export interface ApplicationProps {
 abstract class ApplicationBase extends cdk.Resource implements IApplication, IExtensible {
   public abstract applicationId: string;
   public abstract applicationArn: string;
-  private _environments: IEnvironment[] = [];
+  private _environments: IEnvironmentRef[] = [];
   protected abstract extensible: ExtensibleBase;
+
+  public get applicationRef(): ApplicationReference {
+    return {
+      applicationId: this.applicationId,
+    };
+  }
 
   public addEnvironment(id: string, options: EnvironmentOptions = {}): IEnvironment {
     return new Environment(this, id, {
@@ -210,12 +223,12 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication, IEx
     });
   }
 
-  public addExistingEnvironment(environment: IEnvironment) {
+  public addExistingEnvironment(environment: IEnvironmentRef) {
     this._environments.push(environment);
   }
 
   public environments(): IEnvironment[] {
-    return this._environments;
+    return this._environments.map(toIEnvironment);
   }
 
   /**
@@ -334,7 +347,11 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication, IEx
  * @resource AWS::AppConfig::Application
  * @see https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-creating-application.html
  */
+@propertyInjectable
 export class Application extends ApplicationBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appconfig.Application';
+
   /**
    * Imports an AWS AppConfig application into the CDK using its Amazon Resource Name (ARN).
    *
@@ -346,7 +363,7 @@ export class Application extends ApplicationBase {
     const parsedArn = cdk.Stack.of(scope).splitArn(applicationArn, cdk.ArnFormat.SLASH_RESOURCE_NAME);
     const applicationId = parsedArn.resourceName;
     if (!applicationId) {
-      throw new cdk.ValidationError('Missing required application id from application ARN', scope);
+      throw new cdk.ValidationError(lit`MissingApplicationId`, 'Missing required application id from application ARN', scope);
     }
 
     class Import extends ApplicationBase {

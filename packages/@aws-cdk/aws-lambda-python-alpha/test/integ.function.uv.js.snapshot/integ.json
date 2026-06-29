@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "integ-lambda-python-uv-test/DefaultTest": {
+      "stacks": [
+        "integ-lambda-python-uv"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "integ-lambda-python-uv-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integlambdapythonuvtestDefaultTestDeployAssertE21A2901"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}

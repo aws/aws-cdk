@@ -1,7 +1,9 @@
-import { Construct, IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
-import { App, CfnResource, IAspect, Stack, Stage, Aspects } from '../lib';
+import type { IAspect } from '../lib';
+import { App, CfnResource, Stack, Stage, Aspects } from '../lib';
 
 describe('stage', () => {
   test('Stack inherits unspecified part of the env from Stage', () => {
@@ -252,7 +254,7 @@ describe('stage', () => {
     const rootAssembly = app.synth();
 
     // THEN
-    expect(rootAssembly.manifest.artifacts).toEqual({
+    expect(rootAssembly.manifest.artifacts).toMatchObject({
       'assembly-StageLevel1': {
         type: 'cdk:cloud-assembly',
         properties: {
@@ -263,7 +265,7 @@ describe('stage', () => {
     });
 
     const assemblyLevel1 = rootAssembly.getNestedAssembly('assembly-StageLevel1');
-    expect(assemblyLevel1.manifest.artifacts).toEqual({
+    expect(assemblyLevel1.manifest.artifacts).toMatchObject({
       'assembly-StageLevel1-StageLevel2': {
         type: 'cdk:cloud-assembly',
         properties: {
@@ -274,7 +276,7 @@ describe('stage', () => {
     });
 
     const assemblyLevel2 = assemblyLevel1.getNestedAssembly('assembly-StageLevel1-StageLevel2');
-    expect(assemblyLevel2.manifest.artifacts).toEqual({
+    expect(assemblyLevel2.manifest.artifacts).toMatchObject({
       'assembly-StageLevel1-StageLevel2-StageLevel3': {
         type: 'cdk:cloud-assembly',
         properties: {

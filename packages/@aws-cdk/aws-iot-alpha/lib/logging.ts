@@ -1,8 +1,10 @@
-import { Resource, Stack, IResource, ArnFormat } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import * as iot from 'aws-cdk-lib/aws-iot';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as iot from 'aws-cdk-lib/aws-iot';
+import type { IResource } from 'aws-cdk-lib/core';
+import { Resource, Stack, ArnFormat } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
 
 /**
  * Represents AWS IoT Logging
@@ -68,7 +70,11 @@ export interface LoggingProps {
 /**
  * Defines AWS IoT Logging
  */
+@propertyInjectable
 export class Logging extends Resource implements ILogging {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-iot-alpha.Logging';
+
   /**
    * Import an existing AWS IoT Logging
    *

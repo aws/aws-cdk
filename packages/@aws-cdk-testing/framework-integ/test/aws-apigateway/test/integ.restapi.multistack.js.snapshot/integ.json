@@ -1,11 +1,13 @@
 {
-  "version": "20.0.0",
+  "version": "44.0.0",
   "testCases": {
     "restapi-multistack/DefaultTest": {
       "stacks": [
         "SecondStack"
       ],
-      "assertionStack": "restapi-multistack/DefaultTest/DeployAssert"
+      "assertionStack": "restapi-multistack/DefaultTest/DeployAssert",
+      "assertionStackName": "restapimultistackDefaultTestDeployAssertFCCAE394"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

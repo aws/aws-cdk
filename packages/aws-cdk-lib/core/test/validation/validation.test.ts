@@ -1,25 +1,20 @@
-/* eslint-disable quote-props */
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
-import { table } from 'table';
+import * as cxapi from '../../../cx-api';
 import * as core from '../../lib';
-import { PolicyValidationPluginReportBeta1, PolicyViolationBeta1 } from '../../lib';
 
 let consoleErrorMock: jest.SpyInstance;
-let consoleLogMock: jest.SpyInstance;
 beforeEach(() => {
+  process.env.NO_COLOR = '1';
+  OUTPUT_REDACTIONS.clear();
   consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => { return true; });
-  consoleLogMock = jest.spyOn(console, 'log').mockImplementation(() => { return true; });
+  jest.spyOn(console, 'log').mockImplementation(() => { return true; });
   process.exitCode = undefined;
 });
 
 afterEach(() => {
   jest.clearAllMocks();
-});
-
-afterAll(() => {
-  jest.resetAllMocks();
 });
 
 describe('validations', () => {
@@ -42,38 +37,15 @@ describe('validations', () => {
       ],
     });
     const stack = new core.Stack(app);
-    new core.CfnResource(stack, 'Fake', {
-      type: 'Test::Resource::Fake',
-      properties: {
-        result: 'failure',
-      },
-    });
+    new FailResource(stack, 'Fake');
 
-    app.synth();
+    redactAsmDir(app.synth());
     expect(process.exitCode).toEqual(1);
 
-    expect(consoleErrorMock.mock.calls[0][0].split('\n')).toEqual(expect.arrayContaining(validationReport([{
-      templatePath: '/path/to/Default.template.json',
-      constructPath: 'Default/Fake',
-      title: 'test-rule',
-      pluginName: 'test-plugin',
-      status: 'failure',
-      ruleMetadata: {
-        id: 'abcdefg',
-      },
-      severity: 'medium',
-      creationStack: [
-        expect.stringMatching(/Default \(Default\)/),
-        expect.stringMatching(/│ Construct: (aws-cdk-lib.Stack|constructs.Construct)/),
-        expect.stringMatching(/│ Library Version: .*/),
-        expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
-        expect.stringMatching(/└──  Fake \(Default\/Fake\)/),
-        expect.stringMatching(/│ Construct: (aws-cdk-lib.CfnResource|constructs.Construct)/),
-        expect.stringMatching(/│ Library Version: .*/),
-        expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
-      ],
-      resourceLogicalId: 'Fake',
-    }])));
+    expect(mockErrorOutput()).toMatchSnapshot();
+    // It has all the relevant details
+    expect(mockErrorOutput()).toContain('Default/Fake');
+    expect(mockErrorOutput()).toMatch(/(aws-cdk-lib.Stack|constructs.Construct)/);
   });
 
   test('validation success', () => {
@@ -94,30 +66,7 @@ describe('validations', () => {
 
     app.synth();
     expect(process.exitCode).toBeUndefined();
-
-    expect(consoleLogMock.mock.calls).toEqual([
-      [
-        expect.stringMatching(/Performing Policy Validations/),
-      ],
-      [
-        expect.stringMatching(/Policy Validation Successful!/),
-      ],
-    ]);
-    expect(consoleErrorMock.mock.calls[0][0]).toEqual(`Validation Report
------------------
-
-Policy Validation Report Summary
-
-╔══════════════╤═════════╗
-║ Plugin       │ Status  ║
-╟──────────────┼─────────╢
-║ test-plugin  │ success ║
-╟──────────────┼─────────╢
-║ test-plugin2 │ success ║
-╟──────────────┼─────────╢
-║ test-plugin3 │ success ║
-╚══════════════╧═════════╝
-`);
+    expect(mockErrorOutput()).toEqual('');
   });
 
   test('multiple stacks', () => {
@@ -126,36 +75,32 @@ Policy Validation Report Summary
         new FakePlugin('test-plugin', [{
           description: 'test recommendation',
           ruleName: 'test-rule',
-          violatingResources: [{
-            locations: ['test-location'],
-            resourceLogicalId: 'DefaultResource',
-            templatePath: '/path/to/stack1.template.json',
-          }],
+          violatingResources: [
+            {
+              locations: ['test-location'],
+              resourceLogicalId: 'DefaultResource',
+              templatePath: '/path/to/stack1.template.json',
+            },
+            {
+              locations: ['test-location'],
+              resourceLogicalId: 'DefaultResource',
+              templatePath: '/path/to/stack2.template.json',
+            },
+          ],
         }]),
       ],
     });
     const stack1 = new core.Stack(app, 'stack1');
-    new core.CfnResource(stack1, 'DefaultResource', {
-      type: 'Test::Resource::Fake',
-      properties: {
-        result: 'failure',
-      },
-    });
+    new FailResource(stack1, 'DefaultResource');
     const stack2 = new core.Stack(app, 'stack2');
-    new core.CfnResource(stack2, 'DefaultResource', {
-      type: 'Test::Resource::Fake',
-      properties: {
-        result: 'failure',
-      },
-    });
+    new FailResource(stack2, 'DefaultResource');
 
-    app.synth();
+    redactAsmDir(app.synth());
     expect(process.exitCode).toEqual(1);
 
-    const report = consoleErrorMock.mock.calls[0][0];
-    // Assuming the rest of the report's content is checked by another test
-    expect(report).toContain('- Template Path: /path/to/stack1.template.json');
-    expect(report).not.toContain('- Template Path: /path/to/stack2.template.json');
+    expect(mockErrorOutput()).toMatchSnapshot();
+    expect(mockErrorOutput()).toContain('stack1/DefaultResource');
+    expect(mockErrorOutput()).toContain('stack2/DefaultResource');
   });
 
   test('multiple stages', () => {
@@ -206,93 +151,26 @@ Policy Validation Report Summary
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'DefaultResource',
-            templatePath: '/path/to/Stage2Stage3stack10CD36915.template.json',
+            templatePath: '/path/to/Stage2Stage3stack3A378CA7D.template.json',
           }],
         }]),
       ],
     });
-    const stack3 = new core.Stack(stage3, 'stack1');
-    new core.CfnResource(stack3, 'DefaultResource', {
-      type: 'Test::Resource::Fake',
-      properties: {
-        result: 'failure',
-      },
-    });
+    const stack3 = new core.Stack(stage3, 'stack3');
+    new FailResource(stack3, 'DefaultResource');
     const stack1 = new core.Stack(stage1, 'stack1');
-    new core.CfnResource(stack1, 'DefaultResource', {
-      type: 'Test::Resource::Fake',
-      properties: {
-        result: 'failure',
-      },
-    });
+    new FailResource(stack1, 'DefaultResource');
     const stack2 = new core.Stack(stage2, 'stack2');
-    new core.CfnResource(stack2, 'DefaultResource', {
-      type: 'Test::Resource::Fake',
-      properties: {
-        result: 'failure',
-      },
-    });
+    new FailResource(stack2, 'DefaultResource');
 
-    app.synth();
+    redactAsmDir(app.synth());
     expect(process.exitCode).toEqual(1);
 
-    const report = consoleErrorMock.mock.calls[0][0].split('\n');
-    // Assuming the rest of the report's content is checked by another test
-    expect(report).toEqual(expect.arrayContaining(
-      validationReport([
-        {
-          pluginName: 'test-plugin2',
-          status: 'failure',
-          templatePath: '/path/to/Stage1stack1DDED8B6C.template.json',
-          constructPath: 'Stage1/stack1/DefaultResource',
-          title: 'test-rule2',
-          creationStack: [
-            expect.stringMatching(/Stage1 \(Stage1\)/),
-            expect.stringMatching(/│ Construct: (aws-cdk-lib.Stage|constructs.Construct)/),
-            expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
-            expect.stringMatching(/└──  stack1 \(Stage1\/stack1\)/),
-            expect.stringMatching(/│ Construct: (aws-cdk-lib.Stack|constructs.Construct)/),
-            expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
-            expect.stringMatching(/└──  DefaultResource \(Stage1\/stack1\/DefaultResource\)/),
-            expect.stringMatching(/│ Construct: (aws-cdk-lib.CfnResource|constructs.Construct)/),
-            expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
-          ],
-          resourceLogicalId: 'DefaultResource',
-          description: 'do something',
-          version: '1.2.3',
-        },
-        {
-          pluginName: 'test-plugin4',
-          status: 'failure',
-          templatePath: '/path/to/Stage2Stage3stack10CD36915.template.json',
-          constructPath: 'Stage2/Stage3/stack1/DefaultResource',
-          description: 'do something',
-          title: 'test-rule4',
-          resourceLogicalId: 'DefaultResource',
-        },
-        {
-          pluginName: 'test-plugin3',
-          status: 'failure',
-          templatePath: '/path/to/Stage2stack259BA718E.template.json',
-          constructPath: 'Stage2/stack2/DefaultResource',
-          title: 'test-rule3',
-          resourceLogicalId: 'DefaultResource',
-          description: 'do something',
-        },
-        {
-          pluginName: 'test-plugin1',
-          status: 'failure',
-          templatePath: '/path/to/Stage1stack1DDED8B6C.template.json',
-          constructPath: 'Stage1/stack1/DefaultResource',
-          title: 'test-rule1',
-          resourceLogicalId: 'DefaultResource',
-          description: 'do something',
-        },
-      ]),
-    ));
+    expect(mockErrorOutput()).toMatchSnapshot();
+
+    for (const cPath of ['Stage1/stack1/DefaultResource', 'Stage2/Stage3/stack3/DefaultResource', 'Stage2/stack2/DefaultResource', 'Stage1/stack1/DefaultResource']) {
+      expect(mockErrorOutput()).toContain(cPath);
+    }
   });
 
   test('multiple stages, multiple plugins', () => {
@@ -321,42 +199,28 @@ Policy Validation Report Summary
     });
     const stage3 = new core.Stage(stage2, 'Stage3', { });
     const stack3 = new core.Stack(stage3, 'stack1');
-    new core.CfnResource(stack3, 'DefaultResource', {
-      type: 'Test::Resource::Fake',
-      properties: {
-        result: 'failure',
-      },
-    });
+    new FailResource(stack3, 'DefaultResource');
     const stack1 = new core.Stack(stage1, 'stack1');
-    new core.CfnResource(stack1, 'DefaultResource', {
-      type: 'Test::Resource::Fake',
-      properties: {
-        result: 'failure',
-      },
-    });
+    new FailResource(stack1, 'DefaultResource');
     const stack2 = new core.Stack(stage2, 'stack2');
-    new core.CfnResource(stack2, 'DefaultResource', {
-      type: 'Test::Resource::Fake',
-      properties: {
-        result: 'failure',
-      },
-    });
+    new FailResource(stack2, 'DefaultResource');
+
     app.synth();
 
     expect(mockValidate).toHaveBeenCalledTimes(2);
-    expect(mockValidate).toHaveBeenNthCalledWith(2, {
+    expect(mockValidate).toHaveBeenNthCalledWith(2, expect.objectContaining({
       templatePaths: [
         expect.stringMatching(/assembly-Stage1\/Stage1stack1DDED8B6C.template.json/),
         expect.stringMatching(/assembly-Stage2\/Stage2stack259BA718E.template.json/),
         expect.stringMatching(/assembly-Stage2\/assembly-Stage2-Stage3\/Stage2Stage3stack10CD36915.template.json/),
       ],
-    });
-    expect(mockValidate).toHaveBeenNthCalledWith(1, {
+    }));
+    expect(mockValidate).toHaveBeenNthCalledWith(1, expect.objectContaining({
       templatePaths: [
         expect.stringMatching(/assembly-Stage2\/Stage2stack259BA718E.template.json/),
         expect.stringMatching(/assembly-Stage2\/assembly-Stage2-Stage3\/Stage2Stage3stack10CD36915.template.json/),
       ],
-    });
+    }));
   });
 
   test('multiple stages, single plugin', () => {
@@ -378,36 +242,21 @@ Policy Validation Report Summary
     const stage2 = new core.Stage(app, 'Stage2', { });
     const stage3 = new core.Stage(stage2, 'Stage3', { });
     const stack3 = new core.Stack(stage3, 'stack1');
-    new core.CfnResource(stack3, 'DefaultResource', {
-      type: 'Test::Resource::Fake',
-      properties: {
-        result: 'failure',
-      },
-    });
+    new FailResource(stack3, 'DefaultResource');
     const stack1 = new core.Stack(stage1, 'stack1');
-    new core.CfnResource(stack1, 'DefaultResource', {
-      type: 'Test::Resource::Fake',
-      properties: {
-        result: 'failure',
-      },
-    });
+    new FailResource(stack1, 'DefaultResource');
     const stack2 = new core.Stack(stage2, 'stack2');
-    new core.CfnResource(stack2, 'DefaultResource', {
-      type: 'Test::Resource::Fake',
-      properties: {
-        result: 'failure',
-      },
-    });
+    new FailResource(stack2, 'DefaultResource');
     app.synth();
 
     expect(mockValidate).toHaveBeenCalledTimes(1);
-    expect(mockValidate).toHaveBeenCalledWith({
+    expect(mockValidate).toHaveBeenCalledWith(expect.objectContaining({
       templatePaths: [
         expect.stringMatching(/assembly-Stage1\/Stage1stack1DDED8B6C.template.json/),
         expect.stringMatching(/assembly-Stage2\/Stage2stack259BA718E.template.json/),
         expect.stringMatching(/assembly-Stage2\/assembly-Stage2-Stage3\/Stage2Stage3stack10CD36915.template.json/),
       ],
-    });
+    }));
   });
 
   test('multiple constructs', () => {
@@ -427,13 +276,13 @@ Policy Validation Report Summary
     const stack = new core.Stack(app);
     new LevelTwoConstruct(stack, 'SomeResource');
     new LevelTwoConstruct(stack, 'AnotherResource');
-    app.synth();
+    redactAsmDir(app.synth());
     expect(process.exitCode).toEqual(1);
 
-    const report = consoleErrorMock.mock.calls[0][0];
+    const report = mockErrorOutput();
     // Assuming the rest of the report's content is checked by another test
-    expect(report).toContain('- Construct Path: Default/SomeResource');
-    expect(report).not.toContain('- Construct Path: Default/AnotherResource');
+    expect(report).toContain('Default/SomeResource');
+    expect(report).not.toContain('Default/AnotherResource');
   });
 
   test('multiple plugins', () => {
@@ -460,48 +309,14 @@ Policy Validation Report Summary
       ],
     });
     const stack = new core.Stack(app);
-    new core.CfnResource(stack, 'Fake', {
-      type: 'Test::Resource::Fake',
-      properties: {
-        result: 'failure',
-      },
-    });
-    app.synth();
+    new FailResource(stack, 'Fake');
+    redactAsmDir(app.synth());
     expect(process.exitCode).toEqual(1);
 
-    const report = consoleErrorMock.mock.calls[0][0].split('\n');
-    expect(report).toEqual(expect.arrayContaining(
-      validationReport([
-        {
-          pluginName: 'plugin1',
-          status: 'failure',
-          templatePath: '/path/to/Default.template.json',
-          constructPath: 'Default/Fake',
-          title: 'rule-1',
-          creationStack: [
-            expect.stringMatching(/Default \(Default\)/),
-            expect.stringMatching(/│ Construct: (aws-cdk-lib.Stack|constructs.Construct)/),
-            expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
-            expect.stringMatching(/└──  Fake \(Default\/Fake\)/),
-            expect.stringMatching(/│ Construct: (aws-cdk-lib.CfnResource|constructs.Construct)/),
-            expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
-          ],
-          description: 'do something',
-          resourceLogicalId: 'Fake',
-        },
-        {
-          pluginName: 'plugin2',
-          status: 'failure',
-          templatePath: '/path/to/Default.template.json',
-          constructPath: 'Default/Fake',
-          title: 'rule-2',
-          description: 'do another thing',
-          resourceLogicalId: 'Fake',
-        },
-      ]),
-    ));
+    const report = mockErrorOutput();
+    expect(report).toMatchSnapshot();
+    expect(report).toContain('do something');
+    expect(report).toContain('do another thing');
   });
 
   test('multiple plugins with mixed results', () => {
@@ -520,46 +335,15 @@ Policy Validation Report Summary
       ],
     });
     const stack = new core.Stack(app);
-    new core.CfnResource(stack, 'Fake', {
-      type: 'Test::Resource::Fake',
-      properties: {
-        result: 'failure',
-      },
-    });
-    app.synth();
+    new FailResource(stack, 'Fake');
+    redactAsmDir(app.synth());
 
-    const report = consoleErrorMock.mock.calls[0][0].split('\n');
-    expect(report).toEqual(expect.arrayContaining(
-      validationReport([
-        {
-          pluginName: 'plugin1',
-          status: 'success',
-          constructPath: '',
-          resourceLogicalId: '',
-          templatePath: '',
-          title: '',
-        },
-        {
-          pluginName: 'plugin2',
-          status: 'failure',
-          templatePath: '/path/to/Default.template.json',
-          constructPath: 'Default/Fake',
-          title: 'rule-2',
-          creationStack: [
-            expect.stringMatching(/Default \(Default\)/),
-            expect.stringMatching(/│ Construct: (aws-cdk-lib.Stack|constructs.Construct)/),
-            expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
-            expect.stringMatching(/└──  Fake \(Default\/Fake\)/),
-            expect.stringMatching(/│ Construct: (aws-cdk-lib.CfnResource|constructs.Construct)/),
-            expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
-          ],
-          description: 'do another thing',
-          resourceLogicalId: 'Fake',
-        },
-      ]),
-    ));
+    const report = mockErrorOutput();
+    expect(report).toMatchSnapshot();
+    expect(report).toContain('do another thing');
+
+    expect(report).toContain('plugin2');
+    expect(report).not.toContain('plugin1');
   });
 
   test('plugin throws an error', () => {
@@ -582,19 +366,14 @@ Policy Validation Report Summary
     });
 
     const stack = new core.Stack(app);
-    new core.CfnResource(stack, 'Fake', {
-      type: 'Test::Resource::Fake',
-      properties: {
-        result: 'success',
-      },
-    });
+    new FailResource(stack, 'Fake');
 
-    app.synth();
+    redactAsmDir(app.synth());
     expect(process.exitCode).toEqual(1);
 
-    const report = consoleErrorMock.mock.calls[0][0];
-    expect(report).toContain('error: Validation plugin \'broken-plugin\' failed: Something went wrong');
-    expect(report).toContain(generateTable('test-plugin', 'failure', 'N/A'));
+    const report = mockErrorOutput();
+    expect(report).toContain('test recommendation');
+    expect(report).toContain('ERROR Validation plugin \'broken-plugin\' failed: Something went wrong');
   });
 
   test('plugin tries to modify a template', () => {
@@ -604,18 +383,57 @@ Policy Validation Report Summary
       ],
     });
     const stack = new core.Stack(app);
-    new core.CfnResource(stack, 'DefaultResource', {
-      type: 'Test::Resource::Fake',
-      properties: {
-        result: 'success',
-      },
-    });
+    new FailResource(stack, 'DefaultResource');
     expect(() => {
       app.synth();
     }).toThrow(/Illegal operation: validation plugin 'rogue-plugin' modified the cloud assembly/);
   });
 
-  test('JSON format', () => {
+  test('plugin that writes new files to assembly is allowed', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        {
+          name: 'file-writer-plugin',
+          validate(context: core.IPolicyValidationContextBeta1) {
+            const assemblyDir = path.dirname(context.templatePaths[0]);
+            fs.writeFileSync(path.join(assemblyDir, 'plugin-output.json'), '{"result":"ok"}');
+            return { success: true, violations: [] };
+          },
+        },
+      ],
+    });
+    const stack = new core.Stack(app);
+    new core.CfnResource(stack, 'DefaultResource', {
+      type: 'Test::Resource::Fake',
+      properties: { result: 'success' },
+    });
+    expect(() => app.synth()).not.toThrow();
+    const outputFile = path.join(app.outdir, 'plugin-output.json');
+    expect(fs.existsSync(outputFile)).toBe(true);
+    expect(JSON.parse(fs.readFileSync(outputFile, 'utf-8'))).toEqual({ result: 'ok' });
+  });
+
+  test('plugin that deletes pre-existing file is caught', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        {
+          name: 'deleter-plugin',
+          validate(context: core.IPolicyValidationContextBeta1) {
+            fs.unlinkSync(context.templatePaths[0]);
+            return { success: true, violations: [] };
+          },
+        },
+      ],
+    });
+    const stack = new core.Stack(app);
+    new core.CfnResource(stack, 'DefaultResource', {
+      type: 'Test::Resource::Fake',
+      properties: { result: 'success' },
+    });
+    expect(() => app.synth()).toThrow(/Illegal operation: validation plugin 'deleter-plugin' modified the cloud assembly/);
+  });
+
+  test('failSynthOnValidationErrors=false writes JSON but does not print or fail', () => {
     const app = new core.App({
       policyValidationBeta1: [
         new FakePlugin('test-plugin', [{
@@ -631,7 +449,76 @@ Policy Validation Report Summary
           }],
         }]),
       ],
-      context: { '@aws-cdk/core:validationReportJson': true },
+      context: {
+        '@aws-cdk/core:failSynthOnValidationErrors': false,
+      },
+    });
+    const stack = new core.Stack(app);
+    new FailResource(stack, 'Fake');
+    redactAsmDir(app.synth());
+
+    // No exit code set
+    expect(process.exitCode).toBeUndefined();
+
+    // JSON file is written in the new v2 format
+    const file = path.join(app.outdir, 'validation-report.json');
+    const report = JSON.parse(fs.readFileSync(file).toString('utf-8'));
+    expect(report).toEqual(expect.objectContaining({
+      version: expect.any(String),
+      title: 'Validation Report',
+      pluginReports: [
+        {
+          pluginName: 'test-plugin',
+          conclusion: 'failure',
+          violations: [
+            {
+              ruleName: 'test-rule',
+              description: 'test recommendation',
+              severity: 'error',
+              ruleMetadata: { id: 'abcdefg' },
+              violatingConstructs: [
+                {
+                  constructPath: 'Default/Fake',
+                  constructFqn: expect.stringMatching(/(aws-cdk-lib.CfnResource|Construct)/),
+                  libraryVersion: expect.any(String),
+                  cloudFormationResource: {
+                    templatePath: '/path/to/Default.template.json',
+                    logicalId: 'Fake',
+                    propertyPaths: ['test-location'],
+                  },
+                  stackTraces: expect.any(Array),
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    }));
+
+    // No console output about validation
+    const allOutput = mockErrorOutput();
+    expect(allOutput).toEqual('');
+  });
+
+  test('failSynthOnValidationErrors="false" (string) works the same as boolean false', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        new FakePlugin('test-plugin', [{
+          description: 'test recommendation',
+          ruleName: 'test-rule',
+          ruleMetadata: {
+            id: 'abcdefg',
+          },
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceLogicalId: 'Fake',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      ],
+      context: {
+        '@aws-cdk/core:failSynthOnValidationErrors': 'false',
+      },
     });
     const stack = new core.Stack(app);
     new core.CfnResource(stack, 'Fake', {
@@ -640,50 +527,211 @@ Policy Validation Report Summary
         result: 'failure',
       },
     });
-    app.synth();
+    redactAsmDir(app.synth());
+
+    expect(process.exitCode).toBeUndefined();
+
+    const file = path.join(app.outdir, 'validation-report.json');
+    expect(fs.existsSync(file)).toBe(true);
+
+    const allOutput = mockErrorOutput();
+    expect(allOutput).toEqual('');
+  });
+
+  test('Pretty print as default', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        new FakePlugin('test-plugin', [{
+          description: 'test recommendation',
+          ruleName: 'test-rule',
+          ruleMetadata: {
+            id: 'abcdefg',
+          },
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceLogicalId: 'Fake',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      ],
+      context: {
+      },
+    });
+    const stack = new core.Stack(app);
+    new FailResource(stack, 'Fake');
+    redactAsmDir(app.synth());
+    expect(process.exitCode).toEqual(1);
+    const consoleOut = mockErrorOutput();
+    expect(consoleOut).toContain('Validation failed. A copy of this report can be found in');
+  });
+
+  test('both formats enabled by default', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        new FakePlugin('test-plugin', [{
+          description: 'test recommendation',
+          ruleName: 'test-rule',
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceLogicalId: 'Fake',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      ],
+    });
+    const stack = new core.Stack(app);
+    new FailResource(stack, 'Fake');
+    redactAsmDir(app.synth());
     expect(process.exitCode).toEqual(1);
 
-    const report = fs.readFileSync(path.join(app.outdir, 'policy-validation-report.json')).toString('utf-8');
-    expect(JSON.parse(report)).toEqual(expect.objectContaining({
+    // JSON file written
+    const file = path.join(app.outdir, 'validation-report.json');
+    expect(fs.existsSync(file)).toBe(true);
+
+    // Pretty print also output
+    const consoleReport = mockErrorOutput();
+    expect(consoleReport).toContain('test recommendation');
+  });
+
+  test('failSynthOnValidationErrors=false succeeds even with validation failures', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        new FakePlugin('test-plugin', [{
+          description: 'test recommendation',
+          ruleName: 'test-rule',
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceLogicalId: 'Fake',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      ],
+      context: {
+        '@aws-cdk/core:failSynthOnValidationErrors': false,
+      },
+    });
+    const stack = new core.Stack(app);
+    new FailResource(stack, 'Fake');
+    redactAsmDir(app.synth());
+
+    // No failure exit code
+    expect(process.exitCode).toBeUndefined();
+
+    // JSON file is still written
+    const file = path.join(app.outdir, 'validation-report.json');
+    expect(fs.existsSync(file)).toBe(true);
+    const report = JSON.parse(fs.readFileSync(file, 'utf-8'));
+    expect(report.pluginReports[0].conclusion).toEqual('failure');
+  });
+
+  test('validationReportJson=true writes legacy report alongside new report', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        new FakePlugin('test-plugin', [{
+          description: 'test recommendation',
+          ruleName: 'test-rule',
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceLogicalId: 'Fake',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      ],
+      context: {
+        '@aws-cdk/core:validationReportJson': true,
+      },
+    });
+    const stack = new core.Stack(app);
+    new FailResource(stack, 'Fake');
+    redactAsmDir(app.synth());
+
+    // New format is always written
+    const newFile = path.join(app.outdir, 'validation-report.json');
+    expect(fs.existsSync(newFile)).toBe(true);
+    const newReport = JSON.parse(fs.readFileSync(newFile, 'utf-8'));
+    expect(newReport.version).toBeDefined();
+    expect(newReport.pluginReports[0].conclusion).toEqual('failure');
+
+    // Legacy format is also written when opted in
+    const legacyFile = path.join(app.outdir, 'policy-validation-report.json');
+    expect(fs.existsSync(legacyFile)).toBe(true);
+    const legacyReport = JSON.parse(fs.readFileSync(legacyFile, 'utf-8'));
+    expect(legacyReport.pluginReports[0].summary.status).toEqual('failure');
+    expect(legacyReport.pluginReports[0].summary.pluginName).toEqual('test-plugin');
+  });
+
+  test('legacy report is NOT written by default', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        new FakePlugin('test-plugin', [{
+          description: 'test recommendation',
+          ruleName: 'test-rule',
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceLogicalId: 'Fake',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      ],
+    });
+    const stack = new core.Stack(app);
+    new FailResource(stack, 'Fake');
+    redactAsmDir(app.synth());
+
+    // New format written
+    expect(fs.existsSync(path.join(app.outdir, 'validation-report.json'))).toBe(true);
+
+    // Legacy format NOT written
+    expect(fs.existsSync(path.join(app.outdir, 'policy-validation-report.json'))).toBe(false);
+  });
+
+  test('Multi format', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        new FakePlugin('test-plugin', [{
+          description: 'test recommendation',
+          ruleName: 'test-rule',
+          ruleMetadata: {
+            id: 'abcdefg',
+          },
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceLogicalId: 'Fake',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      ],
+    });
+    const stack = new core.Stack(app);
+    new FailResource(stack, 'Fake');
+    redactAsmDir(app.synth());
+    expect(process.exitCode).toEqual(1);
+    const file = path.join(app.outdir, 'validation-report.json');
+    const report = JSON.parse(fs.readFileSync(file).toString('utf-8'));
+    expect(report).toEqual(expect.objectContaining({
+      version: expect.any(String),
       title: 'Validation Report',
       pluginReports: [
         {
-          summary: {
-            pluginName: 'test-plugin',
-            status: 'failure',
-          },
+          pluginName: 'test-plugin',
+          conclusion: 'failure',
           violations: [
             {
               ruleName: 'test-rule',
               description: 'test recommendation',
+              severity: 'error',
               ruleMetadata: { id: 'abcdefg' },
-              violatingResources: [{
-                'locations': [
-                  'test-location',
-                ],
-                'resourceLogicalId': 'Fake',
-                'templatePath': '/path/to/Default.template.json',
-              }],
               violatingConstructs: [
                 {
-                  constructStack: {
-                    'id': 'Default',
-                    'construct': expect.stringMatching(/(aws-cdk-lib.Stack|Construct)/),
-                    'libraryVersion': expect.any(String),
-                    'location': "Run with '--debug' to include location info",
-                    'path': 'Default',
-                    'child': {
-                      'id': 'Fake',
-                      'construct': expect.stringMatching(/(aws-cdk-lib.CfnResource|Construct)/),
-                      'libraryVersion': expect.any(String),
-                      'location': "Run with '--debug' to include location info",
-                      'path': 'Default/Fake',
-                    },
-                  },
                   constructPath: 'Default/Fake',
-                  locations: ['test-location'],
-                  resourceLogicalId: 'Fake',
-                  templatePath: '/path/to/Default.template.json',
+                  constructFqn: expect.stringMatching(/(aws-cdk-lib.CfnResource|Construct)/),
+                  libraryVersion: expect.any(String),
+                  cloudFormationResource: {
+                    templatePath: '/path/to/Default.template.json',
+                    logicalId: 'Fake',
+                    propertyPaths: ['test-location'],
+                  },
+                  stackTraces: expect.any(Array),
                 },
               ],
             },
@@ -691,18 +739,641 @@ Policy Validation Report Summary
         },
       ],
     }));
+    const consoleOut = mockErrorOutput();
+    expect(consoleOut).toContain('Validation failed. A copy of this report can be found in');
+  });
+
+  test('a plugin implementing Beta1 is assignable to IPolicyValidationPlugin', () => {
+    // GIVEN
+    const beta1Plugin: core.IPolicyValidationPluginBeta1 = new FakePlugin('beta1-plugin', []);
+
+    // WHEN
+    const plugin: core.IPolicyValidationPlugin = beta1Plugin;
+
+    // THEN
+    expect(plugin.name).toEqual('beta1-plugin');
+  });
+
+  describe('annotation report integration', () => {
+    const annotationReportContext = { [cxapi.ANNOTATIONS_IN_VALIDATION_REPORT]: true };
+
+    test('annotation warnings appear in validation report', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new FailResource(construct, 'Resource');
+
+      core.Annotations.of(construct).addWarningV2('my-lib:SomeWarning', 'This is a warning');
+
+      redactAsmDir(app.synth());
+
+      // Warnings alone should not fail
+      expect(process.exitCode).toBeUndefined();
+
+      // Should show the annotation report
+      const output = mockErrorOutput();
+      expect(output).toContain('Construct Annotations');
+      expect(output).toContain('my-lib:SomeWarning');
+    });
+
+    test('annotation errors cause validation failure', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new FailResource(construct, 'Resource');
+
+      core.Annotations.of(construct).addError('Something is broken');
+
+      redactAsmDir(app.synth());
+
+      expect(process.exitCode).toEqual(1);
+
+      const output = mockErrorOutput();
+      expect(output).toContain('Construct Annotations');
+      expect(output).toContain('Something is broken');
+      expect(output).toMatch(/Error/i);
+    });
+
+    test('acknowledged warnings are excluded from annotation report', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new FailResource(construct, 'Resource');
+
+      core.Annotations.of(construct).addWarningV2('my-lib:AckedWarning', 'This warning is acknowledged');
+      core.Annotations.of(construct).acknowledgeWarning('my-lib:AckedWarning');
+
+      redactAsmDir(app.synth());
+
+      // No annotations left, so no report at all
+      const output = mockErrorOutput();
+      expect(output).not.toContain('Construct Annotations');
+    });
+
+    test('partial acknowledgment only excludes acknowledged warnings', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new FailResource(construct, 'Resource');
+
+      core.Validations.of(construct).addWarning('AckedRule', 'This one is acknowledged');
+      core.Validations.of(construct).addWarning('KeptRule', 'This one is not');
+      core.Validations.of(construct).acknowledge({ id: 'AckedRule', reason: 'Accepted risk' });
+
+      redactAsmDir(app.synth());
+
+      const output = mockErrorOutput();
+      expect(output).toContain('Construct Annotations');
+      expect(output).not.toContain('annotation::AckedRule');
+      expect(output).toContain('annotation::KeptRule');
+    });
+
+    test('annotation report works alongside plugin reports', () => {
+      const app = new core.App({
+        context: annotationReportContext,
+        policyValidationBeta1: [
+          new FakePlugin('test-plugin', [{
+            description: 'plugin violation',
+            ruleName: 'plugin-rule',
+            violatingResources: [{
+              locations: ['test-location'],
+              resourceLogicalId: 'Fake',
+              templatePath: '/path/to/Default.template.json',
+            }],
+          }]),
+        ],
+      });
+      const stack = new core.Stack(app);
+      new FailResource(stack, 'Fake');
+
+      core.Annotations.of(stack).addWarningV2('my-lib:StackWarning', 'Stack-level warning');
+
+      redactAsmDir(app.synth());
+
+      expect(process.exitCode).toEqual(1);
+
+      const output = mockErrorOutput();
+      // Both plugin and annotation reports should appear
+      expect(output).toContain('test-plugin');
+      expect(output).toContain('Construct Annotations');
+      expect(output).toContain('plugin-rule');
+      expect(output).toContain('my-lib:StackWarning');
+    });
+
+    test('annotation report with no plugins registered still produces output', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new FailResource(construct, 'Resource');
+
+      core.Annotations.of(construct).addError('Error without plugins');
+
+      redactAsmDir(app.synth());
+
+      expect(process.exitCode).toEqual(1);
+
+      const output = mockErrorOutput();
+      expect(output).toContain('Construct Annotations');
+      expect(output).toContain('Error without plugins');
+    });
+
+    test('annotations on constructs without CfnResource use construct path', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'Orphan');
+      // No CfnResource child
+
+      core.Annotations.of(construct).addWarningV2('my-lib:OrphanWarning', 'Warning on orphan');
+
+      redactAsmDir(app.synth());
+
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).toContain('Construct Annotations');
+      expect(output).toContain('my-lib:OrphanWarning');
+      // Construct path is provided directly
+      expect(output).toContain('MyStack/Orphan');
+    });
+
+    test('Validations.of().addWarning appears in annotation report', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new FailResource(construct, 'Resource');
+
+      core.Validations.of(construct).addWarning('MyRule', 'Validation warning');
+
+      redactAsmDir(app.synth());
+
+      const output = mockErrorOutput();
+      expect(output).toContain('Construct Annotations');
+      expect(output).toContain('annotation::MyRule');
+    });
+
+    test('Validations.of().addError appears in annotation report and fails', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new FailResource(construct, 'Resource');
+
+      core.Validations.of(construct).addError('MyError', 'Validation error');
+
+      redactAsmDir(app.synth());
+
+      expect(process.exitCode).toEqual(1);
+
+      const output = mockErrorOutput();
+      expect(output).toContain('Construct Annotations');
+      expect(output).toMatch(/error/i);
+
+      // Should not be acknowledgeable
+      expect(output).not.toMatch(/acknowledge/i);
+      expect(output).toContain('Rule annotation::MyError');
+      expect(output).toMatchSnapshot();
+    });
+
+    test('extractRuleName regex matches addWarningV2 ack tag format', () => {
+      // This test verifies the coupling between the [ack: <id>] tag format
+      // produced by Annotations.addWarningV2 and the regex in extractRuleName.
+      // If the tag format in annotations.ts changes, this test should fail.
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new FailResource(construct, 'Resource');
+
+      core.Annotations.of(construct).addWarningV2('my-lib:TestId', 'Test message');
+
+      // Verify the metadata contains the expected tag format
+      const warning = construct.node.metadata.find(m => m.type === 'aws:cdk:warning');
+      expect(warning?.data).toContain('[ack: my-lib:TestId]');
+
+      // Verify the report extracts the ID correctly
+      redactAsmDir(app.synth());
+      const output = mockErrorOutput();
+      expect(output).toContain('my-lib:TestId');
+    });
+
+    test('plugin violations can be suppressed via Validations.acknowledge()', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'MyBucket', {
+        type: 'AWS::S3::Bucket',
+        properties: {},
+      });
+
+      core.Validations.of(app).addPlugins(
+        new FakePlugin('test-plugin', [{
+          description: 'S3 Bucket should have versioning enabled',
+          ruleName: 'S3_BUCKET_VERSIONING_ENABLED',
+          severity: 'error',
+          violatingResources: [{
+            locations: ['Properties/VersioningConfiguration'],
+            resourceLogicalId: 'MyBucket',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      );
+
+      // Suppress the error-level violation using <pluginName>::<ruleId>
+      core.Validations.of(stack).acknowledge({ id: 'test-plugin::S3_BUCKET_VERSIONING_ENABLED', reason: 'Not needed for this bucket' });
+
+      redactAsmDir(app.synth());
+
+      const output = mockErrorOutput();
+      expect(output).not.toContain('S3_BUCKET_VERSIONING_ENABLED');
+    });
+
+    test('suppressed violations appear in validation-report.json', () => {
+      const app = new core.App({
+        context: {
+          ...annotationReportContext,
+          '@aws-cdk/core:failSynthOnValidationErrors': false,
+        },
+      });
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'MyBucket', {
+        type: 'AWS::S3::Bucket',
+        properties: {},
+      });
+
+      core.Validations.of(app).addPlugins(
+        new FakePlugin('test-plugin', [{
+          description: 'S3 Bucket should have versioning enabled',
+          ruleName: 'S3_BUCKET_VERSIONING_ENABLED',
+          severity: 'error',
+          violatingResources: [{
+            locations: ['Properties/VersioningConfiguration'],
+            resourceLogicalId: 'MyBucket',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      );
+
+      core.Validations.of(stack).acknowledge({ id: 'test-plugin::S3_BUCKET_VERSIONING_ENABLED', reason: 'Not needed for this bucket' });
+
+      redactAsmDir(app.synth());
+
+      const file = path.join(app.outdir, 'validation-report.json');
+      const report = JSON.parse(fs.readFileSync(file, 'utf-8'));
+      expect(report.pluginReports).toHaveLength(1);
+      expect(report.pluginReports[0].violations).toHaveLength(0);
+      expect(report.pluginReports[0].suppressedViolations).toHaveLength(1);
+      const sv = report.pluginReports[0].suppressedViolations[0];
+      expect(sv).toEqual(expect.objectContaining({
+        ruleName: 'S3_BUCKET_VERSIONING_ENABLED',
+        description: 'S3 Bucket should have versioning enabled',
+        acknowledgedId: 'test-plugin::S3_BUCKET_VERSIONING_ENABLED',
+        reason: 'Not needed for this bucket',
+        acknowledgedAt: 'Default',
+      }));
+      expect(sv.violatingConstructs[0].stackTraces).toBeDefined();
+      expect(sv.acknowledgedStackTrace).toBeDefined();
+      expect(sv.acknowledgedStackTrace).toContain('validation.test.ts');
+    });
+
+    test('fatal plugin violations cannot be suppressed', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'Fake', {
+        type: 'AWS::S3::Bucket',
+        properties: {},
+      });
+
+      core.Validations.of(app).addPlugins(
+        new FakePlugin('test-plugin', [{
+          description: 'Unknown resource type',
+          ruleName: 'E9001',
+          severity: 'fatal',
+          violatingResources: [{
+            locations: [],
+            resourceLogicalId: 'BadResource',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      );
+
+      // Attempt to suppress the fatal violation
+      core.Validations.of(stack).acknowledge({ id: 'test-plugin::E9001', reason: 'Trying to suppress fatal' });
+
+      redactAsmDir(app.synth());
+
+      const output = mockErrorOutput();
+      // Fatal violations remain despite acknowledgment
+      expect(output).toContain('E9001');
+      expect(output).toContain('Unknown resource type');
+    });
+
+    test('plugin names with spaces use dashes in suppression IDs', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'Fake', {
+        type: 'AWS::S3::Bucket',
+        properties: {},
+      });
+
+      core.Validations.of(app).addPlugins(
+        new FakePlugin('My Plugin', [{
+          description: 'Some violation',
+          ruleName: 'MY RULE',
+          severity: 'error',
+          violatingResources: [{
+            locations: [],
+            resourceLogicalId: 'Fake',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      );
+
+      // Suppress using dashes instead of spaces
+      core.Validations.of(stack).acknowledge({ id: 'My-Plugin::MY-RULE', reason: 'OK' });
+
+      redactAsmDir(app.synth());
+
+      const output = mockErrorOutput();
+      expect(output).not.toContain('MY RULE');
+    });
+
+    test('validation report JSON is always written to assembly directory', () => {
+      const app = new core.App({
+        context: annotationReportContext,
+      });
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new FailResource(construct, 'Resource');
+
+      core.Annotations.of(construct).addWarningV2('my-lib:AlwaysWritten', 'Report always in assembly');
+
+      const assembly = redactAsmDir(app.synth());
+
+      const reportPath = path.join(assembly.directory, 'validation-report.json');
+      expect(fs.existsSync(reportPath)).toBe(true);
+      const report = JSON.parse(fs.readFileSync(reportPath, 'utf-8'));
+      expect(report.pluginReports[0].pluginName).toEqual('Construct Annotations');
+    });
+  });
+
+  describe('Validations.of()', () => {
+    test('addPlugins adds plugin to enclosing stage', () => {
+      // GIVEN
+      const app = new core.App();
+      const plugin = new FakePlugin('test-plugin', []);
+
+      // WHEN
+      core.Validations.of(app).addPlugins(plugin);
+
+      // THEN
+      expect(app.policyValidationBeta1.map(p => p.name)).toContain('test-plugin');
+    });
+
+    test('addPlugins from nested construct resolves to enclosing stage', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const plugin = new FakePlugin('test-plugin', []);
+
+      // WHEN
+      core.Validations.of(stack).addPlugins(plugin);
+
+      // THEN - plugin is registered on the app (enclosing stage), not the stack
+      expect(app.policyValidationBeta1.map(p => p.name)).toContain('test-plugin');
+    });
+
+    test('throws when addPlugins called without enclosing stage', () => {
+      // GIVEN
+      const construct = new Construct(undefined as any, '');
+
+      // THEN
+      expect(() => core.Validations.of(construct).addPlugins(new FakePlugin('test', []))).toThrow(/without an enclosing Stage/);
+    });
+
+    test('plugin added via addPlugins runs during synth', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app);
+      new FailResource(stack, 'Fake');
+
+      // WHEN
+      core.Validations.of(app).addPlugins(new FakePlugin('added-plugin', [{
+        description: 'test recommendation',
+        ruleName: 'test-rule',
+        violatingResources: [{
+          locations: ['test-location'],
+          resourceLogicalId: 'Fake',
+          templatePath: '/path/to/Default.template.json',
+        }],
+      }]));
+      redactAsmDir(app.synth());
+
+      // THEN - exitCode 1 means the plugin ran and reported violations
+      expect(process.exitCode).toEqual(1);
+    });
+
+    test('addWarning adds warning metadata to construct', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+
+      // WHEN
+      core.Validations.of(construct).addWarning('my-lib:MyWarning', 'Something is off');
+
+      // THEN
+      const warnings = construct.node.metadata.filter(m => m.type === 'aws:cdk:warning');
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].data).toContain('Something is off');
+      expect(warnings[0].data).toContain('[ack: annotation::my-lib:MyWarning]');
+    });
+
+    test('addError adds error metadata with id to construct', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+
+      // WHEN
+      core.Validations.of(construct).addError('my-lib:MyError', 'Something is wrong');
+
+      // THEN
+      const errors = construct.node.metadata.filter(m => m.type === 'aws:cdk:error');
+      expect(errors).toHaveLength(1);
+      expect(errors[0].data).toBe('Something is wrong (annotation::my-lib:MyError)');
+    });
+
+    test('acknowledge routes annotation rules to Annotations.acknowledgeWarning', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      core.Validations.of(construct).addWarning('SomeWarning', 'This is a warning');
+
+      // WHEN - no prefix defaults to annotation rule
+      core.Validations.of(construct).acknowledge({ id: 'SomeWarning', reason: 'Accepted risk' });
+
+      // THEN - existing warning is removed
+      const warningsAfterAck = construct.node.metadata.filter(m => m.type === 'aws:cdk:warning');
+      expect(warningsAfterAck).toHaveLength(0);
+    });
+
+    test('acknowledge records to construct metadata', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+
+      // WHEN
+      core.Validations.of(construct).acknowledge(
+        { id: 'annotation::SomeWarning', reason: 'Accepted risk per team review' },
+        { id: 'some-plugin::RuleX', reason: 'Not applicable' },
+      );
+
+      // THEN - one metadata entry per acknowledgement
+      const ackEntries = construct.node.metadata.filter(
+        m => m.type === core.Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
+      );
+      expect(ackEntries).toHaveLength(2);
+      expect(ackEntries[0].data).toEqual({ 'annotation::SomeWarning': 'Accepted risk per team review' });
+      expect(ackEntries[1].data).toEqual({ 'some-plugin::RuleX': 'Not applicable' });
+      expect(ackEntries[0].trace).toBeDefined();
+    });
+
+    test('multiple acknowledge calls accumulate in metadata', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+
+      // WHEN - two separate calls
+      core.Validations.of(construct).acknowledge({ id: 'RuleA', reason: 'reason A' });
+      core.Validations.of(construct).acknowledge({ id: 'RuleB', reason: 'reason B' });
+
+      // THEN - separate metadata entries, each with stack trace
+      const ackEntries = construct.node.metadata.filter(
+        m => m.type === core.Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
+      );
+      expect(ackEntries).toHaveLength(2);
+      expect(ackEntries[0].data).toEqual({ 'annotation::RuleA': 'reason A' });
+      expect(ackEntries[1].data).toEqual({ 'annotation::RuleB': 'reason B' });
+    });
+
+    test('throws on invalid ID with multiple delimiters', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+
+      expect(() => {
+        core.Validations.of(construct).acknowledge({ id: 'a::b::c', reason: 'reason' });
+      }).toThrow(/Invalid validation rule ID 'a::b::c'/);
+    });
+
+    test('throws on invalid ID with empty prefix', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+
+      expect(() => {
+        core.Validations.of(construct).acknowledge({ id: '::foo', reason: 'reason' });
+      }).toThrow(/Invalid validation rule ID '::foo'/);
+    });
+
+    test('validate context includes appConstruct as the root construct', () => {
+      let capturedAppConstruct: any;
+      const plugin: core.IPolicyValidationPlugin = {
+        name: 'scope-capture-plugin',
+        validate(context) {
+          capturedAppConstruct = context.appConstruct;
+          return { success: true, violations: [] };
+        },
+      };
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      new FailResource(stack, 'Fake');
+      core.Validations.of(app).addPlugins(plugin);
+      redactAsmDir(app.synth());
+
+      expect(capturedAppConstruct).toBe(app);
+    });
+
+    test('non-Beta1 plugin with constructPath runs through synth', () => {
+      // GIVEN - a plugin returning violations with optional fields (constructPath instead of resourceLogicalId)
+      const app = new core.App();
+      const stack = new core.Stack(app);
+      new FailResource(stack, 'Fake');
+
+      // WHEN
+      core.Validations.of(app).addPlugins(new FakeNonBeta1Plugin('non-beta1-plugin', [{
+        description: 'construct-level violation',
+        ruleName: 'construct-rule',
+        violatingResources: [{
+          constructPath: 'Default/Fake',
+          locations: ['Properties'],
+        }],
+      }]));
+      redactAsmDir(app.synth());
+
+      // THEN
+      expect(process.exitCode).toEqual(1);
+      const output = mockErrorOutput();
+      expect(output).toContain('non-beta1-plugin');
+      expect(output).toContain('construct-rule');
+      expect(output).toContain('Default/Fake');
+    });
+
+    test('non-Beta1 plugin accessed via policyValidationBeta1 getter has defaults for optional fields', () => {
+      // GIVEN - a plugin returning violations without resourceLogicalId or templatePath
+      const app = new core.App();
+      core.Validations.of(app).addPlugins(new FakeNonBeta1Plugin('non-beta1-plugin', [{
+        description: 'test',
+        ruleName: 'test-rule',
+        violatingResources: [{
+          constructPath: 'Default/Foo',
+          locations: ['Props'],
+        }],
+      }]));
+
+      // WHEN - access via Beta1 getter
+      const beta1Plugins = app.policyValidationBeta1;
+      const report = beta1Plugins[0].validate({ templatePaths: ['/tmp/test.template.json'], appConstruct: app });
+
+      // THEN - optional fields are filled with defaults
+      expect(report.violations[0].violatingResources[0].resourceLogicalId).toEqual('');
+      expect(report.violations[0].violatingResources[0].templatePath).toEqual('');
+    });
+
+    test('non-Beta1 plugin with all fields populated works identically to Beta1', () => {
+      // GIVEN - a non-Beta1 plugin that provides all fields (same as Beta1 would)
+      const app = new core.App();
+      const stack = new core.Stack(app);
+      new FailResource(stack, 'Fake');
+
+      core.Validations.of(app).addPlugins(new FakeNonBeta1Plugin('full-fields-plugin', [{
+        description: 'full violation',
+        ruleName: 'full-rule',
+        violatingResources: [{
+          resourceLogicalId: 'Fake',
+          templatePath: '/path/to/Default.template.json',
+          locations: ['Properties/Result'],
+        }],
+      }]));
+      redactAsmDir(app.synth());
+
+      // THEN
+      expect(process.exitCode).toEqual(1);
+      const output = mockErrorOutput();
+      expect(output).toContain('full-fields-plugin');
+      expect(output).toContain('full-rule');
+      expect(output).toContain('Fake');
+    });
   });
 });
 
 class FakePlugin implements core.IPolicyValidationPluginBeta1 {
   constructor(
     public readonly name: string,
-    private readonly violations: PolicyViolationBeta1[],
+    private readonly violations: core.PolicyViolationBeta1[],
     public readonly version?: string,
     public readonly ruleIds?: string []) {
   }
 
-  validate(_context: core.IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
+  validate(_context: core.IPolicyValidationContextBeta1): core.PolicyValidationPluginReportBeta1 {
     return {
       success: this.violations.length === 0,
       violations: this.violations,
@@ -714,7 +1385,7 @@ class FakePlugin implements core.IPolicyValidationPluginBeta1 {
 class RoguePlugin implements core.IPolicyValidationPluginBeta1 {
   public readonly name = 'rogue-plugin';
 
-  validate(context: core.IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
+  validate(context: core.IPolicyValidationContextBeta1): core.PolicyValidationPluginReportBeta1 {
     const templatePath = context.templatePaths[0];
     fs.writeFileSync(templatePath, 'malicious data');
     return {
@@ -727,84 +1398,59 @@ class RoguePlugin implements core.IPolicyValidationPluginBeta1 {
 class BrokenPlugin implements core.IPolicyValidationPluginBeta1 {
   public readonly name = 'broken-plugin';
 
-  validate(_context: core.IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
+  validate(_context: core.IPolicyValidationContextBeta1): core.PolicyValidationPluginReportBeta1 {
     throw new Error('Something went wrong');
   }
 }
 
-interface ValidationReportData {
-  templatePath: string;
-  title: string;
-  status: string;
-  pluginName: string;
-  constructPath: string;
-  creationStack?: string[];
-  description?: string;
-  resourceLogicalId: string;
-  severity?: string;
-  version?: string;
-  ruleMetadata?: { [key: string]: string };
+class FakeNonBeta1Plugin implements core.IPolicyValidationPlugin {
+  constructor(
+    public readonly name: string,
+    private readonly violations: core.PolicyViolation[],
+  ) {}
+
+  validate(_context: core.IPolicyValidationContext): core.PolicyValidationPluginReport {
+    return {
+      success: this.violations.length === 0,
+      violations: this.violations,
+    };
+  }
 }
 
-function generateTable(pluginName: string, status: string, pluginVersion: string): string {
-  return table([
-    [`Plugin: ${pluginName}`],
-    [`Version: ${pluginVersion}`],
-    [`Status: ${status}`],
-  ], {
-    header: { content: 'Plugin Report' },
-    singleLine: true,
-    columns: [{
-      paddingLeft: 3,
-      paddingRight: 3,
-    }],
-  });
+const OUTPUT_REDACTIONS = new Map<string, string>();
+
+function redact(value: string, placeHolder: string) {
+  OUTPUT_REDACTIONS.set(value, placeHolder);
 }
 
-const validationReport = (data: ValidationReportData[]) => {
-  const result = data.flatMap(d => {
-    if (d.status === 'failure') {
-      const title = reset(red(bright(`${d.title} (1 occurrences)`)));
-      return [
-        expect.stringMatching(new RegExp('Validation Report')),
-        expect.stringMatching(new RegExp('-----------------')),
-        expect.stringMatching(new RegExp(`Plugin: ${d.pluginName}`)),
-        expect.stringMatching(new RegExp(`Version: ${d.version ?? 'N/A'}`)),
-        expect.stringMatching(new RegExp(`Status: ${d.status}`)),
-        expect.stringMatching(new RegExp('\\(Violations\\)')),
-        title,
-        ...d.severity ? [expect.stringMatching(new RegExp(`Severity: ${d.severity}`))] : [],
-        expect.stringMatching(new RegExp('  Occurrences:')),
-        expect.stringMatching(new RegExp(`    - Construct Path: ${d.constructPath}`)),
-        expect.stringMatching(new RegExp(`    - Template Path: ${d.templatePath}`)),
-        expect.stringMatching(new RegExp('    - Creation Stack:')),
-        ...d.creationStack ?? [],
-        expect.stringMatching(new RegExp(`    - Resource ID: ${d.resourceLogicalId}`)),
-        expect.stringMatching(new RegExp('    - Template Locations:')),
-        expect.stringMatching(new RegExp('      > test-location')),
-        expect.stringMatching(new RegExp(`  Description: ${d.description ?? 'test recommendation'}`)),
-        ...d.ruleMetadata ? [expect.stringMatching('  Rule Metadata:'), ...Object.entries(d.ruleMetadata).flatMap(([key, value]) => expect.stringMatching(`${key}: ${value}`))] : [],
-      ];
-    }
-    return [];
-  });
-  result.push(
-    expect.stringMatching(new RegExp('Policy Validation Report Summary')),
-    ...data.map(d => expect.stringMatching(new RegExp(`.*${d.pluginName}.*${d.status}.*`))),
-  );
-  return result;
-};
-
-function reset(s: string) {
-  return `${s}\x1b[0m`;
+function redactPath(filePath: string, placeHolder: string) {
+  // Redact both absolute and relative paths
+  redact(filePath, placeHolder);
+  redact(path.relative(process.cwd(), filePath), placeHolder);
 }
 
-function red(s: string) {
-  return `\x1b[31m${s}`;
+function redactAsmDir(asm: cxapi.CloudAssembly): cxapi.CloudAssembly {
+  redactPath(asm.directory, '<assembly-directory>');
+  return asm;
 }
 
-function bright(s: string) {
-  return `\x1b[1m${s}`;
+function mockErrorOutput() {
+  let output = consoleErrorMock.mock.calls.map(call => call[0]).join('\n');
+  for (const [value, placeHolder] of OUTPUT_REDACTIONS) {
+    output = output.replaceAll(value, placeHolder);
+  }
+  return output;
+}
+
+class FailResource extends core.CfnResource {
+  constructor(scope: Construct, id: string) {
+    super(scope, id, {
+      type: 'Test::Resource::Fake',
+      properties: {
+        result: 'failure',
+      },
+    });
+  }
 }
 
 class LevelTwoConstruct extends Construct {

@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "9bf632accd3ad7922a20d9242d5d569821c0fd874102657409c0599945bb2151": {
+      "displayName": "aws-cdk-bedrock-prompt-override-1 Template",
+      "source": {
+        "path": "aws-cdk-bedrock-prompt-override-1.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-6d95168e": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9bf632accd3ad7922a20d9242d5d569821c0fd874102657409c0599945bb2151.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,4 +1,5 @@
-import { App, Stack, StackProps, Duration, FeatureFlags } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack, Duration, FeatureFlags } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -68,7 +69,11 @@ class LambdaAlarmActionIntegrationTestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new LambdaAlarmActionIntegrationTestStack(app, 'LambdaAlarmActionIntegrationTestStack');
 new integ.IntegTest(app, 'LambdaAlarmActionIntegrationTest', {
   testCases: [stack],
@@ -76,7 +81,10 @@ new integ.IntegTest(app, 'LambdaAlarmActionIntegrationTest', {
 app.synth();
 
 const appWithFeatureFlag = new App({
-  context: { [LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION]: true },
+  context: {
+    [LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION]: true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
 });
 const stackWithFeatureFlag = new LambdaAlarmActionIntegrationTestStack(appWithFeatureFlag, 'LambdaAlarmActionIntegrationTestStackWithFeatureFlag');
 new integ.IntegTest(appWithFeatureFlag, 'LambdaAlarmActionIntegrationTestWithFeatureFlag', {
@@ -84,7 +92,6 @@ new integ.IntegTest(appWithFeatureFlag, 'LambdaAlarmActionIntegrationTestWithFea
 });
 appWithFeatureFlag.synth();
 
-/* eslint-disable no-console */
 function handler(event: any, _context: any, callback: any) {
   console.log(JSON.stringify(event, undefined, 2));
   return callback();

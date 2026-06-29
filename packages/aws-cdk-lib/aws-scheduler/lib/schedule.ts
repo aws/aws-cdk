@@ -1,17 +1,22 @@
-import { Construct } from 'constructs';
-import { ScheduleExpression } from './schedule-expression';
-import { IScheduleGroup } from './schedule-group';
+import type { Construct } from 'constructs';
+import type { ScheduleExpression } from './schedule-expression';
+import type { IScheduleGroup } from './schedule-group';
+import type { IScheduleRef, ScheduleReference } from './scheduler.generated';
 import { CfnSchedule } from './scheduler.generated';
-import { IScheduleTarget } from './target';
+import type { IScheduleTarget } from './target';
 import * as cloudwatch from '../../aws-cloudwatch';
-import * as kms from '../../aws-kms';
-import { Arn, ArnFormat, Duration, IResource, Resource, Token } from '../../core';
+import type * as kms from '../../aws-kms';
+import type { Duration, IResource } from '../../core';
+import { Arn, ArnFormat, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Interface representing a created or an imported `Schedule`.
  */
-export interface ISchedule extends IResource {
+export interface ISchedule extends IResource, IScheduleRef {
   /**
    * The arn of the schedule.
    * @attribute
@@ -46,7 +51,7 @@ export class TimeWindow {
    */
   public static flexible(maxWindow: Duration): TimeWindow {
     if (maxWindow.toMinutes() < 1 || maxWindow.toMinutes() > 1440) {
-      throw new Error(`The provided duration must be between 1 minute and 1440 minutes, got ${maxWindow.toMinutes()}`);
+      throw new UnscopedValidationError(lit`MustBeProvidedDurationBetween`, `The provided duration must be between 1 minute and 1440 minutes, got ${maxWindow.toMinutes()}`);
     }
     return new TimeWindow('FLEXIBLE', maxWindow);
   }
@@ -152,7 +157,11 @@ export interface ScheduleProps {
 /**
  * An EventBridge Schedule
  */
+@propertyInjectable
 export class Schedule extends Resource implements ISchedule {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-scheduler.Schedule';
+
   /**
    * Return the given named metric for all schedules.
    *
@@ -250,9 +259,24 @@ export class Schedule extends Resource implements ISchedule {
    * Import an existing schedule using the ARN.
    */
   public static fromScheduleArn(scope: Construct, id: string, scheduleArn: string): ISchedule {
+    // Format: arn:aws:scheduler:region:account:schedule/SCHEDULE-GROUP/SCHEDULE-NAME
+    const parsedName = Arn.split(scheduleArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName?.split('/')[1];
+
+    if (!parsedName) {
+      throw new UnscopedValidationError(lit`InvalidScheduleFormatExpectedArn`, `Invalid schedule ARN format. Expected: arn:<partition>:scheduler:<region>:<account>:schedule/<group-name>/<schedule-name>, got: ${scheduleArn}`);
+    }
+
+    const scheduleName = parsedName;
+
     class Import extends Resource implements ISchedule {
       public readonly scheduleArn = scheduleArn;
-      public readonly scheduleName = Arn.split(scheduleArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!.split('/')[1];
+      public readonly scheduleName = scheduleName;
+      public get scheduleRef(): ScheduleReference {
+        return {
+          scheduleArn: this.scheduleArn,
+          scheduleName: this.scheduleName,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -265,17 +289,29 @@ export class Schedule extends Resource implements ISchedule {
   /**
    * The arn of the schedule.
    */
-  public readonly scheduleArn: string;
+  @memoizedGetter
+  public get scheduleArn(): string {
+    return this.getResourceArnAttribute(this._resource.attrArn, {
+      service: 'scheduler',
+      resource: 'schedule',
+      resourceName: `${this.scheduleGroup?.scheduleGroupName ?? 'default'}/${this.physicalName}`,
+    });
+  }
 
   /**
    * The name of the schedule.
    */
-  public readonly scheduleName: string;
+  @memoizedGetter
+  public get scheduleName(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
 
   /**
    * The customer managed KMS key that EventBridge Scheduler will use to encrypt and decrypt your data.
    */
   readonly key?: kms.IKey;
+
+  private readonly _resource: CfnSchedule;
 
   /**
    * A `RetryPolicy` object that includes information about the retry policy settings.
@@ -304,7 +340,7 @@ export class Schedule extends Resource implements ISchedule {
 
     this.validateTimeFrame(props.start, props.end);
     if (props.scheduleName && !Token.isUnresolved(props.scheduleName) && props.scheduleName.length > 64) {
-      throw new Error(`scheduleName cannot be longer than 64 characters, got: ${props.scheduleName.length}`);
+      throw new ValidationError(lit`ScheduleNameCannotLongerCharacters`, `scheduleName cannot be longer than 64 characters, got: ${props.scheduleName.length}`, this);
     }
 
     const resource = new CfnSchedule(this, 'Resource', {
@@ -335,12 +371,7 @@ export class Schedule extends Resource implements ISchedule {
       description: props.description,
     });
 
-    this.scheduleName = this.getResourceNameAttribute(resource.ref);
-    this.scheduleArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'scheduler',
-      resource: 'schedule',
-      resourceName: `${this.scheduleGroup?.scheduleGroupName ?? 'default'}/${this.physicalName}`,
-    });
+    this._resource = resource;
   }
 
   private renderRetryPolicy(): CfnSchedule.RetryPolicyProperty | undefined {
@@ -349,10 +380,10 @@ export class Schedule extends Resource implements ISchedule {
     };
 
     if (policy.maximumEventAgeInSeconds && (policy.maximumEventAgeInSeconds < 60 || policy.maximumEventAgeInSeconds > 86400)) {
-      throw new Error(`maximumEventAgeInSeconds must be between 60 and 86400, got ${policy.maximumEventAgeInSeconds}`);
+      throw new ValidationError(lit`MaximumEventAgeSeconds`, `maximumEventAgeInSeconds must be between 60 and 86400, got ${policy.maximumEventAgeInSeconds}`, this);
     }
     if (policy.maximumRetryAttempts && (policy.maximumRetryAttempts < 0 || policy.maximumRetryAttempts > 185)) {
-      throw new Error(`maximumRetryAttempts must be between 0 and 185, got ${policy.maximumRetryAttempts}`);
+      throw new ValidationError(lit`MaximumRetryAttempts`, `maximumRetryAttempts must be between 0 and 185, got ${policy.maximumRetryAttempts}`, this);
     }
 
     const isEmptyPolicy = Object.values(policy).every(value => value === undefined);
@@ -361,7 +392,14 @@ export class Schedule extends Resource implements ISchedule {
 
   private validateTimeFrame(start?: Date, end?: Date) {
     if (start && end && start >= end) {
-      throw new Error(`start must precede end, got start: ${start.toISOString()}, end: ${end.toISOString()}`);
+      throw new ValidationError(lit`StartPrecedeEndStart`, `start must precede end, got start: ${start.toISOString()}, end: ${end.toISOString()}`, this);
     }
+  }
+
+  public get scheduleRef(): ScheduleReference {
+    return {
+      scheduleArn: this.scheduleArn,
+      scheduleName: this.scheduleName,
+    };
   }
 }

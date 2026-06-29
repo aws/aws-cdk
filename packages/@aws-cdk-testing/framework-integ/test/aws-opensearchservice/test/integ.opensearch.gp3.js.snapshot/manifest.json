@@ -1,5 +1,5 @@
 {
-  "version": "33.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "cdk-integ-opensearch-gp3.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdk-integ-opensearch-gp3.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/213b01de3bb16c293563a528b8be2db8d685bf9228b484f6c369e8ce3f9f3958.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d29c037cbb6574aed6021590d46962fdd1f0397a7ce89d289800f2316fbe73ca.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,6 +34,36 @@
         "cdk-integ-opensearch-gp3.assets"
       ],
       "metadata": {
+        "/cdk-integ-opensearch-gp3/Domain": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "version": "*",
+              "ebs": {
+                "volumeSize": "*",
+                "volumeType": "gp3",
+                "throughput": "*",
+                "iops": "*"
+              },
+              "zoneAwareness": {
+                "enabled": true,
+                "availabilityZoneCount": "*"
+              },
+              "vpcSubnets": [
+                {
+                  "subnetType": "Private"
+                }
+              ],
+              "capacity": {
+                "dataNodeInstanceType": "*",
+                "dataNodes": "*",
+                "masterNodeInstanceType": "*",
+                "masterNodes": "*"
+              }
+            }
+          }
+        ],
         "/cdk-integ-opensearch-gp3/Domain/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -67,6 +98,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "IntegDefaultTestDeployAssert4E6713E1.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -107,5 +139,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

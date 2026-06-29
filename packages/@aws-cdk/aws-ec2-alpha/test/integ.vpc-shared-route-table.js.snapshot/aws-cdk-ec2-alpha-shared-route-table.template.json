@@ -33,7 +33,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "SharedRouteTableIGW"
+      "Value": "SharedRouteTableVPC"
      }
     ]
    }
@@ -80,6 +80,12 @@
   "VPCEgressOnlyGWEIGW4D24FCEA": {
    "Type": "AWS::EC2::EgressOnlyInternetGateway",
    "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "SharedRouteTableEgressOnlyIGW"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "VPCB9E5F0B4",
@@ -129,16 +135,23 @@
   "PublicSubnet1Subnet03067927": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "us-west-2a",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
     "CidrBlock": "10.1.1.0/24",
     "Tags": [
      {
-      "Key": "Name",
+      "Key": "aws-cdk:subnet-name",
       "Value": "PublicSubnet1"
      },
      {
-      "Key": "VpcName",
-      "Value": "SharedRouteTableVPC"
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
      }
     ],
     "VpcId": {
@@ -172,16 +185,23 @@
   "PublicSubnet2Subnet78B4B4BD": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "us-west-2b",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
     "CidrBlock": "10.1.2.0/24",
     "Tags": [
      {
-      "Key": "Name",
+      "Key": "aws-cdk:subnet-name",
       "Value": "PublicSubnet2"
      },
      {
-      "Key": "VpcName",
-      "Value": "SharedRouteTableVPC"
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
      }
     ],
     "VpcId": {

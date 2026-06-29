@@ -1,4 +1,10 @@
 {
+    "appsync": {
+        "AppSyncDataSourceType": {
+            "values": ["NONE"],
+            "comment": "NONE is not supported"
+        }
+    },
     "codebuild": {
         "FleetComputeType": {
             "comment": "They values are already defined in a different place"
@@ -55,6 +61,10 @@
         },
         "FunctionEventType": {
             "comment": "The origin-X events are only available to Lambda@Edge functions"
+        },
+        "PriceClass": {
+            "values": ["None"],
+            "comment": "NONE is not supported"
         }
     },
     "iot": {
@@ -89,6 +99,12 @@
         "VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint": {
             "values": ["NOTSPECIFIED"],
             "comment": "Although NOTSPECIFIED is a valid value, but for CDK customers can just not provide the value for that property"
+        }
+    },
+    "ecs": {
+        "LaunchType": {
+            "values": ["MANAGED_INSTANCES"],
+            "comment": "Customers cannot pass launchType=MANAGED_INSTANCES and this value only appears in Describe calls. In order to use Amazon ECS Managed Instances, users must use capacityProviderStrategy request parameter and omit the launchType request parameter"
         }
     }
 }

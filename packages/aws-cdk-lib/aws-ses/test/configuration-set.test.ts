@@ -1,6 +1,6 @@
 import { Template, Match } from '../../assertions';
 import { Duration, Stack } from '../../core';
-import { ConfigurationSet, ConfigurationSetTlsPolicy, DedicatedIpPool, SuppressionReasons } from '../lib';
+import { AutoValidationThreshold, ConfigurationSet, ConfigurationSetTlsPolicy, DedicatedIpPool, HttpsPolicy, SuppressionReasons } from '../lib';
 
 let stack: Stack;
 beforeEach(() => {
@@ -40,6 +40,31 @@ test('configuration set with options', () => {
     TrackingOptions: {
       CustomRedirectDomain: 'track.cdk.dev',
     },
+  });
+});
+
+describe('custom tracking domain', () => {
+  test('configuration set with custom tracking domain', () => {
+    new ConfigurationSet(stack, 'ConfigurationSet', {
+      customTrackingRedirectDomain: 'track.cdk.dev',
+      customTrackingHttpsPolicy: HttpsPolicy.REQUIRE,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
+      TrackingOptions: {
+        CustomRedirectDomain: 'track.cdk.dev',
+        HttpsPolicy: 'REQUIRE',
+      },
+    });
+  });
+
+  test.each([undefined, ''])('throw error for specifying custom tracking https policy without custom tracking domain %s', (customTrackingRedirectDomain) => {
+    expect(() => {
+      new ConfigurationSet(stack, 'ConfigurationSet', {
+        customTrackingRedirectDomain,
+        customTrackingHttpsPolicy: HttpsPolicy.REQUIRE,
+      });
+    }).toThrow('customTrackingHttpsPolicy can only be set when customTrackingRedirectDomain is also set.');
   });
 });
 
@@ -189,5 +214,100 @@ describe('maxDeliveryDuration', () => {
         maxDeliveryDuration: Duration.hours(14).plus(Duration.seconds(1)),
       });
     }).toThrow('The maximum delivery duration must be less than or equal to 14 hours (50400 seconds), got: 50401 seconds.');
+  });
+});
+
+describe('autoValidationThreshold', () => {
+  test('configuration set without autoValidationThreshold', () => {
+    new ConfigurationSet(stack, 'ConfigurationSet');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
+      SuppressionOptions: Match.absent(),
+    });
+  });
+
+  test('configuration set with disableAutoValidation true', () => {
+    new ConfigurationSet(stack, 'ConfigurationSet', {
+      disableAutoValidation: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
+      SuppressionOptions: {
+        ValidationOptions: {
+          ConditionThreshold: {
+            ConditionThresholdEnabled: 'DISABLED',
+          },
+        },
+      },
+    });
+  });
+
+  test('configuration set with disableAutoValidation false', () => {
+    new ConfigurationSet(stack, 'ConfigurationSet', {
+      disableAutoValidation: false,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
+      SuppressionOptions: {
+        ValidationOptions: {
+          ConditionThreshold: {
+            ConditionThresholdEnabled: 'ENABLED',
+            OverallConfidenceThreshold: Match.absent(),
+          },
+        },
+      },
+    });
+  });
+
+  test.each([
+    AutoValidationThreshold.MEDIUM,
+    AutoValidationThreshold.HIGH,
+    AutoValidationThreshold.MANAGED,
+  ])('configuration set with autoValidationThreshold %s', (threshold) => {
+    new ConfigurationSet(stack, 'ConfigurationSet', {
+      autoValidationThreshold: threshold,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
+      SuppressionOptions: {
+        ValidationOptions: {
+          ConditionThreshold: {
+            ConditionThresholdEnabled: 'ENABLED',
+            OverallConfidenceThreshold: {
+              ConfidenceVerdictThreshold: threshold,
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('configuration set with disableAutoValidation false and autoValidationThreshold', () => {
+    new ConfigurationSet(stack, 'ConfigurationSet', {
+      disableAutoValidation: false,
+      autoValidationThreshold: AutoValidationThreshold.HIGH,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
+      SuppressionOptions: {
+        ValidationOptions: {
+          ConditionThreshold: {
+            ConditionThresholdEnabled: 'ENABLED',
+            OverallConfidenceThreshold: {
+              ConfidenceVerdictThreshold: 'HIGH',
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('fails when disableAutoValidation true and autoValidationThreshold are both set', () => {
+    expect(() => {
+      new ConfigurationSet(stack, 'ConfigurationSet', {
+        disableAutoValidation: true,
+        autoValidationThreshold: AutoValidationThreshold.HIGH,
+      });
+    }).toThrow('When disableAutoValidation is true, autoValidationThreshold must not be specified.');
   });
 });

@@ -1,0 +1,172 @@
+{
+ "Resources": {
+  "AwsApiCallGluegetJobea6ea7cf268d52d579aeb4fbf49ea890": {
+   "Type": "Custom::DeployAssert@SdkCallGluegetJob",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Glue",
+    "api": "getJob",
+    "expected": "{\"$ObjectLike\":{\"Job\":{\"DefaultArguments\":{\"name\":\"not\",\"pattern\":{\"name\":\"objectLike\",\"pattern\":{\"--enable-observability-metrics\":{\"name\":\"anyValue\"}},\"partial\":true}}}}}",
+    "parameters": {
+     "JobName": "\"PySparkETLJobNoMetrics\""
+    },
+    "flattenResponse": "false",
+    "salt": "1780997762668"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "glue:GetJob"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "glue:GetJob"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "6611813c56ee5ec64f812f46caf03748d8b30fea6e344cc7ac25035891a6dfe8.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  },
+  "AwsApiCallGluegetJob6b166eaabdaab4362694e965eee1555d": {
+   "Type": "Custom::DeployAssert@SdkCallGluegetJob",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Glue",
+    "api": "getJob",
+    "expected": "{\"$ObjectLike\":{\"Job\":{\"DefaultArguments\":{\"name\":\"objectLike\",\"pattern\":{\"--enable-observability-metrics\":\"true\"},\"partial\":true}}}}",
+    "parameters": {
+     "JobName": "\"PySparkETLJobSelectiveMetrics\""
+    },
+    "flattenResponse": "false",
+    "salt": "1780997762672"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallGluegetJobea6ea7cf268d52d579aeb4fbf49ea890": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallGluegetJobea6ea7cf268d52d579aeb4fbf49ea890",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallGluegetJob6b166eaabdaab4362694e965eee1555d": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallGluegetJob6b166eaabdaab4362694e965eee1555d",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

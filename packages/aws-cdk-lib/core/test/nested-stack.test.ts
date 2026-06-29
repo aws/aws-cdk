@@ -1,10 +1,13 @@
 import * as path from 'path';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { readFileSync } from 'fs-extra';
 import { toCloudFormation } from './util';
+import * as cxapi from '../../cx-api';
+import type { CfnStack } from '../lib';
 import {
-  Stack, NestedStack, CfnStack, Resource, CfnResource, App, CfnOutput,
+  Stack, NestedStack, Resource, CfnResource, App, CfnOutput,
 } from '../lib';
+import { memoizedGetter } from '../lib/helpers-internal/memoize';
 
 describe('nested-stack', () => {
   test('a nested-stack has a defaultChild', () => {
@@ -35,9 +38,65 @@ describe('nested-stack', () => {
     expect(nestedStack.templateOptions.description).toEqual(description);
   });
 
+  test('indent templates when suppressTemplateIndentation is not set', () => {
+    const app = new App();
+
+    const stack = new Stack(app, 'Stack');
+    const nestedStack = new NestedStack(stack, 'Nested1');
+    new CfnResource(nestedStack, 'MyResource', { type: 'MyResourceType' });
+
+    const assembly = app.synth();
+    const nestedTemplate = readFileSync(path.join(assembly.directory, `${nestedStack.artifactId}.nested.template.json`), 'utf8');
+    expect(nestedTemplate).toMatch(/^{\n \"Resources\": {\n  \"MyResource\": {\n   \"Type\": \"MyResourceType\"\n  }\n }/);
+  });
+
+  test('indent templates when @aws-cdk/core:suppressTemplateIndentation is true but is overriden by suppressTemplateIndentation', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:suppressTemplateIndentation': true,
+      },
+    });
+
+    const stack = new Stack(app, 'Stack');
+    const nestedStack = new NestedStack(stack, 'Nested1', { suppressTemplateIndentation: false });
+    new CfnResource(nestedStack, 'MyResource', { type: 'MyResourceType' });
+
+    const assembly = app.synth();
+    const nestedTemplate = readFileSync(path.join(assembly.directory, `${nestedStack.artifactId}.nested.template.json`), 'utf8');
+    expect(nestedTemplate).toMatch(/^{\n \"Resources\": {\n  \"MyResource\": {\n   \"Type\": \"MyResourceType\"\n  }\n }/);
+  });
+
+  test('do not indent templates when suppressTemplateIndentation is true', () => {
+    const app = new App();
+
+    const stack = new Stack(app, 'Stack');
+    const nestedStack = new NestedStack(stack, 'Nested1', { suppressTemplateIndentation: true });
+    new CfnResource(nestedStack, 'MyResource', { type: 'MyResourceType' });
+
+    const assembly = app.synth();
+    const nestedTemplate = readFileSync(path.join(assembly.directory, `${nestedStack.artifactId}.nested.template.json`), 'utf8');
+    expect(nestedTemplate).toMatch(/^{\"Resources\":{\"MyResource\":{\"Type\":\"MyResourceType\"}}/);
+  });
+
+  test('do not indent templates when @aws-cdk/core:suppressTemplateIndentation is true', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:suppressTemplateIndentation': true,
+      },
+    });
+
+    const stack = new Stack(app, 'Stack');
+    const nestedStack = new NestedStack(stack, 'Nested1');
+    new CfnResource(nestedStack, 'MyResource', { type: 'MyResourceType' });
+
+    const assembly = app.synth();
+    const nestedTemplate = readFileSync(path.join(assembly.directory, `${nestedStack.artifactId}.nested.template.json`), 'utf8');
+    expect(nestedTemplate).toMatch(/^{\"Resources\":{\"MyResource\":{\"Type\":\"MyResourceType\"}}/);
+  });
+
   test('can create cross region references when crossRegionReferences=true', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
     const stack1 = new Stack(app, 'Stack1', {
       env: {
         account: '123456789012',
@@ -73,34 +132,15 @@ describe('nested-stack', () => {
         Resource2: {
           Properties: {
             Prop1: {
-              Ref: 'referencetoStack2ExportsReader861D07DCcdkexportsStack2Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E',
+              'Fn::GetStackOutput': {
+                StackName: 'Stack1',
+                Region: 'bermuda-triangle-1337',
+                OutputName: 'PublishOutputFnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067Ref9772E2BF',
+              },
             },
           },
           Type: 'My::Resource',
         },
-      },
-    });
-    const template2 = assembly.getStackByName(stack2.stackName).template;
-    expect(template2?.Resources).toMatchObject({
-      ExportsReader8B249524: {
-        DeletionPolicy: 'Delete',
-        Properties: {
-          ReaderProps: {
-            imports: {
-              '/cdk/exports/Stack2/Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E': '{{resolve:ssm:/cdk/exports/Stack2/Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E}}',
-            },
-            region: 'bermuda-triangle-42',
-            prefix: 'Stack2',
-          },
-          ServiceToken: {
-            'Fn::GetAtt': [
-              'CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68',
-              'Arn',
-            ],
-          },
-        },
-        Type: 'Custom::CrossRegionExportReader',
-        UpdateReplacePolicy: 'Delete',
       },
     });
     const template1 = assembly.getStackByName(stack1.stackName).template;
@@ -113,35 +153,19 @@ describe('nested-stack', () => {
       },
     });
 
-    expect(template1?.Resources).toMatchObject({
-      ExportsWriterbermudatriangle42E59594276156AC73: {
-        DeletionPolicy: 'Delete',
-        Properties: {
-          WriterProps: {
-            exports: {
-              '/cdk/exports/Stack2/Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E': {
-                'Fn::GetAtt': [
-                  'Nested1NestedStackNested1NestedStackResourceCD0AD36B',
-                  'Outputs.Stack1Nested1Resource178AEB067Ref',
-                ],
-              },
-            },
-            region: 'bermuda-triangle-42',
-          },
-          ServiceToken: {
-            'Fn::GetAtt': [
-              'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
-              'Arn',
-            ],
-          },
+    expect(template1?.Outputs).toMatchObject({
+      PublishOutputFnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067Ref9772E2BF: {
+        Value: {
+          'Fn::GetAtt': [
+            'Nested1NestedStackNested1NestedStackResourceCD0AD36B',
+            'Outputs.Stack1Nested1Resource178AEB067Ref',
+          ],
         },
-        Type: 'Custom::CrossRegionExportWriter',
-        UpdateReplacePolicy: 'Delete',
       },
     });
   });
 
-  test('cannot create cross region references when crossRegionReferences=false', () => {
+  test('cross region references require explicit physical name on nested stack resources', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1', {
@@ -165,27 +189,57 @@ describe('nested-stack', () => {
     });
 
     // THEN
-    expect(() => toCloudFormation(stack2)).toThrow(
+    expect(() => app.synth()).toThrow(
       /Cannot use resource 'Stack1\/MyNestedStack\/MyResource' in a cross-environment fashion/);
+  });
+
+  test('requires bundling when root stack has exact match in BUNDLING_STACKS', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    stack.node.setContext(cxapi.BUNDLING_STACKS, ['Stack']);
+
+    const child = new NestedStack(stack, 'Child');
+    const child2 = new NestedStack(child, 'Child2');
+
+    expect(child.bundlingRequired).toBe(true);
+    expect(child2.bundlingRequired).toBe(true);
+  });
+
+  test('not requires bundling when root stack has no match in BUNDLING_STACKS', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    stack.node.setContext(cxapi.BUNDLING_STACKS, ['Stack2']);
+
+    const child = new NestedStack(stack, 'Child');
+    const child2 = new NestedStack(child, 'Child2');
+
+    expect(child.bundlingRequired).toBe(false);
+    expect(child2.bundlingRequired).toBe(false);
   });
 });
 
 class MyResource extends Resource {
-  public readonly arn: string;
-  public readonly name: string;
+  private readonly res: CfnResource;
 
   constructor(scope: Construct, id: string, physicalName?: string) {
     super(scope, id, { physicalName });
 
-    const res = new CfnResource(this, 'Resource', {
+    this.res = new CfnResource(this, 'Resource', {
       type: 'My::Resource',
       properties: {
         resourceName: this.physicalName,
       },
     });
+  }
 
-    this.name = this.getResourceNameAttribute(res.ref.toString());
-    this.arn = this.getResourceArnAttribute(res.getAtt('Arn').toString(), {
+  @memoizedGetter
+  public get name(): string {
+    return this.getResourceNameAttribute(this.res.ref.toString());
+  }
+
+  @memoizedGetter
+  public get arn(): string {
+    return this.getResourceArnAttribute(this.res.getAtt('Arn').toString(), {
       region: '',
       account: '',
       resource: 'my-resource',

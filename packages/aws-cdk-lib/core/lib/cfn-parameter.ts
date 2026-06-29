@@ -1,7 +1,9 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnElement } from './cfn-element';
+import { ValidationError } from './errors';
 import { CfnReference } from './private/cfn-reference';
-import { IResolvable, IResolveContext } from './resolvable';
+import { lit } from './private/literal-string';
+import type { IResolvable, IResolveContext } from './resolvable';
 import { Token } from './token';
 import { ResolutionTypeHint } from './type-hints';
 
@@ -113,7 +115,7 @@ export class CfnParameter extends CfnElement {
 
   /**
    * Creates a parameter construct.
-   * Note that the name (logical ID) of the parameter will derive from it's `coname` and location
+   * Note that the name (logical ID) of the parameter will derive from its `coname` and location
    * within the stack. Therefore, it is recommended that parameters are defined at the stack level.
    *
    * @param scope The parent construct.
@@ -294,7 +296,7 @@ export class CfnParameter extends CfnElement {
    */
   public get valueAsString(): string {
     if (!isStringType(this.type) && !isNumberType(this.type)) {
-      throw new Error(`Parameter type (${this.type}) is not a string or number type`);
+      throw new ValidationError(lit`ParameterType`, `Parameter type (${this.type}) is not a string or number type`, this);
     }
     return Token.asString(this.value);
   }
@@ -304,7 +306,7 @@ export class CfnParameter extends CfnElement {
    */
   public get valueAsList(): string[] {
     if (!isListType(this.type)) {
-      throw new Error(`Parameter type (${this.type}) is not a string list type`);
+      throw new ValidationError(lit`ParameterType`, `Parameter type (${this.type}) is not a string list type`, this);
     }
     return Token.asList(this.value);
   }
@@ -314,7 +316,7 @@ export class CfnParameter extends CfnElement {
    */
   public get valueAsNumber(): number {
     if (!isNumberType(this.type)) {
-      throw new Error(`Parameter type (${this.type}) is not a number type`);
+      throw new ValidationError(lit`ParameterType`, `Parameter type (${this.type}) is not a number type`, this);
     }
     return Token.asNumber(this.value);
   }

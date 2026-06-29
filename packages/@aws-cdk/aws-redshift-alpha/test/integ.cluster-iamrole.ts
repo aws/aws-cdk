@@ -1,8 +1,9 @@
+import * as integ from '@aws-cdk/integ-tests-alpha';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Aspects, CfnResource, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { App, Aspects, CfnResource, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
-import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct, IConstruct } from 'constructs';
+import type { Construct, IConstruct } from 'constructs';
 import * as redshift from '../lib';
 
 class RedshiftEnv extends Stack {
@@ -71,10 +72,16 @@ class SingleProviderRoleStack extends Stack {
 const app = new App({
   postCliContext: {
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },
 });
 
-const singleProviderRoleTestStack = new SingleProviderRoleStack(app, 'single-provider-role-integ');
+const stack = new Stack(app, 'aws-cdk-redshift-cluster-database');
+
+const singleProviderRoleTestStack = new SingleProviderRoleStack(stack, 'single-provider-role-integ');
+
+new RedshiftEnv(stack, 'redshift-iamrole-integ');
+
 Aspects.of(singleProviderRoleTestStack).add({
   visit(node: IConstruct) {
     if (CfnResource.isCfnResource(node)) {
@@ -85,7 +92,7 @@ Aspects.of(singleProviderRoleTestStack).add({
 
 new integ.IntegTest(app, 'IamRoleInteg', {
   testCases: [
-    new RedshiftEnv(app, 'redshift-iamrole-integ'),
+    stack,
     singleProviderRoleTestStack,
   ],
 });

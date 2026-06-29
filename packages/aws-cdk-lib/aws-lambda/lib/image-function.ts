@@ -1,12 +1,15 @@
-import { Construct } from 'constructs';
-import { Architecture } from './architecture';
-import { AssetImageCode, AssetImageCodeProps, EcrImageCode, EcrImageCodeProps, Code } from './code';
-import { Function, FunctionOptions } from './function';
+import type { Construct } from 'constructs';
+import type { Architecture } from './architecture';
+import type { AssetImageCodeProps, EcrImageCodeProps, Code } from './code';
+import { AssetImageCode, EcrImageCode } from './code';
+import type { FunctionOptions } from './function';
+import { Function } from './function';
 import { Handler } from './handler';
 import { Runtime } from './runtime';
-import * as ecr from '../../aws-ecr';
+import type * as ecr from '../../aws-ecr';
 import { Platform } from '../../aws-ecr-assets';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties to configure a new DockerImageFunction construct.
@@ -64,7 +67,11 @@ export abstract class DockerImageCode {
 /**
  * Create a lambda function where the handler is a docker image
  */
+@propertyInjectable
 export class DockerImageFunction extends Function {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.DockerImageFunction';
+
   constructor(scope: Construct, id: string, props: DockerImageFunctionProps) {
     super(scope, id, {
       ...props,

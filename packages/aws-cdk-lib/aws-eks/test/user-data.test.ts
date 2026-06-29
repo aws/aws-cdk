@@ -5,8 +5,6 @@ import { App, Stack } from '../../core';
 import { Cluster, KubernetesVersion } from '../lib/';
 import { renderAmazonLinuxUserData } from '../lib/user-data';
 
-/* eslint-disable max-len */
-
 describe('user data', () => {
   test('default user data', () => {
     // GIVEN

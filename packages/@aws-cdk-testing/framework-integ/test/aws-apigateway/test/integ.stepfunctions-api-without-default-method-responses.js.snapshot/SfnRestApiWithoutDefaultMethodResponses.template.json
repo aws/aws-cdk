@@ -41,7 +41,7 @@
     "Name": "StepFunctionsRestApi"
    }
   },
-  "StepFunctionsRestApiDeployment8FF8D52A481e2c6fad35132b46721c49969398fb": {
+  "StepFunctionsRestApiDeployment8FF8D52Afb21ad980b99258ceeed145ec1ebe3b5": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "Automatically created by the RestApi construct",
@@ -51,13 +51,16 @@
    },
    "DependsOn": [
     "StepFunctionsRestApiANY7699CA92"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "StepFunctionsRestApiDeploymentStageprodE1E3545E": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "StepFunctionsRestApiDeployment8FF8D52A481e2c6fad35132b46721c49969398fb"
+     "Ref": "StepFunctionsRestApiDeployment8FF8D52Afb21ad980b99258ceeed145ec1ebe3b5"
     },
     "RestApiId": {
      "Ref": "StepFunctionsRestApiC6E3E883"
@@ -134,7 +137,7 @@
       },
       {
        "ResponseTemplates": {
-        "application/json": "\"error\": $input.path('$.error')"
+        "application/json": "{\n          \"error\": \"$input.path('$.error')\"\n        }"
        },
        "SelectionPattern": "5\\d{2}",
        "StatusCode": "500"

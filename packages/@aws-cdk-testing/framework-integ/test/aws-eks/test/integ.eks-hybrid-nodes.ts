@@ -14,7 +14,7 @@ class EksHybridNodesStack extends Stack {
       maxAzs: 2,
       natGateways: 1,
       restrictDefaultSecurityGroup: false,
-      cidr: '10.0.0.0/16',
+      ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
     });
     new eks.Cluster(this, 'Cluster', {
       vpc,
@@ -37,6 +37,7 @@ class EksHybridNodesStack extends Stack {
 
 const app = new App({
   postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });

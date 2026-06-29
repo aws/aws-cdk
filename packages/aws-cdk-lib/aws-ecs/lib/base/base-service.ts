@@ -1,45 +1,58 @@
-import { Construct } from 'constructs';
+import type { Construct, IConstruct } from 'constructs';
 import { ScalableTaskCount } from './scalable-task-count';
-import { ServiceManagedVolume } from './service-managed-volume';
+import type { ServiceManagedVolume } from './service-managed-volume';
 import * as appscaling from '../../../aws-applicationautoscaling';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
-import * as elb from '../../../aws-elasticloadbalancing';
+import type * as elb from '../../../aws-elasticloadbalancing';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as iam from '../../../aws-iam';
-import * as kms from '../../../aws-kms';
+import type * as kms from '../../../aws-kms';
 import * as cloudmap from '../../../aws-servicediscovery';
-import {
-  Annotations,
-  Duration,
+import type {
   IResolvable,
   IResource,
+} from '../../../core';
+import {
+  Annotations,
+  Arn,
+  ArnFormat,
+  Duration,
+  FeatureFlags,
+  Fn,
   Lazy,
   Resource,
   Stack,
-  ArnFormat,
-  FeatureFlags,
   Token,
-  Arn,
-  Fn,
+  ValidationError,
 } from '../../../core';
+import type { IArrayBox, IBox } from '../../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../../core/lib/helpers-internal';
+import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
+import { lit } from '../../../core/lib/private/literal-string';
 import * as cxapi from '../../../cx-api';
+import type { IServiceRef, ServiceReference } from '../../../interfaces/generated/aws-ecs-interfaces.generated';
 import { RegionInfo } from '../../../region-info';
-import {
+import type { IAlternateTarget } from '../alternate-target-configuration';
+import type {
   LoadBalancerTargetOptions,
-  NetworkMode,
   TaskDefinition,
+} from '../base/task-definition';
+import {
+  NetworkMode,
   TaskDefinitionRevision,
 } from '../base/task-definition';
-import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, Cluster } from '../cluster';
-import { ContainerDefinition, Protocol } from '../container-definition';
+import type { CapacityProviderStrategy, ICluster } from '../cluster';
+import { Cluster, ExecuteCommandLogging } from '../cluster';
+import type { ContainerDefinition, Protocol } from '../container-definition';
+import type { IDeploymentLifecycleHookTarget } from '../deployment-lifecycle-hook-target';
 import { CfnService } from '../ecs.generated';
-import { LogDriver, LogDriverConfig } from '../log-drivers/log-driver';
+import type { LogDriver, LogDriverConfig } from '../log-drivers/log-driver';
 
 /**
  * The interface for a service.
  */
-export interface IService extends IResource {
+export interface IService extends IResource, IServiceRef {
   /**
    * The Amazon Resource Name (ARN) of the service.
    *
@@ -83,6 +96,68 @@ export interface DeploymentCircuitBreaker {
    * @default false
    */
   readonly rollback?: boolean;
+}
+
+/**
+ * Configuration for forcing a new deployment of the service.
+ */
+export interface ForceNewDeployment {
+  /**
+   * Whether to enable the force-new-deployment mechanism for the service.
+   *
+   * Setting this to `true` enables the mechanism, but on its own it does not
+   * force a new deployment on every `cdk deploy`: CloudFormation only starts a
+   * new deployment when it detects a change in the template, and the signal for
+   * that is the `nonce` value changing between deployments. If `nonce` is not
+   * provided or its value stays the same across deployments, no new deployment
+   * is forced. When set to `false`, the `ForceNewDeployment` property is rendered
+   * with `EnableForceNewDeployment: false`.
+   *
+   * To force a new deployment on every `cdk deploy`, provide a `nonce` with a
+   * unique, time-varying value such as a timestamp, random string, or sequence
+   * number (e.g. `Date.now().toString()`).
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-ecs-service-forcenewdeployment.html
+   */
+  readonly enabled: boolean;
+
+  /**
+   * A unique nonce value that signals Amazon ECS to start a new deployment.
+   *
+   * When you change this value, it triggers a new deployment even though no
+   * other service parameters have changed. Use a stable, time-varying value
+   * like a commit hash, image digest, or version string.
+   *
+   * If not provided and `enabled` is `true`, only `EnableForceNewDeployment`
+   * is set without a nonce.
+   *
+   * Must be between 1 and 255 characters.
+   *
+   * @default - no nonce
+   */
+  readonly nonce?: string;
+}
+
+/**
+ * Configuration for traffic shift during progressive deployments
+ */
+export interface TrafficShiftConfig {
+  /**
+   * The percentage of production traffic to shift in each step.
+   * - For linear deployment: multiples of 0.1 from 3.0 to 100.0
+   * - For canary deployment: multiples of 0.1 from 0.1 to 100.0
+   *
+   * @default - 10.0 for linear, 5.0 for canary
+   */
+  readonly stepPercent?: number;
+
+  /**
+   * The duration to wait between traffic shifting steps.
+   * Valid values are 0 to 1440 minutes (24 hours).
+   *
+   * @default - Duration.minutes(6) for linear, Duration.minutes(10) for canary
+   */
+  readonly stepBakeTime?: Duration;
 }
 
 /**
@@ -162,6 +237,52 @@ export interface IEcsLoadBalancerTarget extends elbv2.IApplicationLoadBalancerTa
 }
 
 /**
+ * The format of Service Connect access logs.
+ *
+ * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-connect-envoy-access-logs.html
+ */
+export enum ServiceConnectAccessLogFormat {
+  /**
+   * Human-readable text format for access logs.
+   */
+  TEXT = 'TEXT',
+
+  /**
+   * Structured JSON format for access logs.
+   * This format is well-suited for integration with log analysis tools.
+   */
+  JSON = 'JSON',
+}
+
+/**
+ * Configuration for Service Connect access logs.
+ *
+ * Service Connect access logs provide detailed telemetry about individual requests processed by the Service Connect proxy,
+ * including HTTP methods, paths, response codes, and timing information.
+ *
+ * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-connect-envoy-access-logs.html
+ */
+export interface ServiceConnectAccessLogConfiguration {
+  /**
+   * The format for Service Connect access log output.
+   *
+   * - TEXT: Human-readable text format
+   * - JSON: Structured JSON format for log analysis tools
+   */
+  readonly format: ServiceConnectAccessLogFormat;
+
+  /**
+   * Whether to include query parameters in Service Connect access logs.
+   *
+   * When enabled, query parameters from HTTP requests are included in the access logs.
+   * Consider security and privacy implications as query parameters may contain sensitive information such as request IDs and tokens.
+   *
+   * @default undefined - AWS ECS default is false, which means that query parameters are not included in access logs
+   */
+  readonly includeQueryParameters?: boolean;
+}
+
+/**
  * Interface for Service Connect configuration.
  */
 export interface ServiceConnectProps {
@@ -187,6 +308,15 @@ export interface ServiceConnectProps {
    * @default - none
    */
   readonly logDriver?: LogDriver;
+
+  /**
+   * The configuration for Service Connect access logs.
+   *
+   * Access logs provide detailed telemetry about individual requests processed by the　Service Connect proxy.
+   *
+   * @default undefined - AWS ECS default is disabled, which means that access logs are not recorded
+   */
+  readonly accessLogConfiguration?: ServiceConnectAccessLogConfiguration;
 }
 
 /**
@@ -280,7 +410,7 @@ export interface ServiceConnectTlsConfiguration {
    *
    * @default - none
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKeyRef;
 
   /**
    * The IAM role that's associated with the Service Connect TLS.
@@ -429,11 +559,64 @@ export interface BaseServiceOptions {
 
   /**
    * Configuration details for a volume used by the service. This allows you to specify
-   * details about the EBS volume that can be attched to ECS tasks.
+   * details about the EBS volume that can be attached to ECS tasks.
    *
    * @default - undefined
    */
   readonly volumeConfigurations?: ServiceManagedVolume[];
+
+  /**
+   * The deployment strategy to use for the service.
+   * @default ROLLING
+   */
+  readonly deploymentStrategy?: DeploymentStrategy;
+
+  /**
+   * bake time minutes for service.
+   * @default - none
+   */
+  readonly bakeTime?: Duration;
+
+  /**
+   * The lifecycle hooks to execute during deployment stages
+   * @default - none;
+   */
+  readonly lifecycleHooks?: IDeploymentLifecycleHookTarget[];
+
+  /**
+   * Configuration for linear deployment strategy.
+   * Only valid when deploymentStrategy is set to LINEAR.
+   *
+   * @default - no linear configuration
+   */
+  readonly linearConfiguration?: TrafficShiftConfig;
+
+  /**
+   * Configuration for canary deployment strategy.
+   * Only valid when deploymentStrategy is set to CANARY.
+   *
+   * @default - no canary configuration
+   */
+  readonly canaryConfiguration?: TrafficShiftConfig;
+
+  /**
+   * Configuration for forcing a new deployment of the service.
+   *
+   * By default, deployments aren't forced. You can use this option to start
+   * a new deployment with no service definition changes. For example, you can
+   * update a service's tasks to use a newer Docker image with the same
+   * image/tag combination (`my_image:latest`) or to roll Fargate tasks onto
+   * a newer platform version.
+   *
+   * This is equivalent to calling the `forceNewDeployment()` method, but allows
+   * you to configure it declaratively at construction time, including the ability
+   * to explicitly disable it with `enabled: false`.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-forcenewdeployment.html
+   * @default - no forced deployment
+   */
+  readonly forceNewDeployment?: ForceNewDeployment;
+
 }
 
 /**
@@ -493,7 +676,7 @@ class ApplicationListenerConfig extends ListenerConfig {
     const protocol = props.protocol;
     const port = props.port ?? (protocol === elbv2.ApplicationProtocol.HTTPS ? 443 : 80);
     this.listener.addTargets(id, {
-      ... props,
+      ...props,
       targets: [
         service.loadBalancerTarget({
           ...target,
@@ -542,6 +725,7 @@ export interface IBaseService extends IService {
 /**
  * The base class for Ec2Service and FargateService services.
  */
+@noBoxStackTraces
 export abstract class BaseService extends Resource
   implements IBaseService, elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, elb.ILoadBalancerTarget {
   /**
@@ -561,7 +745,7 @@ export abstract class BaseService extends Resource
     } else {
       const resourceNameParts = resourceName.split('/');
       if (resourceNameParts.length !== 2) {
-        throw new Error(`resource name ${resourceName} from service ARN: ${serviceArn} is not using the ARN cluster format`);
+        throw new ValidationError(lit`ResourceNameServiceArn`, `resource name ${resourceName} from service ARN: ${serviceArn} is not using the ARN cluster format`, scope);
       }
       clusterName = resourceNameParts[0];
       serviceName = resourceNameParts[1];
@@ -582,6 +766,12 @@ export abstract class BaseService extends Resource
       public readonly serviceArn = serviceArn;
       public readonly serviceName = serviceName;
       public readonly cluster = cluster;
+
+      public get serviceRef(): ServiceReference {
+        return {
+          serviceArn: this.serviceArn,
+        };
+      }
     }
 
     return new Import(scope, id, {
@@ -598,16 +788,13 @@ export abstract class BaseService extends Resource
   public readonly connections: ec2.Connections = new ec2.Connections();
 
   /**
-   * The Amazon Resource Name (ARN) of the service.
+   * A reference to this service.
    */
-  public readonly serviceArn: string;
-
-  /**
-   * The name of the service.
-   *
-   * @attribute
-   */
-  public readonly serviceName: string;
+  public get serviceRef(): ServiceReference {
+    return {
+      serviceArn: this.serviceArn,
+    };
+  }
 
   /**
    * The task definition to use for tasks in the service.
@@ -628,31 +815,50 @@ export abstract class BaseService extends Resource
    * A list of Elastic Load Balancing load balancer objects, containing the load balancer name, the container
    * name (as it appears in a container definition), and the container port to access from the load balancer.
    */
-  protected loadBalancers = new Array<CfnService.LoadBalancerProperty>();
+  private _loadBalancers: IArrayBox<CfnService.LoadBalancerProperty> = Box.fromArray([], { omitEmpty: false });
 
   /**
    * A list of Elastic Load Balancing load balancer objects, containing the load balancer name, the container
    * name (as it appears in a container definition), and the container port to access from the load balancer.
    */
-  protected networkConfiguration?: CfnService.NetworkConfigurationProperty;
+  private readonly _networkConfigurationBox: IBox<CfnService.NetworkConfigurationProperty | undefined> = Box.fromValue(undefined);
+
+  protected get networkConfiguration(): CfnService.NetworkConfigurationProperty | undefined {
+    return this._networkConfigurationBox.getMutable();
+  }
+  protected set networkConfiguration(value: CfnService.NetworkConfigurationProperty | undefined) {
+    this._networkConfigurationBox.set(value);
+  }
 
   /**
    * The deployment alarms property - this will be rendered directly and lazily as the CfnService.alarms
    * property.
    */
-  protected deploymentAlarms?: CfnService.DeploymentAlarmsProperty;
+  private readonly _deploymentAlarms: IBox<CfnService.DeploymentAlarmsProperty | undefined> = Box.fromValue(undefined);
+
+  protected get deploymentAlarms(): CfnService.DeploymentAlarmsProperty | undefined {
+    return this._deploymentAlarms.getMutable();
+  }
+  protected set deploymentAlarms(value: CfnService.DeploymentAlarmsProperty | undefined) {
+    this._deploymentAlarms.set(value);
+  }
 
   /**
    * The details of the service discovery registries to assign to this service.
    * For more information, see Service Discovery.
    */
-  protected serviceRegistries = new Array<CfnService.ServiceRegistryProperty>();
+  private _serviceRegistries: IArrayBox<CfnService.ServiceRegistryProperty> = Box.fromArray();
 
   /**
    * The service connect configuration for this service.
+   */
+  private readonly _serviceConnectConfig: IBox<CfnService.ServiceConnectConfigurationProperty | undefined> = Box.fromValue(undefined);
+
+  /**
+   * Whether this service is using the ECS deployment controller.
    * @internal
    */
-  protected _serviceConnectConfig?: CfnService.ServiceConnectConfigurationProperty;
+  private readonly isEcsDeploymentController: boolean;
 
   private readonly resource: CfnService;
   private scalableTaskCount?: ScalableTaskCount;
@@ -660,7 +866,64 @@ export abstract class BaseService extends Resource
   /**
    * All volumes
    */
-  private readonly volumes: ServiceManagedVolume[] = [];
+  private readonly _volumes: IArrayBox<ServiceManagedVolume>;
+
+  /**
+   * A deployment lifecycle hook runs custom logic at specific stages of the deployment process.
+   * @default - none
+   */
+  private readonly _lifecycleHooks: IArrayBox<IDeploymentLifecycleHookTarget>;
+
+  @memoizedGetter
+  public get serviceArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
+      service: 'ecs',
+      resource: 'service',
+      resourceName: `${this.cluster.clusterName}/${this.physicalName}`,
+    });
+  }
+
+  /**
+   * The details of the service discovery registries to assign to this service.
+   * For more information, see Service Discovery.
+   */
+  protected set serviceRegistries(sr: CfnService.ServiceRegistryProperty[]) {
+    this._serviceRegistries.set(sr);
+  }
+
+  /**
+   * The details of the service discovery registries to assign to this service.
+   * For more information, see Service Discovery.
+   */
+  protected get serviceRegistries(): CfnService.ServiceRegistryProperty[] {
+    return this._serviceRegistries.getMutable();
+  }
+
+  /**
+   * A list of Elastic Load Balancing load balancer objects, containing the load balancer name, the container
+   * name (as it appears in a container definition), and the container port to access from the load balancer.
+   */
+  public get loadBalancers(): Array<CfnService.LoadBalancerProperty> {
+    return this._loadBalancers.getMutable();
+  }
+
+  /**
+   * A list of Elastic Load Balancing load balancer objects, containing the load balancer name, the container
+   * name (as it appears in a container definition), and the container port to access from the load balancer.
+   */
+  public set loadBalancers(value: Array<CfnService.LoadBalancerProperty>) {
+    this._loadBalancers.set(value);
+  }
+
+  @memoizedGetter
+  public get serviceName(): string {
+    return this.getResourceNameAttribute(this.resource.attrName);
+  }
+
+  /**
+   * The deployment strategy for the service
+   */
+  private readonly deploymentStrategy?: DeploymentStrategy;
 
   /**
    * Constructs a new instance of the BaseService class.
@@ -674,12 +937,13 @@ export abstract class BaseService extends Resource
     super(scope, id, {
       physicalName: props.serviceName,
     });
-
     if (props.propagateTags && props.propagateTaskTagsFrom) {
-      throw new Error('You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank');
+      throw new ValidationError(lit`OnlySpecifyEitherPropagateTags`, 'You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank', this);
     }
 
     this.taskDefinition = taskDefinition;
+    this._volumes = Box.fromArray();
+    this._lifecycleHooks = Box.fromArray();
 
     // launchType will set to undefined if using external DeploymentController or capacityProviderStrategies
     const launchType = props.deploymentController?.type === DeploymentControllerType.EXTERNAL ||
@@ -688,10 +952,22 @@ export abstract class BaseService extends Resource
 
     const propagateTagsFromSource = props.propagateTaskTagsFrom ?? props.propagateTags ?? PropagatedTagSource.NONE;
     const deploymentController = this.getDeploymentController(props);
+
+    // Determine if this service is using the ECS deployment controller
+    this.isEcsDeploymentController = !deploymentController || deploymentController.type === DeploymentControllerType.ECS;
+    this.deploymentStrategy = props.deploymentStrategy;
+
+    if (props.linearConfiguration) {
+      this.validateLinearConfiguration(props.linearConfiguration);
+    }
+    if (props.canaryConfiguration) {
+      this.validateCanaryConfiguration(props.canaryConfiguration);
+    }
+
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
       serviceName: this.physicalName,
-      loadBalancers: Lazy.any({ produce: () => this.loadBalancers }, { omitEmptyArray: true }),
+      loadBalancers: this._loadBalancers.derive(lbs => lbs.length > 0 ? lbs : undefined),
       deploymentConfiguration: {
         maximumPercent: props.maxHealthyPercent || 200,
         minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent,
@@ -699,7 +975,18 @@ export abstract class BaseService extends Resource
           enable: props.circuitBreaker.enable ?? true,
           rollback: props.circuitBreaker.rollback ?? false,
         } : undefined,
-        alarms: Lazy.any({ produce: () => this.deploymentAlarms }, { omitEmptyArray: true }),
+        alarms: this._deploymentAlarms,
+        strategy: props.deploymentStrategy,
+        bakeTimeInMinutes: props.bakeTime?.toMinutes(),
+        linearConfiguration: props.linearConfiguration ? {
+          stepPercent: props.linearConfiguration.stepPercent,
+          stepBakeTimeInMinutes: props.linearConfiguration.stepBakeTime?.toMinutes(),
+        } : undefined,
+        canaryConfiguration: props.canaryConfiguration ? {
+          canaryPercent: props.canaryConfiguration.stepPercent,
+          canaryBakeTimeInMinutes: props.canaryConfiguration.stepBakeTime?.toMinutes(),
+        } : undefined,
+        lifecycleHooks: Lazy.any({ produce: () => this.renderLifecycleHooks() }, { omitEmptyArray: true }),
       },
       propagateTags: propagateTagsFromSource === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags ?? false,
@@ -709,10 +996,10 @@ export abstract class BaseService extends Resource
       capacityProviderStrategy: props.capacityProviderStrategies,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
-      networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
-      serviceRegistries: Lazy.any({ produce: () => this.serviceRegistries }, { omitEmptyArray: true }),
-      serviceConnectConfiguration: Lazy.any({ produce: () => this._serviceConnectConfig }, { omitEmptyArray: true }),
-      volumeConfigurations: Lazy.any({ produce: () => this.renderVolumes() }, { omitEmptyArray: true }),
+      networkConfiguration: this._networkConfigurationBox,
+      serviceRegistries: this._serviceRegistries,
+      serviceConnectConfiguration: this._serviceConnectConfig,
+      volumeConfigurations: this._volumes.derive(_ => this.renderVolumes()),
       ...additionalProps,
     });
 
@@ -722,16 +1009,35 @@ export abstract class BaseService extends Resource
       Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:externalDeploymentController', 'taskDefinition and launchType are blanked out when using external deployment controller.');
     }
 
-    if (props.circuitBreaker
-        && deploymentController
-        && deploymentController.type !== DeploymentControllerType.ECS) {
-      Annotations.of(this).addError('Deployment circuit breaker requires the ECS deployment controller.');
+    if (props.circuitBreaker && !this.isEcsDeploymentController) {
+      Annotations.of(this)._addTrackableError(lit`CircuitBreakerRequiresEcsController`, 'Deployment circuit breaker requires the ECS deployment controller.');
     }
 
-    if (props.deploymentAlarms
-      && deploymentController
-      && deploymentController.type !== DeploymentControllerType.ECS) {
-      throw new Error('Deployment alarms requires the ECS deployment controller.');
+    if (!props.circuitBreaker && this.isEcsDeploymentController) {
+      // If we *could* use a circuit breaker, then let's recommend users to do so. It makes detecting errors sooo much faster.
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:shouldUseCircuitBreaker', 'Enable the \'circuitBreaker\' property to trigger a quicker deployment failure if tasks are failing to come start (without this setting deployments may take up to 3 hours to fail).');
+    }
+
+    if (props.deploymentAlarms && !this.isEcsDeploymentController) {
+      throw new ValidationError(lit`RequiresDeploymentAlarmsRequires`, 'Deployment alarms requires the ECS deployment controller.', this);
+    }
+
+    if (props.forceNewDeployment !== undefined) {
+      if (!this.isEcsDeploymentController) {
+        throw new ValidationError(lit`ForceNewDeploymentRequiresEcsController`, 'forceNewDeployment requires the ECS deployment controller.', this);
+      }
+
+      const enabled = props.forceNewDeployment.enabled;
+      const nonce = props.forceNewDeployment.nonce;
+
+      if (nonce !== undefined && !Token.isUnresolved(nonce) && (nonce.length < 1 || nonce.length > 255)) {
+        throw new ValidationError(lit`ForceNewDeploymentNonceInvalidLength`, `forceNewDeployment nonce must be between 1 and 255 characters, got ${nonce.length}`, this);
+      }
+
+      this.resource.forceNewDeployment = {
+        enableForceNewDeployment: enabled,
+        forceNewDeploymentNonce: nonce,
+      };
     }
 
     if (
@@ -739,7 +1045,7 @@ export abstract class BaseService extends Resource
       && props.taskDefinitionRevision
       && props.taskDefinitionRevision !== TaskDefinitionRevision.LATEST
     ) {
-      throw new Error('CODE_DEPLOY deploymentController can only be used with the `latest` task definition revision');
+      throw new ValidationError(lit`CodeDeployDeploymentControllerOnlyUsed`, 'CODE_DEPLOY deploymentController can only be used with the `latest` task definition revision', this);
     }
 
     if (props.minHealthyPercent === undefined) {
@@ -759,13 +1065,6 @@ export abstract class BaseService extends Resource
       }
       this.node.addDependency(taskDefinition);
     }
-
-    this.serviceArn = this.getResourceArnAttribute(this.resource.ref, {
-      service: 'ecs',
-      resource: 'service',
-      resourceName: `${props.cluster.clusterName}/${this.physicalName}`,
-    });
-    this.serviceName = this.getResourceNameAttribute(this.resource.attrName);
 
     this.cluster = props.cluster;
 
@@ -796,16 +1095,15 @@ export abstract class BaseService extends Resource
 
     if (props.deploymentAlarms) {
       if (props.deploymentAlarms.alarmNames.length === 0) {
-        throw new Error('at least one alarm name is required when specifying deploymentAlarms, received empty array');
+        throw new ValidationError(lit`IsRequiredLeastAlarmName`, 'at least one alarm name is required when specifying deploymentAlarms, received empty array', this);
       }
       this.deploymentAlarms = {
         alarmNames: props.deploymentAlarms.alarmNames,
         enable: true,
         rollback: props.deploymentAlarms.behavior !== AlarmBehavior.FAIL_ON_ALARM,
       };
-    // CloudWatch alarms is only supported for Amazon ECS services that use the rolling update (ECS) deployment controller.
-    } else if ((!props.deploymentController ||
-      props.deploymentController?.type === DeploymentControllerType.ECS) && this.deploymentAlarmsAvailableInRegion()) {
+      // CloudWatch alarms is only supported for Amazon ECS services that use the rolling update (ECS) deployment controller.
+    } else if (this.isEcsDeploymentController && this.deploymentAlarmsAvailableInRegion()) {
       // Only set default deployment alarms settings when feature flag is not enabled.
       if (!FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM)) {
         this.deploymentAlarms = {
@@ -816,21 +1114,86 @@ export abstract class BaseService extends Resource
       }
     }
 
+    if (props.lifecycleHooks) {
+      if (this.isEcsDeploymentController) {
+        props.lifecycleHooks.forEach(target => this.addLifecycleHook(target));
+      } else {
+        throw new ValidationError(lit`RequiresDeploymentLifecycleHooks`, 'Deployment lifecycle hooks requires the ECS deployment controller.', this);
+      }
+    }
+
     this.node.defaultChild = this.resource;
+  }
+
+  /**
+   * Forces a new deployment of the service.
+   *
+   * This can be used to trigger a deployment without changing the task definition or desired count.
+   * ECS will start a new deployment even if there are no changes to the service configuration.
+   *
+   * **Important:** When called without a nonce, a timestamp is generated automatically, which means
+   * every `cdk synth` produces a different template and every `cdk deploy` triggers a new deployment
+   * regardless of whether any code has changed. To avoid this, provide a stable nonce value that only
+   * changes when you intentionally want to force a redeployment (e.g., an image digest or a version string).
+   *
+   * @param nonce - A unique string (1-255 characters) that signals ECS to start a new deployment.
+   * If not provided, a timestamp-based nonce is generated.
+   */
+  public forceNewDeployment(nonce?: string) {
+    // ForceNewDeployment is only supported with the ECS deployment controller.
+    // CODE_DEPLOY and EXTERNAL controllers manage deployments externally and do not
+    // support this CloudFormation property. The AWS documentation does not explicitly
+    // state this restriction; a documentation update has been requested.
+    if (!this.isEcsDeploymentController) {
+      throw new ValidationError(lit`EcsControllerRequired`, 'forceNewDeployment requires the ECS deployment controller.', this);
+    }
+
+    const resolvedNonce = nonce ?? new Date().toISOString();
+
+    if (!Token.isUnresolved(resolvedNonce) && (resolvedNonce.length < 1 || resolvedNonce.length > 255)) {
+      throw new ValidationError(lit`ForceDeploymentErrorInvalidLength`, `forceNewDeployment nonce must be between 1 and 255 characters, got ${resolvedNonce.length}`, this);
+    }
+
+    this.resource.forceNewDeployment = {
+      enableForceNewDeployment: true,
+      forceNewDeploymentNonce: resolvedNonce,
+    };
+  }
+
+  /**
+   * Add a deployment lifecycle hook target
+   * @param target The lifecycle hook target to add
+   */
+  public addLifecycleHook(target: IDeploymentLifecycleHookTarget) {
+    if (!this.isEcsDeploymentController) {
+      throw new ValidationError(lit`RequiresDeploymentLifecycleHooks`, 'Deployment lifecycle hooks requires the ECS deployment controller.', this);
+    }
+    this._lifecycleHooks.push(target);
+  }
+
+  private renderLifecycleHooks(): CfnService.DeploymentLifecycleHookProperty[] {
+    return this._lifecycleHooks.get().map((target) => {
+      const config = target.bind(this);
+      return {
+        hookTargetArn: config.targetArn,
+        roleArn: config.role!.roleArn,
+        lifecycleStages: config.lifecycleStages.map(stage => stage.toString()),
+      };
+    });
   }
 
   /**
    * Adds a volume to the Service.
    */
   public addVolume(volume: ServiceManagedVolume) {
-    this.volumes.push(volume);
+    this._volumes.push(volume);
   }
 
   private renderVolumes(): CfnService.ServiceVolumeConfigurationProperty[] {
-    if (this.volumes.length > 1) {
-      throw new Error(`Only one EBS volume can be specified for 'volumeConfigurations', got: ${this.volumes.length}`);
+    if (this._volumes.length > 1) {
+      throw new ValidationError(lit`OnlyVolumeSpecifiedVolumeConfigurations`, `Only one EBS volume can be specified for 'volumeConfigurations', got: ${this._volumes.length}`, this);
     }
-    return this.volumes.map(renderVolume);
+    return this._volumes.get().map(renderVolume);
     function renderVolume(spec: ServiceManagedVolume): CfnService.ServiceVolumeConfigurationProperty {
       const tagSpecifications = spec.config?.tagSpecifications?.map(ebsTagSpec => {
         return {
@@ -855,6 +1218,7 @@ export abstract class BaseService extends Resource
           volumeType: spec.config.volumeType,
           snapshotId: spec.config.snapShotId,
           sizeInGiB: spec.config.size?.toGibibytes(),
+          volumeInitializationRate: spec.config.volumeInitializationRate?.toMebibytes(),
           tagSpecifications: tagSpecifications,
         },
       };
@@ -878,8 +1242,8 @@ export abstract class BaseService extends Resource
    *
    */
   public enableDeploymentAlarms(alarmNames: string[], options?: DeploymentAlarmOptions) {
-    if (alarmNames.length === 0 ) {
-      throw new Error('at least one alarm name is required when calling enableDeploymentAlarms(), received empty array');
+    if (alarmNames.length === 0) {
+      throw new ValidationError(lit`IsRequiredLeastAlarmName`, 'at least one alarm name is required when calling enableDeploymentAlarms(), received empty array', this);
     }
 
     alarmNames.forEach(alarmName => {
@@ -895,7 +1259,7 @@ export abstract class BaseService extends Resource
         (AlarmBehavior.ROLLBACK_ON_ALARM === options.behavior && !this.deploymentAlarms.rollback) ||
         (AlarmBehavior.FAIL_ON_ALARM === options.behavior && this.deploymentAlarms.rollback)
       ) {
-        throw new Error(`all deployment alarms on an ECS service must have the same AlarmBehavior. Attempted to enable deployment alarms with ${options.behavior}, but alarms were previously enabled with ${this.deploymentAlarms.rollback ? AlarmBehavior.ROLLBACK_ON_ALARM : AlarmBehavior.FAIL_ON_ALARM}`);
+        throw new ValidationError(lit`DeploymentAlarmsServiceSame`, `all deployment alarms on an ECS service must have the same AlarmBehavior. Attempted to enable deployment alarms with ${options.behavior}, but alarms were previously enabled with ${this.deploymentAlarms.rollback ? AlarmBehavior.ROLLBACK_ON_ALARM : AlarmBehavior.FAIL_ON_ALARM}`, this);
       }
     }
 
@@ -916,8 +1280,8 @@ export abstract class BaseService extends Resource
    * Enable Service Connect on this service.
    */
   public enableServiceConnect(config?: ServiceConnectProps) {
-    if (this._serviceConnectConfig) {
-      throw new Error('Service connect configuration cannot be specified more than once.');
+    if (this._serviceConnectConfig.get() !== undefined) {
+      throw new ValidationError(lit`ServiceConnectConfigurationCannot`, 'Service connect configuration cannot be specified more than once.', this);
     }
 
     this.validateServiceConnectConfiguration(config);
@@ -947,7 +1311,7 @@ export abstract class BaseService extends Resource
     const services = cfg.services?.map(svc => {
       const containerPort = this.taskDefinition.findPortMappingByName(svc.portMappingName)?.containerPort;
       if (!containerPort) {
-        throw new Error(`Port mapping with name ${svc.portMappingName} does not exist.`);
+        throw new ValidationError(lit`PortMappingNameDoes`, `Port mapping with name ${svc.portMappingName} does not exist.`, this);
       }
       const alias = {
         port: svc.port || containerPort,
@@ -958,7 +1322,7 @@ export abstract class BaseService extends Resource
         issuerCertificateAuthority: {
           awsPcaAuthorityArn: svc.tls.awsPcaAuthorityArn,
         },
-        kmsKey: svc.tls.kmsKey?.keyArn,
+        kmsKey: svc.tls.kmsKey?.keyRef.keyArn,
         roleArn: svc.tls.role?.roleArn,
       } : undefined;
 
@@ -979,12 +1343,16 @@ export abstract class BaseService extends Resource
       logConfig = cfg.logDriver.bind(this, this.taskDefinition.defaultContainer);
     }
 
-    this._serviceConnectConfig = {
+    this._serviceConnectConfig.set({
       enabled: true,
       logConfiguration: logConfig,
       namespace: namespace,
       services: services,
-    };
+      accessLogConfiguration: cfg.accessLogConfiguration ? {
+        format: cfg.accessLogConfiguration.format,
+        includeQueryParameters: cfg.accessLogConfiguration.includeQueryParameters ? 'ENABLED' : 'DISABLED',
+      } : undefined,
+    });
   }
 
   /**
@@ -992,17 +1360,27 @@ export abstract class BaseService extends Resource
    */
   private validateServiceConnectConfiguration(config?: ServiceConnectProps) {
     if (!this.taskDefinition.defaultContainer) {
-      throw new Error('Task definition must have at least one container to enable service connect.');
+      throw new ValidationError(lit`TaskDefinitionLeastContainer`, 'Task definition must have at least one container to enable service connect.', this);
     }
 
     // Check the implicit enable case; when config isn't specified or namespace isn't specified, we need to check that there is a namespace on the cluster.
     if ((!config || !config.namespace) && !this.cluster.defaultCloudMapNamespace) {
-      throw new Error('Namespace must be defined either in serviceConnectConfig or cluster.defaultCloudMapNamespace');
+      throw new ValidationError(lit`MustBeNamespaceDefinedEither`, 'Namespace must be defined either in serviceConnectConfig or cluster.defaultCloudMapNamespace', this);
     }
 
     // When config isn't specified, return.
     if (!config) {
       return;
+    }
+
+    // accessLogConfiguration controls the format of Envoy proxy access logs, but the actual
+    // log delivery is handled by logDriver (logConfiguration). Without logDriver, the Envoy
+    // sidecar has no log driver and its stdout is dropped, access logs never reach any destination.
+    if (config.accessLogConfiguration && !config.logDriver) {
+      throw new ValidationError(lit`AccessLogConfigurationRequiresLogDriver`,
+        'accessLogConfiguration requires logDriver to be set. Without logDriver, access logs are not delivered to any destination.',
+        this,
+      );
     }
 
     if (!config.services) {
@@ -1012,13 +1390,13 @@ export abstract class BaseService extends Resource
     config.services.forEach(serviceConnectService => {
       // port must exist on the task definition
       if (!this.taskDefinition.findPortMappingByName(serviceConnectService.portMappingName)) {
-        throw new Error(`Port Mapping '${serviceConnectService.portMappingName}' does not exist on the task definition.`);
+        throw new ValidationError(lit`PortMappingDoesExist`, `Port Mapping '${serviceConnectService.portMappingName}' does not exist on the task definition.`, this);
       }
 
       // Check that no two service connect services use the same discovery name.
       const discoveryName = serviceConnectService.discoveryName || serviceConnectService.portMappingName;
       if (portNames.get(serviceConnectService.portMappingName)?.includes(discoveryName)) {
-        throw new Error(`Cannot create multiple services with the discoveryName '${discoveryName}'.`);
+        throw new ValidationError(lit`CannotCreateMultiple`, `Cannot create multiple services with the discoveryName '${discoveryName}'.`, this);
       }
 
       let currentDiscoveries = portNames.get(serviceConnectService.portMappingName);
@@ -1031,21 +1409,77 @@ export abstract class BaseService extends Resource
 
       // IngressPortOverride should be within the valid port range if it exists.
       if (serviceConnectService.ingressPortOverride && !this.isValidPort(serviceConnectService.ingressPortOverride)) {
-        throw new Error(`ingressPortOverride ${serviceConnectService.ingressPortOverride} is not valid.`);
+        throw new ValidationError(lit`IngressPortOverrideValid`, `ingressPortOverride ${serviceConnectService.ingressPortOverride} is not valid.`, this);
       }
 
       // clientAlias.port should be within the valid port range
       if (serviceConnectService.port &&
         !this.isValidPort(serviceConnectService.port)) {
-        throw new Error(`Client Alias port ${serviceConnectService.port} is not valid.`);
+        throw new ValidationError(lit`ClientAliasPortValid`, `Client Alias port ${serviceConnectService.port} is not valid.`, this);
       }
 
       // tls.awsPcaAuthorityArn should be an ARN
       const awsPcaAuthorityArn = serviceConnectService.tls?.awsPcaAuthorityArn;
       if (awsPcaAuthorityArn && !Token.isUnresolved(awsPcaAuthorityArn) && !awsPcaAuthorityArn.startsWith('arn:')) {
-        throw new Error(`awsPcaAuthorityArn must start with "arn:" and have at least 6 components; received ${awsPcaAuthorityArn}`);
+        throw new ValidationError(lit`AwsPcaAuthorityArnStartArnLeast`, `awsPcaAuthorityArn must start with "arn:" and have at least 6 components; received ${awsPcaAuthorityArn}`, this);
       }
     });
+  }
+
+  /**
+   * Validate Canary Configuration
+   */
+  private validateCanaryConfiguration(config: TrafficShiftConfig) {
+    if (this.deploymentStrategy !== DeploymentStrategy.CANARY) {
+      throw new ValidationError(lit`RequiresCanaryConfigurationRequires`, 'Canary configuration requires deploymentStrategy to be set to CANARY', this);
+    }
+
+    if (config.stepPercent !== undefined && !Token.isUnresolved(config.stepPercent)) {
+      if (!Number.isFinite(config.stepPercent) || config.stepPercent < 0.1 || config.stepPercent > 100.0) {
+        throw new ValidationError(lit`MustBeCanaryDeploymentStepPercent`, `Canary deployment stepPercent must be between 0.1 and 100.0, received ${config.stepPercent}`, this);
+      }
+      if (!Number.isInteger(config.stepPercent * 10)) {
+        throw new ValidationError(lit`MustBeCanaryDeploymentStepPercent`, `Canary deployment stepPercent must be a multiple of 0.1, received ${config.stepPercent}`, this);
+      }
+    }
+
+    if (config.stepBakeTime !== undefined && !config.stepBakeTime.isUnresolved()) {
+      const minutes = config.stepBakeTime.toMinutes({ integral: false });
+      if (!Number.isInteger(minutes)) {
+        throw new ValidationError(lit`MustBeCanaryDeploymentStepBakeTime`, `Canary deployment stepBakeTime must be a whole number of minutes, received ${minutes} minutes`, this);
+      }
+      if (minutes < 0 || minutes > 1440) {
+        throw new ValidationError(lit`MustBeCanaryDeploymentStepBakeTime`, `Canary deployment stepBakeTime must be between 0 and 1440 minutes, received ${minutes} minutes`, this);
+      }
+    }
+  }
+
+  /**
+   * Validate Linear Configuration
+   */
+  private validateLinearConfiguration(config: TrafficShiftConfig) {
+    if (this.deploymentStrategy !== DeploymentStrategy.LINEAR) {
+      throw new ValidationError(lit`RequiresLinearConfigurationRequires`, 'Linear configuration requires deploymentStrategy to be set to LINEAR', this);
+    }
+
+    if (config.stepPercent !== undefined && !Token.isUnresolved(config.stepPercent)) {
+      if (!Number.isFinite(config.stepPercent) || config.stepPercent < 3.0 || config.stepPercent > 100.0) {
+        throw new ValidationError(lit`MustBeLinearDeploymentStepPercent`, `Linear deployment stepPercent must be between 3.0 and 100.0, received ${config.stepPercent}`, this);
+      }
+      if (!Number.isInteger(config.stepPercent * 10)) {
+        throw new ValidationError(lit`MustBeLinearDeploymentStepPercent`, `Linear deployment stepPercent must be a multiple of 0.1, received ${config.stepPercent}`, this);
+      }
+    }
+
+    if (config.stepBakeTime !== undefined && !config.stepBakeTime.isUnresolved()) {
+      const minutes = config.stepBakeTime.toMinutes({ integral: false });
+      if (!Number.isInteger(minutes)) {
+        throw new ValidationError(lit`MustBeLinearDeploymentStepBakeTime`, `Linear deployment stepBakeTime must be a whole number of minutes, received ${minutes} minutes`, this);
+      }
+      if (minutes < 0 || minutes > 1440) {
+        throw new ValidationError(lit`MustBeLinearDeploymentStepBakeTime`, `Linear deployment stepBakeTime must be between 0 and 1440 minutes, received ${minutes} minutes`, this);
+      }
+    }
   }
 
   /**
@@ -1071,7 +1505,7 @@ export abstract class BaseService extends Resource
       return props.deploymentController;
     }
     const disableCircuitBreakerEcsDeploymentControllerFeatureFlag =
-        FeatureFlags.of(this).isEnabled(cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER);
+      FeatureFlags.of(this).isEnabled(cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER);
 
     if (!disableCircuitBreakerEcsDeploymentControllerFeatureFlag && props.circuitBreaker) {
       // This is undesirable behavior (the controller is implicitly ECS anyway when left
@@ -1100,7 +1534,7 @@ export abstract class BaseService extends Resource
         resources: ['*'],
       }));
 
-      const logGroupArn = logConfiguration?.cloudWatchLogGroup ? `arn:${this.stack.partition}:logs:${this.env.region}:${this.env.account}:log-group:${logConfiguration.cloudWatchLogGroup.logGroupName}:*` : '*';
+      const logGroupArn = logConfiguration?.cloudWatchLogGroup ? `arn:${this.stack.partition}:logs:${this.env.region}:${this.env.account}:log-group:${logConfiguration.cloudWatchLogGroup.logGroupRef.logGroupName}:*` : '*';
       this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
         actions: [
           'logs:CreateLogStream',
@@ -1111,7 +1545,7 @@ export abstract class BaseService extends Resource
       }));
     }
 
-    if (logConfiguration?.s3Bucket?.bucketName) {
+    if (logConfiguration?.s3Bucket?.bucketRef.bucketName) {
       this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
         actions: [
           's3:GetBucketLocation',
@@ -1122,14 +1556,14 @@ export abstract class BaseService extends Resource
         actions: [
           's3:PutObject',
         ],
-        resources: [`arn:${this.stack.partition}:s3:::${logConfiguration.s3Bucket.bucketName}/*`],
+        resources: [`arn:${this.stack.partition}:s3:::${logConfiguration.s3Bucket.bucketRef.bucketName}/*`],
       }));
       if (logConfiguration.s3EncryptionEnabled) {
         this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
           actions: [
             's3:GetEncryptionConfiguration',
           ],
-          resources: [`arn:${this.stack.partition}:s3:::${logConfiguration.s3Bucket.bucketName}`],
+          resources: [`arn:${this.stack.partition}:s3:::${logConfiguration.s3Bucket.bucketRef.bucketName}`],
         }));
       }
     }
@@ -1214,16 +1648,20 @@ export abstract class BaseService extends Resource
    * });
    */
   public loadBalancerTarget(options: LoadBalancerTargetOptions): IEcsLoadBalancerTarget {
+    if (options.alternateTarget && !this.isEcsDeploymentController) {
+      throw new ValidationError(lit`RequiresDeploymentLifecycleHooks`, 'Deployment lifecycle hooks requires the ECS deployment controller.', this);
+    }
+
     const self = this;
     const target = this.taskDefinition._validateTarget(options);
     const connections = self.connections;
     return {
       attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
         targetGroup.registerConnectable(self, self.taskDefinition._portRangeFromPortMapping(target.portMapping));
-        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!);
+        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!, options.alternateTarget);
       },
       attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
-        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!);
+        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!, options.alternateTarget);
       },
       connections,
       attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
@@ -1278,7 +1716,7 @@ export abstract class BaseService extends Resource
    */
   public autoScaleTaskCount(props: appscaling.EnableScalingProps) {
     if (this.scalableTaskCount) {
-      throw new Error('AutoScaling of task count already enabled for this service');
+      throw new ValidationError(lit`AutoScalingTaskCountAlready`, 'AutoScaling of task count already enabled for this service', this);
     }
 
     return this.scalableTaskCount = new ScalableTaskCount(this, 'TaskCount', {
@@ -1298,17 +1736,17 @@ export abstract class BaseService extends Resource
   public enableCloudMap(options: CloudMapOptions): cloudmap.Service {
     const sdNamespace = options.cloudMapNamespace ?? this.cluster.defaultCloudMapNamespace;
     if (sdNamespace === undefined) {
-      throw new Error('Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.');
+      throw new ValidationError(lit`CannotEnableService`, 'Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.', this);
     }
 
     if (sdNamespace.type === cloudmap.NamespaceType.HTTP) {
-      throw new Error('Cannot enable DNS service discovery for HTTP Cloudmap Namespace.');
+      throw new ValidationError(lit`CannotEnableService`, 'Cannot enable DNS service discovery for HTTP Cloudmap Namespace.', this);
     }
 
     // Determine DNS type based on network mode
     const networkMode = this.taskDefinition.networkMode;
     if (networkMode === NetworkMode.NONE) {
-      throw new Error('Cannot use a service discovery if NetworkMode is None. Use Bridge, Host or AwsVpc instead.');
+      throw new ValidationError(lit`CannotServiceDiscovery`, 'Cannot use a service discovery if NetworkMode is None. Use Bridge, Host or AwsVpc instead.', this);
     }
 
     // Bridge or host network mode requires SRV records
@@ -1319,7 +1757,7 @@ export abstract class BaseService extends Resource
         dnsRecordType = cloudmap.DnsRecordType.SRV;
       }
       if (dnsRecordType !== cloudmap.DnsRecordType.SRV) {
-        throw new Error('SRV records must be used when network mode is Bridge or Host.');
+        throw new ValidationError(lit`MustBeRecordsUsedNetwork`, 'SRV records must be used when network mode is Bridge or Host.', this);
       }
     }
 
@@ -1330,7 +1768,7 @@ export abstract class BaseService extends Resource
       }
     }
 
-    const { containerName, containerPort } = determineContainerNameAndPort({
+    const { containerName, containerPort } = determineContainerNameAndPort(this, {
       taskDefinition: this.taskDefinition,
       dnsRecordType: dnsRecordType!,
       container: options.container,
@@ -1365,7 +1803,7 @@ export abstract class BaseService extends Resource
   public associateCloudMapService(options: AssociateCloudMapServiceOptions): void {
     const service = options.service;
 
-    const { containerName, containerPort } = determineContainerNameAndPort({
+    const { containerName, containerPort } = determineContainerNameAndPort(this, {
       taskDefinition: this.taskDefinition,
       dnsRecordType: service.dnsRecordType,
       container: options.container,
@@ -1414,7 +1852,7 @@ export abstract class BaseService extends Resource
    * This method is called to create a networkConfiguration.
    * @deprecated use configureAwsVpcNetworkingWithSecurityGroups instead.
    */
-  // eslint-disable-next-line max-len
+
   protected configureAwsVpcNetworking(vpc: ec2.IVpc, assignPublicIp?: boolean, vpcSubnets?: ec2.SubnetSelection, securityGroup?: ec2.ISecurityGroup) {
     if (vpcSubnets === undefined) {
       vpcSubnets = assignPublicIp ? { subnetType: ec2.SubnetType.PUBLIC } : {};
@@ -1428,7 +1866,7 @@ export abstract class BaseService extends Resource
       awsvpcConfiguration: {
         assignPublicIp: assignPublicIp ? 'ENABLED' : 'DISABLED',
         subnets: vpc.selectSubnets(vpcSubnets).subnetIds,
-        securityGroups: Lazy.list({ produce: () => [securityGroup!.securityGroupId] }),
+        securityGroups: [securityGroup!.securityGroupId],
       },
     };
   }
@@ -1469,13 +1907,13 @@ export abstract class BaseService extends Resource
    */
   private attachToELB(loadBalancer: elb.LoadBalancer, containerName: string, containerPort: number): void {
     if (this.taskDefinition.networkMode === NetworkMode.AWS_VPC) {
-      throw new Error('Cannot use a Classic Load Balancer if NetworkMode is AwsVpc. Use Host or Bridge instead.');
+      throw new ValidationError(lit`CannotClassicLoad`, 'Cannot use a Classic Load Balancer if NetworkMode is AwsVpc. Use Host or Bridge instead.', this);
     }
     if (this.taskDefinition.networkMode === NetworkMode.NONE) {
-      throw new Error('Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead.');
+      throw new ValidationError(lit`CannotClassicLoad`, 'Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead.', this);
     }
 
-    this.loadBalancers.push({
+    this._loadBalancers.push({
       loadBalancerName: loadBalancer.loadBalancerName,
       containerName,
       containerPort,
@@ -1485,15 +1923,21 @@ export abstract class BaseService extends Resource
   /**
    * Shared logic for attaching to an ELBv2
    */
-  private attachToELBv2(targetGroup: elbv2.ITargetGroup, containerName: string, containerPort: number): elbv2.LoadBalancerTargetProps {
+  private attachToELBv2(
+    targetGroup: elbv2.ITargetGroup,
+    containerName: string,
+    containerPort: number,
+    alternateTarget?: IAlternateTarget): elbv2.LoadBalancerTargetProps {
     if (this.taskDefinition.networkMode === NetworkMode.NONE) {
-      throw new Error('Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.');
+      throw new ValidationError(lit`CannotLoadBalancer`, 'Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.', this);
     }
 
-    this.loadBalancers.push({
+    const advancedConfiguration = alternateTarget?.bind(this);
+    this._loadBalancers.push({
       targetGroupArn: targetGroup.targetGroupArn,
       containerName,
       containerPort,
+      advancedConfiguration,
     });
 
     // Service creation can only happen after the load balancer has
@@ -1527,12 +1971,12 @@ export abstract class BaseService extends Resource
    * Associate Service Discovery (Cloud Map) service
    */
   private addServiceRegistry(registry: ServiceRegistry) {
-    if (this.serviceRegistries.length >= 1) {
-      throw new Error('Cannot associate with the given service discovery registry. ECS supports at most one service registry per service.');
+    if (this._serviceRegistries.length >= 1) {
+      throw new ValidationError(lit`CannotAssociateGiven`, 'Cannot associate with the given service discovery registry. ECS supports at most one service registry per service.', this);
     }
 
     const sr = this.renderServiceRegistry(registry);
-    this.serviceRegistries.push(sr);
+    this._serviceRegistries.push(sr);
   }
 
   /**
@@ -1540,9 +1984,9 @@ export abstract class BaseService extends Resource
    *  healthCheckGracePeriod is not already set
    */
   private evaluateHealthGracePeriod(providedHealthCheckGracePeriod?: Duration): IResolvable {
-    return Lazy.any({
-      produce: () => providedHealthCheckGracePeriod?.toSeconds() ?? (this.loadBalancers.length > 0 ? 60 : undefined),
-    });
+    return this._loadBalancers.derive(
+      lbs => providedHealthCheckGracePeriod?.toSeconds() ?? (lbs.length > 0 ? 60 : undefined),
+    );
   }
 
   private enableExecuteCommand() {
@@ -1569,15 +2013,23 @@ export abstract class BaseService extends Resource
   private renderTimeout(idleTimeout?: Duration, perRequestTimeout?: Duration): CfnService.TimeoutConfigurationProperty | undefined {
     if (!idleTimeout && !perRequestTimeout) return undefined;
     if (idleTimeout && idleTimeout.toMilliseconds() > 0 && idleTimeout.toMilliseconds() < Duration.seconds(1).toMilliseconds()) {
-      throw new Error(`idleTimeout must be at least 1 second or 0 to disable it, got ${idleTimeout.toMilliseconds()}ms.`);
+      throw new ValidationError(lit`MustBeIdleTimeoutLeastSecond`, `idleTimeout must be at least 1 second or 0 to disable it, got ${idleTimeout.toMilliseconds()}ms.`, this);
     }
     if (perRequestTimeout && perRequestTimeout.toMilliseconds() > 0 && perRequestTimeout.toMilliseconds() < Duration.seconds(1).toMilliseconds()) {
-      throw new Error(`perRequestTimeout must be at least 1 second or 0 to disable it, got ${perRequestTimeout.toMilliseconds()}ms.`);
+      throw new ValidationError(lit`MustBePerRequestTimeoutLeastSecond`, `perRequestTimeout must be at least 1 second or 0 to disable it, got ${perRequestTimeout.toMilliseconds()}ms.`, this);
     }
     return {
       idleTimeoutSeconds: idleTimeout?.toSeconds(),
       perRequestTimeoutSeconds: perRequestTimeout?.toSeconds(),
     };
+  }
+
+  /**
+   * Checks if the service is using the ECS deployment controller.
+   * @returns true if the service is using the ECS deployment controller or if no deployment controller is specified (defaults to ECS)
+   */
+  public isUsingECSDeploymentController(): boolean {
+    return this.isEcsDeploymentController;
   }
 }
 
@@ -1726,6 +2178,28 @@ export enum DeploymentControllerType {
 }
 
 /**
+ * The deployment stratergy to use for ECS controller
+ */
+export enum DeploymentStrategy {
+  /**
+   * Rolling update deployment
+   */
+  ROLLING = 'ROLLING',
+  /**
+   * Blue/green deployment
+   */
+  BLUE_GREEN = 'BLUE_GREEN',
+  /**
+   * Linear deployment with progressive traffic shifting
+   */
+  LINEAR = 'LINEAR',
+  /**
+   * Canary deployment with fixed traffic percentage testing
+   */
+  CANARY = 'CANARY',
+}
+
+/**
  * Propagate tags from either service or task definition
  */
 export enum PropagatedTagSource {
@@ -1758,21 +2232,21 @@ interface DetermineContainerNameAndPortOptions {
 /**
  * Determine the name of the container and port to target for the service registry.
  */
-function determineContainerNameAndPort(options: DetermineContainerNameAndPortOptions) {
+function determineContainerNameAndPort(scope: IConstruct, options: DetermineContainerNameAndPortOptions) {
   // If the record type is SRV, then provide the containerName and containerPort to target.
   // We use the name of the default container and the default port of the default container
   // unless the user specifies otherwise.
   if (options.dnsRecordType === cloudmap.DnsRecordType.SRV) {
     // Ensure the user-provided container is from the right task definition.
     if (options.container && options.container.taskDefinition != options.taskDefinition) {
-      throw new Error('Cannot add discovery for a container from another task definition');
+      throw new ValidationError(lit`CannotDiscoveryContainer`, 'Cannot add discovery for a container from another task definition', scope);
     }
 
     const container = options.container ?? options.taskDefinition.defaultContainer!;
 
     // Ensure that any port given by the user is mapped.
     if (options.containerPort && !container.portMappings.some(mapping => mapping.containerPort === options.containerPort)) {
-      throw new Error('Cannot add discovery for a container port that has not been mapped');
+      throw new ValidationError(lit`CannotDiscoveryContainer`, 'Cannot add discovery for a container port that has not been mapped', scope);
     }
 
     return {

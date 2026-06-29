@@ -3,7 +3,11 @@ import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'aws-custom-resource-cloudwatch-stack');
 

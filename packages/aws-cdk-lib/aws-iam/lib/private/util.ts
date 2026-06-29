@@ -1,19 +1,19 @@
-import { IConstruct } from 'constructs';
-import { captureStackTrace, DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, Lazy, StringConcat, Token, Tokenization } from '../../../core';
-import { IPolicy } from '../policy';
+import type { IConstruct } from 'constructs';
+import type { IPostProcessor, IResolvable, IResolveContext } from '../../../core';
+import {
+  DefaultTokenResolver,
+  StringConcat,
+  Token,
+  Tokenization,
+  UnscopedValidationError,
+  ValidationError,
+} from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
+import type { IPolicy } from '../policy';
 
 export const MAX_POLICY_NAME_LEN = 128;
 
 export const LITERAL_STRING_KEY = 'LiteralString';
-
-export function undefinedIfEmpty(f: () => string[]): string[] {
-  return Lazy.list({
-    produce: () => {
-      const array = f();
-      return (array && array.length > 0) ? array : undefined;
-    },
-  });
-}
 
 /**
  * Used to generate a unique policy name based on the policy resource construct.
@@ -60,7 +60,7 @@ export class AttachedPolicies {
     }
 
     if (this.policies.find(p => p.policyName === policy.policyName)) {
-      throw new Error(`A policy named "${policy.policyName}" is already attached`);
+      throw new ValidationError(lit`PolicyNamedAlreadyAttached`, `A policy named "${policy.policyName}" is already attached`, policy);
     }
 
     this.policies.push(policy);
@@ -79,7 +79,7 @@ export function mergePrincipal(target: { [key: string]: string[] }, source: { [k
 
   if ((LITERAL_STRING_KEY in source && targetKeys.some(k => k !== LITERAL_STRING_KEY)) ||
     (LITERAL_STRING_KEY in target && sourceKeys.some(k => k !== LITERAL_STRING_KEY))) {
-    throw new Error(`Cannot merge principals ${JSON.stringify(target)} and ${JSON.stringify(source)}; if one uses a literal principal string the other one must be empty`);
+    throw new UnscopedValidationError(lit`CannotMustBeCannotMerge`, `Cannot merge principals ${JSON.stringify(target)} and ${JSON.stringify(source)}; if one uses a literal principal string the other one must be empty`);
   }
 
   for (const key of sourceKeys) {
@@ -111,10 +111,9 @@ export class UniqueStringSet implements IResolvable, IPostProcessor {
     return Token.asList(new UniqueStringSet(fn));
   }
 
-  public readonly creationStack: string[];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
 
   private constructor(private readonly fn: () => string[]) {
-    this.creationStack = captureStackTrace();
   }
 
   public resolve(context: IResolveContext) {

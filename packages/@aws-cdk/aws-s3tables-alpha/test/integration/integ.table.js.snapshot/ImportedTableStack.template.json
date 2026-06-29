@@ -1,0 +1,81 @@
+{
+ "Resources": {
+  "ImportBucket84ED9370": {
+   "Type": "AWS::S3Tables::TableBucket",
+   "Properties": {
+    "TableBucketName": "import-table-bucket",
+    "UnreferencedFileRemoval": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ImportNamespace1D04D30B": {
+   "Type": "AWS::S3Tables::Namespace",
+   "Properties": {
+    "Namespace": "import_table_namespace",
+    "TableBucketARN": {
+     "Fn::GetAtt": [
+      "ImportBucket84ED9370",
+      "TableBucketARN"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CreatedTableC1AB30DA": {
+   "Type": "AWS::S3Tables::Table",
+   "Properties": {
+    "Namespace": "import_table_namespace",
+    "OpenTableFormat": "ICEBERG",
+    "TableBucketARN": {
+     "Fn::GetAtt": [
+      "ImportBucket84ED9370",
+      "TableBucketARN"
+     ]
+    },
+    "TableName": "import_test_table",
+    "WithoutMetadata": "Yes"
+   },
+   "DependsOn": [
+    "ImportNamespace1D04D30B"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

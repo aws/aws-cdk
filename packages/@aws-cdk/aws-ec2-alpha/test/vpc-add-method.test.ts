@@ -1,9 +1,9 @@
-import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
-import * as vpc from '../lib/vpc-v2';
-import { IpCidr, SubnetV2 } from '../lib/subnet-v2';
-import * as route from '../lib/route';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import { CfnEIP, SubnetType, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
+import * as route from '../lib/route';
+import { IpCidr, SubnetV2 } from '../lib/subnet-v2';
+import * as vpc from '../lib/vpc-v2';
 
 describe('Vpc V2 with full control', () => {
   let stack: cdk.Stack;
@@ -200,11 +200,7 @@ describe('Vpc V2 with full control', () => {
       ],
     });
     // EIP should be created when not provided
-    template.hasResource('AWS::EC2::EIP', {
-      DependsOn: [
-        'TestSubnetRouteTableAssociationFE267B30',
-      ],
-    });
+    template.hasResource('AWS::EC2::EIP', {});
   });
 
   test('EIP created for NAT Gateway has domain set to vpc', () => {
@@ -271,11 +267,7 @@ describe('Vpc V2 with full control', () => {
       ],
     });
     // EIP should be created when not provided
-    template.hasResource('AWS::EC2::EIP', {
-      DependsOn: [
-        'TestSubnetRouteTableAssociationFE267B30',
-      ],
-    });
+    template.hasResource('AWS::EC2::EIP', {});
   });
 
   test('addNatGateway fails for public gateway without IGW attached', () => {
@@ -582,7 +574,7 @@ describe('Vpc V2 with full control', () => {
       Tags: Match.arrayWith([
         {
           Key: 'Name',
-          Value: 'FirstNatGateway',
+          Value: 'SecondNatGateway',
         },
       ]),
     });
@@ -592,7 +584,7 @@ describe('Vpc V2 with full control', () => {
       Tags: Match.arrayWith([
         {
           Key: 'Name',
-          Value: 'SecondNatGateway',
+          Value: 'FirstNatGateway',
         },
       ]),
     });

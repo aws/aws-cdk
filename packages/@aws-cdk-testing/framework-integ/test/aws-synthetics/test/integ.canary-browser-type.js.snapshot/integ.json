@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "SyntheticsCanaryBrowserType/DefaultTest": {
+      "stacks": [
+        "SyntheticsCanaryBrowserTypeStack"
+      ],
+      "assertionStack": "SyntheticsCanaryBrowserType/DefaultTest/DeployAssert",
+      "assertionStackName": "SyntheticsCanaryBrowserTypeDefaultTestDeployAssertA8C77441"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

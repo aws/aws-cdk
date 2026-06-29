@@ -1,7 +1,8 @@
 import { PublicHostedZone } from 'aws-cdk-lib/aws-route53';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as ses from 'aws-cdk-lib/aws-ses';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as path from 'path';
@@ -36,7 +37,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 new integ.IntegTest(app, 'EmailIdentityFromArnInteg', {
   testCases: [new TestStack(app, 'cdk-ses-email-identity-from-arn-integ')],

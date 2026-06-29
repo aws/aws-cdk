@@ -2,7 +2,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as ga from 'aws-cdk-lib/aws-globalaccelerator';
 import { App, Stack } from 'aws-cdk-lib';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import * as endpoints from 'aws-cdk-lib/aws-globalaccelerator-endpoints';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
@@ -56,7 +56,11 @@ class GaStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new GaStack(app, 'integ-globalaccelerator');
 new IntegTest(app, 'GlobalAcceleratorInteg', {
   testCases: [stack],

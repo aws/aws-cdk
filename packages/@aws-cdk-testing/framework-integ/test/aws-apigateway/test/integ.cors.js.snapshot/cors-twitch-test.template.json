@@ -69,7 +69,10 @@
     "corsapitesttwitchOPTIONSE5EEB527",
     "corsapitesttwitchPOSTB52CFB02",
     "corsapitesttwitch0E3D1559"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "corsapitestDeploymentStageprod8F31F2AB": {
    "Type": "AWS::ApiGateway::Stage",
@@ -538,7 +541,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4f.zip"
+     "S3Key": "9ca27eaf027ba06cb7a2cff6b3c3acb7964b8f201f3c2ee45a8756f30064ba9b.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -547,7 +550,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "handlerServiceRole187D5A5A"

@@ -1,39 +1,16 @@
-import { Construct, IConstruct } from 'constructs';
+import { Construct } from 'constructs';
 import { AWS_CDK_CONSTRUCTOR_PROPS } from './analytics-data-source/classes';
 import { AWS_CDK_ENUMS } from './analytics-data-source/enums';
 import { Annotations } from './annotations';
-import { RESOURCE_SYMBOL, JSII_RUNTIME_SYMBOL } from './constants';
+import { JSII_RUNTIME_SYMBOL } from './constants';
 import { FeatureFlags } from './feature-flags';
-import { Resource } from './resource';
+import { MetadataType } from './metadata-type';
 import { Token } from './token';
 import { ENABLE_ADDITIONAL_METADATA_COLLECTION } from '../../cx-api';
 
-/**
- * Enumeration of metadata types used for tracking analytics in AWS CDK.
- */
-export enum MetadataType {
-  /**
-   * Metadata type for construct properties.
-   * This is used to represent properties of CDK constructs.
-   */
-  CONSTRUCT = 'aws:cdk:analytics:construct',
-
-  /**
-   * Metadata type for method properties.
-   * This is used to track parameters and details of CDK method calls.
-   */
-  METHOD = 'aws:cdk:analytics:method',
-
-  /**
-   * Metadata type for feature flags.
-   * This is used to track analytics related to feature flags in the CDK.
-   */
-  FEATURE_FLAG = 'aws:cdk:analytics:featureflag',
-}
-
-export function addConstructMetadata(scope: Construct, props: any): void {
+export function addConstructMetadata(construct: Construct, props: any): void {
   try {
-    addMetadata(scope, MetadataType.CONSTRUCT, props);
+    addPropsAsMetadata(construct, MetadataType.CONSTRUCT, props);
   } catch (e) {
     /**
      * Errors are ignored here.
@@ -43,13 +20,13 @@ export function addConstructMetadata(scope: Construct, props: any): void {
      * Without this, it will just fall back to the previous metadata
      * collection strategy.
      */
-    Annotations.of(scope).addWarningV2('@aws-cdk/core:addConstructMetadataFailed', `Failed to add construct metadata for node [${scope.node.id}]. Reason: ${e}`);
+    Annotations.of(construct).addWarningV2('@aws-cdk/core:addConstructMetadataFailed', `Failed to add construct metadata for node [${construct.node.id}]. Reason: ${e}`);
   }
 }
 
 export function addMethodMetadata(scope: Construct, methodName: string, props: any): void {
   try {
-    addMetadata(scope, MetadataType.METHOD, {
+    addPropsAsMetadata(scope, MetadataType.METHOD, {
       [methodName]: props,
     });
   } catch (e) {
@@ -69,43 +46,30 @@ export function addMethodMetadata(scope: Construct, methodName: string, props: a
  * Method decorator for tracking analytics metadata.
  * This decorator is used to track method calls in the CDK.
  */
-export function MethodMetadata(): MethodDecorator {
-  return function (_: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
+
+export function MethodMetadata<This extends Construct>() {
+  return function (originalMethod: any, context: ClassMethodDecoratorContext<This>) {
     // Ensure the Decorator is Only Applied to Methods
-    if (!descriptor || typeof descriptor.value !== 'function') {
-      return descriptor;
+    if (typeof originalMethod !== 'function') {
+      return originalMethod;
     }
-    const originalMethod = descriptor.value;
 
-    descriptor.value = function (...args: any[]) {
-      const scope = this as Construct;
-      if (scope instanceof Construct) {
-        addMethodMetadata(scope, propertyKey.toString(), args);
+    return function(this: This, ...args: any[]) {
+      if (this instanceof Construct) {
+        addMethodMetadata(this, context.name.toString(), args);
       }
-
       return originalMethod.apply(this, args);
     };
-
-    return descriptor;
   };
 }
 
-export function addMetadata(scope: Construct, type: MetadataType, props: any): void {
-  const telemetryEnabled = FeatureFlags.of(scope).isEnabled(ENABLE_ADDITIONAL_METADATA_COLLECTION) ?? false;
+export function addPropsAsMetadata(construct: Construct, type: MetadataType, props: any): void {
+  const telemetryEnabled = FeatureFlags.of(construct).isEnabled(ENABLE_ADDITIONAL_METADATA_COLLECTION) ?? false;
   if (!telemetryEnabled) {
     return;
   }
-  const fqn: string = Object.getPrototypeOf(scope).constructor[JSII_RUNTIME_SYMBOL].fqn;
-  scope.node.addMetadata(type, redactMetadata(fqn, props));
-}
-
-/**
- * Check whether the given construct is a Resource. Note that this is
- * duplicated function from 'core/lib/resource.ts' to avoid circular
- * dependencies in imports.
- */
-export function isResource(construct: IConstruct): construct is Resource {
-  return construct !== null && typeof(construct) === 'object' && RESOURCE_SYMBOL in construct;
+  const fqn: string = (construct.constructor as any)[JSII_RUNTIME_SYMBOL].fqn;
+  construct.node.addMetadata(type, redactMetadata(fqn, props));
 }
 
 /**

@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "3f1eb2de618e508e49f477f5b2291de001df6e377ff5b351a3815cecb1023242": {
+      "displayName": "aws-cdk-elbv2-lambda-multi-value-headers Template",
+      "source": {
+        "path": "aws-cdk-elbv2-lambda-multi-value-headers.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-0a225b06": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3f1eb2de618e508e49f477f5b2291de001df6e377ff5b351a3815cecb1023242.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

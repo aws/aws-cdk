@@ -4,7 +4,11 @@ import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const repositoryName = 'my-repo';
 
 const lookupStack = new Stack(app, 'EcrRepoLookupStack', {

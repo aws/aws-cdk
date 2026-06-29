@@ -1,5 +1,5 @@
-import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as iot from '../lib';
 
@@ -11,6 +11,9 @@ class TestStack extends cdk.Stack {
 
     const config = new iot.AccountAuditConfiguration(this, 'AuditConfiguration', {
       targetTopic,
+      checkConfiguration: {
+        deviceCertificateAgeCheckDuration: cdk.Duration.days(1229),
+      },
     });
 
     new iot.ScheduledAudit(this, 'DailyAudit', {

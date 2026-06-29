@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import { IModel } from './model-base';
+import type { Construct } from 'constructs';
+import type { IModel } from './model-base';
 import { ArnFormat, Stack } from '../../core';
 
 /**
@@ -94,6 +94,9 @@ export class FoundationModelIdentifier {
 
   /** Base model "amazon.nova-premier-v1:0". */
   public static readonly AMAZON_NOVA_PREMIER_V1_0 = new FoundationModelIdentifier('amazon.nova-premier-v1:0');
+
+  /** amazon.nova-2-multimodal-embeddings-v1:0 */
+  public static readonly AMAZON_NOVA_2_MULTIMODAL_EMBEDDINGS_V1_0 = new FoundationModelIdentifier('amazon.nova-2-multimodal-embeddings-v1:0');
 
   /**
    * Base model "ai21.j2-mid".
@@ -224,6 +227,12 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-3-7-sonnet-20250219-v1:0" */
   public static readonly ANTHROPIC_CLAUDE_3_7_SONNET_20250219_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-7-sonnet-20250219-v1:0');
 
+  /** Base model "anthropic.claude-sonnet-4-20250514-v1:0" */
+  public static readonly ANTHROPIC_CLAUDE_SONNET_4_20250514_V1_0 = new FoundationModelIdentifier('anthropic.claude-sonnet-4-20250514-v1:0');
+
+  /** Base model "anthropic.claude-sonnet-4-5-20250929-v1:0" */
+  public static readonly ANTHROPIC_CLAUDE_SONNET_4_5_20250929_V1_0 = new FoundationModelIdentifier('anthropic.claude-sonnet-4-5-20250929-v1:0');
+
   /** Base model "anthropic.claude-3-haiku-20240307-v1:0". */
   public static readonly ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-haiku-20240307-v1:0');
 
@@ -236,6 +245,9 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-3-haiku-20240307-v1:0:200k" */
   public static readonly ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0_200K = new FoundationModelIdentifier('anthropic.claude-3-haiku-20240307-v1:0:200k');
 
+  /** Base model "anthropic.claude-haiku-4-5-20251001-v1:0" */
+  public static readonly ANTHROPIC_CLAUDE_HAIKU_4_5_20251001_V1_0 = new FoundationModelIdentifier('anthropic.claude-haiku-4-5-20251001-v1:0');
+
   /** Base model "anthropic.claude-3-opus-20240229-v1:0" */
   public static readonly ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-opus-20240229-v1:0');
 
@@ -247,6 +259,27 @@ export class FoundationModelIdentifier {
 
   /** Base model "anthropic.claude-3-opus-20240229-v1:0:200k". */
   public static readonly ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_200K = new FoundationModelIdentifier('anthropic.claude-3-opus-20240229-v1:0:200k');
+
+  /** Base model "anthropic.claude-opus-4-20250514-v1:0" */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_4_20250514_V1_0 = new FoundationModelIdentifier('anthropic.claude-opus-4-20250514-v1:0');
+
+  /** Base model "anthropic.claude-opus-4-1-20250805-v1:0". */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_4_1_20250805_V1_0 = new FoundationModelIdentifier('anthropic.claude-opus-4-1-20250805-v1:0');
+
+  /** Base model "anthropic.claude-opus-4-5-20251101-v1:0". */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_4_5_20251101_V1_0 = new FoundationModelIdentifier('anthropic.claude-opus-4-5-20251101-v1:0');
+
+  /** Base model "anthropic.claude-opus-4-6-v1". */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_4_6_V1 = new FoundationModelIdentifier('anthropic.claude-opus-4-6-v1');
+
+  /** Base model "anthropic.claude-opus-4-7". */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_4_7 = new FoundationModelIdentifier('anthropic.claude-opus-4-7');
+
+  /** Base model "anthropic.claude-opus-4-8". */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_4_8 = new FoundationModelIdentifier('anthropic.claude-opus-4-8');
+
+  /** Base model "anthropic.claude-sonnet-4-6". */
+  public static readonly ANTHROPIC_CLAUDE_SONNET_4_6 = new FoundationModelIdentifier('anthropic.claude-sonnet-4-6');
 
   /**
    * Base model "anthropic.claude-instant-v1".
@@ -293,8 +326,20 @@ export class FoundationModelIdentifier {
   /** Base model "cohere.embed-multilingual-v3:0:512". */
   public static readonly COHERE_EMBED_MULTILINGUAL_V3_0_512 = new FoundationModelIdentifier('cohere.embed-multilingual-v3:0:512');
 
+  /** Base model "cohere.embed-v4:0". */
+  public static readonly COHERE_EMBED_V4 = new FoundationModelIdentifier('cohere.embed-v4:0');
+
   /** Base model "deepseek.r1-v1:0". */
   public static readonly DEEP_SEEK_R1_V1_0 = new FoundationModelIdentifier('deepseek.r1-v1:0');
+
+  /** Base model "deepseek.v3-v1:0" */
+  public static readonly DEEP_SEEK_V3_V1_0 = new FoundationModelIdentifier('deepseek.v3-v1:0');
+
+  /** Base model "openai.gpt-oss-120b-1:0". */
+  public static readonly OPENAI_GPT_OSS_120B_1 = new FoundationModelIdentifier('openai.gpt-oss-120b-1:0');
+
+  /** Base model "openai.gpt-oss-20b-1:0". */
+  public static readonly OPENAI_GPT_OSS_20B_1 = new FoundationModelIdentifier('openai.gpt-oss-20b-1:0');
 
   /** Base model "luma.ray-v2:0". */
   public static readonly LUMA_RAY_V2_0 = new FoundationModelIdentifier('luma.ray-v2:0');
@@ -389,6 +434,15 @@ export class FoundationModelIdentifier {
   /** Base model "meta.llama4-scout-17b-instruct-v1:0". */
   public static readonly META_LLAMA_4_SCOUT_17B_INSTRUCT_V1_0 = new FoundationModelIdentifier('meta.llama4-scout-17b-instruct-v1:0');
 
+  /** Base model "minimax.minimax-m2". */
+  public static readonly MINIMAX_MINIMAX_M2 = new FoundationModelIdentifier('minimax.minimax-m2');
+
+  /** Base model "minimax.minimax-m2.1". */
+  public static readonly MINIMAX_MINIMAX_M2_1 = new FoundationModelIdentifier('minimax.minimax-m2.1');
+
+  /** Base model "minimax.minimax-m2.5". */
+  public static readonly MINIMAX_MINIMAX_M2_5 = new FoundationModelIdentifier('minimax.minimax-m2.5');
+
   /** Base model "mistral.mistral-7b-instruct-v0:2". */
   public static readonly MISTRAL_MISTRAL_7B_INSTRUCT_V0_2 = new FoundationModelIdentifier('mistral.mistral-7b-instruct-v0:2');
 
@@ -406,6 +460,18 @@ export class FoundationModelIdentifier {
 
   /** Base model "mistral.pixtral-large-2502-v1:0". */
   public static readonly MISTRAL_PIXTRAL_LARGE_2502_V1_0 = new FoundationModelIdentifier('mistral.pixtral-large-2502-v1:0');
+
+  /** Base Model "qwen.qwen3-32b-v1:0" */
+  public static readonly QWEN_QWEN3_32B_V1_0 = new FoundationModelIdentifier('qwen.qwen3-32b-v1:0');
+
+  /** Base Model "qwen.qwen3-235b-a22b-2507-v1:0" */
+  public static readonly QWEN_QWEN3_235B_A22B_2507_V1_0 = new FoundationModelIdentifier('qwen.qwen3-235b-a22b-2507-v1:0');
+
+  /** Base Model "qwen.qwen3-coder-30b-a3b-v1:0" */
+  public static readonly QWEN_QWEN3_CODER_30B_A3B_V1_0 = new FoundationModelIdentifier('qwen.qwen3-coder-30b-a3b-v1:0');
+
+  /** Base Model "qwen.qwen3-coder-480b-a35b-v1:0" */
+  public static readonly QWEN_QWEN3_CODER_480B_A35B_V1_0 = new FoundationModelIdentifier('qwen.qwen3-coder-480b-a35b-v1:0');
 
   /**
    * Base model "stability.stable-diffusion-xl".
@@ -454,6 +520,24 @@ export class FoundationModelIdentifier {
 
   /** Base model "writer.palmyra-x5-v1:0". */
   public static readonly WRITER_PALMYRA_X5_V1_0 = new FoundationModelIdentifier('writer.palmyra-x5-v1:0');
+
+  /** Base model "twelvelabs.marengo-embed-2-7-v1:0". */
+  public static readonly TWELVELABS_MARENGO_EMBED_2_7_V1_0 = new FoundationModelIdentifier('twelvelabs.marengo-embed-2-7-v1:0');
+
+  /** Base model "twelvelabs.pegasus-1-2-v1:0". */
+  public static readonly TWELVELABS_PEGASUS_1_2_V1_0 = new FoundationModelIdentifier('twelvelabs.pegasus-1-2-v1:0');
+
+  /** Basic model "twelvelabs.marengo-embed-3-0-v1:0" */
+  public static readonly TWELVELABS_MARENGO_EMBED_3_0_V1_0 = new FoundationModelIdentifier('twelvelabs.marengo-embed-3-0-v1:0');
+
+  /** Base model "zai.glm-4.7". */
+  public static readonly ZAI_GLM_4_7 = new FoundationModelIdentifier('zai.glm-4.7');
+
+  /** Base model "zai.glm-4.7-flash". */
+  public static readonly ZAI_GLM_4_7_FLASH = new FoundationModelIdentifier('zai.glm-4.7-flash');
+
+  /** Base model "zai.glm-5". */
+  public static readonly ZAI_GLM_5 = new FoundationModelIdentifier('zai.glm-5');
 
   /**
    * Constructor for foundation model identifier

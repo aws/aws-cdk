@@ -13,6 +13,7 @@ class DistributedMapStack extends cdk.Stack {
     super(scope, id, props);
 
     this.bucket = new s3.Bucket(this, 'Bucket', {
+      autoDeleteObjects: true,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
@@ -41,7 +42,7 @@ class DistributedMapStack extends cdk.Stack {
     });
 
     this.stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-      definition: distributedMap,
+      definitionBody: sfn.DefinitionBody.fromChainable(distributedMap),
       queryLanguage: sfn.QueryLanguage.JSONATA,
     });
   }

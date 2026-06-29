@@ -3,7 +3,7 @@ import { buildComponentName, toLambdaRuntime } from '../../../lib/custom-resourc
 
 describe('to lambda runtime', () => {
   test.each([
-    [Runtime.NODEJS_18_X, 'lambda.Runtime.NODEJS_18_X'],
+    [Runtime.NODEJS_20_X, 'lambda.Runtime.NODEJS_20_X'],
     [Runtime.PYTHON_3_11, 'lambda.Runtime.PYTHON_3_11'],
   ])('to lambda %s runtime', (runtime, expectedRuntime) => {
     expect(toLambdaRuntime(runtime)).toEqual(expectedRuntime);

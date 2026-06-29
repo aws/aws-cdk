@@ -4,6 +4,8 @@ import * as ssm from '../../aws-ssm';
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
 import { Construct } from 'constructs';
+import { UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * The ECS-optimized AMI variant to use. For more information, see
@@ -36,6 +38,7 @@ export enum AmiHardwareType {
  * ECS-optimized Windows version list
  */
 export enum WindowsOptimizedVersion {
+  SERVER_2025 = '2025',
   SERVER_2022 = '2022',
   SERVER_2019 = '2019',
   SERVER_2016 = '2016',
@@ -97,6 +100,13 @@ export interface EcsOptimizedAmiProps {
    * @default false
    */
   readonly cachedInContext?: boolean;
+
+  /**
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
+   */
+  readonly additionalCacheKey?: string;
 }
 
 /*
@@ -114,6 +124,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
 
   private readonly amiParameterName: string;
   private readonly cachedInContext: boolean;
+  private readonly additionalCacheKey?: string;
 
   /**
    * Constructs a new instance of the EcsOptimizedAmi class.
@@ -122,15 +133,15 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
     this.hwType = (props && props.hardwareType) || AmiHardwareType.STANDARD;
     if (props && props.generation) { // generation defined in the props object
       if (props.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX && this.hwType !== AmiHardwareType.STANDARD) {
-        throw new Error('Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead');
+        throw new UnscopedValidationError(lit`AmazonLinuxDoesSupport`, 'Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead');
       } else if (props.windowsVersion) {
-        throw new Error('"windowsVersion" and Linux image "generation" cannot be both set');
+        throw new UnscopedValidationError(lit`WindowsVersionLinuxImageGeneration`, '"windowsVersion" and Linux image "generation" cannot be both set');
       } else {
         this.generation = props.generation;
       }
     } else if (props && props.windowsVersion) {
       if (this.hwType !== AmiHardwareType.STANDARD) {
-        throw new Error('Windows Server does not support special hardware type');
+        throw new UnscopedValidationError(lit`WindowsServerDoesSupport`, 'Windows Server does not support special hardware type');
       } else {
         this.windowsVersion = props.windowsVersion;
       }
@@ -152,13 +163,18 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
       + (this.windowsVersion ? 'image_id' : 'recommended/image_id');
 
     this.cachedInContext = props?.cachedInContext ?? false;
+    this.additionalCacheKey = props?.additionalCacheKey;
+
+    if (this.additionalCacheKey !== undefined && !this.cachedInContext) {
+      throw new UnscopedValidationError(lit`AdditionalCacheKeyCachedInContextFalse`, '"additionalCacheKey" was set but "cachedInContext" is false, so it will have no effect');
+    }
   }
 
   /**
    * Return the correct image
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
-    const ami = lookupImage(scope, this.cachedInContext, this.amiParameterName);
+    const ami = lookupImage(scope, this.cachedInContext, this.amiParameterName, this.additionalCacheKey);
 
     const osType = this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX;
     return {
@@ -193,6 +209,13 @@ export interface EcsOptimizedImageOptions {
    * @default false
    */
   readonly cachedInContext?: boolean;
+
+  /**
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
+   */
+  readonly additionalCacheKey?: string;
 }
 
 /**
@@ -253,6 +276,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
 
   private readonly amiParameterName: string;
   private readonly cachedInContext: boolean;
+  private readonly additionalCacheKey?: string;
 
   /**
    * Constructs a new instance of the EcsOptimizedAmi class.
@@ -265,7 +289,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
     } else if (props.generation) {
       this.generation = props.generation;
     } else {
-      throw new Error('This error should never be thrown');
+      throw new UnscopedValidationError(lit`ErrorShouldNeverThrown`, 'This error should never be thrown');
     }
 
     // set the SSM parameter name
@@ -280,14 +304,19 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
       + (this.hwType === AmiHardwareType.NEURON ? 'inf/' : '')
       + (this.windowsVersion ? 'image_id' : 'recommended/image_id');
 
-    this.cachedInContext = props?.cachedInContext ?? false;
+    this.cachedInContext = props.cachedInContext ?? false;
+    this.additionalCacheKey = props.additionalCacheKey;
+
+    if (this.additionalCacheKey !== undefined && !this.cachedInContext) {
+      throw new UnscopedValidationError(lit`AdditionalCacheKeyCachedInContextFalse`, '"additionalCacheKey" was set but "cachedInContext" is false, so it will have no effect');
+    }
   }
 
   /**
    * Return the correct image
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
-    const ami = lookupImage(scope, this.cachedInContext, this.amiParameterName);
+    const ami = lookupImage(scope, this.cachedInContext, this.amiParameterName, this.additionalCacheKey);
 
     const osType = this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX;
     return {
@@ -358,6 +387,13 @@ export interface BottleRocketImageProps {
    * @default false
    */
   readonly cachedInContext?: boolean;
+
+  /**
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
+   */
+  readonly additionalCacheKey?: string;
 }
 
 /**
@@ -384,6 +420,8 @@ export class BottleRocketImage implements ec2.IMachineImage {
 
   private readonly cachedInContext: boolean;
 
+  private readonly additionalCacheKey?: string;
+
   /**
    * Constructs a new instance of the BottleRocketImage class.
    */
@@ -395,13 +433,18 @@ export class BottleRocketImage implements ec2.IMachineImage {
     this.amiParameterName = `/aws/service/bottlerocket/${this.variant}/${this.architecture}/latest/image_id`;
 
     this.cachedInContext = props.cachedInContext ?? false;
+    this.additionalCacheKey = props.additionalCacheKey;
+
+    if (this.additionalCacheKey !== undefined && !this.cachedInContext) {
+      throw new UnscopedValidationError(lit`AdditionalCacheKeyCachedInContextFalse`, '"additionalCacheKey" was set but "cachedInContext" is false, so it will have no effect');
+    }
   }
 
   /**
    * Return the correct image
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
-    const ami = lookupImage(scope, this.cachedInContext, this.amiParameterName);
+    const ami = lookupImage(scope, this.cachedInContext, this.amiParameterName, this.additionalCacheKey);
 
     return {
       imageId: ami,
@@ -417,8 +460,8 @@ Object.defineProperty(BottleRocketImage.prototype, BR_IMAGE_SYMBOL, {
   writable: false,
 });
 
-function lookupImage(scope: Construct, cachedInContext: boolean | undefined, parameterName: string) {
+function lookupImage(scope: Construct, cachedInContext: boolean | undefined, parameterName: string, additionalCacheKey?: string) {
   return cachedInContext
-    ? ssm.StringParameter.valueFromLookup(scope, parameterName)
+    ? ssm.StringParameter.valueFromLookup(scope, parameterName, undefined, { additionalCacheKey })
     : ssm.StringParameter.valueForTypedStringParameterV2(scope, parameterName, ssm.ParameterValueType.AWS_EC2_IMAGE_ID);
 }

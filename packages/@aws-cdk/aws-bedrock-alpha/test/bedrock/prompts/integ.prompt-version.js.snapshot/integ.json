@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "BedrockPromptVersion/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-prompt-version-1"
+      ],
+      "assertionStack": "BedrockPromptVersion/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockPromptVersionDefaultTestDeployAssertC409C241"
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

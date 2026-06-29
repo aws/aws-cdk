@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { Stack, App, StackProps, RemovalPolicy } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { Stack, App, RemovalPolicy } from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import type { Construct } from 'constructs';
 import * as redshift from '../lib';
 
 class RedshiftEnv extends Stack {
@@ -25,6 +26,7 @@ class RedshiftEnv extends Stack {
       },
       defaultDatabaseName: 'database',
       subnetGroup,
+      nodeType: redshift.NodeType.RA3_LARGE,
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
@@ -39,9 +41,14 @@ class RedshiftEnv extends Stack {
 const app = new App({
   postCliContext: {
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },
 });
 
+const stack = new Stack(app, 'aws-cdk-redshift-cluster-database');
+
+new RedshiftEnv(stack, 'redshift-exclude-characters-integ');
+
 new integ.IntegTest(app, 'ExcludeCharactersInteg', {
-  testCases: [new RedshiftEnv(app, 'redshift-exclude-characters-integ')],
+  testCases: [stack],
 });

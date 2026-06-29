@@ -1,16 +1,33 @@
-import { Resource, TypeDefinition } from '@aws-cdk/service-spec-types';
-import { ClassType, Module, Stability, StructType } from '@cdklabs/typewriter';
+import type { Resource, TypeDefinition } from '@aws-cdk/service-spec-types';
+import type { ClassType, Expression, PropertySpec } from '@cdklabs/typewriter';
+import { expr, FreeFunction, Module, Stability, stmt, StructType, Type } from '@cdklabs/typewriter';
 import { CloudFormationMapping } from './cloudformation-mapping';
-import { TypeConverter } from './type-converter';
+import type { RelationshipDecider } from './relationship-decider';
+import type { TypeConverter } from './type-converter';
 import { TypeDefinitionDecider } from './typedefinition-decider';
-import { cloudFormationDocLink, structNameFromTypeDefinition } from '../naming';
+import type { TypeDefProperty } from './typedefinition-decider';
+import { cloudFormationDocLink, flattenFunctionNameFromType, structNameFromTypeDefinition } from '../naming';
 import { splitDocumentation } from '../util';
+import { CDK_CORE } from './cdk';
 
 export interface TypeDefinitionStructOptions {
   readonly typeDefinition: TypeDefinition;
   readonly converter: TypeConverter;
   readonly resource: Resource;
   readonly resourceClass: ClassType;
+  readonly relationshipDecider: RelationshipDecider;
+  /**
+   * Add the cfn producer helpers.
+   * Validator + ToCloudFormation
+   * @default true
+   */
+  readonly cfnProducer?: boolean;
+  /**
+   * Add the cfn parser helpers.
+   * fromCloudFormation
+   * @default true
+   */
+  readonly cfnParser?: boolean;
 }
 
 /**
@@ -23,6 +40,8 @@ export class TypeDefinitionStruct extends StructType {
   private readonly converter: TypeConverter;
   private readonly resource: Resource;
   private readonly module: Module;
+  private readonly relationshipDecider: RelationshipDecider;
+  private readonly options: TypeDefinitionStructOptions;
 
   constructor(options: TypeDefinitionStructOptions) {
     super(options.resourceClass, {
@@ -38,24 +57,96 @@ export class TypeDefinitionStruct extends StructType {
       },
     });
 
+    this.options = options;
     this.typeDefinition = options.typeDefinition;
     this.converter = options.converter;
     this.resource = options.resource;
+    this.relationshipDecider = options.relationshipDecider;
+    this.options = options;
 
     this.module = Module.of(this);
   }
 
   public build() {
-    const cfnMapping = new CloudFormationMapping(this.module, this.converter);
+    const cfnMapping = new CloudFormationMapping(this.module, this.converter, {
+      resourceType: this.resource.cloudFormationType,
+      propTypeName: this.typeDefinition.name,
+    });
 
-    const decider = new TypeDefinitionDecider(this.resource, this.typeDefinition, this.converter);
+    const decider = new TypeDefinitionDecider(this.resource, this.typeDefinition, this.converter, this.relationshipDecider);
 
     for (const prop of decider.properties) {
       this.addProperty(prop.propertySpec);
       cfnMapping.add(prop.cfnMapping);
     }
 
-    cfnMapping.makeCfnProducer(this.module, this);
-    cfnMapping.makeCfnParser(this.module, this);
+    let needsResolverFunction = false;
+    for (const [propName, prop] of Object.entries(this.typeDefinition.properties)) {
+      needsResolverFunction = needsResolverFunction
+        ? needsResolverFunction
+        : this.relationshipDecider.needsFlatteningFunction(propName, prop);
+    }
+
+    if (needsResolverFunction) {
+      const resolverFunction = new FreeFunction(this.module, {
+        name: flattenFunctionNameFromType(this),
+        returnType: Type.unionOf(this.type, CDK_CORE.IResolvable),
+        parameters: [{ name: 'props', type: Type.unionOf(this.type, CDK_CORE.IResolvable) }],
+      });
+
+      const propsParam = resolverFunction.parameters[0];
+      resolverFunction.addBody(
+        stmt.if_(CDK_CORE.isResolvableObject(propsParam))
+          .then(stmt.ret(propsParam)),
+
+        stmt.ret(expr.object(
+          Object.fromEntries(
+            decider.properties.map(prop => [
+              prop.propertySpec.name,
+              this.resolverExpression(prop, propsParam),
+            ]),
+          ),
+        )),
+      );
+    }
+
+    if (this.options.cfnProducer ?? true) {
+      cfnMapping.makeCfnProducer(this.module, this);
+    }
+    if (this.options.cfnParser ?? true) {
+      cfnMapping.makeCfnParser(this.module, this);
+    }
+  }
+
+  protected resolverExpression(prop: TypeDefProperty, propsParam: Expression): Expression {
+    return prop.resolver(propsParam);
+  }
+}
+
+/**
+ * Same as TypeDefinitionStruct, but all props are optional.
+ */
+export class PartialTypeDefinitionStruct extends TypeDefinitionStruct {
+  /**
+   * Change property spec to make every prop optional.
+   */
+  public addProperty(prop: PropertySpec) {
+    return super.addProperty({
+      ...prop,
+      optional: true,
+    });
+  }
+
+  protected resolverExpression(prop: TypeDefProperty, propsParam: Expression): Expression {
+    const propValue = expr.get(propsParam, prop.propertySpec.name);
+    const resolved = prop.resolver(propsParam);
+    // All properties are optional in partial structs, so we need to guard against undefined.
+    // Reference equality is safe here: when a property has no relationship to resolve,
+    // prop.resolver returns the exact same expr.get() object as propValue, so we can
+    // skip the redundant ternary guard for simple pass-through properties.
+    if (resolved === propValue) {
+      return resolved;
+    }
+    return expr.cond(expr.not(propValue)).then(expr.UNDEFINED).else(resolved);
   }
 }

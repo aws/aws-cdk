@@ -1,8 +1,9 @@
+import { CfnPlaybackKeyPair } from 'aws-cdk-lib/aws-ivs';
 import * as core from 'aws-cdk-lib/core';
 import { Lazy, Names } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import { CfnPlaybackKeyPair } from 'aws-cdk-lib/aws-ivs';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
 
 /**
  * Represents an IVS Playback Key Pair
@@ -45,7 +46,10 @@ export interface PlaybackKeyPairProps {
 /**
   A new IVS Playback Key Pair
  */
+@propertyInjectable
 export class PlaybackKeyPair extends PlaybackKeyPairBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ivs-alpha.PlaybackKeyPair';
   public readonly playbackKeyPairArn: string;
 
   /**

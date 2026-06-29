@@ -1,3 +1,6 @@
+import { UnscopedValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
+
 export type IntrinsicExpression = StringLiteralExpression | PathExpression | FnCallExpression;
 export type TopLevelIntrinsic = PathExpression | FnCallExpression;
 
@@ -252,7 +255,7 @@ export class IntrinsicParser {
   }
 
   private raiseError(message: string): never {
-    throw new Error(`Invalid JSONPath expression: ${message} at index ${this.i} in ${JSON.stringify(this.expression)}`);
+    throw new UnscopedValidationError(lit`InvalidJsonPathExpression`, `Invalid JSONPath expression: ${message} at index ${this.i} in ${JSON.stringify(this.expression)}`);
   }
 }
 

@@ -1,12 +1,14 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as cdk from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import { IDatabaseCluster } from './cluster';
-import { Endpoint } from './endpoint';
 import { CfnDBInstance } from 'aws-cdk-lib/aws-neptune';
-import { IParameterGroup } from './parameter-group';
+import * as cdk from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import type { IDatabaseCluster } from './cluster';
+import { Endpoint } from './endpoint';
+import type { IParameterGroup } from './parameter-group';
 
 /**
  * Possible Instances Types to use in Neptune cluster
@@ -299,7 +301,7 @@ export class InstanceType {
     if (cdk.Token.isUnresolved(instanceType) || instanceType.startsWith('db.')) {
       this._instanceType = instanceType;
     } else {
-      throw new Error(`instance type must start with 'db.'; (got ${instanceType})`);
+      throw new cdk.UnscopedValidationError(lit`InstanceTypeMustStartWithDb`, `instance type must start with 'db.'; (got ${instanceType})`);
     }
   }
 }
@@ -471,7 +473,10 @@ export abstract class DatabaseInstanceBase extends cdk.Resource implements IData
  *
  * @resource AWS::Neptune::DBInstance
  */
+@propertyInjectable
 export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseInstance {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-neptune-alpha.DatabaseInstance';
   /**
    * The instance's database cluster
    */

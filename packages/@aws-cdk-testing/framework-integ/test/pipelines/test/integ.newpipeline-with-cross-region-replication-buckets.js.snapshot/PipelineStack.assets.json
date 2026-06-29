@@ -1,13 +1,14 @@
 {
-  "version": "36.0.0",
+  "version": "53.0.0",
   "files": {
     "6a11c4d5361c8eece5e172f0d62861a0215126cee7e79377251b0920254bf7b9": {
+      "displayName": "PipelineStack Template",
       "source": {
         "path": "PipelineStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-us-east-1": {
+        "current_account-us-east-1-01ee831a": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
           "objectKey": "6a11c4d5361c8eece5e172f0d62861a0215126cee7e79377251b0920254bf7b9.json",
           "region": "us-east-1",

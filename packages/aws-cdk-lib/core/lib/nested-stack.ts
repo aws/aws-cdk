@@ -3,17 +3,21 @@ import { Construct, Node } from 'constructs';
 import { FileAssetPackaging } from './assets';
 import { Fn } from './cfn-fn';
 import { Aws } from './cfn-pseudo';
-import { CfnResource } from './cfn-resource';
+import type { CfnResource } from './cfn-resource';
 import { CfnStack } from './cloudformation.generated';
-import { Duration } from './duration';
+import type { Duration } from './duration';
+import { UnscopedValidationError } from './errors';
+import type { IBox } from './helpers-internal/box';
+import { Box } from './helpers-internal/box';
 import { Lazy } from './lazy';
 import { Names } from './names';
 import { RemovalPolicy } from './removal-policy';
-import { IResolveContext } from './resolvable';
+import type { IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { NestedStackSynthesizer } from './stack-synthesizers';
 import { Token } from './token';
 import * as cxapi from '../../cx-api';
+import { lit } from './private/literal-string';
 
 const NESTED_STACK_SYMBOL = Symbol.for('@aws-cdk/core.NestedStack');
 
@@ -75,6 +79,17 @@ export interface NestedStackProps {
    * @default - No description.
    */
   readonly description?: string;
+
+  /**
+   * Enable this flag to suppress indentation in generated CloudFormation templates.
+   *
+   * If not specified, the value of the `@aws-cdk/core:suppressTemplateIndentation`
+   * context key will be used. If that is not specified, then the
+   * default value `false` will be used.
+   *
+   * @default - the value of `@aws-cdk/core:suppressTemplateIndentation`, or `false` if that is not set.
+   */
+  readonly suppressTemplateIndentation?: boolean;
 }
 
 /**
@@ -109,7 +124,7 @@ export class NestedStack extends Stack {
   private readonly resource: CfnStack;
   private readonly _contextualStackId: string;
   private readonly _contextualStackName: string;
-  private _templateUrl?: string;
+  private _templateUrl: IBox<string | null> = Box.fromValue(null);
   private _parentStack: Stack;
 
   constructor(scope: Construct, id: string, props: NestedStackProps = { }) {
@@ -120,6 +135,7 @@ export class NestedStack extends Stack {
       synthesizer: new NestedStackSynthesizer(parentStack.synthesizer),
       description: props.description,
       crossRegionReferences: parentStack._crossRegionReferences,
+      suppressTemplateIndentation: props.suppressTemplateIndentation,
     });
 
     this._parentStack = parentStack;
@@ -135,7 +151,9 @@ export class NestedStack extends Stack {
 
     this.resource = new CfnStack(parentScope, `${id}.NestedStackResource`, {
       // This value cannot be cached since it changes during the synthesis phase
-      templateUrl: Lazy.uncachedString({ produce: () => this._templateUrl || '<unresolved>' }),
+      // Cannot replace token allocation with memoized getter since we are passing the value to an L1
+      // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
+      templateUrl: Token.asString(this._templateUrl.derive((url) => url || '<unresolved>')),
       parameters: Lazy.any({ produce: () => Object.keys(this.parameters).length > 0 ? this.parameters : undefined }),
       notificationArns: props.notificationArns,
       timeoutInMinutes: props.timeout ? props.timeout.toMinutes() : undefined,
@@ -205,7 +223,7 @@ export class NestedStack extends Stack {
    * @internal
    */
   public _prepareTemplateAsset() {
-    if (this._templateUrl) {
+    if (this._templateUrl.get()) {
       return false;
     }
 
@@ -234,7 +252,7 @@ export class NestedStack extends Stack {
 
     // if bucketName/objectKey are cfn parameters from a stack other than the parent stack, they will
     // be resolved as cross-stack references like any other (see "multi" tests).
-    this._templateUrl = `https://s3.${this._parentStack.region}.${this._parentStack.urlSuffix}/${templateLocation.bucketName}/${templateLocation.objectKey}`;
+    this._templateUrl.set(`https://s3.${this._parentStack.region}.${this._parentStack.urlSuffix}/${templateLocation.bucketName}/${templateLocation.objectKey}`);
     return true;
   }
 
@@ -261,6 +279,10 @@ export class NestedStack extends Stack {
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.templateFile;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
   }
+
+  public get bundlingRequired() {
+    return this._parentStack.bundlingRequired;
+  }
 }
 
 /**
@@ -268,12 +290,12 @@ export class NestedStack extends Stack {
  */
 function findParentStack(scope: Construct): Stack {
   if (!scope) {
-    throw new Error('Nested stacks cannot be defined as a root construct');
+    throw new UnscopedValidationError(lit`NestedStacksCannotDefined`, 'Nested stacks cannot be defined as a root construct');
   }
 
   const parentStack = Node.of(scope).scopes.reverse().find(p => Stack.isStack(p));
   if (!parentStack) {
-    throw new Error('Nested stacks must be defined within scope of another non-nested stack');
+    throw new UnscopedValidationError(lit`MustBeNestedStacksDefined`, 'Nested stacks must be defined within scope of another non-nested stack');
   }
 
   return parentStack as Stack;

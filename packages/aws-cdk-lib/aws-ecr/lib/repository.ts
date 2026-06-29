@@ -1,16 +1,16 @@
 import { EOL } from 'os';
-import { IConstruct, Construct } from 'constructs';
+import type { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './ecr.generated';
-import { LifecycleRule, TagStatus } from './lifecycle';
+import type { LifecycleRule } from './lifecycle';
+import { TagStatus } from './lifecycle';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
+import type * as kms from '../../aws-kms';
 import * as cxschema from '../../cloud-assembly-schema';
+import type { IResource } from '../../core';
 import {
   Annotations,
   ArnFormat,
-  IResource,
-  Lazy,
   RemovalPolicy,
   Resource,
   Stack,
@@ -24,9 +24,14 @@ import {
   ValidationError,
   UnscopedValidationError,
 } from '../../core';
+import type { IArrayBox, IBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AutoDeleteImagesProvider } from '../../custom-resource-handlers/dist/aws-ecr/auto-delete-images-provider.generated';
+import type { IRepositoryRef, RepositoryReference } from '../../interfaces/generated/aws-ecr-interfaces.generated';
 
 const AUTO_DELETE_IMAGES_RESOURCE_TYPE = 'Custom::ECRAutoDeleteImages';
 const AUTO_DELETE_IMAGES_TAG = 'aws-cdk:auto-delete-images';
@@ -34,7 +39,7 @@ const AUTO_DELETE_IMAGES_TAG = 'aws-cdk:auto-delete-images';
 /**
  * Represents an ECR repository.
  */
-export interface IRepository extends IResource {
+export interface IRepository extends IResource, IRepositoryRef {
   /**
    * The name of the repository
    * @attribute
@@ -190,6 +195,16 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * The ARN of the repository
    */
   public abstract readonly repositoryArn: string;
+
+  /**
+   * A reference to this repository
+   */
+  public get repositoryRef(): RepositoryReference {
+    return {
+      repositoryName: this.repositoryName,
+      repositoryArn: this.repositoryArn,
+    };
+  }
 
   /**
    * Add a policy statement to the repository's resource policy
@@ -353,6 +368,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
 
   /**
    * Grant the given principal identity permissions to perform the actions on this repository
+   * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
     const crossAccountPrincipal = this.unsafeCrossAccountResourcePolicyPrincipal(grantee);
@@ -382,7 +398,6 @@ export abstract class RepositoryBase extends Resource implements IRepository {
         grantee,
         actions,
         resourceArns: [this.repositoryArn],
-        scope: this,
       });
     } else {
       return iam.Grant.addToPrincipalOrResource({
@@ -397,6 +412,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
 
   /**
    * Grant the given identity permissions to read the images in this repository
+   * [disable-awslint:no-grants]
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee,
@@ -407,6 +423,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
 
   /**
    * Grant the given identity permissions to use the images in this repository
+   * [disable-awslint:no-grants]
    */
   public grantPull(grantee: iam.IGrantable) {
     const ret = this.grant(grantee, ...this.REPO_PULL_ACTIONS);
@@ -415,7 +432,6 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       grantee,
       actions: ['ecr:GetAuthorizationToken'],
       resourceArns: ['*'],
-      scope: this,
     });
 
     return ret;
@@ -423,6 +439,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
 
   /**
    * Grant the given identity permissions to use the images in this repository
+   * [disable-awslint:no-grants]
    */
   public grantPush(grantee: iam.IGrantable) {
     const ret = this.grant(grantee, ...this.REPO_PUSH_ACTIONS);
@@ -430,7 +447,6 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       grantee,
       actions: ['ecr:GetAuthorizationToken'],
       resourceArns: ['*'],
-      scope: this,
     });
 
     return ret;
@@ -438,6 +454,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
 
   /**
    * Grant the given identity permissions to pull and push images to this repository.
+   * [disable-awslint:no-grants]
    */
   public grantPullPush(grantee: iam.IGrantable) {
     const ret = this.grant(grantee,
@@ -448,7 +465,6 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       grantee,
       actions: ['ecr:GetAuthorizationToken'],
       resourceArns: ['*'],
-      scope: this,
     });
 
     return ret;
@@ -548,7 +564,7 @@ export interface RepositoryProps {
    * @default - If encryption is set to `KMS` and this property is undefined,
    * an AWS managed KMS key is used.
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKeyRef;
 
   /**
    * Life cycle rules to apply to this registry
@@ -585,6 +601,16 @@ export interface RepositoryProps {
    *  @default TagMutability.MUTABLE
    */
   readonly imageTagMutability?: TagMutability;
+
+  /**
+   * The image tag mutability exclusion filters for the repository.
+   *
+   * These filters specify which image tags can override the repository's default image tag mutability setting.
+   *
+   * @default undefined - AWS ECR default is no exclusion filters
+   * @see https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-tag-mutability.html
+   */
+  readonly imageTagMutabilityExclusionFilters?: ImageTagMutabilityExclusionFilter[];
 
   /**
    * Whether all images should be automatically deleted when the repository is
@@ -632,6 +658,7 @@ export interface RepositoryAttributes {
  * Define an ECR repository
  */
 @propertyInjectable
+@noBoxStackTraces
 export class Repository extends RepositoryBase {
   /**
    * Uniquely identifies this class.
@@ -643,18 +670,18 @@ export class Repository extends RepositoryBase {
    */
   public static fromLookup(scope: Construct, id: string, options: RepositoryLookupOptions): IRepository {
     if (Token.isUnresolved(options.repositoryName) || Token.isUnresolved(options.repositoryArn)) {
-      throw new UnscopedValidationError('Cannot look up a repository with a tokenized name or ARN.');
+      throw new UnscopedValidationError(lit`CannotLookupRepositoryWithTokenizedValue`, 'Cannot look up a repository with a tokenized name or ARN.');
     }
 
     if (!options.repositoryArn && !options.repositoryName) {
-      throw new UnscopedValidationError('At least one of `repositoryName` or `repositoryArn` must be provided.');
+      throw new UnscopedValidationError(lit`RepositoryNameOrArnRequired`, 'At least one of `repositoryName` or `repositoryArn` must be provided.');
     }
 
     const identifier = options.repositoryName ??
       (options.repositoryArn ? Arn.split(options.repositoryArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName : undefined);
 
     if (!identifier) {
-      throw new UnscopedValidationError('Could not determine repository identifier from provided options.');
+      throw new UnscopedValidationError(lit`CouldNotDetermineRepositoryIdentifier`, 'Could not determine repository identifier from provided options.');
     }
 
     const response: {[key: string]: any}[] = ContextProvider.getValue(scope, {
@@ -708,7 +735,7 @@ export class Repository extends RepositoryBase {
     // repository names can include "/" (e.g. foo/bar/myrepo) and it is impossible to
     // parse the name from an ARN using CloudFormation's split/select.
     if (Token.isUnresolved(repositoryArn)) {
-      throw new UnscopedValidationError('"repositoryArn" is a late-bound value, and therefore "repositoryName" is required. Use `fromRepositoryAttributes` instead');
+      throw new UnscopedValidationError(lit`RepositoryArnIsLateBoundValue`, '"repositoryArn" is a late-bound value, and therefore "repositoryName" is required. Use `fromRepositoryAttributes` instead');
     }
 
     validateRepositoryArn();
@@ -733,7 +760,7 @@ export class Repository extends RepositoryBase {
       const splitArn = repositoryArn.split(':');
 
       if (!splitArn[splitArn.length - 1].startsWith('repository/')) {
-        throw new UnscopedValidationError(`Repository arn should be in the format 'arn:<PARTITION>:ecr:<REGION>:<ACCOUNT>:repository/<NAME>', got ${repositoryArn}.`);
+        throw new UnscopedValidationError(lit`InvalidRepositoryArnFormat`, `Repository arn should be in the format 'arn:<PARTITION>:ecr:<REGION>:<ACCOUNT>:repository/<NAME>', got ${repositoryArn}.`);
       }
     }
   }
@@ -785,16 +812,28 @@ export class Repository extends RepositoryBase {
     }
 
     if (errors.length > 0) {
-      throw new UnscopedValidationError(`Invalid ECR repository name (value: ${repositoryName})${EOL}${errors.join(EOL)}`);
+      throw new UnscopedValidationError(lit`InvalidRepositoryName`, `Invalid ECR repository name (value: ${repositoryName})${EOL}${errors.join(EOL)}`);
     }
   }
 
-  public readonly repositoryName: string;
-  public readonly repositoryArn: string;
-  private readonly lifecycleRules = new Array<LifecycleRule>();
+  private readonly lifecycleRules: IArrayBox<LifecycleRule> = Box.fromArray([], { omitEmpty: false });
   private readonly registryId?: string;
-  private policyDocument?: iam.PolicyDocument;
+  private readonly _policyDocument: IBox<iam.PolicyDocument | undefined>;
   private readonly _resource: CfnRepository;
+
+  @memoizedGetter
+  public get repositoryName(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
+
+  @memoizedGetter
+  public get repositoryArn(): string {
+    return this.getResourceArnAttribute(this._resource.attrArn, {
+      service: 'ecr',
+      resource: 'repository',
+      resourceName: this.physicalName,
+    });
+  }
 
   constructor(scope: Construct, id: string, props: RepositoryProps = {}) {
     super(scope, id, {
@@ -803,44 +842,42 @@ export class Repository extends RepositoryBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    Repository.validateRepositoryName(this.physicalName);
+    this._policyDocument = Box.fromValue(undefined);
 
-    const resource = new CfnRepository(this, 'Resource', {
+    Repository.validateRepositoryName(this.physicalName);
+    this.validateTagMutability(props.imageTagMutability, props.imageTagMutabilityExclusionFilters);
+
+    this._resource = new CfnRepository(this, 'Resource', {
       repositoryName: this.physicalName,
       // It says "Text", but they actually mean "Object".
-      repositoryPolicyText: Lazy.any({ produce: () => this.policyDocument }),
-      lifecyclePolicy: Lazy.any({ produce: () => this.renderLifecyclePolicy() }),
+      repositoryPolicyText: this._policyDocument,
+      lifecyclePolicy: this.lifecycleRules.derive(rules => this.renderLifecyclePolicy(rules)),
       imageScanningConfiguration: props.imageScanOnPush !== undefined ? { scanOnPush: props.imageScanOnPush } : undefined,
-      imageTagMutability: props.imageTagMutability || undefined,
+      imageTagMutability: props.imageTagMutability,
+      imageTagMutabilityExclusionFilters: props.imageTagMutabilityExclusionFilters?.map(
+        filter => filter._render(),
+      ),
       encryptionConfiguration: this.parseEncryption(props),
       emptyOnDelete: props.emptyOnDelete,
     });
-    this._resource = resource;
 
-    resource.applyRemovalPolicy(props.removalPolicy);
+    this._resource.applyRemovalPolicy(props.removalPolicy);
 
     this.registryId = props.lifecycleRegistryId;
     if (props.lifecycleRules) {
       props.lifecycleRules.forEach(this.addLifecycleRule.bind(this));
     }
 
-    this.repositoryName = this.getResourceNameAttribute(resource.ref);
-    this.repositoryArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'ecr',
-      resource: 'repository',
-      resourceName: this.physicalName,
-    });
-
     if (props.emptyOnDelete && props.removalPolicy !== RemovalPolicy.DESTROY) {
-      throw new ValidationError('Cannot use \'emptyOnDelete\' property on a repository without setting removal policy to \'DESTROY\'.', this);
+      throw new ValidationError(lit`EmptyOnDeleteRequiresDestroyRemovalPolicy`, 'Cannot use \'emptyOnDelete\' property on a repository without setting removal policy to \'DESTROY\'.', this);
     } else if (props.emptyOnDelete == undefined && props.autoDeleteImages) {
       if (props.removalPolicy !== RemovalPolicy.DESTROY) {
-        throw new ValidationError('Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.', this);
+        throw new ValidationError(lit`AutoDeleteImagesRequiresDestroyRemovalPolicy`, 'Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.', this);
       }
       this.enableAutoDeleteImages();
     }
 
-    this.node.addValidation({ validate: () => this.policyDocument?.validateForResourcePolicy() ?? [] });
+    this.node.addValidation({ validate: () => this._policyDocument.get()?.validateForResourcePolicy() ?? [] });
   }
 
   /**
@@ -855,11 +892,11 @@ export class Repository extends RepositoryBase {
     if (statement.resources.length) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-ecr:noResourceStatements', 'ECR resource policy does not allow resource statements.');
     }
-    if (this.policyDocument === undefined) {
-      this.policyDocument = new iam.PolicyDocument();
+    if (this._policyDocument.get() === undefined) {
+      this._policyDocument.set(new iam.PolicyDocument());
     }
-    this.policyDocument.addStatements(statement);
-    return { statementAdded: true, policyDependable: this.policyDocument };
+    this._policyDocument.get()!.addStatements(statement);
+    return { statementAdded: true, policyDependable: this._policyDocument.get()! };
   }
 
   /**
@@ -879,45 +916,77 @@ export class Repository extends RepositoryBase {
       && (rule.tagPrefixList === undefined || rule.tagPrefixList.length === 0)
       && (rule.tagPatternList === undefined || rule.tagPatternList.length === 0)
     ) {
-      throw new ValidationError('TagStatus.Tagged requires the specification of a tagPrefixList or a tagPatternList', this);
+      throw new ValidationError(lit`TaggedStatusRequiresTagPrefixOrPatternList`, 'TagStatus.Tagged requires the specification of a tagPrefixList or a tagPatternList', this);
     }
     if (rule.tagStatus !== TagStatus.TAGGED && (rule.tagPrefixList !== undefined || rule.tagPatternList !== undefined)) {
-      throw new ValidationError('tagPrefixList and tagPatternList can only be specified when tagStatus is set to Tagged', this);
+      throw new ValidationError(lit`TagPrefixAndPatternListOnlyForTaggedStatus`, 'tagPrefixList and tagPatternList can only be specified when tagStatus is set to Tagged', this);
     }
     if (rule.tagPrefixList !== undefined && rule.tagPatternList !== undefined) {
-      throw new ValidationError('Both tagPrefixList and tagPatternList cannot be specified together in a rule', this);
+      throw new ValidationError(lit`CannotSpecifyBothTagPrefixAndPatternList`, 'Both tagPrefixList and tagPatternList cannot be specified together in a rule', this);
     }
     if (rule.tagPatternList !== undefined) {
       rule.tagPatternList.forEach((pattern) => {
         const splitPatternLength = pattern.split('*').length;
         if (splitPatternLength > 5) {
-          throw new ValidationError(`A tag pattern cannot contain more than four wildcard characters (*), pattern: ${pattern}, counts: ${splitPatternLength - 1}`, this);
+          throw new ValidationError(lit`TagPatternExceedsWildcardLimit`, `A tag pattern cannot contain more than four wildcard characters (*), pattern: ${pattern}, counts: ${splitPatternLength - 1}`, this);
         }
       });
     }
     if ((rule.maxImageAge !== undefined) === (rule.maxImageCount !== undefined)) {
-      throw new ValidationError(`Life cycle rule must contain exactly one of 'maxImageAge' and 'maxImageCount', got: ${JSON.stringify(rule)}`, this);
+      throw new ValidationError(lit`LifecycleRuleMustContainExactlyOneAgeOrCountProperty`, `Life cycle rule must contain exactly one of 'maxImageAge' and 'maxImageCount', got: ${JSON.stringify(rule)}`, this);
     }
 
-    if (rule.tagStatus === TagStatus.ANY && this.lifecycleRules.filter(r => r.tagStatus === TagStatus.ANY).length > 0) {
-      throw new ValidationError('Life cycle can only have one TagStatus.Any rule', this);
+    if (rule.tagStatus === TagStatus.ANY && this.lifecycleRules.some(r => r.tagStatus === TagStatus.ANY)) {
+      throw new ValidationError(lit`LifecycleCanOnlyHaveOneAnyTagStatusRule`, 'Life cycle can only have one TagStatus.Any rule', this);
     }
 
     this.lifecycleRules.push({ ...rule });
   }
 
+  private validateTagMutability(tagMutability?: TagMutability, exclusionFilters?: ImageTagMutabilityExclusionFilter[]): void {
+    const EXCLUSION_REQUIRED_TAG_MUTABILITY = [
+      TagMutability.IMMUTABLE_WITH_EXCLUSION,
+      TagMutability.MUTABLE_WITH_EXCLUSION,
+    ];
+
+    const requiresExclusion = tagMutability && EXCLUSION_REQUIRED_TAG_MUTABILITY.includes(tagMutability);
+    const hasExclusionFilters = !!exclusionFilters;
+
+    if (hasExclusionFilters && !requiresExclusion) {
+      throw new ValidationError(
+        lit`ImageTagMutabilityRequiresExclusionFilters`,
+        `imageTagMutability must be 'IMMUTABLE_WITH_EXCLUSION' or 'MUTABLE_WITH_EXCLUSION' when imageTagMutabilityExclusionFilters is provided, got: ${tagMutability}.`,
+        this,
+      );
+    }
+
+    const filterCount = exclusionFilters?.length;
+
+    if (filterCount !== undefined && (filterCount < 1 || filterCount > 5)) {
+      throw new ValidationError(lit`ExclusionFiltersCountOutOfRange`, `imageTagMutabilityExclusionFilters must contain between 1 and 5 filters, got ${filterCount}.`, this);
+    }
+
+    if (requiresExclusion && !hasExclusionFilters) {
+      throw new ValidationError(
+        lit`ExclusionFiltersRequiredForMutabilityWithExclusion`,
+        `imageTagMutabilityExclusionFilters must be specified when imageTagMutability is '${tagMutability}'.`,
+        this,
+      );
+    }
+  }
+
   /**
    * Render the life cycle policy object
    */
-  private renderLifecyclePolicy(): CfnRepository.LifecyclePolicyProperty | undefined {
+  private renderLifecyclePolicy(rules: readonly LifecycleRule[]): CfnRepository.LifecyclePolicyProperty | undefined {
     const stack = Stack.of(this);
     let lifecyclePolicyText: any;
 
-    if (this.lifecycleRules.length === 0 && !this.registryId) { return undefined; }
+    if (rules.length === 0 && !this.registryId) { return undefined; }
 
-    if (this.lifecycleRules.length > 0) {
+    if (rules.length > 0) {
       lifecyclePolicyText = JSON.stringify(stack.resolve({
-        rules: this.orderedLifecycleRules().map(renderLifecycleRule),
+        rules: this.orderedLifecycleRules(rules).map(renderLifecycleRule),
       }));
     }
 
@@ -932,15 +1001,15 @@ export class Repository extends RepositoryBase {
    *
    * Also applies validation of the 'any' rule.
    */
-  private orderedLifecycleRules(): LifecycleRule[] {
-    if (this.lifecycleRules.length === 0) { return []; }
+  private orderedLifecycleRules(rules: readonly LifecycleRule[]): LifecycleRule[] {
+    if (rules.length === 0) { return []; }
 
-    const prioritizedRules = this.lifecycleRules.filter(r => r.rulePriority !== undefined && r.tagStatus !== TagStatus.ANY);
-    const autoPrioritizedRules = this.lifecycleRules.filter(r => r.rulePriority === undefined && r.tagStatus !== TagStatus.ANY);
-    const anyRules = this.lifecycleRules.filter(r => r.tagStatus === TagStatus.ANY);
+    const prioritizedRules = rules.filter(r => r.rulePriority !== undefined && r.tagStatus !== TagStatus.ANY);
+    const autoPrioritizedRules = rules.filter(r => r.rulePriority === undefined && r.tagStatus !== TagStatus.ANY);
+    const anyRules = rules.filter(r => r.tagStatus === TagStatus.ANY);
     if (anyRules.length > 0 && anyRules[0].rulePriority !== undefined && autoPrioritizedRules.length > 0) {
       // Supporting this is too complex for very little value. We just prohibit it.
-      throw new ValidationError("Cannot combine prioritized TagStatus.Any rule with unprioritized rules. Remove rulePriority from the 'Any' rule.", this);
+      throw new ValidationError(lit`CannotCombinePrioritizedAnyRuleWithUnprioritizedRules`, "Cannot combine prioritized TagStatus.Any rule with unprioritized rules. Remove rulePriority from the 'Any' rule.", this);
     }
 
     const prios = prioritizedRules.map(r => r.rulePriority!);
@@ -969,7 +1038,7 @@ export class Repository extends RepositoryBase {
 
     // if encryption key is set, encryption must be set to KMS.
     if (encryptionType !== RepositoryEncryption.KMS && props.encryptionKey) {
-      throw new ValidationError(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType.value})`, this);
+      throw new ValidationError(lit`EncryptionKeyRequiresKmsEncryption`, `encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType.value})`, this);
     }
 
     if (encryptionType === RepositoryEncryption.AES_256) {
@@ -979,11 +1048,11 @@ export class Repository extends RepositoryBase {
     if (encryptionType === RepositoryEncryption.KMS) {
       return {
         encryptionType: 'KMS',
-        kmsKey: props.encryptionKey?.keyArn,
+        kmsKey: props.encryptionKey?.keyRef.keyArn,
       };
     }
 
-    throw new ValidationError(`Unexpected 'encryptionType': ${encryptionType}`, this);
+    throw new ValidationError(lit`UnexpectedEncryptionType`, `Unexpected 'encryptionType': ${encryptionType}`, this);
   }
 
   private enableAutoDeleteImages() {
@@ -1036,7 +1105,7 @@ function validateAnyRuleLast(rules: LifecycleRule[]) {
   if (anyRules.length === 1) {
     const maxPrio = Math.max(...rules.map(r => r.rulePriority!));
     if (anyRules[0].rulePriority !== maxPrio) {
-      throw new UnscopedValidationError(`TagStatus.Any rule must have highest priority, has ${anyRules[0].rulePriority} which is smaller than ${maxPrio}`);
+      throw new UnscopedValidationError(lit`AnyTagStatusRuleMustHaveHighestPriority`, `TagStatus.Any rule must have highest priority, has ${anyRules[0].rulePriority} which is smaller than ${maxPrio}`);
     }
   }
 }
@@ -1049,6 +1118,7 @@ function renderLifecycleRule(rule: LifecycleRule) {
     rulePriority: rule.rulePriority,
     description: rule.description,
     selection: {
+
       tagStatus: rule.tagStatus || TagStatus.ANY,
       tagPrefixList: rule.tagPrefixList,
       tagPatternList: rule.tagPatternList,
@@ -1091,6 +1161,54 @@ export enum TagMutability {
    */
   IMMUTABLE = 'IMMUTABLE',
 
+  /**
+   * all image tags within the repository will be immutable, while allowing you to define some filters for tags that can be changed.
+   */
+  IMMUTABLE_WITH_EXCLUSION = 'IMMUTABLE_WITH_EXCLUSION',
+
+  /**
+   * allow image tags to be overwritten while allowing you to define some filters for tags that should remain unchanged.
+   */
+  MUTABLE_WITH_EXCLUSION = 'MUTABLE_WITH_EXCLUSION',
+}
+
+/**
+ * Represents an image tag mutability exclusion filter for ECR repository
+ */
+export class ImageTagMutabilityExclusionFilter {
+  /**
+   * Creates a wildcard filter for image tag mutability exclusion
+   * @param pattern The wildcard pattern to match image tags (e.g., 'dev-*', 'release-v*')
+   */
+  public static wildcard(pattern: string): ImageTagMutabilityExclusionFilter {
+    return new ImageTagMutabilityExclusionFilter('WILDCARD', pattern);
+  }
+
+  private constructor(
+    private readonly filterType: string,
+    private readonly filterValue: string,
+  ) {
+    if (!filterValue) {
+      throw new UnscopedValidationError(lit`FilterPatternCannotBeEmpty`, 'Pattern cannot be empty');
+    }
+    if (filterValue.length > 128) {
+      throw new UnscopedValidationError(lit`FilterPatternExceedsMaxLength`, `Pattern cannot exceed 128 characters, got: ${filterValue.length} characters.`);
+    }
+    if (!/^[0-9a-zA-Z._*-]+$/.test(filterValue)) {
+      throw new UnscopedValidationError(lit`FilterPatternContainsInvalidCharacters`, `Pattern '${filterValue}' contains invalid characters. Only alphanumeric characters, dots, underscores, asterisks, and hyphens are allowed.`);
+    }
+  }
+
+  /**
+   * Renders the filter to CloudFormation properties
+   * @internal
+   */
+  public _render(): CfnRepository.ImageTagMutabilityExclusionFilterProperty {
+    return {
+      imageTagMutabilityExclusionFilterType: this.filterType,
+      imageTagMutabilityExclusionFilterValue: this.filterValue,
+    };
+  }
 }
 
 /**

@@ -54,7 +54,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "ConnectHandlerServiceRole7E4A9B1F"
@@ -315,7 +315,11 @@
     "TargetParameters": {
      "InputTemplate": "<$.message>"
     }
-   }
+   },
+   "DependsOn": [
+    "PipeRoleDefaultPolicy56E6A74D",
+    "PipeRole7D4AFC73"
+   ]
   }
  },
  "Outputs": {

@@ -1,15 +1,18 @@
 import * as cdk from 'aws-cdk-lib';
-import {
-  SecurityGroup,
+import * as apigw from 'aws-cdk-lib/aws-apigateway';
+import type {
   SecurityGroupProps,
-  Vpc,
   VpcProps,
 } from 'aws-cdk-lib/aws-ec2';
+import {
+  SecurityGroup,
+  Vpc,
+} from 'aws-cdk-lib/aws-ec2';
+import type { FunctionProps } from 'aws-cdk-lib/aws-lambda';
 import {
   ApplicationLogLevel,
   Code,
   Function,
-  FunctionProps,
   LoggingFormat,
   Runtime,
 } from 'aws-cdk-lib/aws-lambda';
@@ -18,11 +21,11 @@ import {
   LogRetention,
   RetentionDays,
 } from 'aws-cdk-lib/aws-logs';
+import type { IBucket } from 'aws-cdk-lib/aws-s3';
 import {
   BlockPublicAccess,
   Bucket,
   BucketEncryption,
-  IBucket,
 } from 'aws-cdk-lib/aws-s3';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
@@ -151,6 +154,39 @@ class FunctionPropsInjector implements cdk.IPropertyInjector {
   }
 }
 
+class RestApiPropsInjector implements cdk.IPropertyInjector {
+  readonly constructUniqueId: string;
+
+  constructor() {
+    this.constructUniqueId = apigw.RestApi.PROPERTY_INJECTION_ID;
+  }
+
+  inject(originalProps: apigw.RestApiProps, _context: cdk.InjectionContext): apigw.RestApiProps {
+    return {
+      endpointTypes: [apigw.EndpointType.REGIONAL],
+      deploy: false,
+      restApiName: 'my-rest-api',
+      ...originalProps,
+    };
+  }
+}
+
+class LambdaRestApiPropsInjector implements cdk.IPropertyInjector {
+  readonly constructUniqueId: string;
+
+  constructor() {
+    this.constructUniqueId = apigw.LambdaRestApi.PROPERTY_INJECTION_ID;
+  }
+
+  inject(originalProps: apigw.LambdaRestApiProps, _context: cdk.InjectionContext): apigw.LambdaRestApiProps {
+    return {
+      disableExecuteApiEndpoint: false,
+      restApiName: 'my-lambda-rest-api',
+      ...originalProps,
+    };
+  }
+}
+
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'TestStack', {
   propertyInjectors: [
@@ -158,10 +194,12 @@ const stack = new cdk.Stack(app, 'TestStack', {
     new MyBucketPropsInjector(),
     new SecurityGroupPropsInjector(),
     new VpcPropsInjector(),
+    new RestApiPropsInjector(),
+    new LambdaRestApiPropsInjector(),
   ],
 });
 
-new Function(stack, 'Function', {
+const f = new Function(stack, 'Function', {
   functionName: 'myfunc',
   runtime: Runtime.NODEJS_20_X,
   handler: 'index.handler',
@@ -177,5 +215,9 @@ new SecurityGroup(stack, 'my-sg', {
 });
 
 new Bucket(stack, 'Default', {});
+
+new apigw.LambdaRestApi(stack, 'MyRestAPI', {
+  handler: f,
+});
 
 new IntegTest(app, 'PropertyInjectorTest', { testCases: [stack] });

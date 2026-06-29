@@ -1,6 +1,7 @@
 import * as os from 'os';
 import * as path from 'path';
-import { ClassSpec, ClassType, IScope, Module, TypeScriptRenderer, expr } from '@cdklabs/typewriter';
+import type { ClassSpec, IScope } from '@cdklabs/typewriter';
+import { ClassType, Module, TypeScriptRenderer, expr } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
 import { CallableExpr } from '../../lib/custom-resources-framework/callable-expr';
 import { HandlerFrameworkModule } from '../../lib/custom-resources-framework/framework';
@@ -12,6 +13,10 @@ describe('callable expression', () => {
 
   beforeEach(() => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-test'));
+  });
+
+  afterEach(() => {
+    fs.removeSync(tmpDir);
   });
 
   test('callable expression toString return expression name', () => {

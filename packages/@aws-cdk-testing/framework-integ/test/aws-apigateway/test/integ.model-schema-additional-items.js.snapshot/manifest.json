@@ -1,0 +1,289 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "model-schema-additional-items-test.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "model-schema-additional-items-test.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "model-schema-additional-items-test": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "model-schema-additional-items-test.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7807ff5621da855f1072821e5221aa8dbd3eca0d167af014ea2fe3b1e27f6bc9.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "model-schema-additional-items-test.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "model-schema-additional-items-test.assets"
+      ],
+      "metadata": {
+        "/model-schema-additional-items-test/model-schema-api": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "restApiName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addModel": [
+                "*",
+                {
+                  "contentType": "*",
+                  "modelName": "*",
+                  "schema": {
+                    "type": "object",
+                    "required": "*",
+                    "properties": "*"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addRequestValidator": [
+                "*",
+                {
+                  "requestValidatorName": "*",
+                  "validateRequestBody": true
+                }
+              ]
+            }
+          }
+        ],
+        "/model-schema-additional-items-test/model-schema-api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "modelschemaapi9C215193"
+          }
+        ],
+        "/model-schema-additional-items-test/model-schema-api/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/model-schema-additional-items-test/model-schema-api/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "modelschemaapiDeploymentC7D4982Cc02c0744ba09d7d641fdba42094183f8"
+          }
+        ],
+        "/model-schema-additional-items-test/model-schema-api/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
+          }
+        ],
+        "/model-schema-additional-items-test/model-schema-api/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "modelschemaapiDeploymentStageprodEF543582"
+          }
+        ],
+        "/model-schema-additional-items-test/model-schema-api/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "modelschemaapiEndpoint16CC9BD3"
+          }
+        ],
+        "/model-schema-additional-items-test/model-schema-api/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/model-schema-additional-items-test/model-schema-api/Default/POST": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": {
+                "requestValidator": "*",
+                "requestModels": "*",
+                "methodResponses": [
+                  {
+                    "statusCode": "*"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/model-schema-additional-items-test/model-schema-api/Default/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "modelschemaapiPOST5FB5AEAA"
+          }
+        ],
+        "/model-schema-additional-items-test/model-schema-api/TagsModel": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "contentType": "*",
+              "modelName": "*",
+              "schema": {
+                "type": "object",
+                "required": "*",
+                "properties": "*"
+              },
+              "restApi": "*"
+            }
+          }
+        ],
+        "/model-schema-additional-items-test/model-schema-api/TagsModel/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "modelschemaapiTagsModelFCCA8255"
+          }
+        ],
+        "/model-schema-additional-items-test/model-schema-api/TagsValidator": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "requestValidatorName": "*",
+              "validateRequestBody": true,
+              "restApi": "*"
+            }
+          }
+        ],
+        "/model-schema-additional-items-test/model-schema-api/TagsValidator/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "modelschemaapiTagsValidatorB38D3476"
+          }
+        ],
+        "/model-schema-additional-items-test/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/model-schema-additional-items-test/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "model-schema-additional-items-test"
+    },
+    "ModelSchemaAdditionalItemsTestDefaultTestDeployAssert81CF581B.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ModelSchemaAdditionalItemsTestDefaultTestDeployAssert81CF581B.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ModelSchemaAdditionalItemsTestDefaultTestDeployAssert81CF581B": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ModelSchemaAdditionalItemsTestDefaultTestDeployAssert81CF581B.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ModelSchemaAdditionalItemsTestDefaultTestDeployAssert81CF581B.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ModelSchemaAdditionalItemsTestDefaultTestDeployAssert81CF581B.assets"
+      ],
+      "metadata": {
+        "/ModelSchemaAdditionalItemsTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ModelSchemaAdditionalItemsTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ModelSchemaAdditionalItemsTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}

@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "table-v1-CCI-test/DefaultTest": {
+      "stacks": [
+        "CCI-Integ-Test-TableV1"
+      ],
+      "assertionStack": "table-v1-CCI-test/DefaultTest/DeployAssert",
+      "assertionStackName": "tablev1CCItestDefaultTestDeployAssertDBB26C85"
+    }
+  },
+  "minimumCliVersion": "2.1025.0"
+}

@@ -565,6 +565,7 @@ pass in order to promote from the `PreProd` to the `Prod` environment:
 declare const pipeline: pipelines.CodePipeline;
 const preprod = new MyApplicationStage(this, 'PreProd');
 const prod = new MyApplicationStage(this, 'Prod');
+const topic = new sns.Topic(this, 'ChangeApprovalTopic');
 
 pipeline.addStage(preprod, {
   post: [
@@ -574,7 +575,12 @@ pipeline.addStage(preprod, {
   ],
 });
 pipeline.addStage(prod, {
-  pre: [new pipelines.ManualApprovalStep('PromoteToProd')],
+  pre: [new pipelines.ManualApprovalStep('PromoteToProd', {
+    //All options below are optional
+    comment: 'Please validate changes',
+    reviewUrl: 'https://my.webservice.com/',
+    notificationTopic: topic,
+  })],
 });
 ```
 
@@ -733,6 +739,10 @@ new pipelines.CodeBuildStep('Synth', {
   buildEnvironment: {
     computeType: codebuild.ComputeType.LARGE,
     privileged: true,
+    dockerServer: {
+      computeType: codebuild.DockerServerComputeType.SMALL,
+      securityGroups: [mySecurityGroup],
+    },
   },
   timeout: Duration.minutes(90),
   fileSystemLocations: [
@@ -1075,6 +1085,19 @@ pipeline definition. This can be useful if any Docker image assets — in the pi
 any of the application stages — require authentication, either due to being in a
 different environment (e.g., ECR repo) or to avoid throttling (e.g., DockerHub).
 
+For authenticating to Docker registries that require a username and password combination
+(like DockerHub), create a Secrets Manager Secret with fields named `username`
+and `secret`:
+
+```json
+{
+  "username": "<username>",
+  "secret": "<DockerHub secret>"
+}
+```
+
+Then reference it like this:
+
 ```ts
 const dockerHubSecret = secretsmanager.Secret.fromSecretCompleteArn(
   this,
@@ -1115,10 +1138,6 @@ const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
   }),
 });
 ```
-
-For authenticating to Docker registries that require a username and password combination
-(like DockerHub), create a Secrets Manager Secret with fields named `username`
-and `secret`, and import it (the field names change be customized).
 
 Authentication to ECR repositories is done using the execution role of the
 relevant CodeBuild job. Both types of credentials can be provided with an

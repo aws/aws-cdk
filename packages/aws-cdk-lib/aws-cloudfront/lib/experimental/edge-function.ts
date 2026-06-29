@@ -1,20 +1,21 @@
-import { Construct, Node } from 'constructs';
-import * as cloudwatch from '../../../aws-cloudwatch';
-import * as ec2 from '../../../aws-ec2';
+import type { Construct, Node } from 'constructs';
+import type * as cloudwatch from '../../../aws-cloudwatch';
+import type * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as ssm from '../../../aws-ssm';
+import type { CfnResource } from '../../../core';
 import {
-  CfnResource,
   CustomResource,
-  Lazy,
   Resource,
   Stack,
   Stage,
   Token,
   ValidationError,
 } from '../../../core';
+import { Box } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CrossRegionStringParamReaderProvider } from '../../../custom-resource-handlers/dist/aws-cloudfront/cross-region-string-param-reader-provider.generated';
 
@@ -88,6 +89,19 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     this.node.defaultChild = this._edgeFunction;
   }
 
+  public get versionRef(): lambda.VersionReference {
+    return {
+      functionArn: this.functionArn,
+    };
+  }
+
+  public get functionRef(): lambda.FunctionReference {
+    return {
+      functionArn: this.functionArn,
+      functionName: this.functionName,
+    };
+  }
+
   public get lambda(): lambda.IFunction {
     return this._edgeFunction;
   }
@@ -112,10 +126,10 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
    * Not supported. Connections are only applicable to VPC-enabled functions.
    */
   public get connections(): ec2.Connections {
-    throw new ValidationError('Lambda@Edge does not support connections', this);
+    throw new ValidationError(lit`LambdaEdgeDoesNotSupportConnections`, 'Lambda@Edge does not support connections', this);
   }
   public get latestVersion(): lambda.IVersion {
-    throw new ValidationError('$LATEST function version cannot be used for Lambda@Edge', this);
+    throw new ValidationError(lit`LatestFunctionVersionCannotBeUsedForLambdaEdge`, '$LATEST function version cannot be used for Lambda@Edge', this);
   }
 
   @MethodMetadata()
@@ -130,22 +144,42 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   public addToRolePolicy(statement: iam.PolicyStatement): void {
     return this.lambda.addToRolePolicy(statement);
   }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantInvoke(identity: iam.IGrantable): iam.Grant {
     return this.lambda.grantInvoke(identity);
   }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantInvokeLatestVersion(identity: iam.IGrantable): iam.Grant {
     return this.lambda.grantInvokeLatestVersion(identity);
   }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantInvokeVersion(identity: iam.IGrantable, version: lambda.IVersion): iam.Grant {
     return this.lambda.grantInvokeVersion(identity, version);
   }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantInvokeUrl(identity: iam.IGrantable): iam.Grant {
     return this.lambda.grantInvokeUrl(identity);
   }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantInvokeCompositePrincipal(compositePrincipal: iam.CompositePrincipal): iam.Grant[] {
     return this.lambda.grantInvokeCompositePrincipal(compositePrincipal);
@@ -196,7 +230,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   private createCrossRegionFunction(id: string, props: EdgeFunctionProps): FunctionConfig {
     const parameterNamePrefix = 'cdk/EdgeFunctionArn';
     if (Token.isUnresolved(this.env.region)) {
-      throw new ValidationError('stacks which use EdgeFunctions must have an explicitly set region', this);
+      throw new ValidationError(lit`StacksWithEdgeFunctionsMustHaveExplicitRegion`, 'stacks which use EdgeFunctions must have an explicitly set region', this);
     }
     // SSM parameter names must only contain letters, numbers, ., _, -, or /.
     const sanitizedPath = this.node.path.replace(/[^\/\w.-]/g, '_');
@@ -247,12 +281,10 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
         //
         // Use the logical id of the function version. Whenever a function version changes, the logical id must be
         // changed for it to take effect - a good candidate for RefreshToken.
-        RefreshToken: Lazy.uncachedString({
-          produce: () => {
-            const cfn = version.node.defaultChild as CfnResource;
-            return this.stack.resolve(cfn.logicalId);
-          },
-        }),
+        RefreshToken: Token.asString(Box.fromValue(version).derive((v) => {
+          const cfn = v.node.defaultChild as CfnResource;
+          return this.stack.resolve(cfn.logicalId);
+        })),
       },
     });
 
@@ -262,10 +294,11 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   private edgeStack(stackId?: string): Stack {
     const stage = Stage.of(this);
     if (!stage) {
-      throw new ValidationError('stacks which use EdgeFunctions must be part of a CDK app or stage', this);
+      throw new ValidationError(lit`StacksWithEdgeFunctionsMustBePartOfCdkApp`, 'stacks which use EdgeFunctions must be part of a CDK app or stage', this);
     }
 
     const edgeStackId = stackId ?? `edge-lambda-stack-${this.stack.node.addr}`;
+    const parentStack = Stack.of(this);
     let edgeStack = stage.node.tryFindChild(edgeStackId) as Stack;
     if (!edgeStack) {
       edgeStack = new Stack(stage, edgeStackId, {
@@ -273,6 +306,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
           region: EdgeFunction.EDGE_REGION,
           account: Stack.of(this).account,
         },
+        tags: parentStack.tags.tagValues(),
       });
     }
     this.stack.addDependency(edgeStack);

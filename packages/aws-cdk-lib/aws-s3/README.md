@@ -83,6 +83,22 @@ const bucket = new s3.Bucket(stack, 'MyDSSEBucket', {
 });
 ```
 
+Explicitly block uploads encrypted with SSE-C:
+
+```ts
+const bucket = new s3.Bucket(this, 'MySsecBlockedBucket', {
+  blockedEncryptionTypes: [s3.BlockedEncryptionType.SSE_C],
+});
+```
+
+Allow uploads with all encryption types:
+
+```ts
+const bucket = new s3.Bucket(this, 'MyBucket', {
+  blockedEncryptionTypes: [s3.BlockedEncryptionType.NONE],
+});
+```
+
 ## Permissions
 
 A bucket policy will be automatically created for the bucket upon the first call to
@@ -156,6 +172,84 @@ bucket.grantReadWrite(myLambda);
 Will give the Lambda's execution role permissions to read and write
 from the bucket.
 
+### Understanding "grant" Methods
+
+The S3 construct library provides several grant methods for `IBucketRef` instances, which can
+be accessed via the `BucketGrants` class:
+
+```ts
+declare const principal: iam.IPrincipal;
+declare const bucket: s3.IBucketRef;
+
+s3.BucketGrants.fromBucket(bucket).delete(principal);
+```
+
+If `bucket` is an instance of `CfnBucket`, and the grants process involves adding statements
+to the bucket policy, then the `BucketGrants` class will, by default, do the same thing it
+would do for an instance of `Bucket`: create a new bucket policy (or reuse an existing one)
+and add the necessary statements to it.
+
+But if you want to customize this behavior, you can register an instance of `IResourcePolicyFactory`
+for the `AWS::S3::Bucket` CloudFormation type:
+
+```ts nofixture
+import { CfnResource } from 'aws-cdk-lib';
+import { IResourcePolicyFactory, IResourceWithPolicyV2, PolicyStatement, ResourceWithPolicies } from 'aws-cdk-lib/aws-iam';
+import { Construct, IConstruct } from 'constructs';
+
+declare const scope: Construct;
+class MyFactory implements IResourcePolicyFactory {
+  forResource(resource: CfnResource): IResourceWithPolicyV2 {
+    return {
+      env: resource.env,
+      addToResourcePolicy(statement: PolicyStatement) {
+        // custom implementation to add the statement to the resource policy
+        return { statementAdded: true, policyDependable: resource };
+      }
+    }
+  }
+}
+
+ResourceWithPolicies.register(scope, 'AWS::S3::Bucket', new MyFactory());
+```
+
+`IResourcePolicyFactory` is responsible for converting a construct into a `IResourceWithPolicyV2`,
+effectively providing an ad-hoc way to extend the behavior of L1s to support grants the same way
+as L2s do.
+
+The `BucketGrants` class has many methods, but two of them have a special behavior. These two
+accept an `objectsKeyPattern` parameter to restrict granted permissions to specific resources:
+- `read`
+- `readWrite`
+
+When examining the synthesized policy, you'll notice it includes both your specified object key
+patterns and the bucket itself. This is by design. Some permissions (like `s3:ListBucket`) apply
+at the bucket level, while others (like `s3:GetObject`) apply to specific objects.
+
+Specifically, the [`s3:ListBucket` action operates on bucket resources](https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazons3.html#amazons3-bucket)
+and requires the bucket ARN to work properly. This might be seen as a bug, giving the impression that more permissions were granted than the ones you intended, but the reality is that the policy does not ignore your `objectsKeyPattern` - object-specific actions like `s3:GetObject`
+will still be limited to the resources defined in your pattern.
+
+If you need to restrict the `s3:ListBucket` action to specific paths, you can add a `Condition` to your policy that limits the `objectsKeyPattern` to specific folders. For more details and examples, see the [AWS documentation on bucket policies](https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-bucket-policies.html#example-bucket-policies-folders).
+
+## Attribute-Based Access Control (ABAC)
+
+You can enable ABAC (Attribute-Based Access Control) for an S3 general purpose bucket.
+When ABAC is enabled for the general purpose bucket, you can use tags to manage access to the general purpose buckets as well as for cost tracking purposes.
+When ABAC is disabled for the general purpose buckets, you can only use tags for cost tracking purposes.
+
+To enable ABAC on a bucket:
+
+```ts
+const bucket = new s3.Bucket(this, 'Bucket', {
+  abacStatus: true,
+});
+```
+
+By default, if `abacStatus` is not specified, ABAC will not be enabled for the bucket.
+
+For more information about ABAC and how to use it with S3, see the [AWS documentation on ABAC](https://docs.aws.amazon.com/AmazonS3/latest/userguide/buckets-tagging.html).
+
 ## AWS Foundational Security Best Practices
 
 ### Enforcing SSL
@@ -176,6 +270,26 @@ const bucket = new s3.Bucket(this, 'Bucket', {
   minimumTLSVersion: 1.2,
 });
 ```
+
+## Bucket Naming
+
+By default, CloudFormation assigns a unique bucket name. You can also specify a `bucketName` directly, but this creates a globally unique name that could conflict with other accounts.
+
+### Account-Regional Bucket Namespace
+
+Using `bucketNamePrefix` with `bucketNamespace` set to `ACCOUNT_REGIONAL`, the bucket name is scoped to your account and region, reducing the risk of name conflicts. CloudFormation appends `-<accountId>-<region>-an` to the prefix to form the full name.
+
+```ts
+new s3.Bucket(this, 'MyBucket', {
+  bucketNamePrefix: 'my-app',
+  bucketNamespace: s3.BucketNamespace.ACCOUNT_REGIONAL,
+});
+// Resulting bucket name: my-app-123456789012-us-east-1-an
+```
+
+Note that `bucketName` cannot be used together with `bucketNamePrefix` or `bucketNamespace`.
+
+For more information, see the [AWS documentation on bucket namespaces](https://docs.aws.amazon.com/AmazonS3/latest/userguide/gpbucketnamespaces.html).
 
 ## Sharing buckets between stacks
 
@@ -236,9 +350,8 @@ const bucket = s3.Bucket.fromBucketAttributes(this, 'ImportedBucket', {
 });
 
 // now you can just call methods on the bucket
-bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), {
-  prefix: 'home/myusername/*',
-});
+const filter: s3.NotificationKeyFilter = { prefix: 'home/myusername/*' };
+bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), filter);
 ```
 
 Alternatively, short-hand factories are available as `Bucket.fromBucketName` and
@@ -373,19 +486,19 @@ const bucket = new s3.Bucket(this, 'MyBlockedBucket', {
 });
 ```
 
-Block and ignore public ACLs:
+Block and ignore public ACLs (other options remain unblocked):
 
 ```ts
 const bucket = new s3.Bucket(this, 'MyBlockedBucket', {
-  blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS,
+  blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS_ONLY,
 });
 ```
 
-Alternatively, specify the settings manually:
+Alternatively, specify the settings manually (unspecified options will remain blocked):
 
 ```ts
 const bucket = new s3.Bucket(this, 'MyBlockedBucket', {
-  blockPublicAccess: new s3.BlockPublicAccess({ blockPublicPolicy: true }),
+  blockPublicAccess: new s3.BlockPublicAccess({ blockPublicPolicy: false }),
 });
 ```
 
@@ -592,8 +705,8 @@ const bucketPolicy = new s3.CfnBucketPolicy(this, "BucketPolicy", {
   },
 });
 
-// Wrap L1 Construct with L2 Bucket Policy Construct. Subsequent 
-// generated bucket policy to allow access log delivery would append 
+// Wrap L1 Construct with L2 Bucket Policy Construct. Subsequent
+// generated bucket policy to allow access log delivery would append
 // to the current policy.
 s3.BucketPolicy.fromCfnBucketPolicy(bucketPolicy);
 
@@ -941,11 +1054,14 @@ To replicate objects to a destination bucket, you can specify the `replicationRu
 declare const destinationBucket1: s3.IBucket;
 declare const destinationBucket2: s3.IBucket;
 declare const replicationRole: iam.IRole;
-declare const kmsKey: kms.IKey;
+declare const encryptionKey: kms.IKey;
+declare const destinationEncryptionKey: kms.IKey;
 
 const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
   // Versioning must be enabled on both the source and destination bucket
   versioned: true,
+  // Optional. Specify the KMS key to use for encrypts objects in the source bucket.
+  encryptionKey,
   // Optional. If not specified, a new role will be created.
   replicationRole,
   replicationRules: [
@@ -970,7 +1086,7 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
       // If set, metrics will be output to indicate whether replication by S3 RTC took longer than the configured time.
       metrics: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
       // The kms key to use for the destination bucket.
-      kmsKey,
+      kmsKey: destinationEncryptionKey,
       // The storage class to use for the destination bucket.
       storageClass: s3.StorageClass.INFREQUENT_ACCESS,
       // Whether to replicate objects with SSE-KMS encryption.
@@ -996,6 +1112,20 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
       }
     },
   ],
+});
+
+// Grant permissions to the replication role.
+// This method is not required if you choose to use an auto-generated replication role or manually grant permissions.
+sourceBucket.grantReplicationPermission(replicationRole, {
+  // Optional. Specify the KMS key to use for decrypting objects in the source bucket.
+  sourceDecryptionKey: encryptionKey,
+  destinations: [
+    { bucket: destinationBucket1 },
+    { bucket: destinationBucket2, encryptionKey: destinationEncryptionKey },
+  ],
+  // The 'encryptionKey' property within the 'destinations' array is optional.
+  // If not specified for a destination bucket, this method assumes that
+  // given destination bucket is not encrypted.
 });
 ```
 
@@ -1038,4 +1168,52 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
 if (sourceBucket.replicationRoleArn) {
   destinationBucket.addReplicationPolicy(sourceBucket.replicationRoleArn, true, '111111111111');
   }
+```
+
+## Mixins
+
+S3 provides several [mixins](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#mixins) that can be applied to L1 and L2 constructs.
+
+### BucketAutoDeleteObjects
+
+Automatically deletes all objects from a bucket when the bucket is removed from the stack or when the stack is deleted. Requires the bucket's removal policy to be set to `DESTROY`:
+
+```ts
+new s3.CfnBucket(this, 'Bucket')
+  .with(new s3.mixins.BucketAutoDeleteObjects());
+```
+
+### BucketVersioning
+
+Enables or suspends versioning on an S3 bucket:
+
+```ts
+new s3.CfnBucket(this, 'Bucket')
+  .with(new s3.mixins.BucketVersioning());
+```
+
+### BucketBlockPublicAccess
+
+Blocks public access on an S3 bucket. Defaults to blocking all public access:
+
+```ts
+new s3.CfnBucket(this, 'Bucket')
+  .with(new s3.mixins.BucketBlockPublicAccess());
+```
+
+### BucketPolicyStatements
+
+Adds IAM policy statements to a bucket policy:
+
+```ts
+new s3.CfnBucketPolicy(this, 'Policy', {
+  bucket: new s3.CfnBucket(this, 'Bucket').ref,
+  policyDocument: new iam.PolicyDocument(),
+}).with(new s3.mixins.BucketPolicyStatements([
+  new iam.PolicyStatement({
+    actions: ['s3:GetObject'],
+    resources: ['*'],
+    principals: [new iam.AnyPrincipal()],
+  }),
+]));
 ```

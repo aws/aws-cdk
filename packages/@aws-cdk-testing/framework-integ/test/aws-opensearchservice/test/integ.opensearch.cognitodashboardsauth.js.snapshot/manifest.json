@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "44.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "cdk-integ-opensearch-cognitodashboardsauth.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -20,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdk-integ-opensearch-cognitodashboardsauth.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3a775caaee27411e3f0b828747ee79d41933fe7f48252b614b1992e509a3ceb7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/04a8c6fc574b5c4049ad41adaad94bbca3d9dcc7c2b938ddb6c33fe27327e74e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -45,10 +40,29 @@
             "data": "IdentityPool"
           }
         ],
+        "/cdk-integ-opensearch-cognitodashboardsauth/UserPool": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
         "/cdk-integ-opensearch-cognitodashboardsauth/UserPool/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "UserPool6BA7E5F2"
+          }
+        ],
+        "/cdk-integ-opensearch-cognitodashboardsauth/UserPool/UserPoolDomain": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*",
+              "cognitoDomain": {
+                "domainPrefix": "*"
+              }
+            }
           }
         ],
         "/cdk-integ-opensearch-cognitodashboardsauth/UserPool/UserPoolDomain/Resource": [
@@ -57,10 +71,49 @@
             "data": "UserPoolUserPoolDomain9F01E991"
           }
         ],
+        "/cdk-integ-opensearch-cognitodashboardsauth/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/cdk-integ-opensearch-cognitodashboardsauth/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cdk-integ-opensearch-cognitodashboardsauth/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Role1ABCC5F0"
+          }
+        ],
+        "/cdk-integ-opensearch-cognitodashboardsauth/Domain": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "version": "*",
+              "cognitoDashboardsAuth": {
+                "role": "*",
+                "identityPoolId": "*",
+                "userPoolId": "*"
+              },
+              "capacity": {
+                "multiAzWithStandbyEnabled": false
+              }
+            }
           }
         ],
         "/cdk-integ-opensearch-cognitodashboardsauth/Domain/Resource": [
@@ -97,6 +150,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "CognitoAuthForOpenSearchDashboardsDefaultTestDeployAssert4CCFA971.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -130,6 +184,13 @@
         ]
       },
       "displayName": "CognitoAuthForOpenSearchDashboards/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

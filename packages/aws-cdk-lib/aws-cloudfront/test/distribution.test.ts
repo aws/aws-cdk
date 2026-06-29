@@ -7,9 +7,12 @@ import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import { App, Aws, Duration, Stack, Token } from '../../core';
+import type {
+  CfnDistribution,
+  IOrigin,
+} from '../lib';
 import {
   AllowedMethods,
-  CfnDistribution,
   Distribution,
   Endpoint,
   Function,
@@ -17,13 +20,13 @@ import {
   FunctionEventType,
   GeoRestriction,
   HttpVersion,
-  IOrigin,
   LambdaEdgeEventType,
   PriceClass,
   RealtimeLogConfig,
   SecurityPolicyProtocol,
   SSLMethod,
 } from '../lib';
+import { DistributionGrants } from '../lib/cloudfront-grants.generated';
 
 let app: App;
 let stack: Stack;
@@ -61,6 +64,18 @@ test('minimal example renders correctly', () => {
   });
 
   expect(dist.distributionArn).toEqual(`arn:${Aws.PARTITION}:cloudfront::1234:distribution/${dist.distributionId}`);
+});
+
+test('distribution without additional behaviors or origin groups omits those properties', () => {
+  const origin = defaultOrigin();
+  new Distribution(stack, 'MyDist', { defaultBehavior: { origin } });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      CacheBehaviors: Match.absent(),
+      OriginGroups: Match.absent(),
+    },
+  });
 });
 
 test('existing distributions can be imported', () => {
@@ -1113,11 +1128,118 @@ test('grants custom actions', () => {
   const role = new iam.Role(stack, 'Role', {
     assumedBy: new iam.AccountRootPrincipal(),
   });
-  distribution.grant(role, 'cloudfront:ListInvalidations', 'cloudfront:GetInvalidation');
+  distribution.grant(
+    role,
+    'cloudfront:ListInvalidations',
+    'cloudfront:GetInvalidation',
+    'cloudfront:CreateFieldLevelEncryptionConfig',
+    'cloudfront:CreateFieldLevelEncryptionProfile',
+    'cloudfront:CreateKeyGroup',
+    'cloudfront:CreateMonitoringSubscription',
+    'cloudfront:CreateOriginAccessControl',
+    'cloudfront:CreatePublicKey',
+    'cloudfront:CreateSavingsPlan',
+    'cloudfront:DeleteKeyGroup',
+    'cloudfront:DeleteMonitoringSubscription',
+    'cloudfront:DeletePublicKey',
+    'cloudfront:GetKeyGroup',
+    'cloudfront:GetKeyGroupConfig',
+    'cloudfront:GetMonitoringSubscription',
+    'cloudfront:GetPublicKey',
+    'cloudfront:GetPublicKeyConfig',
+    'cloudfront:GetSavingsPlan',
+    'cloudfront:ListAnycastIpLists',
+    'cloudfront:ListCachePolicies',
+    'cloudfront:ListCloudFrontOriginAccessIdentities',
+    'cloudfront:ListContinuousDeploymentPolicies',
+    'cloudfront:ListDistributions',
+    'cloudfront:ListDistributionsByAnycastIpListId',
+    'cloudfront:ListDistributionsByCachePolicyId',
+    'cloudfront:ListDistributionsByKeyGroup',
+    'cloudfront:ListDistributionsByLambdaFunction',
+    'cloudfront:ListDistributionsByOriginRequestPolicyId',
+    'cloudfront:ListDistributionsByRealtimeLogConfig',
+    'cloudfront:ListDistributionsByResponseHeadersPolicyId',
+    'cloudfront:ListDistributionsByVpcOriginId',
+    'cloudfront:ListDistributionsByWebACLId',
+    'cloudfront:ListFieldLevelEncryptionConfigs',
+    'cloudfront:ListFieldLevelEncryptionProfiles',
+    'cloudfront:ListFunctions',
+    'cloudfront:ListKeyGroups',
+    'cloudfront:ListKeyValueStores',
+    'cloudfront:ListOriginAccessControls',
+    'cloudfront:ListOriginRequestPolicies',
+    'cloudfront:ListPublicKeys',
+    'cloudfront:ListRateCards',
+    'cloudfront:ListRealtimeLogConfigs',
+    'cloudfront:ListResponseHeadersPolicies',
+    'cloudfront:ListSavingsPlans',
+    'cloudfront:ListStreamingDistributions',
+    'cloudfront:ListUsages',
+    'cloudfront:ListVpcOrigins',
+    'cloudfront:UpdateFieldLevelEncryptionConfig',
+    'cloudfront:UpdateKeyGroup',
+    'cloudfront:UpdatePublicKey',
+    'cloudfront:UpdateSavingsPlan',
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
+        {
+          Action: [
+            'cloudfront:CreateFieldLevelEncryptionConfig',
+            'cloudfront:CreateFieldLevelEncryptionProfile',
+            'cloudfront:CreateKeyGroup',
+            'cloudfront:CreateMonitoringSubscription',
+            'cloudfront:CreateOriginAccessControl',
+            'cloudfront:CreatePublicKey',
+            'cloudfront:CreateSavingsPlan',
+            'cloudfront:DeleteKeyGroup',
+            'cloudfront:DeleteMonitoringSubscription',
+            'cloudfront:DeletePublicKey',
+            'cloudfront:GetKeyGroup',
+            'cloudfront:GetKeyGroupConfig',
+            'cloudfront:GetMonitoringSubscription',
+            'cloudfront:GetPublicKey',
+            'cloudfront:GetPublicKeyConfig',
+            'cloudfront:GetSavingsPlan',
+            'cloudfront:ListAnycastIpLists',
+            'cloudfront:ListCachePolicies',
+            'cloudfront:ListCloudFrontOriginAccessIdentities',
+            'cloudfront:ListContinuousDeploymentPolicies',
+            'cloudfront:ListDistributions',
+            'cloudfront:ListDistributionsByAnycastIpListId',
+            'cloudfront:ListDistributionsByCachePolicyId',
+            'cloudfront:ListDistributionsByKeyGroup',
+            'cloudfront:ListDistributionsByLambdaFunction',
+            'cloudfront:ListDistributionsByOriginRequestPolicyId',
+            'cloudfront:ListDistributionsByRealtimeLogConfig',
+            'cloudfront:ListDistributionsByResponseHeadersPolicyId',
+            'cloudfront:ListDistributionsByVpcOriginId',
+            'cloudfront:ListDistributionsByWebACLId',
+            'cloudfront:ListFieldLevelEncryptionConfigs',
+            'cloudfront:ListFieldLevelEncryptionProfiles',
+            'cloudfront:ListFunctions',
+            'cloudfront:ListKeyGroups',
+            'cloudfront:ListKeyValueStores',
+            'cloudfront:ListOriginAccessControls',
+            'cloudfront:ListOriginRequestPolicies',
+            'cloudfront:ListPublicKeys',
+            'cloudfront:ListRateCards',
+            'cloudfront:ListRealtimeLogConfigs',
+            'cloudfront:ListResponseHeadersPolicies',
+            'cloudfront:ListSavingsPlans',
+            'cloudfront:ListStreamingDistributions',
+            'cloudfront:ListUsages',
+            'cloudfront:ListVpcOrigins',
+            'cloudfront:UpdateFieldLevelEncryptionConfig',
+            'cloudfront:UpdateKeyGroup',
+            'cloudfront:UpdatePublicKey',
+            'cloudfront:UpdateSavingsPlan',
+          ],
+          Resource: '*',
+        },
         {
           Action: [
             'cloudfront:ListInvalidations',
@@ -1145,6 +1267,38 @@ test('grants createInvalidation', () => {
     assumedBy: new iam.AccountRootPrincipal(),
   });
   distribution.grantCreateInvalidation(role);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'cloudfront:CreateInvalidation',
+          Resource: {
+            'Fn::Join': [
+              '', [
+                'arn:', { Ref: 'AWS::Partition' }, ':cloudfront::1234:distribution/',
+                { Ref: 'Distribution830FAC52' },
+              ],
+            ],
+          },
+        },
+      ],
+    },
+  });
+});
+
+test('grants createInvalidation to L1', () => {
+  const distribution = new Distribution(stack, 'Distribution', {
+    defaultBehavior: { origin: defaultOrigin() },
+  });
+
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.AccountRootPrincipal(),
+  });
+
+  DistributionGrants.
+    fromDistribution(distribution.node.defaultChild as CfnDistribution)
+    .createInvalidation(role);
 
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
@@ -1196,7 +1350,7 @@ test('render distribution behavior with realtime log config', () => {
       DistributionConfig: {
         DefaultCacheBehavior: {
           RealtimeLogConfigArn: {
-            'Fn::GetAtt': ['RealtimeConfigB6004E8E', 'Arn'],
+            Ref: 'RealtimeConfigB6004E8E',
           },
         },
       },
@@ -1242,14 +1396,14 @@ test('render distribution behavior with realtime log config - multiple behaviors
       DistributionConfig: {
         DefaultCacheBehavior: {
           RealtimeLogConfigArn: {
-            'Fn::GetAtt': ['RealtimeConfigB6004E8E', 'Arn'],
+            Ref: 'RealtimeConfigB6004E8E',
           },
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
         },
         CacheBehaviors: [{
           PathPattern: '/api/*',
           RealtimeLogConfigArn: {
-            'Fn::GetAtt': ['RealtimeConfigB6004E8E', 'Arn'],
+            Ref: 'RealtimeConfigB6004E8E',
           },
           TargetOriginId: 'StackMyDistOrigin20B96F3AD',
         }],
@@ -1337,7 +1491,7 @@ describe('Distribution metrics tests', () => {
       additionalMetricsRequired: true,
       errorMetricName: `${errorCode} error rate`,
     })),
-  ];
+  ] as const;
 
   const defaultMetrics = [
     { name: 'Requests', method: 'metricRequests', statistic: 'Sum', additionalMetricsRequired: false, errorMetricName: '' },
@@ -1346,16 +1500,16 @@ describe('Distribution metrics tests', () => {
     { name: 'TotalErrorRate', method: 'metricTotalErrorRate', statistic: 'Average', additionalMetricsRequired: false, errorMetricName: '' },
     { name: '4xxErrorRate', method: 'metric4xxErrorRate', statistic: 'Average', additionalMetricsRequired: false, errorMetricName: '' },
     { name: '5xxErrorRate', method: 'metric5xxErrorRate', statistic: 'Average', additionalMetricsRequired: false, errorMetricName: '' },
-  ];
+  ] as const;
 
-  test.each(additionalMetrics.concat(defaultMetrics))('get %s metric', (metric) => {
+  test.each([... additionalMetrics, ...defaultMetrics])('get %s metric', (metric) => {
     const origin = defaultOrigin();
     const dist = new Distribution(stack, 'MyDist', {
       defaultBehavior: { origin },
       publishAdditionalMetrics: metric.additionalMetricsRequired,
     });
 
-    const metricObj = dist[metric.method]();
+    const metricObj = (dist as any)[metric.method]();
 
     expect(metricObj).toEqual(new cloudwatch.Metric({
       namespace: 'AWS/CloudFront',
@@ -1374,7 +1528,7 @@ describe('Distribution metrics tests', () => {
     });
 
     expect(() => {
-      dist[metric.method]();
+      (dist as any)[metric.method]();
     }).toThrow(new RegExp(`${metric.errorMetricName} metric is only available if 'publishAdditionalMetrics' is set 'true'`));
   });
 });
@@ -1436,7 +1590,7 @@ describe('attachWebAclId', () => {
     test('does not validate unresolved token webAclId', () => {
       const origin = defaultOrigin();
 
-      const distribution = new Distribution(stack, 'MyDist', {
+      new Distribution(stack, 'MyDist', {
         defaultBehavior: { origin },
         webAclId: Token.asString({ Ref: 'SomeWebAcl' }), // unresolved token
       });

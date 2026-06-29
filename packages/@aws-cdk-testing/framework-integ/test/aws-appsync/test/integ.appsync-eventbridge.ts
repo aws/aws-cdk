@@ -9,7 +9,9 @@ const stack = new cdk.Stack(app, 'stack');
 
 const api = new appsync.GraphqlApi(stack, 'EventBridgeApi', {
   name: 'EventBridgeApi',
-  schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.eventbridge.graphql')),
+  definition: {
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.eventbridge.graphql')),
+  },
 });
 
 const bus = new events.EventBus(stack, 'DestinationEventBus', {});

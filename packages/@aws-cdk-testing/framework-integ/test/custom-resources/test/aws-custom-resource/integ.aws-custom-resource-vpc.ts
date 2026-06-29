@@ -11,7 +11,11 @@ import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '
  *
  */
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-cdk-customresources-vpc');
 const vpc = new ec2.Vpc(stack, 'Vpc', { restrictDefaultSecurityGroup: false });
 new AwsCustomResource(stack, 'DescribeVpcAttribute', {

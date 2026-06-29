@@ -1,11 +1,13 @@
 import * as crypto from 'crypto';
 import { Node } from 'constructs';
 import { TokenMap } from './token-map';
+import { UnscopedValidationError, ValidationError } from '../errors';
 import { Names } from '../names';
-import { IResolvable, IResolveContext } from '../resolvable';
-import { IResource } from '../resource';
+import type { IResolvable, IResolveContext } from '../resolvable';
+import type { IResource } from '../resource';
 import { Stack } from '../stack';
 import { Token } from '../token';
+import { lit } from './literal-string';
 
 export function generatePhysicalName(resource: IResource): string {
   const stack = Stack.of(resource);
@@ -14,12 +16,12 @@ export function generatePhysicalName(resource: IResource): string {
 
   const region: string = stack.region;
   if (Token.isUnresolved(region) || !region) {
-    throw new Error(`Cannot generate a physical name for ${Node.of(resource).path}, because the region is un-resolved or missing`);
+    throw new ValidationError(lit`CannotGeneratePhysicalNameRegionUnresolved`, `Cannot generate a physical name for ${Node.of(resource).path}, because the region is un-resolved or missing`, resource);
   }
 
   const account: string = stack.account;
   if (Token.isUnresolved(account) || !account) {
-    throw new Error(`Cannot generate a physical name for ${Node.of(resource).path}, because the account is un-resolved or missing`);
+    throw new ValidationError(lit`CannotGeneratePhysicalNameAccountUnresolved`, `Cannot generate a physical name for ${Node.of(resource).path}, because the account is un-resolved or missing`, resource);
   }
 
   const parts = [stackPart, idPart]
@@ -81,14 +83,14 @@ const GENERATE_IF_NEEDED_SYMBOL = Symbol.for('@aws-cdk/core.<private>.GenerateIf
  * This token throws an Error when it is resolved, as a way to prevent inadvertent mis-uses of it.
  */
 export class GeneratedWhenNeededMarker implements IResolvable {
-  public readonly creationStack: string[] = [];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
 
   constructor() {
     Object.defineProperty(this, GENERATE_IF_NEEDED_SYMBOL, { value: true });
   }
 
   public resolve(_ctx: IResolveContext): never {
-    throw new Error('Invalid physical name passed to CloudFormation. Use "this.physicalName" instead');
+    throw new UnscopedValidationError(lit`InvalidPhysicalNameMarker`, 'Invalid physical name passed to CloudFormation. Use "this.physicalName" instead');
   }
 
   public toString(): string {

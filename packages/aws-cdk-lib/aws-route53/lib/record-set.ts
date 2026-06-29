@@ -1,16 +1,21 @@
 import { Construct } from 'constructs';
-import { AliasRecordTargetConfig, IAliasRecordTarget } from './alias-record-target';
-import { GeoLocation } from './geo-location';
-import { IHealthCheck } from './health-check';
-import { IHostedZone } from './hosted-zone-ref';
+import type { AliasRecordTargetConfig, IAliasRecordTarget } from './alias-record-target';
+import type { CidrRoutingConfig } from './cidr-routing-config';
+import type { GeoLocation } from './geo-location';
+import type { IHealthCheck } from './health-check';
+import type { IHostedZone } from './hosted-zone-ref';
 import { CfnRecordSet } from './route53.generated';
 import { determineFullyQualifiedDomainName } from './util';
 import * as iam from '../../aws-iam';
-import { CustomResource, Duration, IResource, Names, RemovalPolicy, Resource, Token } from '../../core';
+import type { IResource, RemovalPolicy } from '../../core';
+import { Annotations, CustomResource, Duration, Names, Resource, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { CrossAccountZoneDelegationProvider } from '../../custom-resource-handlers/dist/aws-route53/cross-account-zone-delegation-provider.generated';
 import { DeleteExistingRecordSetProvider } from '../../custom-resource-handlers/dist/aws-route53/delete-existing-record-set-provider.generated';
+import type { IRecordSetRef, RecordSetReference } from '../../interfaces/generated/aws-route53-interfaces.generated';
 
 const CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE = 'Custom::CrossAccountZoneDelegation';
 const DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE = 'Custom::DeleteExistingRecordSet';
@@ -18,7 +23,7 @@ const DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE = 'Custom::DeleteExistingRecordSe
 /**
  * A record set
  */
-export interface IRecordSet extends IResource {
+export interface IRecordSet extends IResource, IRecordSetRef {
   /**
    * The domain name of the record
    */
@@ -165,6 +170,24 @@ export enum RecordType {
 }
 
 /**
+ * The failover policy.
+ * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-failover.html
+ */
+export enum Failover {
+  /**
+   * The primary resource record set determines how Route 53 responds to DNS queries when
+   * the primary resource is healthy.
+   */
+  PRIMARY = 'PRIMARY',
+
+  /**
+   * The secondary resource record set determines how Route 53 responds to DNS queries when
+   * the primary resource is unhealthy.
+   */
+  SECONDARY = 'SECONDARY',
+}
+
+/**
  * Options for a RecordSet.
  */
 export interface RecordSetOptions {
@@ -208,7 +231,7 @@ export interface RecordSetOptions {
   /**
    * Whether to delete the same record set in the hosted zone if it already exists (dangerous!)
    *
-   * This allows to deploy a new record set while minimizing the downtime because the
+   * This allows you to deploy a new record set while minimizing the downtime because the
    * new record set will be created immediately after the existing one is deleted. It
    * also avoids "manual" actions to delete existing record sets.
    *
@@ -217,6 +240,7 @@ export interface RecordSetOptions {
    * > an existing Record Set's `deleteExisting` property from `false -> true` after deployment
    * > will delete the record!
    *
+   * @deprecated This property is dangerous and can lead to unintended record deletion in case of deployment failure.
    * @default false
    */
   readonly deleteExisting?: boolean;
@@ -276,6 +300,30 @@ export interface RecordSetOptions {
    * @default - No health check configured
    */
   readonly healthCheck?: IHealthCheck;
+
+  /**
+   * The object that is specified in resource record set object when you are linking a resource record set to a CIDR location.
+   *
+   * A LocationName with an asterisk “*” can be used to create a default CIDR record. CollectionId is still required for default record.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53-recordset.html#cfn-route53-recordset-cidrroutingconfig
+   * @default - No CIDR routing configured
+   */
+  readonly cidrRoutingConfig?: CidrRoutingConfig;
+
+  /**
+   * Failover configuration for the record set.
+   *
+   * To configure failover, you add the Failover element to two resource record sets.
+   * For one resource record set, you specify PRIMARY as the value for Failover;
+   * for the other resource record set, you specify SECONDARY.
+   *
+   * You must also include the HealthCheckId element for PRIMARY configurations.
+   *
+   * @default - No failover configuration
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-failover.html
+   */
+  readonly failover?: Failover;
 }
 
 /**
@@ -331,12 +379,22 @@ export interface RecordSetProps extends RecordSetOptions {
 /**
  * A record set.
  */
+@propertyInjectable
 export class RecordSet extends Resource implements IRecordSet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.RecordSet';
   public readonly domainName: string;
   private readonly geoLocation?: GeoLocation;
   private readonly weight?: number;
   private readonly region?: string;
   private readonly multiValueAnswer?: boolean;
+  private readonly failover?: Failover;
+
+  public get recordSetRef(): RecordSetReference {
+    return {
+      recordSetName: this.domainName,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
@@ -344,16 +402,20 @@ export class RecordSet extends Resource implements IRecordSet {
     addConstructMetadata(this, props);
 
     if (props.weight && !Token.isUnresolved(props.weight) && (props.weight < 0 || props.weight > 255)) {
-      throw new ValidationError(`weight must be between 0 and 255 inclusive, got: ${props.weight}`, this);
+      throw new ValidationError(lit`WeightInclusive`, `weight must be between 0 and 255 inclusive, got: ${props.weight}`, this);
     }
     if (props.setIdentifier && (props.setIdentifier.length < 1 || props.setIdentifier.length > 128)) {
-      throw new ValidationError(`setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`, this);
+      throw new ValidationError(lit`SetIdentifierCharactersLong`, `setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`, this);
     }
-    if (props.setIdentifier && props.weight === undefined && !props.geoLocation && !props.region && !props.multiValueAnswer) {
-      throw new ValidationError('setIdentifier can only be specified for non-simple routing policies', this);
+    if (props.setIdentifier && props.weight === undefined && !props.geoLocation && !props.region && !props.multiValueAnswer
+      && !props.cidrRoutingConfig && !props.failover) {
+      throw new ValidationError(lit`SetIdentifierSpecifiedNonSimple`, 'setIdentifier can only be specified for non-simple routing policies', this);
     }
     if (props.multiValueAnswer && props.target.aliasTarget) {
-      throw new ValidationError('multiValueAnswer cannot be specified for alias record', this);
+      throw new ValidationError(lit`MultiValueAnswerCannotSpecified`, 'multiValueAnswer cannot be specified for alias record', this);
+    }
+    if (props.failover && props.multiValueAnswer) {
+      throw new ValidationError(lit`CannotFailoverMultiValueAnswer`, 'Cannot use both failover and multiValueAnswer routing policies', this);
     }
 
     const nonSimpleRoutingPolicies = [
@@ -361,17 +423,33 @@ export class RecordSet extends Resource implements IRecordSet {
       props.region,
       props.weight,
       props.multiValueAnswer,
+      props.cidrRoutingConfig,
+      props.failover,
     ].filter((variable) => variable !== undefined).length;
     if (nonSimpleRoutingPolicies > 1) {
-      throw new ValidationError('Only one of region, weight, multiValueAnswer or geoLocation can be defined', this);
+      throw new ValidationError(lit`Onlyregion`, 'Only one of region, weight, multiValueAnswer, geoLocation, cidrRoutingConfig, or failover can be defined', this);
+    }
+
+    if (props.failover === Failover.PRIMARY && !props.healthCheck && !props.target.aliasTarget) {
+      throw new ValidationError(lit`FailoverRecordSetsIncludeHealth`, 'PRIMARY failover record sets must include a health check', this);
+    }
+    if (props.failover && props.target.aliasTarget) {
+      const aliasTargetConfig = props.target.aliasTarget.bind(this, props.zone);
+      if (aliasTargetConfig && !Token.isUnresolved(aliasTargetConfig.evaluateTargetHealth) && aliasTargetConfig.evaluateTargetHealth !== true) {
+        throw new ValidationError(lit`FailoverAliasRecordSetsSet`, 'Failover alias record sets must set EvaluateTargetHealth to true', this);
+      }
     }
 
     this.geoLocation = props.geoLocation;
     this.weight = props.weight;
     this.region = props.region;
     this.multiValueAnswer = props.multiValueAnswer;
+    this.failover = props.failover;
 
     const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) ?? 1800).toString();
+    if (props.target.aliasTarget && props.ttl != undefined) {
+      Annotations.of(this).addWarningV2('aws-cdk-lib/aws-route53:ttlIgnored', 'Ignoring ttl since \'target\' uses an alias target');
+    }
 
     const recordName = determineFullyQualifiedDomainName(props.recordName || props.zone.zoneName, props.zone);
 
@@ -393,11 +471,14 @@ export class RecordSet extends Resource implements IRecordSet {
       weight: props.weight,
       region: props.region,
       healthCheckId: props.healthCheck?.healthCheckId,
+      cidrRoutingConfig: props.cidrRoutingConfig,
+      failover: props.failover,
     });
 
     this.domainName = recordSet.ref;
 
     if (props.deleteExisting) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-route53:deleteExisting', 'deleteExisting field is deprecated do not use it');
       // Delete existing record before creating the new one
       const provider = DeleteExistingRecordSetProvider.getOrCreateProvider(this, DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE, {
         policyStatements: [{ // IAM permissions for all providers
@@ -439,6 +520,11 @@ export class RecordSet extends Resource implements IRecordSet {
   }
 
   private configureSetIdentifier(): string | undefined {
+    if (this.failover) {
+      const idPrefix = `FAILOVER_${this.failover}_ID_`;
+      return this.createIdentifier(idPrefix);
+    }
+
     if (this.geoLocation) {
       let identifier = 'GEO';
       if (this.geoLocation.continentCode) {
@@ -516,7 +602,11 @@ export interface ARecordAttrs extends RecordSetOptions{
  *
  * @resource AWS::Route53::RecordSet
  */
+@propertyInjectable
 export class ARecord extends RecordSet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.ARecord';
+
   /**
    * Creates new A record of type alias with target set to an existing A Record DNS.
    * Use when the target A record is created outside of CDK
@@ -554,7 +644,7 @@ class ARecordAsAliasTarget implements IAliasRecordTarget {
 
   public bind(record: IRecordSet, zone?: IHostedZone | undefined): AliasRecordTargetConfig {
     if (!zone) {
-      throw new ValidationError('Cannot bind to record without a zone', record);
+      throw new ValidationError(lit`CannotBindRecordWithoutZone`, 'Cannot bind to record without a zone', record);
     }
     return {
       dnsName: this.aRrecordAttrs.targetDNS,
@@ -578,7 +668,11 @@ export interface AaaaRecordProps extends RecordSetOptions {
  *
  * @resource AWS::Route53::RecordSet
  */
+@propertyInjectable
 export class AaaaRecord extends RecordSet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.AaaaRecord';
+
   constructor(scope: Construct, id: string, props: AaaaRecordProps) {
     super(scope, id, {
       ...props,
@@ -605,7 +699,11 @@ export interface CnameRecordProps extends RecordSetOptions {
  *
  * @resource AWS::Route53::RecordSet
  */
+@propertyInjectable
 export class CnameRecord extends RecordSet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.CnameRecord';
+
   constructor(scope: Construct, id: string, props: CnameRecordProps) {
     super(scope, id, {
       ...props,
@@ -632,7 +730,11 @@ export interface TxtRecordProps extends RecordSetOptions {
  *
  * @resource AWS::Route53::RecordSet
  */
+@propertyInjectable
 export class TxtRecord extends RecordSet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.TxtRecord';
+
   constructor(scope: Construct, id: string, props: TxtRecordProps) {
     super(scope, id, {
       ...props,
@@ -703,7 +805,11 @@ export interface SrvRecordProps extends RecordSetOptions {
  *
  * @resource AWS::Route53::RecordSet
  */
+@propertyInjectable
 export class SrvRecord extends RecordSet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.SrvRecord';
+
   constructor(scope: Construct, id: string, props: SrvRecordProps) {
     super(scope, id, {
       ...props,
@@ -773,7 +879,11 @@ export interface CaaRecordProps extends RecordSetOptions {
  *
  * @resource AWS::Route53::RecordSet
  */
+@propertyInjectable
 export class CaaRecord extends RecordSet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.CaaRecord';
+
   constructor(scope: Construct, id: string, props: CaaRecordProps) {
     super(scope, id, {
       ...props,
@@ -798,7 +908,11 @@ export interface CaaAmazonRecordProps extends RecordSetOptions {}
  *
  * @resource AWS::Route53::RecordSet
  */
+@propertyInjectable
 export class CaaAmazonRecord extends CaaRecord {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.CaaAmazonRecord';
+
   constructor(scope: Construct, id: string, props: CaaAmazonRecordProps) {
     super(scope, id, {
       ...props,
@@ -845,7 +959,11 @@ export interface MxRecordProps extends RecordSetOptions {
  *
  * @resource AWS::Route53::RecordSet
  */
+@propertyInjectable
 export class MxRecord extends RecordSet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.MxRecord';
+
   constructor(scope: Construct, id: string, props: MxRecordProps) {
     super(scope, id, {
       ...props,
@@ -872,7 +990,11 @@ export interface NsRecordProps extends RecordSetOptions {
  *
  * @resource AWS::Route53::RecordSet
  */
+@propertyInjectable
 export class NsRecord extends RecordSet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.NsRecord';
+
   constructor(scope: Construct, id: string, props: NsRecordProps) {
     super(scope, id, {
       ...props,
@@ -899,7 +1021,11 @@ export interface DsRecordProps extends RecordSetOptions {
  *
  * @resource AWS::Route53::RecordSet
  */
+@propertyInjectable
 export class DsRecord extends RecordSet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.DsRecord';
+
   constructor(scope: Construct, id: string, props: DsRecordProps) {
     super(scope, id, {
       ...props,
@@ -908,6 +1034,277 @@ export class DsRecord extends RecordSet {
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+  }
+}
+
+/**
+ * The ALPN protocol identifier.
+ */
+export class Alpn {
+  /** HTTP/1.1 */
+  public static readonly HTTP1_1 = Alpn.of('http1.1');
+  /** HTTP2 */
+  public static readonly H2 = Alpn.of('h2');
+  /** HTTP3 (QUIC) */
+  public static readonly H3 = Alpn.of('h3');
+
+  /**
+   * A custom ALPN protocol identifier.
+   * @param protocol The ALPN protocol identifier.
+   */
+  public static of(protocol: string): Alpn {
+    return new Alpn(protocol);
+  }
+
+  /**
+   * @param protocol The ALPN protocol identifier.
+   */
+  private constructor(public readonly protocol: string) {}
+}
+
+/**
+ * Common properties of an SVCB and an HTTPS record value.
+ */
+interface SvcbRecordValueCommonProps {
+  /**
+   * Indicates mandatory keys.
+   *
+   * @default - No mandatory keys
+   */
+  readonly mandatory?: string[];
+
+  /**
+   * Indicates the set of Application-Layer Protocol Negotiation (ALPN) protocol identifiers
+   * and associated transport protocols supported by this service endpoint.
+   *
+   * @default - No ALPN protocol identifiers
+   */
+  readonly alpn?: Alpn[];
+
+  /**
+   * Indicates no default ALPN protocol identifiers.
+   * The `alpn` parameter must be supplied together.
+   *
+   * @default false
+   */
+  readonly noDefaultAlpn?: boolean;
+
+  /**
+   * The alternative port number.
+   *
+   * @default - Use the default port
+   */
+  readonly port?: number;
+
+  /**
+   * Conveys that clients may use to reach the service.
+   *
+   * @default - No hints.
+   */
+  readonly ipv4hint?: string[];
+
+  /**
+   * Conveys that clients may use to reach the service.
+   *
+   * @default - No hints.
+   */
+  readonly ipv6hint?: string[];
+}
+
+/**
+ * Base properties of an SVCB and an HTTPS record value.
+ */
+interface SvcbRecordValueBaseProps extends SvcbRecordValueCommonProps {
+  /**
+   * The priority.
+   */
+  readonly priority: number;
+
+  /**
+   * The domain name of the alternative endpoint.
+   */
+  readonly targetName: string;
+}
+
+/**
+ * Represents an SVCB and an HTTPS record value.
+ */
+abstract class SvcbRecordValueBase {
+  protected constructor(private readonly props: SvcbRecordValueBaseProps) {}
+
+  /**
+   * Returns the string representation of SVCB and HTTPS record value.
+   */
+  public toString(): string {
+    const parts: string[] = [`${this.props.priority}`, this.props.targetName];
+    if (this.props.mandatory?.length) {
+      parts.push(`mandatory="${this.props.mandatory.join(',')}"`);
+    }
+    if (this.props.alpn?.length) {
+      parts.push(`alpn="${this.props.alpn.map((alpn) => alpn.protocol).join(',')}"`);
+    }
+    if (this.props.noDefaultAlpn) {
+      parts.push('no-default-alpn');
+    }
+    if (this.props.port !== undefined) {
+      parts.push(`port=${this.props.port}`);
+    }
+    if (this.props.ipv4hint?.length) {
+      parts.push(`ipv4hint="${this.props.ipv4hint.join(',')}"`);
+    }
+    if (this.props.ipv6hint?.length) {
+      parts.push(`ipv6hint="${this.props.ipv6hint.join(',')}"`);
+    }
+    return parts.join(' ');
+  }
+}
+
+/**
+ * Base properties of an SVCB ServiceMode record value.
+ */
+export interface SvcbRecordServiceModeProps extends SvcbRecordValueCommonProps {
+  /**
+   * The priority.
+   *
+   * @default 1
+   */
+  readonly priority?: number;
+
+  /**
+   * The domain name of the alternative endpoint.
+   *
+   * @default '.' - The record name of the record itself
+   */
+  readonly targetName?: string;
+}
+
+/**
+ * Represents an SVCB record value.
+ */
+export class SvcbRecordValue extends SvcbRecordValueBase {
+  /**
+   * An SVCB AliasMode record value.
+   *
+   * @param targetName The domain name of the alternative endpoint.
+   */
+  public static alias(targetName: string): SvcbRecordValue {
+    return new SvcbRecordValue({ priority: 0, targetName });
+  }
+
+  /**
+   * An SVCB ServiceMode record value.
+   */
+  public static service(props?: SvcbRecordServiceModeProps): SvcbRecordValue {
+    return new SvcbRecordValue({ priority: 1, targetName: '.', ...props });
+  }
+
+  private constructor(props: SvcbRecordValueBaseProps) {
+    super(props);
+  }
+}
+
+/**
+ * Construction properties for an SvcbRecord.
+ */
+export interface SvcbRecordProps extends RecordSetOptions {
+  /**
+   * The values.
+   */
+  readonly values: SvcbRecordValue[];
+}
+
+/**
+ * A DNS SVCB record
+ *
+ * @resource AWS::Route53::RecordSet
+ */
+@propertyInjectable
+export class SvcbRecord extends RecordSet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.SvcbRecord';
+
+  constructor(scope: Construct, id: string, props: SvcbRecordProps) {
+    super(scope, id, {
+      ...props,
+      recordType: RecordType.SVCB,
+      target: RecordTarget.fromValues(...props.values.map((v) => v.toString())),
+    });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+  }
+}
+
+/**
+ * Properties of an HTTPS ServiceMode record.
+ */
+export interface HttpsRecordServiceModeProps extends SvcbRecordServiceModeProps {}
+
+/**
+ * Represents an HTTPS record value.
+ */
+export class HttpsRecordValue extends SvcbRecordValueBase {
+  /**
+   * An HTTPS AliasMode record value.
+   *
+   * @param targetName The domain name of the alternative endpoint.
+   */
+  public static alias(targetName: string): HttpsRecordValue {
+    return new HttpsRecordValue({ priority: 0, targetName });
+  }
+
+  /**
+   * An HTTPS ServiceMode record value.
+   */
+  public static service(props?: HttpsRecordServiceModeProps): HttpsRecordValue {
+    return new HttpsRecordValue({ priority: 1, targetName: '.', ...props });
+  }
+
+  private constructor(props: SvcbRecordValueBaseProps) {
+    super(props);
+  }
+}
+
+/**
+ * Construction properties for an HttpsRecord.
+ */
+export interface HttpsRecordProps extends RecordSetOptions {
+  /**
+   * The values.
+   *
+   * @default - Specify exactly one of either `values` or `target`.
+   */
+  readonly values?: HttpsRecordValue[];
+
+  /**
+   * The target (mostly used as an alias target to CloudFront).
+   *
+   * @default - Specify exactly one of either `values` or `target`.
+   */
+  readonly target?: RecordTarget;
+}
+
+/**
+ * A DNS HTTPS record
+ *
+ * @resource AWS::Route53::RecordSet
+ */
+@propertyInjectable
+export class HttpsRecord extends RecordSet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.HttpsRecord';
+
+  constructor(scope: Construct, id: string, props: HttpsRecordProps) {
+    super(scope, id, {
+      ...props,
+      recordType: RecordType.HTTPS,
+      target: props.target ?? RecordTarget.fromValues(...(props.values?.map((v) => v.toString()) ?? [])),
+    });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    if (!!props.values === !!props.target) {
+      throw new ValidationError(lit`SpecifyExactlyOneValuesTarget`, 'Specify exactly one of either values or target.', this);
+    }
   }
 }
 
@@ -924,7 +1321,11 @@ export interface ZoneDelegationRecordProps extends RecordSetOptions {
 /**
  * A record to delegate further lookups to a different set of name servers.
  */
+@propertyInjectable
 export class ZoneDelegationRecord extends RecordSet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.ZoneDelegationRecord';
+
   constructor(scope: Construct, id: string, props: ZoneDelegationRecordProps) {
     super(scope, id, {
       ...props,
@@ -966,7 +1367,7 @@ export interface CrossAccountZoneDelegationRecordProps {
   /**
    * The delegation role in the parent account
    */
-  readonly delegationRole: iam.IRole;
+  readonly delegationRole: iam.IRoleRef;
 
   /**
    * The resource record cache time to live (TTL).
@@ -1016,7 +1417,7 @@ export class CrossAccountZoneDelegationRecord extends Construct {
     const addToPrinciplePolicyResult = role.addToPrincipalPolicy(new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['sts:AssumeRole'],
-      resources: [props.delegationRole.roleArn],
+      resources: [props.delegationRole.roleRef.roleArn],
     }));
 
     const customResource = new CustomResource(this, 'CrossAccountZoneDelegationCustomResource', {
@@ -1024,7 +1425,7 @@ export class CrossAccountZoneDelegationRecord extends Construct {
       serviceToken: provider.serviceToken,
       removalPolicy: props.removalPolicy,
       properties: {
-        AssumeRoleArn: props.delegationRole.roleArn,
+        AssumeRoleArn: props.delegationRole.roleRef.roleArn,
         ParentZoneName: props.parentHostedZoneName,
         ParentZoneId: props.parentHostedZoneId,
         DelegatedZoneName: props.delegatedZone.zoneName,
@@ -1039,3 +1440,4 @@ export class CrossAccountZoneDelegationRecord extends Construct {
     }
   }
 }
+

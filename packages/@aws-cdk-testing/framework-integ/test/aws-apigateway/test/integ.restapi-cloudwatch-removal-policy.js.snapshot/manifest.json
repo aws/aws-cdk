@@ -1,5 +1,5 @@
 {
-  "version": "33.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "test-apigateway-restapi-cloudwatch-removal-policy.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "test-apigateway-restapi-cloudwatch-removal-policy.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ad0976eb05657cb79673c3a947078cdcaaac49665eb861a3a4d2e6eeb5774489.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6ece9c86a8fdc4e432f60430373faf00afcfdb66d6cc74433e7245295992e34b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,10 +34,49 @@
         "test-apigateway-restapi-cloudwatch-removal-policy.assets"
       ],
       "metadata": {
+        "/test-apigateway-restapi-cloudwatch-removal-policy/my-api": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "cloudWatchRole": true,
+              "cloudWatchRoleRemovalPolicy": "destroy"
+            }
+          }
+        ],
         "/test-apigateway-restapi-cloudwatch-removal-policy/my-api/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myapi4C7BF186"
+          }
+        ],
+        "/test-apigateway-restapi-cloudwatch-removal-policy/my-api/CloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "applyRemovalPolicy": [
+                "destroy"
+              ]
+            }
+          }
+        ],
+        "/test-apigateway-restapi-cloudwatch-removal-policy/my-api/CloudWatchRole/ImportCloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/test-apigateway-restapi-cloudwatch-removal-policy/my-api/CloudWatchRole/Resource": [
@@ -51,10 +91,36 @@
             "data": "myapiAccountEC421A0A"
           }
         ],
+        "/test-apigateway-restapi-cloudwatch-removal-policy/my-api/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
         "/test-apigateway-restapi-cloudwatch-removal-policy/my-api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myapiDeployment92F2CB4972a890db5063ec679071ba7eefc76f2a"
+          }
+        ],
+        "/test-apigateway-restapi-cloudwatch-removal-policy/my-api/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/test-apigateway-restapi-cloudwatch-removal-policy/my-api/DeploymentStage.prod/Resource": [
@@ -67,6 +133,23 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "myapiEndpoint3628AFE3"
+          }
+        ],
+        "/test-apigateway-restapi-cloudwatch-removal-policy/my-api/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/test-apigateway-restapi-cloudwatch-removal-policy/my-api/Default/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
           }
         ],
         "/test-apigateway-restapi-cloudwatch-removal-policy/my-api/Default/GET/Resource": [
@@ -103,6 +186,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "apigatewayrestapicloudwatchremovalpolicyDefaultTestDeployAssert35AFDA9A.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -143,5 +227,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

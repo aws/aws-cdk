@@ -4,7 +4,11 @@ import { S3EventSourceV2 } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { TestFunction } from './test-function';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const stack1 = new Stack(app, 'TestStack1');
 const stack2 = new Stack(app, 'TestStack2');

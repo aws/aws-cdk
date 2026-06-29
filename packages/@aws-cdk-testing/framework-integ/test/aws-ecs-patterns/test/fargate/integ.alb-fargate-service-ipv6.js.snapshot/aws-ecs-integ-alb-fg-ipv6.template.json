@@ -609,6 +609,12 @@
   "VpcEIGW61416F369": {
    "Type": "AWS::EC2::EgressOnlyInternetGateway",
    "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-ecs-integ-alb-fg-ipv6/Vpc"
+     }
+    ],
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }

@@ -4,7 +4,11 @@ import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-stepfunctions-integ');
 
 const handler = new Function(stack, 'Handler', {
@@ -13,8 +17,8 @@ const handler = new Function(stack, 'Handler', {
   runtime: Runtime.PYTHON_3_9,
 });
 
-const submitJob = new sfn.Task(stack, 'Invoke Handler', {
-  task: new tasks.InvokeFunction(handler),
+const submitJob = new tasks.LambdaInvoke(stack, 'Invoke Handler', {
+  lambdaFunction: handler,
 });
 
 const callbackHandler = new Function(stack, 'CallbackHandler', {
@@ -23,12 +27,11 @@ const callbackHandler = new Function(stack, 'CallbackHandler', {
   runtime: Runtime.PYTHON_3_9,
 });
 
-const taskTokenHandler = new sfn.Task(stack, 'Invoke Handler with task token', {
-  task: new tasks.RunLambdaTask(callbackHandler, {
-    integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-    payload: sfn.TaskInput.fromObject({
-      token: sfn.JsonPath.taskToken,
-    }),
+const taskTokenHandler = new tasks.LambdaInvoke(stack, 'Invoke Handler with task token', {
+  lambdaFunction: callbackHandler,
+  integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
+  payload: sfn.TaskInput.fromObject({
+    token: sfn.JsonPath.taskToken,
   }),
   inputPath: '$.guid',
   resultPath: '$.status',
@@ -50,7 +53,7 @@ const chain = sfn.Chain
   );
 
 new sfn.StateMachine(stack, 'StateMachine', {
-  definition: chain,
+  definitionBody: sfn.DefinitionBody.fromChainable(chain),
   timeout: cdk.Duration.seconds(30),
 });
 

@@ -1,14 +1,24 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { MAX_POLICY_NAME_LEN } from './util';
-import { FeatureFlags, Names, Resource, Token, TokenComparison, Annotations } from '../../../core';
+import { Annotations, FeatureFlags, Names, Resource, Token, TokenComparison } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME } from '../../../cx-api';
 import { Grant } from '../grant';
-import { IManagedPolicy, ManagedPolicy } from '../managed-policy';
+import type { RoleReference } from '../iam.generated';
+import type { IManagedPolicy, ManagedPolicy } from '../managed-policy';
 import { Policy } from '../policy';
-import { PolicyStatement } from '../policy-statement';
-import { IComparablePrincipal, IPrincipal, ArnPrincipal, AddToPrincipalPolicyResult, PrincipalPolicyFragment } from '../principals';
-import { IRole, FromRoleArnOptions } from '../role';
+import type { PolicyStatement } from '../policy-statement';
+import type {
+  AddToPrincipalPolicyResult,
+  IComparablePrincipal,
+  IPrincipal,
+  PrincipalPolicyFragment,
+} from '../principals';
+import {
+  ArnPrincipal,
+} from '../principals';
+import type { FromRoleArnOptions, IRole } from '../role';
 import { AttachedPolicies } from '../util';
 
 export interface ImportedRoleProps extends FromRoleArnOptions {
@@ -17,7 +27,10 @@ export interface ImportedRoleProps extends FromRoleArnOptions {
   readonly account?: string;
 }
 
+@propertyInjectable
 export class ImportedRole extends Resource implements IRole, IComparablePrincipal {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.ImportedRole';
   public readonly grantPrincipal: IPrincipal = this;
   public readonly principalAccount?: string;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
@@ -40,6 +53,13 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
     this.policyFragment = new ArnPrincipal(this.roleArn).policyFragment;
     this.defaultPolicyName = props.defaultPolicyName;
     this.principalAccount = props.account;
+  }
+
+  public get roleRef(): RoleReference {
+    return {
+      roleName: this.roleName,
+      roleArn: this.roleArn,
+    };
   }
 
   @MethodMetadata()
@@ -82,7 +102,7 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
 
   @MethodMetadata()
   public addManagedPolicy(policy: IManagedPolicy): void {
-    // Using "Type Predicate" to confirm x is ManagedPolicy, which allows to avoid
+    // Using "Type Predicate" to confirm x is ManagedPolicy, which allows us to avoid
     // using try ... catch and throw error.
     const isManagedPolicy = (x: IManagedPolicy): x is ManagedPolicy => {
       return (x as ManagedPolicy).attachToRole !== undefined;
@@ -114,7 +134,6 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
       grantee,
       actions,
       resourceArns: [this.roleArn],
-      scope: this,
     });
   }
 

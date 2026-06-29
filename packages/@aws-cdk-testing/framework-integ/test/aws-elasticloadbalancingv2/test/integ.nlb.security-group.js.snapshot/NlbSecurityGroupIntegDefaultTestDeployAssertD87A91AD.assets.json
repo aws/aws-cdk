@@ -1,0 +1,33 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "6611813c56ee5ec64f812f46caf03748d8b30fea6e344cc7ac25035891a6dfe8": {
+      "source": {
+        "path": "asset.6611813c56ee5ec64f812f46caf03748d8b30fea6e344cc7ac25035891a6dfe8.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-05dfd926": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6611813c56ee5ec64f812f46caf03748d8b30fea6e344cc7ac25035891a6dfe8.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "7979ca60de6d249e882e37fa9b810f3f70dabbb3466de518ae2c51100a5eaf55": {
+      "displayName": "NlbSecurityGroupIntegDefaultTestDeployAssertD87A91AD Template",
+      "source": {
+        "path": "NlbSecurityGroupIntegDefaultTestDeployAssertD87A91AD.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-eb5ec567": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7979ca60de6d249e882e37fa9b810f3f70dabbb3466de518ae2c51100a5eaf55.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,8 +1,8 @@
-import { IParameterGroup } from './parameter-group';
-import * as ec2 from '../../aws-ec2';
-import * as kms from '../../aws-kms';
-import * as secretsmanager from '../../aws-secretsmanager';
-import { Duration, SecretValue } from '../../core';
+import type { IParameterGroup } from './parameter-group';
+import type * as ec2 from '../../aws-ec2';
+import type * as kms from '../../aws-kms';
+import type * as secretsmanager from '../../aws-secretsmanager';
+import type { Duration, SecretValue } from '../../core';
 
 /**
  * Instance properties for database instances
@@ -245,7 +245,7 @@ export abstract class Credentials {
    * @param secret The secret where the credentials are stored
    * @param username The username defined in the secret. If specified the username
    *   will be referenced as a string and not a dynamic reference to the username
-   *   field in the secret. This allows to replace the secret without replacing the
+   *   field in the secret. This allows you to replace the secret without replacing the
    *   instance or cluster.
    */
   public static fromSecret(secret: secretsmanager.ISecret, username?: string): Credentials {
@@ -590,4 +590,19 @@ export enum PerformanceInsightRetention {
    * Long term retention period of 2 years.
    */
   LONG_TERM = 731,
+}
+
+/**
+ * Engine lifecycle support for Amazon RDS and Amazon Aurora
+ */
+export enum EngineLifecycleSupport {
+  /**
+   * Using Amazon RDS extended support
+   */
+  OPEN_SOURCE_RDS_EXTENDED_SUPPORT = 'open-source-rds-extended-support',
+
+  /**
+   * Not using Amazon RDS extended support
+   */
+  OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED = 'open-source-rds-extended-support-disabled',
 }

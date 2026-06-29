@@ -1,9 +1,12 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnComputeEnvironment } from './batch.generated';
-import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
+import type { IComputeEnvironment, ComputeEnvironmentProps } from './compute-environment-base';
+import { ComputeEnvironmentBase } from './compute-environment-base';
 import { ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
 import { ArnFormat, Stack } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents an UnmanagedComputeEnvironment. Batch will not provision instances on your behalf
@@ -42,7 +45,11 @@ export interface UnmanagedComputeEnvironmentProps extends ComputeEnvironmentProp
  *
  * @resource AWS::Batch::ComputeEnvironment
  */
+@propertyInjectable
 export class UnmanagedComputeEnvironment extends ComputeEnvironmentBase implements IUnmanagedComputeEnvironment {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.UnmanagedComputeEnvironment';
+
   /**
    * Import an UnmanagedComputeEnvironment by its arn
    */
@@ -63,8 +70,22 @@ export class UnmanagedComputeEnvironment extends ComputeEnvironmentBase implemen
   }
 
   public readonly unmanagedvCPUs?: number | undefined;
-  public readonly computeEnvironmentArn: string;
-  public readonly computeEnvironmentName: string;
+
+  private readonly resource: CfnComputeEnvironment;
+
+  @memoizedGetter
+  public get computeEnvironmentArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrComputeEnvironmentArn, {
+      service: 'batch',
+      resource: 'compute-environment',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get computeEnvironmentName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   constructor(scope: Construct, id: string, props?: UnmanagedComputeEnvironmentProps) {
     super(scope, id, props);
@@ -72,7 +93,7 @@ export class UnmanagedComputeEnvironment extends ComputeEnvironmentBase implemen
     addConstructMetadata(this, props);
 
     this.unmanagedvCPUs = props?.unmanagedvCpus;
-    const resource = new CfnComputeEnvironment(this, 'Resource', {
+    this.resource = new CfnComputeEnvironment(this, 'Resource', {
       type: 'unmanaged',
       state: this.enabled ? 'ENABLED' : 'DISABLED',
       computeEnvironmentName: props?.computeEnvironmentName,
@@ -84,12 +105,6 @@ export class UnmanagedComputeEnvironment extends ComputeEnvironmentBase implemen
         ],
         assumedBy: new ServicePrincipal('batch.amazonaws.com'),
       }).roleArn,
-    });
-    this.computeEnvironmentName = this.getResourceNameAttribute(resource.ref);
-    this.computeEnvironmentArn = this.getResourceArnAttribute(resource.attrComputeEnvironmentArn, {
-      service: 'batch',
-      resource: 'compute-environment',
-      resourceName: this.physicalName,
     });
   }
 }

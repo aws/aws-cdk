@@ -1,10 +1,14 @@
 import { App, Stack } from 'aws-cdk-lib';
-import { ExpectedResult, IntegTest } from '../../../lib';
 import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as integrations from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { ExpectedResult, IntegTest } from '../../../lib';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': true,
+  },
+});
 const stack = new Stack(app, 'InvokeFunctionAssertions');
 const integ = new IntegTest(app, 'AssertionsTest', {
   testCases: [stack],
@@ -17,7 +21,7 @@ httpApi.addRoutes({
   methods: [apigwv2.HttpMethod.GET],
   integration: new integrations.HttpLambdaIntegration('GetIntegration',
     new lambda.Function(stack, 'GetHandler', {
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
       code: new lambda.InlineCode(`
         exports.handler = async () => ({
@@ -32,7 +36,7 @@ httpApi.addRoutes({
   methods: [apigwv2.HttpMethod.POST],
   integration: new integrations.HttpLambdaIntegration('PostIntegration',
     new lambda.Function(stack, 'PostHandler', {
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
       code: new lambda.InlineCode(`
         exports.handler = async ({ body }) => ({
@@ -47,7 +51,7 @@ httpApi.addRoutes({
   methods: [apigwv2.HttpMethod.GET],
   integration: new integrations.HttpLambdaIntegration('ForbiddenIntegration',
     new lambda.Function(stack, 'ForbiddenHandler', {
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
       code: new lambda.InlineCode(`
         exports.handler = async ({ body }) => ({
@@ -61,7 +65,7 @@ httpApi.addRoutes({
   methods: [apigwv2.HttpMethod.GET],
   integration: new integrations.HttpLambdaIntegration('EchoIntegration',
     new lambda.Function(stack, 'EchoHandler', {
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
       code: new lambda.InlineCode(`
         exports.handler = async ({ pathParameters: { echo } }) => ({

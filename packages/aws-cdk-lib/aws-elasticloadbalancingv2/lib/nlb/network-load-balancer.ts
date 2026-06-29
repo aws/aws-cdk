@@ -1,15 +1,19 @@
-import { Construct } from 'constructs';
-import { BaseNetworkListenerProps, NetworkListener } from './network-listener';
+import type { Construct } from 'constructs';
+import type { BaseNetworkListenerProps } from './network-listener';
+import { NetworkListener } from './network-listener';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { Lazy, Resource, Token } from '../../../core';
+import { FeatureFlags, Lazy, Names, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
+import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { NetworkELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
-import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2, SubnetMapping } from '../shared/base-load-balancer';
+import type { BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2, SubnetMapping } from '../shared/base-load-balancer';
+import { BaseLoadBalancer } from '../shared/base-load-balancer';
 import { IpAddressType, Protocol } from '../shared/enums';
 import { parseLoadBalancerFullName } from '../shared/util';
 
@@ -94,6 +98,19 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
    * @default undefined - The VPC default strategy for subnets is used
    */
   readonly subnetMappings?: SubnetMapping[];
+
+  /**
+   * Create a Network Load Balancer without security groups.
+   *
+   * When true, creates an NLB that cannot have security groups attached.
+   * This is useful when you need to create a traditional NLB without security group associations.
+   *
+   * This property only takes effect when the feature flag
+   * `@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault` is enabled.
+   *
+   * @default false
+   */
+  readonly disableSecurityGroups?: boolean;
 }
 
 /**
@@ -238,6 +255,12 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
       public readonly metrics: INetworkLoadBalancerMetrics = new NetworkLoadBalancerMetrics(this, parseLoadBalancerFullName(attrs.loadBalancerArn));
       public readonly securityGroups?: string[] = attrs.loadBalancerSecurityGroups;
 
+      public get loadBalancerRef(): aws_elasticloadbalancingv2.LoadBalancerReference {
+        return {
+          loadBalancerArn: this.loadBalancerArn,
+        };
+      }
+
       public addListener(lid: string, props: BaseNetworkListenerProps): NetworkListener {
         return new NetworkListener(this, lid, {
           loadBalancer: this,
@@ -247,14 +270,14 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
 
       public get loadBalancerCanonicalHostedZoneId(): string {
         if (attrs.loadBalancerCanonicalHostedZoneId) { return attrs.loadBalancerCanonicalHostedZoneId; }
-        // eslint-disable-next-line max-len
-        throw new ValidationError(`'loadBalancerCanonicalHostedZoneId' was not provided when constructing Network Load Balancer ${this.node.path} from attributes`, this);
+
+        throw new ValidationError(lit`LoadBalancerCanonicalHostedZone`, `'loadBalancerCanonicalHostedZoneId' was not provided when constructing Network Load Balancer ${this.node.path} from attributes`, this);
       }
 
       public get loadBalancerDnsName(): string {
         if (attrs.loadBalancerDnsName) { return attrs.loadBalancerDnsName; }
-        // eslint-disable-next-line max-len
-        throw new ValidationError(`'loadBalancerDnsName' was not provided when constructing Network Load Balancer ${this.node.path} from attributes`, this);
+
+        throw new ValidationError(lit`LoadBalancerDnsNameProvided`, `'loadBalancerDnsName' was not provided when constructing Network Load Balancer ${this.node.path} from attributes`, this);
       }
     }
 
@@ -281,13 +304,15 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   }
 
   constructor(scope: Construct, id: string, props: NetworkLoadBalancerProps) {
+    const enforceSgInboundRules = props.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic !== undefined
+      ? (props.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic ? 'on' : 'off')
+      : undefined;
+
     super(scope, id, props, {
       type: 'network',
       securityGroups: Lazy.list({ produce: () => this.securityGroups }),
       ipAddressType: props.ipAddressType,
-      enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: Lazy.string({
-        produce: () => this.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic,
-      }),
+      enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: enforceSgInboundRules,
       enablePrefixForIpv6SourceNat: props.enablePrefixForIpv6SourceNat === true ? 'on': props.enablePrefixForIpv6SourceNat === false ? 'off' : undefined,
       subnetMappings: props.subnetMappings,
     });
@@ -296,13 +321,13 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
 
     if (props.subnetMappings && props.subnetMappings.length > 0) {
       if (props.internetFacing && props.subnetMappings.some(sm => sm.privateIpv4Address !== undefined)) {
-        throw new ValidationError('Cannot specify `privateIpv4Address` for a internet facing load balancer.', this);
+        throw new ValidationError(lit`CannotSpecifyPrivateIpvAddress`, 'Cannot specify `privateIpv4Address` for a internet facing load balancer.', this);
       }
       if (props.internetFacing !== true && props.subnetMappings.some(sm => sm.allocationId !== undefined)) {
-        throw new ValidationError('Cannot specify `allocationId` for a internal load balancer.', this);
+        throw new ValidationError(lit`CannotSpecifyAllocationIdInternal`, 'Cannot specify `allocationId` for a internal load balancer.', this);
       }
       if (props.enablePrefixForIpv6SourceNat !== true && props.subnetMappings.some(sm => sm.sourceNatIpv6Prefix !== undefined)) {
-        throw new ValidationError('Cannot specify `sourceNatIpv6Prefix` for a load balancer that does not have `enablePrefixForIpv6SourceNat` enabled.', this);
+        throw new ValidationError(lit`CannotSpecifySourceNatIpv`, 'Cannot specify `sourceNatIpv6Prefix` for a load balancer that does not have `enablePrefixForIpv6SourceNat` enabled.', this);
       }
     }
 
@@ -311,14 +336,28 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     if (minimumCapacityUnit && !Token.isUnresolved(minimumCapacityUnit)) {
       const capacityUnitPerAz = minimumCapacityUnit / props.vpc.availabilityZones.length;
       if (!Number.isInteger(minimumCapacityUnit) || capacityUnitPerAz < 2750 || capacityUnitPerAz > 45000) {
-        throw new ValidationError(`'minimumCapacityUnit' must be a positive value between 2750 and 45000 per AZ for Network Load Balancer, got ${capacityUnitPerAz} LCU per AZ.`, this);
+        throw new ValidationError(lit`MinimumCapacityUnitPositiveValue`, `'minimumCapacityUnit' must be a positive value between 2750 and 45000 per AZ for Network Load Balancer, got ${capacityUnitPerAz} LCU per AZ.`, this);
       }
     }
 
     this.enablePrefixForIpv6SourceNat = props.enablePrefixForIpv6SourceNat;
     this.metrics = new NetworkLoadBalancerMetrics(this, this.loadBalancerFullName);
     this.isSecurityGroupsPropertyDefined = !!props.securityGroups;
-    this.connections = new ec2.Connections({ securityGroups: props.securityGroups });
+
+    let securityGroups: ec2.ISecurityGroup[] | undefined;
+    if (props.securityGroups && props.disableSecurityGroups) {
+      throw new ValidationError(lit`CannotSpecifySecurityGroupsDisable`, 'Cannot specify both `securityGroups` and `disableSecurityGroups` properties.', this);
+    }
+    if (FeatureFlags.of(this).isEnabled(cxapi.NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT) && !props.disableSecurityGroups) {
+      securityGroups = props.securityGroups ?? [new ec2.SecurityGroup(this, 'SecurityGroup', {
+        vpc: props.vpc,
+        description: `Automatically created Security Group for ELB ${Names.uniqueId(this)}`,
+        allowAllOutbound: false,
+      })];
+    } else {
+      securityGroups = props.securityGroups;
+    }
+    this.connections = new ec2.Connections({ securityGroups: securityGroups });
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
     if (props.clientRoutingPolicy) {
       this.setAttribute('dns_record.client_routing_policy', props.clientRoutingPolicy);
@@ -347,7 +386,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
       (this.ipAddressType === IpAddressType.DUAL_STACK || this.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4) &&
       this.enablePrefixForIpv6SourceNat !== true
     ) {
-      throw new ValidationError('To add a listener with UDP protocol to a dual stack NLB, \'enablePrefixForIpv6SourceNat\' must be set to true.', this);
+      throw new ValidationError(lit`ListenerProtocolDualStack`, 'To add a listener with UDP protocol to a dual stack NLB, \'enablePrefixForIpv6SourceNat\' must be set to true.', this);
     }
     return new NetworkListener(this, id, {
       loadBalancer: this,
@@ -605,7 +644,10 @@ export interface INetworkLoadBalancer extends ILoadBalancerV2, ec2.IVpcEndpointS
   addListener(id: string, props: BaseNetworkListenerProps): NetworkListener;
 }
 
+@propertyInjectable
 class LookedUpNetworkLoadBalancer extends Resource implements INetworkLoadBalancer {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.LookedUpNetworkLoadBalancer';
   public readonly loadBalancerCanonicalHostedZoneId: string;
   public readonly loadBalancerDnsName: string;
   public readonly loadBalancerArn: string;
@@ -614,6 +656,12 @@ class LookedUpNetworkLoadBalancer extends Resource implements INetworkLoadBalanc
   public readonly securityGroups?: string[];
   public readonly ipAddressType?: IpAddressType;
   public readonly connections: ec2.Connections;
+
+  public get loadBalancerRef(): aws_elasticloadbalancingv2.LoadBalancerReference {
+    return {
+      loadBalancerArn: this.loadBalancerArn,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: cxapi.LoadBalancerContextResponse) {
     super(scope, id, { environmentFromArn: props.loadBalancerArn });

@@ -1,11 +1,12 @@
-import { IApi } from './api';
+import type { IApi } from './api';
 import { ApiMapping } from './api-mapping';
-import { DomainMappingOptions, IAccessLogSettings, IStage } from './stage';
-import { AccessLogFormat } from '../../../aws-apigateway/lib';
+import type { DomainMappingOptions, IAccessLogSettings, IStage } from './stage';
+import type { AccessLogFormat } from '../../../aws-apigateway/lib';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import { Resource, Token } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
-import { CfnStage } from '../apigatewayv2.generated';
+import { lit } from '../../../core/lib/private/literal-string';
+import type { CfnStage, IApiRef, StageReference } from '../apigatewayv2.generated';
 
 /**
  * Base class representing an API
@@ -23,6 +24,10 @@ export abstract class ApiBase extends Resource implements IApi {
       ...props,
     }).attachTo(this);
   }
+
+  public get apiRef(): IApiRef['apiRef'] {
+    return { apiId: this.apiId };
+  }
 }
 
 /**
@@ -30,6 +35,7 @@ export abstract class ApiBase extends Resource implements IApi {
  * @internal
  */
 export abstract class StageBase extends Resource implements IStage {
+  private stageVariables: { [key: string]: string } = {};
   public abstract readonly stageName: string;
   protected abstract readonly baseApi: IApi;
 
@@ -45,11 +51,16 @@ export abstract class StageBase extends Resource implements IStage {
   abstract get url(): string;
 
   /**
+   * The default Access Logging format of this stage.
+   */
+  abstract defaultAccessLogFormat(): AccessLogFormat;
+
+  /**
    * @internal
    */
   protected _addDomainMapping(domainMapping: DomainMappingOptions) {
     if (this._apiMapping) {
-      throw new UnscopedValidationError('Only one ApiMapping allowed per Stage');
+      throw new UnscopedValidationError(lit`OnlyApimappingAllowedStage`, 'Only one ApiMapping allowed per Stage');
     }
     this._apiMapping = new ApiMapping(this, `${domainMapping.domainName}${domainMapping.mappingKey}`, {
       api: this.baseApi,
@@ -73,12 +84,12 @@ export abstract class StageBase extends Resource implements IStage {
       !Token.isUnresolved(format.toString()) &&
       !/\$context\.(?:requestId|extendedRequestId)\b/.test(format.toString())
     ) {
-      throw new ValidationError('Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`', this);
+      throw new ValidationError(lit`AccessIncludeEither`, 'Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`', this);
     }
 
     return {
       destinationArn: props.destination.bind(this).destinationArn,
-      format: format ? format.toString() : AccessLogFormat.clf().toString(),
+      format: format ? format.toString() : this.defaultAccessLogFormat().toString(),
     };
   }
 
@@ -86,5 +97,21 @@ export abstract class StageBase extends Resource implements IStage {
     return this.baseApi.metric(metricName, props).with({
       dimensionsMap: { ApiId: this.baseApi.apiId, Stage: this.stageName },
     }).attachTo(this);
+  }
+
+  public addStageVariable(name: string, value: string) {
+    this.stageVariables[name] = value;
+  }
+
+  /**
+   * Returns the stage variables for this stage.
+   * @internal
+   */
+  protected get _stageVariables(): { [key: string]: string } | undefined {
+    return Object.keys(this.stageVariables).length > 0 ? { ...this.stageVariables } : undefined;
+  }
+
+  public get stageRef(): StageReference {
+    return { apiId: this.baseApi.apiId, stageName: this.stageName };
   }
 }

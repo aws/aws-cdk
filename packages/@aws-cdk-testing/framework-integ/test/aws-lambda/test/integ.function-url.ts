@@ -1,5 +1,6 @@
-import { App, CfnOutput, Stack, StackProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, CfnOutput, Stack } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Function, InlineCode, InvokeMode, Runtime, FunctionUrlAuthType } from 'aws-cdk-lib/aws-lambda';
 
@@ -71,7 +72,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 new IntegTest(app, 'IntegTest', {
   testCases: [
     new TestStack(app, 'Stack1'),

@@ -1,7 +1,9 @@
 import { getResourceArn } from './resource-arn-suffix';
 import * as iam from '../../aws-iam';
 import * as sfn from '../../aws-stepfunctions';
-import { ArnFormat, Stack } from '../../core';
+import { ArnFormat, Stack, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
+import type { IStateMachineRef } from '../../interfaces/generated/aws-stepfunctions-interfaces.generated';
 
 /**
  * Properties for StartExecution
@@ -47,7 +49,7 @@ export interface StartExecutionProps {
 export class StartExecution implements sfn.IStepFunctionsTask {
   private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
-  constructor(private readonly stateMachine: sfn.IStateMachine, private readonly props: StartExecutionProps = {}) {
+  constructor(private readonly stateMachine: IStateMachineRef, private readonly props: StartExecutionProps = {}) {
     this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
 
     const supportedPatterns = [
@@ -57,12 +59,12 @@ export class StartExecution implements sfn.IStepFunctionsTask {
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call Step Functions.`);
+      throw new ValidationError(lit`InvalidServiceIntegrationPattern`, `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call Step Functions.`, stateMachine);
     }
 
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
       && !sfn.FieldUtils.containsTaskToken(props.input)) {
-      throw new Error('Task Token is missing in input (pass JsonPath.taskToken somewhere in input)');
+      throw new ValidationError(lit`TaskTokenMissingInInput`, 'Task Token is missing in input (pass JsonPath.taskToken somewhere in input)', stateMachine);
     }
   }
 
@@ -72,7 +74,7 @@ export class StartExecution implements sfn.IStepFunctionsTask {
       policyStatements: this.createScopedAccessPolicy(task),
       parameters: {
         Input: this.props.input,
-        StateMachineArn: this.stateMachine.stateMachineArn,
+        StateMachineArn: this.stateMachine.stateMachineRef.stateMachineArn,
         Name: this.props.name,
       },
     };
@@ -91,7 +93,7 @@ export class StartExecution implements sfn.IStepFunctionsTask {
     const policyStatements = [
       new iam.PolicyStatement({
         actions: ['states:StartExecution'],
-        resources: [this.stateMachine.stateMachineArn],
+        resources: [this.stateMachine.stateMachineRef.stateMachineArn],
       }),
     ];
 
@@ -104,7 +106,7 @@ export class StartExecution implements sfn.IStepFunctionsTask {
           service: 'states',
           resource: 'execution',
           arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-          resourceName: `${stack.splitArn(this.stateMachine.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME).resourceName}*`,
+          resourceName: `${stack.splitArn(this.stateMachine.stateMachineRef.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME).resourceName}*`,
         })],
       }));
 

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 
 exports.handler = async (event: any) => {
   console.log('hello world');

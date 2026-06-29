@@ -1,10 +1,15 @@
-import { Construct } from 'constructs';
-import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
-import { DnsServiceProps, Service } from './service';
+import type { Construct } from 'constructs';
+import type { BaseNamespaceProps, INamespace } from './namespace';
+import { NamespaceType } from './namespace';
+import type { DnsServiceProps } from './service';
+import { Service } from './service';
 import { CfnPrivateDnsNamespace } from './servicediscovery.generated';
-import * as ec2 from '../../aws-ec2';
-import { Resource } from '../../core';
+import type * as ec2 from '../../aws-ec2';
+import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IPrivateDnsNamespaceRef, PrivateDnsNamespaceReference } from '../../interfaces/generated/aws-servicediscovery-interfaces.generated';
 
 export interface PrivateDnsNamespaceProps extends BaseNamespaceProps {
   /**
@@ -13,7 +18,7 @@ export interface PrivateDnsNamespaceProps extends BaseNamespaceProps {
   readonly vpc: ec2.IVpc;
 }
 
-export interface IPrivateDnsNamespace extends INamespace { }
+export interface IPrivateDnsNamespace extends INamespace, IPrivateDnsNamespaceRef { }
 
 export interface PrivateDnsNamespaceAttributes {
   /**
@@ -35,13 +40,23 @@ export interface PrivateDnsNamespaceAttributes {
 /**
  * Define a Service Discovery HTTP Namespace
  */
+@propertyInjectable
 export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespace {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-servicediscovery.PrivateDnsNamespace';
+
   public static fromPrivateDnsNamespaceAttributes(scope: Construct, id: string, attrs: PrivateDnsNamespaceAttributes): IPrivateDnsNamespace {
     class Import extends Resource implements IPrivateDnsNamespace {
       public namespaceName = attrs.namespaceName;
       public namespaceId = attrs.namespaceId;
       public namespaceArn = attrs.namespaceArn;
       public type = NamespaceType.DNS_PRIVATE;
+      public get privateDnsNamespaceRef(): PrivateDnsNamespaceReference {
+        return {
+          privateDnsNamespaceId: attrs.namespaceId,
+          privateDnsNamespaceArn: attrs.namespaceArn,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -76,7 +91,7 @@ export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespac
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
     if (props.vpc === undefined) {
-      throw new Error('VPC must be specified for PrivateDNSNamespaces');
+      throw new ValidationError(lit`SpecifiedPrivateNamespaces`, 'VPC must be specified for PrivateDNSNamespaces', this);
     }
 
     const ns = new CfnPrivateDnsNamespace(this, 'Resource', {
@@ -100,6 +115,13 @@ export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespac
 
   /** @attribute */
   public get privateDnsNamespaceId() { return this.namespaceId; }
+
+  public get privateDnsNamespaceRef(): PrivateDnsNamespaceReference {
+    return {
+      privateDnsNamespaceId: this.namespaceId,
+      privateDnsNamespaceArn: this.namespaceArn,
+    };
+  }
 
   /**
    * Creates a service within the namespace

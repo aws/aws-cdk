@@ -1,9 +1,11 @@
-import { Construct } from 'constructs';
-import { MapBase, MapBaseJsonataOptions, MapBaseJsonPathOptions, MapBaseOptions, MapBaseProps } from './map-base';
+import type { Construct } from 'constructs';
+import type { MapBaseJsonataOptions, MapBaseJsonPathOptions, MapBaseOptions, MapBaseProps } from './map-base';
+import { MapBase } from './map-base';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
-import { CatchProps, IChainable, INextable, ProcessorConfig, ProcessorMode, QueryLanguage, RetryProps } from '../types';
-import { StateBaseProps } from './state';
+import type { CatchProps, IChainable, INextable, ProcessorConfig, RetryProps } from '../types';
+import { ProcessorMode, QueryLanguage } from '../types';
+import type { StateBaseProps } from './state';
 
 interface MapOptions extends MapBaseOptions {
   /**
@@ -120,7 +122,7 @@ export class Map extends MapBase implements INextable {
       errors.push('Map state cannot have both an iterator and an item processor');
     }
 
-    if (this.parameters && this.itemSelector) {
+    if (this.parameters && (this.itemSelector || this.jsonataItemSelector)) {
       errors.push('Map state cannot have both parameters and an item selector');
     }
 

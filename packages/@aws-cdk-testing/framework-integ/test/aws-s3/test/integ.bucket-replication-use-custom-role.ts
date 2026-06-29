@@ -1,5 +1,7 @@
-import { App, Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
-import { AwsApiCall, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import type { AwsApiCall } from '@aws-cdk/integ-tests-alpha';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -47,23 +49,12 @@ class TestStack extends Stack {
       ],
     });
 
-    this.replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
-      resources: [this.sourceBucket.bucketArn],
-      effect: iam.Effect.ALLOW,
-    }));
-    this.replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['s3:GetObjectVersionForReplication', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'],
-      resources: [this.sourceBucket.arnForObjects('*')],
-      effect: iam.Effect.ALLOW,
-    }));
-    this.replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['s3:ReplicateObject', 's3:ReplicateDelete', 's3:ReplicateTags', 's3:ObjectOwnerOverrideToBucketOwner'],
-      resources: [this.destinationBucket.arnForObjects('*')],
-      effect: iam.Effect.ALLOW,
-    }));
-    sourceKmsKey.grantDecrypt(this.replicationRole);
-    destinationKmsKey.grantEncrypt(this.replicationRole);
+    this.sourceBucket.grantReplicationPermission(this.replicationRole, {
+      sourceDecryptionKey: sourceKmsKey,
+      destinations: [
+        { encryptionKey: destinationKmsKey, bucket: this.destinationBucket },
+      ],
+    });
   }
 }
 
