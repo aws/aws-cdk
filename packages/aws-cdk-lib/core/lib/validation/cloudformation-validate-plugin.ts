@@ -136,12 +136,14 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
           v => v.ruleName === diagnostic.ruleId && v.severity === severity,
         );
 
+        const propertyPathPefix = diagnostic.propertyPath ? `${diagnostic.propertyPath.replace(/^Properties\./, '')}: ` : '';
+
         if (existing) {
           existing.violatingResources.push(violatingResource);
         } else {
           violations.push({
             ruleName: diagnostic.ruleId,
-            description: diagnostic.message,
+            description: `${propertyPathPefix}${diagnostic.message}`,
             severity,
             fix: diagnostic.suggestedFix,
             violatingResources: [violatingResource],
@@ -268,11 +270,16 @@ const IGNORE_RULES = new Set([
 
   // WHAT: Invalid type of field
   // WHY: { Fn::GetStackOutput } not recognized
-  // <https://github.com/aws-cloudformation/cloudformation-validate/issues/56>.
+  // <https://github.com/aws-cloudformation/cloudformation-validate/issues/56>
   'F3012',
 
   // WHAT: CloudFront origin doesn't exist
   // WHY: It does exist, it's just very long.
-  // <https://github.com/aws-cloudformation/cloudformation-validate/issues/57>.
+  // <https://github.com/aws-cloudformation/cloudformation-validate/issues/57>
   'F3057',
+
+  // WHAT: Array must be non-empty
+  // WHY: requirement seems to be hallucinated by the engine
+  // <https://github.com/aws-cloudformation/cloudformation-validate/issues/62>
+  'F3032',
 ]);
