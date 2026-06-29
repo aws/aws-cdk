@@ -623,6 +623,27 @@ declare const preTokenGenerationFn: lambda.Function;
 userpool.addTrigger(cognito.UserPoolOperation.PRE_TOKEN_GENERATION_CONFIG, preTokenGenerationFn, cognito.LambdaVersion.V2_0);
 ```
 
+The inbound federation Lambda trigger allows you to transform and customize federated user attributes during authentication.
+This is useful for modifying large group attributes from external SAML or OIDC providers that exceed Cognito's 2,048 character limit.
+For details, see [Inbound Federation Lambda Trigger](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-inbound-federation.html).
+
+```ts
+declare const inboundFederationFn: lambda.Function;
+
+// Using lambdaTriggers property
+const userpool = new cognito.UserPool(this, 'myuserpool', {
+  lambdaTriggers: {
+    inboundFederation: inboundFederationFn,
+  },
+});
+
+// Or using addTrigger method
+declare const userpool2: cognito.UserPool;
+userpool2.addTrigger(cognito.UserPoolOperation.INBOUND_FEDERATION, inboundFederationFn);
+```
+
+Note: The inbound federation trigger only supports V1_0 lambda version.
+
 The following table lists the set of triggers available, and their corresponding method to add it to the user pool.
 For more information on the function of these triggers and how to configure them, read [User Pool Workflows with
 Triggers](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html).
