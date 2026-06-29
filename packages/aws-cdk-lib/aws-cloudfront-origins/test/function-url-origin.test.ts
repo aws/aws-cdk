@@ -1,4 +1,5 @@
 import { Template, Match } from '../../assertions';
+import * as acm from '../../aws-certificatemanager';
 import * as cloudfront from '../../aws-cloudfront';
 import { OriginIpAddressType } from '../../aws-cloudfront';
 import * as lambda from '../../aws-lambda';
@@ -592,3 +593,69 @@ describe('ipAddressType', () => {
     });
   });
 });
+
+describe('originMtlsConfig', () => {
+  test('renders with originMtlsConfig for FunctionUrlOrigin', () => {
+    const fn = new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+    const fnUrl = fn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+    });
+    const cert = acm.CfnCertificate.fromCertificateId(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/test-cert-id');
+    const origin = new FunctionUrlOrigin(fnUrl, {
+      originMtlsConfig: {
+        clientCertificate: cert,
+      },
+    });
+    const originBindConfig = origin.bind(stack, { originId: 'StackOriginLambdaFunctionURL' });
+
+    expect(stack.resolve(originBindConfig.originProperty)).toMatchObject({
+      customOriginConfig: {
+        originMtlsConfig: {
+          clientCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/test-cert-id',
+        },
+      },
+    });
+  });
+
+  test('renders with originMtlsConfig for FunctionUrlOrigin with OAC', () => {
+    const fn = new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+    const fnUrl = fn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.AWS_IAM,
+    });
+    const cert = acm.CfnCertificate.fromCertificateId(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/test-cert-id');
+
+    new cloudfront.Distribution(stack, 'MyDistribution', {
+      defaultBehavior: {
+        origin: FunctionUrlOrigin.withOriginAccessControl(fnUrl, {
+          originMtlsConfig: {
+            clientCertificate: cert,
+          },
+        }),
+      },
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        Origins: Match.arrayWith([
+          Match.objectLike({
+            CustomOriginConfig: Match.objectLike({
+              OriginMtlsConfig: {
+                ClientCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/test-cert-id',
+              },
+            }),
+          }),
+        ]),
+      },
+    });
+  });
+});
+

@@ -629,6 +629,49 @@ The `responseCompletionTimeout` property specifies the time that a request from 
 
 See the documentation of `aws-cdk-lib/aws-cloudfront` for more information.
 
+## Mutual TLS (mTLS) Authentication with Origins
+
+You can configure mutual TLS (mTLS) authentication between CloudFront and your custom origin server.
+When configured, CloudFront uses a client certificate from AWS Certificate Manager (ACM) to authenticate with the origin.
+
+mTLS is supported on origins that use `CustomOriginConfig`, including `HttpOrigin`, `RestApiOrigin`, `FunctionUrlOrigin`, and `LoadBalancerV2Origin`.
+It is not available for S3 bucket origins or VPC origins.
+
+```ts
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
+
+declare const certificate: acm.ICertificate;
+
+new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: {
+    origin: new origins.HttpOrigin('www.example.com', {
+      originMtlsConfig: {
+        clientCertificate: certificate,
+      },
+    }),
+  },
+});
+```
+
+You can also use mTLS with a REST API origin:
+
+```ts
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
+
+declare const api: apigateway.RestApi;
+declare const certificate: acm.ICertificate;
+
+new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: {
+    origin: new origins.RestApiOrigin(api, {
+      originMtlsConfig: {
+        clientCertificate: certificate,
+      },
+    }),
+  },
+});
+```
+
 ## VPC origins
 
 You can use CloudFront to deliver content from applications that are hosted in your virtual private cloud (VPC) private subnets.
