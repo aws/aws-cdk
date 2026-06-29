@@ -11,7 +11,12 @@ import { MetadataType } from '../lib/metadata-type';
 import { synthesize } from '../lib/private/synthesis';
 
 function createModernApp() {
-  return new cdk.App();
+  const app = new cdk.App();
+  cdk.Validations.of(app).acknowledge({
+    id: 'CloudFormation-Validate::F0005',
+    reason: 'Invalid template sections',
+  });
+  return app;
 }
 
 describe('synthesis', () => {
