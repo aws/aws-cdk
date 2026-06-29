@@ -166,7 +166,7 @@ export class HttpEndpoint implements IDestination {
         streamId: 'HttpDestination',
       }) ?? {};
 
-    const backupConfig = createBackupConfig(
+    const { backupConfig, dependables: backupDependables } = createBackupConfig(
       scope,
       role,
       {
@@ -234,7 +234,7 @@ export class HttpEndpoint implements IDestination {
       },
       dependables: [
         ...(loggingDependables ?? []),
-        ...(backupConfig?.dependables ?? []),
+        ...backupDependables,
       ],
     };
   }

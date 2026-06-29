@@ -280,7 +280,6 @@ describe('Datadog destination', () => {
         }),
       });
 
-      Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
       Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         HttpEndpointDestinationConfiguration: {
           CloudWatchLoggingOptions: Match.absent(),

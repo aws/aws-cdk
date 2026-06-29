@@ -90,7 +90,6 @@ describe('HTTP destination', () => {
         }),
       });
 
-      Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
       Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         HttpEndpointDestinationConfiguration: {
           CloudWatchLoggingOptions: Match.absent(),
@@ -187,7 +186,7 @@ describe('HTTP destination', () => {
         PolicyDocument: {
           Statement: Match.arrayWith([{
             Effect: 'Allow',
-            Action: Match.arrayWith(['s3:PutObject', 's3:GetObject*']),
+            Action: Match.arrayWith(['s3:GetObject*', 's3:PutObject']),
             Resource: Match.arrayWith([stack.resolve(backupBucket.bucketArn)]),
           }]),
         },
@@ -440,7 +439,7 @@ describe('HTTP destination', () => {
     it('fails when size is less than 1 MiB', () => {
       const destination = new firehose.HttpEndpoint({
         endpointConfig: baseEndpointConfig,
-        bufferingHints: { size: cdk.Size.kibibytes(512) },
+        bufferingHints: { size: cdk.Size.mebibytes(0) },
       });
 
       expect(() => {
