@@ -282,4 +282,9 @@ const IGNORE_RULES = new Set([
   // WHY: requirement seems to be hallucinated by the engine
   // <https://github.com/aws-cloudformation/cloudformation-validate/issues/62>
   'F3032',
+
+  // WHAT: Parameter 'X': Default must be a string
+  // WHY: Using Fn::GetStackOutput as the argument for Default incorrectly triggers this rule
+  // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/63>
+  'E2001',
 ]);
