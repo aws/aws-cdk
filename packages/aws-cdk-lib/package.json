@@ -136,7 +136,7 @@
   "devDependencies": {
     "@aws-cdk/lambda-layer-kubectl-v31": "^2.1.0",
     "@aws-cdk/lambda-layer-kubectl-v33": "^2.2.2",
-    "@aws-cdk/aws-service-spec": "0.1.187",
+    "@aws-cdk/aws-service-spec": "0.1.190",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/check-peer-dependencies": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
