@@ -4460,6 +4460,10 @@ test('test 2.87.0 version hash stability', () => {
       '@aws-cdk/aws-lambda:recognizeLayerVersion': true,
     },
   });
+  cdk.Validations.of(app).acknowledge({
+    id: 'CloudFormation-Validate::E3071',
+    reason: 'Node 99.x supports inline code',
+  });
   const stack = new cdk.Stack(app, 'Stack');
 
   // WHEN
