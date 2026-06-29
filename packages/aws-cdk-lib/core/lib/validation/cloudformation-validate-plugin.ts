@@ -296,5 +296,5 @@ const IGNORE_RULES = new Set([
   // WHAT: Mixing inline definitions with external body in RestAPI
   // WHY: Resources like Deployment and Stage are needed to actually deploy a RestApi, even when the body comes from S3
   // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/64>
-  'W3660',
+  'W3660', 'E3660',
 ]);
