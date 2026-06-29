@@ -182,6 +182,11 @@ const IGNORE_RULES = new Set([
   // Will be silenced forever.
   'W3005',
 
+  // WHAT: Optimize the format string of Fn::Sub
+  // WHY: CDK is generating these, humans are not authoring them.
+  // Will be silenced forever.
+  'W1020',
+
   // WHAT: Condition can never be false.
   // WHY: The engine assumes AWS::Partition can only ever equal 'aws', which is not true. Should be removed.
   'W1028',
