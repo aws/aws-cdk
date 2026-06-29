@@ -178,7 +178,7 @@ describe('function', () => {
               'Arn',
             ],
           },
-          Runtime: 'python3.9',
+          Runtime: 'python3.14',
         },
         DependsOn: [
           'MyLambdaServiceRole4539ECB6',
@@ -3916,6 +3916,8 @@ describe('function', () => {
   describe('SnapStart', () => {
     test('set SnapStart to desired value', () => {
       const stack = new cdk.Stack();
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W2530', reason: 'SnapStart is incomplete, we know' });
+
       new lambda.CfnFunction(stack, 'MyLambda', {
         code: {
           s3Bucket: 'my-bucket',
@@ -3943,6 +3945,8 @@ describe('function', () => {
 
     test('function using SnapStart', () => {
       const stack = new cdk.Stack();
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W2530', reason: 'SnapStart is incomplete, we know' });
+
       // WHEN
       new lambda.Function(stack, 'MyLambda', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
@@ -3967,6 +3971,7 @@ describe('function', () => {
     test('runtime validation for snapStart', () => {
       const stack = new cdk.Stack();
       cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W2531', reason: 'Intentionally testing on old runtime' });
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W2530', reason: 'SnapStart is incomplete, we know' });
 
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
@@ -3978,6 +3983,8 @@ describe('function', () => {
 
     test('arm64 function using snapStart', () => {
       const stack = new cdk.Stack();
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W2530', reason: 'SnapStart is incomplete, we know' });
+
       // WHEN
       new lambda.Function(stack, 'MyLambda', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
@@ -4003,6 +4010,8 @@ describe('function', () => {
 
     test('EFS validation for snapStart', () => {
       const stack = new cdk.Stack();
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W2530', reason: 'SnapStart is incomplete, we know' });
+
       const vpc = new ec2.Vpc(stack, 'Vpc', {
         maxAzs: 3,
         natGateways: 1,
@@ -4037,6 +4046,7 @@ describe('function', () => {
 
     test('multi-tenant function with snapStart should throw error', () => {
       const stack = new cdk.Stack();
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W2530', reason: 'SnapStart is incomplete, we know' });
 
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
@@ -5086,7 +5096,7 @@ describe('CMCMK', () => {
         Code: {
           SourceKMSKeyArn: { 'Fn::GetAtt': ['myImportedKey10DE2890', 'Arn'] },
         },
-        Runtime: 'nodejs20.x',
+        Runtime: 'nodejs24.x',
         Handler: 'index.handler',
       },
     });
@@ -5121,7 +5131,7 @@ describe('CMCMK', () => {
         Code: {
           SourceKMSKeyArn: Match.absent(),
         },
-        Runtime: 'nodejs20.x',
+        Runtime: 'nodejs24.x',
         Handler: 'index.handler',
       },
     });
