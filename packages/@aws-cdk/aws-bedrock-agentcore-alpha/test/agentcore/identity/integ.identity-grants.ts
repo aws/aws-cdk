@@ -204,7 +204,7 @@ const INLINE_HANDLER_BODY = `
 // Verifies: read probes pass, admin and use probes are denied.
 
 const readFn = new lambda.Function(stack, 'GrantReadFn', {
-  runtime: lambda.Runtime.NODEJS_22_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   timeout: cdk.Duration.seconds(120),
   environment: {
@@ -227,7 +227,7 @@ workloadIdentity.grantRead(readFn);
 // Verifies: read and admin probes pass (ADMIN_PERMS includes Get*), use probes are denied.
 
 const adminFn = new lambda.Function(stack, 'GrantAdminFn', {
-  runtime: lambda.Runtime.NODEJS_22_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   timeout: cdk.Duration.seconds(120),
   environment: {
@@ -250,7 +250,7 @@ workloadIdentity.grantAdmin(adminFn);
 // Verifies: all probes pass, nothing is denied.
 
 const fullAccessFn = new lambda.Function(stack, 'GrantFullAccessFn', {
-  runtime: lambda.Runtime.NODEJS_22_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   timeout: cdk.Duration.seconds(120),
   environment: {

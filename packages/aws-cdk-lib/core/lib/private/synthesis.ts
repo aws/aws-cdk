@@ -24,8 +24,9 @@ import type { StageSynthesisOptions } from '../stage';
 import { Stage } from '../stage';
 import type { IPolicyValidationPlugin } from '../validation';
 import { ConstructTree } from '../validation/private/construct-tree';
+import { formatValidationReports, humanFriendlyFilename } from '../validation/private/modern-formatter';
 import type { NamedValidationPluginReport, SuppressedViolation } from '../validation/private/report';
-import { PolicyValidationReportFormatter } from '../validation/private/report';
+import { isSuppressibleViolation, mkPluginFailure, PolicyValidationReportFormatter } from '../validation/private/report';
 
 const LEGACY_POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
 
@@ -76,7 +77,7 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): p
 
   const assembly = builder.buildAssembly();
 
-  invokeValidationPlugins(root, builder.outdir, assembly);
+  validateTemplates(root, builder.outdir, assembly);
 
   return assembly;
 }
@@ -103,7 +104,7 @@ function getAssemblies(root: App, rootAssembly: private_cxapi.CloudAssembly): Ma
 /**
  * Invoke validation plugins for all stages in an App.
  */
-function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: private_cxapi.CloudAssembly) {
+function validateTemplates(root: IConstruct, outdir: string, assembly: private_cxapi.CloudAssembly) {
   if (!App.isApp(root)) return;
   const assemblies = getAssemblies(root, assembly);
   const templatePathsByPlugin: Map<IPolicyValidationPlugin, string[]> = new Map();
@@ -121,7 +122,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
   });
 
   // Build the unified list of plugins to run
-  const plugins: Array<{ plugin: IPolicyValidationPlugin; templatePaths: string[] }> = [];
+  const plugins: Array<PendingPluginInvocation> = [];
 
   // 1. User-registered plugins
   for (const [plugin, paths] of templatePathsByPlugin.entries()) {
@@ -138,51 +139,79 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
 
   if (plugins.length === 0) return;
 
-  // eslint-disable-next-line no-console
-  console.error('Performing Policy Validations\n');
+  const reports: NamedValidationPluginReport[] = doInvokeValidationPlugins(outdir, plugins, root);
+  const suppressedByReport: Map<number, SuppressedViolation[]> = collectSuppressions(root, reports);
 
-  // Snapshot pre-existing files so we can detect modifications while still
-  // allowing plugins to create new files in the assembly directory.
-  const preExistingFileHashes = snapshotFileHashes(outdir);
+  const formatter = new PolicyValidationReportFormatter(new ConstructTree(root));
+  const reportJson = formatter.formatJson(reports, assembly.version, suppressedByReport);
 
-  // Run all plugins through the same loop
-  const reports: NamedValidationPluginReport[] = [];
-  for (const { plugin, templatePaths } of plugins) {
-    try {
-      const report = plugin.validate({ templatePaths, appConstruct: root });
-      reports.push({ ...report, pluginName: plugin.name, pluginVersion: plugin.version });
-    } catch (e: any) {
-      reports.push({
-        success: false,
-        pluginName: plugin.name,
-        pluginVersion: plugin.version,
-        violations: [],
-        metadata: {
-          error: `Validation plugin '${plugin.name}' failed: ${e.message}`,
-        },
-      });
-    }
-    if (hasModifiedPreExistingFiles(preExistingFileHashes)) {
-      throw new AssumptionError(lit`IllegalOperationValidationPlugin`, `Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
-    }
+  // Always write validation report to disk
+  const reportFile = path.join(assembly.directory, cxapi.VALIDATION_REPORT_FILE);
+  fs.writeFileSync(reportFile, JSON.stringify(reportJson, undefined, 2));
+
+  // Write legacy report if requested
+  if (getBooleanContext(root, cxapi.VALIDATION_REPORT_JSON_CONTEXT, false)) {
+    fs.writeFileSync(
+      path.join(assembly.directory, LEGACY_POLICY_VALIDATION_FILE_PATH),
+      JSON.stringify(formatter.formatLegacyJson(reports), undefined, 2),
+    );
   }
 
-  // Filter out suppressed violations. Collect all acknowledged rule IDs
-  // from construct metadata across the tree, then remove matching violations
-  // from reports. Fatal violations cannot be suppressed.
-  //
-  // Rule matching: violations are matched as <pluginName>::<ruleName> with
-  // spaces replaced by dashes. Users suppress with:
-  //   Validations.of(x).acknowledge({ id: '<plugin-name>::<rule-id>' })
-  const acknowledgedRules = collectAcknowledgedRuleIds(root);
+  // Whether the CDK app handles validation output (default true). The CLI can set this to false to take over the
+  // responsibility of printing the validation report and setting the exit code.
+  const cdkAppHandlesValidationReporting = getBooleanContext(root, cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT, true);
+  if (cdkAppHandlesValidationReporting) {
+    const output = formatValidationReports(process.cwd(), reportJson.pluginReports);
+    // eslint-disable-next-line no-console
+    console.error(output.join('\n\n'));
+
+    const failed = reports.some(r => !r.success);
+    if (failed) {
+      const reportPath = humanFriendlyFilename(process.cwd(), reportFile);
+      // eslint-disable-next-line no-console
+      console.error(`\nValidation failed. A copy of this report can be found in '${reportPath}'`);
+      process.exitCode = 1;
+    }
+  }
+}
+
+const CUSTOM_SYNTHESIS_SYM = Symbol.for('@aws-cdk/core:customSynthesis');
+
+/**
+ * Interface for constructs that want to do something custom during synthesis
+ */
+export interface ICustomSynthesis {
+  /**
+   * Called when the construct is synthesized
+   */
+  onSynthesize(session: ISynthesisSession): void;
+}
+
+interface PendingPluginInvocation {
+  plugin: IPolicyValidationPlugin;
+  templatePaths: string[];
+}
+
+/**
+ * Filter out suppressed violations. Collect all acknowledged rule IDs
+ * from construct metadata across the tree, then remove matching violations
+ * from reports. Fatal violations cannot be suppressed.
+ *
+ * Rule matching: violations are matched as <pluginName>::<ruleName> with
+ * spaces replaced by dashes. Users suppress with:
+ *   Validations.of(x).acknowledge({ id: '<plugin-name>::<rule-id>' })
+ */
+function collectSuppressions(root: App, reports: NamedValidationPluginReport[]) {
   const suppressedByReport: Map<number, SuppressedViolation[]> = new Map();
+  const acknowledgedRules = collectAcknowledgedRuleIds(root);
+
   if (acknowledgedRules.size > 0) {
     for (let i = 0; i < reports.length; i++) {
       const pluginName = reports[i].pluginName.replace(/ /g, '-');
       const active: typeof reports[0]['violations'] = [];
       const suppressed: SuppressedViolation[] = [];
       for (const v of reports[i].violations) {
-        if (v.severity === 'fatal') {
+        if (!isSuppressibleViolation(v)) {
           active.push(v);
           continue;
         }
@@ -210,47 +239,29 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
       }
     }
   }
-
-  if (reports.length > 0) {
-    const tree = new ConstructTree(root);
-    const formatter = new PolicyValidationReportFormatter(tree);
-    const failOnErrors = getBooleanContext(root, cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT, true);
-    const writeLegacyReport = getBooleanContext(root, cxapi.VALIDATION_REPORT_JSON_CONTEXT, false);
-
-    const reportFile = path.join(assembly.directory, cxapi.VALIDATION_REPORT_FILE);
-    const jsonOutput = formatter.formatJson(reports, assembly.version, suppressedByReport);
-    fs.writeFileSync(reportFile, JSON.stringify(jsonOutput, undefined, 2));
-
-    if (writeLegacyReport) {
-      const legacyReportFile = path.join(assembly.directory, LEGACY_POLICY_VALIDATION_FILE_PATH);
-      const legacyOutput = formatter.formatLegacyJson(reports);
-      fs.writeFileSync(legacyReportFile, JSON.stringify(legacyOutput, undefined, 2));
-    }
-
-    if (failOnErrors) {
-      const output = formatter.formatPrettyPrinted(reports);
-      // eslint-disable-next-line no-console
-      console.error(output);
-      const failed = reports.some(r => !r.success);
-      if (failed) {
-        // eslint-disable-next-line no-console
-        console.error(`Validation failed. A copy of this report can be found in '${reportFile}'`);
-        process.exitCode = 1;
-      }
-    }
-  }
+  return suppressedByReport;
 }
 
-const CUSTOM_SYNTHESIS_SYM = Symbol.for('@aws-cdk/core:customSynthesis');
-
 /**
- * Interface for constructs that want to do something custom during synthesis
+ * Invoke all validation plugins, make sure they don't accidentally modify any files in the output directory (so they are strictly readonly).
  */
-export interface ICustomSynthesis {
-  /**
-   * Called when the construct is synthesized
-   */
-  onSynthesize(session: ISynthesisSession): void;
+function doInvokeValidationPlugins(outdir: string, plugins: PendingPluginInvocation[], root: App) {
+  const preExistingFileHashes = snapshotFileHashes(outdir);
+
+  // Run all plugins through the same loop
+  const reports: NamedValidationPluginReport[] = [];
+  for (const { plugin, templatePaths } of plugins) {
+    try {
+      const report = plugin.validate({ templatePaths, appConstruct: root });
+      reports.push({ ...report, pluginName: plugin.name, pluginVersion: plugin.version });
+    } catch (e: any) {
+      reports.push(mkPluginFailure(plugin, e));
+    }
+    if (hasModifiedPreExistingFiles(preExistingFileHashes)) {
+      throw new AssumptionError(lit`IllegalOperationValidationPlugin`, `Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
+    }
+  }
+  return reports;
 }
 
 export function addCustomSynthesis(construct: IConstruct, synthesis: ICustomSynthesis): void {
