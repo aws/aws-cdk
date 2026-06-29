@@ -2052,26 +2052,26 @@ describe('stack', () => {
     const resourceM = new CfnResource(producerM, 'ResourceXXX', { type: 'AWS::Resource' });
 
     // THEN - producers are the same
-    resourceM.overrideLogicalId('OVERRIDE_LOGICAL_ID');
+    resourceM.overrideLogicalId('banana');
     producerM.exportValue(resourceM.getAtt('Att'));
 
     const template = appM.synth().getStackByName(producerM.stackName).template;
     expect(template).toMatchObject({
       Outputs: {
-        ExportsOutputFnGetAttOVERRIDELOGICALIDAtt2DD28019: {
+        ExportsOutputFnGetAttbananaAttF2F2ECCE: {
           Export: {
-            Name: 'Producer:ExportsOutputFnGetAttOVERRIDELOGICALIDAtt2DD28019',
+            Name: 'Producer:ExportsOutputFnGetAttbananaAttF2F2ECCE',
           },
           Value: {
             'Fn::GetAtt': [
-              'OVERRIDE_LOGICAL_ID',
+              'banana',
               'Att',
             ],
           },
         },
       },
       Resources: {
-        OVERRIDE_LOGICAL_ID: {
+        banana: {
           Type: 'AWS::Resource',
         },
       },
