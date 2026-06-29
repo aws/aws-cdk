@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "ForEachIntegTest/DefaultTest": {
+      "stacks": [
+        "ForEachIntegStack"
+      ],
+      "assertionStack": "ForEachIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ForEachIntegTestDefaultTestDeployAssertD9E4BA43"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
