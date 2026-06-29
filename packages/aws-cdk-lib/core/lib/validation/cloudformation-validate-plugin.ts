@@ -276,7 +276,7 @@ const IGNORE_RULES = new Set([
   // WHAT: CloudFront origin doesn't exist
   // WHY: It does exist, it's just very long.
   // <https://github.com/aws-cloudformation/cloudformation-validate/issues/57>
-  'F3057',
+  'E3057',
 
   // WHAT: Array must be non-empty
   // WHY: requirement seems to be hallucinated by the engine
@@ -297,4 +297,9 @@ const IGNORE_RULES = new Set([
   // WHY: Resources like Deployment and Stage are needed to actually deploy a RestApi, even when the body comes from S3
   // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/64>
   'W3660',
+
+  // WHAT: Mutex fields on AWS::CloudWatch::Alarm
+  // WHY: The engine doesn't know about a new field that recently got added, which is also fine to supply.
+  // <https://github.com/aws-cloudformation/cloudformation-validate/issues/67>
+  'F3014',
 ]);
