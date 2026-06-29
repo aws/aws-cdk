@@ -522,6 +522,48 @@ The following update policies are available:
   configured on the AutoScalingGroup), the old AutoScalingGroup is deleted.
   If the deployment needs to be rolled back, the new AutoScalingGroup is
   deleted and the old one is left unchanged.
+* `UpdatePolicy.instanceRefresh([options])`: when a property that triggers an
+  instance refresh changes (such as the launch template or mixed instances
+  policy), CloudFormation starts an [instance refresh] to replace the existing
+  instances gradually while maintaining availability. Unlike rolling and
+  replacing updates, the replacement is performed by the Auto Scaling service
+  rather than by CloudFormation itself.
+
+To customize the instance refresh, pass options:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType,
+  machineImage,
+
+  updatePolicy: autoscaling.UpdatePolicy.instanceRefresh({
+    minHealthyPercentage: 90,
+    maxHealthyPercentage: 100,
+    instanceWarmup: Duration.seconds(300),
+    checkpointPercentages: [50, 100],
+    checkpointDelay: Duration.minutes(10),
+    alarmNames: ['my-alarm'],
+  }),
+});
+```
+
+> **Note:** CloudFormation reads the `UpdatePolicy` from the *rollback target*
+> template (the template being rolled back to), not from the template that
+> triggered the update. Keep the `updatePolicy` on the Auto Scaling group
+> permanently — if you remove it after the triggering update, a subsequent
+> rollback will not perform an instance refresh.
+
+If you omit `minHealthyPercentage`/`maxHealthyPercentage`, they fall back to the
+Auto Scaling group's instance maintenance policy when one is defined; otherwise
+CloudFormation defaults to `100`/`110` for the `Rolling` strategy
+(launch-before-terminate with a 10% surge) and `90`/`100` for `ReplaceRootVolume`.
+
+[instance refresh]: https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-instance-refresh.html
 
 ## Allowing Connections
 

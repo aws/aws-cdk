@@ -3186,3 +3186,98 @@ test.each([
     DeletionProtection: expectedValue,
   });
 });
+
+test('can configure instance refresh update policy with defaults', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = mockVpc(stack);
+
+  // WHEN
+  new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+    machineImage: new ec2.AmazonLinuxImage(),
+    vpc,
+    updatePolicy: autoscaling.UpdatePolicy.instanceRefresh(),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
+    UpdatePolicy: {
+      AutoScalingInstanceRefresh: {},
+    },
+  });
+});
+
+test('can configure instance refresh update policy with all options', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = mockVpc(stack);
+
+  // WHEN
+  new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+    machineImage: new ec2.AmazonLinuxImage(),
+    vpc,
+    updatePolicy: autoscaling.UpdatePolicy.instanceRefresh({
+      strategy: autoscaling.InstanceRefreshStrategy.ROLLING,
+      minHealthyPercentage: 90,
+      maxHealthyPercentage: 110,
+      instanceWarmup: cdk.Duration.seconds(300),
+      skipMatching: true,
+      checkpointPercentages: [20, 50, 100],
+      checkpointDelay: cdk.Duration.seconds(3600),
+      bakeTime: cdk.Duration.seconds(600),
+      alarmNames: ['my-alarm-1', 'my-alarm-2'],
+      scaleInProtectedInstances: autoscaling.ScaleInProtectedInstances.WAIT,
+      standbyInstances: autoscaling.StandbyInstances.IGNORE,
+    }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
+    UpdatePolicy: {
+      AutoScalingInstanceRefresh: {
+        Strategy: 'Rolling',
+        Preferences: {
+          MinHealthyPercentage: 90,
+          MaxHealthyPercentage: 110,
+          InstanceWarmup: 300,
+          SkipMatching: true,
+          CheckpointPercentages: [20, 50, 100],
+          CheckpointDelay: 3600,
+          BakeTime: 600,
+          AlarmSpecification: {
+            Alarms: ['my-alarm-1', 'my-alarm-2'],
+          },
+          ScaleInProtectedInstances: 'Wait',
+          StandbyInstances: 'Ignore',
+        },
+      },
+    },
+  });
+});
+
+test('can configure instance refresh with only strategy', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = mockVpc(stack);
+
+  // WHEN
+  new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+    machineImage: new ec2.AmazonLinuxImage(),
+    vpc,
+    updatePolicy: autoscaling.UpdatePolicy.instanceRefresh({
+      strategy: autoscaling.InstanceRefreshStrategy.REPLACE_ROOT_VOLUME,
+    }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
+    UpdatePolicy: {
+      AutoScalingInstanceRefresh: {
+        Strategy: 'ReplaceRootVolume',
+      },
+    },
+  });
+});

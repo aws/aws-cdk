@@ -21,7 +21,7 @@ import type * as elb from '../../aws-elasticloadbalancing';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as iam from '../../aws-iam';
 import type * as sns from '../../aws-sns';
-import type { CfnAutoScalingRollingUpdate, CfnCreationPolicy, CfnUpdatePolicy, IResource } from '../../core';
+import type { CfnAutoScalingInstanceRefreshPreferences, CfnAutoScalingRollingUpdate, CfnCreationPolicy, CfnUpdatePolicy, IResource } from '../../core';
 import {
   Annotations,
   Aspects,
@@ -1032,6 +1032,39 @@ export abstract class UpdatePolicy {
   }
 
   /**
+   * Use instance refresh to update the instances in the AutoScalingGroup
+   *
+   * When properties that trigger an instance refresh change (such as LaunchTemplate
+   * or MixedInstancesPolicy), CloudFormation starts an instance refresh to replace
+   * instances gradually while maintaining availability.
+   */
+  public static instanceRefresh(options: InstanceRefreshOptions = {}): UpdatePolicy {
+    return new class extends UpdatePolicy {
+      public _renderUpdatePolicy(): CfnUpdatePolicy {
+        const preferences: CfnAutoScalingInstanceRefreshPreferences = {
+          minHealthyPercentage: options.minHealthyPercentage,
+          maxHealthyPercentage: options.maxHealthyPercentage,
+          instanceWarmup: options.instanceWarmup?.toSeconds(),
+          skipMatching: options.skipMatching,
+          checkpointPercentages: options.checkpointPercentages,
+          checkpointDelay: options.checkpointDelay?.toSeconds(),
+          bakeTime: options.bakeTime?.toSeconds(),
+          alarmSpecification: options.alarmNames ? { alarms: options.alarmNames } : undefined,
+          scaleInProtectedInstances: options.scaleInProtectedInstances,
+          standbyInstances: options.standbyInstances,
+        };
+        const hasPreferences = Object.values(preferences).some(value => value !== undefined);
+        return {
+          autoScalingInstanceRefresh: {
+            strategy: options.strategy,
+            preferences: hasPreferences ? preferences : undefined,
+          },
+        };
+      }
+    }();
+  }
+
+  /**
    * Render the ASG's CreationPolicy
    * @internal
    */
@@ -1102,6 +1135,151 @@ export interface RollingUpdateOptions {
    * @default - The `minSuccessPercentage` configured for `signals` on the AutoScalingGroup
    */
   readonly minSuccessPercentage?: number;
+}
+
+/**
+ * The strategy to use for the instance refresh.
+ */
+export enum InstanceRefreshStrategy {
+  /**
+   * Terminate instances and launch new ones to replace them.
+   */
+  ROLLING = 'Rolling',
+
+  /**
+   * Replace the root volume of instances in place.
+   */
+  REPLACE_ROOT_VOLUME = 'ReplaceRootVolume',
+}
+
+/**
+ * The behavior of instances that are protected from scale in during an instance refresh.
+ */
+export enum ScaleInProtectedInstances {
+  /**
+   * Refresh instances that are protected from scale in.
+   */
+  REFRESH = 'Refresh',
+
+  /**
+   * Ignore instances that are protected from scale in.
+   */
+  IGNORE = 'Ignore',
+
+  /**
+   * Wait until instances are no longer protected from scale in, then refresh them.
+   */
+  WAIT = 'Wait',
+}
+
+/**
+ * The behavior of instances in standby during an instance refresh.
+ */
+export enum StandbyInstances {
+  /**
+   * Terminate instances in standby and launch new ones to replace them.
+   */
+  TERMINATE = 'Terminate',
+
+  /**
+   * Ignore instances in standby.
+   */
+  IGNORE = 'Ignore',
+
+  /**
+   * Wait until instances are taken out of standby, then refresh them.
+   */
+  WAIT = 'Wait',
+}
+
+/**
+ * Options for customizing the instance refresh update policy
+ */
+export interface InstanceRefreshOptions {
+  /**
+   * The strategy to use for the instance refresh.
+   *
+   * @default InstanceRefreshStrategy.ROLLING
+   */
+  readonly strategy?: InstanceRefreshStrategy;
+
+  /**
+   * The minimum percentage of the group to keep in service, healthy, and ready to use
+   * to support your workload during the instance refresh, expressed as a percentage of
+   * the group's desired capacity.
+   *
+   * @default - the value set in the Auto Scaling group's instance maintenance policy, if defined; otherwise 100 when the strategy is Rolling, or 90 when the strategy is ReplaceRootVolume
+   */
+  readonly minHealthyPercentage?: number;
+
+  /**
+   * The maximum percentage of the group that can be in service and healthy, or pending,
+   * to support your workload during the instance refresh. The difference between
+   * `maxHealthyPercentage` and `minHealthyPercentage` cannot be greater than 100. A larger
+   * range increases the number of instances that can be replaced at the same time.
+   *
+   * @default - the value set in the Auto Scaling group's instance maintenance policy, if defined; otherwise 110 when the strategy is Rolling, or 100 when the strategy is ReplaceRootVolume
+   */
+  readonly maxHealthyPercentage?: number;
+
+  /**
+   * The amount of time to wait after a new instance enters the InService state before
+   * moving on to refresh the next instance.
+   *
+   * @default - uses the group's default instance warmup
+   */
+  readonly instanceWarmup?: Duration;
+
+  /**
+   * Indicates whether skip matching is enabled.
+   *
+   * @default true
+   */
+  readonly skipMatching?: boolean;
+
+  /**
+   * Threshold values for each checkpoint in ascending order. Each number must be unique.
+   * To replace all instances in the group, the last number in the array must be 100.
+   *
+   * @default - no checkpoints
+   */
+  readonly checkpointPercentages?: number[];
+
+  /**
+   * The amount of time to wait after a checkpoint is reached before continuing.
+   *
+   * @default - 3600 seconds
+   */
+  readonly checkpointDelay?: Duration;
+
+  /**
+   * The amount of time after an instance refresh completes successfully before
+   * CloudFormation considers the update successful.
+   *
+   * @default Duration.seconds(0)
+   */
+  readonly bakeTime?: Duration;
+
+  /**
+   * The names of CloudWatch alarms to monitor during the instance refresh.
+   *
+   * @default - no alarms
+   */
+  readonly alarmNames?: string[];
+
+  /**
+   * Specifies the behavior of instances that are protected from scale in during an instance refresh.
+   *
+   * @default ScaleInProtectedInstances.WAIT
+   */
+  readonly scaleInProtectedInstances?: ScaleInProtectedInstances;
+
+  /**
+   * Specifies the behavior of instances in standby during an instance refresh.
+   *
+   * @default StandbyInstances.WAIT
+   */
+  readonly standbyInstances?: StandbyInstances;
 }
 
 /**
