@@ -27,7 +27,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import type { IResource as IResourceBase, Size } from '../../core';
-import { ArnFormat, CfnOutput, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token } from '../../core';
+import { ArnFormat, CfnOutput, FeatureFlags, RemovalPolicy, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import type { IBox, ISetBox } from '../../core/lib/helpers-internal';
 import { Box } from '../../core/lib/helpers-internal';
@@ -1003,9 +1003,7 @@ export class RestApi extends RestApiBase {
     this._setResourcePolicy(props.policy);
 
     const resource = new CfnRestApi(this, 'Resource', {
-      name: Lazy.string({
-        produce: () => Stack.of(this).resolve(this.physicalName) ?? this.node.id,
-      }),
+      name: this.physicalName,
       description: props.description,
       policy: this._resourcePolicyAsToken,
       failOnWarnings: props.failOnWarnings,
