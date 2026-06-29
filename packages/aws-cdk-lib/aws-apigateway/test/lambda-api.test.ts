@@ -346,9 +346,9 @@ describe('lambda api', () => {
       restApiName: cdk.PhysicalName.GENERATE_IF_NEEDED,
     });
 
-    // THEN
+    // THEN - falls back to construct ID since API Gateway always requires a name
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
-      Name: Match.absent(),
+      Name: 'lambda-rest-api',
     });
   });
 
