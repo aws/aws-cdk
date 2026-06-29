@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "integ-test-distribution-mtls/DefaultTest": {
+      "stacks": [
+        "integ-distribution-mtls"
+      ],
+      "assertionStack": "integ-test-distribution-mtls/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestdistributionmtlsDefaultTestDeployAssert81D37065"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
