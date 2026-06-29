@@ -15,7 +15,7 @@
      "StackName": "\"aws-cdk-eks-cluster-deletion-protection\""
     },
     "flattenResponse": "false",
-    "salt": "1780291095230"
+    "salt": "1780567342991"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -109,12 +109,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
+     "S3Key": "6611813c56ee5ec64f812f46caf03748d8b30fea6e344cc7ac25035891a6dfe8.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -123,6 +123,10 @@
       "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -145,7 +149,7 @@
      "StackName": "\"aws-cdk-eks-cluster-deletion-protection\""
     },
     "flattenResponse": "false",
-    "salt": "1780291095231"
+    "salt": "1780567342993"
    },
    "DependsOn": [
     "AwsApiCallCloudFormationdeleteStack472fb1617496e75232e22dd80272c735"
@@ -333,12 +337,12 @@
   "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
+     "S3Key": "6611813c56ee5ec64f812f46caf03748d8b30fea6e344cc7ac25035891a6dfe8.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -347,6 +351,10 @@
       "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -375,12 +383,12 @@
   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
+     "S3Key": "6611813c56ee5ec64f812f46caf03748d8b30fea6e344cc7ac25035891a6dfe8.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -389,6 +397,10 @@
       "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -408,7 +420,7 @@
      "deletionProtection": "false"
     },
     "flattenResponse": "false",
-    "salt": "1780291095233"
+    "salt": "1780567342998"
    },
    "DependsOn": [
     "AwsApiCallCloudFormationdescribeStacks472fb1617496e75232e22dd80272c735",
@@ -439,7 +451,7 @@
      "name": "\"eks-deletion-protection-test\""
     },
     "flattenResponse": "false",
-    "salt": "1780291095233"
+    "salt": "1780567342999"
    },
    "DependsOn": [
     "AwsApiCalleksupdateClusterConfigcecf8e8b292e8b686346a0061ffe5ed1"
