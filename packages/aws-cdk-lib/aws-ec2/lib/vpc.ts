@@ -1483,6 +1483,18 @@ export class Vpc extends VpcBase {
   public readonly vpcIpv6CidrBlocks: string[];
 
   /**
+   * The IPv6 CIDR block associated with this VPC.
+   *
+   * For a dual-stack VPC, this is the Amazon-provided `/56` IPv6 CIDR block.
+   * The value can be passed to `Peer.ipv6()` to reference the VPC's IPv6 range
+   * in security group rules or used as an egress destination.
+   *
+   * This is `undefined` for VPCs that are not configured with IPv6 (i.e. the
+   * `ipProtocol` is not `DUAL_STACK`).
+   */
+  public readonly vpcIpv6CidrBlock?: string;
+
+  /**
    * List of public subnets in this VPC
    */
   public readonly publicSubnets: ISubnet[] = [];
@@ -1680,6 +1692,7 @@ export class Vpc extends VpcBase {
       });
 
       this.ipv6SelectedCidr = Fn.select(0, this.resource.attrIpv6CidrBlocks);
+      this.vpcIpv6CidrBlock = this.ipv6SelectedCidr;
     }
 
     // subnetConfiguration must be set before calling createSubnets

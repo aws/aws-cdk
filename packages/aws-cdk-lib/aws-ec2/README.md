@@ -358,6 +358,21 @@ Disabling the auto-assigning of a public IPv4 address by default can avoid the c
 
 See [Advanced Subnet Configuration](#advanced-subnet-configuration) for all IPv6 specific properties.
 
+The Amazon provided IPv6 CIDR block of a dual stack VPC can be referenced through the `vpcIpv6CidrBlock` property, for example to allow traffic from the VPC's IPv6 range in a security group:
+
+```ts
+const vpc = new ec2.Vpc(this, 'DualStackVpc', {
+  ipProtocol: ec2.IpProtocol.DUAL_STACK,
+});
+
+const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
+securityGroup.addIngressRule(
+  ec2.Peer.ipv6(vpc.vpcIpv6CidrBlock!),
+  ec2.Port.tcp(443),
+  'Allow HTTPS from the VPC IPv6 range',
+);
+```
+
 ### Reserving availability zones
 
 There are situations where the IP space for availability zones will
