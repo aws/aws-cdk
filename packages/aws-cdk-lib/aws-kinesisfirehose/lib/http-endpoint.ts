@@ -221,8 +221,8 @@ export class HTTPEndpoint implements IDestination {
         cloudWatchLoggingOptions: loggingOptions,
         processingConfiguration: createProcessingConfig(
           scope,
-          role,
-          this.props.processor,
+          this.props,
+          { role },
         ),
         roleArn: role.roleArn,
         s3BackupMode: this.props.backupMode ?? HTTPBackupMode.FAILED,
