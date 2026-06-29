@@ -283,6 +283,11 @@ const IGNORE_RULES = new Set([
   // <https://github.com/aws-cloudformation/cloudformation-validate/issues/62>
   'F3032',
 
+  // WHAT: Validate maximum string length, string matches regex
+  // WHY: At least { Ref: 'AWS::AccountId' } produces a string that does not validate according to common rules.
+  // <https://github.com/aws-cloudformation/cloudformation-validate/issues/65>
+  'F3031', 'F3033',
+
   // WHAT: Parameter 'X': Default must be a string
   // WHY: Using Fn::GetStackOutput as the argument for Default incorrectly triggers this rule
   // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/63>
