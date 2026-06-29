@@ -91,7 +91,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "L2FunctionServiceRole2D0DE7A4"
