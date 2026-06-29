@@ -1286,6 +1286,288 @@ describe('tests', () => {
     })).not.toThrow('Priority must have value greater than or equal to 1');
   });
 
+  test('Throws when specifying priority without conditions', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
+      vpc,
+    });
+    const listener = lb.addListener('Listener', {
+      port: 80,
+    });
+
+    // THEN
+    expect(() => listener.addAction('Action', {
+      action: elbv2.ListenerAction.fixedResponse(500),
+      priority: 10,
+    })).toThrow( 'Setting \'conditions\', \'pathPattern\' or \'hostHeader\' also requires \'priority\', and vice versa.');
+  });
+
+  test('Throws when specifying conditions without priority', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
+      vpc,
+    });
+    const listener = lb.addListener('Listener', {
+      port: 80,
+    });
+
+    // THEN
+    expect(() => listener.addAction('Action', {
+      action: elbv2.ListenerAction.fixedResponse(500),
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/hello'])],
+    })).toThrow( 'Setting \'conditions\', \'pathPattern\' or \'hostHeader\' also requires \'priority\', and vice versa.');
+  });
+
+  describe('transforms', () => {
+    test('configures transforms', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
+        vpc,
+      });
+      const listener = lb.addListener('Listener', {
+        port: 80,
+      });
+      listener.addAction('Action', {
+        action: elbv2.ListenerAction.fixedResponse(500),
+        priority: 10,
+        conditions: [elbv2.ListenerCondition.pathPatterns(['/hello'])],
+        transforms: [
+          elbv2.ListenerTransform.hostHeaderRewrite([
+            {
+              regex: '^(.*)$', replace: 'example.com',
+            },
+          ]),
+          elbv2.ListenerTransform.urlRewrite([
+            {
+              regex: '^(.*)$', replace: '/newpath/$1',
+            },
+          ]),
+        ],
+      });
+      listener.addAction('DefaultAction', {
+        action: elbv2.ListenerAction.fixedResponse(200),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
+        Actions: [
+          {
+            FixedResponseConfig: {
+              StatusCode: '500',
+            },
+            Type: 'fixed-response',
+          },
+        ],
+        Conditions: [
+          {
+            PathPatternConfig: {
+              Values: ['/hello'],
+            },
+          },
+        ],
+        Priority: 10,
+        Transforms: [
+          {
+            Type: 'host-header-rewrite',
+            HostHeaderRewriteConfig: {
+              Rewrites: [
+                {
+                  Regex: '^(.*)$',
+                  Replace: 'example.com',
+                },
+              ],
+            },
+          },
+          {
+            Type: 'url-rewrite',
+            UrlRewriteConfig: {
+              Rewrites: [
+                {
+                  Regex: '^(.*)$',
+                  Replace: '/newpath/$1',
+                },
+              ],
+            },
+          },
+        ],
+      });
+    });
+
+    test('configure transforms via addTransforms', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
+        vpc,
+      });
+      const listener = lb.addListener('Listener', {
+        port: 80,
+      });
+      listener.addAction('DefaultAction', {
+        action: elbv2.ListenerAction.fixedResponse(200),
+      });
+
+      const listenerRule = new elbv2.ApplicationListenerRule(stack, 'Rule', {
+        action: elbv2.ListenerAction.fixedResponse(500),
+        listener,
+        priority: 10,
+        conditions: [elbv2.ListenerCondition.pathPatterns(['/hello'])],
+      });
+      listenerRule.addTransforms([
+        elbv2.ListenerTransform.hostHeaderRewrite([
+          {
+            regex: '^(.*)$', replace: 'example.com',
+          },
+        ]),
+        elbv2.ListenerTransform.urlRewrite([
+          {
+            regex: '^(.*)$', replace: '/newpath/$1',
+          },
+        ]),
+      ]);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
+        Actions: [
+          {
+            FixedResponseConfig: {
+              StatusCode: '500',
+            },
+            Type: 'fixed-response',
+          },
+        ],
+        Conditions: [
+          {
+            PathPatternConfig: {
+              Values: ['/hello'],
+            },
+          },
+        ],
+        Priority: 10,
+        Transforms: [
+          {
+            Type: 'host-header-rewrite',
+            HostHeaderRewriteConfig: {
+              Rewrites: [
+                {
+                  Regex: '^(.*)$',
+                  Replace: 'example.com',
+                },
+              ],
+            },
+          },
+          {
+            Type: 'url-rewrite',
+            UrlRewriteConfig: {
+              Rewrites: [
+                {
+                  Regex: '^(.*)$',
+                  Replace: '/newpath/$1',
+                },
+              ],
+            },
+          },
+        ],
+      });
+    });
+
+    test('throws when specifying transforms without priority and conditions', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
+        vpc,
+      });
+      const listener = lb.addListener('Listener', {
+        port: 80,
+      });
+
+      // THEN
+      expect(() => listener.addAction('Action', {
+        action: elbv2.ListenerAction.fixedResponse(500),
+        transforms: [
+          elbv2.ListenerTransform.hostHeaderRewrite([{
+            regex: '^(.*)$', replace: 'example.com',
+          }]),
+        ],
+      })).toThrow('Setting \'transforms\' requires \'priority\' and at least one of \'conditions\', \'pathPattern\' or \'hostHeader\' to be set.');
+    });
+
+    test('throws when specifying multiple host header rewrites', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
+        vpc,
+      });
+      const listener = lb.addListener('Listener', {
+        port: 80,
+      });
+
+      // WHEN
+      listener.addAction('Action', {
+        action: elbv2.ListenerAction.fixedResponse(500),
+        priority: 10,
+        conditions: [elbv2.ListenerCondition.pathPatterns(['/hello'])],
+        transforms: [
+          elbv2.ListenerTransform.hostHeaderRewrite([
+            {
+              regex: '^(.*)$', replace: 'example.com',
+            },
+          ]),
+          elbv2.ListenerTransform.hostHeaderRewrite([
+            {
+              regex: '^(.*)$', replace: 'example.org',
+            },
+          ]),
+        ],
+      });
+
+      expect(() => app.synth()).toThrow('Only one host-header-rewrite transform is allowed per rule');
+    });
+
+    test('throws when specifying multiple url rewrites', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
+        vpc,
+      });
+      const listener = lb.addListener('Listener', {
+        port: 80,
+      });
+
+      // WHEN
+      listener.addAction('Action', {
+        action: elbv2.ListenerAction.fixedResponse(500),
+        priority: 10,
+        conditions: [elbv2.ListenerCondition.pathPatterns(['/hello'])],
+        transforms: [
+          elbv2.ListenerTransform.urlRewrite([
+            {
+              regex: '^(.*)$', replace: '/newpath/$1',
+            },
+          ]),
+          elbv2.ListenerTransform.urlRewrite([
+            {
+              regex: '^(.*)$', replace: '/otherpath/$1',
+            },
+          ]),
+        ],
+      });
+
+      expect(() => app.synth()).toThrow('Only one url-rewrite transform is allowed per rule');
+    });
+  });
+
   testDeprecated('Throws when specifying both target groups and redirect response', () => {
     // GIVEN
     const stack = new cdk.Stack();
