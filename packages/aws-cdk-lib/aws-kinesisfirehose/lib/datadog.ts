@@ -1,8 +1,11 @@
+import type { CommonDestinationProps } from './common';
 import {
-  type HTTPAttribute,
-  HTTPBackupMode,
-  HTTPCompression,
-  HTTPEndpoint,
+  type HttpAttribute,
+  type HttpBufferingHints,
+  type HttpRetryOptions,
+  HttpBackupMode,
+  HttpCompression,
+  HttpEndpoint,
 } from './http-endpoint';
 import type { ISecret } from '../../aws-secretsmanager';
 import { Duration, Size } from '../../core';
@@ -101,7 +104,7 @@ export class DatadogEndpoint {
 /**
  * Props for defining a Datadog destination of a Kinesis Data Firehose delivery stream.
  */
-export interface DatadogProps {
+export interface DatadogProps extends CommonDestinationProps {
   /**
    * The API key required to enable data delivery from Amazon Data Firehose.
    */
@@ -115,34 +118,51 @@ export interface DatadogProps {
    *
    * @default - No tags.
    */
-  readonly tags?: HTTPAttribute[];
+  readonly tags?: HttpAttribute[];
   /**
    * Describes the S3 bucket backup options for the data that Kinesis Data Firehose delivers to Datadog.
    *
-   * @default - Failed only
+   * @default HttpBackupMode.FAILED
    */
-  readonly backupMode?: HTTPBackupMode;
+  readonly backupMode?: HttpBackupMode;
+  /**
+   * Buffering hints for data delivery to the Datadog endpoint.
+   *
+   * @default - interval of 60 seconds, size of 4 MiB
+   */
+  readonly bufferingHints?: HttpBufferingHints;
+  /**
+   * Retry behavior when Kinesis Data Firehose cannot deliver data to Datadog.
+   *
+   * @default - duration of 60 seconds
+   */
+  readonly retryOptions?: HttpRetryOptions;
+  /**
+   * Content encoding applied to the request body before delivery.
+   *
+   * @default HttpCompression.GZIP
+   */
+  readonly requestCompression?: HttpCompression;
 }
 
 /**
  * A Datadog destination for data from a Kinesis Data Firehose delivery stream.
  */
-export class Datadog extends HTTPEndpoint {
+export class Datadog extends HttpEndpoint {
   constructor(props: DatadogProps) {
     super({
+      ...props,
       endpointConfig: {
         url: props.endpoint.url,
         secret: props.apiKey,
       },
-      requestCompression: HTTPCompression.GZIP,
-      bufferingHints: {
+      requestCompression: props.requestCompression ?? HttpCompression.GZIP,
+      bufferingHints: props.bufferingHints ?? {
         interval: Duration.seconds(60),
         size: Size.mebibytes(4),
       },
-      retryOptions: {
-        duration: Duration.seconds(60),
-      },
-      backupMode: props.backupMode ?? HTTPBackupMode.FAILED,
+      retryOptions: props.retryOptions ?? { duration: Duration.seconds(60) },
+      backupMode: props.backupMode ?? HttpBackupMode.FAILED,
       attributes: props.tags ?? [],
     });
   }

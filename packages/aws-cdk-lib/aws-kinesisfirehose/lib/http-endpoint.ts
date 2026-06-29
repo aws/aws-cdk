@@ -1,6 +1,7 @@
 import type { Construct } from 'constructs';
-import type {
-  CommonDestinationProps,
+import {
+  BackupMode as S3BackupMode,
+  type CommonDestinationProps,
 } from './common';
 import type {
   DestinationBindOptions,
@@ -11,15 +12,17 @@ import * as iam from '../../aws-iam';
 import type { ISecret } from '../../aws-secretsmanager';
 import {
   createBackupConfig,
+  createBufferingHints,
   createLoggingOptions,
   createProcessingConfig,
 } from './private/helpers';
-import type * as cdk from '../../core';
+import * as cdk from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Kinesis Data Firehose uses the content encoding to compress the body of a request before sending the request to the destination.
  */
-export enum HTTPCompression {
+export enum HttpCompression {
   /**
    * GZIP
    */
@@ -31,9 +34,9 @@ export enum HTTPCompression {
 }
 
 /**
- * Describes the S3 bucket backup options for the data that Kinesis Data Firehose delivers to the HTTP endpoint destination.
+ * Describes the S3 bucket backup options for the data that Kinesis Data Firehose delivers to the Http endpoint destination.
  */
-export enum HTTPBackupMode {
+export enum HttpBackupMode {
   /**
    * Back up only the documents that Kinesis Data Firehose could not deliver.
    */
@@ -47,7 +50,7 @@ export enum HTTPBackupMode {
 /**
  * The buffering options that can be used before data is delivered to the specified destination.
  */
-export interface HTTPBufferingHints {
+export interface HttpBufferingHints {
   /**
    * The higher interval allows more time to collect data and the size of data may be bigger. The lower interval sends the data more frequently and may be more advantageous when looking at shorter cycles of data activity.
    * @default 60 seconds
@@ -61,9 +64,9 @@ export interface HTTPBufferingHints {
 }
 
 /**
- * Describes the retry behavior in case Kinesis Data Firehose is unable to deliver data to the specified HTTP endpoint destination, or if it doesn't receive a valid acknowledgment of receipt from the specified HTTP endpoint destination.
+ * Describes the retry behavior in case Kinesis Data Firehose is unable to deliver data to the specified Http endpoint destination, or if it doesn't receive a valid acknowledgment of receipt from the specified Http endpoint destination.
  */
-export interface HTTPRetryOptions {
+export interface HttpRetryOptions {
   /**
    * The total amount of time that Kinesis Data Firehose spends on retries.
    */
@@ -71,88 +74,88 @@ export interface HTTPRetryOptions {
 }
 
 /**
- * Describes the configuration of the HTTP endpoint to which Kinesis Firehose delivers data.
+ * Describes the configuration of the Http endpoint to which Kinesis Firehose delivers data.
  */
-export interface HTTPEndpointConfig {
+export interface HttpEndpointConfig {
   /**
-   * The URL of the HTTP endpoint selected as the destination.
+   * The URL of the Http endpoint selected as the destination.
    */
   readonly url: string;
   /**
-   * The access key required for Kinesis Firehose to authenticate with the HTTP endpoint selected as the destination.
+   * The access key required for Kinesis Firehose to authenticate with the Http endpoint selected as the destination.
    * @default - None
    */
   readonly accessKey?: cdk.SecretValue;
   /**
-   * The secret required for Kinesis Firehose to authenticate with the HTTP endpoint selected as the destination.
+   * The secret required for Kinesis Firehose to authenticate with the Http endpoint selected as the destination.
    * @default - None
    */
   readonly secret?: ISecret;
   /**
-   * The name of the HTTP endpoint selected as the destination.
+   * The name of the Http endpoint selected as the destination.
    * @default - None
    */
   readonly name?: string;
 }
 
 /**
- * Describes the metadata sent to the HTTP endpoint destination.
+ * Describes the metadata sent to the Http endpoint destination.
  */
-export interface HTTPAttribute {
+export interface HttpAttribute {
   /**
-   * The name of the HTTP endpoint common attribute.
+   * The name of the Http endpoint common attribute.
    */
   readonly name: string;
   /**
-   * The value of the HTTP endpoint common attribute.
+   * The value of the Http endpoint common attribute.
    */
   readonly value: string;
 }
 
 /**
- * Props for defining an HTTP destination of a Kinesis Data Firehose delivery stream.
+ * Props for defining an Http destination of a Kinesis Data Firehose delivery stream.
  */
-export interface HTTPEndpointProps extends CommonDestinationProps {
+export interface HttpEndpointProps extends CommonDestinationProps {
   /**
-   * Describes the configuration of the HTTP endpoint to which Kinesis Firehose delivers data.
+   * Describes the configuration of the Http endpoint to which Kinesis Firehose delivers data.
    */
-  readonly endpointConfig: HTTPEndpointConfig;
+  readonly endpointConfig: HttpEndpointConfig;
   /**
-   * Describes the S3 bucket backup options for the data that Kinesis Data Firehose delivers to the HTTP endpoint destination.
+   * Describes the S3 bucket backup options for the data that Kinesis Data Firehose delivers to the Http endpoint destination.
    * @default - Failed data only
    */
-  readonly backupMode?: HTTPBackupMode;
+  readonly backupMode?: HttpBackupMode;
   /**
    * Compress the body of a request before sending the request to the destination.
    * @default - None
    */
-  readonly requestCompression?: HTTPCompression;
+  readonly requestCompression?: HttpCompression;
   /**
    * The buffering options that can be used before data is delivered to the specified destination.
    * @default - None
    */
-  readonly bufferingHints?: HTTPBufferingHints;
+  readonly bufferingHints?: HttpBufferingHints;
   /**
    * The total amount of time that Kinesis Data Firehose spends on retries
    * @default - None
    */
-  readonly retryOptions?: HTTPRetryOptions;
+  readonly retryOptions?: HttpRetryOptions;
   /**
-   * Describes the metadata sent to the HTTP endpoint destination.
+   * Describes the metadata sent to the Http endpoint destination.
    * @default - None
    */
-  readonly attributes?: HTTPAttribute[];
+  readonly attributes?: HttpAttribute[];
 }
 
 /**
- *  An HTTP destination for data from a Kinesis Data Firehose delivery stream.
+ *  An Http destination for data from a Kinesis Data Firehose delivery stream.
  */
-export class HTTPEndpoint implements IDestination {
-  constructor(private readonly props: HTTPEndpointProps) {}
+export class HttpEndpoint implements IDestination {
+  constructor(private readonly props: HttpEndpointProps) {}
   bind(scope: Construct, _options: DestinationBindOptions): DestinationConfig {
     const role =
       this.props.role ??
-			new iam.Role(scope, 'HTTP Destination Role', {
+			new iam.Role(scope, 'Http Destination Role', {
 			  assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
 			});
 
@@ -160,7 +163,7 @@ export class HTTPEndpoint implements IDestination {
       createLoggingOptions(scope, {
         loggingConfig: this.props.loggingConfig,
         role,
-        streamId: 'HTTPDestination',
+        streamId: 'HttpDestination',
       }) ?? {};
 
     const backupConfig = createBackupConfig(
@@ -168,11 +171,19 @@ export class HTTPEndpoint implements IDestination {
       role,
       {
         ...this.props.s3Backup,
+        mode: this.props.backupMode === HttpBackupMode.ALL ? S3BackupMode.ALL : S3BackupMode.FAILED,
       },
     );
 
     if (this.props.endpointConfig.secret) {
       this.props.endpointConfig.secret.grantRead(role);
+    }
+
+    if (this.props.retryOptions) {
+      const durationInSeconds = this.props.retryOptions.duration.toSeconds();
+      if (!cdk.Token.isUnresolved(durationInSeconds) && durationInSeconds > 7200) {
+        throw new cdk.ValidationError(lit`HttpRetryDurationTooLarge`, `Retry duration must be at most 7200 seconds, got ${durationInSeconds} seconds.`, scope);
+      }
     }
 
     return {
@@ -188,22 +199,13 @@ export class HTTPEndpoint implements IDestination {
         },
         ...(this.props.retryOptions && {
           retryOptions: {
-            durationInSeconds: this.props.retryOptions?.duration.toSeconds(),
+            durationInSeconds: this.props.retryOptions.duration.toSeconds(),
           },
         }),
-        ...(this.props.bufferingHints && {
-          bufferingHints: {
-            ...(this.props.bufferingHints.interval && {
-              intervalInSeconds: this.props.bufferingHints.interval.toSeconds(),
-            }),
-            ...(this.props.bufferingHints.size && {
-              sizeInMBs: this.props.bufferingHints.size.toMebibytes(),
-            }),
-          },
-        }),
+        bufferingHints: createBufferingHints(scope, this.props.bufferingHints?.interval, this.props.bufferingHints?.size),
         requestConfiguration: {
           contentEncoding:
-						this.props.requestCompression ?? HTTPCompression.NONE,
+						this.props.requestCompression ?? HttpCompression.NONE,
           ...(this.props.attributes && {
             commonAttributes: [
               ...this.props.attributes.map((attr) => ({
@@ -220,7 +222,7 @@ export class HTTPEndpoint implements IDestination {
           { role },
         ),
         roleArn: role.roleArn,
-        s3BackupMode: this.props.backupMode ?? HTTPBackupMode.FAILED,
+        s3BackupMode: this.props.backupMode ?? HttpBackupMode.FAILED,
         s3Configuration: backupConfig,
         ...(this.props.endpointConfig.secret && {
           secretsManagerConfiguration: {
