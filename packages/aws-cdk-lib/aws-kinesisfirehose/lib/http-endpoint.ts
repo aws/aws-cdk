@@ -1,7 +1,6 @@
 import type { Construct } from 'constructs';
-import {
-  type CommonDestinationProps,
-  BackupMode as S3BackupMode,
+import type {
+  CommonDestinationProps,
 } from './common';
 import type {
   DestinationBindOptions,
@@ -10,13 +9,12 @@ import type {
 } from './destination';
 import * as iam from '../../aws-iam';
 import type { ISecret } from '../../aws-secretsmanager';
-import type { Duration, Size } from '../../core';
 import {
   createBackupConfig,
   createLoggingOptions,
   createProcessingConfig,
 } from './private/helpers';
-import * as cdk from '../../core';
+import type * as cdk from '../../core';
 
 /**
  * Kinesis Data Firehose uses the content encoding to compress the body of a request before sending the request to the destination.
@@ -54,12 +52,12 @@ export interface HTTPBufferingHints {
    * The higher interval allows more time to collect data and the size of data may be bigger. The lower interval sends the data more frequently and may be more advantageous when looking at shorter cycles of data activity.
    * @default 60 seconds
    */
-  readonly interval?: Duration;
+  readonly interval?: cdk.Duration;
   /**
    * The higher buffer size may be lower in cost with higher latency. The lower buffer size will be faster in delivery with higher cost and less latency.
    * @default 4 MiB
    */
-  readonly size?: Size;
+  readonly size?: cdk.Size;
 }
 
 /**
@@ -69,7 +67,7 @@ export interface HTTPRetryOptions {
   /**
    * The total amount of time that Kinesis Data Firehose spends on retries.
    */
-  readonly duration: Duration;
+  readonly duration: cdk.Duration;
 }
 
 /**
@@ -165,16 +163,13 @@ export class HTTPEndpoint implements IDestination {
         streamId: 'HTTPDestination',
       }) ?? {};
 
-    const { backupConfig, dependables: backupDependables } = createBackupConfig(
+    const backupConfig = createBackupConfig(
       scope,
       role,
       {
-        mode:
-					this.props.backupMode === HTTPBackupMode.ALL
-					  ? S3BackupMode.ALL
-					  : S3BackupMode.FAILED,
+        ...this.props.s3Backup,
       },
-    )!;
+    );
 
     if (this.props.endpointConfig.secret) {
       this.props.endpointConfig.secret.grantRead(role);
@@ -237,7 +232,7 @@ export class HTTPEndpoint implements IDestination {
       },
       dependables: [
         ...(loggingDependables ?? []),
-        ...(backupDependables ?? []),
+        ...(backupConfig?.dependables ?? []),
       ],
     };
   }
