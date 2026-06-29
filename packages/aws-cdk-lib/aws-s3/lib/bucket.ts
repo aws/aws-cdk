@@ -2490,6 +2490,7 @@ export class Bucket extends BucketBase {
   private readonly inventories: IArrayBox<Inventory> = Box.fromArray();
   private readonly _resource: CfnBucket;
   private readonly reflection: BucketReflection;
+  private _suppressedTypeCheck = false;
 
   constructor(scope: Construct, id: string, props: BucketProps = {}) {
     super(scope, id, {
@@ -2640,6 +2641,16 @@ export class Bucket extends BucketBase {
   @MethodMetadata()
   public addLifecycleRule(rule: LifecycleRule) {
     this.lifecycleRules.push(rule);
+
+    if ((rule.objectSizeLessThan !== undefined || rule.objectSizeLessThan !== undefined) && !this._suppressedTypeCheck) {
+      // These are typed as numbers by CDK, but as strings by CloudFormation. The validation plugin is going to complain
+      // about the type mismatch, so suppress the warning for this construct if it's applicable.
+      Validations.of(this).acknowledge({
+        id: 'CloudFormation-Validate::W9003',
+        reason: 'LifecycleRule.objectSizeLessThan and LifecycleRule.objectSizeGreaterThan are numbers for historical reasons',
+      });
+      this._suppressedTypeCheck = true;
+    }
   }
 
   /**
