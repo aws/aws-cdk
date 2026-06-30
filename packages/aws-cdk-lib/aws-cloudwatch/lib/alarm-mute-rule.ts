@@ -42,8 +42,7 @@ export abstract class ScheduleExpression {
    * @param timeZone The time zone to use for interpreting the date. Default: - UTC
    */
   public static at(date: Date, timeZone?: cdk.TimeZone): ScheduleExpression {
-    // CFN error message: "At expressions must be a valid date in 'yyyy-MM-ddThh:mm' format"
-    const literal = (date).toISOString().replace(/:\d\d\.\d+Z$/, '');
+    const literal = formatDate(date);
     return new LiteralScheduleExpression(`at(${literal})`, timeZone);
   }
 
@@ -298,10 +297,9 @@ export class AlarmMuteRule extends cdk.Resource implements IAlarmMuteRule {
           timezone: props.schedule.timeZone?.timezoneName,
         },
       },
-      // CFN error message: "Invalid request provided: StartDate needs to follow the format yyyy-MM-ddTHH:mm"
-      startDate: props.start?.toISOString().replace(/:\d\d\.\d+Z$/, ''),
-      expireDate: props.expire?.toISOString().replace(/:\d\d\.\d+Z$/, ''),
-      tags: props.tags,
+      startDate: props.start ? formatDate(props.start) : undefined,
+      expireDate: props.expire ? formatDate(props.expire) : undefined,
+      tags: props.tags ? Object.entries(props.tags).map(([key, value]) => ({ key, value })) : undefined,
     });
   }
 
@@ -342,4 +340,13 @@ export class AlarmMuteRule extends cdk.Resource implements IAlarmMuteRule {
   public addAlarm(alarm: IAlarmRef): void {
     this.alarms.push(alarm);
   }
+}
+
+/**
+ * Formats a Date with local time zone.
+ * CFN error message: "At expressions must be a valid date in 'yyyy-MM-ddThh:mm' format"
+ */
+function formatDate(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
