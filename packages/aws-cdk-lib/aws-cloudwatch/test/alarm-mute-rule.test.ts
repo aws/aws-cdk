@@ -271,4 +271,16 @@ describe('Alarm mute rule', () => {
       });
     }).toThrow('Duration must be less than or equal to 15 days');
   });
+
+  test('fromAlarmMuteRuleName', () => {
+    const alarmMuteRule = cloudwatch.AlarmMuteRule.fromAlarmMuteRuleName(stack, 'AlarmMuteRule', 'MyAlarmMuteRule');
+    expect(alarmMuteRule.alarmMuteRuleName).toEqual('MyAlarmMuteRule');
+    expect(stack.resolve(alarmMuteRule.alarmMuteRuleArn)).toEqual({ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudwatch:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':alarm-mute-rule:MyAlarmMuteRule']] });
+  });
+
+  test('fromAlarmMuteRuleArn', () => {
+    const alarmMuteRule = cloudwatch.AlarmMuteRule.fromAlarmMuteRuleArn(stack, 'AlarmMuteRule', 'arn:aws:cloudwatch:us-east-1:123456789012:alarm-mute-rule:MyAlarmMuteRule');
+    expect(alarmMuteRule.alarmMuteRuleName).toEqual('MyAlarmMuteRule');
+    expect(stack.resolve(alarmMuteRule.alarmMuteRuleArn)).toEqual('arn:aws:cloudwatch:us-east-1:123456789012:alarm-mute-rule:MyAlarmMuteRule');
+  });
 });
