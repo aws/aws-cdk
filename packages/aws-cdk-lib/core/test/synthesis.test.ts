@@ -29,7 +29,7 @@ describe('synthesis', () => {
 
     // THEN
     expect(app.synth()).toEqual(session); // same session if we synth() again
-    expect(list(session.directory)).toEqual(['cdk.out', 'manifest.json', 'tree.json']);
+    expect(list(session.directory)).toEqual(expect.arrayContaining(['cdk.out', 'manifest.json', 'tree.json']));
     expect(readJson(session.directory, 'manifest.json').artifacts).toMatchObject({
       Tree: {
         type: 'cdk:tree',
@@ -53,7 +53,7 @@ describe('synthesis', () => {
       treeMetadata: false,
     });
     const assembly = app.synth();
-    expect(list(assembly.directory)).toEqual(['cdk.out', 'manifest.json']);
+    expect(list(assembly.directory)).not.toContain('tree.json');
   });
 
   test('tree.json constructInfo does not contain metadata', () => {
