@@ -2,7 +2,8 @@ import type { Construct } from 'constructs';
 import type { AlarmMuteRuleReference, IAlarmMuteRuleRef, IAlarmRef } from './cloudwatch.generated';
 import { CfnAlarmMuteRule } from './cloudwatch.generated';
 import * as cdk from '../../core';
-import { lit, memoizedGetter } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, lit, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -252,7 +253,7 @@ export class AlarmMuteRule extends cdk.Resource implements IAlarmMuteRule {
     return new Import(scope, id);
   }
 
-  private readonly alarms: IAlarmRef[];
+  private readonly alarms: IArrayBox<IAlarmRef> = Box.fromArray([]);
   private readonly alarmMuteRule: CfnAlarmMuteRule;
 
   constructor(scope: Construct, id: string, props: AlarmMuteRuleProps) {
@@ -261,8 +262,6 @@ export class AlarmMuteRule extends cdk.Resource implements IAlarmMuteRule {
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
-
-    this.alarms = props.alarms ? [...props.alarms] : [];
 
     if (
       props.alarmMuteRuleName !== undefined && !cdk.Token.isUnresolved(props.alarmMuteRuleName) &&
@@ -279,10 +278,19 @@ export class AlarmMuteRule extends cdk.Resource implements IAlarmMuteRule {
       }
     }
 
+    for (const alarm of props.alarms ?? []) {
+      this.addAlarm(alarm);
+    }
+
     this.alarmMuteRule = new CfnAlarmMuteRule(this, 'Resource', {
       name: props.alarmMuteRuleName,
       description: props.description,
-      muteTargets: cdk.Lazy.any({ produce: () => this.renderMuteTargets() }),
+      muteTargets: this.alarms.derive((alarms) => {
+        if (alarms.length > 100) {
+          throw new cdk.ValidationError(lit`TargetAlarmsTooMany`, `The maximum number of target alarms is 100. Got ${this.alarms.length} alarms.`, this);
+        }
+        return { alarmNames: alarms.map((alarm) => alarm.alarmRef.alarmName) };
+      }),
       rule: {
         schedule: {
           duration: props.duration.toIsoString(),
@@ -333,17 +341,5 @@ export class AlarmMuteRule extends cdk.Resource implements IAlarmMuteRule {
    */
   public addAlarm(alarm: IAlarmRef): void {
     this.alarms.push(alarm);
-  }
-
-  private renderMuteTargets(): CfnAlarmMuteRule.MuteTargetsProperty | undefined {
-    if (this.alarms.length === 0) {
-      return undefined;
-    }
-    if (this.alarms.length > 100) {
-      throw new cdk.ValidationError(lit`TargetAlarmsTooMany`, `The maximum number of target alarms is 100. Got ${this.alarms.length} alarms.`, this);
-    }
-    return {
-      alarmNames: this.alarms.map((alarm) => alarm.alarmRef.alarmName),
-    };
   }
 }
