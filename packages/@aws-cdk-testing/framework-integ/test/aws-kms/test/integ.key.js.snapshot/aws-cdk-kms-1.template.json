@@ -55,7 +55,9 @@
       "Arn"
      ]
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "AsymmetricKey26BBC514": {
    "Type": "AWS::KMS::Key",
