@@ -1,6 +1,6 @@
 import type { StackProps } from 'aws-cdk-lib';
 import { App, Duration, Stack, TimeZone } from 'aws-cdk-lib';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import { Alarm, AlarmMuteRule, Metric, ScheduleExpression } from 'aws-cdk-lib/aws-cloudwatch';
 
 class AlarmMuteRuleIntegrationTest extends Stack {
@@ -28,8 +28,8 @@ class AlarmMuteRuleIntegrationTest extends Stack {
       description: 'Alarm mute rule integration test',
       schedule: ScheduleExpression.cron({ minute: '0', hour: '0' }),
       duration: Duration.minutes(1),
-      start: new Date(2030, 1, 1),
-      expire: new Date(2030, 12, 31),
+      start: new Date(2030, 0, 1),
+      expire: new Date(2030, 11, 31),
     });
     muteRule1.addAlarm(alarm2);
 
@@ -43,6 +43,26 @@ class AlarmMuteRuleIntegrationTest extends Stack {
 
 const app = new App();
 
-new IntegTest(app, 'cdk-cloudwatch-alarms-mute-rules-integ-test', {
+const integ = new IntegTest(app, 'cdk-cloudwatch-alarms-mute-rules-integ-test', {
   testCases: [new AlarmMuteRuleIntegrationTest(app, 'AlarmMuteRuleIntegrationTest')],
 });
+
+integ.assertions
+  .awsApiCall('CloudWatch', 'getAlarmMuteRule', {
+    AlarmMuteRuleName: 'AlarmMuteRuleIntegTest',
+  }).expect(ExpectedResult.objectLike({
+    Name: 'AlarmMuteRuleIntegTest',
+    Description: 'Alarm mute rule integration test',
+    Rule: {
+      Schedule: {
+        Expression: 'cron(0 0 * * *)',
+        Duration: 'PT1M',
+      },
+    },
+    MuteTargets: {
+      AlarmNames: Match.arrayWith([
+        Match.stringLikeRegexp('Alarm1'),
+        Match.stringLikeRegexp('Alarm2'),
+      ]),
+    },
+  }));
