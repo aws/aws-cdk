@@ -114,6 +114,21 @@ export class OAuth2CredentialProviderVendor {
   }
 }
 
+/**
+ * Source of the OAuth2 client secret.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-bedrockagentcore-oauth2credentialprovider-customoauth2providerconfiginput.html
+ */
+export enum ClientSecretSource {
+  /** The service creates and manages the secret in Secrets Manager (default). */
+  MANAGED = 'MANAGED',
+  /**
+   * You supply a pre-existing AWS Secrets Manager secret.
+   * Must be accompanied by `clientSecretConfig` on the provider props.
+   */
+  EXTERNAL = 'EXTERNAL',
+}
+
 /******************************************************************************
  *                                Interface
  *****************************************************************************/
