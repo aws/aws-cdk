@@ -259,7 +259,7 @@ export class AlarmMuteRule extends cdk.Resource implements IAlarmMuteRule, cdk.I
     this.alarms = props.alarms ? [...props.alarms] : [];
 
     if (
-      props.alarmMuteRuleName !== undefined && cdk.Token.isResolved(props.alarmMuteRuleName) &&
+      props.alarmMuteRuleName !== undefined && !cdk.Token.isUnresolved(props.alarmMuteRuleName) &&
       (props.alarmMuteRuleName.length < 1 || props.alarmMuteRuleName.length > 255)
     ) {
       throw new cdk.ValidationError(lit`InvalidAlarmMuteRuleNameLength`, `Alarm mute rule name must be between 1 and 255 characters, got ${props.alarmMuteRuleName.length} characters.`, this);
