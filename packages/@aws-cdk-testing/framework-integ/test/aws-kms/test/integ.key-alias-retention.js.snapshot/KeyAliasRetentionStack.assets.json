@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "8e1d528d82e07b933dd4d2ec9518d1ee43bd8d9d8c612eacd03f1312a17b9e51": {
+      "displayName": "KeyAliasRetentionStack Template",
+      "source": {
+        "path": "KeyAliasRetentionStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-8ef69713": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8e1d528d82e07b933dd4d2ec9518d1ee43bd8d9d8c612eacd03f1312a17b9e51.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

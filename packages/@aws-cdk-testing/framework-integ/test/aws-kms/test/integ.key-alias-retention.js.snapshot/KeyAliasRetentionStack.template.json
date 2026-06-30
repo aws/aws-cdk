@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "keyFEDD6EC0": {
+  "Key961B73FD": {
    "Type": "AWS::KMS::Key",
    "Properties": {
     "KeyPolicy": {
@@ -32,32 +32,22 @@
      "Version": "2012-10-17"
     }
    },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
-  "keyAliasCEB16DF2": {
+  "KeyAlias910D852D": {
    "Type": "AWS::KMS::Alias",
    "Properties": {
-    "AliasName": {
-     "Fn::Join": [
-      "",
-      [
-       "alias/MyKey",
-       {
-        "Ref": "AWS::AccountId"
-       }
-      ]
-     ]
-    },
+    "AliasName": "alias/cdk-integ-kms-key-retention",
     "TargetKeyId": {
      "Fn::GetAtt": [
-      "keyFEDD6EC0",
+      "Key961B73FD",
       "Arn"
      ]
     }
    },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   }
  },
  "Parameters": {

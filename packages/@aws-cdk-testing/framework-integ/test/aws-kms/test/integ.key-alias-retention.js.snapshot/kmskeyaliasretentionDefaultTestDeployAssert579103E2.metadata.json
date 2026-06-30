@@ -1,0 +1,145 @@
+{
+  "/kms-key-alias-retention/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:39:38)",
+        "new IntegTestCase (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk-testing/framework-integ/test/aws-kms/test/integ.key-alias-retention.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/kms-key-alias-retention/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "visit (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "visit (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)"
+      ]
+    }
+  ],
+  "/kms-key-alias-retention/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "visit (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "visit (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)"
+      ]
+    }
+  ],
+  "/kms-key-alias-retention/DefaultTest/DeployAssert/AwsApiCallKMSdescribeKeybb761589b48535b443410aace6e1eef9/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/kms-key-alias-retention/DefaultTest/DeployAssert/AwsApiCallKMSdescribeKeybb761589b48535b443410aace6e1eef9/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallKMSdescribeKeybb761589b48535b443410aace6e1eef9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:87:25)",
+        "recurse (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:356:38)",
+        "recurse (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "invokeAspectsV2 (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:5)",
+        "synthesize (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:77:9)",
+        "App.synth (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/kms-key-alias-retention/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:111:26)",
+        "SingletonFunction.ensureFunction (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:196:16)",
+        "new SingletonFunction (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:187:36)",
+        "new AssertionsProvider (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:260:24)",
+        "new AwsApiCall (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:49:25)",
+        "DeployAssert.awsApiCall (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:49:16)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk-testing/framework-integ/test/aws-kms/test/integ.key-alias-retention.js:30:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/kms-key-alias-retention/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:28)",
+        "SingletonFunction.ensureFunction (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:196:16)",
+        "new SingletonFunction (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:187:36)",
+        "new AssertionsProvider (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:260:24)",
+        "new AwsApiCall (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:49:25)",
+        "DeployAssert.awsApiCall (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:49:16)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk-testing/framework-integ/test/aws-kms/test/integ.key-alias-retention.js:30:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/kms-key-alias-retention/DefaultTest/DeployAssert/AwsApiCallKMSdescribeKeybb761589b48535b443410aace6e1eef9/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallKMSdescribeKeybb761589b48535b443410aace6e1eef9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new AwsApiCall (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:60:32)",
+        "DeployAssert.awsApiCall (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:49:16)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk-testing/framework-integ/test/aws-kms/test/integ.key-alias-retention.js:30:18)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
