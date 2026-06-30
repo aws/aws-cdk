@@ -190,6 +190,14 @@ export interface AlarmMuteRuleOptions {
    * @default - no configuration
    */
   readonly expire?: Date;
+
+  /**
+   * A list of tags associated with the alarm mute rule.
+   * Tags help you organize and categorize your AWS resources.
+   *
+   * @default - No tags are applied
+   */
+  readonly tags?: { [key: string]: string };
 }
 
 /**
@@ -208,7 +216,7 @@ export interface AlarmMuteRuleProps extends AlarmMuteRuleOptions {
  * A CloudWatch Alarm Mute Rule.
  */
 @propertyInjectable
-export class AlarmMuteRule extends cdk.Resource implements IAlarmMuteRule, cdk.ITaggableV2 {
+export class AlarmMuteRule extends cdk.Resource implements IAlarmMuteRule {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudwatch.AlarmMuteRule';
 
@@ -243,8 +251,6 @@ export class AlarmMuteRule extends cdk.Resource implements IAlarmMuteRule, cdk.I
     }
     return new Import(scope, id);
   }
-
-  public readonly cdkTagManager: cdk.TagManager;
 
   private readonly alarms: IAlarmRef[];
   private readonly alarmMuteRule: CfnAlarmMuteRule;
@@ -287,9 +293,8 @@ export class AlarmMuteRule extends cdk.Resource implements IAlarmMuteRule, cdk.I
       // CFN error message: "Invalid request provided: StartDate needs to follow the format yyyy-MM-ddTHH:mm"
       startDate: props.start?.toISOString().replace(/:\d\d\.\d+Z$/, ''),
       expireDate: props.expire?.toISOString().replace(/:\d\d\.\d+Z$/, ''),
+      tags: props.tags,
     });
-
-    this.cdkTagManager = this.alarmMuteRule.cdkTagManager;
   }
 
   public get alarmMuteRuleRef(): AlarmMuteRuleReference {
