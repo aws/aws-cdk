@@ -1734,6 +1734,23 @@ export enum TransitionDefaultMinimumObjectSize {
   VARIES_BY_STORAGE_CLASS = 'varies_by_storage_class',
 }
 
+/**
+ * The namespace for the bucket name when using `bucketNamePrefix`.
+ *
+ * Determines how CloudFormation generates the unique portion of the bucket name.
+ */
+export enum BucketNamespace {
+  /**
+   * The bucket name is globally unique.
+   */
+  GLOBAL = 'global',
+
+  /**
+   * The bucket name is unique within the account and region.
+   */
+  ACCOUNT_REGIONAL = 'account-regional',
+}
+
 export interface BucketProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
@@ -1793,9 +1810,40 @@ export interface BucketProps {
   /**
    * Physical name of this bucket.
    *
+   * Cannot be used together with `bucketNamePrefix` or `bucketNamespace`.
+   *
    * @default - Assigned by CloudFormation (recommended).
    */
   readonly bucketName?: string;
+
+  /**
+   * A prefix for the bucket name in the account-regional namespace.
+   *
+   * Requires `bucketNamespace` to be set to `ACCOUNT_REGIONAL`.
+   * Cannot be used together with `bucketName`.
+   *
+   * CloudFormation appends `-<accountId>-<region>-an` to form the full name.
+   * For example, `my-app` becomes `my-app-123456789012-us-east-1-an`.
+   *
+   * Must contain only lowercase letters, numbers, and hyphens.
+   * Must start and end with a lowercase letter or number.
+   *
+   * @default - No prefix.
+   */
+  readonly bucketNamePrefix?: string;
+
+  /**
+   * The namespace for the bucket name.
+   *
+   * AWS recommends `ACCOUNT_REGIONAL` for improved security, as bucket names
+   * are scoped to your account and cannot be claimed by other accounts.
+   * When set to `ACCOUNT_REGIONAL`, `bucketNamePrefix` is required.
+   * When set to `GLOBAL`, it can be used standalone to explicitly specify the default namespace.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/gpbucketnamespaces.html
+   * @default - Global namespace.
+   */
+  readonly bucketNamespace?: BucketNamespace;
 
   /**
    * Policy to apply when the bucket is removed from this stack.
@@ -2252,6 +2300,17 @@ export class Bucket extends BucketBase {
   }
 
   /**
+   * Maximum length for the bucket name prefix in the account-regional namespace.
+   *
+   * The account-regional suffix format is `-<accountId(12)>-<region>-an`.
+   * For the shortest region codes (9 chars, e.g. `us-east-1`), the suffix
+   * is 26 chars, leaving 37 chars for the prefix within the 63-char bucket
+   * name limit. Longer region codes (e.g. `ap-southeast-1`) will have a
+   * shorter effective limit enforced by CloudFormation at deploy time.
+   */
+  private static readonly MAX_BUCKET_NAME_PREFIX_LENGTH = 37;
+
+  /**
    * Return any errors against the bucket name
    */
   private static _validateBucketName(physicalName: string, allowLegacyBucketNaming: boolean = false): string[] {
@@ -2317,6 +2376,73 @@ export class Bucket extends BucketBase {
     }
   }
 
+  /**
+   * Return any errors against the bucket name prefix.
+   */
+  private static _validateBucketNamePrefix(prefix?: string): string[] {
+    if (!prefix || Token.isUnresolved(prefix)) {
+      return [];
+    }
+
+    const errors: string[] = [];
+
+    if (prefix.length > Bucket.MAX_BUCKET_NAME_PREFIX_LENGTH) {
+      errors.push(`Bucket name prefix must be ${Bucket.MAX_BUCKET_NAME_PREFIX_LENGTH} characters or fewer`);
+    }
+    if (!/^[a-z0-9]/.test(prefix)) {
+      errors.push('Bucket name prefix must start with a lowercase letter or number');
+    }
+    if (!/[a-z0-9]$/.test(prefix)) {
+      errors.push('Bucket name prefix must end with a lowercase letter or number');
+    }
+    if (/[^a-z0-9-]/.test(prefix)) {
+      errors.push('Bucket name prefix must only contain lowercase letters, numbers, and hyphens');
+    }
+
+    return errors;
+  }
+
+  /**
+   * Like '_validateBucketNamePrefix', but throws a scoped ValidationError
+   */
+  private static validateBucketNamePrefixScoped(scope: IConstruct, prefix?: string): void {
+    const errors = Bucket._validateBucketNamePrefix(prefix);
+    if (errors.length > 0) {
+      throw new ValidationError(lit`InvalidBucketNamePrefixValue`, `Invalid S3 bucket name prefix (value: ${prefix})${EOL}${errors.join(EOL)}`, scope);
+    }
+  }
+
+  private static validateBucketNamingCombination(scope: IConstruct, props: BucketProps): void {
+    if (props.bucketName && props.bucketNamePrefix) {
+      throw new ValidationError(
+        lit`BucketNameConflictsWithPrefix`,
+        '\'bucketName\' and \'bucketNamePrefix\' cannot be used together',
+        scope,
+      );
+    }
+    if (props.bucketName && props.bucketNamespace && props.bucketNamespace !== BucketNamespace.GLOBAL) {
+      throw new ValidationError(
+        lit`BucketNameConflictsWithNamespace`,
+        '\'bucketName\' cannot be used with \'bucketNamespace\' (except GLOBAL). Use \'bucketNamePrefix\' with \'bucketNamespace\' instead',
+        scope,
+      );
+    }
+    if (props.bucketNamePrefix && props.bucketNamespace !== BucketNamespace.ACCOUNT_REGIONAL) {
+      throw new ValidationError(
+        lit`BucketNamePrefixRequiresAccountRegional`,
+        '\'bucketNamePrefix\' requires \'bucketNamespace\' to be set to ACCOUNT_REGIONAL',
+        scope,
+      );
+    }
+    if (props.bucketNamespace === BucketNamespace.ACCOUNT_REGIONAL && !props.bucketNamePrefix) {
+      throw new ValidationError(
+        lit`AccountRegionalNamespaceRequiresPrefix`,
+        '\'bucketNamespace\' ACCOUNT_REGIONAL requires \'bucketNamePrefix\' to be specified',
+        scope,
+      );
+    }
+  }
+
   @memoizedGetter
   public get bucketArn(): string {
     return this.getResourceArnAttribute(this._resource.attrArn, {
@@ -2377,7 +2503,9 @@ export class Bucket extends BucketBase {
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
     this.encryptionKey = encryptionKey;
 
+    Bucket.validateBucketNamingCombination(this, props);
     Bucket.validateBucketNameScoped(this, this.physicalName);
+    Bucket.validateBucketNamePrefixScoped(this, props.bucketNamePrefix);
 
     let publicAccessBlockConfig: BlockPublicAccessOptions | undefined = props.blockPublicAccess;
     if (props.blockPublicAccess && FeatureFlags.of(this).isEnabled(cxapi.S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT)) {
@@ -2398,6 +2526,8 @@ export class Bucket extends BucketBase {
 
     const resource = new CfnBucket(this, 'Resource', {
       bucketName: this.physicalName,
+      bucketNamePrefix: props.bucketNamePrefix,
+      bucketNamespace: props.bucketNamespace,
       bucketEncryption,
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
       lifecycleConfiguration: this.lifecycleRules.derive(rules => this.parseLifecycleConfiguration(rules)),
@@ -2602,7 +2732,7 @@ export class Bucket extends BucketBase {
       throw new ValidationError(lit`EncryptionkeySpecified`, `encryptionKey is specified, so 'encryption' must be set to KMS or DSSE (value: ${encryptionType})`, this);
     }
 
-    // if bucketKeyEnabled is set, encryption can not be BucketEncryption.UNENCRYPTED
+    // if bucketKeyEnabled is set, encryption cannot be BucketEncryption.UNENCRYPTED
     if (props.bucketKeyEnabled && encryptionType === BucketEncryption.UNENCRYPTED) {
       throw new ValidationError(lit`BucketKeyEnabledSpecifiedEncryption`, `bucketKeyEnabled is specified, so 'encryption' must be set to KMS, DSSE or S3 (value: ${encryptionType})`, this);
     }
@@ -3225,7 +3355,7 @@ export class Bucket extends BucketBase {
  */
 export enum BucketEncryption {
   /**
-   * Previous option. Buckets can not be unencrypted now.
+   * Previous option. Buckets cannot be unencrypted now.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html
    * @deprecated S3 applies server-side encryption with SSE-S3 for every bucket
    * that default encryption is not configured.

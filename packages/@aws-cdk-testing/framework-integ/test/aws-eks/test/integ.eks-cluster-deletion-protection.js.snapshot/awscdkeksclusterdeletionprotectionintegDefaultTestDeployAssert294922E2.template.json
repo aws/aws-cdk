@@ -1,0 +1,642 @@
+{
+ "Resources": {
+  "AwsApiCallCloudFormationdeleteStack472fb1617496e75232e22dd80272c735": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFormationdeleteStack",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudFormation",
+    "api": "deleteStack",
+    "parameters": {
+     "StackName": "\"aws-cdk-eks-cluster-deletion-protection\""
+    },
+    "flattenResponse": "false",
+    "salt": "1780567342991"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "cloudformation:DeleteStack"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "cloudformation:DescribeStacks"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "eks:UpdateClusterConfig"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "eks:DescribeCluster"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "6611813c56ee5ec64f812f46caf03748d8b30fea6e344cc7ac25035891a6dfe8.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  },
+  "AwsApiCallCloudFormationdescribeStacks472fb1617496e75232e22dd80272c735": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFormationdescribeStacks",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudFormation",
+    "api": "describeStacks",
+    "expected": "{\"$ObjectLike\":{\"Stacks\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"StackName\":\"aws-cdk-eks-cluster-deletion-protection\",\"StackStatus\":\"DELETE_FAILED\"}}]}}}",
+    "stateMachineArn": {
+     "Ref": "AwsApiCallCloudFormationdescribeStacks472fb1617496e75232e22dd80272c735WaitForEBE8FE5B"
+    },
+    "parameters": {
+     "StackName": "\"aws-cdk-eks-cluster-deletion-protection\""
+    },
+    "flattenResponse": "false",
+    "salt": "1780567342993"
+   },
+   "DependsOn": [
+    "AwsApiCallCloudFormationdeleteStack472fb1617496e75232e22dd80272c735"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallCloudFormationdescribeStacks472fb1617496e75232e22dd80272c735WaitForIsCompleteProviderInvoke7C8ACCC6": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallCloudFormationdescribeStacks472fb1617496e75232e22dd80272c735WaitForRole70D8AD04",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallCloudFormationdeleteStack472fb1617496e75232e22dd80272c735"
+   ]
+  },
+  "AwsApiCallCloudFormationdescribeStacks472fb1617496e75232e22dd80272c735WaitForTimeoutProviderInvokeD6BBA0EF": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallCloudFormationdescribeStacks472fb1617496e75232e22dd80272c735WaitForRole70D8AD04",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallCloudFormationdeleteStack472fb1617496e75232e22dd80272c735"
+   ]
+  },
+  "AwsApiCallCloudFormationdescribeStacks472fb1617496e75232e22dd80272c735WaitForRole70D8AD04": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "Policies": [
+     {
+      "PolicyName": "InlineInvokeFunctions",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": "lambda:InvokeFunction",
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "DependsOn": [
+    "AwsApiCallCloudFormationdeleteStack472fb1617496e75232e22dd80272c735"
+   ]
+  },
+  "AwsApiCallCloudFormationdescribeStacks472fb1617496e75232e22dd80272c735WaitForEBE8FE5B": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":360,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AwsApiCallCloudFormationdescribeStacks472fb1617496e75232e22dd80272c735WaitForRole70D8AD04",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallCloudFormationdeleteStack472fb1617496e75232e22dd80272c735",
+    "AwsApiCallCloudFormationdescribeStacks472fb1617496e75232e22dd80272c735WaitForRole70D8AD04"
+   ]
+  },
+  "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "cloudformation:DescribeStacks"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "eks:DescribeCluster"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "6611813c56ee5ec64f812f46caf03748d8b30fea6e344cc7ac25035891a6dfe8.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.isComplete",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  },
+  "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "6611813c56ee5ec64f812f46caf03748d8b30fea6e344cc7ac25035891a6dfe8.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.onTimeout",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  },
+  "AwsApiCalleksupdateClusterConfigcecf8e8b292e8b686346a0061ffe5ed1": {
+   "Type": "Custom::DeployAssert@SdkCalleksupdateClusterConfig",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "eks",
+    "api": "updateClusterConfig",
+    "parameters": {
+     "name": "\"eks-deletion-protection-test\"",
+     "deletionProtection": "false"
+    },
+    "flattenResponse": "false",
+    "salt": "1780567342998"
+   },
+   "DependsOn": [
+    "AwsApiCallCloudFormationdescribeStacks472fb1617496e75232e22dd80272c735",
+    "AwsApiCallCloudFormationdescribeStacks472fb1617496e75232e22dd80272c735WaitForIsCompleteProviderInvoke7C8ACCC6",
+    "AwsApiCallCloudFormationdescribeStacks472fb1617496e75232e22dd80272c735WaitForEBE8FE5B",
+    "AwsApiCallCloudFormationdescribeStacks472fb1617496e75232e22dd80272c735WaitForRole70D8AD04",
+    "AwsApiCallCloudFormationdescribeStacks472fb1617496e75232e22dd80272c735WaitForTimeoutProviderInvokeD6BBA0EF"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCalleksdescribeClustera7d7a00c3e5f1cebeacd8cafb72da080": {
+   "Type": "Custom::DeployAssert@SdkCalleksdescribeCluster",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "eks",
+    "api": "describeCluster",
+    "expected": "{\"$ObjectLike\":{\"cluster\":{\"$ObjectLike\":{\"status\":\"ACTIVE\",\"deletionProtection\":false}}}}",
+    "stateMachineArn": {
+     "Ref": "AwsApiCalleksdescribeClustera7d7a00c3e5f1cebeacd8cafb72da080WaitForD575D1A1"
+    },
+    "parameters": {
+     "name": "\"eks-deletion-protection-test\""
+    },
+    "flattenResponse": "false",
+    "salt": "1780567342999"
+   },
+   "DependsOn": [
+    "AwsApiCalleksupdateClusterConfigcecf8e8b292e8b686346a0061ffe5ed1"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCalleksdescribeClustera7d7a00c3e5f1cebeacd8cafb72da080WaitForIsCompleteProviderInvoke25665C89": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCalleksdescribeClustera7d7a00c3e5f1cebeacd8cafb72da080WaitForRole024A9D24",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCalleksupdateClusterConfigcecf8e8b292e8b686346a0061ffe5ed1"
+   ]
+  },
+  "AwsApiCalleksdescribeClustera7d7a00c3e5f1cebeacd8cafb72da080WaitForTimeoutProviderInvoke927DE26F": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCalleksdescribeClustera7d7a00c3e5f1cebeacd8cafb72da080WaitForRole024A9D24",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCalleksupdateClusterConfigcecf8e8b292e8b686346a0061ffe5ed1"
+   ]
+  },
+  "AwsApiCalleksdescribeClustera7d7a00c3e5f1cebeacd8cafb72da080WaitForRole024A9D24": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "Policies": [
+     {
+      "PolicyName": "InlineInvokeFunctions",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": "lambda:InvokeFunction",
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "DependsOn": [
+    "AwsApiCalleksupdateClusterConfigcecf8e8b292e8b686346a0061ffe5ed1"
+   ]
+  },
+  "AwsApiCalleksdescribeClustera7d7a00c3e5f1cebeacd8cafb72da080WaitForD575D1A1": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":360,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AwsApiCalleksdescribeClustera7d7a00c3e5f1cebeacd8cafb72da080WaitForRole024A9D24",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCalleksdescribeClustera7d7a00c3e5f1cebeacd8cafb72da080WaitForRole024A9D24",
+    "AwsApiCalleksupdateClusterConfigcecf8e8b292e8b686346a0061ffe5ed1"
+   ]
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallCloudFormationdescribeStacks472fb1617496e75232e22dd80272c735": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudFormationdescribeStacks472fb1617496e75232e22dd80272c735",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCalleksdescribeClustera7d7a00c3e5f1cebeacd8cafb72da080": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCalleksdescribeClustera7d7a00c3e5f1cebeacd8cafb72da080",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

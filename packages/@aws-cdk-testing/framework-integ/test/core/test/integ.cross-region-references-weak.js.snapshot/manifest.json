@@ -627,10 +627,10 @@
             "recommendedValue": true,
             "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
           },
-          "@aws-cdk/core:crossStackReferenceStrength": {
+          "@aws-cdk/core:defaultCrossStackReferences": {
             "userValue": "weak",
-            "recommendedValue": "weak",
-            "explanation": "Controls whether cross-stack references are strong, weak, or both",
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
             "unconfiguredBehavesLike": {
               "v2": "strong"
             }

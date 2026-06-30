@@ -2,6 +2,56 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.260.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.259.0-alpha.0...v2.260.0-alpha.0) (2026-06-16)
+
+## [2.259.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.258.1-alpha.0...v2.259.0-alpha.0) (2026-06-11)
+
+## [2.258.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.258.0-alpha.0...v2.258.1-alpha.0) (2026-06-08)
+
+## [2.258.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.257.0-alpha.0...v2.258.0-alpha.0) (2026-06-04)
+
+
+### Features
+
+* **integ-tests-alpha:** add option to set the provider log level ([#38005](https://github.com/aws/aws-cdk/issues/38005)) ([c634a79](https://github.com/aws/aws-cdk/commit/c634a795de080df21b86fad191d05dfde884eb4e))
+
+
+### Bug Fixes
+
+* **custom-resource-handlers:** deterministic asset hashes for generated lambdas ([#37634](https://github.com/aws/aws-cdk/issues/37634)) ([6c3d5bc](https://github.com/aws/aws-cdk/commit/6c3d5bc36e19b8834319578fbd8525615a47a4b9)), closes [#34307](https://github.com/aws/aws-cdk/issues/34307)
+* **glue-alpha:** deprecate Ray Jobs ([#38055](https://github.com/aws/aws-cdk/issues/38055)) ([3fa428b](https://github.com/aws/aws-cdk/commit/3fa428b9b24d286841940cfff5200d16817196bf))
+* **glue-alpha:** restore notifyDelayAfter to PySpark and Scala Spark ETL jobs ([#37815](https://github.com/aws/aws-cdk/issues/37815)) ([05be88a](https://github.com/aws/aws-cdk/commit/05be88aa324635108076bdc648a4ee940d22a386)), closes [#33839](https://github.com/aws/aws-cdk/issues/33839)
+* **integ-tests-alpha:** assertion failures print too much unnecessary information ([#37974](https://github.com/aws/aws-cdk/issues/37974)) ([bc0de1d](https://github.com/aws/aws-cdk/commit/bc0de1dacc59b95a2e89f9c3ec96589e98b35ed2))
+* **mediapackagev2-alpha:** cdnAuth on OriginEndpoint now generates the required policy ([#38013](https://github.com/aws/aws-cdk/issues/38013)) ([1d56b46](https://github.com/aws/aws-cdk/commit/1d56b46abd477f188021d32d77551be1377765d0))
+
+## [2.257.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.256.1-alpha.0...v2.257.0-alpha.0) (2026-05-21)
+
+## [2.256.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.256.0-alpha.0...v2.256.1-alpha.0) (2026-05-20)
+
+## [2.256.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.255.0-alpha.0...v2.256.0-alpha.0) (2026-05-19)
+
+## [2.255.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.254.0-alpha.0...v2.255.0-alpha.0) (2026-05-18)
+
+### Features
+
+* **bedrock-agentcore-alpha:** Graduation of the library to stable. The **Policy** submodule is the only submodule that remains in alpha. All other constructs have graduated to stable in `aws-cdk-lib/aws-bedrockagentcore` and we recommend migrating to the stable versions  ([#37876](https://github.com/aws/aws-cdk/issues/37876)) ([00cf601](https://github.com/aws/aws-cdk/commit/00cf6015f30755653de7a541f79c944d4a68f423))
+
+
+## [2.254.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.253.1-alpha.0...v2.254.0-alpha.0) (2026-05-13)
+
+
+### Features
+
+* **bedrock-agentcore-alpha:** add tags support to Evaluator and OnlineEvaluationConfig ([#37804](https://github.com/aws/aws-cdk/issues/37804)) ([adbf88f](https://github.com/aws/aws-cdk/commit/adbf88faeb4d2b762563389aea160cfda496f200))
+* **bedrock-agentcore-alpha:** add identity L2 constructs ([#37610](https://github.com/aws/aws-cdk/issues/37610)) ([67c3af2](https://github.com/aws/aws-cdk/commit/67c3af260cedb8e610dff36f829afb36114dd93a))
+* **mediapackagev2-alpha:** add OAC integration between CloudFront and MediaPackageV2 ([#37701](https://github.com/aws/aws-cdk/issues/37701)) ([654f59c](https://github.com/aws/aws-cdk/commit/654f59c559f6eb2b5240e7885372ac82ea05a996))
+
+
+### Bug Fixes
+
+* **bedrock-agentcore-alpha:** fix cedar policy bug ([#37782](https://github.com/aws/aws-cdk/issues/37782)) ([e678d5c](https://github.com/aws/aws-cdk/commit/e678d5cc251f00a0a67bc308b562a3fddca6a73c)), closes [#37828](https://github.com/aws/aws-cdk/issues/37828)
+* **custom-resource-handlers:** deployment fails when parameter already exists ([#37852](https://github.com/aws/aws-cdk/issues/37852)) ([025c38c](https://github.com/aws/aws-cdk/commit/025c38ca989a234189b411df011a560a003107b3))
+
 ## [2.253.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.253.0-alpha.0...v2.253.1-alpha.0) (2026-05-08)
 
 ## [2.253.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.252.0-alpha.0...v2.253.0-alpha.0) (2026-05-06)
