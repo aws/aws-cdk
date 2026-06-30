@@ -1,0 +1,194 @@
+name: Monitor CI Pending Approval
+
+on:
+  schedule:
+    # Run daily at 08:00 UTC
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+jobs:
+  check-prs:
+    # this workflow will always fail in forks; bail if this isn't running in the upstream
+    if: github.repository == 'aws/aws-cdk'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+    environment: automation
+
+    steps:
+      - name: Check for PRs pending CI approval
+        id: check-prs
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
+          script: |
+            const owner = 'aws';
+            const repo = 'aws-cdk';
+
+            // Search for beginning-contributor PRs
+            const { data: searchResults } = await github.rest.search.issuesAndPullRequests({
+              q: `is:pr is:open repo:${owner}/${repo} label:beginning-contributor`,
+              per_page: 100
+            });
+
+            console.log(`Found ${searchResults.total_count} beginning-contributor PRs`);
+
+            const pendingApproval = [];
+            const pendingBuildResult = [];
+
+            for (const item of searchResults.items) {
+              const prNumber = item.number;
+
+              try {
+                // Get PR details
+                const { data: pr } = await github.rest.pulls.get({
+                  owner,
+                  repo,
+                  pull_number: prNumber
+                });
+
+                // Skip draft PRs
+                if (pr.draft) {
+                  continue;
+                }
+
+                // Check workflow runs for action_required (true pending approval)
+                const { data: workflowRuns } = await github.rest.actions.listWorkflowRunsForRepo({
+                  owner,
+                  repo,
+                  head_sha: pr.head.sha,
+                  per_page: 20
+                });
+
+                const hasActionRequired = workflowRuns.workflow_runs.some(run =>
+                  run.conclusion === 'action_required'
+                );
+
+                if (hasActionRequired) {
+                  pendingApproval.push({
+                    number: prNumber,
+                    title: pr.title,
+                    author: pr.user.login,
+                    url: pr.html_url,
+                    created_at: pr.created_at
+                  });
+                  console.log(`PR #${prNumber}: Pending approval (action_required)`);
+                  continue;
+                }
+
+                // Check if build has completed with a result
+                const buildRun = workflowRuns.workflow_runs.find(run =>
+                  run.name === 'PR Build' || run.name === 'Codebuild PR Build'
+                );
+
+                // If no build run exists at all, or build hasn't reported back
+                const { data: status } = await github.rest.repos.getCombinedStatusForRef({
+                  owner,
+                  repo,
+                  ref: pr.head.sha
+                });
+
+                if (status.state === 'pending' && status.total_count === 0 && !buildRun) {
+                  // No CI activity at all — but also no action_required
+                  // This means approval was skipped but no build triggered
+                  pendingBuildResult.push({
+                    number: prNumber,
+                    title: pr.title,
+                    author: pr.user.login,
+                    url: pr.html_url,
+                    created_at: pr.created_at
+                  });
+                  console.log(`PR #${prNumber}: Pending build result (no CI activity)`);
+                  continue;
+                }
+
+                if (buildRun && (buildRun.status === 'queued' || buildRun.status === 'in_progress')) {
+                  console.log(`PR #${prNumber}: Build in progress, skipping`);
+                  continue;
+                }
+
+                // Build ran but no commit status reported — stuck pipeline
+                if (status.state === 'pending' && status.total_count === 0 && buildRun && buildRun.conclusion !== null) {
+                  pendingBuildResult.push({
+                    number: prNumber,
+                    title: pr.title,
+                    author: pr.user.login,
+                    url: pr.html_url,
+                    created_at: pr.created_at
+                  });
+                  console.log(`PR #${prNumber}: Pending build result (build completed but no status)`);
+                }
+
+              } catch (error) {
+                console.error(`Error processing PR #${prNumber}:`, error.message);
+              }
+            }
+
+            return { pendingApproval, pendingBuildResult };
+
+      - name: Update tracking issue
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
+          script: |
+            const results = ${{ steps.check-prs.outputs.result }};
+            const { pendingApproval, pendingBuildResult } = results;
+            const total = pendingApproval.length + pendingBuildResult.length;
+            const owner = 'aws';
+            const repo = 'aws-cdk';
+            const labels = ['automation', 'ci-pending', 'tracking'];
+
+            let issueBody = `## 📊 Beginning Contributor CI Report\n\n`;
+            issueBody += `\`\`\`\n`;
+            issueBody += `🔒 Pending Approval: ${pendingApproval.length} PR(s)\n`;
+            issueBody += `⏳ Pending Build Result: ${pendingBuildResult.length} PR(s)\n`;
+            issueBody += `\`\`\`\n\n`;
+
+            if (pendingApproval.length > 0) {
+              issueBody += `### 🔒 Pending Approval (${pendingApproval.length})\n\n`;
+              issueBody += `| PR | Title | Author | Created |\n`;
+              issueBody += `|----|-------|--------|----------|\n`;
+              for (const pr of pendingApproval) {
+                issueBody += `| [#${pr.number}](${pr.url}) | ${pr.title} | @${pr.author} | ${pr.created_at.split('T')[0]} |\n`;
+              }
+              issueBody += `\n`;
+            }
+
+            if (pendingBuildResult.length > 0) {
+              issueBody += `### ⏳ Pending Build Result (${pendingBuildResult.length})\n\n`;
+              issueBody += `| PR | Title | Author | Created |\n`;
+              issueBody += `|----|-------|--------|----------|\n`;
+              for (const pr of pendingBuildResult) {
+                issueBody += `| [#${pr.number}](${pr.url}) | ${pr.title} | @${pr.author} | ${pr.created_at.split('T')[0]} |\n`;
+              }
+              issueBody += `\n`;
+            }
+
+            if (total === 0) {
+              issueBody += `✅ No PRs need attention at this time.\n\n`;
+            }
+
+            issueBody += `---\n`;
+            issueBody += `*This issue is automatically updated*\n`;
+            issueBody += `*Monitoring repository: ${owner}/${repo}*\n`;
+            issueBody += `*Last checked: ${new Date().toISOString()}*`;
+
+            const issueTitle = total > 0
+              ? `CI Pending Approval - ${total} PR(s)`
+              : `CI Pending Approval - No PRs`;
+
+            // Tracking issue number — update this after the issue is created
+            const TRACKING_ISSUE_NUMBER = 9000;
+
+            await github.rest.issues.update({
+              owner,
+              repo,
+              issue_number: TRACKING_ISSUE_NUMBER,
+              title: issueTitle,
+              body: issueBody,
+              labels: labels
+            });
+            console.log(`Updated tracking issue #${TRACKING_ISSUE_NUMBER}: ${pendingApproval.length} pending approval, ${pendingBuildResult.length} pending build result`);
+
+            console.log(`Result: ${pendingApproval.length} pending approval, ${pendingBuildResult.length} pending build result`);
