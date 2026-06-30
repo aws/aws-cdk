@@ -27,5 +27,6 @@ const APP_INIT_HOOK_SYMBOL = Symbol.for('@aws-cdk/core.App#initHook');
     { id: 'CloudFormation-Validate::F3021', reason: 'Yes yes RDS passwords' },
     { id: 'CloudFormation-Validate::W2531', reason: 'There are many deprecated Lambda runtimes' },
     { id: 'CloudFormation-Validate::W9010', reason: 'Hardcoded AMI IDs are fine in tests' },
+    { id: 'CloudFormation-Validate::E3710', reason: 'We still have tests for shutdown services' },
   );
 };
