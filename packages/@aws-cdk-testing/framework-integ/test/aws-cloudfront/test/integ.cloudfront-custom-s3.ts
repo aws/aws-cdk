@@ -2,6 +2,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import type { Construct } from 'constructs';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class TestStack extends Stack {
@@ -15,20 +16,15 @@ class TestStack extends Stack {
       autoDeleteObjects: true,
     });
 
-    new cloudfront.CloudFrontWebDistribution(this, 'Distribution', {
-      viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+    new cloudfront.Distribution(this, 'Distribution', {
+      defaultBehavior: {
+        origin: new origins.HttpOrigin(bucket.bucketWebsiteDomainName, {
+          protocolPolicy: cloudfront.OriginProtocolPolicy.HTTP_ONLY,
+        }),
+        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      },
       priceClass: cloudfront.PriceClass.PRICE_CLASS_200,
-      originConfigs: [
-        {
-          behaviors: [{ isDefaultBehavior: true }],
-          customOriginSource: {
-            originProtocolPolicy: cloudfront.OriginProtocolPolicy.HTTP_ONLY,
-            domainName: bucket.bucketWebsiteDomainName,
-          },
-        },
-      ],
-    },
-    );
+    });
   }
 }
 
