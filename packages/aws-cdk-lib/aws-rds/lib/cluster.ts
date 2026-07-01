@@ -9,7 +9,7 @@ import type { NetworkType } from './instance';
 import type { IParameterGroup } from './parameter-group';
 import { ParameterGroup } from './parameter-group';
 import { DATA_API_ACTIONS } from './perms';
-import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, renderSnapshotCredentials } from './private/util';
+import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, renderSnapshotCredentials, validateManagedPasswordCredentials, validateManagedPasswordSnapshotCredentials } from './private/util';
 import type { BackupProps, Credentials, InstanceProps, RotationSingleUserOptions, RotationMultiUserOptions, SnapshotCredentials, EngineLifecycleSupport } from './props';
 import { PerformanceInsightRetention } from './props';
 import type { DatabaseProxyOptions } from './proxy';
@@ -811,6 +811,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
   protected hasServerlessInstance?: boolean;
   protected enableDataApi?: boolean;
+  protected manageMasterUserPassword?: boolean;
 
   constructor(scope: Construct, id: string, props: DatabaseClusterBaseProps) {
     super(scope, id);
@@ -1242,6 +1243,9 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    * See [Single user rotation strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-one-user-one-password)
    */
   public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
+    if (this.manageMasterUserPassword) {
+      throw new ValidationError(lit`CannotAddRotationWithManageMasterUserPassword`, 'Cannot add rotation when `manageMasterUserPassword` is enabled. RDS automatically rotates the master password when it manages the secret.', this);
+    }
     if (!this.secret) {
       throw new ValidationError(lit`CannotAddSingleUserRotationWithoutSecret`, 'Cannot add a single user rotation for a cluster without a secret.', this);
     }
@@ -1266,6 +1270,9 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    * See [Alternating users rotation strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users)
    */
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
+    if (this.manageMasterUserPassword) {
+      throw new ValidationError(lit`CannotAddRotationWithManageMasterUserPassword`, 'Cannot add rotation when `manageMasterUserPassword` is enabled. RDS automatically rotates the master password when it manages the secret.', this);
+    }
     if (!this.secret) {
       throw new ValidationError(lit`CannotAddMultiUserRotationWithoutSecret`, 'Cannot add a multi user rotation for a cluster without a secret.', this);
     }
@@ -1381,6 +1388,17 @@ export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
    * @default - This DB Cluster is not a read replica
    */
   readonly replicationSourceIdentifier?: string;
+
+  /**
+   * Whether to use RDS native integration with AWS Secrets Manager for master user password management.
+   *
+   * When enabled, RDS generates and manages the master user password in Secrets Manager.
+   * Cannot be used together with credentials containing a password.
+   *
+   * @default false
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-secrets-manager.html
+   */
+  readonly manageMasterUserPassword?: boolean;
 }
 
 /**
@@ -1483,23 +1501,65 @@ export class DatabaseCluster extends DatabaseClusterNew {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    const credentials = renderCredentials(this, props.engine, props.credentials);
-    const secret = credentials.secret;
+    // Validate manageMasterUserPassword conflicts with unsupported credential properties
+    if (props.manageMasterUserPassword) {
+      validateManagedPasswordCredentials(this, props.credentials);
+    }
 
-    const canHaveCredentials = props.replicationSourceIdentifier == undefined;
+    const canHaveCredentials = props.replicationSourceIdentifier === undefined;
 
+    // A read replica inherits the master credentials from its source cluster, so RDS does not
+    // manage a master user secret for it. Reject the contradictory combination up front instead
+    // of silently dropping `ManageMasterUserPassword` from the template.
+    if (props.manageMasterUserPassword && !canHaveCredentials) {
+      throw new ValidationError(lit`ManagedPasswordIncompatibleWithReadReplica`, 'cannot use `manageMasterUserPassword` with `replicationSourceIdentifier`; read replicas inherit credentials from the source cluster', this);
+    }
+
+    this.manageMasterUserPassword = props.manageMasterUserPassword;
+
+    // Prepare credential-specific configuration
+    let secret: secretsmanager.ISecret | undefined;
+    let masterUsername: string | undefined;
+    let masterUserPassword: string | undefined;
+    let manageMasterUserPassword: boolean | undefined;
+    let masterUserSecret: { kmsKeyId: string } | undefined;
+
+    if (props.manageMasterUserPassword) {
+      // RDS-managed approach: RDS creates and manages the Secret automatically.
+      // `canHaveCredentials` is always true here because the read-replica combination is rejected above.
+      masterUsername = props.credentials?.username ?? props.engine.defaultUsername ?? 'admin';
+      manageMasterUserPassword = props.manageMasterUserPassword;
+      masterUserSecret = props.credentials?.encryptionKey
+        ? { kmsKeyId: props.credentials.encryptionKey.keyArn }
+        : undefined;
+    } else {
+      // Standard approach: CDK creates and manages the Secret via DatabaseSecret
+      const credentials = renderCredentials(this, props.engine, props.credentials);
+      secret = credentials.secret;
+      masterUsername = canHaveCredentials ? credentials.username : undefined;
+      masterUserPassword = canHaveCredentials ? credentials.password?.unsafeUnwrap() : undefined;
+    }
+
+    // Create the cluster with the prepared configuration
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
-      // Admin
-      masterUsername: canHaveCredentials ? credentials.username : undefined,
-      masterUserPassword: canHaveCredentials ? credentials.password?.unsafeUnwrap() : undefined,
+      masterUsername,
+      masterUserPassword,
+      manageMasterUserPassword,
+      masterUserSecret,
       replicationSourceIdentifier: props.replicationSourceIdentifier,
     });
 
     this.clusterIdentifier = cluster.ref;
     this.clusterResourceIdentifier = cluster.attrDbClusterResourceId;
 
-    if (secret) {
+    // Set up the secret reference
+    if (props.manageMasterUserPassword) {
+      this.secret = secretsmanager.Secret.fromSecretAttributes(this, 'ManagedSecret', {
+        secretCompleteArn: cluster.attrMasterUserSecretSecretArn,
+        encryptionKey: props.credentials?.encryptionKey,
+      });
+    } else if (secret) {
       this.secret = secret.attach(this);
     }
 
@@ -1644,6 +1704,17 @@ export interface DatabaseClusterFromSnapshotProps extends DatabaseClusterBasePro
    * @default - The existing username and password from the snapshot will be used.
    */
   readonly snapshotCredentials?: SnapshotCredentials;
+
+  /**
+   * Whether to use RDS native integration with AWS Secrets Manager for master user password management.
+   *
+   * When enabled, RDS generates and manages the master user password in Secrets Manager.
+   * This is supported when restoring from snapshots, allowing migration to RDS-managed passwords.
+   *
+   * @default false
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-secrets-manager.html
+   */
+  readonly manageMasterUserPassword?: boolean;
 }
 
 /**
@@ -1683,7 +1754,17 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-rds:generatedCredsNotApplied', 'Generated credentials will not be applied to cluster. Use `snapshotCredentials` instead. `addRotationSingleUser()` and `addRotationMultiUser()` cannot be used on this cluster.');
     }
 
-    const deprecatedCredentials = !FeatureFlags.of(this).isEnabled(cxapi.RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS)
+    // Validate manageMasterUserPassword conflicts with unsupported snapshotCredentials properties
+    if (props.manageMasterUserPassword) {
+      validateManagedPasswordSnapshotCredentials(this, props.snapshotCredentials);
+    }
+
+    this.manageMasterUserPassword = props.manageMasterUserPassword;
+
+    // When RDS manages the master password, the deprecated `credentials` rendering path must be
+    // skipped — otherwise it always creates an orphan DatabaseSecret that is never bound to the cluster.
+    const deprecatedCredentials = (!props.manageMasterUserPassword
+      && !FeatureFlags.of(this).isEnabled(cxapi.RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS))
       ? renderCredentials(this, props.engine, props.credentials)
       : undefined;
 
@@ -1692,13 +1773,24 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
       snapshotIdentifier: props.snapshotIdentifier,
-      masterUserPassword: credentials?.secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
+      masterUserPassword: props.manageMasterUserPassword
+        ? undefined
+        : credentials?.secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
+      manageMasterUserPassword: props.manageMasterUserPassword || undefined,
+      masterUserSecret: props.manageMasterUserPassword && props.snapshotCredentials?.encryptionKey
+        ? { kmsKeyId: props.snapshotCredentials.encryptionKey.keyArn }
+        : undefined,
     });
 
     this.clusterIdentifier = cluster.ref;
     this.clusterResourceIdentifier = cluster.attrDbClusterResourceId;
 
-    if (credentials?.secret) {
+    if (props.manageMasterUserPassword) {
+      this.secret = secretsmanager.Secret.fromSecretAttributes(this, 'ManagedSecret', {
+        secretCompleteArn: cluster.attrMasterUserSecretSecretArn,
+        encryptionKey: props.snapshotCredentials?.encryptionKey,
+      });
+    } else if (credentials?.secret) {
       this.secret = credentials.secret.attach(this);
     }
 
