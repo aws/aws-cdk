@@ -13,6 +13,12 @@ describe('apex domain', () => {
   test('understands eTLDs', () => {
     expect(apexDomain('test.domain.co.uk')).toEqual('domain.co.uk');
   });
+
+  test('handles domains colliding with Object.prototype methods', () => {
+    expect(apexDomain('www.toString.com')).toEqual('toString.com');
+    expect(apexDomain('www.hasOwnProperty.com')).toEqual('hasOwnProperty.com');
+    expect(apexDomain('www.valueOf.com')).toEqual('valueOf.com');
+  });
 });
 
 describe('isDnsValidatedCertificate', () => {
