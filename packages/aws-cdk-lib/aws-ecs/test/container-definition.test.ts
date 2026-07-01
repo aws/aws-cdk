@@ -1344,7 +1344,6 @@ describe('container definition', () => {
     });
   });
 
-
   test('throws when container has more than 100 environment variables via props', () => {
     // GIVEN
     const stack = new cdk.Stack();
