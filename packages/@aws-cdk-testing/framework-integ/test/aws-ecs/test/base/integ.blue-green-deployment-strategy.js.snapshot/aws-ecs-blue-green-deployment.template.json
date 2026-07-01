@@ -740,6 +740,18 @@
      "Ref": "FargateCluster7CCD5F93"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [
+       {
+        "Ref": "MyCustomAlarmBBB0BEE1"
+       },
+       {
+        "Ref": "AnotherCustomAlarm221DEB18"
+       }
+      ],
+      "Enable": true,
+      "Rollback": true
+     },
      "LifecycleHooks": [
       {
        "HookTargetArn": {
@@ -910,6 +922,30 @@
       "Ref": "ServicePreScaleUpRoleD002A553"
      }
     ]
+   }
+  },
+  "MyCustomAlarmBBB0BEE1": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 2,
+    "MetricName": "MyCustomMetric",
+    "Namespace": "Custom",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 80
+   }
+  },
+  "AnotherCustomAlarm221DEB18": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 2,
+    "MetricName": "AnotherCustomMetric",
+    "Namespace": "Custom",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 80
    }
   }
  },
