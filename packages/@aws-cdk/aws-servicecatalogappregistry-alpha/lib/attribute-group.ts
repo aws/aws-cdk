@@ -32,11 +32,11 @@ export interface IAttributeGroup extends cdk.IResource {
    * The attributes that compose the attribute group, as a JSON of nested key-value pairs.
    *
    * For an attribute group created in this stack, these are the attributes supplied at creation.
-   * For an attribute group imported via `fromAttributeGroupArn`, these are the attributes passed
+   * For an attribute group imported via `fromAttributeGroupAttributes`, these are the attributes passed
    * at import time, since AppRegistry does not return attributes from an ARN.
    *
    * @default - the attributes supplied at creation; for imports, the attributes passed to
-   * `fromAttributeGroupArn`, or `undefined` if none were provided
+   * `fromAttributeGroupAttributes`, or `undefined` if none were provided
    */
   readonly attributes?: { [key: string]: any };
 

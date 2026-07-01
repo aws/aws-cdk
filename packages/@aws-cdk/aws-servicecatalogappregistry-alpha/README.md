@@ -252,7 +252,8 @@ const importedAttributeGroup = appreg.AttributeGroup.fromAttributeGroupArn(
 The attributes of an attribute group are available on the construct via the `attributes` property. For
 attribute groups created in your app this is the JSON you supplied at creation. Because AppRegistry does
 not return attributes from an ARN, import with `AttributeGroup.fromAttributeGroupAttributes()` and pass the
-known attributes so they can be read back the same way:
+known attributes so they can be read back the same way; groups imported via `fromAttributeGroupArn` have
+`attributes` set to `undefined`:
 
 ```ts
 const importedAttributeGroupWithAttributes = appreg.AttributeGroup.fromAttributeGroupAttributes(this, 'MyImportedAttrGroupWithAttributes', {
@@ -263,7 +264,7 @@ const importedAttributeGroupWithAttributes = appreg.AttributeGroup.fromAttribute
   },
 });
 
-// `attributes` is undefined when the group is imported via `fromAttributeGroupArn`
+// resolves to the attributes passed above: { stage: 'beta', owner: 'platform' }
 const attributes = importedAttributeGroupWithAttributes.attributes;
 ```
 
