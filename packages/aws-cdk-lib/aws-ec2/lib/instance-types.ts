@@ -1210,12 +1210,12 @@ export enum InstanceClass {
   G6E = 'g6e',
 
   /**
-   * Graphics-optimized instances powered by NVIDIA L40S Tensor Core GPUs, 7th generation
+   * Cost-efficient GPU-based instances for AI inference and spatial computing workloads, 7th generation
    */
   GRAPHICS7_EFFICIENT = 'graphics7-efficient',
 
   /**
-   * Graphics-optimized instances powered by NVIDIA L40S Tensor Core GPUs, 7th generation
+   * Cost-efficient GPU-based instances for AI inference and spatial computing workloads, 7th generation
    */
   G7E = 'g7e',
 
