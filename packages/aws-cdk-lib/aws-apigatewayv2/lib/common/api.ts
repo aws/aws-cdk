@@ -3,7 +3,7 @@ import type { IResource } from '../../../core';
 import type { IApiRef } from '../apigatewayv2.generated';
 
 /**
- * Represents a API Gateway HTTP/WebSocket API
+ * Represents an API Gateway HTTP/WebSocket API
  */
 export interface IApi extends IResource, IApiRef {
   /**

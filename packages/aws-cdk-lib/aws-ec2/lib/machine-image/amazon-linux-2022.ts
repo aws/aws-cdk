@@ -54,7 +54,7 @@ export interface AmazonLinux2022ImageSsmParameterProps extends AmazonLinuxImageS
  */
 export class AmazonLinux2022ImageSsmParameter extends AmazonLinuxImageSsmParameterBase {
   /**
-   * Generates a SSM Parameter name for a specific amazon linux 2022 AMI
+   * Generates an SSM Parameter name for a specific amazon linux 2022 AMI
    *
    * Example values:
    *

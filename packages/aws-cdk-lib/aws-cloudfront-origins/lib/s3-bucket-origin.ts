@@ -32,7 +32,7 @@ const KEY_ACTIONS: Record<string, string[]> = {
 export interface S3BucketOriginBaseProps extends cloudfront.OriginProps { }
 
 /**
- * Properties for configuring a S3 origin with OAC
+ * Properties for configuring an S3 origin with OAC
  */
 export interface S3BucketOriginWithOACProps extends S3BucketOriginBaseProps {
   /**
@@ -52,7 +52,7 @@ export interface S3BucketOriginWithOACProps extends S3BucketOriginBaseProps {
 }
 
 /**
- * Properties for configuring a S3 origin with OAI
+ * Properties for configuring an S3 origin with OAI
  */
 export interface S3BucketOriginWithOAIProps extends S3BucketOriginBaseProps {
   /**
@@ -68,14 +68,14 @@ export interface S3BucketOriginWithOAIProps extends S3BucketOriginBaseProps {
  */
 export abstract class S3BucketOrigin extends cloudfront.OriginBase {
   /**
-   * Create a S3 Origin with Origin Access Control (OAC) configured
+   * Create an S3 Origin with Origin Access Control (OAC) configured
    */
   public static withOriginAccessControl(bucket: IBucket, props?: S3BucketOriginWithOACProps): cloudfront.IOrigin {
     return new S3BucketOriginWithOAC(bucket, props);
   }
 
   /**
-   * Create a S3 Origin with Origin Access Identity (OAI) configured
+   * Create an S3 Origin with Origin Access Identity (OAI) configured
    * OAI is a legacy feature and we **strongly** recommend you to use OAC via `withOriginAccessControl()`
    * unless it is not supported in your required region (e.g. China regions).
    */
@@ -84,7 +84,7 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
   }
 
   /**
-   * Create a S3 Origin with default S3 bucket settings (no origin access control)
+   * Create an S3 Origin with default S3 bucket settings (no origin access control)
    */
   public static withBucketDefaults(bucket: IBucket, props?: cloudfront.OriginProps): cloudfront.IOrigin {
     return new class extends S3BucketOrigin {
