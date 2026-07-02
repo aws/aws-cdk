@@ -36,7 +36,6 @@ describe('UserGroup', () => {
       const users = [
         new IamUser(stack, 'TestUser1', {
           userId: 'user1',
-          userName: 'user1',
           engine: UserEngine.REDIS,
           accessControl: AccessControl.fromAccessString('on ~* +@all'),
         }),
