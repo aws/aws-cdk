@@ -13,6 +13,7 @@
 
 import { Template, Match } from '../../../../assertions';
 import * as iam from '../../../../aws-iam';
+import * as kms from '../../../../aws-kms';
 import * as lambda from '../../../../aws-lambda';
 import { App, Duration, Lazy, Stack } from '../../../../core';
 import {
@@ -457,6 +458,69 @@ describe('Evaluator', () => {
           ]),
         },
       });
+    });
+  });
+
+  describe('encryption (KMS)', () => {
+    test('passes the customer-managed KMS key ARN to the L1 resource', () => {
+      const key = new kms.Key(stack, 'Key');
+
+      new Evaluator(stack, 'TestEvaluator', {
+        evaluatorName: 'encrypted_evaluator',
+        level: EvaluationLevel.SESSION,
+        evaluatorConfig: EvaluatorConfig.llmAsAJudge({
+          instructions: 'Evaluate helpfulness.',
+          modelId: 'us.anthropic.claude-sonnet-4-6',
+          ratingScale: EvaluatorRatingScale.categorical([
+            { label: 'Good', definition: 'Helpful.' },
+          ]),
+        }),
+        kmsKey: key,
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::Evaluator', {
+        KmsKeyArn: stack.resolve(key.keyArn),
+      });
+    });
+
+    test('exposes the KMS key on the construct', () => {
+      const key = new kms.Key(stack, 'Key');
+
+      const evaluator = new Evaluator(stack, 'TestEvaluator', {
+        evaluatorName: 'encrypted_evaluator',
+        level: EvaluationLevel.SESSION,
+        evaluatorConfig: EvaluatorConfig.llmAsAJudge({
+          instructions: 'Evaluate helpfulness.',
+          modelId: 'us.anthropic.claude-sonnet-4-6',
+          ratingScale: EvaluatorRatingScale.categorical([
+            { label: 'Good', definition: 'Helpful.' },
+          ]),
+        }),
+        kmsKey: key,
+      });
+
+      expect(evaluator.kmsKey).toBe(key);
+    });
+
+    test('does not set KmsKeyArn when no key is provided (backwards compatible)', () => {
+      const evaluator = new Evaluator(stack, 'TestEvaluator', {
+        evaluatorName: 'default_key_evaluator',
+        level: EvaluationLevel.SESSION,
+        evaluatorConfig: EvaluatorConfig.llmAsAJudge({
+          instructions: 'Evaluate helpfulness.',
+          modelId: 'us.anthropic.claude-sonnet-4-6',
+          ratingScale: EvaluatorRatingScale.categorical([
+            { label: 'Good', definition: 'Helpful.' },
+          ]),
+        }),
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::Evaluator', {
+        KmsKeyArn: Match.absent(),
+      });
+      expect(evaluator.kmsKey).toBeUndefined();
     });
   });
 
