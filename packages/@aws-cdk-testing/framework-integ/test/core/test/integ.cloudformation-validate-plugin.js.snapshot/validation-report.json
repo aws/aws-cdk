@@ -4,65 +4,41 @@
   "pluginReports": [
     {
       "pluginName": "CloudFormation Validate",
-      "pluginVersion": "1.0.0",
-      "conclusion": "failure",
+      "pluginVersion": "1.1.0",
+      "conclusion": "success",
       "violations": [
         {
           "ruleName": "F3002",
-          "description": "Additional properties are not allowed ('BogusProperty' was unexpected)",
-          "severity": "fatal",
+          "description": "BogusProperty: Additional properties are not allowed ('BogusProperty' was unexpected)",
+          "severity": "warning",
           "ruleMetadata": {
             "category": "Schema"
           },
           "violatingConstructs": [
             {
               "constructPath": "CloudFormationValidatePluginStack/MyBucket/Resource",
-              "constructFqn": "constructs.Construct",
-              "libraryVersion": "10.6.0",
+              "constructFqn": "aws-cdk-lib.aws_s3.CfnBucket",
+              "libraryVersion": "0.0.0",
               "cloudFormationResource": {
-                "templatePath": "test/core/test/integ.cloudformation-validate-plugin.js.snapshot/CloudFormationValidatePluginStack.template.json",
+                "templatePath": "/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/core/test/integ.cloudformation-validate-plugin.js.snapshot/CloudFormationValidatePluginStack.template.json",
                 "logicalId": "MyBucketF68F3FF0",
                 "propertyPaths": [
                   "Properties.BogusProperty"
                 ]
-              },
-              "stackTraces": [
-                "<anonymous> (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/core/test/integ.cloudformation-validate-plugin.ts:13:15)\nnew Bucket (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)\nnew Bucket (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.ts:2527:22)"
-              ]
+              }
             }
           ]
         },
         {
-          "ruleName": "E9001",
-          "description": "Unknown resource type 'AWS::CDK::Metadata'",
-          "severity": "error",
+          "ruleName": "F0001",
+          "description": "Resources section must exist and be non-empty",
+          "severity": "warning",
           "ruleMetadata": {
-            "category": "Resource"
+            "category": "Structure"
           },
           "violatingConstructs": [
             {
-              "constructPath": "CloudFormationValidatePluginStack/CDKMetadata/Default",
-              "constructFqn": "constructs.Construct",
-              "libraryVersion": "10.6.0",
-              "cloudFormationResource": {
-                "templatePath": "test/core/test/integ.cloudformation-validate-plugin.js.snapshot/CloudFormationValidatePluginStack.template.json",
-                "logicalId": "CDKMetadata"
-              },
-              "stackTraces": [
-                "<anonymous> (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/core/test/integ.cloudformation-validate-plugin.ts:13:15)\n/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:486 (:)\nnew MetadataResource (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/metadata-resource.ts:28:24)"
-              ]
-            },
-            {
-              "constructPath": "CloudFormationValidatePluginTest/DefaultTest/DeployAssert/CDKMetadata/Default",
-              "constructFqn": "constructs.Construct",
-              "libraryVersion": "10.6.0",
-              "cloudFormationResource": {
-                "templatePath": "test/core/test/integ.cloudformation-validate-plugin.js.snapshot/CloudFormationValidatePluginTestDefaultTestDeployAssertD7DAFB01.template.json",
-                "logicalId": "CDKMetadata"
-              },
-              "stackTraces": [
-                "new IntegTest (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.ts:160:29)\nnew IntegTestCase (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.ts:47:20)\nnew DeployAssert (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.ts:60:34)\n/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:486 (:)\nnew MetadataResource (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/metadata-resource.ts:28:24)"
-              ]
+              "constructPath": ""
             }
           ]
         }
