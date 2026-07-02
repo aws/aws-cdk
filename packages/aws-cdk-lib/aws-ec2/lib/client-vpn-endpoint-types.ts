@@ -52,3 +52,16 @@ export enum VpnPort {
   /** OpenVPN */
   OPENVPN = 1194,
 }
+
+/**
+ * The IP address type for a Client VPN endpoint or its traffic.
+ *
+ */
+export enum ClientVpnEndpointIpAddressType {
+  /** IPv4 addressing only */
+  IPV4 = 'ipv4',
+  /** IPv6 addressing only */
+  IPV6 = 'ipv6',
+  /** Both IPv4 and IPv6 addressing */
+  DUAL_STACK = 'dual-stack',
+}

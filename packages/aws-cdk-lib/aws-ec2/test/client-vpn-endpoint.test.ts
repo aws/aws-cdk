@@ -338,3 +338,37 @@ test.each([true, false])('client vpn endpoint with disconnectOnSessionTimeout se
     DisconnectOnSessionTimeout: disconnectOnSessionTimeout,
   });
 });
+
+test.each([
+  [ec2.ClientVpnEndpointIpAddressType.IPV4, 'ipv4'],
+  [ec2.ClientVpnEndpointIpAddressType.IPV6, 'ipv6'],
+  [ec2.ClientVpnEndpointIpAddressType.DUAL_STACK, 'dual-stack'],
+])('client vpn endpoint with endpointIpAddressType %s', (endpointIpAddressType, expected) => {
+  vpc.addClientVpnEndpoint('Endpoint', {
+    cidr: '10.100.0.0/16',
+    serverCertificateArn: 'server-certificate-arn',
+    clientCertificateArn: 'client-certificate-arn',
+    endpointIpAddressType,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::ClientVpnEndpoint', {
+    EndpointIpAddressType: expected,
+  });
+});
+
+test.each([
+  [ec2.ClientVpnEndpointIpAddressType.IPV4, 'ipv4'],
+  [ec2.ClientVpnEndpointIpAddressType.IPV6, 'ipv6'],
+  [ec2.ClientVpnEndpointIpAddressType.DUAL_STACK, 'dual-stack'],
+])('client vpn endpoint with trafficIpAddressType %s', (trafficIpAddressType, expected) => {
+  vpc.addClientVpnEndpoint('Endpoint', {
+    cidr: '10.100.0.0/16',
+    serverCertificateArn: 'server-certificate-arn',
+    clientCertificateArn: 'client-certificate-arn',
+    trafficIpAddressType,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::ClientVpnEndpoint', {
+    TrafficIpAddressType: expected,
+  });
+});
