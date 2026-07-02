@@ -130,6 +130,14 @@ export class Validations {
       // For now, all rules route to annotation acknowledgment.
       // Future validation types will be distinguished by their prefix.
       Annotations.of(this.scope).acknowledgeWarning(qualifiedId);
+
+      // Warnings added directly via Annotations.addWarningV2() are stored with their
+      // bare ID (no 'annotation::' prefix). When the caller passes an unqualified ID,
+      // acknowledge both the qualified form (for Validations.addWarning) and the bare
+      // form (for Annotations.addWarningV2) so that either source is suppressed.
+      if (!rule.id.includes('::')) {
+        Annotations.of(this.scope).acknowledgeWarning(rule.id);
+      }
     }
   }
 
