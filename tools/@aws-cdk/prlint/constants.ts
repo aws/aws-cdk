@@ -11,7 +11,6 @@ export enum Exemption {
   TEST = 'pr-linter/exempt-test',
   INTEG_TEST = 'pr-linter/exempt-integ-test',
   BREAKING_CHANGE = 'pr-linter/exempt-breaking-change',
-  CLI_INTEG_TESTED = 'pr-linter/cli-integ-tested',
   ANALYTICS_METADATA_CHANGE = 'pr-linter/analytics-metadata-change',
   REQUEST_CLARIFICATION = 'pr/reviewer-clarification-requested',
   REQUEST_EXEMPTION = 'pr-linter/exemption-requested',
