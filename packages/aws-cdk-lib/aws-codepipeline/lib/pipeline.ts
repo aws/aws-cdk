@@ -272,6 +272,26 @@ export interface PipelineProps {
   readonly artifactBucket?: s3.IBucket;
 
   /**
+   * The removal policy to apply to the artifact bucket created by the pipeline.
+   *
+   * Only applicable if `artifactBucket` is not provided.
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly artifactBucketRemovalPolicy?: RemovalPolicy;
+
+  /**
+   * Whether to automatically delete objects in the artifact bucket when the bucket is removed
+   * from the stack or when the stack is deleted.
+   *
+   * Requires `artifactBucketRemovalPolicy` to be set to `RemovalPolicy.DESTROY`.
+   * Only applicable if `artifactBucket` is not provided.
+   *
+   * @default false
+   */
+  readonly artifactBucketAutoDeleteObjects?: boolean;
+
+  /**
    * The IAM role to be assumed by this Pipeline.
    *
    * @default a new IAM role will be created.
@@ -635,6 +655,34 @@ export class Pipeline extends PipelineBase {
       throw new ValidationError(lit`OnlyArtifactBucketOrCrossRegionReplicationBucketsSpecified`, 'Only one of artifactBucket and crossRegionReplicationBuckets can be specified!', this);
     }
 
+    // lifecycle props cannot be set when an existing bucket is provided
+    if (props.artifactBucket && (props.artifactBucketRemovalPolicy !== undefined || props.artifactBucketAutoDeleteObjects !== undefined)) {
+      throw new ValidationError(
+        lit`LifecyclePropsWithExistingBucket`,
+        "Cannot set 'artifactBucketRemovalPolicy' or 'artifactBucketAutoDeleteObjects' when 'artifactBucket' is provided",
+        this,
+      );
+    }
+
+    // lifecycle props cannot be set when crossRegionReplicationBuckets is provided
+    if ((props.artifactBucketRemovalPolicy !== undefined || props.artifactBucketAutoDeleteObjects !== undefined)
+      && props.crossRegionReplicationBuckets) {
+      throw new ValidationError(
+        lit`LifecyclePropsWithCrossRegionBuckets`,
+        "Cannot set 'artifactBucketRemovalPolicy' or 'artifactBucketAutoDeleteObjects' when 'crossRegionReplicationBuckets' is provided",
+        this,
+      );
+    }
+
+    // autoDeleteObjects requires DESTROY removal policy
+    if (props.artifactBucketAutoDeleteObjects && props.artifactBucketRemovalPolicy !== RemovalPolicy.DESTROY) {
+      throw new ValidationError(
+        lit`AutoDeleteRequiresDestroyPolicy`,
+        "'artifactBucketAutoDeleteObjects' requires 'artifactBucketRemovalPolicy' to be set to 'RemovalPolicy.DESTROY'",
+        this,
+      );
+    }
+
     // The feature flag is set to true by default for new projects, otherwise false.
     this.crossAccountKeys = props.crossAccountKeys
       ?? (FeatureFlags.of(this).isEnabled(cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE) ? false : true);
@@ -675,7 +723,8 @@ export class Pipeline extends PipelineBase {
         encryption: encryptionKey ? s3.BucketEncryption.KMS : s3.BucketEncryption.KMS_MANAGED,
         enforceSSL: true,
         blockPublicAccess: new s3.BlockPublicAccess(s3.BlockPublicAccess.BLOCK_ALL),
-        removalPolicy: RemovalPolicy.RETAIN,
+        removalPolicy: props.artifactBucketRemovalPolicy ?? RemovalPolicy.RETAIN,
+        autoDeleteObjects: props.artifactBucketAutoDeleteObjects,
       });
     }
     this.artifactBucket = propsBucket;
