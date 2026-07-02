@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "7309ce561f3b5a1bf0de0c09a49f6d78c8fa2bf1bb2490214d9ba774a3e76c59": {
+      "displayName": "aws-cdk-mediaconnect-router-input-srt Template",
+      "source": {
+        "path": "aws-cdk-mediaconnect-router-input-srt.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-735c43e2": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7309ce561f3b5a1bf0de0c09a49f6d78c8fa2bf1bb2490214d9ba774a3e76c59.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
