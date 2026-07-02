@@ -997,6 +997,89 @@ describe('proxy', () => {
       },
     });
   });
+
+  test('infer default port from an instance target', () => {
+    // GIVEN
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0,
+      }),
+      vpc,
+    });
+
+    const proxy = new rds.DatabaseProxy(stack, 'Proxy', {
+      proxyTarget: rds.ProxyTarget.fromInstance(instance),
+      secrets: [instance.secret!],
+      vpc,
+    });
+
+    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
+
+    // WHEN
+    expect(() => {
+      proxy.connections.allowDefaultPortFrom(securityGroup);
+    }).not.toThrow();
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
+      IpProtocol: 'tcp',
+      Description: 'from SecurityGroup:{IndirectPort}',
+      FromPort: {
+        'Fn::GetAtt': ['InstanceC1063A87', 'Endpoint.Port'],
+      },
+      GroupId: {
+        'Fn::GetAtt': ['ProxyProxySecurityGroupC42FC3CE', 'GroupId'],
+      },
+      SourceSecurityGroupId: {
+        'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'],
+      },
+      ToPort: {
+        'Fn::GetAtt': ['InstanceC1063A87', 'Endpoint.Port'],
+      },
+    });
+  });
+
+  test('infer default port from a cluster target', () => {
+    // GIVEN
+    const cluster = new rds.DatabaseCluster(stack, 'Cluster', {
+      engine: rds.DatabaseClusterEngine.auroraPostgres({
+        version: rds.AuroraPostgresEngineVersion.VER_17_9,
+      }),
+      vpc,
+      writer: rds.ClusterInstance.provisioned('writer'),
+    });
+
+    const proxy = new rds.DatabaseProxy(stack, 'Proxy', {
+      proxyTarget: rds.ProxyTarget.fromCluster(cluster),
+      secrets: [cluster.secret!],
+      vpc,
+    });
+
+    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
+
+    // WHEN
+    expect(() => {
+      proxy.connections.allowDefaultPortFrom(securityGroup);
+    }).not.toThrow();
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
+      IpProtocol: 'tcp',
+      Description: 'from SecurityGroup:{IndirectPort}',
+      FromPort: {
+        'Fn::GetAtt': ['ClusterEB0386A7', 'Endpoint.Port'],
+      },
+      GroupId: {
+        'Fn::GetAtt': ['ProxyProxySecurityGroupC42FC3CE', 'GroupId'],
+      },
+      SourceSecurityGroupId: {
+        'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'],
+      },
+      ToPort: {
+        'Fn::GetAtt': ['ClusterEB0386A7', 'Endpoint.Port'],
+      },
+    });
+  });
 });
 
 describe('feature flag @aws-cdk/aws-rds:databaseProxyUniqueResourceName', () => {
