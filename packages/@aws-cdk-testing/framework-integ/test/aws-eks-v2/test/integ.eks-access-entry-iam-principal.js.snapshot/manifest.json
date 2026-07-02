@@ -1,28 +1,28 @@
 {
   "version": "54.0.0",
   "artifacts": {
-    "EksClusterV2RemovalPolicyStack.assets": {
+    "EKSAccessEntryIamPrincipal.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "EksClusterV2RemovalPolicyStack.assets.json",
+        "file": "EKSAccessEntryIamPrincipal.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "EksClusterV2RemovalPolicyStack": {
+    "EKSAccessEntryIamPrincipal": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "EksClusterV2RemovalPolicyStack.template.json",
+        "templateFile": "EKSAccessEntryIamPrincipal.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ad9bf64174da6c21add2df71fc6a29d2ad07b2cd69667a93091ddb7ede694070.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/095a3b1edc50422863813fc34835ba1b1b03552685eae7a07dd815dd19a15780.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "EksClusterV2RemovalPolicyStack.assets"
+          "EKSAccessEntryIamPrincipal.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,24 +31,24 @@
         }
       },
       "dependencies": [
-        "EksClusterV2RemovalPolicyStack.assets"
+        "EKSAccessEntryIamPrincipal.assets"
       ],
-      "additionalMetadataFile": "EksClusterV2RemovalPolicyStack.metadata.json",
-      "displayName": "EksClusterV2RemovalPolicyStack"
+      "additionalMetadataFile": "EKSAccessEntryIamPrincipal.metadata.json",
+      "displayName": "EKSAccessEntryIamPrincipal"
     },
-    "eksclusterremovalpolicyintegDefaultTestDeployAssertC54E19AC.assets": {
+    "awscdkeksaccessentryiamprincipalintegDefaultTestDeployAssertEFA6C70F.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "eksclusterremovalpolicyintegDefaultTestDeployAssertC54E19AC.assets.json",
+        "file": "awscdkeksaccessentryiamprincipalintegDefaultTestDeployAssertEFA6C70F.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "eksclusterremovalpolicyintegDefaultTestDeployAssertC54E19AC": {
+    "awscdkeksaccessentryiamprincipalintegDefaultTestDeployAssertEFA6C70F": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "eksclusterremovalpolicyintegDefaultTestDeployAssertC54E19AC.template.json",
+        "templateFile": "awscdkeksaccessentryiamprincipalintegDefaultTestDeployAssertEFA6C70F.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -57,7 +57,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "eksclusterremovalpolicyintegDefaultTestDeployAssertC54E19AC.assets"
+          "awscdkeksaccessentryiamprincipalintegDefaultTestDeployAssertEFA6C70F.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -66,10 +66,10 @@
         }
       },
       "dependencies": [
-        "eksclusterremovalpolicyintegDefaultTestDeployAssertC54E19AC.assets"
+        "awscdkeksaccessentryiamprincipalintegDefaultTestDeployAssertEFA6C70F.assets"
       ],
-      "additionalMetadataFile": "eksclusterremovalpolicyintegDefaultTestDeployAssertC54E19AC.metadata.json",
-      "displayName": "eks-cluster-removal-policy-integ/DefaultTest/DeployAssert"
+      "additionalMetadataFile": "awscdkeksaccessentryiamprincipalintegDefaultTestDeployAssertEFA6C70F.metadata.json",
+      "displayName": "aws-cdk-eks-access-entry-iam-principal-integ/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -478,7 +478,7 @@
             "explanation": "When enabled, CDK will expand the scope of usage data collected to better inform CDK development and improve communication for security concerns and emerging issues."
           },
           "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": {
-            "userValue": false,
+            "userValue": true,
             "recommendedValue": false,
             "explanation": "[Deprecated] When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement"
           },
@@ -545,7 +545,7 @@
             "explanation": "When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined."
           },
           "@aws-cdk/aws-lambda:useCdkManagedLogGroup": {
-            "userValue": true,
+            "userValue": false,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
