@@ -64,6 +64,10 @@ describe('cfn resource', () => {
       'works as expected when used on supported resources (old behavior)', (resourceType) => {
         // GIVEN
         const app = new core.App();
+        core.Validations.of(app).acknowledge({
+          id: 'CloudFormation-Validate::F3017',
+          reason: 'Required properties missing',
+        });
         const stack = new core.Stack(app, 'TestStack');
         const resource = new core.CfnResource(stack, 'Resource', {
           type: resourceType,
@@ -87,6 +91,10 @@ describe('cfn resource', () => {
       'works as expected when used on supported resources (under feature flag)', (resourceType) => {
         // GIVEN
         const app = new core.App({ context: { [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: true } });
+        core.Validations.of(app).acknowledge({
+          id: 'CloudFormation-Validate::F3017',
+          reason: 'Required properties missing',
+        });
         const stack = new core.Stack(app, 'TestStack');
         const resource = new core.CfnResource(stack, 'Resource', {
           type: resourceType,
@@ -109,6 +117,15 @@ describe('cfn resource', () => {
     test('warns on unsupported resources (without feature flag)', () => {
       // GIVEN
       const app = new core.App();
+      core.Validations.of(app).acknowledge({
+        id: 'CloudFormation-Validate::F3016',
+        reason: 'SNAPSHOT technically doesnt make sense here',
+      });
+      core.Validations.of(app).acknowledge({
+        id: 'CloudFormation-Validate::F0018',
+        reason: 'SNAPSHOT technically doesnt make sense here',
+      });
+
       const stack = new core.Stack(app);
       const resource = new core.CfnResource(stack, 'Resource', {
         type: 'AWS::Lambda::Function',
@@ -297,6 +314,10 @@ describe('cfn resource', () => {
   test('can switch off updating Update policy', () => {
     // GIVEN
     const app = new core.App();
+    core.Validations.of(app).acknowledge({
+      id: 'CloudFormation-Validate::W3011',
+      reason: 'Did not apply both policies, just for testing',
+    });
     const stack = new core.Stack(app, 'TestStack');
     const resource = new core.CfnResource(stack, 'DefaultResource', { type: 'Test::Resource::Fake' });
 

@@ -1872,6 +1872,8 @@ export class Cluster extends ClusterBase {
       deletionProtection: props.deletionProtection,
     });
 
+    this.node.defaultChild = resource;
+
     if (this.endpointAccess._config.privateAccess && privateSubnets.length !== 0) {
       // when private access is enabled and the vpc has private subnets, lets connect
       // the provider to the vpc so that it will work even when restricting public access.

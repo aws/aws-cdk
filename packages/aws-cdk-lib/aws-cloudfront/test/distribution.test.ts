@@ -964,7 +964,7 @@ test('price class is included if provided', () => {
 
 test('escape hatches are supported', () => {
   const dist = new Distribution(stack, 'Dist', {
-    defaultBehavior: { origin: defaultOrigin },
+    defaultBehavior: { origin: defaultOrigin() },
   });
   const cfnDist = dist.node.defaultChild as CfnDistribution;
   cfnDist.addPropertyOverride('DistributionConfig.DefaultCacheBehavior.ForwardedValues.Headers', ['*']);
