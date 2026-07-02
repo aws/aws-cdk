@@ -1,6 +1,6 @@
 
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Match, Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as autoscaling from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
@@ -3438,6 +3438,113 @@ describe('cluster', () => {
       }).toThrow('Cannot specify both spotMaxPricePercentageOverLowestPrice and onDemandMaxPricePercentageOverLowestPrice. Use one or the other.');
     });
 
+    test('auto-sets localStorage to REQUIRED when useLocalStorage is true and localStorage is not set in instanceRequirements', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc, description: 'sg' });
+
+      // WHEN - localStorage not specified in instanceRequirements
+      const provider = new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+        subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
+        useLocalStorage: true,
+        instanceRequirements: {
+          vCpuCountMin: 1,
+          memoryMin: cdk.Size.gibibytes(2),
+        },
+      });
+      cluster.addManagedInstancesCapacityProvider(provider);
+
+      // THEN - localStorage is automatically set to REQUIRED in CloudFormation output
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+        ManagedInstancesProvider: {
+          InstanceLaunchTemplate: {
+            InstanceRequirements: {
+              LocalStorage: 'required',
+            },
+            LocalStorageConfiguration: {
+              UseLocalStorage: true,
+            },
+          },
+        },
+      });
+      Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('useLocalStorage'));
+    });
+
+    test('warns when useLocalStorage is true and localStorage is explicitly set to non-REQUIRED', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc, description: 'sg' });
+
+      // WHEN - localStorage explicitly set to INCLUDED
+      const provider = new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+        subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
+        useLocalStorage: true,
+        instanceRequirements: {
+          vCpuCountMin: 1,
+          memoryMin: cdk.Size.gibibytes(2),
+          localStorage: ec2.LocalStorage.INCLUDED,
+        },
+      });
+      cluster.addManagedInstancesCapacityProvider(provider);
+
+      // THEN
+      Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('useLocalStorage is true but instanceRequirements.localStorage is not REQUIRED'));
+    });
+
+    test('throws when useLocalStorage is true and localStorage is EXCLUDED', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc, description: 'sg' });
+
+      // THEN - EXCLUDED contradicts useLocalStorage, instances with instance store are impossible to select
+      expect(() => {
+        new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+          subnets: vpc.privateSubnets,
+          securityGroups: [securityGroup],
+          useLocalStorage: true,
+          instanceRequirements: {
+            vCpuCountMin: 1,
+            memoryMin: cdk.Size.gibibytes(2),
+            localStorage: ec2.LocalStorage.EXCLUDED,
+          },
+        });
+      }).toThrow('useLocalStorage cannot be true when instanceRequirements.localStorage is EXCLUDED');
+    });
+
+    test('warns when useLocalStorage is true and instanceRequirements is not specified', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc, description: 'sg' });
+
+      // WHEN
+      const provider = new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+        subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
+        useLocalStorage: true,
+      });
+      cluster.addManagedInstancesCapacityProvider(provider);
+
+      // THEN
+      Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('instanceRequirements is not specified'));
+    });
+
     test('throws when capacity provider name starts with aws, ecs or fargate', () => {
       // GIVEN
       const app = new cdk.App();
@@ -4335,6 +4442,56 @@ describe('cluster', () => {
                 Min: 100,
                 Max: 1000,
               },
+            },
+          },
+        },
+      });
+    });
+
+    test.each([true, false])('with useLocalStorage enabled', (useLocalStorage) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceRole = new iam.Role(stack, 'InstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
+        role: instanceRole,
+      });
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
+
+      // WHEN
+      new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+        infrastructureRole,
+        ec2InstanceProfile: instanceProfile,
+        subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
+        useLocalStorage,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+        ManagedInstancesProvider: {
+          InstanceLaunchTemplate: {
+            LocalStorageConfiguration: {
+              UseLocalStorage: useLocalStorage,
             },
           },
         },
