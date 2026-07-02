@@ -353,6 +353,139 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
   public metricWriteIOPS(props?: cloudwatch.MetricOptions) {
     return this.metric('WriteIOPS', { statistic: 'Average', ...props });
   }
+
+  /**
+   * The percentage of CPU utilization.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricCPUUtilization(props?: cloudwatch.MetricOptions) {
+    return this.metric('CPUUtilization', { statistic: 'Average', ...props });
+  }
+
+  /**
+   * The number of client network connections to the database instance.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricDatabaseConnections(props?: cloudwatch.MetricOptions) {
+    return this.metric('DatabaseConnections', { statistic: 'Average', ...props });
+  }
+
+  /**
+   * The amount of available storage space.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricFreeStorageSpace(props?: cloudwatch.MetricOptions) {
+    return this.metric('FreeStorageSpace', { statistic: 'Average', ...props });
+  }
+
+  /**
+   * The amount of available random access memory.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricFreeableMemory(props?: cloudwatch.MetricOptions) {
+    return this.metric('FreeableMemory', { statistic: 'Average', ...props });
+  }
+
+  /**
+   * The incoming (receive) network traffic on the DB instance, including both
+   * customer database traffic and Amazon RDS traffic used for monitoring and replication.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricNetworkReceiveThroughput(props?: cloudwatch.MetricOptions) {
+    return this.metric('NetworkReceiveThroughput', { statistic: 'Average', ...props });
+  }
+
+  /**
+   * The outgoing (transmit) network traffic on the DB instance, including both
+   * customer database traffic and Amazon RDS traffic used for monitoring and replication.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricNetworkTransmitThroughput(props?: cloudwatch.MetricOptions) {
+    return this.metric('NetworkTransmitThroughput', { statistic: 'Average', ...props });
+  }
+
+  /**
+   * The average amount of time taken per disk I/O read operation.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricReadLatency(props?: cloudwatch.MetricOptions) {
+    return this.metric('ReadLatency', { statistic: 'Average', ...props });
+  }
+
+  /**
+   * The average amount of time taken per disk I/O write operation.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricWriteLatency(props?: cloudwatch.MetricOptions) {
+    return this.metric('WriteLatency', { statistic: 'Average', ...props });
+  }
+
+  /**
+   * The average number of bytes read from disk per second.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricReadThroughput(props?: cloudwatch.MetricOptions) {
+    return this.metric('ReadThroughput', { statistic: 'Average', ...props });
+  }
+
+  /**
+   * The average number of bytes written to disk per second.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricWriteThroughput(props?: cloudwatch.MetricOptions) {
+    return this.metric('WriteThroughput', { statistic: 'Average', ...props });
+  }
+
+  /**
+   * The amount of swap space used on the DB instance.
+   *
+   * This metric is available for MariaDB, MySQL, Oracle, and PostgreSQL DB instances.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricSwapUsage(props?: cloudwatch.MetricOptions) {
+    return this.metric('SwapUsage', { statistic: 'Average', ...props });
+  }
+
+  /**
+   * The number of outstanding I/Os (read/write requests) waiting to access the disk.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricDiskQueueDepth(props?: cloudwatch.MetricOptions) {
+    return this.metric('DiskQueueDepth', { statistic: 'Average', ...props });
+  }
+
+  /**
+   * The percent of General Purpose SSD (gp2) burst-bucket I/O credits available.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricBurstBalance(props?: cloudwatch.MetricOptions) {
+    return this.metric('BurstBalance', { statistic: 'Average', ...props });
+  }
+
+  /**
+   * For read replica configurations, the amount of time a read replica DB instance
+   * lags behind the source DB instance.
+   *
+   * Applies to MariaDB, Microsoft SQL Server, MySQL, Oracle, and PostgreSQL read replicas.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricReplicaLag(props?: cloudwatch.MetricOptions) {
+    return this.metric('ReplicaLag', { statistic: 'Average', ...props });
+  }
 }
 
 /**

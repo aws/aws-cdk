@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "rds-instance-metrics-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-instance-metrics"
+      ],
+      "assertionStack": "rds-instance-metrics-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "rdsinstancemetricsintegtestDefaultTestDeployAssert8316E84C"
+    }
+  },
+  "minimumCliVersion": "2.1121.0"
+}
