@@ -1,0 +1,56 @@
+{
+  "/MemoryStreamDelivery/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.ts:60:34)",
+        "new IntegTestCase (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.ts:47:20)",
+        "new IntegTest (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.ts:160:29)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/memory/integ.memory-stream-delivery.js:34:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/MemoryStreamDelivery/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "visit (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "visit (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)"
+      ]
+    }
+  ],
+  "/MemoryStreamDelivery/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "visit (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "visit (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)"
+      ]
+    }
+  ]
+}
