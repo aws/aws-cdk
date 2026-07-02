@@ -25,6 +25,7 @@ new lambda.CapacityProvider(stack, 'CapacityProvider', {
   scalingOptions: lambda.ScalingOptions.manual([
     lambda.TargetTrackingScalingPolicy.cpuUtilization(70),
   ]),
+  systemLogLevel: lambda.SystemLogLevel.DEBUG,
 });
 
 new integ.IntegTest(app, 'CapacityProviderAllFieldsTest', {
