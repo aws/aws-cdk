@@ -1,0 +1,154 @@
+{
+ "Resources": {
+  "Alarm1F9009D71": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 3,
+    "MetricName": "Metric",
+    "Namespace": "CDK/Test",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 100
+   }
+  },
+  "Alarm2A7122E13": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 3,
+    "MetricName": "Metric",
+    "Namespace": "CDK/Test",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 200
+   }
+  },
+  "CompositeAlarmF4C3D082": {
+   "Type": "AWS::CloudWatch::CompositeAlarm",
+   "Properties": {
+    "AlarmName": "AlarmMuteRuleIntegrationTestCompositeAlarmC2EA25A4",
+    "AlarmRule": {
+     "Fn::Join": [
+      "",
+      [
+       "(ALARM(\"",
+       {
+        "Fn::GetAtt": [
+         "Alarm1F9009D71",
+         "Arn"
+        ]
+       },
+       "\") OR ALARM(\"",
+       {
+        "Fn::GetAtt": [
+         "Alarm2A7122E13",
+         "Arn"
+        ]
+       },
+       "\"))"
+      ]
+     ]
+    }
+   }
+  },
+  "RecurringMuteRuleB5AEE146": {
+   "Type": "AWS::CloudWatch::AlarmMuteRule",
+   "Properties": {
+    "Description": "Mute alarms during daily maintenance window",
+    "MuteTargets": {
+     "AlarmNames": [
+      {
+       "Ref": "Alarm1F9009D71"
+      },
+      {
+       "Ref": "Alarm2A7122E13"
+      }
+     ]
+    },
+    "Name": "RecurringMuteRule",
+    "Rule": {
+     "Schedule": {
+      "Duration": "PT1H",
+      "Expression": "cron(0 2 * * *)",
+      "Timezone": "UTC"
+     }
+    }
+   }
+  },
+  "OneTimeMuteRuleF5B3927B": {
+   "Type": "AWS::CloudWatch::AlarmMuteRule",
+   "Properties": {
+    "MuteTargets": {
+     "AlarmNames": [
+      {
+       "Ref": "Alarm1F9009D71"
+      }
+     ]
+    },
+    "Name": "OneTimeMuteRule",
+    "Rule": {
+     "Schedule": {
+      "Duration": "PT1H30M",
+      "Expression": "at(2026-12-15T03:30)"
+     }
+    }
+   }
+  },
+  "MuteRuleWithDates2761A66E": {
+   "Type": "AWS::CloudWatch::AlarmMuteRule",
+   "Properties": {
+    "ExpireDate": "2027-12-31T23:59",
+    "MuteTargets": {
+     "AlarmNames": [
+      {
+       "Ref": "CompositeAlarmF4C3D082"
+      }
+     ]
+    },
+    "Name": "MuteRuleWithDates",
+    "Rule": {
+     "Schedule": {
+      "Duration": "PT2H",
+      "Expression": "cron(0 4 * * SAT)"
+     }
+    },
+    "StartDate": "2026-01-01T00:00"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
