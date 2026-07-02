@@ -205,13 +205,14 @@
        "Arn"
       ]
      },
-     "ListOfTags": [
-      {
-       "ConditionKey": "stage",
-       "ConditionType": "STRINGEQUALS",
-       "ConditionValue": "prod"
-      }
-     ],
+     "Conditions": {
+      "StringEquals": [
+       {
+        "ConditionKey": "stage",
+        "ConditionValue": "prod"
+       }
+      ]
+     },
      "Resources": [
       {
        "Fn::Join": [
