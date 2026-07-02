@@ -4,6 +4,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sqs from '../../aws-sqs';
 import { Aws, CfnResource, Stack, Arn, App, PhysicalName, CfnOutput } from '../../core';
+import type { IEventBus } from '../lib';
 import { EventBus, IncludeDetail, Level } from '../lib';
 
 describe('event bus', () => {
@@ -798,5 +799,49 @@ describe('event bus', () => {
         Version: '2012-10-17',
       },
     });
+  });
+});
+
+describe('eventSourceName / IEventBus assignability (issue #37996)', () => {
+  // Regression coverage: under `exactOptionalPropertyTypes`, EventBus must stay
+  // assignable to the optional `IEventBus.eventSourceName`. The IEventBus
+  // annotations are the type-level guard; the runtime expectations confirm the
+  // getter -> readonly-field refactor preserves behavior.
+  test('a concrete EventBus is assignable to IEventBus and has no event source by default', () => {
+    const stack = new Stack();
+    const eventBus = new EventBus(stack, 'Bus');
+
+    const asInterface: IEventBus = eventBus;
+
+    expect(asInterface.eventSourceName).toBeUndefined();
+  });
+
+  test('eventSourceName is populated from props', () => {
+    const stack = new Stack();
+    const eventBus: IEventBus = new EventBus(stack, 'Bus', {
+      eventSourceName: 'aws.partner/PartnerName/acct1/repo1',
+    });
+
+    expect(eventBus.eventSourceName).toEqual('aws.partner/PartnerName/acct1/repo1');
+  });
+
+  test('eventSourceName is carried through fromEventBusAttributes', () => {
+    const stack = new Stack();
+    const eventBus: IEventBus = EventBus.fromEventBusAttributes(stack, 'Imported', {
+      eventBusName: 'myBus',
+      eventBusArn: 'arn:aws:events:us-east-1:123456789012:event-bus/myBus',
+      eventBusPolicy: '{}',
+      eventSourceName: 'aws.partner/PartnerName/acct1/repo1',
+    });
+
+    expect(eventBus.eventSourceName).toEqual('aws.partner/PartnerName/acct1/repo1');
+  });
+
+  test('eventSourceName is undefined when imported without one', () => {
+    const stack = new Stack();
+    const eventBus: IEventBus = EventBus.fromEventBusArn(
+      stack, 'Imported', 'arn:aws:events:us-east-1:123456789012:event-bus/myBus');
+
+    expect(eventBus.eventSourceName).toBeUndefined();
   });
 });
