@@ -1,6 +1,13 @@
-import * as os from 'os';
 import * as path from 'path';
-import { table } from 'table';
+import type {
+  PluginReportJson,
+  PolicyValidationReportConclusion,
+  PolicyValidationReportJson,
+  PolicyViolationJson,
+  PolicyViolationSeverity,
+  SuppressedViolationJson,
+  ViolatingConstructJson,
+} from '@aws-cdk/cloud-assembly-schema';
 import type { ConstructTree, ConstructTrace } from './construct-tree';
 import { ReportTrace } from './trace';
 import * as report from '../report';
@@ -104,59 +111,6 @@ export interface NamedValidationPluginReport extends report.PolicyValidationPlug
 }
 
 /**
- * JSON representation of the validation report, matching cloud-assembly-schema.
- */
-export interface PolicyValidationReportJson {
-  readonly version: string;
-  readonly title?: string;
-  readonly pluginReports: PluginReportJson[];
-}
-
-export interface PluginReportJson {
-  readonly pluginName: string;
-  readonly pluginVersion?: string;
-  readonly conclusion: PolicyValidationReportConclusion;
-  readonly metadata?: { readonly [key: string]: string };
-  readonly violations: PolicyViolationJson[];
-  readonly suppressedViolations?: SuppressedViolationJson[];
-}
-
-export type PolicyValidationReportConclusion = 'success' | 'failure';
-
-export interface PolicyViolationJson {
-  readonly ruleName: string;
-  readonly description: string;
-  readonly suggestedFix?: string;
-  readonly severity: PolicyViolationSeverity;
-  readonly customSeverity?: string;
-  readonly ruleMetadata?: { readonly [key: string]: string };
-  readonly violatingConstructs: ViolatingConstructJson[];
-}
-
-export type PolicyViolationSeverity = 'fatal' | 'error' | 'warning' | 'info' | 'custom';
-
-export interface ViolatingConstructJson {
-  readonly constructPath: string;
-  readonly constructFqn?: string;
-  readonly libraryVersion?: string;
-  readonly cloudFormationResource?: CloudFormationResourceJson;
-  readonly stackTraces?: string[];
-}
-
-export interface CloudFormationResourceJson {
-  readonly templatePath: string;
-  readonly logicalId: string;
-  readonly propertyPaths?: string[];
-}
-
-export interface SuppressedViolationJson extends PolicyViolationJson {
-  readonly acknowledgedId: string;
-  readonly reason?: string;
-  readonly acknowledgedAt?: string;
-  readonly acknowledgedStackTrace?: string;
-}
-
-/**
  * A violation that was suppressed, carrying acknowledgement metadata.
  * Used internally to pass suppressed violations from synthesis to the formatter.
  */
@@ -174,81 +128,6 @@ export class PolicyValidationReportFormatter {
   private readonly reportTrace: ReportTrace;
   constructor(private readonly tree: ConstructTree) {
     this.reportTrace = new ReportTrace(tree);
-  }
-
-  public formatPrettyPrinted(reps: NamedValidationPluginReport[]): string {
-    const json = this.formatLegacyJson(reps);
-    const output = [json.title];
-    output.push('-'.repeat(json.title.length));
-
-    json.pluginReports.forEach(plugin => {
-      output.push('');
-      output.push(table([
-        [`Source: ${plugin.summary.pluginName}`],
-        [`Version: ${plugin.version ?? 'N/A'}`],
-        [`Status: ${plugin.summary.status}`],
-      ], {
-        header: { content: 'Validation Report' },
-        singleLine: true,
-        columns: [{
-          paddingLeft: 3,
-          paddingRight: 3,
-        }],
-      }));
-      if (plugin.summary.metadata) {
-        output.push('');
-        output.push(`Metadata: \n\t${Object.entries(plugin.summary.metadata).flatMap(([key, value]) => `${key}: ${value}`).join('\n\t')}`);
-      }
-
-      if (plugin.violations.length > 0) {
-        output.push('');
-        output.push('(Violations)');
-      }
-
-      plugin.violations.forEach((violation) => {
-        const constructs = violation.violatingConstructs;
-        const occurrences = constructs.length;
-        const title = reset(red(bright(`${violation.ruleName} (${occurrences} occurrences)`)));
-        output.push('');
-        output.push(title);
-        if (violation.severity) {
-          output.push(`Severity: ${violation.severity}`);
-        }
-        output.push('');
-        output.push('  Occurrences:');
-        for (const construct of constructs) {
-          output.push('');
-          output.push(`    - Construct Path: ${construct.constructPath ?? 'N/A'}`);
-          output.push(`    - Template Path: ${construct.templatePath ?? 'N/A'}`);
-          output.push(`    - Creation Stack:\n\t${this.reportTrace.formatPrettyPrinted(construct.constructPath)}`);
-          output.push(`    - Resource ID: ${construct.resourceLogicalId ?? 'N/A'}`);
-          if (construct.locations) {
-            output.push('    - Template Locations:');
-            for (const location of construct.locations) {
-              output.push(`      > ${location}`);
-            }
-          }
-        }
-        output.push('');
-        output.push(`  Description: ${violation.description }`);
-        if (violation.fix) {
-          output.push(`  How to fix: ${violation.fix}`);
-        }
-        if (violation.ruleMetadata) {
-          output.push(`  Rule Metadata: \n\t${Object.entries(violation.ruleMetadata).flatMap(([key, value]) => `${key}: ${value}`).join('\n\t')}`);
-        }
-      });
-    });
-
-    output.push('');
-    output.push('Policy Validation Report Summary');
-    output.push('');
-    output.push(table([
-      ['Source', 'Status'],
-      ...reps.map(rep => [rep.pluginName, rep.success ? 'success' : 'failure']),
-    ], { }));
-
-    return output.join(os.EOL);
   }
 
   public formatLegacyJson(reps: NamedValidationPluginReport[]): LegacyPolicyValidationReportJson {
@@ -321,23 +200,23 @@ export class PolicyValidationReportFormatter {
       customSeverity: severity.customSeverity,
       ruleMetadata: violation.ruleMetadata,
       violatingConstructs: violation.violatingResources.map(resource => {
-        const constructPath = resource.constructPath ?? (
-          resource.templatePath && resource.resourceLogicalId
-            ? this.tree.getConstructByLogicalId(
-              path.basename(resource.templatePath),
-              resource.resourceLogicalId,
-            )?.node.path
-            : undefined
-        );
-        const construct = constructPath
-          ? this.tree.getConstructByPath(constructPath)
-          : undefined;
-        const constructInfo = construct
-          ? this.tree.constructTraceLevelFromTreeNode(construct)
+        let constructPath = resource.constructPath;
+
+        // If the construct path is not reported, let's try to guess it from the template name and the logical ID
+        if (!constructPath && resource.templatePath && resource.resourceLogicalId) {
+          constructPath = this.tree.getConstructByLogicalId(
+            path.basename(resource.templatePath),
+            resource.resourceLogicalId,
+          )?.node.path;
+        }
+
+        const constructInfo = constructPath
+          ? this.tree.constructTraceLevelFromConstructPath(constructPath)
           : undefined;
 
         const result: ViolatingConstructJson = {
-          constructPath: constructPath ?? 'N/A',
+          // The constructPath is not optional in the output JSON, so put an empty string here if we don't have it.
+          constructPath: constructPath ?? '',
           constructFqn: constructInfo?.construct,
           libraryVersion: constructInfo?.libraryVersion,
           cloudFormationResource: resource.resourceLogicalId && resource.templatePath
@@ -379,7 +258,7 @@ export class PolicyValidationReportFormatter {
       results.push({
         pluginName: rep.pluginName,
         pluginVersion: rep.pluginVersion,
-        conclusion: (rep.success ? 'success' : 'failure') as PolicyValidationReportConclusion,
+        conclusion: (rep.success ? 'success' : 'failure') satisfies PolicyValidationReportConclusion,
         metadata: rep.metadata,
         violations: rep.violations.map(violation => this.formatViolationJson(violation)),
         suppressedViolations: suppressed
@@ -418,14 +297,25 @@ function normalizeSeverity(severity: string | undefined): { severity: PolicyViol
   return { severity: 'custom', customSeverity: severity };
 }
 
-function reset(s: string) {
-  return `${s}\x1b[0m`;
+export function mkPluginFailure(plugin: { name: string; version?: string }, e: Error): NamedValidationPluginReport {
+  return {
+    success: false,
+    pluginName: plugin.name,
+    pluginVersion: plugin.version,
+    violations: [],
+    metadata: {
+      error: `Validation plugin '${plugin.name}' failed: ${e.message}`,
+    },
+  };
 }
 
-function red(s: string) {
-  return `\x1b[31m${s}`;
-}
-
-function bright(s: string) {
-  return `\x1b[1m${s}`;
+/**
+ * Report whether it is possible to suppress this violation.
+ *
+ * Violations that are reported as "fatal", or that have been converted from annotations, cannot be suppressed.
+ */
+export function isSuppressibleViolation(violation: { severity?: string; ruleMetadata?: { [key: string]: string } }): boolean {
+  const isFatal = violation.severity?.toLowerCase() === 'fatal';
+  const isErrorAnnotation = violation.ruleMetadata?.['cdk:annotation'] && violation.severity?.toLowerCase() === 'error';
+  return !isFatal && !isErrorAnnotation;
 }

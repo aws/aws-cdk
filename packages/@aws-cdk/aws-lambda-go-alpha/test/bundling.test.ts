@@ -19,7 +19,7 @@ beforeEach(() => {
   jest.spyOn(DockerImage, 'fromBuild').mockReturnValue({
     image: 'built-image',
     cp: () => 'built-image',
-    run: () => {},
+    run: () => { },
     toJSON: () => 'build-image',
   });
 
@@ -61,7 +61,7 @@ test('bundling', () => {
     }),
   });
 
-  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/aws-lambda-go-alpha\/lib$/), expect.objectContaining({
+  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/aws-lambda-go-alpha\/lib\/docker$/), expect.objectContaining({
     buildArgs: expect.objectContaining({
       IMAGE: expect.stringMatching(/build-go/),
     }),
@@ -165,7 +165,7 @@ test('with Docker build args', () => {
       HELLO: 'WORLD',
     },
   });
-  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/aws-lambda-go-alpha\/lib$/), expect.objectContaining({
+  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/aws-lambda-go-alpha\/lib\/docker$/), expect.objectContaining({
     buildArgs: expect.objectContaining({
       HELLO: 'WORLD',
     }),
