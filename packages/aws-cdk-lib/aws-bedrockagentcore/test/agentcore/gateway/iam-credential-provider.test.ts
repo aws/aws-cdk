@@ -27,7 +27,6 @@ describe('IAM credential provider', () => {
   let stack: cdk.Stack;
   let gateway: Gateway;
   let lambdaFunction: lambda.Function;
-  let restApi: apigateway.RestApi;
   const toolSchema = ToolSchema.fromInline([
     {
       name: 'test_tool',
@@ -65,11 +64,6 @@ describe('IAM credential provider', () => {
       handler: 'index.handler',
       code: lambda.Code.fromInline('exports.handler = async () => {}'),
     });
-    restApi = new apigateway.RestApi(stack, 'TestRestApi', {
-      restApiName: 'test-api',
-      deployOptions: { stageName: 'prod' },
-    });
-    restApi.root.addResource('test').addMethod('GET');
   });
 
   describe('rendering', () => {
@@ -235,23 +229,30 @@ describe('IAM credential provider', () => {
           GatewayCredentialProvider.fromIamRole({ service: 'bedrock-runtime' }),
         ],
       })],
-      ['API Gateway', () => GatewayTarget.forApiGateway(stack, 'Target', {
-        gateway,
-        gatewayTargetName: 'target',
-        restApi,
-        stage: 'prod',
-        apiGatewayToolConfiguration: {
-          toolFilters: [
-            {
-              filterPath: '/test',
-              methods: [ApiGatewayHttpMethod.GET],
-            },
+      ['API Gateway', () => {
+        const restApi = new apigateway.RestApi(stack, 'TestRestApi', {
+          restApiName: 'test-api',
+          deployOptions: { stageName: 'prod' },
+        });
+        restApi.root.addResource('test').addMethod('GET');
+        return GatewayTarget.forApiGateway(stack, 'Target', {
+          gateway,
+          gatewayTargetName: 'target',
+          restApi,
+          stage: 'prod',
+          apiGatewayToolConfiguration: {
+            toolFilters: [
+              {
+                filterPath: '/test',
+                methods: [ApiGatewayHttpMethod.GET],
+              },
+            ],
+          },
+          credentialProviderConfigurations: [
+            GatewayCredentialProvider.fromIamRole({ service: 'bedrock-runtime' }),
           ],
-        },
-        credentialProviderConfigurations: [
-          GatewayCredentialProvider.fromIamRole({ service: 'bedrock-runtime' }),
-        ],
-      })],
+        });
+      }],
       ['Smithy', () => GatewayTarget.forSmithy(stack, 'Target', {
         gateway,
         gatewayTargetName: 'target',
