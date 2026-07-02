@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file. See [standa
 ## [2.261.0](https://github.com/aws/aws-cdk/compare/v2.260.0...v2.261.0) (2026-07-02)
 
 
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+ - aws-cloudwatch: AWS::CloudWatch::LogAlarm: QueryLanguage property has been removed from the ScheduledQueryConfiguration type.
+ - aws-elasticloadbalancing: AWS::ElasticLoadBalancing::LoadBalancer: Id attribute has been removed and the primary identifier is now LoadBalancerName.
+
+
 ### Features
 
 * update L1 CloudFormation resource definitions ([#38189](https://github.com/aws/aws-cdk/issues/38189)) ([5aabd32](https://github.com/aws/aws-cdk/commit/5aabd323b3ec960a2525d2f5100bfa7463597fbd))
