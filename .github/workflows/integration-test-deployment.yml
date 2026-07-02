@@ -58,7 +58,7 @@ jobs:
 
       - name: Load Docker images
         id: docker-cache
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: |
             ~/.docker-images.tar
@@ -69,7 +69,7 @@ jobs:
         run: docker image load --input ~/.docker-images.tar
 
       - name: Cache build artifacts
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.s3buildcache
@@ -107,7 +107,7 @@ jobs:
 
       - name: Cache Docker images
         if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         with:
           path: |
             ~/.docker-images.tar
