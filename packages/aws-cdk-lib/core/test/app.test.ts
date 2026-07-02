@@ -422,6 +422,44 @@ describe('app', () => {
       delete process.env[cxapi.PERF_COUNTERS_FILE_ENV];
     }
   });
+
+  test('App synthesized without an outdir creates a temp dir that cleanupTemporaryDirectories removes', () => {
+    // GIVEN - an app with no outdir synthesizes into a temporary cdk.out directory
+    const app = new App();
+    new Stack(app, 'Stack1');
+    const assembly = app.synth();
+    const outdir = assembly.directory;
+
+    // the temp dir really exists and lives under the OS temp directory
+    expect(fs.existsSync(outdir)).toBe(true);
+    expect(path.dirname(outdir)).toEqual(fs.realpathSync(os.tmpdir()));
+    expect(path.basename(outdir).startsWith('cdk.out')).toBe(true);
+
+    // WHEN
+    cxapi.CloudAssembly.cleanupTemporaryDirectories();
+
+    // THEN - the temporary assembly directory has been removed
+    expect(fs.existsSync(outdir)).toBe(false);
+  });
+
+  test('App synthesized with an explicit outdir is not removed by cleanupTemporaryDirectories', () => {
+    // GIVEN - an explicit outdir is owned by the caller and must survive cleanup
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-explicit-outdir'));
+    try {
+      const app = new App({ outdir });
+      new Stack(app, 'Stack1');
+      app.synth();
+      expect(fs.existsSync(outdir)).toBe(true);
+
+      // WHEN
+      cxapi.CloudAssembly.cleanupTemporaryDirectories();
+
+      // THEN - the explicit outdir is left untouched
+      expect(fs.existsSync(outdir)).toBe(true);
+    } finally {
+      fs.rmSync(outdir, { force: true, recursive: true });
+    }
+  });
 });
 
 class MyConstruct extends Construct {
