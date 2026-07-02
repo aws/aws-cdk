@@ -1796,6 +1796,31 @@ new lambda.Function(this, 'Function', {
 });
 ```
 
+When the bundling command needs to resolve private dependencies over SSH
+(for example `pip` or `npm` pulling from a private git repository), set
+`sshForwarding: true` on the bundling options. The host's `SSH_AUTH_SOCK`
+is bind-mounted into the bundling container and the in-container
+`SSH_AUTH_SOCK` env var is pointed at the mount path, letting the bundling
+process reuse the host SSH agent without copying private keys into the
+container. Synthesis fails fast if `SSH_AUTH_SOCK` is not set on the host.
+
+```ts
+new lambda.Function(this, 'Function', {
+  code: lambda.Code.fromAsset('/path/to/handler', {
+    bundling: {
+      image: lambda.Runtime.PYTHON_3_9.bundlingImage,
+      command: [
+        'bash', '-c',
+        'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output',
+      ],
+      sshForwarding: true,
+    },
+  }),
+  runtime: lambda.Runtime.PYTHON_3_9,
+  handler: 'index.handler',
+});
+```
+
 ## Language-specific APIs
 
 Language-specific higher level constructs are provided in separate modules:
