@@ -1,6 +1,6 @@
-import * as child_process from 'child_process';
-import * as fs from 'fs';
-import * as path from 'path';
+import child_process from 'child_process';
+import fs from 'fs';
+import path from 'path';
 import { bockfs } from '@aws-cdk/cdk-build-tools';
 import { callsites, exec, extractDependencies, findUp, findUpMultiple, getTsconfigCompilerOptions, getTsconfigCompilerOptionsArray } from '../lib/util';
 

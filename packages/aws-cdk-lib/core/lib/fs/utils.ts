@@ -28,6 +28,10 @@ export function shouldFollow(mode: SymlinkFollowMode, sourceRoot: string, realPa
   }
 
   function _isInternal(): boolean {
-    return path.resolve(realPath).startsWith(path.resolve(sourceRoot));
+    return isInternalPath(path.resolve(sourceRoot), path.resolve(realPath));
   }
+}
+
+export function isInternalPath(rootPath: string, targetPath: string): boolean {
+  return rootPath === targetPath || targetPath.startsWith(rootPath + path.sep);
 }
