@@ -4,6 +4,13 @@ import { Arn, ArnFormat, Aws } from '../../../../core';
 import { FieldUtils } from '../../fields';
 import { QueryLanguage } from '../../types';
 
+const KMS_WRITE_ACTIONS = [
+  'kms:Encrypt',
+  'kms:ReEncrypt*',
+  'kms:GenerateDataKey*',
+  'kms:Decrypt',
+];
+
 /**
  * Interface for Result Writer configuration props
  * @deprecated use {@link ResultWriterV2Props} instead
@@ -152,6 +159,19 @@ function buildS3PutObjectPolicyStatements(bucketName?: string): iam.PolicyStatem
   ];
 }
 
+function buildKmsWritePolicyStatements(bucket?: IBucket): iam.PolicyStatement[] {
+  if (!bucket?.encryptionKey) {
+    return [];
+  }
+
+  return [
+    new iam.PolicyStatement({
+      actions: KMS_WRITE_ACTIONS,
+      resources: [bucket.encryptionKey.keyArn],
+    }),
+  ];
+}
+
 /**
  * Value for s3:putObject used as Resource for ResultWriter in the ASL
  * "arn:aws:states:::s3:putObject"
@@ -211,7 +231,12 @@ export class ResultWriter {
    * Compile policy statements to provide relevent permissions to the state machine
    */
   public providePolicyStatements(): iam.PolicyStatement[] {
-    return this.bucket?.bucketRef.bucketName ? buildS3PutObjectPolicyStatements(this.bucket.bucketRef.bucketName) : [];
+    return this.bucket?.bucketRef.bucketName
+      ? [
+        ...buildS3PutObjectPolicyStatements(this.bucket.bucketRef.bucketName),
+        ...buildKmsWritePolicyStatements(this.bucket),
+      ]
+      : [];
   }
 }
 
@@ -289,7 +314,10 @@ export class ResultWriterV2 {
     } else if (this.bucketNamePath) {
       return buildS3PutObjectPolicyStatements();
     }
-    return buildS3PutObjectPolicyStatements(this.bucket?.bucketName);
+    return [
+      ...buildS3PutObjectPolicyStatements(this.bucket?.bucketName),
+      ...buildKmsWritePolicyStatements(this.bucket),
+    ];
   }
 
   /**
