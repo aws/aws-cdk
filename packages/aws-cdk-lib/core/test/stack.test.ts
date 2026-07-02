@@ -1,4 +1,7 @@
+import { execSync } from 'child_process';
 import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Construct, Node } from 'constructs';
 import { flattenMeta, getWarnings, toCloudFormation } from './util';
@@ -18,6 +21,7 @@ import {
   TagManager,
   TagType,
 } from '../lib';
+import { GitSource } from '../lib/git-source';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
 import { PostResolveToken } from '../lib/util';
@@ -3286,6 +3290,73 @@ describe('regionalFact', () => {
         Databases: { Description: 'Information about the databases' },
       },
     });
+  });
+
+  test('git source metadata is not included by default', () => {
+    GitSource._clearCache();
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    new CfnResource(stack, 'Resource', { type: 'MyResource' });
+
+    const assembly = app.synth();
+    const template = assembly.getStackByName(stack.stackName).template;
+    expect(template?.Metadata?.['AWS::CDK::Source']).toBeUndefined();
+  });
+
+  test.each([
+    ['context key', { context: { '@aws-cdk/core:trackSourceCommit': true } }],
+    ['App props', { trackSourceCommit: true }],
+  ])('git source metadata is included when trackSourceCommit is set via %s', (_label, appProps) => {
+    let gitAvailable: boolean;
+    try {
+      execSync('git --version', { stdio: 'pipe' });
+      gitAvailable = true;
+    } catch {
+      gitAvailable = false;
+    }
+    if (!gitAvailable) { return; }
+
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-git-test-'));
+    try {
+      execSync([
+        'git init',
+        'git config user.email "test@test.com"',
+        'git config user.name "Test"',
+        'git remote add origin https://github.com/example/repo.git',
+        'git commit --allow-empty -m "init"',
+      ].join(' && '), { cwd: tmpDir, stdio: 'pipe' });
+      const cwdSpy = jest.spyOn(process, 'cwd').mockReturnValue(tmpDir);
+      GitSource._clearCache();
+
+      const app = new App(appProps);
+      const stack = new Stack(app, 'Stack');
+      new CfnResource(stack, 'Resource', { type: 'MyResource' });
+
+      const assembly = app.synth();
+      const template = assembly.getStackByName(stack.stackName).template;
+      const source = template?.Metadata?.['AWS::CDK::Source'];
+
+      expect(source).toBeDefined();
+      expect(source.Commit).toMatch(/^[a-f0-9]{40}([a-f0-9]{24})?$/);
+      expect(source.Repository).toBe('https://github.com/example/repo.git');
+
+      cwdSpy.mockRestore();
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+      GitSource._clearCache();
+    }
+  });
+
+  test('stack-level trackSourceCommit overrides app-level setting', () => {
+    GitSource._clearCache();
+    const app = new App({ trackSourceCommit: true });
+    const stack = new Stack(app, 'Stack', { trackSourceCommit: false });
+    new CfnResource(stack, 'Resource', { type: 'MyResource' });
+
+    const assembly = app.synth();
+    const template = assembly.getStackByName(stack.stackName).template;
+    expect(template?.Metadata?.['AWS::CDK::Source']).toBeUndefined();
+    GitSource._clearCache();
   });
 });
 
