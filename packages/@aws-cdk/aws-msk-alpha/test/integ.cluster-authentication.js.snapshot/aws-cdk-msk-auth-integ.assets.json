@@ -1,15 +1,16 @@
 {
-  "version": "38.0.1",
+  "version": "54.0.0",
   "files": {
-    "7c12b5b1fd96903b543fbfd848373b75380666868f6a835c113706d91d538e56": {
+    "4906f07761791eac13ed27ae3cb442c0d82cdf70139150c0b22a47a16b239b80": {
+      "displayName": "aws-cdk-msk-auth-integ Template",
       "source": {
         "path": "aws-cdk-msk-auth-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-0cdd7778": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "7c12b5b1fd96903b543fbfd848373b75380666868f6a835c113706d91d538e56.json",
+          "objectKey": "4906f07761791eac13ed27ae3cb442c0d82cdf70139150c0b22a47a16b239b80.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
