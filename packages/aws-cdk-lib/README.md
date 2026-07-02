@@ -1732,7 +1732,9 @@ will be reported as errors), and for violations of AWS best practices (reported
 as warnings). To suppress a reported warning or error, add the following to
 your application:
 
-```ts
+```ts fixture=validation-plugin
+const app = new App();
+
 // You can use any scope here, closer to the violation is safer
 Validations.of(app).acknowledge({
   id: 'CloudFormation-Validate::W9999',
@@ -1743,8 +1745,10 @@ Validations.of(app).acknowledge({
 The plugin supports loading custom Rego or CloudFormation guard rule sets, which you
 can configure if you add instantiate the plugin explicitly to your app:
 
-```ts
-cdk.Validations.of(app).addPlugins(new cdk.CloudFormationValidatePlugin({
+```ts fixture=validation-plugin
+const app = new App();
+
+Validations.of(app).addPlugins(new CloudFormationValidatePlugin({
   guardRules: [
     'path/to/my/rules.guard',
   ],
