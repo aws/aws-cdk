@@ -1,0 +1,96 @@
+{
+ "Resources": {
+  "MyQueueE6CA6235": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MyQueuePolicy6BBEDDAC": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Condition": {
+        "ArnEquals": {
+         "aws:SourceArn": "arn:aws:sns:ap-east-1:12345678:topicstackopicstackmytopicc43e67af8b0efdae6fec"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": [
+         "sns.amazonaws.com",
+         "sns.ap-east-1.amazonaws.com"
+        ]
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyQueueE6CA6235",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "MyQueueE6CA6235"
+     }
+    ]
+   }
+  },
+  "MyQueueTopicStackMyTopicC43E67AFC8DC8B4A": {
+   "Type": "AWS::SNS::Subscription",
+   "Properties": {
+    "Endpoint": {
+     "Fn::GetAtt": [
+      "MyQueueE6CA6235",
+      "Arn"
+     ]
+    },
+    "Protocol": "sqs",
+    "Region": "ap-east-1",
+    "TopicArn": "arn:aws:sns:ap-east-1:12345678:topicstackopicstackmytopicc43e67af8b0efdae6fec"
+   },
+   "DependsOn": [
+    "MyQueuePolicy6BBEDDAC"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
