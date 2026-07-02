@@ -7,6 +7,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
@@ -32,21 +33,14 @@ const lambdaVersion = new lambda.Version(stack, 'LambdaVersion', {
   lambda: edgeFunction,
 });
 
-new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribution', {
-  originConfigs: [
-    {
-      s3OriginSource: {
-        s3BucketSource: sourceBucket,
-      },
-      behaviors: [{
-        isDefaultBehavior: true,
-        lambdaFunctionAssociations: [{
-          eventType: cloudfront.LambdaEdgeEventType.ORIGIN_REQUEST,
-          lambdaFunction: lambdaVersion,
-        }],
-      }],
-    },
-  ],
+new cloudfront.Distribution(stack, 'MyDistribution', {
+  defaultBehavior: {
+    origin: origins.S3BucketOrigin.withOriginAccessControl(sourceBucket),
+    edgeLambdas: [{
+      eventType: cloudfront.LambdaEdgeEventType.ORIGIN_REQUEST,
+      functionVersion: lambdaVersion,
+    }],
+  },
 });
 
 new IntegTest(app, 'integ-cloudfront-lambda-association', {

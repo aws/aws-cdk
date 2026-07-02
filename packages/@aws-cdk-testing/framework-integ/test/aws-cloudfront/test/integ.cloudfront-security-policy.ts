@@ -4,35 +4,30 @@
  * so DNS validation against a real domain you control is needed.
  * Replace the acmCertRef and names below with your own values.
  */
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as cdk from 'aws-cdk-lib';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-cloudfront-custom');
 
-new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
-  originConfigs: [
-    {
-      originHeaders: {
-        'X-Custom-Header': 'somevalue',
-      },
-      customOriginSource: {
-        domainName: 'brelandm.a2z.com',
-      },
-      behaviors: [
-        {
-          isDefaultBehavior: true,
-        },
-      ],
-    },
-  ],
-  aliasConfiguration: {
-    acmCertRef: 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
-    names: ['test.test.com'],
-    sslMethod: cloudfront.SSLMethod.SNI,
-    securityPolicy: cloudfront.SecurityPolicyProtocol.TLS_V1,
+const certificate = acm.Certificate.fromCertificateArn(
+  stack, 'Cert',
+  'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
+);
+
+new cloudfront.Distribution(stack, 'AnAmazingWebsiteProbably', {
+  defaultBehavior: {
+    origin: new origins.HttpOrigin('brelandm.a2z.com', {
+      customHeaders: { 'X-Custom-Header': 'somevalue' },
+    }),
   },
+  certificate,
+  domainNames: ['test.test.com'],
+  sslSupportMethod: cloudfront.SSLMethod.SNI,
+  minimumProtocolVersion: cloudfront.SecurityPolicyProtocol.TLS_V1,
 });
 
 app.synth();
