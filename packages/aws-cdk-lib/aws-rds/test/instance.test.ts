@@ -2405,6 +2405,34 @@ describe('instance', () => {
     });
   });
 
+  test('read replica with engineVersion', () => {
+    // GIVEN
+    const instanceType = ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL);
+    const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 });
+    const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', { engine });
+    const source = new rds.DatabaseInstance(stack, 'Source', {
+      engine,
+      instanceType,
+      vpc,
+    });
+
+    const replicaEngine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_4 });
+
+    // WHEN
+    new rds.DatabaseInstanceReadReplica(stack, 'Replica', {
+      sourceDatabaseInstance: source,
+      parameterGroup,
+      instanceType,
+      vpc,
+      engineVersion: replicaEngine.engineVersion,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EngineVersion: '16.4',
+    });
+  });
+
   test('specify `storageThroughput` for gp3 storage type', () => {
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
