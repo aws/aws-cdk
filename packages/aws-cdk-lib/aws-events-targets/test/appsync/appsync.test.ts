@@ -85,8 +85,8 @@ describe('AppSync GraphQL API target', () => {
           AppSyncParameters: { GraphQLOperation: graphQLOperation },
           Id: 'Target0',
           InputTransformer: {
-            InputPathsMap: { detail: '$.detail' },
-            InputTemplate: '{"message":<detail>}',
+            InputPathsMap: { message: '$.detail' },
+            InputTemplate: '{"message":<message>}',
           },
           RoleArn: {
             'Fn::GetAtt': [
@@ -176,8 +176,8 @@ describe('AppSync API with AWS_IAM auth', () => {
           AppSyncParameters: { GraphQLOperation: graphQLOperation },
           Id: 'Target0',
           InputTransformer: {
-            InputPathsMap: { detail: '$.detail' },
-            InputTemplate: '{"message":<detail>}',
+            InputPathsMap: { message: '$.detail' },
+            InputTemplate: '{"message":<message>}',
           },
           RoleArn: {
             'Fn::GetAtt': [
@@ -244,8 +244,8 @@ describe('AppSync API with AWS_IAM auth', () => {
           AppSyncParameters: { GraphQLOperation: graphQLOperation },
           Id: 'Target0',
           InputTransformer: {
-            InputPathsMap: { detail: '$.detail' },
-            InputTemplate: '{"message":<detail>}',
+            InputPathsMap: { message: '$.detail' },
+            InputTemplate: '{"message":<message>}',
           },
           RoleArn: {
             'Fn::GetAtt': [
@@ -326,8 +326,8 @@ describe('AppSync API with AWS_IAM auth', () => {
           AppSyncParameters: { GraphQLOperation: graphQLOperation },
           Id: 'Target0',
           InputTransformer: {
-            InputPathsMap: { detail: '$.detail' },
-            InputTemplate: '{"message":<detail>}',
+            InputPathsMap: { message: '$.detail' },
+            InputTemplate: '{"message":<message>}',
           },
           RoleArn: {
             'Fn::GetAtt': [

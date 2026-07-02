@@ -46,13 +46,13 @@ describe('input', () => {
           {
             InputTransformer: {
               InputPathsMap: {
-                f1: '$',
+                data: '$',
               },
               InputTemplate: {
                 'Fn::Join': [
                   '',
                   [
-                    '{"data":<f1>,"stackName":"',
+                    '{"data":<data>,"stackName":"',
                     { Ref: 'AWS::StackName' },
                     '"}',
                   ],
@@ -206,6 +206,90 @@ describe('input', () => {
                   ],
                 ],
               },
+            },
+          },
+        ],
+      });
+    });
+
+    test('fromObject preserves user-specified key names in InputPathsMap (issue #33845)', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const rule = new Rule(stack, 'Rule', {
+        schedule: Schedule.rate(cdk.Duration.minutes(1)),
+      });
+
+      // WHEN
+      rule.addTarget(new SomeTarget(RuleTargetInput.fromObject({
+        myName: EventField.fromPath('$.detail.name'),
+        myUUID: EventField.fromPath('$.detail.uuid'),
+      })));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+        Targets: [
+          {
+            InputTransformer: {
+              InputPathsMap: {
+                myName: '$.detail.name',
+                myUUID: '$.detail.uuid',
+              },
+              InputTemplate: '{"myName":<myName>,"myUUID":<myUUID>}',
+            },
+          },
+        ],
+      });
+    });
+
+    test('fromObject falls back to path-derived key when EventField is embedded in a larger string', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const rule = new Rule(stack, 'Rule', {
+        schedule: Schedule.rate(cdk.Duration.minutes(1)),
+      });
+
+      // WHEN
+      rule.addTarget(new SomeTarget(RuleTargetInput.fromObject({
+        myKey: `prefix-${EventField.fromPath('$.detail.name')}`,
+      })));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+        Targets: [
+          {
+            InputTransformer: {
+              InputPathsMap: {
+                'detail-name': '$.detail.name',
+              },
+              InputTemplate: '{"myKey":"prefix-<detail-name>"}',
+            },
+          },
+        ],
+      });
+    });
+
+    test('fromObject reuses the same InputPathsMap key when the same path appears multiple times', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const rule = new Rule(stack, 'Rule', {
+        schedule: Schedule.rate(cdk.Duration.minutes(1)),
+      });
+
+      // WHEN
+      rule.addTarget(new SomeTarget(RuleTargetInput.fromObject({
+        firstKey: EventField.fromPath('$.detail.name'),
+        secondKey: EventField.fromPath('$.detail.name'),
+      })));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+        Targets: [
+          {
+            InputTransformer: {
+              InputPathsMap: {
+                firstKey: '$.detail.name',
+              },
+              InputTemplate: '{"firstKey":<firstKey>,"secondKey":<firstKey>}',
             },
           },
         ],
