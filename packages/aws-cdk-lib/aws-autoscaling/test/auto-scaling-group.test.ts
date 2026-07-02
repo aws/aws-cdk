@@ -1318,6 +1318,10 @@ describe('auto scaling group', () => {
   test('warning if iops without volumeType', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::W3671',
+      reason: 'We have our own warning',
+    });
     const vpc = mockVpc(stack);
 
     new autoscaling.AutoScalingGroup(stack, 'MyStack', {
@@ -1341,6 +1345,10 @@ describe('auto scaling group', () => {
   test('warning if iops and volumeType !== IO1', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::W3671',
+      reason: 'We have our own warning',
+    });
     const vpc = mockVpc(stack);
 
     new autoscaling.AutoScalingGroup(stack, 'MyStack', {

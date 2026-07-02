@@ -50,12 +50,12 @@
   resolved "https://registry.npmjs.org/@aws-cdk/asset-node-proxy-agent-v6/-/asset-node-proxy-agent-v6-2.1.2.tgz#71733894b092032309523cfcba24dc2bb3e7fd84"
   integrity sha512-pDiuqH+qY3zM9lhhLjbKJ1tnKOHzQ2V4Wr/3qsxyKeKAkuPMI/BVGvZG1PbrikUw949cGVTfVEt4ETKKYnrj0Q==
 
-"@aws-cdk/aws-service-spec@0.1.184":
-  version "0.1.184"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.184.tgz#8b01e2a9d5785350584be557ebb188941258048a"
-  integrity sha512-OC/OraJ3rGqoxKleeYnveN9N8ymw9vmH8llkhLVV92VZFdUFfNcviBX6DleOvvxAbIxmsCOTaRQ8Aa7iPaPM/Q==
+"@aws-cdk/aws-service-spec@0.1.185":
+  version "0.1.185"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.185.tgz#a4caa82744cde717a6a761b2a18d36a3d7a7e748"
+  integrity sha512-J1rf6m8AavVV1iFKY6s0ljTstUS94yaLYdNHCa0QwRCM5DDxK+kGaqHmj/1rBWkGsIJ15IHVLsMPQ/Q6fAvLTA==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.250"
+    "@aws-cdk/service-spec-types" "^0.0.251"
     "@cdklabs/tskb" "^0.0.4"
 
 "@aws-cdk/aws-service-spec@0.1.190":
@@ -82,13 +82,12 @@
     jsonschema "^1.5.0"
     semver "^7.8.1"
 
-"@aws-cdk/integ-runner@^2.199.0":
-  version "2.199.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/integ-runner/-/integ-runner-2.199.0.tgz#366af53e29c199f8ac8815c8aeef1320b31631d7"
-  integrity sha512-tK6QpC94fzvIKZiDvqZs96p4SvzKflDcGoNItPdCyUvevMSkOYqTjlzXCNl3GmfZo1rkdcaROgk9qnmQ4n28eQ==
+"@aws-cdk/integ-runner@^2.202.1":
+  version "2.202.1"
+  resolved "https://registry.npmjs.org/@aws-cdk/integ-runner/-/integ-runner-2.202.1.tgz#1844dd34fe005368764ca8029e763f4f533fc143"
+  integrity sha512-EZonKL98ziLXKDSb1JHS+kuTvfERjvJ+hykDSHHg325REE5z5YclNPnpQsNayjjNmd3zZdVeMhs8X1aIarfP8w==
   dependencies:
-    "@aws-cdk/aws-service-spec" "0.1.184"
-    aws-cdk "2.1126.0"
+    "@aws-cdk/aws-service-spec" "0.1.185"
 
 "@aws-cdk/lambda-layer-kubectl-v24@^2.0.242":
   version "2.0.242"
@@ -150,13 +149,6 @@
   version "0.0.256"
   resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.256.tgz#c787460597647332ab5c50647ab420f213130cb9"
   integrity sha512-oZz7qWObPzAhnOOxr0fMkM55AT9U9YhUr/PiAnBFjGEuONJnXamjuTaHvsjLfvCVTOiQY3HWSvR+Qo0+Ad3xzw==
-  dependencies:
-    "@cdklabs/tskb" "^0.0.4"
-
-"@aws-cdk/service-spec-types@^0.0.250":
-  version "0.0.250"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.250.tgz#062009c756cdf9c6cd462f55914ed8123068d58b"
-  integrity sha512-jrYbgUvUPagxPKiebiXSf28up+RvGow3A1UnWltkdjO8UdAj5KZwtNazNdD/SGDfqA8FGVGKSaFeFaHztttc2w==
   dependencies:
     "@cdklabs/tskb" "^0.0.4"
 
@@ -2324,6 +2316,11 @@
     "@smithy/types" "^4.14.3"
     fast-xml-parser "5.7.3"
     tslib "^2.6.2"
+
+"@aws/cloudformation-validate@1.1.0-beta":
+  version "1.1.0-beta"
+  resolved "https://registry.npmjs.org/@aws/cloudformation-validate/-/cloudformation-validate-1.1.0-beta.tgz#2f42fd1ea84a3fbfeb45db2662136a95a822b353"
+  integrity sha512-EZtN8wKiiuRodQ6tApew7sfV/CX7LzX2We8lOAU+4G2yS3ddpIAcAfWbLIZnTct396BdaBDFRlWcIKxoOaGrdg==
 
 "@aws/lambda-invoke-store@^0.2.2":
   version "0.2.4"
@@ -5608,10 +5605,10 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
-aws-cdk@2.1126.0:
-  version "2.1126.0"
-  resolved "https://registry.npmjs.org/aws-cdk/-/aws-cdk-2.1126.0.tgz#8468b116e41465e19095615bf1b941edf27ebf8e"
-  integrity sha512-uNoocb3vCPiAT3j9+SwL6pn/VVggHWBsgC2XpxyhNvYQYt6cE9BM/149GWwtdcwnLrPjnwW1+CV/5nSSh5dV+w==
+aws-cdk@^2.1129.0:
+  version "2.1129.0"
+  resolved "https://registry.npmjs.org/aws-cdk/-/aws-cdk-2.1129.0.tgz#4f8d59001c8ca577ff21671601152460a396c652"
+  integrity sha512-M0EWbjeKW+baUsirjtKuWh7w/9dPxF8taEi2hqo9ecCjGeQxV1dzyosJf+caR3Jh7dFyyT3J8zEtRb/cU971Rw==
 
 aws-sdk-client-mock-jest@4.1.0:
   version "4.1.0"
@@ -12956,9 +12953,9 @@ tar-stream@~2.2.0:
     readable-stream "^3.1.1"
 
 tar@6.2.1, tar@^6.1.11, tar@^6.2.1, tar@^7.5.16, tar@^7.5.7:
-  version "7.5.16"
-  resolved "https://registry.npmjs.org/tar/-/tar-7.5.16.tgz#f11e063afed4554f758049d082909e37d6b53ced"
-  integrity sha512-56adEpPMouktRlBLXiaYFFzZ/3+JXa8P9n7WbR+ibIjtviN55mEaOkiysCnPnWm+7kkui1Dn8J9l+g6zV8731w==
+  version "7.5.19"
+  resolved "https://registry.npmjs.org/tar/-/tar-7.5.19.tgz#d8915e6b717f8036a79d839ca9448198b002b0a7"
+  integrity sha512-4LeEWl96twnS2Q7Bz4MGqgazLqO+hJN63GZxXoIqh1T3VweYD997gbU1ItNsQafqqXTXd5WFyFdReLtwvRBNiw==
   dependencies:
     "@isaacs/fs-minipass" "^4.0.0"
     chownr "^3.0.0"
