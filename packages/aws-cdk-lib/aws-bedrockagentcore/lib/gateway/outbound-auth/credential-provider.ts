@@ -155,7 +155,8 @@ export abstract class GatewayCredentialProvider {
    * Provide `service` and optionally `region` to explicitly choose the SigV4 signing
    * service / region instead of relying on the gateway's inference from the target
    * endpoint. Useful for cross-region calls and for targets where the service can't be
-   * inferred from the URL.
+   * inferred from the URL. Explicit `service` / `region` is only supported for MCP Server
+   * and OpenAPI targets; other target types must use the bare `fromIamRole()`.
    */
   public static fromIamRole(props?: GatewayIamRoleCredentialProviderProps): ICredentialProviderConfig {
     return new GatewayIamRoleCredentialProviderConfig(props);

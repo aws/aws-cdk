@@ -12,18 +12,22 @@
  */
 
 import { Match, Template } from '../../../../assertions';
+import * as apigateway from '../../../../aws-apigateway';
 import * as lambda from '../../../../aws-lambda';
 import * as cdk from '../../../../core';
 import { Gateway } from '../../../lib';
 import { GatewayCredentialProvider } from '../../../lib/gateway/outbound-auth/credential-provider';
 import { GatewayIamRoleCredentialProviderConfig } from '../../../lib/gateway/outbound-auth/iam-role';
+import { ApiSchema } from '../../../lib/gateway/targets/schema/api-schema';
 import { ToolSchema, SchemaDefinitionType } from '../../../lib/gateway/targets/schema/tool-schema';
 import { GatewayTarget } from '../../../lib/gateway/targets/target';
+import { ApiGatewayHttpMethod } from '../../../lib/gateway/targets/target-configuration';
 
 describe('IAM credential provider', () => {
   let stack: cdk.Stack;
   let gateway: Gateway;
   let lambdaFunction: lambda.Function;
+  let restApi: apigateway.RestApi;
   const toolSchema = ToolSchema.fromInline([
     {
       name: 'test_tool',
@@ -34,6 +38,19 @@ describe('IAM credential provider', () => {
       },
     },
   ]);
+  const openApiSchema = () => ApiSchema.fromInline(JSON.stringify({
+    openapi: '3.0.0',
+    info: { title: 'Test API', version: '1.0.0' },
+    servers: [{ url: 'https://api.example.com' }],
+    paths: {
+      '/test': {
+        get: {
+          operationId: 'getTest',
+          responses: { 200: { description: 'OK' } },
+        },
+      },
+    },
+  }));
 
   beforeEach(() => {
     const app = new cdk.App();
@@ -48,6 +65,11 @@ describe('IAM credential provider', () => {
       handler: 'index.handler',
       code: lambda.Code.fromInline('exports.handler = async () => {}'),
     });
+    restApi = new apigateway.RestApi(stack, 'TestRestApi', {
+      restApiName: 'test-api',
+      deployOptions: { stageName: 'prod' },
+    });
+    restApi.root.addResource('test').addMethod('GET');
   });
 
   describe('rendering', () => {
@@ -121,6 +143,35 @@ describe('IAM credential provider', () => {
         ],
       });
     });
+
+    test('renders iamCredentialProvider with service and region for an OpenAPI target', () => {
+      GatewayTarget.forOpenApi(stack, 'OpenApiTarget', {
+        gateway,
+        gatewayTargetName: 'openapi-target',
+        apiSchema: openApiSchema(),
+        validateOpenApiSchema: false,
+        credentialProviderConfigurations: [
+          GatewayCredentialProvider.fromIamRole({
+            service: 'execute-api',
+            region: 'us-west-2',
+          }),
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        CredentialProviderConfigurations: [
+          {
+            CredentialProviderType: 'GATEWAY_IAM_ROLE',
+            CredentialProvider: {
+              IamCredentialProvider: {
+                Service: 'execute-api',
+                Region: 'us-west-2',
+              },
+            },
+          },
+        ],
+      });
+    });
   });
 
   describe('validation', () => {
@@ -174,8 +225,8 @@ describe('IAM credential provider', () => {
       })).not.toThrow();
     });
 
-    test('fails when explicit service/region is used with a Lambda target', () => {
-      expect(() => GatewayTarget.forLambda(stack, 'Target', {
+    test.each([
+      ['Lambda', () => GatewayTarget.forLambda(stack, 'Target', {
         gateway,
         gatewayTargetName: 'target',
         lambdaFunction,
@@ -183,8 +234,35 @@ describe('IAM credential provider', () => {
         credentialProviderConfigurations: [
           GatewayCredentialProvider.fromIamRole({ service: 'bedrock-runtime' }),
         ],
-      })).toThrow(
-        /IamCredentialProvider with explicit service\/region is only supported for MCP Server targets/,
+      })],
+      ['API Gateway', () => GatewayTarget.forApiGateway(stack, 'Target', {
+        gateway,
+        gatewayTargetName: 'target',
+        restApi,
+        stage: 'prod',
+        apiGatewayToolConfiguration: {
+          toolFilters: [
+            {
+              filterPath: '/test',
+              methods: [ApiGatewayHttpMethod.GET],
+            },
+          ],
+        },
+        credentialProviderConfigurations: [
+          GatewayCredentialProvider.fromIamRole({ service: 'bedrock-runtime' }),
+        ],
+      })],
+      ['Smithy', () => GatewayTarget.forSmithy(stack, 'Target', {
+        gateway,
+        gatewayTargetName: 'target',
+        smithyModel: ApiSchema.fromInline('{}'),
+        credentialProviderConfigurations: [
+          GatewayCredentialProvider.fromIamRole({ service: 'bedrock-runtime' }),
+        ],
+      })],
+    ])('fails when explicit service/region is used with a %s target', (_targetType, createTarget) => {
+      expect(createTarget).toThrow(
+        /IamCredentialProvider with explicit service\/region is only supported for MCP Server and OpenAPI targets/,
       );
     });
   });

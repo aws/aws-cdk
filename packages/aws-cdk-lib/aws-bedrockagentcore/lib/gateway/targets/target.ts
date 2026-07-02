@@ -649,9 +649,9 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
 
   /**
    * Validates that explicit SigV4 service / region on the IAM credential provider is only
-   * used with the MCP Server target type. The Bedrock AgentCore service rejects
+   * used with the MCP Server and OpenAPI target types. The Bedrock AgentCore service rejects
    * `IamCredentialProvider` (with service / region) for every other target type at deploy time
-   * (Lambda, Smithy, API Gateway and OpenAPI). Surface that as a synthesis-time error so users
+   * (Lambda, API Gateway and Smithy). Surface that as a synthesis-time error so users
    * get fail-fast feedback.
    */
   private validateIamCredentialProviderTargetType(): void {
@@ -659,16 +659,19 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
       return;
     }
     const hasExplicitIamCredentialProvider = this.credentialProviderConfigurations.some(
-      (c) => c instanceof GatewayIamRoleCredentialProviderConfig
-        && (c.service !== undefined || c.region !== undefined),
+      (c) => c instanceof GatewayIamRoleCredentialProviderConfig && c.service !== undefined,
     );
     if (!hasExplicitIamCredentialProvider) {
       return;
     }
-    if (this.targetType !== McpTargetType.MCP_SERVER) {
+    const iamCredentialProviderTargetTypes = [
+      McpTargetType.MCP_SERVER,
+      McpTargetType.OPENAPI_SCHEMA,
+    ];
+    if (!iamCredentialProviderTargetTypes.includes(this.targetType)) {
       throw new ValidationError(
         lit`IamCredentialProviderUnsupportedTargetType`,
-        `IamCredentialProvider with explicit service/region is only supported for MCP Server targets, got target type "${this.targetType}"`,
+        `IamCredentialProvider with explicit service/region is only supported for MCP Server and OpenAPI targets, got target type "${this.targetType}"`,
         this,
       );
     }

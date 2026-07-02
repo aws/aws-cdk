@@ -47,7 +47,8 @@ export interface GatewayIamRoleCredentialProviderProps {
 
 /**
  * Gateway IAM Role credential provider configuration implementation
- * Can be used with Lambda and Smithy targets
+ * Bare (no service/region) works with any target type; explicit service/region
+ * is only valid for MCP Server and OpenAPI targets
  * @internal
  */
 export class GatewayIamRoleCredentialProviderConfig implements ICredentialProviderConfig {
