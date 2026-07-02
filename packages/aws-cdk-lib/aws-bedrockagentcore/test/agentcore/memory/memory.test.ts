@@ -43,7 +43,9 @@ describe('Memory default tests', () => {
 
   test('Should have the correct resources', () => {
     template.resourceCountIs('AWS::BedrockAgentCore::Memory', 1);
-    template.resourceCountIs('AWS::IAM::Role', 1);
+    // A memory with only short-term storage and no strategies does not need an
+    // execution role, so none is created. See https://github.com/aws/aws-cdk/issues/38021
+    template.resourceCountIs('AWS::IAM::Role', 0);
   });
 
   test('Should have Memory resource with expected properties', () => {
@@ -71,6 +73,49 @@ describe('Memory default tests', () => {
     expect(memoryWithDefaultExpiry.expirationDuration?.toDays()).toBe(90);
   });
 
+  test('Should not create an execution role and should not set MemoryExecutionRoleArn', () => {
+    template.resourceCountIs('AWS::IAM::Role', 0);
+    expect(memory.executionRole).toBeUndefined();
+    template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      MemoryExecutionRoleArn: Match.absent(),
+    });
+  });
+
+  test('grantPrincipal resolves to an UnknownPrincipal when there is no role', () => {
+    expect(memory.grantPrincipal).toBeInstanceOf(iam.UnknownPrincipal);
+  });
+});
+
+describe('Memory auto-created execution role tests', () => {
+  let template: Template;
+  let stack: cdk.Stack;
+  // @ts-ignore
+  let memory: Memory;
+
+  beforeAll(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    // A strategy requires an execution role, so one is auto-created.
+    memory = new Memory(stack, 'test-memory', {
+      memoryName: 'test_memory',
+      expirationDuration: Duration.days(30),
+      memoryStrategies: [MemoryStrategy.usingBuiltInSemantic()],
+    });
+
+    template = Template.fromStack(stack);
+  });
+
+  test('Should create exactly one execution role', () => {
+    template.resourceCountIs('AWS::IAM::Role', 1);
+    expect(memory.executionRole).toBeDefined();
+  });
+
   test('Should have service role with confused deputy conditions', () => {
     template.hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
@@ -90,6 +135,49 @@ describe('Memory default tests', () => {
               },
             },
           },
+        ],
+      },
+    });
+  });
+
+  test('Should set MemoryExecutionRoleArn to the auto-created role', () => {
+    template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      MemoryExecutionRoleArn: {
+        'Fn::GetAtt': [
+          Match.stringLikeRegexp('testmemoryServiceRole.*'),
+          'Arn',
+        ],
+      },
+    });
+  });
+});
+
+describe('Memory addMemoryStrategy creates a role on demand', () => {
+  test('a role-less memory gains a role when a strategy is added after construction', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test-stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    const memory = new Memory(stack, 'test-memory', {
+      memoryName: 'test_memory',
+      expirationDuration: Duration.days(30),
+    });
+
+    // No role before a strategy is added.
+    expect(memory.executionRole).toBeUndefined();
+
+    memory.addMemoryStrategy(MemoryStrategy.usingBuiltInSemantic());
+
+    // A role is created on demand once a strategy needs it.
+    expect(memory.executionRole).toBeDefined();
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::IAM::Role', 1);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      MemoryExecutionRoleArn: {
+        'Fn::GetAtt': [
+          Match.stringLikeRegexp('testmemoryServiceRole.*'),
+          'Arn',
         ],
       },
     });
