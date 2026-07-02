@@ -1,3 +1,4 @@
+import type { PerformanceEntry } from 'perf_hooks';
 import { performance } from 'perf_hooks';
 import './dispose-polyfill';
 
@@ -33,6 +34,10 @@ export const TELEMETRY_FIELD = 'telemetry';
  * The field in `detail` that needs to be set to `true` in order to skip this for counting
  */
 export const SKIPCOUNT_FIELD = 'skipCount';
+
+interface PerformanceMeasureEntry extends PerformanceEntry {
+  detail?: Record<string, unknown>;
+}
 
 export interface ProfileOptions {
   /**
@@ -175,12 +180,12 @@ export interface ReadCountersOptions {
 export function readPerfCounters(options?: ReadCountersOptions): PerfCounters {
   // Do all perfs
   const counters: PerfCounters = {};
-  for (const entry of performance.getEntriesByType('measure')) {
-    if (options?.telemetry && !(entry.detail as any)?.[TELEMETRY_FIELD]) {
+  for (const entry of performance.getEntriesByType('measure') as PerformanceMeasureEntry[]) {
+    if (options?.telemetry && !(entry.detail)?.[TELEMETRY_FIELD]) {
       continue;
     }
 
-    const count = (entry.detail as any)?.[SKIPCOUNT_FIELD] ? 0 : 1;
+    const count = (entry.detail)?.[SKIPCOUNT_FIELD] ? 0 : 1;
 
     const ctr = counters[entry.name];
     if (ctr) {

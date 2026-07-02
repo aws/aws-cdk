@@ -16,17 +16,26 @@ Principles:
 - Full surface area. Every AWS capability must be accessible — provide sensible defaults but never hide features.
 - Escape hatches over perfection. Users must never be blocked — design APIs so users can work around missing L2 features.
 - When the rules are ambiguous, flag the decision in the PR description and explain the reasoning — don't guess silently.
+- If you have been briefed for a task this file does not cover (e.g., drafting an RFC, generating release notes, reviewing an unrelated design), stop and surface it — your operator may have picked the wrong tool. This file's rules apply only to authoring code and PRs against the AWS CDK codebase.
 
 ## Quick Reference — Commands
 
 | Task | Command | Working Directory |
 |------|---------|-------------------|
+| Install dependencies | `yarn install` | repo root |
 | Build everything | `npx lerna run build --skip-nx-cache` | repo root |
+| Build aws-cdk-lib package only | `npx lerna run build --scope=aws-cdk-lib --stream` | repo root |
+| Build one module | `yarn build` | `packages/aws-cdk-lib/aws-{service}` or `packages/@aws-cdk/aws-{service}-alpha` |
+| Build stable module integ tests | `npx lerna run build --scope=@aws-cdk-testing/framework-integ --stream` | repo root |
+| Test all in package | `yarn test` | `packages/aws-cdk-lib` |
 | Test one module | `yarn test aws-lambda` | `packages/aws-cdk-lib` |
 | Test one file | `npx jest aws-lambda/test/function.test.ts` | `packages/aws-cdk-lib` |
 | Lint | `npx lerna run lint` | repo root |
+| Lint with auto-fix | `yarn lint --fix` | repo root |
 | Rosetta (README compile check) | `/bin/bash ./scripts/run-rosetta.sh` | repo root |
-| Run integ snapshots | `yarn integ --directory test/aws-lambda/test` | `packages/@aws-cdk-testing/framework-integ` |
+| Run all integ snapshots | `yarn integ` | `packages/@aws-cdk-testing/framework-integ` |
+| Run integ snapshots in module | `yarn integ --directory test/aws-lambda/test` | `packages/@aws-cdk-testing/framework-integ` |
+| Update integ snapshots (no deploy) | `yarn integ --dry-run --update-on-failed` | `packages/@aws-cdk-testing/framework-integ` |
 | Run integ with deploy | `yarn integ test/aws-lambda/test/integ.lambda.js --update-on-failed` | `packages/@aws-cdk-testing/framework-integ` |
 
 > **Note:** All test, lint, integ, and rosetta commands require the project to be compiled first. Run the build command above before any of these.
@@ -57,6 +66,7 @@ L2 design rules:
 - You MUST hide CloudFormation details — do not require users to understand CFN to use an L2. Do not leak implementation details (ARNs, IAM actions, internal wiring) through the API
 - You MUST provide escape hatches — expose the underlying L1 construct so users are never blocked by missing L2 features
 - You SHOULD define resource contracts as interfaces — ensure third-party constructs can look and feel like first-party constructs
+- You MUST NOT make L2s taggable themselves. Only L1 (`Cfn*`) resources implement `ITaggable` / `ITaggableV2`. L2s expose an optional `tags` prop wired to the L1 default child; users tag at any scope via `Tags.of(scope).add(...)`, which traverses the tree — see [AGENTS_CONSTRUCT_DESIGN.md § Tags](./docs/AGENTS_CONSTRUCT_DESIGN.md#tags)
 
 ### L2 Building Blocks
 
