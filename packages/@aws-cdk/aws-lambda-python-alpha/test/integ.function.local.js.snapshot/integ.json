@@ -1,0 +1,14 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "lambda-python-function-local/DefaultTest": {
+      "stacks": [
+        "integ-lambda-python-function-local"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "lambda-python-function-local/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdapythonfunctionlocalDefaultTestDeployAssert45D2A34B"
+    }
+  },
+  "minimumCliVersion": "2.1121.0"
+}
