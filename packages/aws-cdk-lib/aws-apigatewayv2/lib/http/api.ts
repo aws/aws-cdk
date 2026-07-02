@@ -428,7 +428,7 @@ export class HttpApi extends HttpApiBase {
   /**
    * The default stage of this API
    */
-  public readonly defaultStage: IHttpStage | undefined;
+  public readonly defaultStage?: IHttpStage;
 
   /**
    * Default Authorizer applied to all routes in the gateway.
