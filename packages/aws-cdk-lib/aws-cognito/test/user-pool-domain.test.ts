@@ -104,6 +104,17 @@ describe('User Pool Domain', () => {
     })).not.toThrow();
   });
 
+  test('does not fail when domainPrefix is a token transformed by native string operations', () => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    const parameter = new CfnParameter(stack, 'Parameter');
+
+    expect(() => pool.addDomain('Domain', {
+      cognitoDomain: { domainPrefix: parameter.valueAsString.replace('_', '').toLowerCase() },
+    })).not.toThrow();
+  });
+
   testDeprecated('custom resource is added when cloudFrontDomainName property is used', () => {
     // GIVEN
     const stack = new Stack();
