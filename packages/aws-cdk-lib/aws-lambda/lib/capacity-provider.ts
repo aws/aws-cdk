@@ -6,8 +6,8 @@ import { CfnCapacityProvider } from './lambda.generated';
 import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
-import type { IResource } from '../../core';
 import { Annotations, Arn, ArnFormat, Resource, Stack, Token, ValidationError } from '../../core';
+import type { CfnTag, IResource } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
@@ -99,6 +99,58 @@ export interface CapacityProviderProps {
    * @default - No KMS key specified, uses an AWS-managed key instead
    */
   readonly kmsKey?: kms.IKey;
+
+  /**
+   * Configuration for tag propagation to managed resources (EC2 instances, ENIs, EBS volumes).
+   *
+   * Use the static factory methods on `PropagateTags` to create:
+   * - `PropagateTags.none()` - Explicitly disable tag propagation
+   * - `PropagateTags.explicit(tags)` - Propagate specified tags
+   *
+   * @default - No tag propagation; tags are not propagated to managed resources.
+   */
+  readonly propagateTags?: PropagateTags;
+}
+
+/**
+ * Configuration for propagating tags to managed resources created by a capacity provider.
+ *
+ * Use static factory methods to create instances:
+ * ```
+ * propagateTags: lambda.PropagateTags.explicit([{ key: 'env', value: 'prod' }])
+ * ```
+ */
+export class PropagateTags {
+  /**
+   * No tag propagation to managed resources.
+   */
+  public static none(): PropagateTags {
+    return new PropagateTags('None');
+  }
+
+  /**
+   * Propagate the specified tags to all managed resources.
+   *
+   * @param tags Tags to propagate. Maximum 40 tags.
+   */
+  public static explicit(tags: CfnTag[]): PropagateTags {
+    return new PropagateTags('Explicit', tags);
+  }
+
+  /**
+   * The propagation mode.
+   */
+  public readonly mode: string;
+
+  /**
+   * The explicit tags to propagate (only for Explicit mode).
+   */
+  public readonly explicitTags?: CfnTag[];
+
+  private constructor(mode: string, explicitTags?: CfnTag[]) {
+    this.mode = mode;
+    this.explicitTags = explicitTags;
+  }
 }
 
 /**
@@ -455,6 +507,7 @@ export class CapacityProvider extends CapacityProviderBase {
       instanceRequirements,
       capacityProviderScalingConfig,
       kmsKeyArn: props.kmsKey?.keyArn,
+      propagateTags: props.propagateTags,
     });
   }
 
@@ -483,6 +536,10 @@ export class CapacityProvider extends CapacityProviderBase {
 
     if (props.scalingOptions) {
       this.validateScalingPolicies(props.scalingOptions, validationErrorCPName);
+    }
+
+    if (props.propagateTags?.explicitTags && !Token.isUnresolved(props.propagateTags.explicitTags) && props.propagateTags.explicitTags.length > 40) {
+      throw new ValidationError(lit`PropagateTagsExplicitTagsMaximum`, `propagateTags explicit tags can have at most 40 tags, but ${validationErrorCPName} has ${props.propagateTags.explicitTags.length}.`, this);
     }
   }
 

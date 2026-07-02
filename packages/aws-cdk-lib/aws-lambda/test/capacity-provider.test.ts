@@ -666,4 +666,73 @@ describe('capacity provider', () => {
       }).toThrow('maxExecutionEnvironments must be between 0 and 15000, but was 15001');
     });
   });
+
+  describe('propagateTags', () => {
+    test('renders PropagateTags with Mode Explicit when PropagateTags.explicit() used', () => {
+      // WHEN
+      new lambda.CapacityProvider(stack, 'MyCapacityProvider', {
+        subnets,
+        securityGroups: [securityGroup],
+        propagateTags: lambda.PropagateTags.explicit([
+          { key: 'env', value: 'prod' },
+          { key: 'team', value: 'platform' },
+        ]),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::CapacityProvider', {
+        PropagateTags: {
+          Mode: 'Explicit',
+          ExplicitTags: [
+            { Key: 'env', Value: 'prod' },
+            { Key: 'team', Value: 'platform' },
+          ],
+        },
+      });
+    });
+
+    test('renders PropagateTags with Mode None when PropagateTags.none() used', () => {
+      // WHEN
+      new lambda.CapacityProvider(stack, 'MyCapacityProvider', {
+        subnets,
+        securityGroups: [securityGroup],
+        propagateTags: lambda.PropagateTags.none(),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::CapacityProvider', {
+        PropagateTags: {
+          Mode: 'None',
+        },
+      });
+    });
+
+    test('does not render PropagateTags when prop is omitted', () => {
+      // WHEN
+      new lambda.CapacityProvider(stack, 'MyCapacityProvider', {
+        subnets,
+        securityGroups: [securityGroup],
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::Lambda::CapacityProvider', {
+        PropagateTags: Match.absent(),
+      });
+    });
+
+    test('throws when explicit tags exceed 40', () => {
+      // GIVEN
+      const tooManyTags = Array.from({ length: 41 }, (_, i) => ({ key: `key${i}`, value: `value${i}` }));
+
+      // THEN
+      expect(() => {
+        new lambda.CapacityProvider(stack, 'MyCapacityProvider', {
+          subnets,
+          securityGroups: [securityGroup],
+          propagateTags: lambda.PropagateTags.explicit(tooManyTags),
+        });
+      }).toThrow(/propagateTags explicit tags can have at most 40 tags/);
+    });
+  });
 });
