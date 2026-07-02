@@ -281,4 +281,138 @@ describe('DeploymentLifecycleHookTarget', () => {
       service.addLifecycleHook(hookTarget);
     }).toThrow(/Deployment lifecycle hooks requires the ECS deployment controller/);
   });
+
+  test('hookDetails are rendered as JSON string in CloudFormation template', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // WHEN
+    service.addLifecycleHook(new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUpHook', {
+      lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
+      hookDetails: { environment: 'production', config: { retries: 3 } },
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        LifecycleHooks: [
+          {
+            HookDetails: '{"environment":"production","config":{"retries":3}}',
+            LifecycleStages: ['PRE_SCALE_UP'],
+          },
+        ],
+      },
+    });
+  });
+
+  test('hookDetails is absent when not provided', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // WHEN
+    service.addLifecycleHook(new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUpHook', {
+      lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        LifecycleHooks: [
+          {
+            HookDetails: Match.absent(),
+            LifecycleStages: ['PRE_SCALE_UP'],
+          },
+        ],
+      },
+    });
+  });
+
+  test('hookDetails throws when array is provided', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // WHEN
+    service.addLifecycleHook(new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUpHook', {
+      lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
+      hookDetails: ['a', 'b'] as any,
+    }));
+
+    // THEN
+    expect(() => {
+      Template.fromStack(stack);
+    }).toThrow(/hookDetails must be a plain JSON object \(arrays and primitives are not allowed\)/);
+  });
+
+  test('hookDetails with CDK token renders as intrinsic function', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // WHEN
+    service.addLifecycleHook(new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUpHook', {
+      lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
+      hookDetails: { stackName: cdk.Aws.STACK_NAME },
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        LifecycleHooks: [
+          {
+            HookDetails: Match.not(Match.absent()),
+            LifecycleStages: ['PRE_SCALE_UP'],
+          },
+        ],
+      },
+    });
+  });
+
+  test('hookDetails throws when primitive is provided', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // WHEN
+    service.addLifecycleHook(new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUpHook', {
+      lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
+      hookDetails: 'not-an-object' as any,
+    }));
+
+    // THEN
+    expect(() => {
+      Template.fromStack(stack);
+    }).toThrow(/hookDetails must be a plain JSON object \(arrays and primitives are not allowed\)/);
+  });
+
+  test('hookDetails throws when null is provided', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // WHEN
+    service.addLifecycleHook(new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUpHook', {
+      lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
+      hookDetails: null as any,
+    }));
+
+    // THEN
+    expect(() => {
+      Template.fromStack(stack);
+    }).toThrow(/hookDetails must be a plain JSON object \(arrays and primitives are not allowed\)/);
+  });
 });
