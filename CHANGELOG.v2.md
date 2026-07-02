@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.261.0](https://github.com/aws/aws-cdk/compare/v2.260.0...v2.261.0) (2026-07-02)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#38189](https://github.com/aws/aws-cdk/issues/38189)) ([5aabd32](https://github.com/aws/aws-cdk/commit/5aabd323b3ec960a2525d2f5100bfa7463597fbd))
+* **core:** add git source metadata to CloudFormation templates ([#37368](https://github.com/aws/aws-cdk/issues/37368)) ([765271b](https://github.com/aws/aws-cdk/commit/765271b8581daf723de8329c9a00e424e3a9bbdc))
+* **rds:** support native Secrets Manager integration for RDS Cluster and Instance  ([#35734](https://github.com/aws/aws-cdk/issues/35734)) ([07d5623](https://github.com/aws/aws-cdk/commit/07d5623bfd62de14844f52f7733e3da9e4b03daf)), closes [#29239](https://github.com/aws/aws-cdk/issues/29239)
+
+
+### Bug Fixes
+
+* improve internal path detection ([#38205](https://github.com/aws/aws-cdk/issues/38205)) ([6a1934d](https://github.com/aws/aws-cdk/commit/6a1934d59033e125004363bf32affbe5937948ce))
+* **ecr-assets:** tarball asset build command not escaped ([#38171](https://github.com/aws/aws-cdk/issues/38171)) ([bad8a3a](https://github.com/aws/aws-cdk/commit/bad8a3a2af8cdbeaeb09c29ed28b018152ad52b9))
+* print validation errors according to new style ([#38166](https://github.com/aws/aws-cdk/issues/38166)) ([031aba8](https://github.com/aws/aws-cdk/commit/031aba88ab51bb323d0dee987309ec1ff75878e3))
+
 ## [2.260.0](https://github.com/aws/aws-cdk/compare/v2.259.0...v2.260.0) (2026-06-16)
 
 
