@@ -427,7 +427,13 @@ export class LustreFileSystem extends FileSystemBase {
       }
     }
 
-    // TODO: Add validation for V_2_12 with PERSISTENT_2 deployment mode and metadata configuration mode when metadata configuration is supported.
+    if (fileSystemTypeVersion === FileSystemTypeVersion.V_2_12 && deploymentType !== LustreDeploymentType.PERSISTENT_2) {
+      throw new ValidationError(lit`FileSystemTypeVersionV212OnlySupportedForPersistent2`, 'fileSystemTypeVersion V_2_12 is only supported for PERSISTENT_2 deployment type', this);
+    }
+
+    if (fileSystemTypeVersion === FileSystemTypeVersion.V_2_15 && deploymentType !== LustreDeploymentType.PERSISTENT_2) {
+      throw new ValidationError(lit`FileSystemTypeVersionV215OnlySupportedForPersistent2`, 'fileSystemTypeVersion V_2_15 is only supported for PERSISTENT_2 deployment type', this);
+    }
   }
 
   /**

@@ -142,11 +142,30 @@ describe('FSx for Lustre File System', () => {
 
   test.each([
     FileSystemTypeVersion.V_2_10,
-    FileSystemTypeVersion.V_2_12,
-    FileSystemTypeVersion.V_2_15,
-  ])('file system is created correctly with fileSystemTypeVersion %s', (fileSystemTypeVersion: FileSystemTypeVersion) => {
+  ])('file system is created correctly with fileSystemTypeVersion %s and SCRATCH_2', (fileSystemTypeVersion: FileSystemTypeVersion) => {
     lustreConfiguration = {
       deploymentType: LustreDeploymentType.SCRATCH_2,
+    };
+
+    new LustreFileSystem(stack, 'FsxFileSystem', {
+      lustreConfiguration,
+      storageCapacityGiB: storageCapacity,
+      vpc,
+      vpcSubnet,
+      fileSystemTypeVersion,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
+      FileSystemTypeVersion: fileSystemTypeVersion,
+    });
+  });
+
+  test.each([
+    FileSystemTypeVersion.V_2_12,
+    FileSystemTypeVersion.V_2_15,
+  ])('file system is created correctly with fileSystemTypeVersion %s and PERSISTENT_2', (fileSystemTypeVersion: FileSystemTypeVersion) => {
+    lustreConfiguration = {
+      deploymentType: LustreDeploymentType.PERSISTENT_2,
     };
 
     new LustreFileSystem(stack, 'FsxFileSystem', {
@@ -178,6 +197,42 @@ describe('FSx for Lustre File System', () => {
             fileSystemTypeVersion: FileSystemTypeVersion.V_2_10,
           });
         }).toThrow('fileSystemTypeVersion V_2_10 is only supported for SCRATCH and PERSISTENT_1 deployment types');
+      });
+
+      test.each([
+        LustreDeploymentType.SCRATCH_1,
+        LustreDeploymentType.SCRATCH_2,
+        LustreDeploymentType.PERSISTENT_1,
+      ])('fails when fileSystemTypeVersion V_2_12 is used with %s deployment type', (deploymentType: LustreDeploymentType) => {
+        lustreConfiguration = { deploymentType };
+
+        expect(() => {
+          new LustreFileSystem(stack, 'FsxFileSystem', {
+            lustreConfiguration,
+            storageCapacityGiB: storageCapacity,
+            vpc,
+            vpcSubnet,
+            fileSystemTypeVersion: FileSystemTypeVersion.V_2_12,
+          });
+        }).toThrow('fileSystemTypeVersion V_2_12 is only supported for PERSISTENT_2 deployment type');
+      });
+
+      test.each([
+        LustreDeploymentType.SCRATCH_1,
+        LustreDeploymentType.SCRATCH_2,
+        LustreDeploymentType.PERSISTENT_1,
+      ])('fails when fileSystemTypeVersion V_2_15 is used with %s deployment type', (deploymentType: LustreDeploymentType) => {
+        lustreConfiguration = { deploymentType };
+
+        expect(() => {
+          new LustreFileSystem(stack, 'FsxFileSystem', {
+            lustreConfiguration,
+            storageCapacityGiB: storageCapacity,
+            vpc,
+            vpcSubnet,
+            fileSystemTypeVersion: FileSystemTypeVersion.V_2_15,
+          });
+        }).toThrow('fileSystemTypeVersion V_2_15 is only supported for PERSISTENT_2 deployment type');
       });
     });
 
