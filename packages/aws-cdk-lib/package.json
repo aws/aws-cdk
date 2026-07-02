@@ -112,7 +112,6 @@
     "minimatch",
     "punycode",
     "semver",
-    "table",
     "yaml",
     "mime-types"
   ],
@@ -129,7 +128,6 @@
     "minimatch": "^10.2.5",
     "punycode": "^2.3.1",
     "semver": "^7.8.1",
-    "table": "^6.9.0",
     "yaml": "1.10.3",
     "mime-types": "^2.1.35"
   },
