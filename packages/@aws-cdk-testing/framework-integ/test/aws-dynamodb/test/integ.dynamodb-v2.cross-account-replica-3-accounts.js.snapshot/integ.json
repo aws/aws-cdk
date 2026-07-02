@@ -1,0 +1,15 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "MultiAccount3ReplicaIntegTest/DefaultTest": {
+      "stacks": [
+        "MultiAccount3SourceStack",
+        "MultiAccount3ReplicaStack1",
+        "MultiAccount3ReplicaStack2"
+      ],
+      "assertionStack": "MultiAccount3ReplicaIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "MultiAccount3ReplicaIntegTestDefaultTestDeployAssertED899930"
+    }
+  },
+  "minimumCliVersion": "2.1119.0"
+}
