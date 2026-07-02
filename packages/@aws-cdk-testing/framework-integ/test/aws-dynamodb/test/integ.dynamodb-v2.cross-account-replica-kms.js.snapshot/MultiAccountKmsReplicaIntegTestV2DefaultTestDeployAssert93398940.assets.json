@@ -1,0 +1,21 @@
+{
+  "version": "50.0.0",
+  "files": {
+    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+      "displayName": "MultiAccountKmsReplicaIntegTestV2DefaultTestDeployAssert93398940 Template",
+      "source": {
+        "path": "MultiAccountKmsReplicaIntegTestV2DefaultTestDeployAssert93398940.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "${AWS::AccountId}-${AWS::Region}-f36b6746": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "region": "${AWS::Region}",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
