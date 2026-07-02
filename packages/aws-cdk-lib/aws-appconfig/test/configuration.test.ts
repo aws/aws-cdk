@@ -7,6 +7,7 @@ import { Bucket } from '../../aws-s3';
 import { Secret } from '../../aws-secretsmanager';
 import { CfnDocument, StringParameter } from '../../aws-ssm';
 import * as cdk from '../../core';
+import type { IConfiguration } from '../lib';
 import {
   Application,
   HostedConfiguration,
@@ -1464,5 +1465,42 @@ describe('configuration', () => {
       },
       KmsKeyIdentifier: stack.resolve(kmsKey.keyArn),
     });
+  });
+});
+
+describe('deploymentStrategy / IConfiguration assignability (issue #37996)', () => {
+  // Regression coverage: under `exactOptionalPropertyTypes`, the configuration
+  // classes must stay assignable to the optional `IConfiguration.deploymentStrategy`.
+  // The IConfiguration annotation is the type-level guard; the runtime expectations
+  // confirm the getter -> readonly-field refactor preserves behavior.
+  test('a HostedConfiguration is assignable to IConfiguration and auto-creates a deployment strategy', () => {
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig');
+
+    const configuration: IConfiguration = new HostedConfiguration(stack, 'MyHostedConfig', {
+      content: ConfigurationContent.fromInlineText('This is my content'),
+      application: app,
+    });
+
+    expect(configuration.deploymentStrategy).toBeDefined();
+  });
+
+  test('deploymentStrategy reflects the strategy passed in props', () => {
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig');
+    const deploymentStrategy = new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
+      rolloutStrategy: RolloutStrategy.linear({
+        growthFactor: 15,
+        deploymentDuration: cdk.Duration.minutes(30),
+      }),
+    });
+
+    const configuration = new HostedConfiguration(stack, 'MyHostedConfig', {
+      content: ConfigurationContent.fromInlineText('This is my content'),
+      application: app,
+      deploymentStrategy,
+    });
+
+    expect(configuration.deploymentStrategy).toBe(deploymentStrategy);
   });
 });
