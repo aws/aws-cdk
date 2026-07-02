@@ -82,10 +82,10 @@
     jsonschema "^1.5.0"
     semver "^7.8.1"
 
-"@aws-cdk/integ-runner@^2.201.0":
-  version "2.201.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/integ-runner/-/integ-runner-2.201.0.tgz#7b399085c6582937b532ba5c12202d9e40596166"
-  integrity sha512-g1Bqf7EL+cQXu0pL4oiC1nH0ijkjDEeQpBYbEnnmfy2Ahmai1naqLfkR2Uru0K+HxF/wqkGdDYojJETpJWt3vA==
+"@aws-cdk/integ-runner@^2.202.1":
+  version "2.202.1"
+  resolved "https://registry.npmjs.org/@aws-cdk/integ-runner/-/integ-runner-2.202.1.tgz#1844dd34fe005368764ca8029e763f4f533fc143"
+  integrity sha512-EZonKL98ziLXKDSb1JHS+kuTvfERjvJ+hykDSHHg325REE5z5YclNPnpQsNayjjNmd3zZdVeMhs8X1aIarfP8w==
   dependencies:
     "@aws-cdk/aws-service-spec" "0.1.185"
 
