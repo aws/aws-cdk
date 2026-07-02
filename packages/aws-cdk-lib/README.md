@@ -1748,10 +1748,14 @@ can configure if you add instantiate the plugin explicitly to your app:
 ```ts fixture=validation-plugin
 const app = new App();
 
+// Rules text, read from disk perhaps
+declare const myRules: string;
+
 Validations.of(app).addPlugins(new CloudFormationValidatePlugin({
-  guardRules: [
-    'path/to/my/rules.guard',
-  ],
+  guardRules: [{
+    name: 'My rules',
+    content: myRules,
+  }],
 }));
 ```
 
