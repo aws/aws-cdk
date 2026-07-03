@@ -191,11 +191,6 @@ const IGNORE_RULES = new Set([
   // WHY: The engine assumes AWS::Partition can only ever equal 'aws', which is not true. Should be removed.
   'W1028',
 
-  // WHAT: Unknown resource type
-  // WHY: Engine complains about AWS::CDK::Metadata, which is quite common in our templates :>
-  // Should be removed after <https://github.com/aws-cloudformation/cloudformation-validate/issues/33> is resolved.
-  'E9001',
-
   // WHAT: Validate AMI format (must look like ami-xxxx)
   // WHY: CDK uses `AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>` to resolve AMIs, which the engine doesn't understand.
   // Should be removed after <https://github.com/aws-cloudformation/cloudformation-validate/issues/34> is resolved.

@@ -1,7 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`validations multiple plugins 1`] = `
-"core/test/validation/validation.test.ts:324:5
+"[Warning] Template validation found issues in your templates (reported as warnings).
+Set feature flag "@aws-cdk/core:validateAgainstDefaultRules" to true to turn these into errors.
+
+core/test/validation/validation.test.ts:324:5
 ERROR do something (plugin1)
    Default/Fake (Fake) constructs.Construct
    Acknowledge with 'plugin1::rule-1'
@@ -15,7 +18,10 @@ A copy of this report can be found in: <assembly-directory>/validation-report.js
 `;
 
 exports[`validations multiple plugins with mixed results 1`] = `
-"core/test/validation/validation.test.ts:350:5
+"[Warning] Template validation found issues in your templates (reported as warnings).
+Set feature flag "@aws-cdk/core:validateAgainstDefaultRules" to true to turn these into errors.
+
+core/test/validation/validation.test.ts:350:5
 ERROR do another thing (plugin2)
    Default/Fake (Fake) constructs.Construct
    Acknowledge with 'plugin2::rule-2'
@@ -24,7 +30,10 @@ A copy of this report can be found in: <assembly-directory>/validation-report.js
 `;
 
 exports[`validations multiple stacks 1`] = `
-"core/test/validation/validation.test.ts:97:5
+"[Warning] Template validation found issues in your templates (reported as warnings).
+Set feature flag "@aws-cdk/core:validateAgainstDefaultRules" to true to turn these into errors.
+
+core/test/validation/validation.test.ts:97:5
 ERROR test recommendation (test-plugin)
    stack1/DefaultResource (DefaultResource) constructs.Construct
    Acknowledge with 'test-plugin::test-rule'
@@ -38,7 +47,10 @@ A copy of this report can be found in: <assembly-directory>/validation-report.js
 `;
 
 exports[`validations multiple stages 1`] = `
-"core/test/validation/validation.test.ts:165:5
+"[Warning] Template validation found issues in your templates (reported as warnings).
+Set feature flag "@aws-cdk/core:validateAgainstDefaultRules" to true to turn these into errors.
+
+core/test/validation/validation.test.ts:165:5
 ERROR do something (test-plugin2)
    Stage1/stack1/DefaultResource (DefaultResource) constructs.Construct
    Acknowledge with 'test-plugin2::test-rule2'
@@ -62,7 +74,10 @@ A copy of this report can be found in: <assembly-directory>/validation-report.js
 `;
 
 exports[`validations validation failure 1`] = `
-"core/test/validation/validation.test.ts:42:5
+"[Warning] Template validation found issues in your templates (reported as warnings).
+Set feature flag "@aws-cdk/core:validateAgainstDefaultRules" to true to turn these into errors.
+
+core/test/validation/validation.test.ts:42:5
 custom test recommendation (test-plugin)
    Default/Fake (Fake) constructs.Construct
    Acknowledge with 'test-plugin::test-rule'
