@@ -125,27 +125,10 @@ export class NetworkUtils {
    */
   public static validateCidrPairOverlap(cidr1: string, cidr2: string): boolean {
     const cidr1Range = new CidrBlock(cidr1);
-    const cidr1IpRange: [string, string] = [cidr1Range.minIp(), cidr1Range.maxIp()];
-
     const cidr2Range = new CidrBlock(cidr2);
-    const cidr2IpRange: [string, string] = [cidr2Range.minIp(), cidr2Range.maxIp()];
 
-    return this.rangesOverlap(cidr1IpRange, cidr2IpRange);
-  }
-
-  /**
-   * Checks if two IP address ranges overlap
-   *
-   * @param range1 First IP range as [start, end]
-   * @param range2 Second IP range as [start, end]
-   * @returns True if the ranges overlap
-   */
-  private static rangesOverlap(range1: [string, string], range2: [string, string]): boolean {
-    const [start1, end1] = range1;
-    const [start2, end2] = range2;
-
-    // Check if ranges overlap
-    return start1 <= end2 && start2 <= end1;
+    return cidr1Range.minAddress() <= cidr2Range.maxAddress()
+      && cidr2Range.minAddress() <= cidr1Range.maxAddress();
   }
 }
 
