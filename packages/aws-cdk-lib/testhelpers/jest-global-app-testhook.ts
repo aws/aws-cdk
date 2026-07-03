@@ -28,5 +28,6 @@ const APP_INIT_HOOK_SYMBOL = Symbol.for('@aws-cdk/core.App#initHook');
     { id: 'CloudFormation-Validate::W2531', reason: 'There are many deprecated Lambda runtimes' },
     { id: 'CloudFormation-Validate::W9010', reason: 'Hardcoded AMI IDs are fine in tests' },
     { id: 'CloudFormation-Validate::E3710', reason: 'We still have tests for shutdown services' },
+    { id: 'CloudFormation-Validate::F3006', reason: 'We invent a lot of resource types for tests.' },
   );
 };
