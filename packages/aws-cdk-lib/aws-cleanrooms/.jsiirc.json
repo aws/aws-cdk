@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_cleanrooms"
+    },
+    "ruby": {
+      "module": "AWSCDK::CleanRooms"
     }
   }
 }

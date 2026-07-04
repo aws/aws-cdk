@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.assets"
+    },
+    "ruby": {
+      "module": "AWSCDK::Assets"
     }
   }
 }

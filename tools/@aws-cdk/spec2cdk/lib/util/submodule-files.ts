@@ -29,6 +29,16 @@ export async function writeJsiiRc(filePath: string, definition: ModuleDefinition
   const ns = options.namespaceSuffix ?? '';
   const nsUc = ns.charAt(0).toUpperCase() + ns.slice(1);
 
+  let existingTargets: Record<string, Record<string, string>> = {};
+  if (existsSync(filePath)) {
+    try {
+      const existing = JSON.parse(await fs.readFile(filePath, 'utf-8'));
+      existingTargets = existing.targets || {};
+    } catch (e) {
+      // ignore JSON parse errors or other issues
+    }
+  }
+
   const targets: Record<string, Record<string, string>> = {
     java: {
       package: ns ? `${definition.javaPackage}.${ns}` : definition.javaPackage,
@@ -40,6 +50,10 @@ export async function writeJsiiRc(filePath: string, definition: ModuleDefinition
       module: ns ? `${definition.pythonModuleName}.${ns}` : definition.pythonModuleName,
     },
   };
+
+  if (existingTargets.ruby) {
+    targets.ruby = existingTargets.ruby;
+  }
 
   if (options.goPrefix != null) {
     targets.go = {
