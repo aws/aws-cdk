@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import type { IConstruct } from 'constructs';
 import type { LiteralString } from './private/literal-string';
 import { constructInfoFromConstruct } from './private/runtime-info';
-import { enhancedStackTrace } from './stack-trace';
+import { enhancedStackTrace } from './private/stack-trace';
 import type { AssertionError } from '../../assertions/lib/private/error';
 import { ERRORFILE_ENV } from '../../cx-api';
 import type { CloudAssemblyError } from '../../cx-api/lib/private/error';
@@ -25,7 +25,7 @@ export class Errors {
    * To check for more specific errors, use the respective methods.
    */
   public static isConstructError(x: any): x is ConstructError {
-    return x !== null && typeof(x) === 'object' && CONSTRUCT_ERROR_SYMBOL in x;
+    return x !== null && typeof (x) === 'object' && CONSTRUCT_ERROR_SYMBOL in x;
   }
 
   /**
@@ -53,7 +53,7 @@ export class Errors {
    * A CloudAssemblyError is thrown for unexpected problems with the synthesized assembly.
    */
   public static isCloudAssemblyError(x: any): x is CloudAssemblyError {
-    return x !== null && typeof(x) === 'object' && ASSEMBLY_ERROR_SYMBOL in x;
+    return x !== null && typeof (x) === 'object' && ASSEMBLY_ERROR_SYMBOL in x;
   }
 
   /**
@@ -62,7 +62,7 @@ export class Errors {
    * An ExecutionError is thrown if an externally executed script or code failed.
    */
   public static isExecutionError(x: any): x is ExecutionError {
-    return x !== null && typeof(x) === 'object' && EXECUTION_ERROR_SYMBOL in x;
+    return x !== null && typeof (x) === 'object' && EXECUTION_ERROR_SYMBOL in x;
   }
 
   /**
@@ -72,7 +72,7 @@ export class Errors {
    * This error always indicates a bug in the construct.
    */
   public static isAssumptionError(x: any): x is AssumptionError {
-    return x !== null && typeof(x) === 'object' && ASSUMPTION_ERROR_SYMBOL in x;
+    return x !== null && typeof (x) === 'object' && ASSUMPTION_ERROR_SYMBOL in x;
   }
 }
 
