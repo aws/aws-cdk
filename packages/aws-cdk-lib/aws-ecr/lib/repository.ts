@@ -5,6 +5,10 @@ import type { LifecycleRule } from './lifecycle';
 import { TagStatus } from './lifecycle';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
+import {
+  grantCrossAccountViaPrincipalTag,
+  unsafeCrossAccountResourcePolicyPrincipal,
+} from '../../aws-iam/lib/private/cross-account-grants';
 import type * as kms from '../../aws-kms';
 import * as cxschema from '../../cloud-assembly-schema';
 import type { IResource } from '../../core';
@@ -16,7 +20,6 @@ import {
   Stack,
   Tags,
   Token,
-  TokenComparison,
   CustomResource,
   Aws,
   ContextProvider,
@@ -371,43 +374,27 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
-    const crossAccountPrincipal = this.unsafeCrossAccountResourcePolicyPrincipal(grantee);
-    if (crossAccountPrincipal) {
-      // If the principal is from a different account,
-      // that means addToPrincipalOrResource() will update the Resource Policy of this repo to trust that principal.
-      // However, ECR verifies that the principal used in the Policy exists,
-      // and will error out if it doesn't.
-      // Because of that, if the principal is a newly created resource,
-      // and there is not a dependency relationship between the Stacks of this repo and the principal,
-      // trust the entire account of the principal instead
-      // (otherwise, deploying this repo will fail).
-      // To scope down the permissions as much as possible,
-      // only trust principals from that account with a specific tag
-      const crossAccountPrincipalStack = Stack.of(crossAccountPrincipal);
-      const roleTag = `${crossAccountPrincipalStack.stackName}_${crossAccountPrincipal.node.addr}`;
-      Tags.of(crossAccountPrincipal).add('aws-cdk:id', roleTag);
-      this.addToResourcePolicy(new iam.PolicyStatement({
-        actions,
-        principals: [new iam.AccountPrincipal(crossAccountPrincipalStack.account)],
-        conditions: {
-          StringEquals: { 'aws:PrincipalTag/aws-cdk:id': roleTag },
-        },
-      }));
-
-      return iam.Grant.addToPrincipal({
+    const unsafePrincipal = unsafeCrossAccountResourcePolicyPrincipal(grantee, this.env.account, this.stack);
+    if (unsafePrincipal) {
+      const tagGrant = grantCrossAccountViaPrincipalTag({
         grantee,
+        principal: unsafePrincipal,
         actions,
-        resourceArns: [this.repositoryArn],
-      });
-    } else {
-      return iam.Grant.addToPrincipalOrResource({
-        grantee,
-        actions,
-        resourceArns: [this.repositoryArn],
-        resourceSelfArns: [],
         resource: this,
+        identityResourceArns: [this.repositoryArn],
       });
+      if (tagGrant) {
+        return tagGrant;
+      }
     }
+
+    return iam.Grant.addToPrincipalOrResource({
+      grantee,
+      actions,
+      resourceArns: [this.repositoryArn],
+      resourceSelfArns: [],
+      resource: this,
+    });
   }
 
   /**
@@ -468,43 +455,6 @@ export abstract class RepositoryBase extends Resource implements IRepository {
     });
 
     return ret;
-  }
-
-  /**
-   * Returns the resource that backs the given IAM grantee if we cannot put a direct reference
-   * to the grantee in the resource policy of this ECR repository,
-   * and 'undefined' in case we can.
-   */
-  private unsafeCrossAccountResourcePolicyPrincipal(grantee: iam.IGrantable): IConstruct | undefined {
-    // A principal cannot be safely added to the Resource Policy of this ECR repository, if:
-    // 1. The principal is from a different account, and
-    // 2. The principal is a new resource (meaning, not just referenced), and
-    // 3. The Stack this repo belongs to doesn't depend on the Stack the principal belongs to.
-
-    // condition #1
-    const principal = grantee.grantPrincipal;
-    const principalAccount = principal.principalAccount;
-    if (!principalAccount) {
-      return undefined;
-    }
-    const repoAndPrincipalAccountCompare = Token.compareStrings(this.env.account, principalAccount);
-    if (repoAndPrincipalAccountCompare === TokenComparison.BOTH_UNRESOLVED ||
-        repoAndPrincipalAccountCompare === TokenComparison.SAME) {
-      return undefined;
-    }
-
-    // condition #2
-    if (!iam.principalIsOwnedResource(principal)) {
-      return undefined;
-    }
-
-    // condition #3
-    const principalStack = Stack.of(principal);
-    if (this.stack.dependencies.includes(principalStack)) {
-      return undefined;
-    }
-
-    return principal;
   }
 }
 

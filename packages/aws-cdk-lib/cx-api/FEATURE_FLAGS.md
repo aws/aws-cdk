@@ -117,6 +117,7 @@ Flags come in three types:
 | [@aws-cdk/core:annotationsInValidationReport](#aws-cdkcoreannotationsinvalidationreport) | Include construct annotations (warnings and errors) in the policy validation report | 2.253.0 | config |
 | [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-region stack references are strong, weak, or both | 2.254.0 | config |
 | [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | 2.259.0 | new default |
+| [@aws-cdk/aws-iam:crossAccountGrantsViaPrincipalTag](#aws-cdkaws-iamcrossaccountgrantsviaprincipaltag) | Use principal tags for cross-account S3 and KMS grants to not-yet-deployed CDK-owned principals | V2NEXT | fix |
 | [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | V2NEXT | config |
 
 <!-- END table -->
@@ -169,6 +170,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": true,
     "@aws-cdk/aws-events:eventsTargetQueueSameAccount": true,
     "@aws-cdk/aws-events:requireEventBusPolicySid": true,
+    "@aws-cdk/aws-iam:crossAccountGrantsViaPrincipalTag": true,
     "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": true,
     "@aws-cdk/aws-iam:minimizePolicies": true,
     "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true,
@@ -2531,6 +2533,34 @@ When disabled, the default AMI types remain AL2 for backward compatibility.
 **Compatibility with old behavior:** Explicitly set `amiType` to the desired AL2 type (e.g., `NodegroupAmiType.AL2_X86_64`) in your nodegroup configuration.
 
 **Warning**: Enabling this flag on existing stacks will cause node group replacement, which terminates running pods. To migrate safely, first pin existing node groups to their current amiType explicitly, then enable the flag for new node groups.
+
+
+### @aws-cdk/aws-iam:crossAccountGrantsViaPrincipalTag
+
+*Use principal tags for cross-account S3 and KMS grants to not-yet-deployed CDK-owned principals*
+
+Flag type: Backwards incompatible bugfix
+
+When enabled, cross-account S3 and KMS grants to CDK-owned principals that may not have been
+deployed yet trust the grantee account root, scoped by an aws:PrincipalTag condition. This
+avoids first-deployment failures caused by S3 reporting "Invalid principal in policy" or KMS
+reporting "Policy contains a statement with one or more invalid principals" when the resource
+policy references a role ARN that does not exist yet.
+
+When enabling this flag for an existing app, redeploy the principal's stack as well as the
+resource stack. The resource policy now requires the principal's aws-cdk:id tag, so deploying
+only the resource stack can temporarily break a previously working grant.
+
+Tag-scoped account-root trust is not pinned to the role's unique principal ID and survives role
+deletion and recreation. A principal with iam:TagRole could apply the expected tag to another
+assumable role in the grantee account, allowing that role to satisfy the condition. Enabling
+this flag therefore relies on appropriate iam:TagRole controls in the grantee account.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 ### @aws-cdk/core:validateAgainstDefaultRules

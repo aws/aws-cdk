@@ -746,8 +746,12 @@ describe('key policies', () => {
     });
   });
 
-  test('grant for a principal in a different account', () => {
-    const app = new cdk.App();
+  test('grant for a CDK-owned principal in a different account trusts the account root scoped by tag', () => {
+    // A cross-account, CDK-owned principal (e.g. a CodePipeline cross-account action role) may
+    // live in a separate support stack with no dependency ordering relative to this key's stack.
+    // KMS rejects a key policy that references a principal ARN that does not yet exist, so instead
+    // of the bare role ARN we tag the role and trust the account root scoped down to that tag.
+    const app = new cdk.App({ context: { [cxapi.CROSS_ACCOUNT_GRANTS_VIA_PRINCIPAL_TAG]: true } });
     const principalStack = new cdk.Stack(app, 'PrincipalStack', { env: { account: '0123456789012' } });
     const principal = new iam.Role(principalStack, 'Role', {
       assumedBy: new iam.AnyPrincipal(),
@@ -756,6 +760,98 @@ describe('key policies', () => {
 
     const keyStack = new cdk.Stack(app, 'KeyStack', { env: { account: '111111111111' } });
     const key = new kms.Key(keyStack, 'Key');
+
+    key.grants.encrypt(principal);
+
+    const roleTag = `PrincipalStack_${principal.node.addr}`;
+
+    // The key policy trusts the account root of the principal's account, scoped to the tag,
+    // instead of referencing the (possibly not-yet-existing) role ARN.
+    Template.fromStack(keyStack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: Match.arrayWith([{
+          Action: [
+            'kms:Encrypt',
+            'kms:ReEncrypt*',
+            'kms:GenerateDataKey*',
+          ],
+          Effect: 'Allow',
+          Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::0123456789012:root']] } },
+          Condition: {
+            StringEquals: { 'aws:PrincipalTag/aws-cdk:id': roleTag },
+          },
+          Resource: '*',
+        }]),
+        Version: '2012-10-17',
+      },
+    });
+    // The role is tagged with the same value referenced by the key policy condition.
+    Template.fromStack(principalStack).hasResourceProperties('AWS::IAM::Role', {
+      Tags: [{ Key: 'aws-cdk:id', Value: roleTag }],
+    });
+    // The grantee's identity policy is still updated (cross-account access needs both sides).
+    // The resource is '*' rather than the key ARN, since the key ARN cannot be referenced
+    // across accounts (matching the existing cross-environment behavior).
+    Template.fromStack(principalStack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'kms:Encrypt',
+              'kms:ReEncrypt*',
+              'kms:GenerateDataKey*',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test.each([
+    { setting: 'unset', context: {} },
+    { setting: 'false', context: { [cxapi.CROSS_ACCOUNT_GRANTS_VIA_PRINCIPAL_TAG]: false } },
+  ])('grant for a CDK-owned principal in a different account preserves the role ARN when the flag is $setting', ({ context }) => {
+    const app = new cdk.App({ context });
+    const principalStack = new cdk.Stack(app, 'PrincipalStack', { env: { account: '0123456789012' } });
+    const principal = new iam.Role(principalStack, 'Role', {
+      assumedBy: new iam.AnyPrincipal(),
+      roleName: 'MyRolePhysicalName',
+    });
+
+    const keyStack = new cdk.Stack(app, 'KeyStack', { env: { account: '111111111111' } });
+    const key = new kms.Key(keyStack, 'Key');
+
+    key.grants.encrypt(principal);
+
+    Template.fromStack(keyStack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: Match.arrayWith([Match.objectLike({
+          Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::0123456789012:role/MyRolePhysicalName']] } },
+          Condition: Match.absent(),
+        })]),
+      },
+    });
+    Template.fromStack(principalStack).resourcePropertiesCountIs('AWS::IAM::Role', {
+      Tags: [{ Key: 'aws-cdk:id', Value: Match.anyValue() }],
+    }, 0);
+  });
+
+  test('grant for a CDK-owned principal in a different account keeps the role ARN when the key stack depends on the principal stack', () => {
+    // When the key's stack depends on the principal's stack, the principal is guaranteed to exist
+    // before the key policy is deployed, so it is safe to reference the role ARN directly.
+    const app = new cdk.App({ context: { [cxapi.CROSS_ACCOUNT_GRANTS_VIA_PRINCIPAL_TAG]: true } });
+    const principalStack = new cdk.Stack(app, 'PrincipalStack', { env: { account: '0123456789012' } });
+    const principal = new iam.Role(principalStack, 'Role', {
+      assumedBy: new iam.AnyPrincipal(),
+      roleName: 'MyRolePhysicalName',
+    });
+
+    const keyStack = new cdk.Stack(app, 'KeyStack', { env: { account: '111111111111' } });
+    const key = new kms.Key(keyStack, 'Key');
+    keyStack.addDependency(principalStack);
 
     key.grants.encrypt(principal);
 
@@ -774,20 +870,47 @@ describe('key policies', () => {
         Version: '2012-10-17',
       },
     });
-    Template.fromStack(principalStack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              'kms:Encrypt',
-              'kms:ReEncrypt*',
-              'kms:GenerateDataKey*',
-            ],
-            Effect: 'Allow',
-            Resource: '*',
-          },
-        ],
+    // The role is not tagged in this case.
+    Template.fromStack(principalStack).resourcePropertiesCountIs('AWS::IAM::Role', {
+      Tags: [{ Key: 'aws-cdk:id', Value: Match.anyValue() }],
+    }, 0);
+  });
+
+  test('grant for an imported principal in a different account keeps the role ARN', () => {
+    // Imported principals cannot be tagged and are expected to already exist, so we keep
+    // referencing their ARN directly in the key policy (the tag-based mechanism is not applied).
+    const app = new cdk.App({ context: { [cxapi.CROSS_ACCOUNT_GRANTS_VIA_PRINCIPAL_TAG]: true } });
+    const keyStack = new cdk.Stack(app, 'KeyStack', { env: { account: '111111111111' } });
+    const principal = iam.Role.fromRoleArn(keyStack, 'Role', 'arn:aws:iam::0123456789012:role/MyImportedRole', {
+      mutable: false,
+    });
+    const key = new kms.Key(keyStack, 'Key');
+
+    key.grants.encrypt(principal);
+
+    Template.fromStack(keyStack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: Match.arrayWith([{
+          Action: [
+            'kms:Encrypt',
+            'kms:ReEncrypt*',
+            'kms:GenerateDataKey*',
+          ],
+          Effect: 'Allow',
+          Principal: { AWS: 'arn:aws:iam::0123456789012:role/MyImportedRole' },
+          Resource: '*',
+        }]),
         Version: '2012-10-17',
+      },
+    });
+    // No tag-based condition is added for imported principals.
+    Template.fromStack(keyStack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: Match.not(Match.arrayWith([
+          Match.objectLike({
+            Condition: { StringEquals: { 'aws:PrincipalTag/aws-cdk:id': Match.anyValue() } },
+          }),
+        ])),
       },
     });
   });

@@ -2,6 +2,10 @@ import { CfnKey } from './kms.generated';
 import * as perms from './private/perms';
 import type { IGrantable } from '../../aws-iam';
 import * as iam from '../../aws-iam';
+import {
+  grantCrossAccountViaPrincipalTag,
+  unsafeCrossAccountResourcePolicyPrincipal,
+} from '../../aws-iam/lib/private/cross-account-grants';
 import { FeatureFlags, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
 import type { IKeyRef } from '../../interfaces/generated/aws-kms-interfaces.generated';
@@ -42,6 +46,29 @@ export class KeyGrants {
    */
   public actions(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     const granteeStackDependsOnKeyStack = this.granteeStackDependsOnKeyStack(grantee);
+
+    if (
+      FeatureFlags.of(this.resource).isEnabled(cxapi.CROSS_ACCOUNT_GRANTS_VIA_PRINCIPAL_TAG) &&
+      !granteeStackDependsOnKeyStack
+    ) {
+      const keyStack = Stack.of(this.resource);
+      const unsafePrincipal = unsafeCrossAccountResourcePolicyPrincipal(grantee, keyStack.account, keyStack);
+      if (unsafePrincipal && this.policyResource) {
+        // Cross-account identity permissions use '*' because the key ARN cannot be referenced across stacks.
+        const tagGrant = grantCrossAccountViaPrincipalTag({
+          grantee,
+          principal: unsafePrincipal,
+          actions,
+          resource: this.policyResource,
+          identityResourceArns: ['*'],
+          resourcePolicyResources: ['*'],
+        });
+        if (tagGrant) {
+          return tagGrant;
+        }
+      }
+    }
+
     const principal = granteeStackDependsOnKeyStack
       ? new iam.AccountPrincipal(granteeStackDependsOnKeyStack)
       : grantee.grantPrincipal;

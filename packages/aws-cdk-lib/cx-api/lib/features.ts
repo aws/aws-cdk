@@ -158,6 +158,7 @@ export const EKS_DEFAULT_AL2023 = '@aws-cdk/aws-eks:defaultToAL2023';
 export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInValidationReport';
 export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackReferences';
 export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
+export const CROSS_ACCOUNT_GRANTS_VIA_PRINCIPAL_TAG = '@aws-cdk/aws-iam:crossAccountGrantsViaPrincipalTag';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1928,6 +1929,31 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       When this flag is explicitly set to \`true\`, violations are treated as errors and will
       fail synthesis. When unconfigured, violations are reported as warnings only.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CROSS_ACCOUNT_GRANTS_VIA_PRINCIPAL_TAG]: {
+    type: FlagType.BugFix,
+    summary: 'Use principal tags for cross-account S3 and KMS grants to not-yet-deployed CDK-owned principals',
+    detailsMd: `
+      When enabled, cross-account S3 and KMS grants to CDK-owned principals that may not have been
+      deployed yet trust the grantee account root, scoped by an aws:PrincipalTag condition. This
+      avoids first-deployment failures caused by S3 reporting "Invalid principal in policy" or KMS
+      reporting "Policy contains a statement with one or more invalid principals" when the resource
+      policy references a role ARN that does not exist yet.
+
+      When enabling this flag for an existing app, redeploy the principal's stack as well as the
+      resource stack. The resource policy now requires the principal's aws-cdk:id tag, so deploying
+      only the resource stack can temporarily break a previously working grant.
+
+      Tag-scoped account-root trust is not pinned to the role's unique principal ID and survives role
+      deletion and recreation. A principal with iam:TagRole could apply the expected tag to another
+      assumable role in the grantee account, allowing that role to satisfy the condition. Enabling
+      this flag therefore relies on appropriate iam:TagRole controls in the grantee account.
+    `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
