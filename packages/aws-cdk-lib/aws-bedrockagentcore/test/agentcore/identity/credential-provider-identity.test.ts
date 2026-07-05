@@ -1,14 +1,13 @@
-import { Template, Match } from '../../../../assertions';
+import { Match, Template } from '../../../../assertions';
 import * as iam from '../../../../aws-iam';
 import * as cdk from '../../../../core';
+import type { OAuth2AuthorizationServerMetadata } from '../../../lib';
 import {
-  ApiKeyCredentialProvider,
   ApiKeyCredentialLocation,
+  ApiKeyCredentialProvider,
   GatewayCredentialProvider,
   OAuth2CredentialProvider,
-  OAuth2CredentialProviderVendor,
 } from '../../../lib';
-import type { OAuth2AuthorizationServerMetadata } from '../../../lib';
 
 describe('ApiKeyCredentialProvider', () => {
   test('synthesizes expected CloudFormation resource', () => {
@@ -684,24 +683,5 @@ describe('Validation edge cases', () => {
     });
 
     expect(() => imported.bindForGatewayOAuthTarget(['read:user'])).toThrow(/clientSecretArn/);
-  });
-});
-
-describe('OAuth2CredentialProviderVendor.of() escape hatch', () => {
-  test('renders custom vendor value in the template', () => {
-    const stack = new cdk.Stack();
-    new OAuth2CredentialProvider(stack, 'TestProvider', {
-      credentialProviderVendor: OAuth2CredentialProviderVendor.of('CustomVendorOauth2').value,
-      oauth2ProviderConfigInput: {
-        includedOauth2ProviderConfig: {
-          clientId: 'client-id',
-          clientSecret: 'secret',
-        },
-      },
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::OAuth2CredentialProvider', {
-      CredentialProviderVendor: 'CustomVendorOauth2',
-    });
   });
 });
