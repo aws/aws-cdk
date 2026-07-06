@@ -4,7 +4,7 @@ import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as eks from '../../aws-eks';
 import { ArnPrincipal, Role, ServicePrincipal } from '../../aws-iam';
-import { Stack, Duration, Tags, CfnParameter, App } from '../../core';
+import { Stack, Duration, Tags, CfnParameter, App, Validations } from '../../core';
 import * as cxapi from '../../cx-api';
 import type { CfnComputeEnvironmentProps, ManagedEc2EcsComputeEnvironmentProps, ManagedEc2EksComputeEnvironmentProps } from '../lib';
 import { AllocationStrategy, ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment, FargateComputeEnvironment, EcsMachineImageType, EksMachineImageType, DefaultInstanceClass } from '../lib';
@@ -68,6 +68,10 @@ let defaultProps: any;
 describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment])('%p type ComputeEnvironment', (ComputeEnvironment) => {
   beforeEach(() => {
     stack = new Stack();
+    Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::E3060',
+      reason: 'CIDRs dont make sense',
+    });
     vpc = new ec2.Vpc(stack, 'vpc');
 
     pascalCaseExpectedEcsProps = capitalizePropertyNames(stack, defaultExpectedEcsProps);

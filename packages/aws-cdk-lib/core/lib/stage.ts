@@ -286,7 +286,8 @@ export class Stage extends Construct {
 
     // If the construct paths set has changed
     if (!this.constructPathSetsAreEqual(this.constructPathsCache, newConstructPaths)) {
-      const errorMessage = 'Synthesis has been called multiple times and the construct tree was modified after the first synthesis.';
+      const diff = this.constructPathSetsDiff(this.constructPathsCache, newConstructPaths).join(', ');
+      const errorMessage = `Synthesis has been called multiple times and the construct tree was modified after the first synthesis (${diff})`;
       if (options.errorOnDuplicateSynth ?? true) {
         throw new ValidationError(lit`ConstructTreeModifiedAfterSynth`, errorMessage + ' This is not allowed. Remove multple synth() calls and do not modify the construct tree after the first synth().', this);
       } else {
@@ -325,6 +326,34 @@ export class Stage extends Construct {
       }
     }
     return true;
+  }
+
+  /**
+   * Returns a list of +/- marked construct paths that have been added or removed between the 2 sets
+   */
+  private constructPathSetsDiff(set1: Set<string>, set2: Set<string>): string[] {
+    const ret: string[] = [];
+
+    for (const id of set1) {
+      if (!set2.has(id)) {
+        ret.push(`-${id}`);
+      }
+    }
+    for (const id of set2) {
+      if (!set1.has(id)) {
+        ret.push(`+${id}`);
+      }
+    }
+
+    // Simplify the diff by removing any construct paths that are a suffix of another construct path in the diff.
+    // We're doing it inefficiently, but this work is rare.
+    ret.sort((a, b) => a.length - b.length);
+    for (let i = 0; i < ret.length; i++) {
+      const prefix = ret[i] + '/';
+      stripInPlace(ret, i + 1, (x) => x.startsWith(prefix));
+    }
+
+    return ret;
   }
 
   private createBuilder(outdir?: string) {
@@ -384,4 +413,16 @@ export interface StageSynthesisOptions {
    * @default false
    */
   readonly aspectStabilization?: boolean;
+}
+
+/**
+ * Mutate an array in place by removing all elements starting from `startIndex` that match the predicate.
+ */
+function stripInPlace<A>(arr: A[], startIndex: number, predicate: (a: A) => boolean): void {
+  for (let i = startIndex; i < arr.length; i++) {
+    if (predicate(arr[i])) {
+      arr.splice(i, 1);
+      i--;
+    }
+  }
 }
