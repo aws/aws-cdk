@@ -822,6 +822,7 @@ describe('validations', () => {
     test.each([
       'Construct-Annotations::',
       'Annotation::',
+      'annotation::',
     ])('Annotations.addWarningV2 can be acknowledged via Validations using: %p', (prefix) => {
       const app = new NonStrictApp({ context: annotationReportContext });
       const stack = new core.Stack(app, 'MyStack');

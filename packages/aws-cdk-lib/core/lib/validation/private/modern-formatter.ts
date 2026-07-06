@@ -7,7 +7,6 @@ import path from 'path';
 import type { PluginReportJson, PolicyViolationJson, ViolatingConstructJson } from '@aws-cdk/cloud-assembly-schema';
 import { Colorize } from './color';
 import { isSuppressibleViolation } from './report';
-import { AnnotationPlugin } from '../../private/annotation-plugin';
 import { topUserFrame } from '../../private/stack-trace';
 
 export function formatValidationReports(fileRoot: string, reports: PluginReportJson[]): string[] {

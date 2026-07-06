@@ -137,9 +137,16 @@ export class Validations {
     if (parts.length > 2 || (parts.length === 2 && parts[0].length === 0)) {
       throw new UnscopedValidationError(lit`InvalidValidationId`, `Invalid validation rule ID '${id}'. The '::' delimiter is reserved for separating the prefix from the rule name (e.g. 'prefix::RuleName').`);
     }
-    if (parts.length === 2) {
-      return id;
+
+    if (parts.length === 1) {
+      return `${AnnotationPlugin.RULE_PREFIX}::${id}`;
     }
-    return `${AnnotationPlugin.RULE_PREFIX}::${id}`;
+
+    if (parts[0] === 'annotation') {
+      // Uppercase this
+      return `${AnnotationPlugin.RULE_PREFIX}::${parts[1]}`;
+    }
+
+    return id;
   }
 }
