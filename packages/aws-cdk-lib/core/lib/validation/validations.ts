@@ -2,6 +2,7 @@ import type { IConstruct } from 'constructs';
 import type { IPolicyValidationPlugin } from './validation';
 import { Annotations } from '../annotations';
 import { UnscopedValidationError } from '../errors';
+import { AnnotationPlugin } from '../private/annotation-plugin';
 import { lit } from '../private/literal-string';
 import { Stage } from '../stage';
 
@@ -46,16 +47,6 @@ export class Validations {
   public static of(scope: IConstruct): Validations {
     return new Validations(scope);
   }
-
-  /**
-   * Well-known prefix for annotation-based validation rules.
-   *
-   * Every validation source identifies itself via a prefix so that
-   * `acknowledge()` can route suppressions to the correct handler.
-   * The `::` delimiter is reserved for separating the prefix from the
-   * rule name (e.g. `annotation::MyWarning`).
-   */
-  private static readonly ANNOTATION_PREFIX = 'annotation';
 
   private constructor(private readonly scope: IConstruct) {}
 
@@ -149,6 +140,6 @@ export class Validations {
     if (parts.length === 2) {
       return id;
     }
-    return `${Validations.ANNOTATION_PREFIX}::${id}`;
+    return `${AnnotationPlugin.RULE_PREFIX}::${id}`;
   }
 }

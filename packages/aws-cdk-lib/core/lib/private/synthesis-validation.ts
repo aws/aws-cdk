@@ -3,9 +3,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import type * as private_cxapi from '@aws-cdk/cloud-assembly-api';
 import type { IConstruct } from 'constructs';
-import { AnnotationPlugin } from './annotation-plugin';
+import { AnnotationPlugin, collectAnnotationReport } from './annotation-plugin';
 import { collectAcknowledgedRuleIds } from './collect-acknowledged-rule-ids';
-import { collectAnnotationReport } from './collect-annotation-report';
 import { lit } from './literal-string';
 import * as cxapi from '../../../cx-api';
 import { _convertCloudAssemblyBuilder } from '../../../cx-api/lib/legacy-moved';
@@ -213,9 +212,9 @@ function pluginsToEvaluate(root: IConstruct, stage: Stage, stageAssembly: privat
 
   // 3. Construct annotations (as a plugin, only if there are annotations to report)
   if (FeatureFlags.of(root).isEnabled(cxapi.ANNOTATIONS_IN_VALIDATION_REPORT)) {
-    const annotationReport = collectAnnotationReport(stage, stageAssembly.directory);
-    if (annotationReport) {
-      ret.push(new AnnotationPlugin(annotationReport));
+    const annotationsPlugin = collectAnnotationReport(stage, stageAssembly.directory);
+    if (annotationsPlugin) {
+      ret.push(annotationsPlugin);
     }
   }
 
@@ -254,7 +253,7 @@ function collectSuppressions(root: App, reports: NamedValidationPluginReport[]) 
 
   if (acknowledgedRules.size > 0) {
     for (let i = 0; i < reports.length; i++) {
-      const pluginName = reports[i].pluginName.replace(/ /g, '-');
+      const pluginName = reports[i].pluginName;
       const active: typeof reports[0]['violations'] = [];
       const suppressed: SuppressedViolation[] = [];
       for (const v of reports[i].violations) {
@@ -262,15 +261,31 @@ function collectSuppressions(root: App, reports: NamedValidationPluginReport[]) 
           active.push(v);
           continue;
         }
-        const ruleId = `${pluginName}::${v.ruleName.replace(/ /g, '-')}`;
-        const ack = acknowledgedRules.get(ruleId);
+
+        const ackIds: string[] = [];
+        if (v.ruleName.includes('::')) {
+          ackIds.push(v.ruleName);
+
+          // Annotations are special; we renamed the suppression namespace at one point
+          // from "Construct-Annotations" to just "Annotation", and we also want
+          // to support the naked-rule-name form for backwards compatibility.
+          if (pluginName === AnnotationPlugin.NAME) {
+            const unnamespacedPart = v.ruleName.split('::').slice(1).join('::');
+            ackIds.push(`${pluginName}::${unnamespacedPart}`);
+          }
+        } else {
+          ackIds.push(`${pluginName}::${v.ruleName}`);
+        }
+
+        const ack = firstThat(ackIds.map(hyphenify), id => acknowledgedRules.get(id));
+
         if (ack) {
           suppressed.push({
             ...v,
-            acknowledgedId: ruleId,
-            reason: ack.reason,
-            acknowledgedAt: ack.constructPath,
-            acknowledgedStackTrace: ack.stackTrace,
+            acknowledgedId: ack.key,
+            reason: ack.value.reason,
+            acknowledgedAt: ack.value.constructPath,
+            acknowledgedStackTrace: ack.value.stackTrace,
           });
         } else {
           active.push(v);
@@ -506,4 +521,18 @@ function stripAnsi(x: string) {
 
   const re = new RegExp(pattern, 'g');
   return x.replaceAll(re, '');
+}
+
+function firstThat<A, B>(xs: A[], predicate: (x: A) => B | undefined): { key: A; value: B } | undefined {
+  for (const x of xs) {
+    const value = predicate(x);
+    if (value !== undefined) {
+      return { key: x, value };
+    }
+  }
+  return undefined;
+}
+
+function hyphenify(x: string) {
+  return x.replace(/ /g, '-');
 }
