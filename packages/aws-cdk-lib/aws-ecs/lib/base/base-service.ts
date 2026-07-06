@@ -81,6 +81,48 @@ export interface DeploymentController {
 }
 
 /**
+ * The type of threshold used by the deployment circuit breaker.
+ */
+export enum DeploymentCircuitBreakerThresholdType {
+  /**
+   * Use a fixed failure count as the threshold.
+   */
+  COUNT = 'COUNT',
+
+  /**
+   * Use a percentage of the desired task count as the threshold,
+   * bounded by Amazon ECS minimum and maximum limits.
+   */
+  BOUNDED_PERCENT = 'BOUNDED_PERCENT',
+
+  /**
+   * Use a raw percentage of the desired task count as the threshold,
+   * with no Amazon ECS bounds applied.
+   */
+  UNBOUNDED_PERCENT = 'UNBOUNDED_PERCENT',
+}
+
+/**
+ * The failure threshold configuration for the deployment circuit breaker.
+ *
+ * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-circuit-breaker.html
+ */
+export interface DeploymentCircuitBreakerThresholdConfiguration {
+  /**
+   * How Amazon ECS interprets the threshold value to determine deployment failure.
+   */
+  readonly type: DeploymentCircuitBreakerThresholdType;
+
+  /**
+   * The threshold value Amazon ECS uses to determine deployment failure.
+   *
+   * For `COUNT`, this is the number of task launch failures.
+   * For `BOUNDED_PERCENT` and `UNBOUNDED_PERCENT`, this is the percentage of desired task count.
+   */
+  readonly value: number;
+}
+
+/**
  * The deployment circuit breaker to use for the service
  */
 export interface DeploymentCircuitBreaker {
@@ -96,6 +138,28 @@ export interface DeploymentCircuitBreaker {
    * @default false
    */
   readonly rollback?: boolean;
+
+  /**
+   * Whether the deployment circuit breaker resets its failure count
+   * when a task reaches a healthy state.
+   *
+   * When `true`, the failure counter resets each time a task becomes healthy
+   * (consecutive failure counting). When `false`, failures accumulate across
+   * the entire deployment (cumulative counting).
+   *
+   * @default - Amazon ECS default behavior
+   */
+  readonly resetOnHealthyTask?: boolean;
+
+  /**
+   * The failure threshold configuration for the deployment circuit breaker.
+   *
+   * Defines how many task failures trigger the circuit breaker.
+   *
+   * @default - Amazon ECS defaults (BOUNDED_PERCENT with value 50)
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-circuit-breaker.html
+   */
+  readonly thresholdConfiguration?: DeploymentCircuitBreakerThresholdConfiguration;
 }
 
 /**
@@ -963,6 +1027,9 @@ export abstract class BaseService extends Resource
     if (props.canaryConfiguration) {
       this.validateCanaryConfiguration(props.canaryConfiguration);
     }
+    if (props.circuitBreaker?.thresholdConfiguration) {
+      this.validateCircuitBreakerThresholdConfiguration(props.circuitBreaker.thresholdConfiguration);
+    }
 
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
@@ -1002,6 +1069,22 @@ export abstract class BaseService extends Resource
       volumeConfigurations: this._volumes.derive(_ => this.renderVolumes()),
       ...additionalProps,
     });
+
+    if (props.circuitBreaker?.resetOnHealthyTask !== undefined) {
+      this.resource.addPropertyOverride(
+        'DeploymentConfiguration.DeploymentCircuitBreaker.ResetOnHealthyTask',
+        props.circuitBreaker.resetOnHealthyTask,
+      );
+    }
+    if (props.circuitBreaker?.thresholdConfiguration) {
+      this.resource.addPropertyOverride(
+        'DeploymentConfiguration.DeploymentCircuitBreaker.ThresholdConfiguration',
+        {
+          Type: props.circuitBreaker.thresholdConfiguration.type,
+          Value: props.circuitBreaker.thresholdConfiguration.value,
+        },
+      );
+    }
 
     this.node.addDependency(this.taskDefinition.taskRole);
 
@@ -1478,6 +1561,26 @@ export abstract class BaseService extends Resource
       }
       if (minutes < 0 || minutes > 1440) {
         throw new ValidationError(lit`MustBeLinearDeploymentStepBakeTime`, `Linear deployment stepBakeTime must be between 0 and 1440 minutes, received ${minutes} minutes`, this);
+      }
+    }
+  }
+
+  private validateCircuitBreakerThresholdConfiguration(config: DeploymentCircuitBreakerThresholdConfiguration) {
+    if (!Token.isUnresolved(config.value)) {
+      if (!Number.isInteger(config.value) || config.value < 1) {
+        throw new ValidationError(
+          lit`InvalidCircuitBreakerThresholdValue`,
+          `thresholdConfiguration value must be a positive integer, got ${config.value}`,
+          this,
+        );
+      }
+
+      if (!Token.isUnresolved(config.type) && config.type === DeploymentCircuitBreakerThresholdType.BOUNDED_PERCENT && config.value > 100) {
+        throw new ValidationError(
+          lit`InvalidCircuitBreakerBoundedPercentValue`,
+          `thresholdConfiguration value for BOUNDED_PERCENT must be between 1 and 100, got ${config.value}`,
+          this,
+        );
       }
     }
   }

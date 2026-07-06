@@ -20,6 +20,7 @@ export function acknowledgeTestValidationRules(scope: IConstruct) {
     { id: 'CloudFormation-Validate::W9007', reason: 'Deprecated runtimes used intentionally in tests' },
     { id: 'CloudFormation-Validate::E1150', reason: 'Hardcoded account IDs are expected in tests' },
     { id: 'CloudFormation-Validate::F3004', reason: 'Circular dependencies are intentional in some tests' },
+    { id: 'CloudFormation-Validate::F3002', reason: 'New circuit breaker properties not yet in bundled CFN spec' },
   );
 }
 

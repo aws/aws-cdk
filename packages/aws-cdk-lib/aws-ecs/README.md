@@ -867,7 +867,7 @@ Use `circuitBreaker` to enable the deployment circuit breaker which determines w
 will fail if the service can't reach a steady state.
 You can optionally enable `rollback` for automatic rollback.
 
-See [Using the deployment circuit breaker](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html) for more details.
+See [Using the deployment circuit breaker](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-circuit-breaker.html) for more details.
 
 ```ts
 declare const cluster: ecs.Cluster;
@@ -882,6 +882,36 @@ const service = new ecs.FargateService(this, 'Service', {
   },
 });
 ```
+
+You can configure the circuit breaker failure threshold and counting behavior using
+`thresholdConfiguration` and `resetOnHealthyTask`:
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  circuitBreaker: {
+    enable: true,
+    rollback: true,
+    resetOnHealthyTask: true,
+    thresholdConfiguration: {
+      type: ecs.DeploymentCircuitBreakerThresholdType.COUNT,
+      value: 10,
+    },
+  },
+});
+```
+
+The `thresholdConfiguration` supports three threshold types:
+
+- `COUNT` — trip the circuit breaker after a fixed number of task launch failures
+- `BOUNDED_PERCENT` — trip after a percentage of desired count failures, bounded by Amazon ECS min/max limits
+- `UNBOUNDED_PERCENT` — trip after a raw percentage of desired count failures with no bounds
+
+When `resetOnHealthyTask` is `true`, the failure counter resets each time a task reaches a healthy state
+(consecutive counting). When `false`, failures accumulate across the entire deployment (cumulative counting).
 
 > Note: ECS Anywhere doesn't support deployment circuit breakers and rollback.
 
