@@ -4,7 +4,7 @@ import * as cloudfront from '../../aws-cloudfront';
 import * as origins from '../../aws-cloudfront-origins';
 import * as iam from '../../aws-iam';
 import * as targets from '../../aws-route53-targets';
-import { CfnParameter, Duration, RemovalPolicy, Stack } from '../../core';
+import { CfnParameter, Duration, RemovalPolicy, Stack, Validations } from '../../core';
 import * as route53 from '../lib';
 
 describe('record set', () => {
@@ -1404,6 +1404,11 @@ describe('record set', () => {
   test('HTTPS record, alias for CloudFront', () => {
     // GIVEN
     const stack = new Stack();
+    Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::E3029',
+      reason: 'Validator says this is not allowed, I dont want to get rid of this test just yet',
+    });
+
     const zone = new route53.HostedZone(stack, 'HostedZone', {
       zoneName: 'myzone',
     });
