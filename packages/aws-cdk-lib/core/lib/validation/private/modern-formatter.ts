@@ -66,7 +66,7 @@ function formatViolationBlock(fileRoot: string, v: FlattenedViolation): string {
   lines.push([
     Colorize.bold(getSeverityColor(v.severity)(sanitize(v.severity))),
     Colorize.bold(stripAckTag(sanitize(v.description))),
-    Colorize.grey(`(${sanitize(v.pluginName)})`),
+    Colorize.grey(`(${namespace(v)})`),
   ].join(' '));
 
   const constructInfo = formatConstructInfo(fileRoot, v.construct);
@@ -77,8 +77,7 @@ function formatViolationBlock(fileRoot: string, v: FlattenedViolation): string {
   }
 
   if (isSuppressibleViolation(v)) {
-    const ackId = `${sanitize(v.pluginName)}::${sanitize(v.ruleName)}`.replace(/ /g, '-');
-    lines.push(`   ${Colorize.grey(`Acknowledge with '${ackId}'`)}`);
+    lines.push(`   ${Colorize.grey(`Acknowledge with '${ackId(v)}'`)}`);
   } else {
     // If not acknowledgeable, we should still show the rule name for reference.
     lines.push(`   ${Colorize.grey(`Rule ${sanitize(v.ruleName)}`)}`);
@@ -173,4 +172,12 @@ function isPluginFailure(r: PluginReportJson): PluginError | undefined {
     return undefined;
   }
   return { error: r.metadata.error };
+}
+
+function namespace(v: FlattenedViolation): string {
+  return v.ruleName.includes('::') ? sanitize(v.ruleName.split('::')[0]) : sanitize(v.pluginName);
+}
+
+function ackId(v: FlattenedViolation): string {
+  return (v.ruleName.includes('::') ? sanitize(v.ruleName) : `${sanitize(v.pluginName)}::${sanitize(v.ruleName)}`).replace(/ /g, '-');
 }
