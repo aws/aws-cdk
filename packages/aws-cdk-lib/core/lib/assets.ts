@@ -334,7 +334,7 @@ export interface DockerImageAssetSource {
 export enum FileAssetPackaging {
   /**
    * The asset source path points to a directory, which should be archived using
-   * zip and and then uploaded to Amazon S3.
+   * zip and then uploaded to Amazon S3.
    */
   ZIP_DIRECTORY = 'zip',
 
