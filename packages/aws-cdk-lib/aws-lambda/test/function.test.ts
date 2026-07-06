@@ -2431,6 +2431,32 @@ describe('function', () => {
     });
   });
 
+  test('event invoke config accepts tokens for maxEventAge and retryAttempts', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const maxEventAge = new cdk.CfnParameter(stack, 'MaxEventAge', { type: 'Number' });
+    const retryAttempts = new cdk.CfnParameter(stack, 'RetryAttempts', { type: 'Number' });
+
+    // WHEN
+    new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      maxEventAge: cdk.Duration.seconds(maxEventAge.valueAsNumber),
+      retryAttempts: retryAttempts.valueAsNumber,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
+      FunctionName: {
+        Ref: 'fn5FF616E3',
+      },
+      Qualifier: '$LATEST',
+      MaximumEventAgeInSeconds: { Ref: 'MaxEventAge' },
+      MaximumRetryAttempts: { Ref: 'RetryAttempts' },
+    });
+  });
+
   test('throws when calling configureAsyncInvoke on already configured function', () => {
     // GIVEN
     const stack = new cdk.Stack();
