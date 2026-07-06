@@ -277,6 +277,30 @@ describe('lambda version', () => {
     })).toThrow('Provisioned Concurrency is not supported for functions with tenant isolation mode');
   });
 
+  test('provisionedConcurrentExecutions can be a token', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+    });
+    const pce = new cdk.CfnParameter(stack, 'ProvisionedConcurrentExecutions', { type: 'Number' });
+
+    // WHEN
+    new lambda.Version(stack, 'Version', {
+      lambda: fn,
+      provisionedConcurrentExecutions: pce.valueAsNumber,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Version', {
+      ProvisionedConcurrencyConfig: {
+        ProvisionedConcurrentExecutions: { Ref: 'ProvisionedConcurrentExecutions' },
+      },
+    });
+  });
+
   describe('version scaling configuration', () => {
     test('version with min and max execution environments', () => {
       const stack = new cdk.Stack();
