@@ -2,11 +2,11 @@ import type { Construct } from 'constructs';
 import { Node } from 'constructs';
 import { Annotations } from './annotations';
 import { ValidationError } from './errors';
+import { lit } from './private/literal-string';
 import { Stack } from './stack';
 import { Token } from './token';
 import type * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
-import { lit } from './private/literal-string';
 
 /**
  */

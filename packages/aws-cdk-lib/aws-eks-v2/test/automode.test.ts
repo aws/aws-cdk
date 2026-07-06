@@ -1,8 +1,8 @@
+import { testFixtureNoVpc } from './util';
 import { Template, Match } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as eks from '../lib';
-import { testFixtureNoVpc } from './util';
 
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_33;
 
