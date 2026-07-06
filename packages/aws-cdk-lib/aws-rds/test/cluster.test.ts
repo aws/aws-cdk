@@ -23,7 +23,6 @@ import {
   DBClusterStorageType,
   DatabaseInsightsMode,
   EngineLifecycleSupport,
-  MasterUserAuthenticationType,
 } from '../lib';
 import { acknowledgeTestValidationRules } from './util';
 
