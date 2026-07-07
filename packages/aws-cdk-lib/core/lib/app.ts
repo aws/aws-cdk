@@ -17,6 +17,13 @@ import type * as public_cxapi from '../../cx-api';
 const APP_SYMBOL = Symbol.for('@aws-cdk/core.App');
 
 /**
+ * Can hold a function to globally initialize Apps.
+ *
+ * Intended for testing, no stability guarantees on this behavior.
+ */
+const APP_INIT_HOOK_SYMBOL = Symbol.for('@aws-cdk/core.App#initHook');
+
+/**
  * Report performance counters if synthesis time exceeds this
  */
 const DEFAULT_SLOW_SYNTH_PER_STACK_THRESHOLD_MS = 10_000;
@@ -266,6 +273,10 @@ export class App extends Stage {
     this._treeMetadata = props.treeMetadata ?? true;
 
     this.performanceReporting = props.performanceReporting ?? this.node.tryGetContext(cxapi.PERFORMANCE_REPORTING_ENABLED_CONTEXT) ?? true;
+
+    if ((globalThis as any)[APP_INIT_HOOK_SYMBOL]) {
+      (globalThis as any)[APP_INIT_HOOK_SYMBOL](this);
+    }
   }
 
   private loadContext(defaults: { [key: string]: string } = { }, final: { [key: string]: string } = {}) {

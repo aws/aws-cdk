@@ -73,6 +73,16 @@ export interface IPolicyValidationContext {
   readonly templatePaths: string[];
 
   /**
+   * The account ID for these templates, if known
+   */
+  readonly accountId: string | undefined;
+
+  /**
+   * The region for these templates, if known
+   */
+  readonly region: string | undefined;
+
+  /**
    * The root construct of the app being validated.
    *
    * Plugins may walk this tree for typed L1 property access and token
@@ -159,7 +169,11 @@ export function _toBeta1Plugin(plugin: IPolicyValidationPlugin): IPolicyValidati
     version: plugin.version,
     ruleIds: plugin.ruleIds,
     validate(context: IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
-      const report = plugin.validate(context);
+      const report = plugin.validate({
+        ...context,
+        accountId: undefined,
+        region: undefined,
+      });
       return {
         success: report.success,
         pluginVersion: report.pluginVersion,
