@@ -4087,10 +4087,12 @@ describe('function', () => {
       const stack = new cdk.Stack();
 
       // WHEN
-      new lambda.DockerImageFunction(stack, 'MyLambda', {
+      const fn = new lambda.DockerImageFunction(stack, 'MyLambda', {
         code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-lambda-handler')),
         snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
       });
+
+      fn.currentVersion;
 
       // THEN
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
