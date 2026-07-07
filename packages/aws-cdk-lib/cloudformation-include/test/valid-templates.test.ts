@@ -1,9 +1,10 @@
 import * as path from 'path';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
+import { acknowledgeTestWarnings } from './test-warnings';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
-import * as ssm from '../../aws-ssm';
+import type * as ssm from '../../aws-ssm';
 import * as core from '../../core';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
@@ -14,8 +15,11 @@ import * as futils from '../lib/file-utils';
 describe('CDK Include', () => {
   let stack: core.Stack;
 
+  let app: core.App;
   beforeEach(() => {
-    stack = new core.Stack();
+    app = new core.App();
+    acknowledgeTestWarnings(app);
+    stack = new core.Stack(app, 'Stack');
   });
 
   test('can ingest a template with only an empty S3 Bucket, and output it unchanged', () => {
@@ -522,7 +526,7 @@ describe('CDK Include', () => {
     const cfnTemplate = includeTestTemplate(stack, 'bucket-with-parameters.json');
     const param = cfnTemplate.getParameter('BucketName');
     new s3.CfnBucket(stack, 'NewBucket', {
-      bucketName: param.valueAsString,
+      bucketNamePrefix: param.valueAsString,
     });
 
     const originalTemplate = loadTestFileToJsObject('bucket-with-parameters.json');
@@ -532,7 +536,7 @@ describe('CDK Include', () => {
         "NewBucket": {
           "Type": "AWS::S3::Bucket",
           "Properties": {
-            "BucketName": {
+            "BucketNamePrefix": {
               "Ref": "BucketName",
             },
           },
@@ -752,7 +756,6 @@ describe('CDK Include', () => {
 
   test("correctly handles referencing the ingested template's resources across Stacks", () => {
     // for cross-stack sharing to work, we need an App
-    const app = new core.App();
     stack = new core.Stack(app, 'MyStack');
     const cfnTemplate = includeTestTemplate(stack, 'only-empty-bucket.json');
     const cfnBucket = cfnTemplate.getResource('Bucket') as s3.CfnBucket;

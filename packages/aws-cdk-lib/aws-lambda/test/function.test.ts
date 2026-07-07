@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { testDeprecated, bockfs } from '@aws-cdk/cdk-build-tools';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import * as _ from 'lodash';
 import { Annotations, Match, Template } from '../../assertions';
 import { ProfilingGroup } from '../../aws-codeguruprofiler';
@@ -11,6 +11,7 @@ import { AccountPrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
+import * as s3files from '../../aws-s3files';
 import * as signer from '../../aws-signer';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
@@ -55,9 +56,23 @@ describe('function', () => {
         Code: { ZipFile: 'foo' },
         Handler: 'index.handler',
         Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
       DependsOn: ['MyLambdaServiceRole4539ECB6'],
+    });
+  });
+
+  test('function without layers omits Layers property', () => {
+    const stack = new cdk.Stack();
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Layers: Match.absent(),
     });
   });
 
@@ -107,7 +122,7 @@ describe('function', () => {
         Code: { ZipFile: 'foo' },
         Handler: 'index.handler',
         Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
       DependsOn: ['MyLambdaServiceRoleDefaultPolicy5BBC6F68', 'MyLambdaServiceRole4539ECB6'],
     });
@@ -163,7 +178,7 @@ describe('function', () => {
               'Arn',
             ],
           },
-          Runtime: 'python3.9',
+          Runtime: 'python3.14',
         },
         DependsOn: [
           'MyLambdaServiceRole4539ECB6',
@@ -252,7 +267,7 @@ describe('function', () => {
 
       expect(getWarnings(app.synth())).toEqual([
         {
-          message: expect.stringMatching(/^addPermission\(\) has no effect on a Lambda Function with region=us-west-2, account=123456789012, in a Stack with region=\${Token\[AWS\.Region\.\d+]}, account=\${Token\[AWS\.AccountId\.\d+]}. Suppress this warning if this is is intentional, or pass sameEnvironment=true to fromFunctionAttributes\(\) if you would like to add the permissions\. \[ack: UnclearLambdaEnvironment]$/),
+          message: expect.stringMatching(/^addPermission\(\) has no effect on a Lambda Function with region=us-west-2, account=123456789012, in a Stack with region=\${Token\[AWS\.Region\.\d+]}, account=\${Token\[AWS\.AccountId\.\d+]}. Suppress this warning if this is intentional, or pass sameEnvironment=true to fromFunctionAttributes\(\) if you would like to add the permissions\. \[ack: UnclearLambdaEnvironment]$/),
           path: '/Default/Imported',
         },
       ]);
@@ -262,7 +277,7 @@ describe('function', () => {
       const stack = new cdk.Stack();
       const fn = newTestLambda(stack);
       const sourceAccount = 'some-account';
-      const sourceArn = 'some-arn';
+      const sourceArn = 'arn:aws:s3:::my-bucket';
       const service = 'my-service';
       const principal = new iam.PrincipalWithConditions(new iam.ServicePrincipal(service), {
         ArnLike: {
@@ -292,7 +307,7 @@ describe('function', () => {
     test('applies source arn condition if principal has conditions', () => {
       const stack = new cdk.Stack();
       const fn = newTestLambda(stack);
-      const sourceArn = 'some-arn';
+      const sourceArn = 'arn:aws:s3:::my-bucket';
       const service = 'my-service';
       const principal = new iam.PrincipalWithConditions(new iam.ServicePrincipal(service), {
         ArnLike: {
@@ -901,7 +916,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
         DeadLetterConfig: {
           TargetArn: {
             'Fn::GetAtt': [
@@ -997,7 +1012,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
         DeadLetterConfig: {
           TargetArn: {
             'Fn::GetAtt': [
@@ -1062,7 +1077,7 @@ describe('function', () => {
           'Arn',
         ],
       },
-      Runtime: 'nodejs22.x',
+      Runtime: 'nodejs24.x',
     });
   });
 
@@ -1301,7 +1316,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
         TracingConfig: {
           Mode: 'Active',
         },
@@ -1361,7 +1376,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
         TracingConfig: {
           Mode: 'Active',
         },
@@ -1422,7 +1437,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
         TracingConfig: {
           Mode: 'PassThrough',
         },
@@ -1482,7 +1497,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
         TracingConfig: {
           Mode: 'PassThrough',
         },
@@ -1518,7 +1533,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
       DependsOn: [
         'MyLambdaServiceRole4539ECB6',
@@ -2061,7 +2076,7 @@ describe('function', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
       code: lambda.Code.fromInline('exports.handler = async () => {}'),
       tenancyConfig: lambda.TenancyConfig.PER_TENANT,
@@ -2086,7 +2101,7 @@ describe('function', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
       code: lambda.Code.fromInline('exports.handler = async () => {}'),
       tenancyConfig: lambda.TenancyConfig.PER_TENANT,
@@ -2210,7 +2225,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       environment: {
         SOME: 'Variable',
       },
@@ -2234,7 +2249,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       environment: {
         SOME: 'Variable',
       },
@@ -2256,7 +2271,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       reservedConcurrentExecutions: 10,
     });
 
@@ -2307,7 +2322,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       logRetention: logs.RetentionDays.ONE_MONTH,
       logRemovalPolicy: cdk.RemovalPolicy.DESTROY,
     });
@@ -2413,6 +2428,32 @@ describe('function', () => {
       },
       MaximumEventAgeInSeconds: 3600,
       MaximumRetryAttempts: 0,
+    });
+  });
+
+  test('event invoke config accepts tokens for maxEventAge and retryAttempts', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const maxEventAge = new cdk.CfnParameter(stack, 'MaxEventAge', { type: 'Number' });
+    const retryAttempts = new cdk.CfnParameter(stack, 'RetryAttempts', { type: 'Number' });
+
+    // WHEN
+    new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      maxEventAge: cdk.Duration.seconds(maxEventAge.valueAsNumber),
+      retryAttempts: retryAttempts.valueAsNumber,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
+      FunctionName: {
+        Ref: 'fn5FF616E3',
+      },
+      Qualifier: '$LATEST',
+      MaximumEventAgeInSeconds: { Ref: 'MaxEventAge' },
+      MaximumRetryAttempts: { Ref: 'RetryAttempts' },
     });
   });
 
@@ -3409,6 +3450,71 @@ describe('function', () => {
         IpProtocol: 'tcp',
       });
     });
+
+    test('mount s3files filesystem', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1 });
+      const bucket = new s3.Bucket(stack, 'Bucket');
+
+      const fileSystem = new s3files.CfnFileSystem(stack, 'S3FilesFs', {
+        bucket: bucket.bucketArn,
+        roleArn: 'arn:aws:iam::123456789012:role/S3FilesRole',
+      });
+
+      const sg = new ec2.SecurityGroup(stack, 'MountTargetSG', { vpc });
+
+      new s3files.CfnMountTarget(stack, 'MountTarget0', {
+        fileSystemId: fileSystem.attrFileSystemId,
+        subnetId: vpc.privateSubnets[0].subnetId,
+        securityGroups: [sg.securityGroupId],
+      });
+
+      const accessPoint = new s3files.CfnAccessPoint(stack, 'AccessPoint', {
+        fileSystemId: fileSystem.attrFileSystemId,
+      });
+
+      // WHEN — reflection auto-resolves fileSystem, mountTargets, and securityGroups
+      new lambda.Function(stack, 'MyFunction', {
+        vpc,
+        handler: 'index.handler',
+        runtime: lambda.Runtime.PYTHON_3_12,
+        code: lambda.Code.fromInline('def handler(event, context): pass'),
+        filesystem: lambda.FileSystem.fromS3FilesAccessPoint(accessPoint, '/mnt/data'),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        FileSystemConfigs: [
+          {
+            Arn: {
+              'Fn::GetAtt': ['AccessPoint', 'AccessPointArn'],
+            },
+            LocalMountPath: '/mnt/data',
+          },
+        ],
+      });
+
+      // Verify IAM policies for s3files
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: 's3files:ClientMount',
+              Resource: {
+                'Fn::GetAtt': ['AccessPoint', 'AccessPointArn'],
+              },
+            }),
+            Match.objectLike({
+              Action: ['s3files:ClientMount', 's3files:ClientWrite'],
+              Resource: {
+                Ref: 'S3FilesFs',
+              },
+            }),
+          ]),
+        },
+      });
+    });
   });
 
   describe('code config', () => {
@@ -3836,9 +3942,12 @@ describe('function', () => {
   describe('SnapStart', () => {
     test('set SnapStart to desired value', () => {
       const stack = new cdk.Stack();
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W2530', reason: 'SnapStart is incomplete, we know' });
+
       new lambda.CfnFunction(stack, 'MyLambda', {
         code: {
-          zipFile: 'java11-test-function.zip',
+          s3Bucket: 'my-bucket',
+          s3Key: 'java11-test-function.zip',
         },
         functionName: 'MyCDK-SnapStart-Function',
         handler: 'example.Handler::handleRequest',
@@ -3850,7 +3959,7 @@ describe('function', () => {
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Properties:
         {
-          Code: { ZipFile: 'java11-test-function.zip' },
+          Code: { S3Bucket: 'my-bucket', S3Key: 'java11-test-function.zip' },
           Handler: 'example.Handler::handleRequest',
           Runtime: 'java11',
           SnapStart: {
@@ -3862,6 +3971,8 @@ describe('function', () => {
 
     test('function using SnapStart', () => {
       const stack = new cdk.Stack();
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W2530', reason: 'SnapStart is incomplete, we know' });
+
       // WHEN
       new lambda.Function(stack, 'MyLambda', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
@@ -3885,6 +3996,8 @@ describe('function', () => {
 
     test('runtime validation for snapStart', () => {
       const stack = new cdk.Stack();
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W2531', reason: 'Intentionally testing on old runtime' });
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W2530', reason: 'SnapStart is incomplete, we know' });
 
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
@@ -3896,6 +4009,8 @@ describe('function', () => {
 
     test('arm64 function using snapStart', () => {
       const stack = new cdk.Stack();
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W2530', reason: 'SnapStart is incomplete, we know' });
+
       // WHEN
       new lambda.Function(stack, 'MyLambda', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
@@ -3921,6 +4036,8 @@ describe('function', () => {
 
     test('EFS validation for snapStart', () => {
       const stack = new cdk.Stack();
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W2530', reason: 'SnapStart is incomplete, we know' });
+
       const vpc = new ec2.Vpc(stack, 'Vpc', {
         maxAzs: 3,
         natGateways: 1,
@@ -3955,6 +4072,7 @@ describe('function', () => {
 
     test('multi-tenant function with snapStart should throw error', () => {
       const stack = new cdk.Stack();
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W2530', reason: 'SnapStart is incomplete, we know' });
 
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
@@ -3981,7 +4099,7 @@ describe('function', () => {
         {
           Code: { ZipFile: 'foo' },
           Handler: 'bar',
-          Runtime: 'nodejs22.x',
+          Runtime: 'nodejs24.x',
           RecursiveLoop: 'Terminate',
         },
       });
@@ -4001,7 +4119,7 @@ describe('function', () => {
         {
           Code: { ZipFile: 'foo' },
           Handler: 'bar',
-          Runtime: 'nodejs22.x',
+          Runtime: 'nodejs24.x',
           RecursiveLoop: 'Allow',
         },
       });
@@ -4020,7 +4138,7 @@ describe('function', () => {
         {
           Code: { ZipFile: 'foo' },
           Handler: 'bar',
-          Runtime: 'nodejs22.x',
+          Runtime: 'nodejs24.x',
           // for default, if the property is not set up in stack it doesn't show up in the template.
         },
       });
@@ -4035,8 +4153,8 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_LATEST,
     });
-    const sourceArnA = 'some-arn-a';
-    const sourceArnB = 'some-arn-b';
+    const sourceArnA = 'arn:aws:s3:::bucket-a';
+    const sourceArnB = 'arn:aws:s3:::bucket-b';
     const service = 's3.amazonaws.com';
     const conditionalPrincipalA = new iam.PrincipalWithConditions(new iam.ServicePrincipal(service), {
       ArnLike: {
@@ -4264,7 +4382,7 @@ describe('function', () => {
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       tenancyConfig: lambda.TenancyConfig.PER_TENANT,
     });
 
@@ -4280,7 +4398,7 @@ describe('function', () => {
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       // No tenancyConfig specified
     });
 
@@ -4315,7 +4433,7 @@ test('set ephemeral storage to desired size', () => {
     {
       Code: { ZipFile: 'foo' },
       Handler: 'bar',
-      Runtime: 'nodejs22.x',
+      Runtime: 'nodejs24.x',
       EphemeralStorage: {
         Size: 1024,
       },
@@ -4352,7 +4470,7 @@ test('FunctionVersionUpgrade adds new description to function', () => {
     {
       Code: { ZipFile: 'foo' },
       Handler: 'bar',
-      Runtime: 'nodejs22.x',
+      Runtime: 'nodejs24.x',
       Description: Match.stringLikeRegexp('my description version-hash'),
     },
   });
@@ -4377,6 +4495,10 @@ test('test 2.87.0 version hash stability', () => {
     context: {
       '@aws-cdk/aws-lambda:recognizeLayerVersion': true,
     },
+  });
+  cdk.Validations.of(app).acknowledge({
+    id: 'CloudFormation-Validate::E3071',
+    reason: 'Node 99.x supports inline code',
   });
   const stack = new cdk.Stack(app, 'Stack');
 
@@ -4713,7 +4835,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -4732,7 +4854,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -4751,7 +4873,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -4770,7 +4892,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -4789,7 +4911,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -4808,7 +4930,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -4975,10 +5097,10 @@ describe('CMCMK', () => {
     bockfs({
       '/home/project/function.test.handler7.zip': '// nothing',
     });
-    const bockPath = bockfs.workingDirectory('/home/project');
+    using bockPath = bockfs.workingDirectory('/home/project');
     mockCallsites.mockImplementation(() => [
       { getFunctionName: () => 'NodejsFunction' },
-      { getFileName: () => bockPath`function.test.ts` },
+      { getFileName: () => bockPath.translate`function.test.ts` },
     ]);
 
     const stack = new cdk.Stack();
@@ -4992,7 +5114,7 @@ describe('CMCMK', () => {
     new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromCustomCommand('function.test.handler7.zip', ['node'], commandOptions),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
@@ -5000,7 +5122,7 @@ describe('CMCMK', () => {
         Code: {
           SourceKMSKeyArn: { 'Fn::GetAtt': ['myImportedKey10DE2890', 'Arn'] },
         },
-        Runtime: 'nodejs20.x',
+        Runtime: 'nodejs24.x',
         Handler: 'index.handler',
       },
     });
@@ -5016,10 +5138,10 @@ describe('CMCMK', () => {
     bockfs({
       '/home/project/function.test.handler7.zip': '// nothing',
     });
-    const bockPath = bockfs.workingDirectory('/home/project');
+    using bockPath = bockfs.workingDirectory('/home/project');
     mockCallsites.mockImplementation(() => [
       { getFunctionName: () => 'NodejsFunction' },
-      { getFileName: () => bockPath`function.test.ts` },
+      { getFileName: () => bockPath.translate`function.test.ts` },
     ]);
 
     const stack = new cdk.Stack();
@@ -5027,7 +5149,7 @@ describe('CMCMK', () => {
     new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromCustomCommand('function.test.handler7.zip', ['node']),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
@@ -5035,7 +5157,7 @@ describe('CMCMK', () => {
         Code: {
           SourceKMSKeyArn: Match.absent(),
         },
-        Runtime: 'nodejs20.x',
+        Runtime: 'nodejs24.x',
         Handler: 'index.handler',
       },
     });
@@ -5051,7 +5173,7 @@ describe('tag propagation to logGroup on FF USE_CDK_MANAGED_LAMBDA_LOGGROUP enab
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('exports.handler = async () => {};'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     cdk.Tags.of(fn).add('Environment', 'Test');
@@ -5078,7 +5200,7 @@ describe('USE_CDK_MANAGED_LAMBDA_LOGGROUP defaults to false when not specified',
     new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('exports.handler = async () => {};'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     // THEN
@@ -5096,7 +5218,7 @@ describe('Lambda Function log group behavior', () => {
       new lambda.Function(stack, 'TestFunction', {
         code: lambda.Code.fromInline('exports.handler = async () => {};'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_20_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         logRetention: logs.RetentionDays.ONE_WEEK,
         logGroup: new logs.LogGroup(stack, 'CustomLogGroup'),
       });
@@ -5111,7 +5233,7 @@ describe('Lambda Function log group behavior', () => {
       new lambda.Function(stack, 'LogRetentionOnlyFunction', {
         code: lambda.Code.fromInline('exports.handler = async () => {};'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_20_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         logRetention: logs.RetentionDays.ONE_WEEK,
       });
     }).not.toThrow();
@@ -5125,7 +5247,7 @@ describe('Lambda Function log group behavior', () => {
       new lambda.Function(stack, 'LogGroupOnlyFunction', {
         code: lambda.Code.fromInline('exports.handler = async () => {};'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_20_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         logGroup: new logs.LogGroup(stack, 'MyLogGroup'),
       });
     }).not.toThrow();
@@ -5133,6 +5255,15 @@ describe('Lambda Function log group behavior', () => {
 });
 
 describe('telemetry metadata', () => {
+  beforeEach(() => {
+    // In case we didn't compile using jsii
+    if (!(lambda.Function as any).hasOwnProperty(JSII_RUNTIME_SYMBOL)) {
+      (lambda.Function as any)[JSII_RUNTIME_SYMBOL] = {
+        fqn: 'aws-cdk-lib.aws-lambda.Function',
+      };
+    }
+  });
+
   afterEach(() => {
     jest.restoreAllMocks();
   });
@@ -5142,19 +5273,10 @@ describe('telemetry metadata', () => {
     app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);
     const stack = new cdk.Stack(app);
 
-    const mockConstructor = {
-      [JSII_RUNTIME_SYMBOL]: {
-        fqn: 'aws-cdk-lib.aws-lambda.Function',
-      },
-    };
-    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
-      constructor: mockConstructor,
-    });
-
     const fn = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     fn.addEnvironment('foo', '1234567890', {
@@ -5180,19 +5302,10 @@ describe('telemetry metadata', () => {
     app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, false);
     const stack = new cdk.Stack(app);
 
-    const mockConstructor = {
-      [JSII_RUNTIME_SYMBOL]: {
-        fqn: 'aws-cdk-lib.aws-lambda.Function',
-      },
-    };
-    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
-      constructor: mockConstructor,
-    });
-
     const fn = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     expect(fn.node.metadata).toStrictEqual([]);
@@ -5206,6 +5319,8 @@ describe('L1 Relationships', () => {
     });
     new lambda.CfnFunction(stack, 'MyLambda', {
       code: { zipFile: 'foo' },
+      handler: 'index.handler',
+      runtime: 'python3.14',
       role: role, // Simple Union
     });
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
@@ -5222,14 +5337,16 @@ describe('L1 Relationships', () => {
     });
     const layer1 = new lambda.LayerVersion(stack, 'LayerVersion1', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
-      compatibleRuntimes: [lambda.Runtime.PYTHON_3_13],
+      compatibleRuntimes: [lambda.Runtime.PYTHON_3_14],
     });
     const layer2 = new lambda.LayerVersion(stack, 'LayerVersion2', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
-      compatibleRuntimes: [lambda.Runtime.PYTHON_3_13],
+      compatibleRuntimes: [lambda.Runtime.PYTHON_3_14],
     });
     new lambda.CfnFunction(stack, 'MyLambda', {
       code: { zipFile: 'foo' },
+      handler: 'index.handler',
+      runtime: 'python3.14',
       role: role,
       layers: [layer1, layer2], // Array of Unions
     });
@@ -5248,11 +5365,13 @@ describe('L1 Relationships', () => {
     });
     const layer1 = new lambda.LayerVersion(stack, 'LayerVersion1', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
-      compatibleRuntimes: [lambda.Runtime.PYTHON_3_13],
+      compatibleRuntimes: [lambda.Runtime.PYTHON_3_14],
     });
     const layerArray = [layer1, 'layer2Arn'];
     new lambda.CfnFunction(stack, 'MyLambda', {
       code: { zipFile: 'foo' },
+      handler: 'index.handler',
+      runtime: 'python3.14',
       role: role,
       layers: layerArray,
     });
@@ -5301,6 +5420,6 @@ function newTestLambda(scope: constructs.Construct) {
   return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
-    runtime: lambda.Runtime.PYTHON_3_9,
+    runtime: lambda.Runtime.PYTHON_3_14,
   });
 }

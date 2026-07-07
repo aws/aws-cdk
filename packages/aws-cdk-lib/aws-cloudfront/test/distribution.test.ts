@@ -7,9 +7,12 @@ import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import { App, Aws, Duration, Stack, Token } from '../../core';
+import type {
+  CfnDistribution,
+  IOrigin,
+} from '../lib';
 import {
   AllowedMethods,
-  CfnDistribution,
   Distribution,
   Endpoint,
   Function,
@@ -17,7 +20,6 @@ import {
   FunctionEventType,
   GeoRestriction,
   HttpVersion,
-  IOrigin,
   LambdaEdgeEventType,
   PriceClass,
   RealtimeLogConfig,
@@ -62,6 +64,18 @@ test('minimal example renders correctly', () => {
   });
 
   expect(dist.distributionArn).toEqual(`arn:${Aws.PARTITION}:cloudfront::1234:distribution/${dist.distributionId}`);
+});
+
+test('distribution without additional behaviors or origin groups omits those properties', () => {
+  const origin = defaultOrigin();
+  new Distribution(stack, 'MyDist', { defaultBehavior: { origin } });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      CacheBehaviors: Match.absent(),
+      OriginGroups: Match.absent(),
+    },
+  });
 });
 
 test('existing distributions can be imported', () => {
@@ -950,7 +964,7 @@ test('price class is included if provided', () => {
 
 test('escape hatches are supported', () => {
   const dist = new Distribution(stack, 'Dist', {
-    defaultBehavior: { origin: defaultOrigin },
+    defaultBehavior: { origin: defaultOrigin() },
   });
   const cfnDist = dist.node.defaultChild as CfnDistribution;
   cfnDist.addPropertyOverride('DistributionConfig.DefaultCacheBehavior.ForwardedValues.Headers', ['*']);

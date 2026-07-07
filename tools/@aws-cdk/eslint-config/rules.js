@@ -1,6 +1,14 @@
 import fs from 'fs';
 
 // @ts-check
+
+// No more md5, will break in FIPS environments
+// Both qualified and unqualified calls
+const NO_MD5 = {
+  "selector": "CallExpression:matches([callee.name='createHash'], [callee.property.name='createHash']) Literal[value='md5']",
+  "message": "Use the md5hash() function from the core library if you want md5",
+};
+
 export function makeRules(/** @type{bool} */ isConstructLibrary) {
   /** @type { import("@eslint/core").RulesConfig } */
   const ret = {
@@ -9,6 +17,8 @@ export function makeRules(/** @type{bool} */ isConstructLibrary) {
     '@cdklabs/no-literal-partition': ['error'],
     '@cdklabs/no-invalid-path': ['error'],
     '@cdklabs/promiseall-no-unbounded-parallelism': [ 'error' ],
+    '@cdklabs/no-evaluating-typeguard': [ 'error' ],
+    '@cdklabs/no-unconditional-token-allocation': [ 'error' ],
 
     // Error handling
     'no-throw-literal': [ 'error' ],
@@ -42,6 +52,9 @@ export function makeRules(/** @type{bool} */ isConstructLibrary) {
     'jsdoc/require-property-description': ['error'],
     'jsdoc/require-returns-description': ['error'],
     'jsdoc/check-alignment': ['error'],
+
+    // Require all imports to use the type keyword if the import only exists in the type system
+    '@typescript-eslint/consistent-type-imports': 'error',
 
     // Require all imported dependencies are actually declared in package.json
     'import/no-extraneous-dependencies': [
@@ -81,8 +94,8 @@ export function makeRules(/** @type{bool} */ isConstructLibrary) {
       },
     ],
 
-    // Cannot import from the same module twice
-    'no-duplicate-imports': ['error'],
+    // Cannot import from the same module twice (we prefer `import/no-duplicates` over `no-duplicate-imports` since the former can handle type imports)
+    'import/no-duplicates': ['error'],
 
     // Cannot shadow names
     'no-shadow': ['off'],
@@ -130,13 +143,15 @@ export function makeRules(/** @type{bool} */ isConstructLibrary) {
     // Are you sure | is not a typo for || ?
     'no-bitwise': ['error'],
 
-    // No more md5, will break in FIPS environments
     "no-restricted-syntax": [
       "error",
+      NO_MD5,
       {
-        // Both qualified and unqualified calls
-        "selector": "CallExpression:matches([callee.name='createHash'], [callee.property.name='createHash']) Literal[value='md5']",
-        "message": "Use the md5hash() function from the core library if you want md5"
+        // Uncached lazys are an older API, not backed by a Box.
+        // They are detrimental to modern CDK features like deferred stack traces and property mixins.
+        // In most cases they are not needed can be replicated by using a Box directly.
+        "selector": "CallExpression[callee.property.name=/^uncached/]:matches([callee.object.name='Lazy'], [callee.object.property.name='Lazy'])",
+        "message": "Lazy.uncached*() is an older, less flexible API with missing features. Use the Box API instead."
       }
     ],
 
@@ -216,8 +231,16 @@ export function makeRules(/** @type{bool} */ isConstructLibrary) {
 export function makeTestRules(/** @type{bool} */ isConstructLibrary) {
   /** @type { import("@eslint/core").RulesConfig } */
   const ret = {
+    // Only for library code, not test code
     '@cdklabs/no-throw-default-error': 'off',
+    '@cdklabs/no-unconditional-token-allocation': 'off',
     'no-console': 'off',
+
+    // Allow Lazy.uncached* in tests (they legitimately test uncached behavior)
+    "no-restricted-syntax": [
+      "error",
+      NO_MD5,
+    ],
   };
   return ret;
 }

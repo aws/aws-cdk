@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "Node20",
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "noUncheckedSideEffectImports": true
+  },
+  "include": [
+    "pr-issue-check.ts"
+  ]
+}

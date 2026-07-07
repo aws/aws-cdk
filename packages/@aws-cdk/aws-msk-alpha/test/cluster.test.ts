@@ -1106,7 +1106,7 @@ describe('MSK Cluster', () => {
           ),
           brokerType: msk.BrokerType.EXPRESS,
         });
-      }).toThrow('Express brokers are only supported with Apache Kafka 3.6.x and 3.8.x, got 2.6.1');
+      }).toThrow('Express brokers are only supported with Apache Kafka 3.6, 3.8, 3.9, got 2.6.1');
     });
   });
 });

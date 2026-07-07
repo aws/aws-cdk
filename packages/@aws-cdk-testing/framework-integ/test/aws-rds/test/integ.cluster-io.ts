@@ -1,23 +1,30 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { INTEG_TEST_LATEST_AURORA_POSTGRES } from './db-versions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Credentials, DatabaseCluster, DatabaseClusterEngine, AuroraPostgresEngineVersion, DBClusterStorageType } from 'aws-cdk-lib/aws-rds';
+import { Credentials, DatabaseCluster, DatabaseClusterEngine, DBClusterStorageType, ClusterInstance } from 'aws-cdk-lib/aws-rds';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-rds-io-integ');
+const stack = new IntegTestBaseStack(app, 'aws-cdk-rds-io-integ');
 
 const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
 const cluster = new DatabaseCluster(stack, 'Database', {
-  engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_15_2 }),
+  engine: DatabaseClusterEngine.auroraPostgres({ version: INTEG_TEST_LATEST_AURORA_POSTGRES }),
   credentials: Credentials.fromUsername('adminuser', { password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6') }),
-  instanceProps: {
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.X2G, ec2.InstanceSize.XLARGE),
-    vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
-    vpc,
-  },
+  vpc,
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
   storageType: DBClusterStorageType.AURORA_IOPT1,
+  writer: ClusterInstance.provisioned('writer', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.R6G, ec2.InstanceSize.XLARGE),
+  }),
+  readers: [
+    ClusterInstance.provisioned('reader', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R6G, ec2.InstanceSize.XLARGE),
+    }),
+  ],
 });
 
 cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
@@ -42,4 +49,3 @@ new IntegTest(app, 'IntegClusterIO', {
   testCases: [stack],
 });
 
-app.synth();

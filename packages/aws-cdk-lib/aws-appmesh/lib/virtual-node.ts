@@ -1,14 +1,20 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { VirtualNodeGrants } from './appmesh-grants.generated';
-import { CfnVirtualNode, IVirtualNodeRef, VirtualNodeReference } from './appmesh.generated';
-import { IMesh, Mesh } from './mesh';
+import type { IVirtualNodeRef, VirtualNodeReference } from './appmesh.generated';
+import { CfnVirtualNode } from './appmesh.generated';
+import type { IMesh } from './mesh';
+import { Mesh } from './mesh';
 import { renderMeshOwner, renderTlsClientPolicy } from './private/utils';
-import { ServiceDiscovery, ServiceDiscoveryConfig } from './service-discovery';
-import { AccessLog, BackendDefaults, Backend } from './shared-interfaces';
-import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
-import * as iam from '../../aws-iam';
+import type { ServiceDiscovery, ServiceDiscoveryConfig } from './service-discovery';
+import type { AccessLog, BackendDefaults, Backend } from './shared-interfaces';
+import type { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
+import type * as iam from '../../aws-iam';
 import * as cdk from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -125,10 +131,15 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
   public get virtualNodeRef(): VirtualNodeReference {
     return {
       virtualNodeArn: this.virtualNodeArn,
-      virtualNodeId: this.virtualNodeName,
     };
   }
 
+  /**
+   *
+   * The use of this method is discouraged. Please use `grants.streamAggregatedResources()` instead.
+   *
+   * [disable-awslint:no-grants]
+   */
   public grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant {
     return this.grants.streamAggregatedResources(identity);
   }
@@ -140,10 +151,12 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
  * Any inbound traffic that your virtual node expects should be specified as a
  * listener. Any outbound traffic that your virtual node expects to reach
  * should be specified as a backend.
+ * [disable-awslint:no-grants]
  *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual_nodes.html
  */
 @propertyInjectable
+@noBoxStackTraces
 export class VirtualNode extends VirtualNodeBase {
   /**
    * Uniquely identifies this class.
@@ -180,12 +193,22 @@ export class VirtualNode extends VirtualNodeBase {
   /**
    * The name of the VirtualNode
    */
-  public readonly virtualNodeName: string;
+  @memoizedGetter
+  public get virtualNodeName(): string {
+    return this.getResourceNameAttribute(this.resource.attrVirtualNodeName);
+  }
 
   /**
    * The Amazon Resource Name belonging to the VirtualNode
    */
-  public readonly virtualNodeArn: string;
+  @memoizedGetter
+  public get virtualNodeArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
+      service: 'appmesh',
+      resource: `mesh/${this.mesh.meshName}/virtualNode`,
+      resourceName: this.physicalName,
+    });
+  }
 
   /**
    * The Mesh which the VirtualNode belongs to
@@ -194,8 +217,9 @@ export class VirtualNode extends VirtualNodeBase {
 
   private readonly serviceDiscoveryConfig?: ServiceDiscoveryConfig;
 
-  private readonly backends = new Array<CfnVirtualNode.BackendProperty>();
-  private readonly listeners = new Array<VirtualNodeListenerConfig>();
+  private readonly backends: IArrayBox<CfnVirtualNode.BackendProperty>;
+  private readonly listeners: IArrayBox<VirtualNodeListenerConfig>;
+  private readonly resource: CfnVirtualNode;
 
   constructor(scope: Construct, id: string, props: VirtualNodeProps) {
     super(scope, id, {
@@ -204,6 +228,9 @@ export class VirtualNode extends VirtualNodeBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    this.backends = Box.fromArray();
+    this.listeners = Box.fromArray();
+
     this.mesh = props.mesh;
     this.serviceDiscoveryConfig = props.serviceDiscovery?.bind(this);
 
@@ -211,13 +238,13 @@ export class VirtualNode extends VirtualNodeBase {
     props.listeners?.forEach(listener => this.addListener(listener));
     const accessLogging = props.accessLog?.bind(this);
 
-    const node = new CfnVirtualNode(this, 'Resource', {
+    this.resource = new CfnVirtualNode(this, 'Resource', {
       virtualNodeName: this.physicalName,
       meshName: this.mesh.meshName,
       meshOwner: renderMeshOwner(this.env.account, this.mesh.env.account),
       spec: {
-        backends: cdk.Lazy.any({ produce: () => this.backends }, { omitEmptyArray: true }),
-        listeners: cdk.Lazy.any({ produce: () => this.listeners.map(listener => listener.listener) }, { omitEmptyArray: true }),
+        backends: this.backends,
+        listeners: this.listeners.map(listener => listener.listener),
         backendDefaults: props.backendDefaults !== undefined
           ? {
             clientPolicy: {
@@ -230,13 +257,6 @@ export class VirtualNode extends VirtualNodeBase {
           accessLog: accessLogging.virtualNodeAccessLog,
         } : undefined,
       },
-    });
-
-    this.virtualNodeName = this.getResourceNameAttribute(node.attrVirtualNodeName);
-    this.virtualNodeArn = this.getResourceArnAttribute(node.ref, {
-      service: 'appmesh',
-      resource: `mesh/${props.mesh.meshName}/virtualNode`,
-      resourceName: this.physicalName,
     });
   }
 
@@ -253,7 +273,7 @@ export class VirtualNode extends VirtualNodeBase {
   @MethodMetadata()
   public addListener(listener: VirtualNodeListener) {
     if (!this.serviceDiscoveryConfig) {
-      throw new cdk.ValidationError('Service discovery information is required for a VirtualNode with a listener.', this);
+      throw new cdk.ValidationError(lit`ServiceDiscoveryRequired`, 'Service discovery information is required for a VirtualNode with a listener.', this);
     }
     this.listeners.push(listener.bind(this));
   }

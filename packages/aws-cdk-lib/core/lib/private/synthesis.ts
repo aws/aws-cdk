@@ -1,27 +1,20 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { IConstruct } from 'constructs';
+import * as private_cxapi from '@aws-cdk/cloud-assembly-api';
+import type { IConstruct } from 'constructs';
+import { generateFeatureFlagReport } from './feature-flag-report';
+import { lit } from './literal-string';
 import { MetadataResource } from './metadata-resource';
 import { prepareApp } from './prepare-app';
 import { TreeMetadata } from './tree-metadata';
-import { CloudAssembly } from '../../../cx-api';
-import * as cxapi from '../../../cx-api';
+import { _convertCloudAssemblyBuilder } from '../../../cx-api/lib/legacy-moved';
 import { Annotations } from '../annotations';
 import { App } from '../app';
 import { _aspectTreeRevisionReader, AspectApplication, AspectPriority, Aspects } from '../aspect';
-import { AssumptionError, UnscopedValidationError } from '../errors';
-import { FileSystem } from '../fs';
+import { UnscopedValidationError } from '../errors';
 import { Stack } from '../stack';
-import { ISynthesisSession } from '../stack-synthesizers/types';
-import { Stage, StageSynthesisOptions } from '../stage';
-import { IPolicyValidationPluginBeta1 } from '../validation';
-import { generateFeatureFlagReport } from './feature-flag-report';
-import { ConstructTree } from '../validation/private/construct-tree';
-import { PolicyValidationReportFormatter, NamedValidationPluginReport } from '../validation/private/report';
-
-const POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
-const VALIDATION_REPORT_PRETTY_CONTEXT = '@aws-cdk/core:validationReportPrettyPrint';
-const VALIDATION_REPORT_JSON_CONTEXT = '@aws-cdk/core:validationReportJson';
+import type { ISynthesisSession } from '../stack-synthesizers/types';
+import type { StageSynthesisOptions } from '../stage';
+import { Stage } from '../stage';
+import { validateTemplates } from './synthesis-validation';
 
 /**
  * Options for `synthesize()`
@@ -34,7 +27,7 @@ export interface SynthesisOptions extends StageSynthesisOptions {
   readonly outdir?: string;
 }
 
-export function synthesize(root: IConstruct, options: SynthesisOptions = { }): cxapi.CloudAssembly {
+export function synthesize(root: IConstruct, options: SynthesisOptions = { }): private_cxapi.CloudAssembly {
   // add the TreeMetadata resource to the App first
   injectTreeMetadata(root);
   // we start by calling "synth" on all nested assemblies (which will take care of all their children)
@@ -59,8 +52,8 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
   // in unit tests, we support creating free-standing stacks, so we create the
   // assembly builder here.
   const builder = Stage.isStage(root)
-    ? root._assemblyBuilder
-    : new cxapi.CloudAssemblyBuilder(options.outdir);
+    ? _convertCloudAssemblyBuilder(root._assemblyBuilder)
+    : new private_cxapi.CloudAssemblyBuilder(options.outdir);
 
   // next, we invoke "onSynthesize" on all of our children. this will allow
   // stacks to add themselves to the synthesized cloud assembly.
@@ -70,113 +63,9 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
 
   const assembly = builder.buildAssembly();
 
-  invokeValidationPlugins(root, builder.outdir, assembly);
+  validateTemplates(root, builder.outdir, assembly);
 
   return assembly;
-}
-
-/**
- * Find all the assemblies in the app, including all levels of nested assemblies
- * and return a map where the assemblyId is the key
- */
-function getAssemblies(root: App, rootAssembly: CloudAssembly): Map<string, CloudAssembly> {
-  const assemblies = new Map<string, CloudAssembly>();
-  assemblies.set(root.artifactId, rootAssembly);
-  visitAssemblies(root, 'pre', construct => {
-    const stage = construct as Stage;
-    if (stage.parentStage && assemblies.has(stage.parentStage.artifactId)) {
-      assemblies.set(
-        stage.artifactId,
-        assemblies.get(stage.parentStage.artifactId)!.getNestedAssembly(stage.artifactId),
-      );
-    }
-  });
-  return assemblies;
-}
-
-/**
- * Invoke validation plugins for all stages in an App.
- */
-function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: CloudAssembly) {
-  if (!App.isApp(root)) return;
-  let hash: string | undefined;
-  const assemblies = getAssemblies(root, assembly);
-  const templatePathsByPlugin: Map<IPolicyValidationPluginBeta1, string[]> = new Map();
-  visitAssemblies(root, 'post', construct => {
-    if (Stage.isStage(construct)) {
-      for (const plugin of construct.policyValidationBeta1) {
-        if (!templatePathsByPlugin.has(plugin)) {
-          templatePathsByPlugin.set(plugin, []);
-        }
-        let assemblyToUse = assemblies.get(construct.artifactId);
-        if (!assemblyToUse) throw new AssumptionError(`Validation failed, cannot find cloud assembly for stage ${construct.stageName}`);
-        templatePathsByPlugin.get(plugin)!.push(...assemblyToUse.stacksRecursively.map(stack => stack.templateFullPath));
-      }
-    }
-  });
-
-  const reports: NamedValidationPluginReport[] = [];
-  if (templatePathsByPlugin.size > 0) {
-    // eslint-disable-next-line no-console
-    console.log('Performing Policy Validations\n');
-  }
-
-  if (templatePathsByPlugin.size > 0) {
-    hash = FileSystem.fingerprint(outdir);
-  }
-
-  for (const [plugin, paths] of templatePathsByPlugin.entries()) {
-    try {
-      const report = plugin.validate({ templatePaths: paths });
-      reports.push({ ...report, pluginName: plugin.name });
-    } catch (e: any) {
-      reports.push({
-        success: false,
-        pluginName: plugin.name,
-        pluginVersion: plugin.version,
-        violations: [],
-        metadata: {
-          error: `Validation plugin '${plugin.name}' failed: ${e.message}`,
-        },
-      });
-    }
-    if (FileSystem.fingerprint(outdir) !== hash) {
-      throw new AssumptionError(`Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
-    }
-  }
-
-  if (reports.length > 0) {
-    const tree = new ConstructTree(root);
-    const formatter = new PolicyValidationReportFormatter(tree);
-    let formatPretty = root.node.tryGetContext(VALIDATION_REPORT_PRETTY_CONTEXT) ?? false;
-    const formatJson = root.node.tryGetContext(VALIDATION_REPORT_JSON_CONTEXT) ?? false;
-    formatPretty = formatPretty || !(formatPretty || formatJson); // if neither is set, default to pretty print
-    const reportFile = path.join(assembly.directory, POLICY_VALIDATION_FILE_PATH);
-    if (formatPretty) {
-      const output = formatter.formatPrettyPrinted(reports);
-      // eslint-disable-next-line no-console
-      console.error(output);
-    }
-    if (formatJson) {
-      const output = formatter.formatJson(reports);
-      fs.writeFileSync(reportFile, JSON.stringify(output, undefined, 2));
-    }
-    const failed = reports.some(r => !r.success);
-    if (failed) {
-      let message = formatJson
-        ? `Validation failed. See the validation report in '${reportFile}' for details`
-        : 'Validation failed. See the validation report above for details';
-      if (formatPretty && formatJson) {
-        message = `Validation failed. See the validation report in '${reportFile}' and above for details`;
-      }
-      // eslint-disable-next-line no-console
-      console.log(message);
-      process.exitCode = 1;
-    } else {
-      // eslint-disable-next-line no-console
-      console.log('Policy Validation Successful!');
-    }
-  }
 }
 
 const CUSTOM_SYNTHESIS_SYM = Symbol.for('@aws-cdk/core:customSynthesis');
@@ -292,7 +181,7 @@ function invokeAspectsV2(root: IConstruct) {
     }
   }
 
-  throw new UnscopedValidationError('We have detected a possible infinite loop while invoking Aspects. Please check your Aspects and verify there is no configuration that would cause infinite Aspect or Node creation.');
+  throw new UnscopedValidationError(lit`PossibleInfiniteLoopDetected`, 'We have detected a possible infinite loop while invoking Aspects. Please check your Aspects and verify there is no configuration that would cause infinite Aspect or Node creation.');
 
   function recurse(construct: IConstruct, inheritedAspects: AspectApplication[]): 'invoked' | 'abort-recursion' | 'nothing' {
     const node = construct.node;
@@ -315,7 +204,7 @@ function invokeAspectsV2(root: IConstruct) {
       // If the last invoked Aspect has a higher priority than the current one, throw an error:
       const lastInvokedAspect = invoked[invoked.length - 1];
       if (lastInvokedAspect && lastInvokedAspect.priority > aspectApplication.priority) {
-        throw new UnscopedValidationError(
+        throw new UnscopedValidationError(lit`CannotInvokeAspectWithLowerPriority`,
           `Cannot invoke Aspect ${aspectApplication.aspect.constructor.name} with priority ${aspectApplication.priority} on node ${node.path}: an Aspect ${lastInvokedAspect.aspect.constructor.name} with a lower priority (added at ${lastInvokedAspect.construct.node.path} with priority ${lastInvokedAspect.priority}) was already invoked on this node.`,
         );
       }
@@ -437,11 +326,11 @@ function injectTreeMetadata(root: IConstruct) {
  *
  * Stop at Assembly boundaries.
  */
-function synthesizeTree(root: IConstruct, builder: cxapi.CloudAssemblyBuilder, validateOnSynth: boolean = false) {
+function synthesizeTree(root: IConstruct, builder: private_cxapi.CloudAssemblyBuilder, validateOnSynth: boolean = false) {
   visit(root, 'post', construct => {
     const session = {
       outdir: builder.outdir,
-      assembly: builder,
+      assembly: _convertCloudAssemblyBuilder(builder),
       validateOnSynth,
     };
 
@@ -475,25 +364,7 @@ function validateTree(root: IConstruct) {
 
   if (errors.length > 0) {
     const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
-    throw new UnscopedValidationError(`Validation failed with the following errors:\n  ${errorList}`);
-  }
-}
-
-/**
- * Visit the given construct tree in either pre or post order, only looking at Assemblies
- */
-function visitAssemblies(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => void) {
-  if (order === 'pre') {
-    cb(root);
-  }
-
-  for (const child of root.node.children) {
-    if (!Stage.isStage(child)) { continue; }
-    visitAssemblies(child, order, cb);
-  }
-
-  if (order === 'post') {
-    cb(root);
+    throw new UnscopedValidationError(lit`ValidationFailedWithErrors`, `Validation failed with the following errors:\n  ${errorList}`);
   }
 }
 

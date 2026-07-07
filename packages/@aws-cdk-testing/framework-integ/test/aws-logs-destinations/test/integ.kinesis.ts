@@ -2,7 +2,7 @@ import * as kinesis from 'aws-cdk-lib/aws-kinesis';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import { App, Stack, RemovalPolicy } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import * as dests from 'aws-cdk-lib/aws-logs-destinations';
 
 class KinesisEnv extends Stack {

@@ -1,15 +1,25 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
+import type * as cdk from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { Code } from '../code';
+import type { Construct } from 'constructs';
+import type { Code } from '../code';
 import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType } from '../constants';
-import { SparkJob, SparkJobProps } from './spark-job';
+import type { SparkJobProps } from './spark-job';
+import { SparkJob } from './spark-job';
 
 /**
  * Properties for creating a Python Spark ETL job
  */
 export interface PySparkEtlJobProps extends SparkJobProps {
+  /**
+   * Specifies configuration properties of a notification (optional).
+   * After a job run starts, the number of minutes to wait before sending a job run delay notification.
+   * @default - undefined
+   */
+  readonly notifyDelayAfter?: cdk.Duration;
+
   /**
    * Extra Python Files S3 URL (optional)
    * S3 URL where additional python dependencies are located
@@ -72,8 +82,7 @@ export interface PySparkEtlJobProps extends SparkJobProps {
 export class PySparkEtlJob extends SparkJob {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.PySparkEtlJob';
-  public readonly jobArn: string;
-  public readonly jobName: string;
+  private resource: CfnJob;
 
   /**
    * PySparkEtlJob constructor
@@ -89,7 +98,7 @@ export class PySparkEtlJob extends SparkJob {
       ...this.nonExecutableCommonArguments(props),
     };
 
-    const jobResource = new CfnJob(this, 'Resource', {
+    this.resource = new CfnJob(this, 'Resource', {
       name: props.jobName,
       description: props.description,
       role: this.role.roleArn,
@@ -103,6 +112,7 @@ export class PySparkEtlJob extends SparkJob {
       numberOfWorkers: props.numberOfWorkers ? props.numberOfWorkers : 10,
       maxRetries: props.jobRunQueuingEnabled ? 0 : props.maxRetries,
       jobRunQueuingEnabled: props.jobRunQueuingEnabled ? props.jobRunQueuingEnabled : false,
+      notificationProperty: props.notifyDelayAfter ? { notifyDelayAfter: props.notifyDelayAfter.toMinutes() } : undefined,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
       timeout: props.timeout?.toMinutes(),
       connections: props.connections ? { connections: props.connections.map((connection) => connection.connectionName) } : undefined,
@@ -110,10 +120,16 @@ export class PySparkEtlJob extends SparkJob {
       tags: props.tags,
       defaultArguments,
     });
+  }
 
-    const resourceName = this.getResourceNameAttribute(jobResource.ref);
-    this.jobArn = this.buildJobArn(this, resourceName);
-    this.jobName = resourceName;
+  @memoizedGetter
+  public get jobArn(): string {
+    return this.buildJobArn(this, this.jobName);
+  }
+
+  @memoizedGetter
+  public get jobName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
   }
 
   /**

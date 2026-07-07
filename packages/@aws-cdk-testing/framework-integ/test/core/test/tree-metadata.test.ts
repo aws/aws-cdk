@@ -5,8 +5,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
 import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
-import { App, AssumptionError, CfnParameter, CfnResource, Lazy, Stack, TreeInspector } from 'aws-cdk-lib';
-import { ForestFile, TreeFile } from 'aws-cdk-lib/core/lib/private/tree-metadata';
+import type { TreeInspector } from 'aws-cdk-lib';
+import { App, AssumptionError, CfnParameter, CfnResource, Lazy, Stack, aws_s3 } from 'aws-cdk-lib';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+import type { ForestFile, TreeFile } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 abstract class AbstractCfnResource extends CfnResource {
   constructor(scope: Construct, id: string) {
@@ -71,6 +73,45 @@ describe('tree metadata', () => {
             },
           }),
         },
+      }),
+    });
+  });
+
+  test('L1 resource add logicalID to tree metadata', () => {
+    const app = new App();
+
+    const stack = new Stack(app, 'mystack');
+    new aws_s3.Bucket(stack, 'Bucky');
+
+    const assembly = app.synth();
+    const treeArtifact = assembly.tree();
+    expect(treeArtifact).toBeDefined();
+
+    expect(readJson(assembly.directory, treeArtifact!.file)).toEqual({
+      version: 'tree-0.1',
+      tree: expect.objectContaining({
+        children: expect.objectContaining({
+          mystack: expect.objectContaining({
+            id: 'mystack',
+            path: 'mystack',
+            children: expect.objectContaining({
+              Bucky: expect.objectContaining({
+                id: 'Bucky',
+                path: 'mystack/Bucky',
+                children: expect.objectContaining({
+                  Resource: expect.objectContaining({
+                    id: 'Resource',
+                    path: 'mystack/Bucky/Resource',
+                    attributes: expect.objectContaining({
+                      'aws:cdk:cloudformation:logicalId': 'Bucky3D4A6827',
+                      'aws:cdk:cloudformation:type': 'AWS::S3::Bucket',
+                    }),
+                  }),
+                }),
+              }),
+            }),
+          }),
+        }),
       }),
     });
   });
@@ -465,7 +506,7 @@ describe('tree metadata', () => {
   test('failing nodes', () => {
     class MyCfnResource extends CfnResource {
       public inspect(_: TreeInspector) {
-        throw new AssumptionError('Forcing an inspect error');
+        throw new AssumptionError(lit`ForcedInspectError`, 'Forcing an inspect error');
       }
     }
 

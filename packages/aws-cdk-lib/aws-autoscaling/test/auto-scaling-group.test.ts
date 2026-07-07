@@ -3,7 +3,8 @@ import { Annotations, Match, Template } from '../../assertions';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import { AmazonLinuxCpuType, AmazonLinuxGeneration, AmazonLinuxImage, InstanceType, LaunchTemplate } from '../../aws-ec2';
-import { ApplicationListener, ApplicationLoadBalancer, ApplicationTargetGroup } from '../../aws-elasticloadbalancingv2';
+import type { ApplicationListener } from '../../aws-elasticloadbalancingv2';
+import { ApplicationLoadBalancer, ApplicationTargetGroup } from '../../aws-elasticloadbalancingv2';
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import * as ssm from '../../aws-ssm';
@@ -1317,6 +1318,10 @@ describe('auto scaling group', () => {
   test('warning if iops without volumeType', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::W3671',
+      reason: 'We have our own warning',
+    });
     const vpc = mockVpc(stack);
 
     new autoscaling.AutoScalingGroup(stack, 'MyStack', {
@@ -1340,6 +1345,10 @@ describe('auto scaling group', () => {
   test('warning if iops and volumeType !== IO1', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::W3671',
+      reason: 'We have our own warning',
+    });
     const vpc = mockVpc(stack);
 
     new autoscaling.AutoScalingGroup(stack, 'MyStack', {
@@ -3134,3 +3143,54 @@ function mockSecurityGroup(stack: cdk.Stack) {
 function getTestStack(): cdk.Stack {
   return new cdk.Stack(undefined, 'TestStack', { env: { account: '1234', region: 'us-east-1' } });
 }
+
+test.each([
+  [autoscaling.TerminateHookAbandonAction.RETAIN, 'retain'],
+  [autoscaling.TerminateHookAbandonAction.TERMINATE, 'terminate'],
+  [undefined, Match.absent()],
+])('can configure instanceLifecyclePolicy with %s', (terminateHookAbandon, expectedValue) => {
+  const stack = new cdk.Stack();
+  const vpc = mockVpc(stack);
+
+  new autoscaling.AutoScalingGroup(stack, `MyASG-${expectedValue}`, {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+    machineImage: new ec2.AmazonLinuxImage(),
+    vpc,
+    instanceLifecyclePolicy: {
+      retentionTriggers: {
+        terminateHookAbandon,
+      },
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+    InstanceLifecyclePolicy: {
+      RetentionTriggers: {
+        TerminateHookAbandon: expectedValue,
+      },
+    },
+  });
+});
+
+test.each([
+  [autoscaling.DeletionProtection.NONE, 'none'],
+  [autoscaling.DeletionProtection.PREVENT_FORCE_DELETION, 'prevent-force-deletion'],
+  [autoscaling.DeletionProtection.PREVENT_ALL_DELETION, 'prevent-all-deletion'],
+])('can configure deletion protection with %s', (deletionProtection, expectedValue) => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = mockVpc(stack);
+
+  // WHEN
+  new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+    machineImage: new ec2.AmazonLinuxImage(),
+    vpc,
+    deletionProtection,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+    DeletionProtection: expectedValue,
+  });
+});

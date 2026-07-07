@@ -1,6 +1,7 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { LogRetention, RetentionDays } from 'aws-cdk-lib/aws-logs';
-import { App, Stack, StackProps, RemovalPolicy } from 'aws-cdk-lib/core';
+import type { StackProps } from 'aws-cdk-lib/core';
+import { App, Stack, RemovalPolicy } from 'aws-cdk-lib/core';
 
 class LogRetentionIntegStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
