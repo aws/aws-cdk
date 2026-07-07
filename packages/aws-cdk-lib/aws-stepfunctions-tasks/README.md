@@ -1020,6 +1020,33 @@ new tasks.EmrCreateCluster(this, 'SpotSpecification', {
 });
 ```
 
+You can use the prioritized allocation strategy to specify instance type priorities for On-Demand instances:
+
+```ts
+new tasks.EmrCreateCluster(this, 'PrioritizedAllocation', {
+  instances: {
+    instanceFleets: [{
+      instanceFleetType: tasks.EmrCreateCluster.InstanceRoleType.CORE,
+      instanceTypeConfigs: [{
+        instanceType: 'm5.large',
+        priority: 0, // Highest priority
+      }, {
+        instanceType: 'm5.xlarge',
+        priority: 1, // Lower priority
+      }],
+      launchSpecifications: {
+        onDemandSpecification: {
+          allocationStrategy: tasks.EmrCreateCluster.OnDemandAllocationStrategy.PRIORITIZED,
+        },
+      },
+      targetOnDemandCapacity: 2,
+    }],
+  },
+  name: 'PrioritizedCluster',
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+});
+```
+
 You can [customize EBS root device volume](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-custom-ami-root-volume-size.html).
 
 ```ts
@@ -1759,7 +1786,7 @@ Step Functions supports [AWS MediaConvert](https://docs.aws.amazon.com/step-func
 ### CreateJob
 
 The [CreateJob](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobspost) API creates a new transcoding job.
-For information about jobs and job settings, see the User Guide at http://docs.aws.amazon.com/mediaconvert/latest/ug/what-is.html
+For information about jobs and job settings, see the User Guide at https://docs.aws.amazon.com/mediaconvert/latest/ug/what-is.html
 
 You can call the `CreateJob` API from a `Task` state. Optionally you can specify the `integrationPattern`.
 
@@ -2014,7 +2041,7 @@ Step Functions supports [AWS Step Functions](https://docs.aws.amazon.com/step-fu
 
 You can manage [AWS Step Functions](https://docs.aws.amazon.com/step-functions/latest/dg/connect-stepfunctions.html) executions.
 
-AWS Step Functions supports it's own [`StartExecution`](https://docs.aws.amazon.com/step-functions/latest/apireference/API_StartExecution.html) API as a service integration.
+AWS Step Functions supports its own [`StartExecution`](https://docs.aws.amazon.com/step-functions/latest/apireference/API_StartExecution.html) API as a service integration.
 
 ```ts
 // Define a state machine with one Pass state

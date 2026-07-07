@@ -1,0 +1,130 @@
+{
+ "Resources": {
+  "WorkloadIdentityC18104DE": {
+   "Type": "AWS::BedrockAgentCore::WorkloadIdentity",
+   "Properties": {
+    "AllowedResourceOauth2ReturnUrls": [
+     "https://example.com/oauth/callback"
+    ],
+    "Name": "integ-test-workload-identity",
+    "Tags": [
+     {
+      "Key": "integ",
+      "Value": "identity"
+     }
+    ]
+   }
+  },
+  "ApiKeyProvider7AFC53BE": {
+   "Type": "AWS::BedrockAgentCore::ApiKeyCredentialProvider",
+   "Properties": {
+    "ApiKey": "integ-test-api-key-placeholder",
+    "Name": "integ-test-api-key-provider",
+    "Tags": [
+     {
+      "Key": "integ",
+      "Value": "identity"
+     }
+    ]
+   }
+  },
+  "GithubOAuth5958D16B": {
+   "Type": "AWS::BedrockAgentCore::OAuth2CredentialProvider",
+   "Properties": {
+    "CredentialProviderVendor": "GithubOauth2",
+    "Name": "integ-test-github-oauth",
+    "Oauth2ProviderConfigInput": {
+     "GithubOauth2ProviderConfig": {
+      "ClientId": "integ-test-github-client-id",
+      "ClientSecret": "integ-test-github-client-secret"
+     }
+    },
+    "Tags": [
+     {
+      "Key": "integ",
+      "Value": "identity"
+     }
+    ]
+   }
+  },
+  "YandexOAuth515CCC8D": {
+   "Type": "AWS::BedrockAgentCore::OAuth2CredentialProvider",
+   "Properties": {
+    "CredentialProviderVendor": "YandexOauth2",
+    "Name": "integ-test-yandex-oauth",
+    "Oauth2ProviderConfigInput": {
+     "IncludedOauth2ProviderConfig": {
+      "ClientId": "integ-test-yandex-client-id",
+      "ClientSecret": "integ-test-yandex-client-secret"
+     }
+    }
+   }
+  },
+  "CustomOAuthD038AAB9": {
+   "Type": "AWS::BedrockAgentCore::OAuth2CredentialProvider",
+   "Properties": {
+    "CredentialProviderVendor": "CustomOauth2",
+    "Name": "integ-test-custom-oauth",
+    "Oauth2ProviderConfigInput": {
+     "CustomOauth2ProviderConfig": {
+      "ClientId": "integ-test-custom-client-id",
+      "ClientSecret": "integ-test-custom-client-secret",
+      "OauthDiscovery": {
+       "DiscoveryUrl": "https://example.com/.well-known/openid-configuration"
+      }
+     }
+    }
+   }
+  },
+  "OktaOAuth26B0DEBF": {
+   "Type": "AWS::BedrockAgentCore::OAuth2CredentialProvider",
+   "Properties": {
+    "CredentialProviderVendor": "OktaOauth2",
+    "Name": "integ-test-okta-oauth",
+    "Oauth2ProviderConfigInput": {
+     "IncludedOauth2ProviderConfig": {
+      "AuthorizationEndpoint": "https://example.okta.com/oauth2/default/v1/authorize",
+      "ClientId": "integ-test-okta-client-id",
+      "ClientSecret": "integ-test-okta-client-secret",
+      "Issuer": "https://example.okta.com/oauth2/default",
+      "TokenEndpoint": "https://example.okta.com/oauth2/default/v1/token"
+     }
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

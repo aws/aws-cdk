@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "TableBucketMetricsIntegTest/DefaultTest": {
+      "stacks": [
+        "MetricsEnabledTestStack"
+      ],
+      "assertionStack": "TableBucketMetricsIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "TableBucketMetricsIntegTestDefaultTestDeployAssertD1D86737"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}
