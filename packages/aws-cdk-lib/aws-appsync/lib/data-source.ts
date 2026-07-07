@@ -16,7 +16,7 @@ import type { IDomain as IOpenSearchDomain } from '../../aws-opensearchservice';
 import type { IServerlessCluster, IDatabaseCluster } from '../../aws-rds';
 import type { ISecret } from '../../aws-secretsmanager';
 import type { IResolvable } from '../../core';
-import { Lazy, Stack, Token } from '../../core';
+import { Lazy, Stack, Token, Validations } from '../../core';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IGraphQLApiRef } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
@@ -529,6 +529,10 @@ export class ElasticsearchDataSource extends BackedDataSource {
         awsRegion: props.domain.env.region,
         endpoint: `https://${props.domain.domainEndpoint}`,
       },
+    });
+    Validations.of(this).acknowledge({
+      id: 'CloudFormation-Validate::W9009',
+      reason: 'elasticSearchConfig is deprecated, but still in use for historical reasons',
     });
 
     props.domain.grantReadWrite(this);

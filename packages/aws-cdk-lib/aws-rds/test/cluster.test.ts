@@ -7,8 +7,8 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import { Secret } from '../../aws-secretsmanager';
 import type { Stack } from '../../core';
-import * as cdk from '../../core';
 import { RemovalPolicy, Annotations as CoreAnnotations } from '../../core';
+import * as cdk from '../../core';
 import {
   RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS,
   AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS,
@@ -24,6 +24,7 @@ import {
   DatabaseInsightsMode,
   EngineLifecycleSupport,
 } from '../lib';
+import { acknowledgeTestValidationRules } from './util';
 
 describe('cluster new api', () => {
   describe('errors are thrown', () => {
@@ -2811,6 +2812,7 @@ describe('cluster', () => {
   describe('performance insights for cluster', () => {
     function setTestStack() {
       const stack = testStack();
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'VPC');
       const key = new kms.Key(stack, 'Key');
       const importedKey = kms.Key.fromKeyArn(stack, 'ImportedKey', 'arn:aws:kms:us-east-1:123456789012:key/imported');
@@ -6430,5 +6432,6 @@ test.each([
 function testStack(app?: cdk.App, stackId?: string) {
   const stack = new cdk.Stack(app, stackId, { env: { account: '12345', region: 'us-test-1' } });
   stack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
+  acknowledgeTestValidationRules(stack);
   return stack;
 }
