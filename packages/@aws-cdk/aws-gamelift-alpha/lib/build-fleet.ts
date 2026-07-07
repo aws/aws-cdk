@@ -115,9 +115,19 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
       this.warnVpcPeeringAuthorizations(this);
     }
 
+    // Add home region location with capacity settings
+    this.addInternalLocation({
+      region: cdk.Stack.of(this).region,
+      capacity: {
+        desiredCapacity: props.desiredCapacity,
+        minSize: props.minSize ?? 0,
+        maxSize: props.maxSize ?? 1,
+      },
+    });
+
     // Add all locations
-    if (props.locations && props.locations?.length > 100) {
-      throw new Error(`No more than 100 locations are allowed per fleet, given ${props.locations.length}`);
+    if (props.locations && props.locations?.length > 99) {
+      throw new Error(`No more than 99 remote locations are allowed per fleet, given ${props.locations.length}`);
     }
     (props.locations || []).forEach(this.addInternalLocation.bind(this));
 
@@ -141,14 +151,11 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
         certificateType: props.useCertificate ? 'GENERATED': 'DISABLED',
       },
       description: props.description,
-      desiredEc2Instances: props.desiredCapacity,
       ec2InboundPermissions: cdk.Lazy.any({ produce: () => this.parseIngressRules() }),
       ec2InstanceType: props.instanceType.toString(),
       fleetType: props.useSpot ? 'SPOT' : 'ON_DEMAND',
       instanceRoleArn: this.role.roleArn,
       locations: cdk.Lazy.any({ produce: () => this.parseLocations() }),
-      maxSize: props.maxSize ? props.maxSize : 1,
-      minSize: props.minSize ? props.minSize : 0,
       name: this.physicalName,
       newGameSessionProtectionPolicy: props.protectNewGameSession ? 'FullProtection' : 'NoProtection',
       peerVpcAwsAccountId: props.peerVpc && props.peerVpc.env.account,

@@ -12,11 +12,13 @@ import * as cloudmap from '../../../aws-servicediscovery';
 import * as cdk from '../../../core';
 import * as cxapi from '../../../cx-api';
 import * as ecsPatterns from '../../lib';
+import { acknowledgeTestValidationRules } from '../util';
 
 describe('ApplicationLoadBalancedFargateService', () => {
   test('setting healthCheckGracePeriod works', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
@@ -34,6 +36,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('setting healthCheck works', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
@@ -68,6 +71,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('selecting correct vpcSubnets', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc', {
       maxAzs: 2,
       subnetConfiguration: [
@@ -113,6 +117,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('target group uses HTTP/80 as default', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
@@ -130,6 +135,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('target group uses HTTPS/443 when configured', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
@@ -148,6 +154,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('setting platform version', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
@@ -165,6 +172,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('load balanced service with family defined', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -222,6 +230,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('setting ALB deployment controller', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
@@ -244,6 +253,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('setting a command for taskImageOption', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
@@ -266,6 +276,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('setting an entryPoint for taskImageOptions', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
@@ -288,6 +299,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('setting ALB circuitBreaker works', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
@@ -314,6 +326,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('setting ALB special listener port to create the listener', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -342,6 +355,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('setting ALB HTTPS protocol to create the listener on 443', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -375,6 +389,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('setting ALB HTTPS correctly sets the recordset name', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -402,6 +417,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('setting ALB cname option correctly sets the recordset type', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -431,6 +447,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('setting ALB record type to NONE correctly omits the recordset', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -457,6 +474,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('setting ALB HTTP protocol to create the listener on 80', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -485,6 +503,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('setting ALB without any protocol or listenerPort to create the listener on 80', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -512,6 +531,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('passing in previously created application load balancer', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc, clusterName: 'MyCluster' });
     const sg = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
@@ -540,6 +560,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('passing in imported application load balancer and resources', () => {
     // GIVEN
     const stack1 = new cdk.Stack();
+    acknowledgeTestValidationRules(stack1);
     const albArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
     const vpc = new ec2.Vpc(stack1, 'Vpc');
     const cluster = new ecs.Cluster(stack1, 'Cluster', { vpc, clusterName: 'MyClusterName' });
@@ -589,6 +610,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('passing in previously created security groups', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc, clusterName: 'MyCluster' });
     const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
@@ -633,6 +655,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('domainName and domainZone not required for HTTPS listener with provided cert', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     const exampleDotComZone = new route53.PublicHostedZone(stack, 'ExampleDotCom', {
@@ -662,6 +685,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('with docker labels defined', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -691,6 +715,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('Passing in token for desiredCount will not throw error', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     const param = new cdk.CfnParameter(stack, 'prammm', {
@@ -717,6 +742,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('multiple capacity provider strategies are set', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
@@ -763,6 +789,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('should validate minHealthyPercent', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -780,6 +807,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('should validate maxHealthyPercent', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -797,6 +825,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('minHealthyPercent must be less than maxHealthyPercent', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -815,6 +844,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('test Fargate loadbalanced construct', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -881,6 +911,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('test Fargate loadbalanced construct opting out of log driver creation', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -921,6 +952,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('test Fargate loadbalanced construct with TLS', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
@@ -978,6 +1010,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('test Fargateloadbalanced construct with TLS and default certificate', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
@@ -1039,6 +1072,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('errors when setting domainName but not domainZone', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1057,6 +1091,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('errors when setting both HTTP protocol and certificate', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1076,6 +1111,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('errors when setting both HTTP protocol and redirectHTTP', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1095,6 +1131,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('does not throw errors when not setting HTTPS protocol but certificate for redirectHTTP', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
@@ -1115,6 +1152,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('errors when setting HTTPS protocol but not domain name', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1133,6 +1171,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('errors when idleTimeout is over 4000 seconds', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1160,6 +1199,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('errors when idleTimeout is under 1 seconds', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1187,6 +1227,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('passes when idleTimeout is between 1 and 4000 seconds', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1214,6 +1255,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('idletime is undefined when not set', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1248,6 +1290,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('test Fargate loadbalanced construct with optional log driver input', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1298,6 +1341,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('test Fargate loadbalanced construct with logging enabled', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1345,6 +1389,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('test Fargate loadbalanced construct with both image and taskDefinition provided', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1373,6 +1418,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('test Fargate application loadbalanced construct with taskDefinition provided', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1413,6 +1459,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('ALBFargate - having *HealthyPercent properties', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1438,6 +1485,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('specify containerCpu and containerMemoryLimitMiB', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1466,6 +1514,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('throw when containerCpu is greater than cpu', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1486,6 +1535,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('throw when containerCpu is negative integer', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1506,6 +1556,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('throw when containerCpu is float', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1526,6 +1577,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('throw when containerMemoryLimitMiB is greater than memoryLimitMiB', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1546,6 +1598,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('throw when containerMemoryLimitMiB is negative integer', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1566,6 +1619,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('throw when containerMemoryLimitMiB is float', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1586,6 +1640,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('throw when containerMemoryLimitMiB is 0', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1738,6 +1793,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('backward compatibility: openListener defaults to true even with custom security groups when feature flag is disabled', () => {
     // GIVEN - Feature flag is NOT enabled (default behavior)
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     const customSg = new ec2.SecurityGroup(stack, 'CustomSG', { vpc });
@@ -1771,6 +1827,7 @@ describe('NetworkLoadBalancedFargateService', () => {
   test('setting loadBalancerType to Network creates an NLB Public', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1792,6 +1849,7 @@ describe('NetworkLoadBalancedFargateService', () => {
   test('setting loadBalancerType to Network and publicLoadBalancer to false creates an NLB Private', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1814,6 +1872,7 @@ describe('NetworkLoadBalancedFargateService', () => {
   test('setting vpc and cluster throws error', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1830,6 +1889,7 @@ describe('NetworkLoadBalancedFargateService', () => {
   test('setting executionRole updated taskDefinition with given execution role', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1859,6 +1919,7 @@ describe('NetworkLoadBalancedFargateService', () => {
   test('setting taskRole updated taskDefinition with given task role', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     const taskRole = new iam.Role(stack, 'taskRoleTest', {
@@ -1887,6 +1948,7 @@ describe('NetworkLoadBalancedFargateService', () => {
   test('setting containerName updates container name with given name', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1912,6 +1974,7 @@ describe('NetworkLoadBalancedFargateService', () => {
   test('not setting containerName updates container name with default', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1936,6 +1999,7 @@ describe('NetworkLoadBalancedFargateService', () => {
   test('setting servicename updates service name with given name', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1956,6 +2020,7 @@ describe('NetworkLoadBalancedFargateService', () => {
   test('not setting servicename updates service name with default', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -1976,6 +2041,7 @@ describe('NetworkLoadBalancedFargateService', () => {
   test('setting listenerCertificate create ELB listener with port 443, TLS protocal and certificate, Target group with port 443 and TLS protocol', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const certificate = Certificate.fromCertificateArn(stack, 'Cert', 'helloworld');
 
     // WHEN
@@ -2004,6 +2070,7 @@ describe('NetworkLoadBalancedFargateService', () => {
   test('not setting listenerCertificate create ELB listener with port 80 and TCP protocal, Target group with port 80 and TCP protocol', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
@@ -2027,6 +2094,7 @@ describe('NetworkLoadBalancedFargateService', () => {
   test('setting NLB deployment controller', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
@@ -2049,6 +2117,7 @@ describe('NetworkLoadBalancedFargateService', () => {
   test('setting NLB circuitBreaker works', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
@@ -2075,6 +2144,7 @@ describe('NetworkLoadBalancedFargateService', () => {
   test('setting NLB special listener port to create the listener', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -2103,6 +2173,7 @@ describe('NetworkLoadBalancedFargateService', () => {
   test('setting NLB cname option correctly sets the recordset type', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -2131,6 +2202,7 @@ describe('NetworkLoadBalancedFargateService', () => {
   test('setting NLB record type to NONE correctly omits the recordset', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -2156,6 +2228,7 @@ describe('NetworkLoadBalancedFargateService', () => {
   test('passing in existing network load balancer to NLB Fargate Service', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const nlb = new NetworkLoadBalancer(stack, 'NLB', { vpc });
 
@@ -2182,6 +2255,7 @@ describe('NetworkLoadBalancedFargateService', () => {
     // GIVEN
     const app = new cdk.App();
     const stack1 = new cdk.Stack(app, 'MyStack');
+    acknowledgeTestValidationRules(stack1);
     const vpc1 = new ec2.Vpc(stack1, 'VPC');
     const cluster1 = new ecs.Cluster(stack1, 'Cluster', { vpc: vpc1 });
     const nlbArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
@@ -2233,6 +2307,7 @@ describe('NetworkLoadBalancedFargateService', () => {
   test('test Network load balanced service with docker labels defined', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -2262,6 +2337,7 @@ describe('NetworkLoadBalancedFargateService', () => {
   test('NetworkLoadBalancedFargateService multiple capacity provider strategies are set', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
@@ -2308,6 +2384,7 @@ describe('NetworkLoadBalancedFargateService', () => {
   test('creates AWS Cloud Map service for Private DNS namespace with network load balanced fargate service', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -2382,6 +2459,7 @@ describe('NetworkLoadBalancedFargateService', () => {
   test('having *HealthyPercent properties', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -2409,6 +2487,7 @@ describe('NetworkLoadBalancedFargateService', () => {
   test('specify security group', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc, clusterName: 'MyCluster' });
     const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
