@@ -923,6 +923,80 @@ const capacityProvider = new lambda.CapacityProvider(this, 'MyCapacityProvider',
 | scalingOptions | ScalingOptions | No | Scaling configuration including policies. |
 | kmsKey | IKey | No | KMS key for encrypting capacity provider data. |
 
+## Network Connectors
+
+Network Connectors encapsulate networking configuration and AWS networking resources (ENIs) that can be associated with Lambda compute resources (MicroVMs) to provide VPC connectivity.
+
+### Creating a Network Connector
+
+To create a VPC egress network connector, specify the subnets, security groups, network protocol, and compute types:
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+const vpc = new ec2.Vpc(this, 'MyVpc');
+const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
+
+const connector = new lambda.NetworkConnector(this, 'MyConnector', {
+  networkConnectorName: 'my-vpc-connector',
+  configuration: lambda.NetworkConnectorConfig.vpcEgress({
+    subnets: vpc.privateSubnets,
+    securityGroups: [securityGroup],
+    networkProtocol: lambda.NetworkProtocol.IPV4,
+    associatedComputeResourceTypes: [lambda.ComputeType.MICROVMS],
+  }),
+});
+```
+
+By default, an operator role is automatically created with the `AWSLambdaNetworkConnectorOperatorPolicy` managed policy. You can also supply a custom role:
+
+```ts nofixture
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { Stack } from 'aws-cdk-lib';
+
+const stack = new Stack();
+const vpc = new ec2.Vpc(stack, 'MyVpc');
+const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
+
+const operatorRole = new iam.Role(stack, 'OperatorRole', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+  managedPolicies: [
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AWSLambdaNetworkConnectorOperatorPolicy'),
+  ],
+});
+
+const connector = new lambda.NetworkConnector(stack, 'MyConnector', {
+  configuration: lambda.NetworkConnectorConfig.vpcEgress({
+    subnets: vpc.privateSubnets,
+    securityGroups: [securityGroup],
+    networkProtocol: lambda.NetworkProtocol.IPV4,
+    associatedComputeResourceTypes: [lambda.ComputeType.MICROVMS],
+  }),
+  operatorRole,
+});
+```
+
+### Importing an Existing Network Connector
+
+You can import an existing network connector by its ARN:
+
+```ts
+const imported = lambda.NetworkConnector.fromNetworkConnectorArn(
+  this, 'ImportedConnector',
+  'arn:aws:lambda:us-east-1:123456789012:network-connector:nc-1234567890abcdef0',
+);
+```
+
+### Network Connector Properties
+
+| Property | Type | Required | Description |
+| --- | --- | --- | --- |
+| networkConnectorName | string | No | A unique name (1-64 chars, alphanumeric, hyphens, underscores). |
+| configuration | NetworkConnectorConfig | Yes | Network configuration created via static factory methods. |
+| operatorRole | IRole | No | IAM role for managing ENIs. Auto-created if not provided. |
+
 ## Lambda Insights
 
 Lambda functions can be configured to use CloudWatch [Lambda Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights.html)

@@ -1,0 +1,56 @@
+{
+  "/NetworkConnectorAllFieldsTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:39:38)",
+        "new IntegTestCase (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.network-connector-all-fields.js:62:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/NetworkConnectorAllFieldsTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:294:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:194:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:335:18)",
+        "/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:467: (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:3)",
+        "visit (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:524:9)",
+        "visit (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:521:9)",
+        "visit (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:521:9)",
+        "visit (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:521:9)",
+        "synthesizeTree (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:460:5)",
+        "synthesize (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:88:5)"
+      ]
+    }
+  ],
+  "/NetworkConnectorAllFieldsTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:194:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:335:18)",
+        "/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:467: (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:3)",
+        "visit (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:524:9)",
+        "visit (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:521:9)",
+        "visit (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:521:9)",
+        "visit (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:521:9)",
+        "synthesizeTree (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:460:5)",
+        "synthesize (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:88:5)"
+      ]
+    }
+  ]
+}
