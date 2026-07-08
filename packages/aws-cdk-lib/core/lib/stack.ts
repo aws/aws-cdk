@@ -229,7 +229,7 @@ export class Stack extends Construct implements ITaggable {
    * We do attribute detection since we can't reliably use 'instanceof'.
    */
   public static isStack(this: void, x: any): x is Stack {
-    return x !== null && typeof(x) === 'object' && STACK_SYMBOL in x;
+    return x !== null && typeof (x) === 'object' && STACK_SYMBOL in x;
   }
 
   /**
@@ -263,13 +263,56 @@ export class Stack extends Construct implements ITaggable {
         return c;
       }
 
-      const _scope = Node.of(c).scope;
+      const _scope = c.node.scope;
       if (Stage.isStage(c) || !_scope) {
         throw new ValidationError(lit`ShouldBeCreatedInStackScope`, `${construct.constructor?.name ?? 'Construct'} at '${Node.of(construct).path}' should be created in the scope of a Stack, but no Stack found`, c);
       }
 
       return _lookup(_scope);
     }
+  }
+
+  /**
+   * Override the reference strength for a specific cross-stack reference value.
+   *
+   * Use this to weaken (or strengthen) an individual reference without
+   * affecting other references to the same resource. For example:
+   *
+   * ```ts
+   * // producerStack defines an SNS topic
+   * declare const topic: sns.Topic;
+   *
+   * // consumerStack subscribes to it with a weak reference,
+   * // so the producer can be torn down without blocking on this consumer
+   * const consumerStack = new Stack(app, 'Consumer', {
+   *   env: { account: '123456789012', region: 'us-east-1' },
+   * });
+   * new sns.Subscription(consumerStack, 'Subscription', {
+   *   topic: sns.Topic.fromTopicArn(consumerStack, 'Topic', Stack.consumeReference(topic.topicArn)),
+   *   endpoint: 'https://example.com/webhook',
+   *   protocol: sns.SubscriptionProtocol.HTTPS,
+   * });
+   * ```
+   *
+   * @param value A tokenized string reference (e.g. `bucket.bucketArn`).
+   * @param strength The reference strength to use. Defaults to `BOTH`.
+   * @returns A token that resolves to the same value but uses the overridden strength.
+   */
+  public static consumeReference(value: string, strength: ReferenceStrength = ReferenceStrength.BOTH): string {
+    return Token.asString(makeCustomCoupledReference(value, strength));
+  }
+
+  /**
+   * Override the reference strength for a specific cross-stack string list reference.
+   *
+   * This is the string list equivalent of `consumeReference`.
+   *
+   * @param value A tokenized string list reference.
+   * @param strength The reference strength to use. Defaults to `BOTH`.
+   * @returns A token that resolves to the same value but uses the overridden strength.
+   */
+  public static consumeListReference(value: string[], strength: ReferenceStrength = ReferenceStrength.BOTH): string[] {
+    return Token.asList(makeCustomCoupledReference(value, strength));
   }
 
   /**
@@ -461,8 +504,8 @@ export class Stack extends Construct implements ITaggable {
     }
 
     this._missingContext = new Array<cxschema.MissingContext>();
-    this._stackDependencies = { };
-    this.templateOptions = { };
+    this._stackDependencies = {};
+    this.templateOptions = {};
     this._crossRegionReferences = !!props.crossRegionReferences;
     this._suppressTemplateIndentation = props.suppressTemplateIndentation ?? this.node.tryGetContext(SUPPRESS_TEMPLATE_INDENTATION_CONTEXT) ?? false;
 
@@ -591,11 +634,11 @@ export class Stack extends Construct implements ITaggable {
     }
     if (arn &&
       (arn.includes('${Qualifier}')
-      || arn.includes('${AWS::AccountId}')
-      || arn.includes('${AWS::Region}')
-      || arn.includes('${AWS::Partition}'))) {
+        || arn.includes('${AWS::AccountId}')
+        || arn.includes('${AWS::Region}')
+        || arn.includes('${AWS::Partition}'))) {
       throw new ValidationError(lit`PermissionsBoundaryContainsPseudoParameter`, `The permissions boundary ${arn} includes a pseudo parameter, ` +
-      'which is not supported for environment agnostic stacks', this);
+        'which is not supported for environment agnostic stacks', this);
     }
     return arn;
   }
@@ -611,7 +654,7 @@ export class Stack extends Construct implements ITaggable {
         visit(node: IConstruct) {
           if (
             CfnResource.isCfnResource(node) &&
-              (node.cfnResourceType == 'AWS::IAM::Role' || node.cfnResourceType == 'AWS::IAM::User')
+            (node.cfnResourceType == 'AWS::IAM::Role' || node.cfnResourceType == 'AWS::IAM::User')
           ) {
             node.addPropertyOverride('PermissionsBoundary', permissionsBoundaryArn);
           }
@@ -1068,7 +1111,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * @internal
    */
-  public _removeAssemblyDependency(target: Stack, reasonFilter: StackDependencyReason={}) {
+  public _removeAssemblyDependency(target: Stack, reasonFilter: StackDependencyReason = {}) {
     // defensive: we should never get here for nested stacks
     if (this.nested || target.nested) {
       throw new ValidationError(lit`CannotRemoveAssemblyLevelDependencies`, 'There cannot be assembly-level dependencies for nested stacks', this);
@@ -1483,12 +1526,12 @@ export class Stack extends Construct implements ITaggable {
     // between producer and consumer anyway, so we can just assume that they are).
     const containingAssembly = Stage.of(this);
 
-    if (env.account && typeof(env.account) !== 'string') {
-      throw new ValidationError(lit`AccountIdMustBeString`, `Account id of stack environment must be a 'string' but received '${typeof(env.account)}'`, this);
+    if (env.account && typeof (env.account) !== 'string') {
+      throw new ValidationError(lit`AccountIdMustBeString`, `Account id of stack environment must be a 'string' but received '${typeof (env.account)}'`, this);
     }
 
-    if (env.region && typeof(env.region) !== 'string') {
-      throw new ValidationError(lit`RegionMustBeString`, `Region of stack environment must be a 'string' but received '${typeof(env.region)}'`, this);
+    if (env.region && typeof (env.region) !== 'string') {
+      throw new ValidationError(lit`RegionMustBeString`, `Region of stack environment must be a 'string' but received '${typeof (env.region)}'`, this);
     }
 
     const account = env.account ?? containingAssembly?.account ?? Aws.ACCOUNT_ID;
@@ -1576,7 +1619,7 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Generate an ID with respect to the given container construct.
    */
-  private generateStackId(container: IConstruct | undefined, prefix: string='') {
+  private generateStackId(container: IConstruct | undefined, prefix: string = '') {
     const rootPath = rootPathTo(this, container);
     const ids = rootPath.map(c => Node.of(c).id);
 
@@ -1800,7 +1843,7 @@ export function rootPathTo(construct: IConstruct, ancestor?: IConstruct): IConst
  * has only one component. Otherwise we fall back to the regular "makeUniqueId"
  * behavior.
  */
-function makeStackName(components: string[], prefix: string='') {
+function makeStackName(components: string[], prefix: string = '') {
   if (components.length === 1) {
     const stack_name = prefix + components[0];
     if (stack_name.length <= 128) {
@@ -1888,6 +1931,7 @@ function count(xs: string[]): Record<string, number> {
 // These imports have to be at the end to prevent circular imports
 /* eslint-disable import/order */
 import { CfnOutput } from './cfn-output';
+import { ReferenceStrength } from './cross-stack-reference-strength';
 import type { Element } from './deps';
 import { addDependency } from './deps';
 import { Names } from './names';
@@ -1900,15 +1944,27 @@ import { Stage } from './stage';
 import type { ITaggable } from './tag-manager';
 import { TagManager } from './tag-manager';
 import { Token, Tokenization } from './token';
-import { getExportable, STRING_LIST_REFERENCE_DELIMITER } from './private/refs';
+import { getExportable, CustomCoupledReference, STRING_LIST_REFERENCE_DELIMITER } from './private/refs';
+import { CfnReference } from './private/cfn-reference';
 import { Fact, RegionInfo } from '../../region-info';
 import { deployTimeLookup } from './private/region-lookup';
 import { makeUniqueResourceName } from './private/unique-resource-name';
 import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
 import type { Intrinsic } from './private/intrinsic';
 import { mutatingAspectPrio32333 } from './private/aspect-prio';
-import { AssumptionError, ValidationError } from './errors';
+import { AssumptionError, UnscopedValidationError, ValidationError } from './errors';
 import { lit } from './private/literal-string';
 import { debugModeEnabled } from './debug';
-import { captureStackTrace } from './stack-trace';
+import { captureStackTrace } from './private/stack-trace';
 /* eslint-enable import/order */
+
+function makeCustomCoupledReference(value: any, strength: ReferenceStrength): CustomCoupledReference {
+  const resolvable = Tokenization.reverse(value);
+  if (!resolvable || !CfnReference.isCfnReference(resolvable)) {
+    throw new UnscopedValidationError(
+      lit`ConsumeReferenceRequiresResourceAttribute`,
+      'consumeReference: the value must be a resource attribute reference (like \'bucket.bucketArn\')',
+    );
+  }
+  return new CustomCoupledReference(resolvable, strength);
+}
