@@ -23,18 +23,18 @@
     "@types/prettier": "2.6.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "aws-sdk-js-codemod": "^2.4.5",
-    "cdk-generate-synthetic-examples": "^0.2.50",
+    "cdk-generate-synthetic-examples": "^0.2.54",
     "conventional-changelog-cli": "^2.2.2",
     "fs-extra": "^9.1.0",
     "graceful-fs": "^4.2.11",
     "jest-junit": "^13.2.0",
-    "jsii-diff": "1.133.0",
-    "jsii-pacmak": "1.133.0",
-    "jsii-reflect": "1.133.0",
-    "jsii-rosetta": "~5.9.49",
+    "jsii-diff": "1.138.0",
+    "jsii-pacmak": "1.138.0",
+    "jsii-reflect": "1.138.0",
+    "jsii-rosetta": "~5.9.55",
     "lerna": "^8.2.4",
     "nx": "^20",
-    "semver": "^7.8.1",
+    "semver": "^7.8.5",
     "standard-version": "^9.5.0",
     "ts-jest": "^29.4.11",
     "ts-node": "^10.9.2",
@@ -181,7 +181,7 @@
   },
   "dependencies": {
     "string-width": "^4.2.3",
-    "tar": "^7.5.16"
+    "tar": "^7.5.19"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
