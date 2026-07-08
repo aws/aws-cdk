@@ -1,3 +1,4 @@
+import { Construct } from 'constructs';
 import { Match, Template } from '../../../assertions';
 import * as apigwv2 from '../../../aws-apigatewayv2';
 import * as ec2 from '../../../aws-ec2';
@@ -29,7 +30,7 @@ describe('AlbIntegration', () => {
         Type: 'HTTP_PROXY',
         IntegrationHttpMethod: 'GET',
         ConnectionType: 'VPC_LINK',
-        ConnectionId: { Ref: 'ApiVpcLinkVpcF5DC0392' },
+        ConnectionId: { Ref: 'ApiVpcLinkc8fd940acb9a3f95ad0e87fb4c3a2482b1900ba1755BD81F6F' },
         IntegrationTarget: { Ref: 'Alb16C2F182' },
         Uri: {
           'Fn::Join': [
@@ -46,7 +47,7 @@ describe('AlbIntegration', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::VpcLink', {
       SecurityGroupIds: [
-        { 'Fn::GetAtt': ['ApiVpcLinkSgVpc932F764C', 'GroupId'] },
+        { 'Fn::GetAtt': ['ApiVpcLinkSgc8fd940acb9a3f95ad0e87fb4c3a2482b1900ba175E55A2949', 'GroupId'] },
       ],
     });
 
@@ -55,7 +56,7 @@ describe('AlbIntegration', () => {
       FromPort: 80,
       ToPort: 80,
       GroupId: { 'Fn::GetAtt': ['AlbSecurityGroup580F65A6', 'GroupId'] },
-      SourceSecurityGroupId: { 'Fn::GetAtt': ['ApiVpcLinkSgVpc932F764C', 'GroupId'] },
+      SourceSecurityGroupId: { 'Fn::GetAtt': ['ApiVpcLinkSgc8fd940acb9a3f95ad0e87fb4c3a2482b1900ba175E55A2949', 'GroupId'] },
     });
   });
 
@@ -159,6 +160,59 @@ describe('AlbIntegration', () => {
     Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroup', 1 + 2); // 1 VpcLink SG + 1 SG per ALB
     // One ingress rule per ALB listener.
     Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroupIngress', 2);
+  });
+
+  test('VPC Link and security group are not reused across different VPCs sharing a construct id', () => {
+    // GIVEN - two VPCs in different scopes, both with the local construct id 'Vpc'
+    const stack = new cdk.Stack();
+    const vpc1 = new ec2.Vpc(new Construct(stack, 'Scope1'), 'Vpc');
+    const vpc2 = new ec2.Vpc(new Construct(stack, 'Scope2'), 'Vpc');
+    const alb1 = new elbv2.ApplicationLoadBalancer(stack, 'Alb1', { vpc: vpc1 });
+    const alb2 = new elbv2.ApplicationLoadBalancer(stack, 'Alb2', { vpc: vpc2 });
+    const listener1 = alb1.addListener('Listener', { port: 80, open: false });
+    listener1.addAction('Default', { action: elbv2.ListenerAction.fixedResponse(200) });
+    const listener2 = alb2.addListener('Listener', { port: 80, open: false });
+    listener2.addAction('Default', { action: elbv2.ListenerAction.fixedResponse(200) });
+
+    const api = new apigateway.RestApi(stack, 'Api');
+
+    // WHEN
+    api.root.addMethod('GET', new apigateway.AlbIntegration(listener1));
+    api.root.addMethod('POST', new apigateway.AlbIntegration(listener2));
+
+    // THEN - a dedicated VPC Link and security group per VPC, each scoped to its own VPC.
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::VpcLink', 2);
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroup', 2 + 2); // 1 VpcLink SG per VPC + 1 SG per ALB
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      GroupDescription: 'Automatic security group for API Gateway VPC Link',
+      VpcId: { Ref: 'Scope1Vpc77A7F8AD' },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      GroupDescription: 'Automatic security group for API Gateway VPC Link',
+      VpcId: { Ref: 'Scope2Vpc7DB58442' },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::VpcLink', {
+      SecurityGroupIds: [
+        { 'Fn::GetAtt': ['ApiVpcLinkSgc8e25fc2fc6fa933d3d982cec77d6102a544a53e41036DBE87', 'GroupId'] },
+      ],
+      SubnetIds: [
+        { Ref: 'Scope1VpcPrivateSubnet1SubnetF9D63A69' },
+        { Ref: 'Scope1VpcPrivateSubnet2SubnetBFD1CE1D' },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::VpcLink', {
+      SecurityGroupIds: [
+        { 'Fn::GetAtt': ['ApiVpcLinkSgc8461cc2baba5b58933b430cf55b61157e54c75f48925AABA9', 'GroupId'] },
+      ],
+      SubnetIds: [
+        { Ref: 'Scope2VpcPrivateSubnet1Subnet2FEA74AC' },
+        { Ref: 'Scope2VpcPrivateSubnet2SubnetD7F79BA0' },
+      ],
+    });
   });
 
   test('integration options are passed through', () => {

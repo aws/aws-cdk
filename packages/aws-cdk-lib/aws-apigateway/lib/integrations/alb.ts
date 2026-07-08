@@ -250,8 +250,8 @@ export class AlbIntegration extends Integration {
    * shared across every `AlbIntegration` attached to the same API and VPC.
    */
   private getOrCreateVpcLink(method: Method, vpc: ec2.IVpc): { vpcLink: apigwv2.VpcLink; securityGroup: ec2.SecurityGroup } {
-    const sgId = `VpcLinkSg-${vpc.node.id}`;
-    const vpcLinkId = `VpcLink-${vpc.node.id}`;
+    const sgId = `VpcLinkSg-${vpc.node.addr}`;
+    const vpcLinkId = `VpcLink-${vpc.node.addr}`;
 
     const securityGroup = (method.api.node.tryFindChild(sgId) as ec2.SecurityGroup | undefined)
       ?? new ec2.SecurityGroup(method.api, sgId, {
