@@ -21,7 +21,7 @@ import type {
 import { CfnApiKeyCredentialProvider } from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import { buildIdentityResourceArns, grantCredentialSecret, grantReadWithList, TOKEN_VAULT_API_KEY_PARENT_RESOURCES, WORKLOAD_IDENTITY_USE_RESOURCES } from './grant-helpers';
@@ -39,6 +39,7 @@ import {
 
 /**
  * An API key credential provider registered in AgentCore Token Vault.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface IApiKeyCredentialProvider extends IResource, iam.IGrantable, IApiKeyCredentialProviderRef {
   /**
@@ -102,6 +103,7 @@ export interface IApiKeyCredentialProvider extends IResource, iam.IGrantable, IA
 
 /**
  * Provider and secret ARNs for wiring a Token Vault API key identity into a gateway target.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface GatewayApiKeyIdentityBinding {
   /**
@@ -117,6 +119,7 @@ export interface GatewayApiKeyIdentityBinding {
 
 /**
  * Properties for a new {@link ApiKeyCredentialProvider} (Token Vault resource).
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface ApiKeyCredentialProviderResourceProps {
   /**
@@ -151,6 +154,7 @@ export interface ApiKeyCredentialProviderResourceProps {
 
 /**
  * Attributes for importing an existing API key credential provider.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface ApiKeyCredentialProviderAttributes {
   /**
@@ -299,6 +303,10 @@ abstract class ApiKeyCredentialProviderBase extends Resource implements IApiKeyC
  * @resource AWS::BedrockAgentCore::ApiKeyCredentialProvider
  */
 @propertyInjectable
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export class ApiKeyCredentialProvider extends ApiKeyCredentialProviderBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-bedrock-agentcore-alpha.ApiKeyCredentialProvider';
@@ -393,6 +401,7 @@ export class ApiKeyCredentialProvider extends ApiKeyCredentialProviderBase {
   /**
    * ARNs for {@link GatewayCredentialProvider.fromApiKeyIdentity} / {@link GatewayCredentialProvider.fromApiKeyIdentityArn}.
    */
+  @MethodMetadata()
   public bindForGatewayApiKeyTarget(): GatewayApiKeyIdentityBinding {
     const secretArn = this.apiKeySecretArn;
     if (secretArn == null) {

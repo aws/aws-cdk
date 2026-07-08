@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check Out
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Node
         uses: actions/setup-node@v6
@@ -130,7 +130,7 @@ jobs:
     environment: automation
     steps:
       - name: Check Out
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Download patch
         uses: actions/download-artifact@v8

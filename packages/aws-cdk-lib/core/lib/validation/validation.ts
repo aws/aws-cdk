@@ -1,3 +1,4 @@
+import type { IConstruct } from 'constructs';
 import type { PolicyValidationPluginReport, PolicyValidationPluginReportBeta1, PolicyViolatingResourceBeta1, PolicyViolationBeta1 } from './report';
 
 /**
@@ -70,6 +71,26 @@ export interface IPolicyValidationContext {
    * The absolute path of all templates to be processed
    */
   readonly templatePaths: string[];
+
+  /**
+   * The account ID for these templates, if known
+   */
+  readonly accountId: string | undefined;
+
+  /**
+   * The region for these templates, if known
+   */
+  readonly region: string | undefined;
+
+  /**
+   * The root construct of the app being validated.
+   *
+   * Plugins may walk this tree for typed L1 property access and token
+   * resolution via `Stack.of(node).resolve()`. The tree is finalized and
+   * should be treated as read-only; mutations have no effect on synthesized
+   * output.
+   */
+  readonly appConstruct: IConstruct;
 }
 
 /**
@@ -120,6 +141,16 @@ export interface IPolicyValidationContextBeta1 {
    * The absolute path of all templates to be processed
    */
   readonly templatePaths: string[];
+
+  /**
+   * The root construct of the app being validated.
+   *
+   * Plugins may walk this tree for typed L1 property access and token
+   * resolution via `Stack.of(node).resolve()`. The tree is finalized and
+   * should be treated as read-only; mutations have no effect on synthesized
+   * output.
+   */
+  readonly appConstruct: IConstruct;
 }
 
 /**
@@ -138,7 +169,11 @@ export function _toBeta1Plugin(plugin: IPolicyValidationPlugin): IPolicyValidati
     version: plugin.version,
     ruleIds: plugin.ruleIds,
     validate(context: IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
-      const report = plugin.validate(context);
+      const report = plugin.validate({
+        ...context,
+        accountId: undefined,
+        region: undefined,
+      });
       return {
         success: report.success,
         pluginVersion: report.pluginVersion,
