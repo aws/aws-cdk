@@ -19,25 +19,35 @@ jobs:
     steps:
       - name: Check for PRs pending CI approval
         id: check-prs
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           script: |
             const owner = 'aws';
             const repo = 'aws-cdk';
+            // Stable identifier for the build workflow (workflow file path),
+            // since the display `name:` field can be renamed at any time.
+            const BUILD_WORKFLOW_PATHS = [
+              '.github/workflows/pr-build.yml',
+              '.github/workflows/codebuild-pr-build.yml'
+            ];
 
-            // Search for beginning-contributor PRs
-            const { data: searchResults } = await github.rest.search.issuesAndPullRequests({
-              q: `is:pr is:open repo:${owner}/${repo} label:beginning-contributor`,
+            // Paginate through all open beginning-contributor PRs; per_page alone
+            // only returns a single page and would silently drop PRs beyond it.
+            const openPrs = await github.paginate(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              state: 'open',
+              labels: 'beginning-contributor',
               per_page: 100
             });
 
-            console.log(`Found ${searchResults.total_count} beginning-contributor PRs`);
+            console.log(`Found ${openPrs.length} beginning-contributor PRs`);
 
             const pendingApproval = [];
             const pendingBuildResult = [];
 
-            for (const item of searchResults.items) {
+            for (const item of openPrs) {
               const prNumber = item.number;
 
               try {
@@ -77,21 +87,23 @@ jobs:
                   continue;
                 }
 
-                // Check if build has completed with a result
+                // Check if the build workflow has a run for this commit, matched by the
+                // stable workflow path rather than the renameable display name.
                 const buildRun = workflowRuns.workflow_runs.find(run =>
-                  run.name === 'PR Build' || run.name === 'Codebuild PR Build'
+                  BUILD_WORKFLOW_PATHS.includes(run.path)
                 );
 
-                // If no build run exists at all, or build hasn't reported back
                 const { data: status } = await github.rest.repos.getCombinedStatusForRef({
                   owner,
                   repo,
                   ref: pr.head.sha
                 });
 
-                if (status.state === 'pending' && status.total_count === 0 && !buildRun) {
-                  // No CI activity at all — but also no action_required
-                  // This means approval was skipped but no build triggered
+                const hasNoCiActivity = status.state === 'pending' && status.total_count === 0 && workflowRuns.workflow_runs.length === 0;
+
+                if (hasNoCiActivity) {
+                  // No workflow runs at all for this commit and no commit statuses —
+                  // approval was skipped but nothing was triggered.
                   pendingBuildResult.push({
                     number: prNumber,
                     title: pr.title,
@@ -128,16 +140,27 @@ jobs:
             return { pendingApproval, pendingBuildResult };
 
       - name: Update tracking issue
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
+        env:
+          CHECK_RESULT: ${{ steps.check-prs.outputs.result }}
         with:
           github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           script: |
-            const results = ${{ steps.check-prs.outputs.result }};
+            const results = JSON.parse(process.env.CHECK_RESULT);
             const { pendingApproval, pendingBuildResult } = results;
             const total = pendingApproval.length + pendingBuildResult.length;
             const owner = 'aws';
             const repo = 'aws-cdk';
             const labels = ['automation', 'ci-pending', 'tracking'];
+
+            // Escape Markdown table-breaking characters and strip newlines from
+            // contributor-controlled fields (e.g. PR titles) before rendering.
+            function sanitizeForTable(value) {
+              return String(value)
+                .replace(/\|/g, '\\|')
+                .replace(/[\r\n]+/g, ' ')
+                .trim();
+            }
 
             let issueBody = `## 📊 Beginning Contributor CI Report\n\n`;
             issueBody += `\`\`\`\n`;
@@ -150,7 +173,7 @@ jobs:
               issueBody += `| PR | Title | Author | Created |\n`;
               issueBody += `|----|-------|--------|----------|\n`;
               for (const pr of pendingApproval) {
-                issueBody += `| [#${pr.number}](${pr.url}) | ${pr.title} | @${pr.author} | ${pr.created_at.split('T')[0]} |\n`;
+                issueBody += `| [#${pr.number}](${pr.url}) | ${sanitizeForTable(pr.title)} | @${pr.author} | ${pr.created_at.split('T')[0]} |\n`;
               }
               issueBody += `\n`;
             }
@@ -160,7 +183,7 @@ jobs:
               issueBody += `| PR | Title | Author | Created |\n`;
               issueBody += `|----|-------|--------|----------|\n`;
               for (const pr of pendingBuildResult) {
-                issueBody += `| [#${pr.number}](${pr.url}) | ${pr.title} | @${pr.author} | ${pr.created_at.split('T')[0]} |\n`;
+                issueBody += `| [#${pr.number}](${pr.url}) | ${sanitizeForTable(pr.title)} | @${pr.author} | ${pr.created_at.split('T')[0]} |\n`;
               }
               issueBody += `\n`;
             }
@@ -189,6 +212,4 @@ jobs:
               body: issueBody,
               labels: labels
             });
-            console.log(`Updated tracking issue #${TRACKING_ISSUE_NUMBER}: ${pendingApproval.length} pending approval, ${pendingBuildResult.length} pending build result`);
-
             console.log(`Result: ${pendingApproval.length} pending approval, ${pendingBuildResult.length} pending build result`);
