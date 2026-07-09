@@ -5221,6 +5221,53 @@ describe('CMCMK', () => {
   });
 });
 
+describe('s3ObjectStorageMode', () => {
+  test.each([
+    lambda.S3ObjectStorageMode.COPY,
+    lambda.S3ObjectStorageMode.REFERENCE,
+  ])('sets S3ObjectStorageMode using fromBucketV2: %s', (s3ObjectStorageMode) => {
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'bucketname');
+
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromBucketV2(bucket, 'script.zip', {
+        objectVersion: 'object-version',
+        s3ObjectStorageMode,
+      }),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Code: {
+        S3Bucket: 'bucketname',
+        S3Key: 'script.zip',
+        S3ObjectVersion: 'object-version',
+        S3ObjectStorageMode: s3ObjectStorageMode,
+      },
+    });
+  });
+
+  test('does not set S3ObjectStorageMode by default', () => {
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'bucketname');
+
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromBucketV2(bucket, 'script.zip', {
+        objectVersion: 'object-version',
+      }),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Code: {
+        S3ObjectStorageMode: Match.absent(),
+      },
+    });
+  });
+});
+
 describe('tag propagation to logGroup on FF USE_CDK_MANAGED_LAMBDA_LOGGROUP enabled', () => {
   it('log group inherits tags from function when USE_CDK_MANAGED_LAMBDA_LOGGROUP is enabled', () => {
     const app = new cdk.App({ context: { [cxapi.USE_CDK_MANAGED_LAMBDA_LOGGROUP]: true } });

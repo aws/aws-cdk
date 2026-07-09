@@ -67,6 +67,39 @@ runtime code.
    the generated code to output (a zip file or a directory), which is then used as the 
    code for the created AWS Lambda.
 
+### Self-managed S3 code storage
+
+Use `S3ObjectStorageMode.REFERENCE` with `Code.fromBucketV2()` to have Lambda reference
+the deployment package directly from your S3 bucket instead of copying it into
+Lambda-managed storage. Lambda requires a versioned S3 object for this mode.
+
+```ts
+import * as s3 from 'aws-cdk-lib/aws-s3';
+
+declare const bucket: s3.IBucket;
+declare const objectVersion: string;
+
+new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_LATEST,
+  handler: 'index.handler',
+  code: lambda.Code.fromBucketV2(bucket, 'my-function.zip', {
+    objectVersion,
+    s3ObjectStorageMode: lambda.S3ObjectStorageMode.REFERENCE,
+  }),
+});
+
+new lambda.LayerVersion(this, 'MyLayer', {
+  code: lambda.Code.fromBucketV2(bucket, 'my-layer.zip', {
+    objectVersion,
+    s3ObjectStorageMode: lambda.S3ObjectStorageMode.REFERENCE,
+  }),
+});
+```
+
+When using `REFERENCE`, configure the source bucket policy to allow the Lambda service
+principal (`lambda.amazonaws.com`) to call `s3:GetObject` and `s3:GetObjectVersion`
+for the referenced object.
+
 The following example shows how to define a Python function and deploy the code
 from the local directory `my-lambda-handler` to it:
 
