@@ -29,7 +29,7 @@
     "outputPaths": [
      "executionArn"
     ],
-    "salt": "1756382102029"
+    "salt": "1779973423605"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -96,12 +96,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4cbd7cdb5600b1d8c000087fcff345214c258e0476ef89eb6b39a89b7de1b656.zip"
+     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -147,7 +147,7 @@
      "includedData": "\"METADATA_ONLY\""
     },
     "flattenResponse": "false",
-    "salt": "1756382102029"
+    "salt": "1779973423607"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -240,7 +240,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":60,\"MaxAttempts\":10,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":60,\"MaxAttempts\":30,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
        {
         "Fn::GetAtt": [
          "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
@@ -313,12 +313,12 @@
   "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4cbd7cdb5600b1d8c000087fcff345214c258e0476ef89eb6b39a89b7de1b656.zip"
+     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -355,12 +355,12 @@
   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4cbd7cdb5600b1d8c000087fcff345214c258e0476ef89eb6b39a89b7de1b656.zip"
+     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",

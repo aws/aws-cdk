@@ -367,7 +367,7 @@ There are a couple of high level differences:
 With a provisioned writer and serverless v2 readers, some of the serverless
 readers will need to be configured to scale with the writer so they can act as
 failover targets. You will need to determine the correct capacity based on the
-provisioned instance type and it's utilization.
+provisioned instance type and its utilization.
 
 As an example, if the CPU utilization for a db.r6g.4xlarge (128 GB) instance
 stays at 10% most times, then the minimum ACUs may be set at 6.5 ACUs
@@ -850,6 +850,36 @@ new rds.DatabaseInstance(this, 'InstanceWithCustomizedSecret', {
   }),
 });
 ```
+
+### RDS-managed master password
+
+You can enable RDS to manage the master password in AWS Secrets Manager by setting `manageMasterUserPassword` to `true`. When enabled, RDS creates and manages the secret automatically, and you can only specify the `username` and optionally an `encryptionKey` in the credentials:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const kmsKey: kms.Key;
+
+// Database cluster with RDS-managed password
+new rds.DatabaseCluster(this, 'Cluster', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
+  writer: rds.ClusterInstance.serverlessV2('writer'),
+  vpc,
+  manageMasterUserPassword: true,
+  credentials: rds.Credentials.fromUsername('admin', {
+    encryptionKey: kmsKey, // Optional - uses default KMS key if not specified
+  }),
+});
+
+// Database instance with RDS-managed password
+new rds.DatabaseInstance(this, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+  vpc,
+  manageMasterUserPassword: true,
+  credentials: rds.Credentials.fromUsername('postgres'),
+});
+```
+
+**Note**: When `manageMasterUserPassword` is enabled, you cannot use other credential properties like `password`, `secret`, `secretName`, `excludeCharacters`, `replicaRegions`, or `usernameAsString`. Only `username` and `encryptionKey` are allowed. The `secret` property exposes a read-only reference to the secret that RDS created, not a CDK-owned secret — `addToResourcePolicy()` is a no-op, so use `secret.grantRead(grantee)` to grant access.
 
 ### Snapshot credentials
 
@@ -1365,6 +1395,44 @@ new rds.DatabaseInstance(this, 'Database', {
 ```
 
 You cannot specify a parameter map and a parameter group at the same time.
+
+### Creating Standalone Parameter Groups
+
+In some scenarios, you may want to create a parameter group that exists independently
+of a database instance or cluster.
+
+By default, `ParameterGroup` uses a lazy creation pattern and only generates the
+CloudFormation resource when bound to an instance or cluster. To create a standalone 
+parameter group, use the static factory methods `forInstance()` or `forCluster()`:
+
+**For instance parameter group (AWS::RDS::DBParameterGroup):**
+
+```ts
+const parameterGroup = rds.ParameterGroup.forInstance(this, 'InstanceParameterGroup', {
+  engine: rds.DatabaseInstanceEngine.mysql({
+    version: rds.MysqlEngineVersion.VER_8_0_35,
+  }),
+  description: 'Parameter group for MySQL',
+  parameters: {
+    max_connections: '150',
+    slow_query_log: '1',
+  },
+});
+```
+
+**For cluster parameter group (AWS::RDS::DBClusterParameterGroup):**
+
+```ts
+const clusterParameterGroup = rds.ParameterGroup.forCluster(this, 'ClusterParameterGroup', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({
+    version: rds.AuroraMysqlEngineVersion.VER_3_04_0,
+  }),
+  description: 'Parameter group for Aurora MySQL',
+  parameters: {
+    aurora_parallel_query: '1',
+  },
+});
+```
 
 ## Serverless v1
 

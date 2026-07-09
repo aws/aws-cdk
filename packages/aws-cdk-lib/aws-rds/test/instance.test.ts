@@ -9,6 +9,7 @@ import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as rds from '../lib';
+import { acknowledgeTestValidationRules } from './util';
 
 let stack: cdk.Stack;
 let vpc: ec2.Vpc;
@@ -16,6 +17,7 @@ let vpc: ec2.Vpc;
 describe('instance', () => {
   beforeEach(() => {
     stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     vpc = new ec2.Vpc(stack, 'VPC');
   });
 
@@ -1748,6 +1750,19 @@ describe('instance', () => {
       });
     });
 
+    test('explicitly disabling performance insights is respected', () => {
+      new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        snapshotIdentifier: 'my-snapshot',
+        enablePerformanceInsights: false,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        EnablePerformanceInsights: false,
+      });
+    });
+
     test('throws if performance insights fields are set but performance insights is disabled', () => {
       expect(() => {
         new rds.DatabaseInstance(stack, 'Instance', {
@@ -2016,6 +2031,165 @@ describe('instance', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
       Name: secretName,
+    });
+  });
+
+  describe('manageMasterUserPassword', () => {
+    test('with username and KMS encryption key', () => {
+      // GIVEN
+      const kmsKey = new kms.Key(stack, 'Key');
+
+      // WHEN
+      new rds.DatabaseInstance(stack, 'Database', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        manageMasterUserPassword: true,
+        credentials: {
+          username: 'testuser',
+          encryptionKey: kmsKey,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        Engine: 'mysql',
+        MasterUsername: 'testuser',
+        ManageMasterUserPassword: true,
+        MasterUserSecret: {
+          KmsKeyId: stack.resolve(kmsKey.keyArn),
+        },
+        MasterUserPassword: Match.absent(),
+      });
+
+      Template.fromStack(stack).resourceCountIs('AWS::SecretsManager::Secret', 0);
+    });
+
+    test('without username (uses engine default)', () => {
+      // WHEN
+      new rds.DatabaseInstance(stack, 'Database', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        manageMasterUserPassword: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        Engine: 'mysql',
+        MasterUsername: 'admin', // engine default username
+        ManageMasterUserPassword: true,
+        MasterUserPassword: Match.absent(),
+        MasterUserSecret: Match.absent(),
+      });
+
+      Template.fromStack(stack).resourceCountIs('AWS::SecretsManager::Secret', 0);
+    });
+
+    test('secret.grantRead() grants kms:Decrypt when a customer managed key is used', () => {
+      // GIVEN
+      const kmsKey = new kms.Key(stack, 'Key');
+      const instance = new rds.DatabaseInstance(stack, 'Database', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        manageMasterUserPassword: true,
+        credentials: {
+          username: 'testuser',
+          encryptionKey: kmsKey,
+        },
+      });
+      const role = new Role(stack, 'Role', {
+        assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+      });
+
+      // WHEN
+      instance.secret!.grantRead(role);
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+              Effect: 'Allow',
+            }),
+          ]),
+        },
+      });
+      template.hasResourceProperties('AWS::KMS::Key', {
+        KeyPolicy: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: 'kms:Decrypt',
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'kms:ViaService': {
+                    'Fn::Join': ['', ['secretsmanager.', { Ref: 'AWS::Region' }, '.amazonaws.com']],
+                  },
+                },
+              },
+            }),
+          ]),
+        },
+      });
+    });
+  });
+
+  describe('manageMasterUserPassword validation errors', () => {
+    test('should reject all unsupported credential properties', () => {
+      // THEN
+      expect(() => {
+        new rds.DatabaseInstance(stack, 'Database', {
+          engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+          vpc,
+          manageMasterUserPassword: true,
+          credentials: {
+            username: 'testuser',
+            password: cdk.SecretValue.unsafePlainText('password'),
+            excludeCharacters: '"@/\\',
+            secretName: 'my-secret',
+            replicaRegions: [{ region: 'us-west-2' }],
+            usernameAsString: true,
+          },
+        });
+      }).toThrow(/When manageMasterUserPassword is enabled, only 'username' and 'encryptionKey' are allowed in credentials\. Found unsupported properties: excludeCharacters, password, replicaRegions, secretName, usernameAsString\./);
+    });
+  });
+
+  describe('manageMasterUserPassword rotation conflict', () => {
+    test('addRotationSingleUser throws when manageMasterUserPassword is enabled', () => {
+      const instance = new rds.DatabaseInstance(stack, 'Database', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        manageMasterUserPassword: true,
+      });
+
+      expect(() => instance.addRotationSingleUser()).toThrow(/Cannot add rotation when `manageMasterUserPassword` is enabled\. RDS automatically rotates the master password when it manages the secret\./);
+    });
+
+    test('addRotationMultiUser throws when manageMasterUserPassword is enabled', () => {
+      const instance = new rds.DatabaseInstance(stack, 'Database', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        manageMasterUserPassword: true,
+      });
+      const userSecret = new rds.DatabaseSecret(stack, 'UserSecret', { username: 'user' });
+
+      expect(() => instance.addRotationMultiUser('user', { secret: userSecret.attach(instance) }))
+        .toThrow(/Cannot add rotation when `manageMasterUserPassword` is enabled\. RDS automatically rotates the master password when it manages the secret\./);
+    });
+
+    test('addRotationSingleUser works when manageMasterUserPassword is not enabled (regression)', () => {
+      const instance = new rds.DatabaseInstance(stack, 'Database', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+      });
+
+      // WHEN - should not throw
+      instance.addRotationSingleUser();
+
+      // THEN
+      Template.fromStack(stack).resourceCountIs('AWS::SecretsManager::RotationSchedule', 1);
     });
   });
 
@@ -2516,6 +2690,7 @@ describe('cross-account instance', () => {
     ['PhysicalName.GENERATE_IF_NEEDED', cdk.PhysicalName.GENERATE_IF_NEEDED, 'instancestackncestackinstancec830ba83756a6dfc7154'],
   ])("with database identifier '%s' can be referenced from a Stack in a different account", (_, providedInstanceId, expectedInstanceId) => {
     const app = new cdk.App();
+    acknowledgeTestValidationRules(app);
     const instanceStack = new cdk.Stack(app, 'InstanceStack', {
       env: { account: '123', region: 'my-region' },
     });

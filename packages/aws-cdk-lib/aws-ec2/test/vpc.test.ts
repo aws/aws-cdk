@@ -1,4 +1,5 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { acknowledgeTestValidationRules } from './util';
 import { Annotations, Match, Template } from '../../assertions';
 import { App, CfnOutput, CfnResource, Fn, Lazy, Stack, Tags } from '../../core';
 import { EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
@@ -2850,7 +2851,9 @@ describe('vpc', () => {
 });
 
 function getTestStack(): Stack {
-  return new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
+  const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
+  acknowledgeTestValidationRules(stack);
+  return stack;
 }
 
 function toCfnTags(tags: any): Array<{Key: string; Value: string}> {
