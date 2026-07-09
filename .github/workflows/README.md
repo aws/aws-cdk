@@ -140,9 +140,9 @@ Owner: CDK Support team
 [project-prioritization-added-on.yml](project-prioritization-added-on.yml): GitHub action that runs every day to update AddedOn field in the prioritization project board.
 Owner: CDK Support team
 
-### Monitor CI Pending Approval
+### Pending Maintainer Action Check
 
-[monitor-ci-pending-approval.yml](monitor-ci-pending-approval.yml): GitHub action that runs daily to track beginning-contributor PRs that need maintainer action — either CI approval or build result investigation. Updates a tracking issue with the current backlog.
+[pending-maintainer-action-check.yml](pending-maintainer-action-check.yml): GitHub action that runs daily to flag beginning-contributor PRs that need maintainer action — either CI approval or build result investigation. Sets "Needs Attention" on the [CDK AC Priority Board](https://github.com/orgs/aws/projects/302/views/9) for matching PRs.
 Owner: Core CDK team
 
 ### Issue sync
