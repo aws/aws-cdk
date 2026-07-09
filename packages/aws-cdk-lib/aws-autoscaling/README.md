@@ -522,12 +522,10 @@ The following update policies are available:
   configured on the AutoScalingGroup), the old AutoScalingGroup is deleted.
   If the deployment needs to be rolled back, the new AutoScalingGroup is
   deleted and the old one is left unchanged.
-* `UpdatePolicy.instanceRefresh([options])`: when a property that triggers an
-  instance refresh changes (such as the launch template or mixed instances
-  policy), CloudFormation starts an [instance refresh] to replace the existing
-  instances gradually while maintaining availability. Unlike rolling and
-  replacing updates, the replacement is performed by the Auto Scaling service
-  rather than by CloudFormation itself.
+* `UpdatePolicy.instanceRefresh([options])`: gradually replace the existing
+  instances with new instances by having Amazon EC2 Auto Scaling perform an
+  instance refresh, keeping a configurable percentage of the group healthy and
+  in service throughout.
 
 To customize the instance refresh, pass options:
 
@@ -562,8 +560,6 @@ If you omit `minHealthyPercentage`/`maxHealthyPercentage`, they fall back to the
 Auto Scaling group's instance maintenance policy when one is defined; otherwise
 CloudFormation defaults to `100`/`110` for the `Rolling` strategy
 (launch-before-terminate with a 10% surge) and `90`/`100` for `ReplaceRootVolume`.
-
-[instance refresh]: https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-instance-refresh.html
 
 ## Allowing Connections
 
