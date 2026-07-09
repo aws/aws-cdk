@@ -1,13 +1,20 @@
 {
   "/AlbIntegrationInteg/DefaultTest/DeployAssert": [
     {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new DeployAssert (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:38:38)",
-        "new IntegTestCase (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
-        "new IntegTest (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:113:15)",
-        "...node internals..."
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "resolveValue (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:165:54)",
+        "resolveReferences (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:73:36)",
+        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:217:27)",
+        "process.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:163:51)",
+        "Object.onceWrapper (node:events:639:26)",
+        "process.emit (node:events:524:28)"
       ]
     }
   ],
@@ -15,48 +22,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:515: (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:515:3)",
-        "visit (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:572:9)",
-        "visit (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:569:9)",
-        "visit (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:569:9)",
-        "visit (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:569:9)",
-        "synthesizeTree (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:508:5)",
-        "synthesize (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
-        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "process.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/app.js:93:51)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:515: (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:515:3)",
-        "visit (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:572:9)",
-        "visit (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:569:9)",
-        "visit (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:569:9)",
-        "visit (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:569:9)",
-        "synthesizeTree (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:508:5)",
-        "synthesize (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
-        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "process.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/app.js:93:51)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationInteg/DefaultTest/DeployAssert/HttpApiCall544b56d3c9fd35c71f70adc378c7d560/Default": [
@@ -77,60 +48,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "AssertionResultsHttpApiCall544b56d3c9fd35c71f70adc378c7d560"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "Object.visit (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk/integ-tests-alpha/lib/assertions/http-call.js:53:25)",
-        "recurse (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:396:38)",
-        "recurse (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:43)",
-        "recurse (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:43)",
-        "recurse (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:43)",
-        "recurse (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:43)",
-        "invokeAspectsV2 (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:368:5)",
-        "synthesize (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:37:9)",
-        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "process.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/app.js:93:51)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
     {
       "type": "aws:cdk:logicalId",
       "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new LambdaFunctionProvider (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:78:26)",
-        "SingletonFunction.ensureFunction (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
-        "new SingletonFunction (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
-        "new AssertionsProvider (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
-        "new HttpApiCall (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk/integ-tests-alpha/lib/assertions/http-call.js:34:25)",
-        "DeployAssert.httpApiCall (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:68:16)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:123:18)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
     {
       "type": "aws:cdk:logicalId",
       "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new LambdaFunctionProvider (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:126:28)",
-        "SingletonFunction.ensureFunction (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
-        "new SingletonFunction (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
-        "new AssertionsProvider (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
-        "new HttpApiCall (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk/integ-tests-alpha/lib/assertions/http-call.js:34:25)",
-        "DeployAssert.httpApiCall (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:68:16)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:123:18)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationInteg/DefaultTest/DeployAssert/HttpApiCalla42c42407399f76d1e4522998e396e4f/Default": [
@@ -151,58 +80,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "AssertionResultsHttpApiCalla42c42407399f76d1e4522998e396e4f"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "Object.visit (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk/integ-tests-alpha/lib/assertions/http-call.js:53:25)",
-        "recurse (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:396:38)",
-        "recurse (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:43)",
-        "recurse (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:43)",
-        "recurse (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:43)",
-        "recurse (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:43)",
-        "invokeAspectsV2 (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:368:5)",
-        "synthesize (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:37:9)",
-        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "process.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/app.js:93:51)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationInteg/DefaultTest/DeployAssert/HttpApiCall544b56d3c9fd35c71f70adc378c7d560/Default/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "HttpApiCall544b56d3c9fd35c71f70adc378c7d560"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new HttpApiCall (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk/integ-tests-alpha/lib/assertions/http-call.js:35:32)",
-        "DeployAssert.httpApiCall (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:68:16)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:123:18)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationInteg/DefaultTest/DeployAssert/HttpApiCalla42c42407399f76d1e4522998e396e4f/Default/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "HttpApiCalla42c42407399f76d1e4522998e396e4f"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new HttpApiCall (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk/integ-tests-alpha/lib/assertions/http-call.js:35:32)",
-        "DeployAssert.httpApiCall (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:68:16)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:124:18)",
-        "...node internals..."
-      ]
     }
   ]
 }

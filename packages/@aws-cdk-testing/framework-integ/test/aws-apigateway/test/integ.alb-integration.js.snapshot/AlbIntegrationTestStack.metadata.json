@@ -1,13 +1,4 @@
 {
-  "/AlbIntegrationTestStack": [
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
-    }
-  ],
   "/AlbIntegrationTestStack/Vpc": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -89,60 +80,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:515: (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:515:3)",
-        "visit (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:572:9)",
-        "visit (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:569:9)",
-        "synthesizeTree (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:508:5)",
-        "synthesize (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
-        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "process.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/app.js:93:51)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:515: (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:515:3)",
-        "visit (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:572:9)",
-        "visit (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:569:9)",
-        "synthesizeTree (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:508:5)",
-        "synthesize (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
-        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "process.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/app.js:93:51)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Vpc/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Vpc8378EB38"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:770:29)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:29:21)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Vpc/PublicSubnet1": [
@@ -269,32 +218,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcIGWD7BA715C"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:825:29)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:29:21)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Vpc/VPCGW": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcVPCGWBF912B6E"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:828:29)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:29:21)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Vpc/RestrictDefaultSecurityGroupCustomResource": [
@@ -307,40 +236,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResourceProviderBase (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:98:25)",
-        "new RestrictDefaultSgProvider (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:24:9)",
-        "RestrictDefaultSgProvider.getOrCreateProvider (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:21:28)",
-        "WrappedClass.restrictDefaultSecurityGroup (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1072:99)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:894:22)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:29:21)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResourceProviderBase (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:120:24)",
-        "new RestrictDefaultSgProvider (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:24:9)",
-        "RestrictDefaultSgProvider.getOrCreateProvider (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:21:28)",
-        "WrappedClass.restrictDefaultSecurityGroup (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1072:99)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:894:22)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:29:21)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/BackendFunction/ServiceRole": [
@@ -377,16 +278,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "BackendFunction63314140"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
-        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:30:33)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/BackendFunction/LogGroup": [
@@ -401,42 +292,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "BackendFunctionInvoke2UTWxhlfyqbT5FTn5jvgbLgjFfJwzswGk55DU1HYBA99DA3B"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addPermission (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:170:9)",
-        "Object.addToResourcePolicy (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:493:26)",
-        "Grant.addToPrincipalOrResource (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-iam/lib/grant.js:68:49)",
-        "WrappedClass.grant (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:483:35)",
-        "WrappedClass.grantInvoke (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:287:26)",
-        "LambdaTarget.attachToApplicationTargetGroup (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-elasticloadbalancingv2-targets/lib/lambda-target.js:44:31)",
-        "WrappedClass.addTarget (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-target-group.js:286:39)",
-        "new ApplicationTargetGroup (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-target-group.js:257:22)",
-        "new ApplicationTargetGroup (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addTargets (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-listener.js:420:27)",
-        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:72:22)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Alb/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Alb16C2F182"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new BaseLoadBalancer (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/shared/base-load-balancer.js:191:26)",
-        "new ApplicationLoadBalancer (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-load-balancer.js:241:13)",
-        "new ApplicationLoadBalancer (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:50:21)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Alb/SecurityGroup": [
@@ -507,51 +368,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "Certificate4E7ABB08"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Certificate (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-certificatemanager/lib/certificate.js:261:26)",
-        "new Certificate (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:58:29)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/AliasRecord/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AliasRecord851000D2"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new RecordSet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-route53/lib/record-set.js:350:31)",
-        "new RecordSet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new ARecord (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-route53/lib/record-set.js:519:13)",
-        "new ARecord (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:62:9)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/RestApi/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "RestApi0C43BF4B"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new RestApi (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:806:30)",
-        "new RestApi (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new RestApi (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:86:20)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/RestApi/CloudWatchRole": [
@@ -582,18 +410,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "RestApiAccount7C83CF5A"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass._configureCloudWatchRole (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:491:34)",
-        "new RestApi (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:821:18)",
-        "new RestApi (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new RestApi (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:86:20)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/RestApi/Deployment": [
@@ -651,18 +467,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "RestApiEndpoint0551178A"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass._configureDeployment (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:527:13)",
-        "new RestApi (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:822:18)",
-        "new RestApi (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new RestApi (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:86:20)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/RestApi/Default": [
@@ -671,7 +475,7 @@
       "data": "*"
     }
   ],
-  "/AlbIntegrationTestStack/RestApi/VpcLinkSg-Vpc": [
+  "/AlbIntegrationTestStack/RestApi/VpcLinkSg-c8341fe2c6baf3e337d47156d11cc4e8f26030a503": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -702,7 +506,7 @@
       }
     }
   ],
-  "/AlbIntegrationTestStack/RestApi/VpcLink-Vpc": [
+  "/AlbIntegrationTestStack/RestApi/VpcLink-c8341fe2c6baf3e337d47156d11cc4e8f26030a503": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -720,713 +524,192 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputRefRestApi0C43BF4B00053745"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "AlbIntegrationStack.exportValue (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
-        "createImportValue (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/refs.js:249:33)",
-        "resolveValue (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/refs.js:176:16)",
-        "resolveReferences (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/refs.js:52:30)",
-        "prepareApp (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
-        "synthesize (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:44:36)",
-        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "process.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/app.js:93:51)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Exports/Output{\"Ref\":\"RestApiDeploymentStageprod3855DE66\"}": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputRefRestApiDeploymentStageprod3855DE66D0316BB8"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "AlbIntegrationStack.exportValue (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
-        "createImportValue (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/refs.js:249:33)",
-        "resolveValue (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/refs.js:176:16)",
-        "resolveReferences (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/refs.js:52:30)",
-        "prepareApp (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
-        "synthesize (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:44:36)",
-        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "process.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/app.js:93:51)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Vpc/PublicSubnet1/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1Subnet5C2D37C4"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:29:21)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Vpc/PublicSubnet1/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1RouteTable6C95E38E"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:29:21)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Vpc/PublicSubnet1/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1RouteTableAssociation97140677"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:29:21)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Vpc/PublicSubnet1/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addDefaultInternetRoute (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1304:27)",
-        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835: (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:3)",
-        "Array.forEach (:)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:29:21)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Vpc/PublicSubnet1/EIP": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1EIPD7E02669"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addNatGateway (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1556:50)",
-        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureNat (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
-        "WrappedClass.createNatGateways (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:29:21)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Vpc/PublicSubnet1/NATGateway": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1NATGateway4D7517AA"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addNatGateway (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1554:25)",
-        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureNat (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
-        "WrappedClass.createNatGateways (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:29:21)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Vpc/PublicSubnet2/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet2Subnet691E08A3"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:29:21)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Vpc/PublicSubnet2/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet2RouteTable94F7E489"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:29:21)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Vpc/PublicSubnet2/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:29:21)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Vpc/PublicSubnet2/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet2DefaultRoute97F91067"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addDefaultInternetRoute (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1304:27)",
-        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835: (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:3)",
-        "Array.forEach (:)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:29:21)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Vpc/PrivateSubnet1/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet1Subnet536B997A"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:29:21)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Vpc/PrivateSubnet1/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet1RouteTableB2C5B500"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:29:21)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Vpc/PrivateSubnet1/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:29:21)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Vpc/PrivateSubnet1/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addRoute (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1393:27)",
-        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureSubnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
-        "NatGatewayProvider.configureNat (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
-        "WrappedClass.createNatGateways (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:29:21)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Vpc/PrivateSubnet2/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet2Subnet3788AAA1"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:29:21)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Vpc/PrivateSubnet2/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet2RouteTableA678073B"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:29:21)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Vpc/PrivateSubnet2/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:29:21)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Vpc/PrivateSubnet2/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet2DefaultRoute060D2087"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addRoute (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1393:27)",
-        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureSubnet (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
-        "NatGatewayProvider.configureNat (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
-        "WrappedClass.createNatGateways (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:29:21)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "WrappedClass.restrictDefaultSecurityGroup (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1091:13)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:894:22)",
-        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:29:21)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/BackendFunction/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BackendFunctionServiceRoleCA938F8D"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
-        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:30:33)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/BackendFunction/SecurityGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BackendFunctionSecurityGroupA3E57401"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new SecurityGroup (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
-        "new SecurityGroup (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new SecurityGroup (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.configureVpc (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-lambda/lib/function.js:1195:62)",
-        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-lambda/lib/function.js:715:33)",
-        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:30:33)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/BackendFunction/LogGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BackendFunctionLogGroupA2C3BDCF"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new LogGroup (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
-        "new LogGroup (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-lambda/lib/function.js:775:34)",
-        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:30:33)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Alb/SecurityGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AlbSecurityGroup580F65A6"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new SecurityGroup (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
-        "new SecurityGroup (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new SecurityGroup (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new ApplicationLoadBalancer (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-load-balancer.js:267:60)",
-        "new ApplicationLoadBalancer (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:50:21)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
-  "/AlbIntegrationTestStack/Alb/SecurityGroup/from AlbIntegrationTestStackRestApiVpcLinkSgVpcB17A29AB:80": [
+  "/AlbIntegrationTestStack/Alb/SecurityGroup/from AlbIntegrationTestStackRestApiVpcLinkSgc8341fe2c6baf3e337d47156d11cc4e8f26030a5034C9BFD8B:80": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "AlbSecurityGroupfromAlbIntegrationTestStackRestApiVpcLinkSgVpcB17A29AB80E5D5F453"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addIngressRule (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:98:13)",
-        "WrappedClass.addIngressRule (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:445:23)",
-        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139: (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139:3)",
-        "ReactiveList.forEachAndForever (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
-        "/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138: (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138:5)",
-        "ReactiveList.forEachAndForever (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
-        "Connections.allowFrom (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/connections.js:137:30)",
-        "AlbIntegration.bind (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/integrations/alb.js:113:39)",
-        "new Method (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/method.js:186:44)",
-        "new Method (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Method (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addMethod (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:90:16)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:92:43)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
+      "data": "AlbSecurityGroupfromAlbIntegrationTestStackRestApiVpcLinkSgc8341fe2c6baf3e337d47156d11cc4e8f26030a5034C9BFD8B80982D9E50"
     }
   ],
-  "/AlbIntegrationTestStack/Alb/SecurityGroup/from AlbIntegrationTestStackRestApiVpcLinkSgVpcB17A29AB:443": [
+  "/AlbIntegrationTestStack/Alb/SecurityGroup/from AlbIntegrationTestStackRestApiVpcLinkSgc8341fe2c6baf3e337d47156d11cc4e8f26030a5034C9BFD8B:443": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "AlbSecurityGroupfromAlbIntegrationTestStackRestApiVpcLinkSgVpcB17A29AB4435E751201"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addIngressRule (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:98:13)",
-        "WrappedClass.addIngressRule (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:445:23)",
-        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139: (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139:3)",
-        "ReactiveList.forEachAndForever (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
-        "/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138: (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138:5)",
-        "ReactiveList.forEachAndForever (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
-        "Connections.allowFrom (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/connections.js:137:30)",
-        "AlbIntegration.bind (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/integrations/alb.js:113:39)",
-        "new Method (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/method.js:186:44)",
-        "new Method (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Method (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addMethod (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:90:16)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:94:44)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
+      "data": "AlbSecurityGroupfromAlbIntegrationTestStackRestApiVpcLinkSgc8341fe2c6baf3e337d47156d11cc4e8f26030a5034C9BFD8B44373514FD9"
     }
   ],
   "/AlbIntegrationTestStack/Alb/HttpListener/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AlbHttpListener00C8B33E"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new BaseListener (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/shared/base-listener.js:132:30)",
-        "new BaseListener (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new ApplicationListener (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-listener.js:233:13)",
-        "new ApplicationListener (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new ApplicationListener (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addListener (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-load-balancer.js:330:30)",
-        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:67:34)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Alb/HttpsListener/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AlbHttpsListener2ADA614F"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new BaseListener (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/shared/base-listener.js:132:30)",
-        "new BaseListener (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new ApplicationListener (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-listener.js:233:13)",
-        "new ApplicationListener (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new ApplicationListener (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addListener (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-load-balancer.js:330:30)",
-        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:76:35)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/RestApi/CloudWatchRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "RestApiCloudWatchRoleE3ED6605"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass._configureCloudWatchRole (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:486:22)",
-        "new RestApi (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:821:18)",
-        "new RestApi (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new RestApi (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:86:20)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/RestApi/Deployment/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "RestApiDeployment180EC50376afe7945b229ff7e5d555cfb9d16c8f"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Deployment (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/deployment.js:136:29)",
-        "new Deployment (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass._configureDeployment (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:515:38)",
-        "new RestApi (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:822:18)",
-        "new RestApi (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new RestApi (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:86:20)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
+      "data": "RestApiDeployment180EC503d5a337ce8170e73eeb1ed2a6410e8d2d"
     }
   ],
   "/AlbIntegrationTestStack/RestApi/DeploymentStage.prod/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "RestApiDeploymentStageprod3855DE66"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Stage (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/stage.js:370:30)",
-        "new Stage (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass._configureDeployment (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:523:36)",
-        "new RestApi (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:822:18)",
-        "new RestApi (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new RestApi (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:86:20)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/RestApi/Default/http": [
@@ -1447,106 +730,34 @@
       }
     }
   ],
-  "/AlbIntegrationTestStack/RestApi/VpcLinkSg-Vpc/Resource": [
+  "/AlbIntegrationTestStack/RestApi/VpcLinkSg-c8341fe2c6baf3e337d47156d11cc4e8f26030a503/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "RestApiVpcLinkSgVpc1881C0A9"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new SecurityGroup (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
-        "new SecurityGroup (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new SecurityGroup (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "AlbIntegration.getOrCreateVpcLink (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/integrations/alb.js:145:16)",
-        "AlbIntegration.bind (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/integrations/alb.js:111:34)",
-        "new Method (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/method.js:186:44)",
-        "new Method (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Method (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addMethod (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:90:16)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:92:43)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
+      "data": "RestApiVpcLinkSgc8341fe2c6baf3e337d47156d11cc4e8f26030a5030486474E"
     }
   ],
-  "/AlbIntegrationTestStack/RestApi/VpcLink-Vpc/Resource": [
+  "/AlbIntegrationTestStack/RestApi/VpcLink-c8341fe2c6baf3e337d47156d11cc4e8f26030a503/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "RestApiVpcLinkVpc5248D480"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new VpcLink (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/vpc-link.js:124:33)",
-        "new VpcLink (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "AlbIntegration.getOrCreateVpcLink (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/integrations/alb.js:150:16)",
-        "AlbIntegration.bind (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/integrations/alb.js:111:34)",
-        "new Method (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/method.js:186:44)",
-        "new Method (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Method (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addMethod (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:90:16)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:92:43)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
+      "data": "RestApiVpcLinkc8341fe2c6baf3e337d47156d11cc4e8f26030a5039BD20C8A"
     }
   ],
   "/AlbIntegrationTestStack/Alb/HttpListener/HttpTargetGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AlbHttpListenerHttpTargetGroup13640CF9"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new TargetGroupBase (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/shared/base-target-group.js:214:29)",
-        "new TargetGroupBase (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new ApplicationTargetGroup (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-target-group.js:207:13)",
-        "new ApplicationTargetGroup (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addTargets (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-listener.js:420:27)",
-        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:72:22)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/Alb/HttpsListener/HttpsTargetGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AlbHttpsListenerHttpsTargetGroupA01C3105"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new TargetGroupBase (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/shared/base-target-group.js:214:29)",
-        "new TargetGroupBase (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new ApplicationTargetGroup (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-target-group.js:207:13)",
-        "new ApplicationTargetGroup (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addTargets (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-listener.js:420:27)",
-        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:82:23)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/RestApi/Default/http/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "RestApihttpEEFEBDB4"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Resource (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:339:30)",
-        "new Resource (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "RootResource.addResource (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:77:16)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:92:23)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/RestApi/Default/http/GET": [
@@ -1564,17 +775,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "RestApihttpsA7B52E05"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Resource (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:339:30)",
-        "new Resource (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "RootResource.addResource (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:77:16)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:94:23)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/RestApi/Default/https/GET": [
@@ -1592,36 +792,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "RestApihttpGETD9124D57"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Method (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/method.js:202:30)",
-        "new Method (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Method (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addMethod (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:90:16)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:92:43)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/AlbIntegrationTestStack/RestApi/Default/https/GET/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "RestApihttpsGETB13A36FE"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Method (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/method.js:202:30)",
-        "new Method (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Method (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addMethod (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:90:16)",
-        "new AlbIntegrationStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:94:44)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.alb-integration.js:107:15)",
-        "...node internals..."
-      ]
     }
   ]
 }

@@ -497,7 +497,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f.zip"
+     "S3Key": "bea78ce725e22a5e0d82378f6b49028c09ba86499286d6945a0506e820854e92.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -732,7 +732,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AlbSecurityGroupfromAlbIntegrationTestStackRestApiVpcLinkSgVpcB17A29AB80E5D5F453": {
+  "AlbSecurityGroupfromAlbIntegrationTestStackRestApiVpcLinkSgc8341fe2c6baf3e337d47156d11cc4e8f26030a5034C9BFD8B80982D9E50": {
    "Type": "AWS::EC2::SecurityGroupIngress",
    "Properties": {
     "Description": "Allow API Gateway VPC Link to reach ALB listener",
@@ -746,7 +746,7 @@
     "IpProtocol": "tcp",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
-      "RestApiVpcLinkSgVpc1881C0A9",
+      "RestApiVpcLinkSgc8341fe2c6baf3e337d47156d11cc4e8f26030a5030486474E",
       "GroupId"
      ]
     },
@@ -755,7 +755,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AlbSecurityGroupfromAlbIntegrationTestStackRestApiVpcLinkSgVpcB17A29AB4435E751201": {
+  "AlbSecurityGroupfromAlbIntegrationTestStackRestApiVpcLinkSgc8341fe2c6baf3e337d47156d11cc4e8f26030a5034C9BFD8B44373514FD9": {
    "Type": "AWS::EC2::SecurityGroupIngress",
    "Properties": {
     "Description": "Allow API Gateway VPC Link to reach ALB listener",
@@ -769,7 +769,7 @@
     "IpProtocol": "tcp",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
-      "RestApiVpcLinkSgVpc1881C0A9",
+      "RestApiVpcLinkSgc8341fe2c6baf3e337d47156d11cc4e8f26030a5030486474E",
       "GroupId"
      ]
     },
@@ -845,7 +845,8 @@
      "Ref": "Alb16C2F182"
     },
     "Port": 443,
-    "Protocol": "HTTPS"
+    "Protocol": "HTTPS",
+    "SslPolicy": "ELBSecurityPolicy-TLS13-1-2-PQ-2025-09"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -985,7 +986,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "RestApiDeployment180EC50376afe7945b229ff7e5d555cfb9d16c8f": {
+  "RestApiDeployment180EC503d5a337ce8170e73eeb1ed2a6410e8d2d": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "Automatically created by the RestApi construct",
@@ -1009,7 +1010,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "RestApiDeployment180EC50376afe7945b229ff7e5d555cfb9d16c8f"
+     "Ref": "RestApiDeployment180EC503d5a337ce8170e73eeb1ed2a6410e8d2d"
     },
     "RestApiId": {
      "Ref": "RestApi0C43BF4B"
@@ -1046,7 +1047,7 @@
     "HttpMethod": "GET",
     "Integration": {
      "ConnectionId": {
-      "Ref": "RestApiVpcLinkVpc5248D480"
+      "Ref": "RestApiVpcLinkc8341fe2c6baf3e337d47156d11cc4e8f26030a5039BD20C8A"
      },
      "ConnectionType": "VPC_LINK",
      "IntegrationHttpMethod": "GET",
@@ -1104,7 +1105,7 @@
     "HttpMethod": "GET",
     "Integration": {
      "ConnectionId": {
-      "Ref": "RestApiVpcLinkVpc5248D480"
+      "Ref": "RestApiVpcLinkc8341fe2c6baf3e337d47156d11cc4e8f26030a5039BD20C8A"
      },
      "ConnectionType": "VPC_LINK",
      "IntegrationHttpMethod": "GET",
@@ -1124,7 +1125,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "RestApiVpcLinkSgVpc1881C0A9": {
+  "RestApiVpcLinkSgc8341fe2c6baf3e337d47156d11cc4e8f26030a5030486474E": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "Automatic security group for API Gateway VPC Link",
@@ -1142,14 +1143,14 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "RestApiVpcLinkVpc5248D480": {
+  "RestApiVpcLinkc8341fe2c6baf3e337d47156d11cc4e8f26030a5039BD20C8A": {
    "Type": "AWS::ApiGatewayV2::VpcLink",
    "Properties": {
-    "Name": "AlbIntegrationTestStackRestApiVpcLinkVpc52D80BD0",
+    "Name": "AlbIntegrationTestStackRestApiVpcLinkc8341fe2c6baf3e337d47156d11cc4e8f26030a5031E4B53E1",
     "SecurityGroupIds": [
      {
       "Fn::GetAtt": [
-       "RestApiVpcLinkSgVpc1881C0A9",
+       "RestApiVpcLinkSgc8341fe2c6baf3e337d47156d11cc4e8f26030a5030486474E",
        "GroupId"
       ]
      }
