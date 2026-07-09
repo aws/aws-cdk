@@ -1090,7 +1090,7 @@ describe('validations', () => {
 
       const output = mockErrorOutput();
       // Fatal violations remain despite acknowledgment
-      expect(output).toContain('E9001');
+      expect(output).toContain('Rule test-plugin::E9001');
       expect(output).toContain('Unknown resource type');
     });
 
