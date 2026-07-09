@@ -94,7 +94,7 @@ test('message retention period can be provided as a parameter', () => {
   const stack = new Stack();
   const parameter = new CfnParameter(stack, 'my-retention-period', {
     type: 'Number',
-    default: 30,
+    default: 60,
   });
 
   // WHEN
@@ -107,7 +107,7 @@ test('message retention period can be provided as a parameter', () => {
     'Parameters': {
       'myretentionperiod': {
         'Type': 'Number',
-        'Default': 30,
+        'Default': 60,
       },
     },
     'Resources': {
