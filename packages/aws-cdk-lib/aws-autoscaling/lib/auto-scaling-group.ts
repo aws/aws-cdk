@@ -1193,7 +1193,7 @@ export enum StandbyInstances {
 }
 
 /**
- * Options for customizing the instance refresh update policy
+ * Options for customizing the instance refresh update policy.
  */
 export interface InstanceRefreshOptions {
   /**
