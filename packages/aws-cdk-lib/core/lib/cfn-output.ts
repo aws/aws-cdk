@@ -147,6 +147,7 @@ export class CfnOutput extends CfnElement {
    */
   public get importValue() {
     // We made _exportName mutable so this will have to be lazy.
+    // eslint-disable-next-line no-restricted-syntax
     return Fn.importValue(Lazy.uncachedString({
       produce: (ctx) => {
         if (Stack.of(ctx.scope) === this.stack) {

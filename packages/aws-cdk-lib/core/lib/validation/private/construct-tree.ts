@@ -170,6 +170,14 @@ export class ConstructTree {
     }
   }
 
+  public constructTraceLevelFromConstructPath(constructPath: string): ReturnType<ConstructTree['constructTraceLevelFromTreeNode']> | undefined {
+    const construct = this.getConstructByPath(constructPath);
+    if (!construct) {
+      return undefined;
+    }
+    return this.constructTraceLevelFromTreeNode(construct);
+  }
+
   /**
    * Convert a Tree Metadata Node into a ConstructTrace object, except its child and stack trace info
    *
@@ -184,6 +192,14 @@ export class ConstructTree {
       construct: constructInfo?.fqn,
       libraryVersion: constructInfo?.version,
     };
+  }
+
+  public stackTraceByPath(path: string) {
+    const construct = this.getConstructByPath(path);
+    if (!construct) {
+      return undefined;
+    }
+    return this.stackTrace(construct);
   }
 
   /**
@@ -201,7 +217,7 @@ export class ConstructTree {
    * @param path the node.addr of the construct
    * @returns the Construct
    */
-  public getConstructByPath(path: string): Construct | undefined {
+  private getConstructByPath(path: string): Construct | undefined {
     return this._constructByPath.get(path);
   }
 

@@ -2,6 +2,7 @@ import type { IConstruct } from 'constructs';
 import type { IPolicyValidationPlugin } from './validation';
 import { Annotations } from '../annotations';
 import { UnscopedValidationError } from '../errors';
+import { AnnotationPlugin } from '../private/annotation-plugin';
 import { lit } from '../private/literal-string';
 import { Stage } from '../stage';
 
@@ -46,16 +47,6 @@ export class Validations {
   public static of(scope: IConstruct): Validations {
     return new Validations(scope);
   }
-
-  /**
-   * Well-known prefix for annotation-based validation rules.
-   *
-   * Every validation source identifies itself via a prefix so that
-   * `acknowledge()` can route suppressions to the correct handler.
-   * The `::` delimiter is reserved for separating the prefix from the
-   * rule name (e.g. `annotation::MyWarning`).
-   */
-  private static readonly ANNOTATION_PREFIX = 'annotation';
 
   private constructor(private readonly scope: IConstruct) {}
 
@@ -134,13 +125,11 @@ export class Validations {
   }
 
   private recordAcknowledgment(id: string, reason: string): void {
-    const matches = this.scope.node.metadata.filter(
-      (m: { type: string }) => m.type === Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
+    this.scope.node.addMetadata(
+      Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
+      { [id]: reason },
+      { stackTrace: true },
     );
-    const existing = matches.length > 0 ? matches[matches.length - 1] : undefined;
-    const acknowledged: Record<string, string> = existing?.data ?? {};
-    acknowledged[id] = reason;
-    this.scope.node.addMetadata(Validations.ACKNOWLEDGED_RULES_METADATA_KEY, acknowledged);
   }
 
   private qualifyId(id: string): string {
@@ -148,9 +137,16 @@ export class Validations {
     if (parts.length > 2 || (parts.length === 2 && parts[0].length === 0)) {
       throw new UnscopedValidationError(lit`InvalidValidationId`, `Invalid validation rule ID '${id}'. The '::' delimiter is reserved for separating the prefix from the rule name (e.g. 'prefix::RuleName').`);
     }
-    if (parts.length === 2) {
-      return id;
+
+    if (parts.length === 1) {
+      return `${AnnotationPlugin.RULE_PREFIX}::${id}`;
     }
-    return `${Validations.ANNOTATION_PREFIX}::${id}`;
+
+    if (parts[0] === 'annotation') {
+      // Uppercase this
+      return `${AnnotationPlugin.RULE_PREFIX}::${parts[1]}`;
+    }
+
+    return id;
   }
 }

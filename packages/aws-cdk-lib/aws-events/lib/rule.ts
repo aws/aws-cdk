@@ -11,9 +11,11 @@ import { mergeEventPattern, renderEventPattern } from './util';
 import type { IRole, IRoleRef } from '../../aws-iam';
 import { PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import type { IResource } from '../../core';
-import { App, Lazy, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat, Annotations, ValidationError } from '../../core';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { App, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat, Annotations, ValidationError, Validations } from '../../core';
+import type { IArrayBox, IBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -75,6 +77,7 @@ export interface RuleProps extends EventCommonOptions {
  * @resource AWS::Events::Rule
  */
 @propertyInjectable
+@noBoxStackTraces
 export class Rule extends Resource implements IRule {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-events.Rule';
@@ -129,8 +132,8 @@ export class Rule extends Resource implements IRule {
     };
   }
 
-  private readonly targets = new Array<CfnRule.TargetProperty>();
-  private readonly eventPattern: EventPattern = { };
+  private readonly targets: IArrayBox<CfnRule.TargetProperty> = Box.fromArray();
+  private readonly eventPattern: IBox<EventPattern>;
   private readonly scheduleExpression?: string;
   private readonly description?: string;
 
@@ -154,13 +157,15 @@ export class Rule extends Resource implements IRule {
     // add a warning on synth when minute is not defined in a cron schedule
     props.schedule?._bind(this);
 
+    this.eventPattern = Box.fromValue<EventPattern>({});
+
     this._resource = new CfnRule(this, 'Resource', {
       name: this.physicalName,
       description: this.description,
       state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
       scheduleExpression: this.scheduleExpression,
-      eventPattern: Lazy.any({ produce: () => this._renderEventPattern() }),
-      targets: Lazy.any({ produce: () => this.renderTargets() }),
+      eventPattern: this.eventPattern.derive(_ => this._renderEventPattern()),
+      targets: this.targets.derive(t => t.length === 0 ? undefined : t),
       eventBusName: props.eventBus && props.eventBus.eventBusRef.eventBusName,
       roleArn: props.role?.roleRef.roleArn,
     });
@@ -256,7 +261,7 @@ export class Rule extends Resource implements IRule {
         const mirrorRuleScope = this.obtainMirrorRuleScope(targetStack, targetAccount, targetRegion);
         new MirrorRule(mirrorRuleScope, `${Names.uniqueId(this)}-${id}`, {
           targets: [target],
-          eventPattern: this.eventPattern,
+          eventPattern: this.eventPattern.getMutable(),
           schedule: this.scheduleExpression ? Schedule.expression(this.scheduleExpression) : undefined,
           description: this.description,
         }, this);
@@ -330,7 +335,7 @@ export class Rule extends Resource implements IRule {
     if (!eventPattern) {
       return;
     }
-    mergeEventPattern(this.eventPattern, eventPattern);
+    mergeEventPattern(this.eventPattern.getMutable(), eventPattern);
   }
 
   /**
@@ -339,7 +344,7 @@ export class Rule extends Resource implements IRule {
    * @internal
    */
   public _renderEventPattern(): any {
-    return renderEventPattern(this.eventPattern);
+    return renderEventPattern(this.eventPattern.getMutable());
   }
 
   protected validateRule() {
@@ -355,7 +360,7 @@ export class Rule extends Resource implements IRule {
       }
     }
 
-    if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
+    if (Object.keys(this.eventPattern.get()).length === 0 && !this.scheduleExpression) {
       errors.push('Either \'eventPattern\' or \'schedule\' must be defined');
     }
 
@@ -364,14 +369,6 @@ export class Rule extends Resource implements IRule {
     }
 
     return errors;
-  }
-
-  private renderTargets() {
-    if (this.targets.length === 0) {
-      return undefined;
-    }
-
-    return this.targets;
   }
 
   /**
@@ -439,6 +436,10 @@ export class Rule extends Resource implements IRule {
             maxLength: 64 - statementPrefix.length,
           }),
           principal: sourceAccount,
+        });
+        Validations.of(eventBusPolicyStack).acknowledge({
+          id: 'CloudFormation-Validate::W9009',
+          reason: 'action is deprecated, but still in use for historical reasons',
         });
       }
       // deploy the event bus permissions before the source stack

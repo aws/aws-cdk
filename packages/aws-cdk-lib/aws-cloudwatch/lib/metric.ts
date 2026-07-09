@@ -1140,7 +1140,13 @@ function validVariableName(x: string) {
  * Return all variable names used in an expression
  */
 function allIdentifiersInExpression(x: string) {
-  return Array.from(matchAll(x, FIND_VARIABLE)).map(m => m[0]);
+  // Remove CDK token patterns before extracting identifiers
+  // Token format: ${Token[TOKEN.123]} or ${Token[TOKEN.456]}
+  const withoutTokens = x.replace(/\$\{Token\[[^\]]+\]\}/g, '');
+  // Remove quoted strings (single and double) so we don't extract identifiers from string arguments
+  // CloudWatch math expressions use both quote styles: METRICS("errors"), DB_PERF_INSIGHTS('RDS', ...)
+  const withoutStrings = withoutTokens.replace(/"[^"]*"|'[^']*'/g, '');
+  return Array.from(matchAll(withoutStrings, FIND_VARIABLE)).map(m => m[0]);
 }
 
 /**
