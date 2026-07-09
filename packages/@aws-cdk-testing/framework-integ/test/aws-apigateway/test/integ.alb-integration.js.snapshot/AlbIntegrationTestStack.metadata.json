@@ -2,9 +2,7 @@
   "/AlbIntegrationTestStack/Vpc": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "natGateways": "*"
-      }
+      "data": "*"
     }
   ],
   "/AlbIntegrationTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
@@ -16,12 +14,7 @@
   "/AlbIntegrationTestStack/BackendFunction": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "runtime": "*",
-        "handler": "*",
-        "code": "*",
-        "vpc": "*"
-      }
+      "data": "*"
     }
   ],
   "/AlbIntegrationTestStack/Alb": [
@@ -41,39 +34,23 @@
   "/AlbIntegrationTestStack/Certificate": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "domainName": "*",
-        "validation": "*"
-      }
+      "data": "*"
     }
   ],
   "/AlbIntegrationTestStack/AliasRecord": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "zone": "*",
-        "recordName": "*",
-        "target": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "zone": "*",
-        "recordName": "*",
-        "target": "*"
-      }
+      "data": "*"
     }
   ],
   "/AlbIntegrationTestStack/RestApi": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "cloudWatchRole": true,
-        "deployOptions": {
-          "stageName": "*"
-        }
-      }
+      "data": "*"
     }
   ],
   "/AlbIntegrationTestStack/BootstrapVersion": [
@@ -97,121 +74,61 @@
   "/AlbIntegrationTestStack/Vpc/PublicSubnet1": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": true,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": true,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {}
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addNatGateway": [
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/AlbIntegrationTestStack/Vpc/PublicSubnet2": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": true,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": true,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {}
+      "data": "*"
     }
   ],
   "/AlbIntegrationTestStack/Vpc/PrivateSubnet1": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {}
+      "data": "*"
     }
   ],
   "/AlbIntegrationTestStack/Vpc/PrivateSubnet2": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {}
+      "data": "*"
     }
   ],
   "/AlbIntegrationTestStack/Vpc/IGW": [
@@ -247,31 +164,13 @@
   "/AlbIntegrationTestStack/BackendFunction/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          },
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/AlbIntegrationTestStack/BackendFunction/SecurityGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "vpc": "*",
-        "description": "*",
-        "allowAllOutbound": "*",
-        "allowAllIpv6Outbound": "*"
-      }
+      "data": "*"
     }
   ],
   "/AlbIntegrationTestStack/BackendFunction/Resource": [
@@ -283,9 +182,7 @@
   "/AlbIntegrationTestStack/BackendFunction/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "logGroupName": "*"
-      }
+      "data": "*"
     }
   ],
   "/AlbIntegrationTestStack/BackendFunction/Invoke2UTWxhlfyqbT5FTn--5jvgbLgj+FfJwzswGk55DU1H--Y=": [
@@ -303,33 +200,15 @@
   "/AlbIntegrationTestStack/Alb/SecurityGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "vpc": "*",
-        "description": "*",
-        "allowAllOutbound": false
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addIngressRule": [
-          "*",
-          {},
-          "*",
-          false
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addIngressRule": [
-          "*",
-          {},
-          "*",
-          false
-        ]
-      }
+      "data": "*"
     }
   ],
   "/AlbIntegrationTestStack/Alb/HttpListener": [
@@ -385,25 +264,11 @@
   "/AlbIntegrationTestStack/RestApi/CloudWatchRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "applyRemovalPolicy": [
-          "retain"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/AlbIntegrationTestStack/RestApi/Account": [
@@ -415,52 +280,29 @@
   "/AlbIntegrationTestStack/RestApi/Deployment": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "description": "*",
-        "api": "*",
-        "retainDeployments": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToLogicalId": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToLogicalId": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToLogicalId": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToLogicalId": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/AlbIntegrationTestStack/RestApi/DeploymentStage.prod": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "deployment": "*",
-        "stageName": "*"
-      }
+      "data": "*"
     }
   ],
   "/AlbIntegrationTestStack/RestApi/Endpoint": [
@@ -478,32 +320,15 @@
   "/AlbIntegrationTestStack/RestApi/VpcLinkSg-c8341fe2c6baf3e337d47156d11cc4e8f26030a503": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "vpc": "*",
-        "description": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEgressRule": [
-          "*",
-          {},
-          "*",
-          true
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEgressRule": [
-          "*",
-          {},
-          "*",
-          true
-        ]
-      }
+      "data": "*"
     }
   ],
   "/AlbIntegrationTestStack/RestApi/VpcLink-c8341fe2c6baf3e337d47156d11cc4e8f26030a503": [
@@ -715,19 +540,13 @@
   "/AlbIntegrationTestStack/RestApi/Default/http": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "parent": "*",
-        "pathPart": "*"
-      }
+      "data": "*"
     }
   ],
   "/AlbIntegrationTestStack/RestApi/Default/https": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "parent": "*",
-        "pathPart": "*"
-      }
+      "data": "*"
     }
   ],
   "/AlbIntegrationTestStack/RestApi/VpcLinkSg-c8341fe2c6baf3e337d47156d11cc4e8f26030a503/Resource": [
@@ -763,12 +582,7 @@
   "/AlbIntegrationTestStack/RestApi/Default/http/GET": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "resource": "*",
-        "httpMethod": "*",
-        "integration": "*",
-        "options": "*"
-      }
+      "data": "*"
     }
   ],
   "/AlbIntegrationTestStack/RestApi/Default/https/Resource": [
@@ -780,12 +594,7 @@
   "/AlbIntegrationTestStack/RestApi/Default/https/GET": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "resource": "*",
-        "httpMethod": "*",
-        "integration": "*",
-        "options": "*"
-      }
+      "data": "*"
     }
   ],
   "/AlbIntegrationTestStack/RestApi/Default/http/GET/Resource": [

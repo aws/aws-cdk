@@ -37,7 +37,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"body\":{\"message\":\"Hello from ALB Integration!\",\"method\":\"GET\"}}}",
     "flattenResponse": "false",
-    "salt": "1783567316398"
+    "salt": "1783579329377"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -67,7 +67,7 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
@@ -125,7 +125,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"body\":{\"message\":\"Hello from ALB Integration!\",\"method\":\"GET\"}}}",
     "flattenResponse": "false",
-    "salt": "1783567316398"
+    "salt": "1783579329377"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
