@@ -2431,6 +2431,32 @@ describe('function', () => {
     });
   });
 
+  test('event invoke config accepts tokens for maxEventAge and retryAttempts', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const maxEventAge = new cdk.CfnParameter(stack, 'MaxEventAge', { type: 'Number' });
+    const retryAttempts = new cdk.CfnParameter(stack, 'RetryAttempts', { type: 'Number' });
+
+    // WHEN
+    new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      maxEventAge: cdk.Duration.seconds(maxEventAge.valueAsNumber),
+      retryAttempts: retryAttempts.valueAsNumber,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
+      FunctionName: {
+        Ref: 'fn5FF616E3',
+      },
+      Qualifier: '$LATEST',
+      MaximumEventAgeInSeconds: { Ref: 'MaxEventAge' },
+      MaximumRetryAttempts: { Ref: 'RetryAttempts' },
+    });
+  });
+
   test('throws when calling configureAsyncInvoke on already configured function', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -4052,6 +4078,62 @@ describe('function', () => {
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'example.Handler::handleRequest',
         runtime: lambda.Runtime.JAVA_11,
+        tenancyConfig: lambda.TenancyConfig.PER_TENANT,
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+      })).toThrow('SnapStart is not supported for functions with tenant isolation mode');
+    });
+
+    test('container image function using SnapStart', () => {
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const fn = new lambda.DockerImageFunction(stack, 'MyLambda', {
+        code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-lambda-handler')),
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+      });
+
+      fn.currentVersion;
+
+      // THEN
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+        Properties: {
+          PackageType: 'Image',
+          SnapStart: {
+            ApplyOn: 'PublishedVersions',
+          },
+        },
+      });
+    });
+
+    test('container image function with SnapStart and EFS throws', () => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1 });
+      const fs = new efs.FileSystem(stack, 'Efs', { vpc });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
+
+      expect(() => new lambda.DockerImageFunction(stack, 'MyLambda', {
+        code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-lambda-handler')),
+        vpc,
+        filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+      })).toThrow('SnapStart is currently not supported using EFS');
+    });
+
+    test('container image function with SnapStart and >512 MiB ephemeral storage throws', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.DockerImageFunction(stack, 'MyLambda', {
+        code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-lambda-handler')),
+        ephemeralStorageSize: Size.mebibytes(1024),
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+      })).toThrow('SnapStart is currently not supported using more than 512 MiB Ephemeral Storage');
+    });
+
+    test('container image function with SnapStart and tenant isolation throws', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.DockerImageFunction(stack, 'MyLambda', {
+        code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-lambda-handler')),
         tenancyConfig: lambda.TenancyConfig.PER_TENANT,
         snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
       })).toThrow('SnapStart is not supported for functions with tenant isolation mode');
