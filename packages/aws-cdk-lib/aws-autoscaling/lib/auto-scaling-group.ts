@@ -2213,6 +2213,14 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     this.autoScalingGroup.cfnOptions.updatePolicy = props.updatePolicy?._renderUpdatePolicy({
       creationPolicy: this.autoScalingGroup.cfnOptions.creationPolicy,
     });
+
+    if (props.signals && this.autoScalingGroup.cfnOptions.updatePolicy?.autoScalingInstanceRefresh) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-autoscaling:signalsNotUsedByInstanceRefresh',
+        'Instance refresh doesn\'t support the cfn-signal helper script. For information about how to verify instance readiness during an instance refresh, see Verify instance readiness during an instance refresh. ' +
+        'https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-updatepolicy.html#cfn-attributes-updatepolicy-instancerefresh-readiness',
+      );
+    }
   }
 
   private applyLegacySignalUpdatePolicies(props: AutoScalingGroupProps) {

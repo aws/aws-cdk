@@ -3289,3 +3289,38 @@ test('can configure instance refresh with only strategy', () => {
     },
   });
 });
+
+test('warns when signals are combined with instance refresh update policy', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = mockVpc(stack);
+
+  // WHEN
+  new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+    machineImage: new ec2.AmazonLinuxImage(),
+    vpc,
+    signals: autoscaling.Signals.waitForAll(),
+    updatePolicy: autoscaling.UpdatePolicy.instanceRefresh(),
+  });
+
+  // THEN
+  Annotations.fromStack(stack).hasWarning('/Default/MyFleet', 'Instance refresh doesn\'t support the cfn-signal helper script. For information about how to verify instance readiness during an instance refresh, see Verify instance readiness during an instance refresh. https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-updatepolicy.html#cfn-attributes-updatepolicy-instancerefresh-readiness [ack: @aws-cdk/aws-autoscaling:signalsNotUsedByInstanceRefresh]');
+});
+
+test('does not warn about signals when instance refresh is used without signals', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = mockVpc(stack);
+
+  // WHEN
+  new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+    machineImage: new ec2.AmazonLinuxImage(),
+    vpc,
+    updatePolicy: autoscaling.UpdatePolicy.instanceRefresh(),
+  });
+
+  // THEN
+  Annotations.fromStack(stack).hasNoWarning('/Default/MyFleet', Match.stringLikeRegexp('.*signalsNotUsedByInstanceRefresh.*'));
+});
