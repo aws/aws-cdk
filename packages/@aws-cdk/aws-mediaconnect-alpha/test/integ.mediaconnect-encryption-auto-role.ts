@@ -65,7 +65,7 @@ const flow = new Flow(stack, 'Flow', {
 // FlowOutput with StaticKeyEncryption auto-role (Zixi Pull).
 new FlowOutput(stack, 'ZixiPullOutput', {
   flow,
-  outputConfig: OutputConfiguration.zixiPull({
+  output: OutputConfiguration.zixiPull({
     streamId: 'auto-role-zixi-pull',
     remoteId: 'auto-role-remote',
     maxLatency: Duration.millis(6000),
@@ -81,7 +81,7 @@ new FlowOutput(stack, 'ZixiPullOutput', {
 // FlowOutput with SrtPasswordEncryption auto-role (SRT Caller).
 new FlowOutput(stack, 'SrtCallerOutput', {
   flow,
-  outputConfig: OutputConfiguration.srtCaller({
+  output: OutputConfiguration.srtCaller({
     destination: '198.51.100.10',
     port: 9100,
     minLatency: Duration.millis(120),

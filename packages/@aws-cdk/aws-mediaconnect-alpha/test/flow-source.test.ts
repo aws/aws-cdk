@@ -4,10 +4,10 @@ import { Vpc, IpAddresses, SubnetType, PrivateSubnet, SecurityGroup } from 'aws-
 import { Role, ServicePrincipal, PolicyDocument, PolicyStatement, Effect } from 'aws-cdk-lib/aws-iam';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 
-import { FailoverConfig, Flow } from '../lib/flow';
+import { Colorimetry, FailoverConfig, Flow, MediaStream, MediaVideoFormat, ScanMode, Tcs, VideoRange } from '../lib/flow';
 import { FlowSource } from '../lib/flow-source';
-import { NetworkConfiguration, SourceConfiguration } from '../lib/flow-source-configuration';
-import { EncryptionAlgorithm, VpcInterface } from '../lib/shared';
+import { Encoding, NetworkConfiguration, SourceConfiguration } from '../lib/flow-source-configuration';
+import { EncryptionAlgorithm, Framerate, NetworkInterface, PixelAspectRatio, VpcInterface } from '../lib/shared';
 
 let app: App;
 let stack: Stack;
@@ -67,7 +67,6 @@ test('MediaConnect source with failover enabled', () => {
   });
 
   new FlowSource(stack, 'output', {
-    flowSourceName: 'mysource',
     flow,
     source: SourceConfiguration.rtp({
       port: 1234,
@@ -84,6 +83,55 @@ test('MediaConnect source with failover enabled', () => {
     Name: 'mysource',
     Protocol: 'rtp',
     VpcInterfaceName: 'test',
+  });
+});
+
+test('flow source falls back to the source configuration name when no explicit name is set', () => {
+  const flow = new Flow(stack, 'flow', {
+    source: SourceConfiguration.rtp({
+      flowSourceName: 'main',
+      port: 5000,
+      network: NetworkConfiguration.publicNetwork('10.0.0.0/8'),
+    }),
+    sourceFailoverConfig: FailoverConfig.failover(),
+  });
+
+  new FlowSource(stack, 'src', {
+    flow,
+    source: SourceConfiguration.rtp({
+      port: 5001,
+      flowSourceName: 'inner-source-name',
+      network: NetworkConfiguration.publicNetwork('10.0.0.0/8'),
+    }),
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::MediaConnect::FlowSource', {
+    Name: 'inner-source-name',
+  });
+});
+
+test('flow source without any name uses a generated name', () => {
+  const flow = new Flow(stack, 'flow', {
+    source: SourceConfiguration.rtp({
+      flowSourceName: 'main',
+      port: 5000,
+      network: NetworkConfiguration.publicNetwork('10.0.0.0/8'),
+    }),
+    sourceFailoverConfig: FailoverConfig.failover(),
+  });
+
+  new FlowSource(stack, 'src', {
+    flow,
+    source: SourceConfiguration.rtp({
+      port: 5001,
+      network: NetworkConfiguration.publicNetwork('10.0.0.0/8'),
+    }),
+  });
+
+  // A name is always emitted (CfnFlowSource.Name is required); it is derived from
+  // construct naming when neither an explicit nor a source-config name is given.
+  Template.fromStack(stack).hasResourceProperties('AWS::MediaConnect::FlowSource', {
+    Name: Match.stringLikeRegexp('.+'),
   });
 });
 
@@ -158,11 +206,10 @@ test('fails - flow source name too long', () => {
 
   expect(() => {
     new FlowSource(stack, 'src', {
-      flowSourceName: 'a'.repeat(65),
       flow,
       source: SourceConfiguration.rtp({
         port: 5001,
-        flowSourceName: 'ignored',
+        flowSourceName: 'a'.repeat(65),
         network: NetworkConfiguration.publicNetwork('10.0.0.0/8'),
       }),
     });
@@ -181,11 +228,10 @@ test('fails - flow source name with invalid characters', () => {
 
   expect(() => {
     new FlowSource(stack, 'src', {
-      flowSourceName: 'invalid@name',
       flow,
       source: SourceConfiguration.rtp({
         port: 5001,
-        flowSourceName: 'ignored',
+        flowSourceName: 'invalid@name',
         network: NetworkConfiguration.publicNetwork('10.0.0.0/8'),
       }),
     });
@@ -283,4 +329,56 @@ test('Zixi Push source with static-key decryption auto-creates a role when none 
       ]),
     },
   });
+});
+
+test('fails - CDI source cannot be added as an additional FlowSource', () => {
+  const flow = Flow.fromFlowAttributes(stack, 'flow', {
+    flowArn: 'arn:aws:mediaconnect:us-east-1:123456789012:flow:1-abc:f',
+    sourceArn: 'arn:aws:mediaconnect:us-east-1:123456789012:source:1-abc:s',
+    isFailoverEnabled: true,
+  });
+
+  const vpc = new Vpc(stack, 'testvpc', {
+    ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
+    subnetConfiguration: [{ name: 'isolated', subnetType: SubnetType.PRIVATE_ISOLATED, cidrMask: 24 }],
+  });
+  const subnet = new PrivateSubnet(stack, 'mysubnet', {
+    availabilityZone: `${stack.region}a`,
+    cidrBlock: '10.0.172.0/24',
+    vpcId: vpc.vpcId,
+  });
+  const role = new Role(stack, 'my-role', { assumedBy: new ServicePrincipal('mediaconnect.amazonaws.com') });
+  const vpcInterface = VpcInterface.define({
+    vpcInterfaceName: 'cdi-vpc-iface',
+    role,
+    securityGroups: [new SecurityGroup(stack, 'sg', { vpc })],
+    subnet,
+    networkInterfaceType: NetworkInterface.EFA,
+  });
+  const mediaStream = MediaStream.video({
+    mediaStreamId: 1,
+    mediaStreamName: 'mystream',
+    videoFormat: MediaVideoFormat.HD_1080P,
+    fmtp: {
+      colorimetry: Colorimetry.BT709,
+      exactFramerate: Framerate.FPS_59_94,
+      par: PixelAspectRatio.SQUARE,
+      scanMode: ScanMode.PROGRESSIVE,
+      videoRange: VideoRange.NARROW,
+      tcs: Tcs.SDR,
+    },
+  });
+
+  expect(() => {
+    new FlowSource(stack, 'src', {
+      flow,
+      source: SourceConfiguration.cdi({
+        flowSourceName: 'cdi-src',
+        maxSyncBuffer: 100,
+        port: 5000,
+        vpcInterface,
+        mediaStreamSourceConfigurations: [{ encoding: Encoding.RAW, mediaStream }],
+      }),
+    });
+  }).toThrow(/CDI or JPEGXS can only be configured on the main Flow construct/);
 });

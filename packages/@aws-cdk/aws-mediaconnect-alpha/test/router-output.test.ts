@@ -37,7 +37,7 @@ describe('RouterOutput', () => {
       tier: RouterOutputTier.OUTPUT_100,
       configuration: RouterOutputConfiguration.standard({
         protocol: RouterOutputProtocol.rtp({
-          destinationAddress: '192.168.1.100',
+          destinationAddress: '198.51.100.100',
           port: 5000,
           forwardErrorCorrection: ForwardErrorCorrection.ENABLED,
         }),
@@ -58,7 +58,7 @@ describe('RouterOutput', () => {
           Protocol: 'RTP',
           ProtocolConfiguration: {
             Rtp: {
-              DestinationAddress: '192.168.1.100',
+              DestinationAddress: '198.51.100.100',
               DestinationPort: 5000,
               ForwardErrorCorrection: 'ENABLED',
             },
@@ -76,7 +76,7 @@ describe('RouterOutput', () => {
       tier: RouterOutputTier.OUTPUT_50,
       configuration: RouterOutputConfiguration.standard({
         protocol: RouterOutputProtocol.rist({
-          destinationAddress: '192.168.1.101',
+          destinationAddress: '198.51.100.101',
           port: 5001,
         }),
         networkInterface,
@@ -96,7 +96,7 @@ describe('RouterOutput', () => {
           Protocol: 'RIST',
           ProtocolConfiguration: {
             Rist: {
-              DestinationAddress: '192.168.1.101',
+              DestinationAddress: '198.51.100.101',
               DestinationPort: 5001,
             },
           },
@@ -144,7 +144,7 @@ describe('RouterOutput', () => {
       tier: RouterOutputTier.OUTPUT_100,
       configuration: RouterOutputConfiguration.standard({
         protocol: RouterOutputProtocol.srtCaller({
-          destinationAddress: '192.168.1.102',
+          destinationAddress: '198.51.100.102',
           destinationPort: 9002,
           minimumLatency: Duration.millis(150),
           streamId: 'test-stream-123',
@@ -160,7 +160,7 @@ describe('RouterOutput', () => {
           Protocol: 'SRT_CALLER',
           ProtocolConfiguration: {
             SrtCaller: {
-              DestinationAddress: '192.168.1.102',
+              DestinationAddress: '198.51.100.102',
               DestinationPort: 9002,
               MinimumLatencyMilliseconds: 150,
               StreamId: 'test-stream-123',
@@ -455,7 +455,7 @@ describe('RouterOutput', () => {
       tier: RouterOutputTier.OUTPUT_20,
       configuration: RouterOutputConfiguration.standard({
         protocol: RouterOutputProtocol.rtp({
-          destinationAddress: '192.168.1.200',
+          destinationAddress: '198.51.100.200',
           port: 5200,
         }),
         networkInterface,
@@ -484,7 +484,7 @@ describe('RouterOutput', () => {
       tier: RouterOutputTier.OUTPUT_50,
       configuration: RouterOutputConfiguration.standard({
         protocol: RouterOutputProtocol.rist({
-          destinationAddress: '192.168.1.30',
+          destinationAddress: '198.51.100.30',
           port: 5300,
         }),
         networkInterface,
@@ -593,7 +593,7 @@ describe('RouterOutput', () => {
       tier: RouterOutputTier.OUTPUT_100,
       configuration: RouterOutputConfiguration.standard({
         protocol: RouterOutputProtocol.rtp({
-          destinationAddress: '192.168.1.40',
+          destinationAddress: '198.51.100.40',
           port: 5400,
         }),
         networkInterface,
@@ -650,6 +650,49 @@ describe('RouterOutput', () => {
         }),
       });
     }).toThrow('Availability zone \'eu-west-1a\' must be within region \'us-east-1');
+  });
+});
+
+describe('maximum bitrate validation', () => {
+  test('throws when below the 1 Mbps minimum', () => {
+    expect(() => {
+      new RouterOutput(stack, 'routerOutput', {
+        maximumBitrate: Bitrate.bps(500000),
+        routingScope: RoutingScope.REGIONAL,
+        configuration: RouterOutputConfiguration.standard({
+          networkInterface,
+          protocol: RouterOutputProtocol.rtp({ destinationAddress: '198.51.100.1', port: 5000 }),
+        }),
+      });
+    }).toThrow('Maximum bitrate must be at least 1,000,000 bits/s (1 Mbps)');
+  });
+
+  test('throws when exceeding the selected tier limit', () => {
+    expect(() => {
+      new RouterOutput(stack, 'routerOutput', {
+        maximumBitrate: Bitrate.mbps(30),
+        routingScope: RoutingScope.REGIONAL,
+        tier: RouterOutputTier.OUTPUT_20,
+        configuration: RouterOutputConfiguration.standard({
+          networkInterface,
+          protocol: RouterOutputProtocol.rtp({ destinationAddress: '198.51.100.1', port: 5000 }),
+        }),
+      });
+    }).toThrow('exceeds the OUTPUT_20 tier limit of 20 Mbps');
+  });
+
+  test('skips bitrate validation for a tokenized maximum bitrate', () => {
+    expect(() => {
+      new RouterOutput(stack, 'routerOutput', {
+        maximumBitrate: Bitrate.bps(Lazy.number({ produce: () => 5000000 })),
+        routingScope: RoutingScope.REGIONAL,
+        tier: RouterOutputTier.OUTPUT_20,
+        configuration: RouterOutputConfiguration.standard({
+          networkInterface,
+          protocol: RouterOutputProtocol.rtp({ destinationAddress: '198.51.100.1', port: 5000 }),
+        }),
+      });
+    }).not.toThrow();
   });
 });
 
@@ -827,4 +870,42 @@ test('MediaLive input transit encryption with an explicit role does not auto-cre
     Properties: { Description: 'Auto-generated MediaConnect role for accessing the encryption secret' },
   });
   expect(Object.keys(roles)).toHaveLength(0);
+});
+
+test('metric() merges a caller-supplied dimensionsMap without dropping RouterOutputARN', () => {
+  const output = new RouterOutput(stack, 'MetricOutput', {
+    routerOutputName: 'metric-test',
+    maximumBitrate: Bitrate.mbps(10),
+    routingScope: RoutingScope.REGIONAL,
+    configuration: RouterOutputConfiguration.standard({
+      networkInterface,
+      protocol: RouterOutputProtocol.rtp({ destinationAddress: '198.51.100.1', port: 5000 }),
+    }),
+  });
+
+  const metric = output.metric('RouterOutputBitRate', { dimensionsMap: { Custom: 'value' } });
+
+  expect(metric.dimensions).toEqual({
+    RouterOutputARN: output.routerOutputArn,
+    Custom: 'value',
+  });
+});
+
+test('named metric helper keeps RouterOutputARN when given a custom dimensionsMap', () => {
+  const output = new RouterOutput(stack, 'MetricOutput2', {
+    routerOutputName: 'metric-test-2',
+    maximumBitrate: Bitrate.mbps(10),
+    routingScope: RoutingScope.REGIONAL,
+    configuration: RouterOutputConfiguration.standard({
+      networkInterface,
+      protocol: RouterOutputProtocol.rtp({ destinationAddress: '198.51.100.1', port: 5000 }),
+    }),
+  });
+
+  const metric = output.metricBitrate({ dimensionsMap: { Custom: 'value' } });
+
+  expect(metric.dimensions).toEqual({
+    RouterOutputARN: output.routerOutputArn,
+    Custom: 'value',
+  });
 });

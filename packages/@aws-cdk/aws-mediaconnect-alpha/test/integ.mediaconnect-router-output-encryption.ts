@@ -78,7 +78,7 @@ const srtCallerEncrypted = new RouterOutput(stack, 'srtCallerEncrypted', {
   tier: RouterOutputTier.OUTPUT_50,
   configuration: RouterOutputConfiguration.standard({
     protocol: RouterOutputProtocol.srtCaller({
-      destinationAddress: '192.168.2.100',
+      destinationAddress: '198.51.100.10',
       destinationPort: 9002,
       minimumLatency: cdk.Duration.millis(150),
       streamId: 'encrypted-stream-123',
@@ -138,7 +138,7 @@ new RouterOutput(stack, 'ristOutput', {
   tier: RouterOutputTier.OUTPUT_50,
   configuration: RouterOutputConfiguration.standard({
     protocol: RouterOutputProtocol.rist({
-      destinationAddress: '192.168.2.200',
+      destinationAddress: '198.51.100.20',
       port: 5200,
     }),
     networkInterface,

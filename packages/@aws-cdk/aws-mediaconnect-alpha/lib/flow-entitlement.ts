@@ -1,5 +1,5 @@
 import type { IResource } from 'aws-cdk-lib';
-import { Resource, Lazy, Names, Token, ValidationError } from 'aws-cdk-lib';
+import { Resource, Lazy, Names, Token, Validations, ValidationError } from 'aws-cdk-lib';
 import { CfnFlowEntitlement } from 'aws-cdk-lib/aws-mediaconnect';
 import type { IFlowEntitlementRef, FlowEntitlementReference } from 'aws-cdk-lib/aws-mediaconnect';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
@@ -50,7 +50,7 @@ export interface FlowEntitlementProps {
   /**
    * The percentage of the entitlement data transfer fee that you want the subscriber to be responsible for.
    *
-   * @default 0
+   * @default - the MediaConnect service default
    */
   readonly dataTransferSubscriberFeePercent?: number;
 
@@ -128,7 +128,7 @@ export class FlowEntitlement extends FlowEntitlementBase {
 
     // Validate flow entitlement name if provided
     if (props.flowEntitlementName != null && props.flowEntitlementName !== '' && !Token.isUnresolved(props.flowEntitlementName)) {
-      if (props.flowEntitlementName.length < 1 || props.flowEntitlementName.length > 64) {
+      if (props.flowEntitlementName.length > 64) {
         throw new ValidationError(lit`FlowEntitlementNameLength`, `Flow entitlement name must be between 1 and 64 characters, got ${props.flowEntitlementName.length}`, this);
       }
       if (!/^[a-zA-Z0-9_-]+$/.test(props.flowEntitlementName)) {
@@ -164,6 +164,14 @@ export class FlowEntitlement extends FlowEntitlementBase {
       dataTransferSubscriberFeePercent: props.dataTransferSubscriberFeePercent,
       entitlementStatus: props.entitlementStatus,
       encryption: props.encryption ? renderStaticKeyEncryption(this, props.encryption, props.flow.flowArn) : undefined,
+    });
+
+    // cfn-validate false positive: the engine's embedded schema flags FlowEntitlement.Encryption
+    // as deprecated, but it is a current property. Remove once the upstream schema is corrected.
+    // Tracking: https://github.com/aws-cloudformation/cloudformation-validate/issues/144
+    Validations.of(resource).acknowledge({
+      id: 'CloudFormation-Validate::W9009',
+      reason: 'cfn-validate false positive: MediaConnect FlowEntitlement.Encryption is not deprecated (see cloudformation-validate#144)',
     });
 
     this.entitlementArn = resource.attrEntitlementArn;

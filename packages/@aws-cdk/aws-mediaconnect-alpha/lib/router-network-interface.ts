@@ -256,7 +256,7 @@ export class RouterNetworkInterface extends RouterNetworkInterfaceBase {
 
     // Validate router network interface name if provided
     if (props.routerNetworkInterfaceName != null && props.routerNetworkInterfaceName !== '' && !Token.isUnresolved(props.routerNetworkInterfaceName)) {
-      if (props.routerNetworkInterfaceName.length < 1 || props.routerNetworkInterfaceName.length > 128) {
+      if (props.routerNetworkInterfaceName.length > 128) {
         throw new ValidationError(lit`RouterNetworkInterfaceNameLength`, `Router network interface name must be between 1 and 128 characters, got ${props.routerNetworkInterfaceName.length}`, this);
       }
       if (!/^[a-zA-Z0-9-]+$/.test(props.routerNetworkInterfaceName)) {

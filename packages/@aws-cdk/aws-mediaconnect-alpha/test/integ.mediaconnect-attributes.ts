@@ -75,7 +75,7 @@ const routerOutput = new RouterOutput(stack, 'RouterOutput', {
   configuration: RouterOutputConfiguration.standard({
     networkInterface,
     protocol: RouterOutputProtocol.rtp({
-      destinationAddress: '10.0.0.1',
+      destinationAddress: '198.51.100.10',
       port: 5001,
     }),
   }),

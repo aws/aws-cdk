@@ -13,6 +13,7 @@
       "prefer-ref-interface:@aws-cdk/aws-mediaconnect-alpha.BridgeSourceProps.bridge",
       "from-method:@aws-cdk/aws-mediaconnect-alpha.BridgeOutput",
       "from-method:@aws-cdk/aws-mediaconnect-alpha.BridgeSource",
+      "props-physical-name:@aws-cdk/aws-mediaconnect-alpha.FlowSourceProps",
       "prefer-ref-interface:@aws-cdk/aws-mediaconnect-alpha.FlowEntitlementProps.flow",
       "prefer-ref-interface:@aws-cdk/aws-mediaconnect-alpha.FlowOutputProps.flow",
       "prefer-ref-interface:@aws-cdk/aws-mediaconnect-alpha.FlowSourceProps.flow",

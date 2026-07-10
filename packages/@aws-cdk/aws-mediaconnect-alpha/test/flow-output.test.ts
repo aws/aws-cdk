@@ -32,15 +32,15 @@ test('MediaConnect flow with rtp-fec creation', () => {
     flowOutputName: 'my-first-output',
     description: 'rtp-output',
     flow,
-    outputConfig: OutputConfiguration.rtpFec({
-      destination: '192.168.1.100',
+    output: OutputConfiguration.rtpFec({
+      destination: '198.51.100.100',
       port: 5000,
     }),
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::MediaConnect::FlowOutput', {
     Description: 'rtp-output',
-    Destination: '192.168.1.100',
+    Destination: '198.51.100.100',
     FlowArn: { 'Fn::GetAtt': ['flowAF0E31A5', 'FlowArn'] },
     Name: 'my-first-output',
     Port: 5000,
@@ -63,7 +63,7 @@ test('MediaConnect flow with ndi creation', () => {
     flowOutputName: 'my-first-output',
     description: 'ndi-output',
     flow,
-    outputConfig: OutputConfiguration.ndi({
+    output: OutputConfiguration.ndi({
       ndiProgramName: 'output',
       ndiSpeedHqQuality: 100,
     }),
@@ -94,8 +94,8 @@ test('Invalid encryption configuration for SRT Caller', () => {
     flowOutputName: 'my-first-output',
     description: 'srt-output',
     flow,
-    outputConfig: OutputConfiguration.srtCaller({
-      destination: '10.10.10.10',
+    output: OutputConfiguration.srtCaller({
+      destination: '198.51.100.110',
       port: 1111,
       encryption: ({
         role: Role.fromRoleName(stack, 'role', 'my-role'),
@@ -106,7 +106,7 @@ test('Invalid encryption configuration for SRT Caller', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::MediaConnect::FlowOutput', {
     Description: 'srt-output',
-    Destination: '10.10.10.10',
+    Destination: '198.51.100.110',
     Encryption: {
       KeyType: 'srt-password',
       RoleArn: {
@@ -143,7 +143,7 @@ test('Flow output with router integration', () => {
 
   new FlowOutput(stack, 'output', {
     flow,
-    outputConfig: OutputConfiguration.router(),
+    output: OutputConfiguration.router(),
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::MediaConnect::FlowOutput', {
@@ -168,14 +168,14 @@ test('Flow output with RTP', () => {
 
   new FlowOutput(stack, 'output', {
     flow,
-    outputConfig: OutputConfiguration.rtp({
-      destination: '192.168.1.1',
+    output: OutputConfiguration.rtp({
+      destination: '198.51.100.1',
       port: 5000,
     }),
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::MediaConnect::FlowOutput', {
-    Destination: '192.168.1.1',
+    Destination: '198.51.100.1',
     Port: 5000,
     Protocol: 'rtp',
   });
@@ -193,14 +193,14 @@ test('Flow output with RIST', () => {
 
   new FlowOutput(stack, 'output', {
     flow,
-    outputConfig: OutputConfiguration.rist({
-      destination: '192.168.1.1',
+    output: OutputConfiguration.rist({
+      destination: '198.51.100.1',
       port: 6000,
     }),
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::MediaConnect::FlowOutput', {
-    Destination: '192.168.1.1',
+    Destination: '198.51.100.1',
     Port: 6000,
     Protocol: 'rist',
   });
@@ -218,7 +218,7 @@ test('Flow output with SRT Listener', () => {
 
   new FlowOutput(stack, 'output', {
     flow,
-    outputConfig: OutputConfiguration.srtListener({
+    output: OutputConfiguration.srtListener({
       port: 7000,
       cidrAllowList: ['10.0.0.0/8'],
     }),
@@ -243,7 +243,7 @@ test('Flow output with Zixi Pull', () => {
 
   new FlowOutput(stack, 'output', {
     flow,
-    outputConfig: OutputConfiguration.zixiPull({
+    output: OutputConfiguration.zixiPull({
       streamId: 'test-stream',
       remoteId: 'remote-1',
       maxLatency: Duration.millis(1000),
@@ -272,9 +272,9 @@ test('Flow output with Zixi Push', () => {
 
   new FlowOutput(stack, 'output', {
     flow,
-    outputConfig: OutputConfiguration.zixiPush({
+    output: OutputConfiguration.zixiPush({
       streamId: 'test-stream',
-      destination: '10.0.0.1',
+      destination: '198.51.100.2',
       port: 2088,
       maxLatency: Duration.millis(500),
     }),
@@ -282,7 +282,7 @@ test('Flow output with Zixi Push', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::MediaConnect::FlowOutput', {
     Protocol: 'zixi-push',
-    Destination: '10.0.0.1',
+    Destination: '198.51.100.2',
     Port: 2088,
     StreamId: 'test-stream',
     MaxLatency: 500,
@@ -304,7 +304,7 @@ test('Flow output with router integration and transit encryption', () => {
 
   new FlowOutput(stack, 'output', {
     flow,
-    outputConfig: OutputConfiguration.router({
+    output: OutputConfiguration.router({
       encryption: { secret },
     }),
   });
@@ -355,8 +355,8 @@ test('Flow output name validation', () => {
     new FlowOutput(stack, 'output', {
       flowOutputName: 'invalid@name!',
       flow,
-      outputConfig: OutputConfiguration.rtp({
-        destination: '192.168.1.100',
+      output: OutputConfiguration.rtp({
+        destination: '198.51.100.100',
         port: 5000,
       }),
     });
@@ -377,8 +377,8 @@ test('Flow output name validation - too long', () => {
     new FlowOutput(stack, 'output', {
       flowOutputName: 'a'.repeat(129),
       flow,
-      outputConfig: OutputConfiguration.rtp({
-        destination: '192.168.1.100',
+      output: OutputConfiguration.rtp({
+        destination: '198.51.100.100',
         port: 5000,
       }),
     });
@@ -398,7 +398,7 @@ test('Zixi Pull output with static-key encryption', () => {
 
   new FlowOutput(stack, 'zixiPull', {
     flow,
-    outputConfig: OutputConfiguration.zixiPull({
+    output: OutputConfiguration.zixiPull({
       streamId: 'live',
       remoteId: 'remote-1',
       maxLatency: Duration.millis(1000),
@@ -434,7 +434,7 @@ test('Zixi Push output with static-key encryption auto-creates a role when none 
 
   new FlowOutput(stack, 'zixiPush', {
     flow,
-    outputConfig: OutputConfiguration.zixiPush({
+    output: OutputConfiguration.zixiPush({
       destination: '198.51.100.10',
       port: 2088,
       streamId: 'live',
@@ -484,7 +484,7 @@ test('SRT Caller output with SRT password encryption auto-creates a role when no
 
   new FlowOutput(stack, 'srtCaller', {
     flow,
-    outputConfig: OutputConfiguration.srtCaller({
+    output: OutputConfiguration.srtCaller({
       destination: '198.51.100.10',
       port: 9100,
       minLatency: Duration.millis(120),
@@ -527,7 +527,7 @@ describe('open output CIDR allow list warning', () => {
   test.each(['0.0.0.0/0', '::/0'])('warns when an output allow list is fully open (%s)', (openCidr) => {
     new FlowOutput(stack, 'output', {
       flow: makeFlow(),
-      outputConfig: OutputConfiguration.srtListener({
+      output: OutputConfiguration.srtListener({
         port: 7000,
         cidrAllowList: [openCidr],
       }),
@@ -542,7 +542,7 @@ describe('open output CIDR allow list warning', () => {
   test('does not warn for a narrow output allow list', () => {
     new FlowOutput(stack, 'output', {
       flow: makeFlow(),
-      outputConfig: OutputConfiguration.srtListener({
+      output: OutputConfiguration.srtListener({
         port: 7000,
         cidrAllowList: ['10.0.0.0/8'],
       }),

@@ -58,7 +58,7 @@ const mergeFlow = new Flow(stack, 'MergeFlow', {
 // fields so we can assert the service applies ENABLED by default.
 new FlowOutput(stack, 'OutputDefault', {
   flow: ristFlow,
-  outputConfig: OutputConfiguration.rtp({
+  output: OutputConfiguration.rtp({
     destination: '203.0.113.20',
     port: 6000,
   }),

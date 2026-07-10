@@ -72,3 +72,54 @@ test('MediaConnect Bridge output', () => {
     },
   });
 });
+
+test.each([0, 256])('BridgeOutputConfiguration.network throws for out-of-range TTL %d', (ttl) => {
+  expect(() => {
+    BridgeOutputConfiguration.network({
+      ipAddress: '192.168.1.100',
+      network: GatewayNetwork.define({ name: 'test', cidrBlock: '198.51.100.0/24' }),
+      port: 1234,
+      protocol: BridgeProtocol.RTP,
+      ttl,
+    });
+  }).toThrow('TTL must be between 1 and 255 hops');
+});
+
+test.each([1, 255])('BridgeOutputConfiguration.network accepts boundary TTL %d', (ttl) => {
+  expect(() => {
+    BridgeOutputConfiguration.network({
+      ipAddress: '192.168.1.100',
+      network: GatewayNetwork.define({ name: 'test', cidrBlock: '198.51.100.0/24' }),
+      port: 1234,
+      protocol: BridgeProtocol.RTP,
+      ttl,
+    });
+  }).not.toThrow();
+});
+
+test('BridgeOutput on an ingress bridge throws', () => {
+  const gateway = Gateway.fromGatewayArn(stack, 'gateway', 'aaaaaa');
+
+  const bridge = new Bridge(stack, 'bridge', {
+    config: BridgeConfiguration.ingress({
+      maxBitrate: Bitrate.mbps(5),
+      maxOutputs: 2,
+      networkSources: [],
+    }),
+    gateway,
+  });
+
+  expect(() => {
+    new BridgeOutput(stack, 'bridge-out', {
+      bridgeOutputName: 'bridge-output',
+      bridge,
+      output: BridgeOutputConfiguration.network({
+        ipAddress: '192.168.1.100',
+        network: GatewayNetwork.define({ name: 'test', cidrBlock: '198.51.100.0/24' }),
+        port: 1234,
+        protocol: BridgeProtocol.RTP,
+        ttl: 15,
+      }),
+    });
+  }).toThrow('BridgeOutput can only be attached to an egress bridge');
+});

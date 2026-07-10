@@ -16,14 +16,12 @@ import * as mediaconnect from '../lib';
 const app = new App();
 const stack = new Stack(app, 'aws-cdk-mediaconnect-dual-source');
 
-// VPC Setup
+// VPC Setup. Empty subnetConfiguration skips auto-generated subnets, which resolve AZs at synth
+// time and hit the integ-runner AZ bug (aws-cdk#38268); the VPC interfaces use the explicit
+// `subnet` below instead.
 const vpc = new ec2.Vpc(stack, 'Vpc', {
   ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
-  subnetConfiguration: [{
-    name: 'isolated',
-    subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
-    cidrMask: 24,
-  }],
+  subnetConfiguration: [],
 });
 const subnet = new ec2.PrivateSubnet(stack, 'Subnet', {
   availabilityZone: `${stack.region}a`,
@@ -76,7 +74,8 @@ const outputVpcInterface = mediaconnect.VpcInterface.define({
 const flow = new mediaconnect.Flow(stack, 'DualSourceFlow', {
   removalPolicy: RemovalPolicy.DESTROY,
   flowName: 'dual-source-flow',
-  availabilityZone: stack.availabilityZones[0],
+  // Matches the explicit subnet's AZ; resolves at deploy time via the region token.
+  availabilityZone: `${stack.region}a`,
   vpcInterfaces: [sourceVpcInterface, outputVpcInterface],
   maintenance: {
     maintenanceDay: mediaconnect.MaintenanceDay.TUESDAY,
@@ -164,7 +163,7 @@ new mediaconnect.FlowEntitlement(stack, 'Entitlement', {
 new mediaconnect.FlowOutput(stack, 'VpcOutput', {
   flowOutputName: 'vpc-interface-output',
   flow,
-  outputConfig: mediaconnect.OutputConfiguration.rist({
+  output: mediaconnect.OutputConfiguration.rist({
     destination: '10.0.1.100',
     port: 6000,
     vpcInterfaceAttachment: outputVpcInterface,
@@ -175,7 +174,7 @@ new mediaconnect.FlowOutput(stack, 'VpcOutput', {
 new mediaconnect.FlowOutput(stack, 'EncryptedOutput', {
   flowOutputName: 'encrypted-srt-output',
   flow,
-  outputConfig: mediaconnect.OutputConfiguration.srtCaller({
+  output: mediaconnect.OutputConfiguration.srtCaller({
     destination: '203.0.113.100',
     port: 7000,
     encryption: {

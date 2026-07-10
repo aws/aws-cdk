@@ -774,10 +774,11 @@ abstract class RouterOutputBase extends Resource implements IRouterOutput {
     return new Metric({
       metricName,
       namespace: 'AWS/MediaConnect',
+      ...props,
       dimensionsMap: {
         RouterOutputARN: this.routerOutputArn,
+        ...props?.dimensionsMap,
       },
-      ...props,
     }).attachTo(this);
   }
 
@@ -920,7 +921,7 @@ export class RouterOutput extends RouterOutputBase implements IRouterOutput {
 
     // Validate router output name if provided
     if (props.routerOutputName != null && props.routerOutputName !== '' && !Token.isUnresolved(props.routerOutputName)) {
-      if (props.routerOutputName.length < 1 || props.routerOutputName.length > 128) {
+      if (props.routerOutputName.length > 128) {
         throw new ValidationError(lit`RouterOutputNameLength`, `Router output name must be between 1 and 128 characters, got ${props.routerOutputName.length}`, this);
       }
       if (!/^[a-zA-Z0-9-]+$/.test(props.routerOutputName)) {
@@ -929,8 +930,8 @@ export class RouterOutput extends RouterOutputBase implements IRouterOutput {
     }
 
     // Validate maximum bitrate
-    if (props.maximumBitrate.toBps() < 1000000) {
-      throw new ValidationError(lit`RouterOutputMinBitrate`, `Maximum bitrate must be at least 1,000,000 bits/s (1 Mbps), got ${props.maximumBitrate}`, this);
+    if (!props.maximumBitrate.isUnresolved() && props.maximumBitrate.toBps() < 1000000) {
+      throw new ValidationError(lit`RouterOutputMinBitrate`, `Maximum bitrate must be at least 1,000,000 bits/s (1 Mbps), got ${props.maximumBitrate.toBps()}`, this);
     }
 
     // Validate bitrate does not exceed tier limit

@@ -57,7 +57,7 @@ export interface FlowOutputProps {
   /**
    * Output configuration
    */
-  readonly outputConfig: OutputConfiguration;
+  readonly output: OutputConfiguration;
 }
 
 /**
@@ -548,7 +548,7 @@ export class FlowOutput extends FlowOutputBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    const outputConfig = props.outputConfig._bind();
+    const outputConfig = props.output._bind();
 
     // Warn on fully-open CIDR allow lists.
     if (outputConfig.cidrAllowList !== undefined && !Token.isUnresolved(outputConfig.cidrAllowList)) {

@@ -22,6 +22,13 @@ export interface IFlowSource extends IResource, IFlowSourceRef {
   readonly flowSourceArn: string;
 
   /**
+   * The name of the flow source.
+   *
+   * @attribute
+   */
+  readonly flowSourceName: string;
+
+  /**
    * The IP address that the flow will be listening on for incoming content.
    *
    * @attribute
@@ -41,14 +48,10 @@ export interface IFlowSource extends IResource, IFlowSourceRef {
  */
 export interface FlowSourceProps {
   /**
-   * Name of the Flow Source.
+   * Additional Source Configuration.
    *
-   * @default automatically generated from construct naming.
-   */
-  readonly flowSourceName?: string;
-
-  /**
-   * Additional Source Configuration
+   * Set the source's name via `name` on the configuration (e.g. `SourceConfiguration.rtp({ name })`).
+   * When no name is set there, one is generated from construct naming.
    */
   readonly source: SourceConfiguration;
 
@@ -66,6 +69,13 @@ export interface FlowSourceAttributes {
    * The Amazon Resource Name (ARN) of the flow source.
    */
   readonly flowSourceArn: string;
+
+  /**
+   * The name of the flow source.
+   *
+   * @default - accessing `flowSourceName` on the imported source throws; only provide when available.
+   */
+  readonly flowSourceName?: string;
 
   /**
    * The IP address that the flow will be listening on for incoming content.
@@ -88,6 +98,7 @@ export interface FlowSourceAttributes {
  */
 abstract class FlowSourceBase extends Resource implements IFlowSource {
   public abstract readonly flowSourceArn: string;
+  public abstract readonly flowSourceName: string;
   public abstract readonly ingestIp: string;
   public abstract readonly sourceIngestPort: string;
 
@@ -137,6 +148,15 @@ export class FlowSource extends FlowSourceBase {
     class Import extends FlowSourceBase {
       public readonly flowSourceArn = attrs.flowSourceArn;
 
+      public get flowSourceName(): string {
+        if (attrs.flowSourceName) return attrs.flowSourceName;
+        throw new ValidationError(
+          lit`FlowSourceNameNotProvided`,
+          `'flowSourceName' is not available on imported FlowSource ${this.node.path}; pass it via fromFlowSourceAttributes`,
+          this,
+        );
+      }
+
       public get ingestIp(): string {
         if (attrs.ingestIp) return attrs.ingestIp;
         throw new ValidationError(
@@ -159,21 +179,24 @@ export class FlowSource extends FlowSourceBase {
   }
 
   readonly flowSourceArn: string;
+  readonly flowSourceName: string;
   readonly ingestIp: string;
   readonly sourceIngestPort: string;
 
   constructor(scope: Construct, id: string, props: FlowSourceProps) {
     super(scope, id, {
-      physicalName: props?.flowSourceName ?? Lazy.string({ produce: () => Names.uniqueResourceName(this, { maxLength: 64 }) }),
+      // The source name comes from the `source` configuration; fall back to a
+      // construct-derived name when it sets none.
+      physicalName: props.source.flowSourceName ?? Lazy.string({ produce: () => Names.uniqueResourceName(this, { maxLength: 64 }) }),
     });
 
-    // Validate flow source name if provided
-    if (props.flowSourceName != null && props.flowSourceName !== '' && !Token.isUnresolved(props.flowSourceName)) {
-      if (props.flowSourceName.length < 1 || props.flowSourceName.length > 64) {
-        throw new ValidationError(lit`FlowSourceNameLength`, `Flow source name must be between 1 and 64 characters, got ${props.flowSourceName.length}`, this);
+    // Validate the source name when one is set on the configuration.
+    if (props.source.flowSourceName != null && props.source.flowSourceName !== '' && !Token.isUnresolved(props.source.flowSourceName)) {
+      if (props.source.flowSourceName.length > 64) {
+        throw new ValidationError(lit`FlowSourceNameLength`, `Flow source name must be between 1 and 64 characters, got ${props.source.flowSourceName.length}`, this);
       }
-      if (!/^[a-zA-Z0-9_-]+$/.test(props.flowSourceName)) {
-        throw new ValidationError(lit`FlowSourceNameFormat`, `Flow source name must contain only alphanumeric characters, hyphens, and underscores, got '${props.flowSourceName}'`, this);
+      if (!/^[a-zA-Z0-9_-]+$/.test(props.source.flowSourceName)) {
+        throw new ValidationError(lit`FlowSourceNameFormat`, `Flow source name must contain only alphanumeric characters, hyphens, and underscores, got '${props.source.flowSourceName}'`, this);
       }
     }
 
@@ -205,6 +228,7 @@ export class FlowSource extends FlowSourceBase {
     });
 
     this.flowSourceArn = resource.flowSourceRef.sourceArn;
+    this.flowSourceName = this.physicalName;
     this.ingestIp = resource.attrIngestIp;
     this.sourceIngestPort = resource.attrSourceIngestPort;
   }

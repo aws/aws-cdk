@@ -10,7 +10,6 @@ import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import type { GatewayNetwork } from './shared';
 import { isOpenCidr } from './shared';
-export { GatewayNetwork } from './shared';
 
 /**
  * Interface for Gateway
@@ -110,6 +109,10 @@ export interface GatewayProps {
 
   /**
    * Policy to apply when the gateway is removed from the stack.
+   *
+   * Defaults to `RETAIN` because a gateway is long-lived, on-premises infrastructure that hosts
+   * bridges, not a data store. Retaining by default avoids an unplanned teardown. Set
+   * `RemovalPolicy.DESTROY` if you want it removed with the stack.
    *
    * @default RemovalPolicy.RETAIN
    */
@@ -223,7 +226,7 @@ export class Gateway extends GatewayBase implements IGateway {
 
     // Validate gateway name if provided
     if (props.gatewayName != null && props.gatewayName !== '' && !Token.isUnresolved(props.gatewayName)) {
-      if (props.gatewayName.length < 1 || props.gatewayName.length > 32) {
+      if (props.gatewayName.length > 32) {
         throw new ValidationError(lit`GatewayNameLength`, `Gateway name must be between 1 and 32 characters, got ${props.gatewayName.length}`, this);
       }
       if (!/^[a-zA-Z0-9-]+$/.test(props.gatewayName)) {

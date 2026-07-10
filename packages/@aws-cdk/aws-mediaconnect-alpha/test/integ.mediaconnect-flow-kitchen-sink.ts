@@ -121,7 +121,7 @@ const flow = new mediaconnect.Flow(stack, 'KitchenSinkFlow', {
 new mediaconnect.FlowOutput(stack, 'NdiOutput', {
   flowOutputName: 'ndi-output',
   flow,
-  outputConfig: mediaconnect.OutputConfiguration.ndi({
+  output: mediaconnect.OutputConfiguration.ndi({
     ndiProgramName: 'kitchen-sink-ndi',
     ndiSpeedHqQuality: 100,
   }),
@@ -131,7 +131,7 @@ new mediaconnect.FlowOutput(stack, 'NdiOutput', {
 new mediaconnect.FlowOutput(stack, 'RtpFecOutput', {
   flowOutputName: 'rtp-fec-output',
   flow,
-  outputConfig: mediaconnect.OutputConfiguration.rtpFec({
+  output: mediaconnect.OutputConfiguration.rtpFec({
     destination: '203.0.113.10',
     port: 6000,
   }),
@@ -141,7 +141,7 @@ new mediaconnect.FlowOutput(stack, 'RtpFecOutput', {
 new mediaconnect.FlowOutput(stack, 'ZixiPullOutput', {
   flowOutputName: 'zixi-pull-output',
   flow,
-  outputConfig: mediaconnect.OutputConfiguration.zixiPull({
+  output: mediaconnect.OutputConfiguration.zixiPull({
     streamId: 'kitchen-sink-zixi-pull',
     remoteId: 'remote-receiver-1',
     maxLatency: Duration.millis(1000),
@@ -158,7 +158,7 @@ new mediaconnect.FlowOutput(stack, 'ZixiPullOutput', {
 new mediaconnect.FlowOutput(stack, 'ZixiPushOutput', {
   flowOutputName: 'zixi-push-output',
   flow,
-  outputConfig: mediaconnect.OutputConfiguration.zixiPush({
+  output: mediaconnect.OutputConfiguration.zixiPush({
     streamId: 'kitchen-sink-zixi-push',
     destination: '203.0.113.20',
     port: 2088,
@@ -175,7 +175,7 @@ new mediaconnect.FlowOutput(stack, 'ZixiPushOutput', {
 new mediaconnect.FlowOutput(stack, 'SrtListenerOutput', {
   flowOutputName: 'srt-listener-output',
   flow,
-  outputConfig: mediaconnect.OutputConfiguration.srtListener({
+  output: mediaconnect.OutputConfiguration.srtListener({
     port: 7000,
     minLatency: Duration.millis(100),
     cidrAllowList: ['10.0.0.0/8'],

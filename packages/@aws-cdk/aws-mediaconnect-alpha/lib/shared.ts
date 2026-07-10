@@ -909,7 +909,7 @@ export class PixelAspectRatio {
  * @internal
  */
 export function exceedsRouterTierBitrate(tierMbps: number | undefined, maximumBitrate: Bitrate): boolean {
-  if (tierMbps === undefined) return false;
+  if (tierMbps === undefined || maximumBitrate.isUnresolved()) return false;
   return maximumBitrate.toBps() > tierMbps * 1_000_000;
 }
 

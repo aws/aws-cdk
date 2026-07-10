@@ -1,5 +1,5 @@
 import type { Bitrate, IResource, RemovalPolicy } from 'aws-cdk-lib';
-import { ArnFormat, Resource, Lazy, Names, Duration, Stack, Token, Fn, UnscopedValidationError, ValidationError } from 'aws-cdk-lib';
+import { ArnFormat, Resource, Lazy, Names, Duration, Stack, Token, Fn, UnscopedValidationError, Validations, ValidationError } from 'aws-cdk-lib';
 import type { MetricOptions } from 'aws-cdk-lib/aws-cloudwatch';
 import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
 import { CfnFlow } from 'aws-cdk-lib/aws-mediaconnect';
@@ -1141,7 +1141,7 @@ abstract class FlowBase extends Resource implements IFlow {
 
     return new FlowOutput(this, id, {
       flow: this,
-      outputConfig: outputConfig,
+      output: outputConfig,
     });
   }
 
@@ -1507,6 +1507,15 @@ export class Flow extends FlowBase implements IFlow {
       vpcInterfaces: Lazy.any({ produce: () => this.vpcInterfaces }, { omitEmptyArray: true }),
     });
 
+    // cfn-validate false positive: the engine's embedded schema flags Flow.Source as deprecated,
+    // but it is a required, current property (no alternative exists). Remove once the upstream
+    // schema is corrected.
+    // Tracking: https://github.com/aws-cloudformation/cloudformation-validate/issues/144
+    Validations.of(flow).acknowledge({
+      id: 'CloudFormation-Validate::W9009',
+      reason: 'cfn-validate false positive: MediaConnect Flow.Source is required and not deprecated (see cloudformation-validate#144)',
+    });
+
     this.flowArn = flow.attrFlowArn;
     this.sourceArn = flow.attrSourceSourceArn;
     this.egressIp = flow.attrEgressIp;
@@ -1533,7 +1542,7 @@ export class Flow extends FlowBase implements IFlow {
   /** Validate the flow name length and character set, when a concrete value is provided. */
   private validateName(props: FlowProps): void {
     if (props.flowName != null && props.flowName !== '' && !Token.isUnresolved(props.flowName)) {
-      if (props.flowName.length < 1 || props.flowName.length > 64) {
+      if (props.flowName.length > 64) {
         throw new ValidationError(lit`FlowNameLength`, `Flow name must be between 1 and 64 characters, got ${props.flowName.length}`, this);
       }
       if (!/^[a-zA-Z0-9_-]+$/.test(props.flowName)) {

@@ -77,7 +77,7 @@ export class BridgeOutput extends Resource implements IBridgeOutput {
 
     // Validate bridge output name if provided
     if (props.bridgeOutputName != null && props.bridgeOutputName !== '' && !Token.isUnresolved(props.bridgeOutputName)) {
-      if (props.bridgeOutputName.length < 1 || props.bridgeOutputName.length > 64) {
+      if (props.bridgeOutputName.length > 64) {
         throw new ValidationError(lit`BridgeOutputNameLength`, `Bridge output name must be between 1 and 64 characters, got ${props.bridgeOutputName.length}`, this);
       }
       if (!/^[a-zA-Z0-9-]+$/.test(props.bridgeOutputName)) {

@@ -76,7 +76,7 @@ const flow = new Flow(stack, 'Flow', {
 // Public outputs.
 new FlowOutput(stack, 'RtpOutput', {
   flow,
-  outputConfig: OutputConfiguration.rtp({
+  output: OutputConfiguration.rtp({
     destination: '198.51.100.10',
     port: 5100,
   }),
@@ -84,7 +84,7 @@ new FlowOutput(stack, 'RtpOutput', {
 
 new FlowOutput(stack, 'RistOutput', {
   flow,
-  outputConfig: OutputConfiguration.rist({
+  output: OutputConfiguration.rist({
     destination: '198.51.100.20',
     port: 5200,
   }),
@@ -92,7 +92,7 @@ new FlowOutput(stack, 'RistOutput', {
 
 new FlowOutput(stack, 'SrtCallerOutput', {
   flow,
-  outputConfig: OutputConfiguration.srtCaller({
+  output: OutputConfiguration.srtCaller({
     destination: '198.51.100.30',
     port: 5300,
     minLatency: cdk.Duration.millis(120),
@@ -102,7 +102,7 @@ new FlowOutput(stack, 'SrtCallerOutput', {
 // VPC outputs — same protocols, routed through the VPC interface.
 new FlowOutput(stack, 'RtpVpcOutput', {
   flow,
-  outputConfig: OutputConfiguration.rtp({
+  output: OutputConfiguration.rtp({
     destination: '10.1.172.10',
     port: 6100,
     vpcInterfaceAttachment: vpcInterface,
@@ -111,7 +111,7 @@ new FlowOutput(stack, 'RtpVpcOutput', {
 
 new FlowOutput(stack, 'RistVpcOutput', {
   flow,
-  outputConfig: OutputConfiguration.rist({
+  output: OutputConfiguration.rist({
     destination: '10.1.172.20',
     port: 6200,
     vpcInterfaceAttachment: vpcInterface,
@@ -120,7 +120,7 @@ new FlowOutput(stack, 'RistVpcOutput', {
 
 new FlowOutput(stack, 'SrtCallerVpcOutput', {
   flow,
-  outputConfig: OutputConfiguration.srtCaller({
+  output: OutputConfiguration.srtCaller({
     destination: '10.1.172.30',
     port: 6300,
     minLatency: cdk.Duration.millis(120),

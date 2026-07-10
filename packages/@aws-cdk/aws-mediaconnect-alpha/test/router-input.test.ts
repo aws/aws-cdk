@@ -1,4 +1,4 @@
-import { App, Bitrate, Duration, Stack } from 'aws-cdk-lib';
+import { App, Bitrate, Duration, Lazy, Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
@@ -146,7 +146,7 @@ describe('RouterInput', () => {
     });
     const flowOutput = new FlowOutput(stack, 'RouterOutputFlow', {
       flow,
-      outputConfig: OutputConfiguration.router({}),
+      output: OutputConfiguration.router({}),
     });
     new RouterInput(stack, 'routerInput', {
       routerInputName: 'test-flow',
@@ -198,7 +198,7 @@ describe('RouterInput', () => {
     });
     const flowOutput = new FlowOutput(stack, 'RouterOutputFlow', {
       flow,
-      outputConfig: OutputConfiguration.router({}),
+      output: OutputConfiguration.router({}),
     });
     new RouterInput(stack, 'routerInput', {
       routerInputName: 'test-flow-no-encryption',
@@ -245,7 +245,7 @@ describe('RouterInputConfiguration validation', () => {
 
   test('merge throws error when SRT protocols are used', () => {
     const srtCaller = RouterInputProtocol.srtCaller({
-      sourceAddress: '192.168.1.1',
+      sourceAddress: '203.0.113.1',
       sourcePort: 5000,
       minimumLatency: Duration.millis(100000),
     });
@@ -333,6 +333,49 @@ test('Router input name validation - invalid characters', () => {
   }).toThrow('Router input name must contain only alphanumeric characters and hyphens');
 });
 
+describe('maximum bitrate validation', () => {
+  test('throws when below the 1 Mbps minimum', () => {
+    expect(() => {
+      new RouterInput(stack, 'router-input', {
+        maximumBitrate: Bitrate.bps(500000),
+        routingScope: RoutingScope.REGIONAL,
+        configuration: RouterInputConfiguration.standard({
+          networkInterface,
+          protocol: RouterInputProtocol.rtp({ port: 5000 }),
+        }),
+      });
+    }).toThrow('Maximum bitrate must be at least 1,000,000 bits/s (1 Mbps)');
+  });
+
+  test('throws when exceeding the selected tier limit', () => {
+    expect(() => {
+      new RouterInput(stack, 'router-input', {
+        maximumBitrate: Bitrate.mbps(30),
+        routingScope: RoutingScope.REGIONAL,
+        tier: RouterInputTier.INPUT_20,
+        configuration: RouterInputConfiguration.standard({
+          networkInterface,
+          protocol: RouterInputProtocol.rtp({ port: 5000 }),
+        }),
+      });
+    }).toThrow('exceeds the INPUT_20 tier limit of 20 Mbps');
+  });
+
+  test('skips bitrate validation for a tokenized maximum bitrate', () => {
+    expect(() => {
+      new RouterInput(stack, 'router-input', {
+        maximumBitrate: Bitrate.bps(Lazy.number({ produce: () => 5000000 })),
+        routingScope: RoutingScope.REGIONAL,
+        tier: RouterInputTier.INPUT_20,
+        configuration: RouterInputConfiguration.standard({
+          networkInterface,
+          protocol: RouterInputProtocol.rtp({ port: 5000 }),
+        }),
+      });
+    }).not.toThrow();
+  });
+});
+
 test('failover throws when not exactly 2 protocols', () => {
   expect(() => {
     RouterInputConfiguration.failover({
@@ -409,7 +452,7 @@ test('port validation - out of range', () => {
 test('SRT Caller port validation - out of range', () => {
   expect(() => {
     RouterInputProtocol.srtCaller({
-      sourceAddress: '10.0.0.1',
+      sourceAddress: '203.0.113.2',
       sourcePort: 70000,
       minimumLatency: Duration.millis(100),
     });
@@ -861,7 +904,7 @@ test('flow-based router input throws when accessing endpoints', () => {
   });
   const flowOutput = new FlowOutput(stack, 'TestFlowOutput', {
     flow,
-    outputConfig: OutputConfiguration.router(),
+    output: OutputConfiguration.router(),
   });
   const input = new RouterInput(stack, 'FlowUrlInput', {
     routerInputName: 'flow-url-test',
@@ -993,5 +1036,43 @@ test('grants.restart() adds correct IAM policy', () => {
         Resource: Match.anyValue(),
       }],
     },
+  });
+});
+
+test('metric() merges a caller-supplied dimensionsMap without dropping RouterInputARN', () => {
+  const input = new RouterInput(stack, 'MetricInput', {
+    routerInputName: 'metric-test',
+    maximumBitrate: Bitrate.mbps(10),
+    routingScope: RoutingScope.REGIONAL,
+    configuration: RouterInputConfiguration.standard({
+      networkInterface,
+      protocol: RouterInputProtocol.rtp({ port: 5000 }),
+    }),
+  });
+
+  const metric = input.metric('RouterInputBitRate', { dimensionsMap: { Custom: 'value' } });
+
+  expect(metric.dimensions).toEqual({
+    RouterInputARN: input.routerInputArn,
+    Custom: 'value',
+  });
+});
+
+test('named metric helper keeps RouterInputARN when given a custom dimensionsMap', () => {
+  const input = new RouterInput(stack, 'MetricInput2', {
+    routerInputName: 'metric-test-2',
+    maximumBitrate: Bitrate.mbps(10),
+    routingScope: RoutingScope.REGIONAL,
+    configuration: RouterInputConfiguration.standard({
+      networkInterface,
+      protocol: RouterInputProtocol.rtp({ port: 5000 }),
+    }),
+  });
+
+  const metric = input.metricBitrate({ dimensionsMap: { Custom: 'value' } });
+
+  expect(metric.dimensions).toEqual({
+    RouterInputARN: input.routerInputArn,
+    Custom: 'value',
   });
 });

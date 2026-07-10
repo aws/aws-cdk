@@ -121,7 +121,7 @@ export class BridgeSource extends Resource implements IBridgeSource {
 
     // Validate bridge source name if provided
     if (props.bridgeSourceName != null && props.bridgeSourceName !== '' && !Token.isUnresolved(props.bridgeSourceName)) {
-      if (props.bridgeSourceName.length < 1 || props.bridgeSourceName.length > 64) {
+      if (props.bridgeSourceName.length > 64) {
         throw new ValidationError(lit`BridgeSourceNameLength`, `Bridge source name must be between 1 and 64 characters, got ${props.bridgeSourceName.length}`, this);
       }
       if (!/^[a-zA-Z0-9-]+$/.test(props.bridgeSourceName)) {

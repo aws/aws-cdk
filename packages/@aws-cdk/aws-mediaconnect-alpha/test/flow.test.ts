@@ -1,5 +1,6 @@
 import { App, Bitrate, Duration, Stack } from 'aws-cdk-lib';
-import { Annotations, Match, Template } from 'aws-cdk-lib/assertions';import { Vpc, IpAddresses, SubnetType, PrivateSubnet, SecurityGroup } from 'aws-cdk-lib/aws-ec2';
+import { Annotations, Match, Template } from 'aws-cdk-lib/assertions';
+import { Vpc, IpAddresses, SubnetType, PrivateSubnet, SecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import { Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 
@@ -68,7 +69,7 @@ test('MediaConnect flow with SRT Caller source', () => {
     source: SourceConfiguration.srtCaller({
       flowSourceName: 'aaa',
       maxLatency: Duration.seconds(1),
-      sourceListenerAddress: '10.10.10.10',
+      sourceListenerAddress: '203.0.113.10',
       sourceListenerPort: 5000,
       decryption: ({
         role: Role.fromRoleName(stack, 'importedRole', 'importedRole'),
@@ -100,7 +101,7 @@ test('MediaConnect flow with SRT Caller source', () => {
       MaxLatency: 1000,
       Name: 'aaa',
       Protocol: 'srt-caller',
-      SourceListenerAddress: '10.10.10.10',
+      SourceListenerAddress: '203.0.113.10',
       SourceListenerPort: 5000,
     },
   });
@@ -369,7 +370,7 @@ test('MediaConnect flow with gateway bridge source and VPC interface', () => {
 
   const subnet = new PrivateSubnet(stack, 'subnet', {
     availabilityZone: 'us-east-1a',
-    cidrBlock: '10.0.0.0/24',
+    cidrBlock: '10.0.172.0/24',
     vpcId: vpc.vpcId,
   });
 
@@ -503,7 +504,7 @@ test('MediaConnect flow with flowoutput on helper method', () => {
 
   flow.addOutput('monitoring-output',
     OutputConfiguration.rtp({
-      destination: '192.168.1.100',
+      destination: '198.51.100.100',
       port: 5004,
     }),
   );
@@ -541,7 +542,7 @@ test('MediaConnect flow with flowoutput on helper method', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::MediaConnect::FlowOutput', {
     // Description: 'output-1',
-    Destination: '192.168.1.100',
+    Destination: '198.51.100.100',
     FlowArn: { 'Fn::GetAtt': ['FlowA74D6E88', 'FlowArn'] },
     Name: 'FlowmonitoringoutputF420EC7A',
     Port: 5004,
@@ -1746,7 +1747,7 @@ test('SRT Caller source validation - reserved port 2088', () => {
   expect(() => {
     SourceConfiguration.srtCaller({
       flowSourceName: 'source',
-      sourceListenerAddress: '10.0.0.1',
+      sourceListenerAddress: '203.0.113.11',
       sourceListenerPort: 2088,
     });
   }).toThrow(/Ports 2077 and 2088 are reserved and cannot be used for SRT Caller/);
@@ -1790,7 +1791,7 @@ test('Flow with SRT Caller source with all options', () => {
   new Flow(stack, 'flow', {
     source: SourceConfiguration.srtCaller({
       flowSourceName: 'srt-caller',
-      sourceListenerAddress: '10.0.0.1',
+      sourceListenerAddress: '203.0.113.11',
       sourceListenerPort: 5000,
       maxLatency: Duration.millis(1000),
       minLatency: Duration.millis(100),
@@ -1802,7 +1803,7 @@ test('Flow with SRT Caller source with all options', () => {
     Source: {
       Name: 'srt-caller',
       Protocol: 'srt-caller',
-      SourceListenerAddress: '10.0.0.1',
+      SourceListenerAddress: '203.0.113.11',
       SourceListenerPort: 5000,
       MaxLatency: 1000,
       MinLatency: 100,
@@ -1833,14 +1834,13 @@ test('Flow with gateway bridge source without VPC interface', () => {
 test('Flow source name validation - too long', () => {
   expect(() => {
     new FlowSource(stack, 'source', {
-      flowSourceName: 'a'.repeat(65),
       flow: Flow.fromFlowAttributes(stack, 'flow', {
         flowArn: 'arn:aws:mediaconnect:us-east-1:123456789012:flow:1-abc:f',
         sourceArn: 'arn:aws:mediaconnect:us-east-1:123456789012:source:1-abc:s',
         isFailoverEnabled: true,
       }),
       source: SourceConfiguration.rtp({
-        flowSourceName: 'source',
+        flowSourceName: 'a'.repeat(65),
         port: 5000,
         network: NetworkConfiguration.publicNetwork('10.0.0.0/16'),
       }),
@@ -1851,14 +1851,13 @@ test('Flow source name validation - too long', () => {
 test('Flow source name validation - invalid characters', () => {
   expect(() => {
     new FlowSource(stack, 'source', {
-      flowSourceName: 'invalid@name',
       flow: Flow.fromFlowAttributes(stack, 'flow', {
         flowArn: 'arn:aws:mediaconnect:us-east-1:123456789012:flow:1-abc:f',
         sourceArn: 'arn:aws:mediaconnect:us-east-1:123456789012:source:1-abc:s',
         isFailoverEnabled: true,
       }),
       source: SourceConfiguration.rtp({
-        flowSourceName: 'source',
+        flowSourceName: 'invalid@name',
         port: 5000,
         network: NetworkConfiguration.publicNetwork('10.0.0.0/16'),
       }),

@@ -15,120 +15,6 @@
     ]
    }
   },
-  "VpcisolatedSubnet1SubnetE62B1B9B": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AvailabilityZone": {
-     "Fn::Select": [
-      0,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
-    "CidrBlock": "10.0.0.0/24",
-    "MapPublicIpOnLaunch": false,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "isolated"
-     },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Isolated"
-     },
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-mediaconnect-dual-source/Vpc/isolatedSubnet1"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
-   }
-  },
-  "VpcisolatedSubnet1RouteTableE442650B": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-mediaconnect-dual-source/Vpc/isolatedSubnet1"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
-   }
-  },
-  "VpcisolatedSubnet1RouteTableAssociationD259E31A": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcisolatedSubnet1RouteTableE442650B"
-    },
-    "SubnetId": {
-     "Ref": "VpcisolatedSubnet1SubnetE62B1B9B"
-    }
-   }
-  },
-  "VpcisolatedSubnet2Subnet39217055": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AvailabilityZone": {
-     "Fn::Select": [
-      1,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
-    "CidrBlock": "10.0.1.0/24",
-    "MapPublicIpOnLaunch": false,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "isolated"
-     },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Isolated"
-     },
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-mediaconnect-dual-source/Vpc/isolatedSubnet2"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
-   }
-  },
-  "VpcisolatedSubnet2RouteTable334F9764": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-mediaconnect-dual-source/Vpc/isolatedSubnet2"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
-   }
-  },
-  "VpcisolatedSubnet2RouteTableAssociation25A4716F": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcisolatedSubnet2RouteTable334F9764"
-    },
-    "SubnetId": {
-     "Ref": "VpcisolatedSubnet2Subnet39217055"
-    }
-   }
-  },
   "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE": {
    "Type": "Custom::VpcRestrictDefaultSG",
    "Properties": {
@@ -395,11 +281,14 @@
    "Type": "AWS::MediaConnect::Flow",
    "Properties": {
     "AvailabilityZone": {
-     "Fn::Select": [
-      0,
-      {
-       "Fn::GetAZs": ""
-      }
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "AWS::Region"
+       },
+       "a"
+      ]
      ]
     },
     "Maintenance": {
@@ -513,7 +402,7 @@
     },
     "IngestPort": 5001,
     "MaxBitrate": 50000000,
-    "Name": "awscdkmediaconnectdualsourceSecondarySource77EF55C2",
+    "Name": "secondary-source-encrypted",
     "Protocol": "srt-listener",
     "WhitelistCidr": "10.1.0.0/16"
    }

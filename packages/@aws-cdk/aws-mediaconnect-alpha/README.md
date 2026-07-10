@@ -381,6 +381,8 @@ const flow = new Flow(stack, 'MyFlow', {
 
 MediaConnect supports multiple source types for ingesting content into a flow. The examples below use `NetworkConfiguration.publicNetwork()` for simplicity, but all protocol-based sources can also use `NetworkConfiguration.vpc()` with a VPC interface for private connectivity.
 
+> The source's `flowSourceName` and `description` are set on the `SourceConfiguration`, not on `FlowSourceProps`. This is because the same `SourceConfiguration` is used both for a flow's inline primary source (`FlowProps.source`, which has no separate props object) and for additional sources added via `FlowSource`. Keeping the name on the configuration lets both be described identically.
+
 #### SRT Listener Source
 
 SRT (Secure Reliable Transport) in listener mode configures MediaConnect to listen on a specific port for incoming content. The upstream device connects to MediaConnect as a caller.
@@ -1030,7 +1032,7 @@ declare const secret: secretsmanager.ISecret;
 
 new FlowOutput(stack, 'SrtOutput', {
   flow,
-  outputConfig: OutputConfiguration.srtCaller({
+  output: OutputConfiguration.srtCaller({
     destination: '203.0.113.100',
     port: 7000,
     encryption: { role, secret },
@@ -1086,7 +1088,7 @@ declare const secret: secretsmanager.ISecret;
 const output = new FlowOutput(stack, 'EncryptedOutput', {
   flow: flow,
   description: 'Encrypted SRT output',
-  outputConfig: OutputConfiguration.srtCaller({
+  output: OutputConfiguration.srtCaller({
     destination: '203.0.113.100',
     port: 7000,
     encryption: { role, secret },
@@ -1130,7 +1132,7 @@ declare const existingRouterOutput: RouterOutput;
 // Flow output to router with transit encryption
 const routerOutput = new FlowOutput(stack, 'RouterOutput', {
   flow: flow,
-  outputConfig: OutputConfiguration.router({
+  output: OutputConfiguration.router({
     encryption: { role, secret },
   }),
 });

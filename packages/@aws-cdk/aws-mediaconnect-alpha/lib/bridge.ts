@@ -11,8 +11,8 @@ import type { Construct } from 'constructs';
 import type { IBridgeOutput } from './bridge-output';
 import { BridgeOutput } from './bridge-output';
 import type { IFlow } from './flow';
-import type { IGateway, GatewayNetwork } from './gateway';
-import type { BridgeProtocol, BridgeNetworkSource, VpcInterfaceConfig } from './shared';
+import type { IGateway } from './gateway';
+import type { BridgeProtocol, BridgeNetworkSource, GatewayNetwork, VpcInterfaceConfig } from './shared';
 import { FailoverMode, State } from './shared';
 
 /**
@@ -368,9 +368,11 @@ export class BridgeConfiguration {
    * An ingress bridge is a ground-to-cloud bridge. The content originates at your premises and is delivered to the cloud.
    */
   public static ingress(config: IngressBridgeConfiguration): BridgeConfiguration {
-    const bitrateBps = config.maxBitrate.toBps();
-    if (bitrateBps < 1000000 || bitrateBps > 100000000) {
-      throw new UnscopedValidationError(lit`BridgeIngressBitrateRange`, `Bridge ingress max bitrate must be between 1,000,000 and 100,000,000 bps, got ${bitrateBps}`);
+    if (!config.maxBitrate.isUnresolved()) {
+      const bitrateBps = config.maxBitrate.toBps();
+      if (bitrateBps < 1000000 || bitrateBps > 100000000) {
+        throw new UnscopedValidationError(lit`BridgeIngressBitrateRange`, `Bridge ingress max bitrate must be between 1,000,000 and 100,000,000 bps, got ${bitrateBps}`);
+      }
     }
 
     if (!Token.isUnresolved(config.networkSources) && config.networkSources.length > 2) {
@@ -387,9 +389,11 @@ export class BridgeConfiguration {
    * An egress bridge is a cloud-to-ground bridge. The content comes from an existing MediaConnect flow and is delivered to your premises.
    */
   public static egress(config: EgressBridgeConfiguration): BridgeConfiguration {
-    const bitrateBps = config.maxBitrate.toBps();
-    if (bitrateBps < 1000000 || bitrateBps > 100000000) {
-      throw new UnscopedValidationError(lit`BridgeEgressBitrateRange`, `Bridge egress max bitrate must be between 1,000,000 and 100,000,000 bps, got ${bitrateBps}`);
+    if (!config.maxBitrate.isUnresolved()) {
+      const bitrateBps = config.maxBitrate.toBps();
+      if (bitrateBps < 1000000 || bitrateBps > 100000000) {
+        throw new UnscopedValidationError(lit`BridgeEgressBitrateRange`, `Bridge egress max bitrate must be between 1,000,000 and 100,000,000 bps, got ${bitrateBps}`);
+      }
     }
 
     if (!Token.isUnresolved(config.flowSources) && config.flowSources.length > 2) {
@@ -455,6 +459,10 @@ export interface BridgeProps {
 
   /**
    * Policy to apply when the bridge is removed from the stack.
+   *
+   * Defaults to `RETAIN` because a bridge is a live transport between your premises and the
+   * cloud, not a data store. Retaining by default avoids an unplanned teardown of a bridge and
+   * everything wired to it. Set `RemovalPolicy.DESTROY` if you want it removed with the stack.
    *
    * @default RemovalPolicy.RETAIN
    */
@@ -562,10 +570,11 @@ abstract class BridgeBase extends Resource implements IBridge {
     return new Metric({
       metricName,
       namespace: 'AWS/MediaConnect',
+      ...props,
       dimensionsMap: {
         BridgeARN: this.bridgeArn,
+        ...props?.dimensionsMap,
       },
-      ...props,
     }).attachTo(this);
   }
 
@@ -579,14 +588,15 @@ abstract class BridgeBase extends Resource implements IBridge {
     return new Metric({
       metricName,
       namespace: 'AWS/MediaConnect',
-      dimensionsMap: {
-        BridgeARN: this.bridgeArn,
-        BridgeSourceName: bridgeSourceName,
-      },
       statistic: 'avg',
       period: Duration.seconds(60),
       unit: Unit.BITS_PER_SECOND,
       ...props,
+      dimensionsMap: {
+        BridgeARN: this.bridgeArn,
+        BridgeSourceName: bridgeSourceName,
+        ...props?.dimensionsMap,
+      },
     }).attachTo(this);
   }
 
@@ -600,14 +610,15 @@ abstract class BridgeBase extends Resource implements IBridge {
     return new Metric({
       metricName,
       namespace: 'AWS/MediaConnect',
-      dimensionsMap: {
-        BridgeARN: this.bridgeArn,
-        BridgeSourceName: bridgeSourceName,
-      },
       statistic: 'avg',
       period: Duration.seconds(60),
       unit: Unit.PERCENT,
       ...props,
+      dimensionsMap: {
+        BridgeARN: this.bridgeArn,
+        BridgeSourceName: bridgeSourceName,
+        ...props?.dimensionsMap,
+      },
     }).attachTo(this);
   }
 
@@ -671,7 +682,7 @@ export class Bridge extends BridgeBase implements IBridge {
 
     // Validate bridge name if provided
     if (props.bridgeName != null && props.bridgeName !== '' && !Token.isUnresolved(props.bridgeName)) {
-      if (props.bridgeName.length < 1 || props.bridgeName.length > 64) {
+      if (props.bridgeName.length > 64) {
         throw new ValidationError(lit`BridgeNameLength`, `Bridge name must be between 1 and 64 characters, got ${props.bridgeName.length}`, this);
       }
       if (!/^[a-zA-Z0-9-]+$/.test(props.bridgeName)) {

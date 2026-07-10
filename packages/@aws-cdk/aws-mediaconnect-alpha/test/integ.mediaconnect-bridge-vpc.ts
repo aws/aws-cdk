@@ -81,7 +81,7 @@ const router = new RouterOutput(stack, 'rtpOutput', {
   tier: RouterOutputTier.OUTPUT_100,
   configuration: RouterOutputConfiguration.standard({
     protocol: RouterOutputProtocol.rtp({
-      destinationAddress: '192.168.1.100',
+      destinationAddress: '198.51.100.10',
       port: 5000,
       forwardErrorCorrection: ForwardErrorCorrection.ENABLED,
     }),

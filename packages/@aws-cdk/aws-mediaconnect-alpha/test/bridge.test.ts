@@ -1,4 +1,4 @@
-import { App, Bitrate, Stack } from 'aws-cdk-lib';
+import { App, Bitrate, Lazy, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Vpc, IpAddresses, SubnetType, PrivateSubnet, SecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
@@ -242,6 +242,24 @@ test('Bridge ingress bitrate validation - too low', () => {
   }).toThrow(/Bridge ingress max bitrate/);
 });
 
+test('Bridge ingress bitrate validation - skipped for a tokenized bitrate', () => {
+  expect(() => {
+    BridgeConfiguration.ingress({
+      maxBitrate: Bitrate.bps(Lazy.number({ produce: () => 5000000 })),
+      maxOutputs: 1,
+      networkSources: [{
+        name: 'source',
+        source: {
+          multicastIp: '239.0.0.1',
+          network: GatewayNetwork.define({ name: 'net', cidrBlock: '198.51.100.0/24' }),
+          port: 5000,
+          protocol: BridgeProtocol.RTP,
+        },
+      }],
+    });
+  }).not.toThrow();
+});
+
 test('Bridge addOutput on egress bridge', () => {
   const gateway = Gateway.fromGatewayArn(stack, 'gateway', 'arn:aws:mediaconnect:us-east-1:123456789012:gateway:1-abc:gw');
 
@@ -383,5 +401,38 @@ test('BridgeFailoverConfig.failover with state: DISABLED persists config without
       FailoverMode: 'FAILOVER',
       State: 'DISABLED',
     },
+  });
+});
+
+describe('bridge metrics preserve BridgeARN when a custom dimensionsMap is given', () => {
+  function makeBridge(): Bridge {
+    const gateway = Gateway.fromGatewayArn(stack, 'gateway', 'aaaaaa');
+    return new Bridge(stack, 'bridge', {
+      config: BridgeConfiguration.ingress({
+        maxBitrate: Bitrate.mbps(5),
+        maxOutputs: 2,
+        networkSources: [],
+      }),
+      gateway,
+    });
+  }
+
+  test('metric() merges the dimensionsMap', () => {
+    const bridge = makeBridge();
+    const metric = bridge.metric('IngressBridgeBitRate', { dimensionsMap: { Custom: 'value' } });
+    expect(metric.dimensions).toEqual({
+      BridgeARN: bridge.bridgeArn,
+      Custom: 'value',
+    });
+  });
+
+  test('metricSourceBitrate() keeps BridgeARN and BridgeSourceName', () => {
+    const bridge = makeBridge();
+    const metric = bridge.metricSourceBitrate('my-source', { dimensionsMap: { Custom: 'value' } });
+    expect(metric.dimensions).toEqual({
+      BridgeARN: bridge.bridgeArn,
+      BridgeSourceName: 'my-source',
+      Custom: 'value',
+    });
   });
 });

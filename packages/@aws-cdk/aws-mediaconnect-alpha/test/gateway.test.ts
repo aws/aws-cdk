@@ -155,3 +155,29 @@ describe('open egress CIDR warning', () => {
     Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('allows traffic from any IP'));
   });
 });
+
+test('Gateway network count validation - empty networks fails at synth', () => {
+  new Gateway(stack, 'gateway', {
+    egressCidrBlocks: ['10.0.0.0/16'],
+    networks: [],
+  });
+
+  expect(() => Template.fromStack(stack)).toThrow('At least 1 network must be specified on the gateway');
+});
+
+test('Gateway network count validation - more than 4 networks (via addNetwork) fails at synth', () => {
+  const gateway = new Gateway(stack, 'gateway', {
+    egressCidrBlocks: ['10.0.0.0/16'],
+    networks: [
+      GatewayNetwork.define({ name: 'n1', cidrBlock: '10.0.1.0/24' }),
+      GatewayNetwork.define({ name: 'n2', cidrBlock: '10.0.2.0/24' }),
+      GatewayNetwork.define({ name: 'n3', cidrBlock: '10.0.3.0/24' }),
+      GatewayNetwork.define({ name: 'n4', cidrBlock: '10.0.4.0/24' }),
+    ],
+  });
+
+  // Pushes the gateway past the 4-network maximum through the addNetwork() path.
+  gateway.addNetwork(GatewayNetwork.define({ name: 'n5', cidrBlock: '10.0.5.0/24' }));
+
+  expect(() => Template.fromStack(stack)).toThrow('A gateway supports a maximum of 4 networks, got 5');
+});

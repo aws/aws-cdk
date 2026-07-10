@@ -37,7 +37,7 @@ const grant = transitSecret.grantRead(transitRole);
 // Encrypted flow output (matches encrypted router input)
 const encryptedFlowOutput = new FlowOutput(stack, 'EncryptedRouterOutputFlow', {
   flow: sourceFlow,
-  outputConfig: OutputConfiguration.router({
+  output: OutputConfiguration.router({
     encryption: {
       role: transitRole,
       secret: transitSecret,
@@ -48,7 +48,7 @@ const encryptedFlowOutput = new FlowOutput(stack, 'EncryptedRouterOutputFlow', {
 // Unencrypted flow output (matches simple router input)
 const simpleFlowOutput = new FlowOutput(stack, 'SimpleRouterOutputFlow', {
   flow: sourceFlow,
-  outputConfig: OutputConfiguration.router({}),
+  output: OutputConfiguration.router({}),
 });
 
 // RouterInput with MediaConnect Flow configuration (with encryption)

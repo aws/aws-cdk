@@ -56,7 +56,7 @@ const input2 = new RouterInput(stack, 'routerInputSrtCaller', {
   configuration: RouterInputConfiguration.standard({
     networkInterface,
     protocol: RouterInputProtocol.srtCaller({
-      sourceAddress: '192.168.1.100',
+      sourceAddress: '203.0.113.10',
       sourcePort: 8000,
       minimumLatency: Duration.millis(150),
       streamId: 'test-stream-input',

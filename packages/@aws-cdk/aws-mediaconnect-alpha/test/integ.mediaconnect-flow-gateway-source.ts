@@ -162,7 +162,7 @@ new mediaconnect.FlowEntitlement(stack, 'Entitlement', {
 new mediaconnect.FlowOutput(stack, 'VpcOutput', {
   flowOutputName: 'vpc-interface-output',
   flow,
-  outputConfig: mediaconnect.OutputConfiguration.rist({
+  output: mediaconnect.OutputConfiguration.rist({
     destination: '10.0.1.100',
     port: 6000,
     vpcInterfaceAttachment: outputVpcInterface,
@@ -173,7 +173,7 @@ new mediaconnect.FlowOutput(stack, 'VpcOutput', {
 new mediaconnect.FlowOutput(stack, 'EncryptedOutput', {
   flowOutputName: 'encrypted-srt-output',
   flow,
-  outputConfig: mediaconnect.OutputConfiguration.srtCaller({
+  output: mediaconnect.OutputConfiguration.srtCaller({
     destination: '203.0.113.100',
     port: 7000,
     encryption: {

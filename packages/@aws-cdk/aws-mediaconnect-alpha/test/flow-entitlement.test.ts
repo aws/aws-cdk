@@ -1,7 +1,9 @@
 import { App, Stack } from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { Flow } from '../lib/flow';
 import { EntitlementStatus, FlowEntitlement } from '../lib/flow-entitlement';
+import { EncryptionAlgorithm } from '../lib/shared';
 
 let app: App;
 let stack: Stack;
@@ -38,12 +40,18 @@ test('Entitlement with encryption and status', () => {
     sourceArn: 'arn:aws:mediaconnect:us-east-1:123456789012:source:1-abc:my-source',
   });
 
+  const secret = new Secret(stack, 'Secret');
+
   new FlowEntitlement(stack, 'entitlement', {
     description: 'test entitlement',
     flow,
     subscribers: ['111122223333'],
     entitlementStatus: EntitlementStatus.DISABLED,
     dataTransferSubscriberFeePercent: 50,
+    encryption: {
+      secret,
+      algorithm: EncryptionAlgorithm.AES256,
+    },
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::MediaConnect::FlowEntitlement', {
@@ -51,6 +59,12 @@ test('Entitlement with encryption and status', () => {
     Subscribers: ['111122223333'],
     EntitlementStatus: 'DISABLED',
     DataTransferSubscriberFeePercent: 50,
+    Encryption: {
+      KeyType: 'static-key',
+      Algorithm: 'aes256',
+      SecretArn: Match.anyValue(),
+      RoleArn: Match.anyValue(),
+    },
   });
 });
 

@@ -4,13 +4,7 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "ipAddresses": "*",
-        "subnetConfiguration": [
-          {
-            "name": "*",
-            "subnetType": "Isolated",
-            "cidrMask": "*"
-          }
-        ]
+        "subnetConfiguration": []
       }
     }
   ],
@@ -142,54 +136,6 @@
       "data": "Vpc8378EB38"
     }
   ],
-  "/aws-cdk-mediaconnect-dual-source/Vpc/isolatedSubnet1": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
-    }
-  ],
-  "/aws-cdk-mediaconnect-dual-source/Vpc/isolatedSubnet2": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
-    }
-  ],
   "/aws-cdk-mediaconnect-dual-source/Vpc/RestrictDefaultSecurityGroupCustomResource": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -254,6 +200,27 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "DualSourceFlowD417E451"
+    },
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W9009": "cfn-validate false positive: MediaConnect Flow.Source is required and not deprecated (see cloudformation-validate#144)"
+      },
+      "trace": [
+        "Validations.recordAcknowledgment (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:129:25)",
+        "Validations.acknowledge (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:122:18)",
+        "new Flow (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow.js:908:48)",
+        "new Flow (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-dual-source.js:109:14)",
+        "Module._compile (node:internal/modules/cjs/loader:1761:14)",
+        "Object..js (node:internal/modules/cjs/loader:1893:10)",
+        "Module.load (node:internal/modules/cjs/loader:1481:32)",
+        "Module._load (node:internal/modules/cjs/loader:1300:12)",
+        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:245:24)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
     }
   ],
   "/aws-cdk-mediaconnect-dual-source/DualSourceFlow/RouterFlowOutput": [
@@ -290,6 +257,27 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "Entitlement27911D97"
+    },
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W9009": "cfn-validate false positive: MediaConnect FlowEntitlement.Encryption is not deprecated (see cloudformation-validate#144)"
+      },
+      "trace": [
+        "Validations.recordAcknowledgment (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:129:25)",
+        "Validations.acknowledge (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:122:18)",
+        "new FlowEntitlement (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow-entitlement.js:146:52)",
+        "new FlowEntitlement (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-dual-source.js:181:1)",
+        "Module._compile (node:internal/modules/cjs/loader:1761:14)",
+        "Object..js (node:internal/modules/cjs/loader:1893:10)",
+        "Module.load (node:internal/modules/cjs/loader:1481:32)",
+        "Module._load (node:internal/modules/cjs/loader:1300:12)",
+        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:245:24)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
     }
   ],
   "/aws-cdk-mediaconnect-dual-source/VpcOutput/Resource": [
@@ -302,42 +290,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "EncryptedOutput0ED4EC5B"
-    }
-  ],
-  "/aws-cdk-mediaconnect-dual-source/Vpc/isolatedSubnet1/Subnet": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "VpcisolatedSubnet1SubnetE62B1B9B"
-    }
-  ],
-  "/aws-cdk-mediaconnect-dual-source/Vpc/isolatedSubnet1/RouteTable": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "VpcisolatedSubnet1RouteTableE442650B"
-    }
-  ],
-  "/aws-cdk-mediaconnect-dual-source/Vpc/isolatedSubnet1/RouteTableAssociation": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "VpcisolatedSubnet1RouteTableAssociationD259E31A"
-    }
-  ],
-  "/aws-cdk-mediaconnect-dual-source/Vpc/isolatedSubnet2/Subnet": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "VpcisolatedSubnet2Subnet39217055"
-    }
-  ],
-  "/aws-cdk-mediaconnect-dual-source/Vpc/isolatedSubnet2/RouteTable": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "VpcisolatedSubnet2RouteTable334F9764"
-    }
-  ],
-  "/aws-cdk-mediaconnect-dual-source/Vpc/isolatedSubnet2/RouteTableAssociation": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "VpcisolatedSubnet2RouteTableAssociation25A4716F"
     }
   ],
   "/aws-cdk-mediaconnect-dual-source/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [

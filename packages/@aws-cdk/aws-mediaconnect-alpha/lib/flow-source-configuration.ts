@@ -130,8 +130,10 @@ export interface MediaStreamSourceConfigurationJpegXs {
 export interface SourceBase {
   /**
    * The name of the source.
+   *
+   * @default - a name is generated automatically
    */
-  readonly flowSourceName: string;
+  readonly flowSourceName?: string;
   /**
    * A description of the source. This description appears only on the MediaConnect console and will not be seen by the end user.
    *
@@ -324,8 +326,10 @@ export interface SourceZixiPush extends SourceBase {
 export interface SourceCdi {
   /**
    * The name of the source.
+   *
+   * @default - a name is generated automatically
    */
-  readonly flowSourceName: string;
+  readonly flowSourceName?: string;
   /**
    * The VPC interface attachment to use for this bridge source.
    */
@@ -352,8 +356,10 @@ export interface SourceCdi {
 export interface SourceJpegXs {
   /**
    * The name of the source.
+   *
+   * @default - a name is generated automatically
    */
-  readonly flowSourceName: string;
+  readonly flowSourceName?: string;
   /**
    * The size of the buffer (in ms) to use to sync incoming source data.
    *
@@ -384,8 +390,10 @@ export interface SourceJpegXs {
 export interface SourceNdi {
   /**
    * The name of the source.
+   *
+   * @default - a name is generated automatically
    */
-  readonly flowSourceName: string;
+  readonly flowSourceName?: string;
 
   /**
    * A description of the source. This description appears only on the MediaConnect
@@ -751,15 +759,19 @@ export class SourceConfiguration {
    * `ndiConfig.ndiState = State.ENABLED` with at least one NDI discovery server.
    */
   public static ndi(input: SourceNdi): SourceConfiguration {
+    const { sourceName } = input;
     return new SourceConfiguration({
       name: input.flowSourceName,
       description: input.description,
       protocol: SourceProtocol.NDI_SPEED_HQ.value,
-      ndiSourceSettings: input.sourceName ? {
-        sourceName: input.sourceName,
-      } : undefined,
+      ndiSourceSettings: sourceName ? { sourceName } : undefined,
     });
   }
+
+  /**
+   * The name of this source, if one was set on the configuration.
+   */
+  public readonly flowSourceName?: string;
 
   /**
    * @param input - CFN-shaped source properties (encryption fields are merged in `_bind`).
@@ -773,7 +785,9 @@ export class SourceConfiguration {
     private readonly staticKeyDecryption?: StaticKeyEncryption,
     private readonly srtPasswordDecryption?: SrtPasswordEncryption,
     private readonly routerDecryption?: TransitEncryption,
-  ) { }
+  ) {
+    this.flowSourceName = input.name;
+  }
 
   /**
    * Called when the source configuration is bound to a Flow or FlowSource.
