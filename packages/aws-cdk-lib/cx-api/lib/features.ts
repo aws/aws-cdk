@@ -85,6 +85,7 @@ export const ROUTE53_PATTERNS_USE_CERTIFICATE = '@aws-cdk/aws-route53-patters:us
 export const ROUTE53_PATTERNS_USE_DISTRIBUTION = '@aws-cdk/aws-route53-patterns:useDistribution';
 export const AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT = '@aws-cdk/customresources:installLatestAwsSdkDefault';
 export const DATABASE_PROXY_UNIQUE_RESOURCE_NAME = '@aws-cdk/aws-rds:databaseProxyUniqueResourceName';
+export const DATABASE_PROXY_LOWERCASE_DERIVED_NAME = '@aws-cdk/aws-rds:databaseProxyLowercaseDerivedName';
 export const CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP = '@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup';
 export const APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID = '@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId';
 export const EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA = '@aws-cdk/aws-ec2:launchTemplateDefaultUserData';
@@ -746,6 +747,26 @@ export const FLAGS: Record<string, FlagInfo> = {
       This is a feature flag as the old behavior was technically incorrect, but users may have come to depend on it.
     `,
     introducedIn: { v2: '2.65.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [DATABASE_PROXY_LOWERCASE_DERIVED_NAME]: {
+    type: FlagType.BugFix,
+    summary: 'Lowercase the auto-derived name of a Database Proxy to match RDS',
+    detailsMd: `
+      When \`dbProxyName\` is not specified, \`DatabaseProxy\` derives the proxy name from the
+      construct \`id\` (or, when \`@aws-cdk/aws-rds:databaseProxyUniqueResourceName\` is enabled,
+      from a unique resource name). RDS stores DB proxy names in lowercase, so a derived name that
+      contains uppercase characters does not match the actual resource name. As a result, the
+      \`dbProxyName\` attribute (which reflects the submitted name) is inconsistent with the deployed
+      resource, breaking downstream references such as CloudWatch dimensions.
+
+      If this flag is set, the derived name is lowercased before it is passed to the underlying
+      \`CfnDBProxy\`, so \`dbProxyName\` matches the real resource. Explicitly provided names and
+      unresolved tokens are left unchanged.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
   },
 
