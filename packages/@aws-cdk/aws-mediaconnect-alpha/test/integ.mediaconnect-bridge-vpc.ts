@@ -1,6 +1,6 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { Vpc, IpAddresses, SubnetType, PrivateSubnet, SecurityGroup } from 'aws-cdk-lib/aws-ec2';
+import { Vpc, IpAddresses, PrivateSubnet, SecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import { Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { RouterOutput, RoutingScope, RouterOutputTier, RouterOutputConfiguration, RouterOutputProtocol, RouterNetworkInterface, RouterNetworkConfiguration, ForwardErrorCorrection } from '../lib';
 
@@ -25,13 +25,11 @@ const gateway = new Gateway(stack, 'gateway', {
   networks: [network],
 });
 
+// Empty subnetConfiguration avoids auto-generated subnets that would resolve AZs at synth time
+// (see aws-cdk#38268); the VPC interface uses the explicit `subnet` below instead.
 const vpc = new Vpc(stack, 'testvpc', {
   ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
-  subnetConfiguration: [{
-    name: 'subnet1',
-    subnetType: SubnetType.PRIVATE_ISOLATED,
-    cidrMask: 24,
-  }],
+  subnetConfiguration: [],
 });
 const subnet = new PrivateSubnet(stack, 'mysubnet', {
   availabilityZone: `${stack.region}a`,

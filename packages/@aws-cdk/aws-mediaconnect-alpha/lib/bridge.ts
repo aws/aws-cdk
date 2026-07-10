@@ -727,7 +727,7 @@ export class Bridge extends BridgeBase implements IBridge {
       })),
     } : undefined;
 
-    const flow = new CfnBridge(this, 'Resource', {
+    const bridge = new CfnBridge(this, 'Resource', {
       name: this.physicalName,
       placementArn: props.gateway.gatewayArn,
       ingressGatewayBridge: ingress?.ingressGatewayBridge,
@@ -737,12 +737,12 @@ export class Bridge extends BridgeBase implements IBridge {
       sourceFailoverConfig: props.sourceFailoverConfig?._bind(),
     });
 
-    this.bridgeArn = flow.attrBridgeArn;
+    this.bridgeArn = bridge.attrBridgeArn;
     this.bridgeName = this.physicalName;
-    this.bridgeState = flow.attrBridgeState;
+    this.bridgeState = bridge.attrBridgeState;
     this.bridgeType = configBind.bridgeType;
 
-    flow.applyRemovalPolicy(props.removalPolicy);
+    bridge.applyRemovalPolicy(props.removalPolicy);
   }
 
   /**

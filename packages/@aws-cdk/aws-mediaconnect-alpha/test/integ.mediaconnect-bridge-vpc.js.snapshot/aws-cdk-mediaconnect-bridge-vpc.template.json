@@ -32,120 +32,6 @@
     ]
    }
   },
-  "testvpcsubnet1Subnet1Subnet03E4EA12": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AvailabilityZone": {
-     "Fn::Select": [
-      0,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
-    "CidrBlock": "10.0.0.0/24",
-    "MapPublicIpOnLaunch": false,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "subnet1"
-     },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Isolated"
-     },
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-mediaconnect-bridge-vpc/testvpc/subnet1Subnet1"
-     }
-    ],
-    "VpcId": {
-     "Ref": "testvpc5C6845CD"
-    }
-   }
-  },
-  "testvpcsubnet1Subnet1RouteTableEBA4A3E2": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-mediaconnect-bridge-vpc/testvpc/subnet1Subnet1"
-     }
-    ],
-    "VpcId": {
-     "Ref": "testvpc5C6845CD"
-    }
-   }
-  },
-  "testvpcsubnet1Subnet1RouteTableAssociation10E9C707": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "testvpcsubnet1Subnet1RouteTableEBA4A3E2"
-    },
-    "SubnetId": {
-     "Ref": "testvpcsubnet1Subnet1Subnet03E4EA12"
-    }
-   }
-  },
-  "testvpcsubnet1Subnet2Subnet9B683CC7": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AvailabilityZone": {
-     "Fn::Select": [
-      1,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
-    "CidrBlock": "10.0.1.0/24",
-    "MapPublicIpOnLaunch": false,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "subnet1"
-     },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Isolated"
-     },
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-mediaconnect-bridge-vpc/testvpc/subnet1Subnet2"
-     }
-    ],
-    "VpcId": {
-     "Ref": "testvpc5C6845CD"
-    }
-   }
-  },
-  "testvpcsubnet1Subnet2RouteTableECD4BB74": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-mediaconnect-bridge-vpc/testvpc/subnet1Subnet2"
-     }
-    ],
-    "VpcId": {
-     "Ref": "testvpc5C6845CD"
-    }
-   }
-  },
-  "testvpcsubnet1Subnet2RouteTableAssociation43B7036D": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "testvpcsubnet1Subnet2RouteTableECD4BB74"
-    },
-    "SubnetId": {
-     "Ref": "testvpcsubnet1Subnet2Subnet9B683CC7"
-    }
-   }
-  },
   "testvpcRestrictDefaultSecurityGroupCustomResource937ADC3F": {
    "Type": "Custom::VpcRestrictDefaultSG",
    "Properties": {
@@ -395,7 +281,7 @@
       "Protocol": "RTP",
       "ProtocolConfiguration": {
        "Rtp": {
-        "DestinationAddress": "192.168.1.100",
+        "DestinationAddress": "198.51.100.10",
         "DestinationPort": 5000,
         "ForwardErrorCorrection": "ENABLED"
        }

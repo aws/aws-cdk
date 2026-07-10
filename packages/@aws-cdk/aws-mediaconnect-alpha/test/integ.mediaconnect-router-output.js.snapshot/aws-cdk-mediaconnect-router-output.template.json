@@ -29,7 +29,7 @@
       "Protocol": "RTP",
       "ProtocolConfiguration": {
        "Rtp": {
-        "DestinationAddress": "192.168.1.100",
+        "DestinationAddress": "198.51.100.10",
         "DestinationPort": 5000,
         "ForwardErrorCorrection": "ENABLED"
        }

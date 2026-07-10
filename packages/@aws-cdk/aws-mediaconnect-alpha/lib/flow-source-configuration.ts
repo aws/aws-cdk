@@ -71,15 +71,15 @@ export class NetworkConfiguration {
   /**
    * The CIDR allowlist for public internet sources, or undefined if using VPC.
    */
-  public readonly whitelistCidr?: string;
+  public readonly allowlistCidr?: string;
 
   /**
    * The VPC interface name, or undefined if using public internet.
    */
   public readonly vpcInterfaceName?: string;
 
-  private constructor(whitelistCidr?: string, vpcInterfaceName?: string) {
-    this.whitelistCidr = whitelistCidr;
+  private constructor(allowlistCidr?: string, vpcInterfaceName?: string) {
+    this.allowlistCidr = allowlistCidr;
     this.vpcInterfaceName = vpcInterfaceName;
   }
 }
@@ -593,7 +593,7 @@ export class SourceConfiguration {
       description: input.description,
       ingestPort: input.port,
       protocol: SourceProtocol.RTP.value,
-      whitelistCidr: input.network.whitelistCidr,
+      whitelistCidr: input.network.allowlistCidr,
       vpcInterfaceName: input.network.vpcInterfaceName,
       maxBitrate: input.maxBitrate?.toBps(),
     });
@@ -610,7 +610,7 @@ export class SourceConfiguration {
       description: input.description,
       ingestPort: input.port,
       protocol: SourceProtocol.RTP_FEC.value,
-      whitelistCidr: input.network.whitelistCidr,
+      whitelistCidr: input.network.allowlistCidr,
       vpcInterfaceName: input.network.vpcInterfaceName,
       maxBitrate: input.maxBitrate?.toBps(),
     });
@@ -627,7 +627,7 @@ export class SourceConfiguration {
       description: input.description,
       ingestPort: input.port,
       protocol: SourceProtocol.RIST.value,
-      whitelistCidr: input.network.whitelistCidr,
+      whitelistCidr: input.network.allowlistCidr,
       vpcInterfaceName: input.network.vpcInterfaceName,
       maxLatency: input.maxLatency?.toMilliseconds(),
       maxBitrate: input.maxBitrate?.toBps(),
@@ -648,7 +648,7 @@ export class SourceConfiguration {
       description: input.description,
       ingestPort: input.port,
       protocol: SourceProtocol.SRT_LISTENER.value,
-      whitelistCidr: input.network.whitelistCidr,
+      whitelistCidr: input.network.allowlistCidr,
       vpcInterfaceName: input.network.vpcInterfaceName,
       minLatency: input.minLatency?.toMilliseconds(),
       maxBitrate: input.maxBitrate?.toBps(),
@@ -668,7 +668,7 @@ export class SourceConfiguration {
       // @see https://docs.aws.amazon.com/mediaconnect/latest/ug/source-ports.html
       ingestPort: input.network.vpcInterfaceName !== undefined ? undefined : 2088,
       protocol: SourceProtocol.ZIXI_PUSH.value,
-      whitelistCidr: input.network.whitelistCidr,
+      whitelistCidr: input.network.allowlistCidr,
       vpcInterfaceName: input.network.vpcInterfaceName,
       streamId: input.streamId,
       maxLatency: input.maxLatency?.toMilliseconds(),

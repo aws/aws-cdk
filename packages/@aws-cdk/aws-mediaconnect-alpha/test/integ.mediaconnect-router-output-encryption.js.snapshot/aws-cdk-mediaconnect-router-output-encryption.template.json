@@ -164,7 +164,7 @@
       "Protocol": "SRT_CALLER",
       "ProtocolConfiguration": {
        "SrtCaller": {
-        "DestinationAddress": "192.168.2.100",
+        "DestinationAddress": "198.51.100.10",
         "DestinationPort": 9002,
         "EncryptionConfiguration": {
          "EncryptionKey": {
@@ -322,7 +322,7 @@
       "Protocol": "RIST",
       "ProtocolConfiguration": {
        "Rist": {
-        "DestinationAddress": "192.168.2.200",
+        "DestinationAddress": "198.51.100.20",
         "DestinationPort": 5200
        }
       }

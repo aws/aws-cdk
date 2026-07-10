@@ -80,7 +80,7 @@
       "Protocol": "RTP",
       "ProtocolConfiguration": {
        "Rtp": {
-        "DestinationAddress": "10.0.0.1",
+        "DestinationAddress": "198.51.100.10",
         "DestinationPort": 5001
        }
       }

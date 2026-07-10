@@ -149,7 +149,7 @@
          }
         },
         "MinimumLatencyMilliseconds": 150,
-        "SourceAddress": "192.168.1.100",
+        "SourceAddress": "203.0.113.10",
         "SourcePort": 8000,
         "StreamId": "test-stream-input"
        }
