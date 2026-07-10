@@ -169,7 +169,7 @@ export interface SourceRist extends SourceBase {
   /**
    * The maximum latency in milliseconds for a RIST or Zixi-based source.
    *
-   * @default - 2000 ms
+   * @default - undefined; when omitted, MediaConnect applies its service default maximum latency
    */
   readonly maxLatency?: Duration;
   /**

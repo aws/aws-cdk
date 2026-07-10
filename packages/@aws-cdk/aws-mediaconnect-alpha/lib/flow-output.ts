@@ -45,7 +45,7 @@ export interface FlowOutputProps {
   /**
    * An indication of whether the output should transmit data or not.
    *
-   * @default - ENABLED; the output is enabled by MediaConnect
+   * @default - undefined; when omitted, MediaConnect enables the output (ENABLED) at deploy time
    */
   readonly outputStatus?: State;
 

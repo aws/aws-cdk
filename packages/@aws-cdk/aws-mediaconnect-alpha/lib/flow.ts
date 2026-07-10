@@ -387,7 +387,7 @@ export interface NdiDiscoveryServerConfig {
   /**
    * The port for the NDI discovery server. Defaults to 5959 if a custom port isn't specified.
    *
-   * @default - 5959 (the MediaConnect service default)
+   * @default - undefined; when omitted, MediaConnect applies 5959 at deploy time
    */
   readonly discoveryServerPort?: number;
   /**
@@ -455,7 +455,7 @@ export interface EncodingConfig {
    *
    * The supported range is 10 Mbps – 50 Mbps.
    *
-   * @default - 20 Mbps (the MediaConnect service default)
+   * @default - undefined; when omitted, MediaConnect applies 20 Mbps at deploy time
    */
   readonly videoMaxBitrate?: Bitrate;
 }
@@ -781,7 +781,7 @@ export interface FlowProps {
   /**
    * Determines the processing capacity and feature set of the flow. Set this optional parameter to LARGE if you want to enable NDI outputs on the flow.
    *
-   * @default - FlowSize.MEDIUM (the MediaConnect service default)
+   * @default - undefined; when omitted, MediaConnect applies FlowSize.MEDIUM at deploy time
    */
   readonly flowSize?: FlowSize;
 

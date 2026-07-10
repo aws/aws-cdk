@@ -81,9 +81,8 @@ export interface FlowEntitlementProps {
 
   /**
    * An indication of whether the new entitlement should be enabled or disabled as soon as it is created.
-   * If you don’t specify the entitlementStatus field in your request, MediaConnect sets it to ENABLED.
    *
-   * @default - ENABLED
+   * @default - undefined; when omitted, MediaConnect enables the entitlement (ENABLED) at deploy time
    */
   readonly entitlementStatus?: EntitlementStatus;
 }
