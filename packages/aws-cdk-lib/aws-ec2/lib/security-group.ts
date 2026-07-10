@@ -5,6 +5,7 @@ import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } fro
 import type { EgressRuleConfig, IngressRuleConfig, IPeer } from './peer';
 import { Peer } from './peer';
 import { Port } from './port';
+import { pruneSubsumed } from './private/rule-subsumption';
 import type { IVpc } from './vpc';
 import * as cxschema from '../../cloud-assembly-schema';
 import type {
@@ -14,6 +15,7 @@ import type {
 import {
   Annotations,
   ContextProvider,
+  FeatureFlags,
   Names,
   Resource,
   Stack,
@@ -26,7 +28,7 @@ import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-re
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import type * as cxapi from '../../cx-api';
+import * as cxapi from '../../cx-api';
 
 const SECURITY_GROUP_SYMBOL = Symbol.for('@aws-cdk/iam.SecurityGroup');
 
@@ -549,11 +551,18 @@ export class SecurityGroup extends SecurityGroupBase {
     this.directIngressRules = Box.fromArray();
     this.directEgressRules = Box.fromArray();
 
+    // When the feature flag is enabled, wire the CFN properties to a *derived*
+    // view of the rule boxes that removes rules subsumed by a broader rule. The
+    // derivation runs at resolve time, so it sees the complete rule set
+    // regardless of the order in which rules were added (order-independent), and
+    // the underlying boxes keep the full push/splice mutation API used elsewhere.
+    const prune = FeatureFlags.of(this).isEnabled(cxapi.EC2_SECURITY_GROUP_PRUNE_SUBSUMED_RULES);
+
     this.securityGroup = new CfnSecurityGroup(this, 'Resource', {
       groupName: this.physicalName,
       groupDescription,
-      securityGroupIngress: this.directIngressRules,
-      securityGroupEgress: this.directEgressRules,
+      securityGroupIngress: prune ? this.directIngressRules.derive(pruneSubsumed) : this.directIngressRules,
+      securityGroupEgress: prune ? this.directEgressRules.derive(pruneSubsumed) : this.directEgressRules,
       vpcId: props.vpc.vpcId,
     });
 

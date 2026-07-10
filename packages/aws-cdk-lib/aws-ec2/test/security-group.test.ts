@@ -1,6 +1,7 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../assertions';
 import { App, Intrinsic, Lazy, Stack, Token } from '../../core';
+import * as cxapi from '../../cx-api';
 import type { EgressRuleConfig, IngressRuleConfig, SecurityGroupProps } from '../lib';
 import { Peer, Port, SecurityGroup, Vpc } from '../lib';
 
@@ -1154,5 +1155,103 @@ describe('Peer rule config type safety', () => {
 
     const config: EgressRuleConfig = sg.toEgressRuleConfig();
     expect(config.destinationSecurityGroupId).toBeDefined();
+  });
+});
+
+describe('subsumed rule pruning feature flag', () => {
+  function ingressRuleCount(stack: Stack): number {
+    const template = Template.fromStack(stack);
+    const sgs = template.findResources('AWS::EC2::SecurityGroup');
+    const props = Object.values(sgs)[0].Properties;
+    return (props.SecurityGroupIngress ?? []).length;
+  }
+
+  test('flag OFF (default): a rule subsumed by a broader rule is still emitted (backwards compatible)', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+    const sg = new SecurityGroup(stack, 'SG', { vpc, allowAllOutbound: false });
+
+    // WHEN
+    sg.addIngressRule(Peer.ipv4('10.0.0.0/16'), Port.allTraffic());
+    sg.addIngressRule(Peer.ipv4('10.0.0.0/16'), Port.tcp(443));
+
+    // THEN — both rules survive (existing behavior preserved)
+    expect(ingressRuleCount(stack)).toBe(2);
+  });
+
+  test('flag ON: a rule subsumed by all-traffic on the same peer is removed', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.EC2_SECURITY_GROUP_PRUNE_SUBSUMED_RULES]: true } });
+    const stack = new Stack(app, 'Stack');
+    const vpc = new Vpc(stack, 'VPC');
+    const sg = new SecurityGroup(stack, 'SG', { vpc, allowAllOutbound: false });
+
+    // WHEN
+    sg.addIngressRule(Peer.ipv4('10.0.0.0/16'), Port.allTraffic());
+    sg.addIngressRule(Peer.ipv4('10.0.0.0/16'), Port.tcp(443));
+
+    // THEN — only the broad all-traffic rule remains
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: [
+        Match.objectLike({ CidrIp: '10.0.0.0/16', IpProtocol: '-1' }),
+      ],
+    });
+    expect(ingressRuleCount(stack)).toBe(1);
+  });
+
+  test('flag ON: a narrow CIDR subsumed by a broader CIDR on the same port is removed', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.EC2_SECURITY_GROUP_PRUNE_SUBSUMED_RULES]: true } });
+    const stack = new Stack(app, 'Stack');
+    const vpc = new Vpc(stack, 'VPC');
+    const sg = new SecurityGroup(stack, 'SG', { vpc, allowAllOutbound: false });
+
+    // WHEN
+    sg.addIngressRule(Peer.ipv4('10.0.0.0/16'), Port.tcp(443));
+    sg.addIngressRule(Peer.ipv4('10.0.1.0/24'), Port.tcp(443));
+
+    // THEN — only the broader /16 remains
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: [
+        Match.objectLike({ CidrIp: '10.0.0.0/16', FromPort: 443, ToPort: 443 }),
+      ],
+    });
+    expect(ingressRuleCount(stack)).toBe(1);
+  });
+
+  test('flag ON: independent rules are all preserved', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.EC2_SECURITY_GROUP_PRUNE_SUBSUMED_RULES]: true } });
+    const stack = new Stack(app, 'Stack');
+    const vpc = new Vpc(stack, 'VPC');
+    const sg = new SecurityGroup(stack, 'SG', { vpc, allowAllOutbound: false });
+
+    // WHEN
+    sg.addIngressRule(Peer.ipv4('10.0.0.0/24'), Port.tcp(443));
+    sg.addIngressRule(Peer.ipv4('192.168.0.0/24'), Port.tcp(80));
+
+    // THEN
+    expect(ingressRuleCount(stack)).toBe(2);
+  });
+
+  test('flag ON: pruning is order-independent', () => {
+    const build = (broaderFirst: boolean): number => {
+      const app = new App({ context: { [cxapi.EC2_SECURITY_GROUP_PRUNE_SUBSUMED_RULES]: true } });
+      const stack = new Stack(app, 'Stack');
+      const vpc = new Vpc(stack, 'VPC');
+      const sg = new SecurityGroup(stack, 'SG', { vpc, allowAllOutbound: false });
+      if (broaderFirst) {
+        sg.addIngressRule(Peer.ipv4('10.0.0.0/16'), Port.tcp(443));
+        sg.addIngressRule(Peer.ipv4('10.0.1.0/24'), Port.tcp(443));
+      } else {
+        sg.addIngressRule(Peer.ipv4('10.0.1.0/24'), Port.tcp(443));
+        sg.addIngressRule(Peer.ipv4('10.0.0.0/16'), Port.tcp(443));
+      }
+      return ingressRuleCount(stack);
+    };
+
+    expect(build(true)).toBe(1);
+    expect(build(false)).toBe(1);
   });
 });

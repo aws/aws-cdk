@@ -158,6 +158,7 @@ export const EKS_DEFAULT_AL2023 = '@aws-cdk/aws-eks:defaultToAL2023';
 export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInValidationReport';
 export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackReferences';
 export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
+export const EC2_SECURITY_GROUP_PRUNE_SUBSUMED_RULES = '@aws-cdk/aws-ec2:securityGroupPruneSubsumedRules';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1928,6 +1929,31 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       When this flag is explicitly set to \`true\`, violations are treated as errors and will
       fail synthesis. When unconfigured, violations are reported as warnings only.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EC2_SECURITY_GROUP_PRUNE_SUBSUMED_RULES]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, security group rules that are fully subsumed by a broader rule are removed from the synthesized template',
+    detailsMd: `
+      Rules added to a security group through the \`Connections\` API (or directly via
+      \`addIngressRule\`/\`addEgressRule\`) are emitted as authored, with only exact-duplicate
+      de-duplication applied. As a result, a narrow rule (e.g. \`tcp/443\` from \`10.0.1.0/24\`)
+      is emitted even when a broader rule already admits the same traffic (e.g. all traffic
+      from \`10.0.0.0/16\`), producing redundant rules, larger templates, and non-deterministic
+      diffs.
+
+      When this feature flag is enabled, the CDK reduces each security group's inline rule set
+      to a minimal equivalent set by removing rules that are fully subsumed by another rule
+      (using port-range interval containment and IPv4 CIDR containment). This never changes the
+      set of admitted traffic. Rules containing unresolved tokens are never removed.
+
+      This is a change to synthesized output, so it is gated behind a feature flag; existing
+      apps keep their current rules until they opt in.
+    `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
