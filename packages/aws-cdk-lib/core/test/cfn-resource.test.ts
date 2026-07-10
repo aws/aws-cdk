@@ -64,6 +64,10 @@ describe('cfn resource', () => {
       'works as expected when used on supported resources (old behavior)', (resourceType) => {
         // GIVEN
         const app = new core.App();
+        core.Validations.of(app).acknowledge({
+          id: 'CloudFormation-Validate::F3017',
+          reason: 'Required properties missing',
+        });
         const stack = new core.Stack(app, 'TestStack');
         const resource = new core.CfnResource(stack, 'Resource', {
           type: resourceType,
@@ -87,6 +91,10 @@ describe('cfn resource', () => {
       'works as expected when used on supported resources (under feature flag)', (resourceType) => {
         // GIVEN
         const app = new core.App({ context: { [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: true } });
+        core.Validations.of(app).acknowledge({
+          id: 'CloudFormation-Validate::F3017',
+          reason: 'Required properties missing',
+        });
         const stack = new core.Stack(app, 'TestStack');
         const resource = new core.CfnResource(stack, 'Resource', {
           type: resourceType,
@@ -109,6 +117,15 @@ describe('cfn resource', () => {
     test('warns on unsupported resources (without feature flag)', () => {
       // GIVEN
       const app = new core.App();
+      core.Validations.of(app).acknowledge({
+        id: 'CloudFormation-Validate::F3016',
+        reason: 'SNAPSHOT technically doesnt make sense here',
+      });
+      core.Validations.of(app).acknowledge({
+        id: 'CloudFormation-Validate::F0018',
+        reason: 'SNAPSHOT technically doesnt make sense here',
+      });
+
       const stack = new core.Stack(app);
       const resource = new core.CfnResource(stack, 'Resource', {
         type: 'AWS::Lambda::Function',
@@ -297,6 +314,10 @@ describe('cfn resource', () => {
   test('can switch off updating Update policy', () => {
     // GIVEN
     const app = new core.App();
+    core.Validations.of(app).acknowledge({
+      id: 'CloudFormation-Validate::W3011',
+      reason: 'Did not apply both policies, just for testing',
+    });
     const stack = new core.Stack(app, 'TestStack');
     const resource = new core.CfnResource(stack, 'DefaultResource', { type: 'Test::Resource::Fake' });
 
@@ -472,6 +493,60 @@ describe('cfn resource', () => {
       const res = new core.CfnResource(stack, 'Resource', { type: 'AWS::Resource' });
 
       res.addOverride('__proto__.evil', 'true');
+    });
+  });
+
+  describe('addPropertyOverride traces the top-level property', () => {
+    const originalCdkDebug = process.env.CDK_DEBUG;
+
+    beforeEach(() => {
+      process.env.CDK_DEBUG = '1';
+    });
+
+    afterEach(() => {
+      if (originalCdkDebug === undefined) {
+        delete process.env.CDK_DEBUG;
+      } else {
+        process.env.CDK_DEBUG = originalCdkDebug;
+      }
+    });
+
+    test('traces the top-level property for a simple path', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'Stack');
+      const res = new core.CfnResource(stack, 'Resource', { type: 'AWS::S3::Bucket' });
+
+      res.addPropertyOverride('VersioningConfiguration', { Status: 'Enabled' });
+
+      const metadata = res.node.metadata.filter(m => m.type === 'aws:cdk:propertyAssignment');
+      expect(metadata.length).toBe(1);
+      expect(metadata[0].data.propertyName).toBe('VersioningConfiguration');
+      expect(metadata[0].data.stackTrace).toBeDefined();
+    });
+
+    test('traces only the top-level property for a nested path', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'Stack');
+      const res = new core.CfnResource(stack, 'Resource', { type: 'AWS::S3::Bucket' });
+
+      res.addPropertyOverride('VersioningConfiguration.Status', 'Enabled');
+
+      const metadata = res.node.metadata.filter(m => m.type === 'aws:cdk:propertyAssignment');
+      expect(metadata.length).toBe(1);
+      expect(metadata[0].data.propertyName).toBe('VersioningConfiguration');
+    });
+
+    test('does not trace when debug mode is disabled', () => {
+      delete process.env.CDK_DEBUG;
+
+      const app = new core.App();
+      const stack = new core.Stack(app, 'Stack');
+      const res = new core.CfnResource(stack, 'Resource', { type: 'AWS::S3::Bucket' });
+
+      res.addPropertyOverride('VersioningConfiguration', { Status: 'Enabled' });
+
+      const metadata = res.node.metadata.filter(m => m.type === 'aws:cdk:propertyAssignment');
+      expect(metadata.length).toBe(0);
     });
   });
 });

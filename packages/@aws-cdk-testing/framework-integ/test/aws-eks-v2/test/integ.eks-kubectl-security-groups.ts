@@ -109,7 +109,7 @@ class EksKubectlSecurityGroupsStack extends Stack {
       kubectlProviderOptions: {
         kubectlLayer: new KubectlV34Layer(this, 'KubectlLayer2'),
         privateSubnets,
-        securityGroup: kubectlSg3, // Single SG (backwards compatibility)
+        securityGroups: [kubectlSg3],
       },
       removalPolicy: RemovalPolicy.DESTROY,
     });

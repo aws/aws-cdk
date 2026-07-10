@@ -112,6 +112,6 @@ export abstract class StageBase extends Resource implements IStage {
   }
 
   public get stageRef(): StageReference {
-    return { stageName: this.stageName };
+    return { apiId: this.baseApi.apiId, stageName: this.stageName };
   }
 }

@@ -21,7 +21,7 @@ import {
   PropagatedTagSource,
 } from '../../lib/base/base-service';
 import { PlacementConstraint, PlacementStrategy } from '../../lib/placement';
-import { addDefaultCapacityProvider } from '../util';
+import { acknowledgeTestValidationRules, addDefaultCapacityProvider } from '../util';
 
 describe('ec2 service', () => {
   describe('When creating an EC2 Service', () => {
@@ -1179,6 +1179,7 @@ describe('ec2 service', () => {
         instanceType: new ec2.InstanceType('bogus'),
         machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
       });
+      acknowledgeTestValidationRules(stack);
 
       // WHEN
       const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provider', {
@@ -3266,6 +3267,7 @@ describe('ec2 service', () => {
         [ecs.NetworkMode.BRIDGE, ecs.NetworkMode.NAT].forEach((networkMode: ecs.NetworkMode) => {
           // GIVEN
           const stack = new cdk.Stack();
+          acknowledgeTestValidationRules(stack);
           const vpc = new ec2.Vpc(stack, 'MyVpc', {});
           const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
           addDefaultCapacityProvider(cluster, stack, vpc);

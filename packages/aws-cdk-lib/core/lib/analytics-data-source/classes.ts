@@ -1161,7 +1161,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
   '@aws-cdk.aws-elasticache-alpha': {
     'IamUser': {
       'userName': '*',
-      'engine': 'UserEngine',
+      'engine': '*',
       'userId': '*',
       'accessControl': '*',
       'grantConnect': [
@@ -1186,19 +1186,19 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'NoPasswordUser': {
       'userName': '*',
-      'engine': 'UserEngine',
+      'engine': '*',
       'userId': '*',
       'accessControl': '*'
     },
     'PasswordUser': {
       'userName': '*',
       'passwords': '*',
-      'engine': 'UserEngine',
+      'engine': '*',
       'userId': '*',
       'accessControl': '*'
     },
     'ServerlessCache': {
-      'engine': 'CacheEngine',
+      'engine': '*',
       'serverlessCacheName': '*',
       'description': '*',
       'cacheUsageLimits': {
@@ -1282,10 +1282,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'userGroup': {
         'userGroupName': '*',
-        'engine': 'UserEngine',
+        'engine': '*',
         'users': {
           'userId': '*',
-          'engine': 'UserEngine',
           'userName': '*',
           'userArn': '*',
           'stack': '*',
@@ -1300,10 +1299,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'UserGroup': {
       'userGroupName': '*',
-      'engine': 'UserEngine',
+      'engine': '*',
       'users': {
         'userId': '*',
-        'engine': 'UserEngine',
+        'engine': '*',
         'userName': '*',
         'userArn': '*',
         'stack': '*',
@@ -1316,7 +1315,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'addUser': [
         {
           'userId': '*',
-          'engine': 'UserEngine',
+          'engine': '*',
           'userName': '*',
           'userArn': '*',
           'stack': '*',
@@ -14387,6 +14386,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'cidrs': '*'
       },
       'removalPolicy': 'RemovalPolicy',
+      'deletionProtection': 'boolean',
       'vpc': {
         'vpcId': '*',
         'vpcArn': '*',
@@ -14986,6 +14986,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'cidrs': '*'
       },
       'removalPolicy': 'RemovalPolicy',
+      'deletionProtection': 'boolean',
       'vpc': {
         'vpcId': '*',
         'vpcArn': '*',
@@ -18851,7 +18852,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         '*',
         {
           'stackTrace': 'boolean',
-          'traceFromFunction': '*'
+          'traceFromFunction': '*',
+          'stackTraceOverride': '*'
         }
       ],
       'dependOn': [
@@ -19504,6 +19506,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     'DatabaseCluster': {
       'credentials': '*',
       'replicationSourceIdentifier': '*',
+      'manageMasterUserPassword': 'boolean',
       'engine': {
         'singleUserRotationApplication': '*',
         'supportedLogTypes': '*',
@@ -19822,6 +19825,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'snapshotIdentifier': '*',
       'credentials': '*',
       'snapshotCredentials': '*',
+      'manageMasterUserPassword': 'boolean',
       'engine': {
         'singleUserRotationApplication': '*',
         'supportedLogTypes': '*',
@@ -20184,6 +20188,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'DatabaseInstance': {
       'credentials': '*',
+      'manageMasterUserPassword': 'boolean',
       'characterSetName': '*',
       'storageEncrypted': 'boolean',
       'storageEncryptionKey': '*',
@@ -25132,6 +25137,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
   },
   'aws-glue-alpha.lib': {
     'PySparkEtlJob': {
+      'notifyDelayAfter': '*',
       'extraPythonFiles': '*',
       'extraFiles': '*',
       'extraJars': '*',
@@ -25567,6 +25573,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'ScalaSparkEtlJob': {
       'className': '*',
+      'notifyDelayAfter': '*',
       'extraFiles': '*',
       'extraJars': '*',
       'extraJarsFirst': 'boolean',
@@ -28609,6 +28616,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'stepPercent': '*',
         'stepBakeTime': '*'
       },
+      'forceNewDeployment': {
+        'enabled': 'boolean',
+        'nonce': '*'
+      },
       'addPlacementStrategies': [
         '*'
       ],
@@ -28869,6 +28880,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'canaryConfiguration': {
         'stepPercent': '*',
         'stepBakeTime': '*'
+      },
+      'forceNewDeployment': {
+        'enabled': 'boolean',
+        'nonce': '*'
       },
       'attachToApplicationTargetGroup': [
         {
@@ -29239,6 +29254,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'canaryConfiguration': {
         'stepPercent': '*',
         'stepBakeTime': '*'
+      },
+      'forceNewDeployment': {
+        'enabled': 'boolean',
+        'nonce': '*'
       },
       'attachToClassicLB': [
         '*'

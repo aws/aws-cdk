@@ -47,7 +47,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "Eval41256dc5445742738ed917bc818694e5ServiceRoleA1AB6027"
