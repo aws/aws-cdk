@@ -6,6 +6,7 @@ import * as cdk from '../../core';
 import { App, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
 import * as ecs from '../lib';
+import { acknowledgeTestValidationRules } from './util';
 
 describe('When import an ECS Service', () => {
   let stack: cdk.Stack;
@@ -825,6 +826,7 @@ describe('forceNewDeployment', () => {
 
   beforeEach(() => {
     stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     vpc = new ec2.Vpc(stack, 'Vpc');
     cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -1023,6 +1025,7 @@ describe('forceNewDeployment constructor option', () => {
 
   beforeEach(() => {
     stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     vpc = new ec2.Vpc(stack, 'Vpc');
     cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
