@@ -159,5 +159,3 @@ const stack = new TestStack(app, 'aws-cdk-elbv2-alb-listener-conditions-integ');
 new integ.IntegTest(app, 'ListenerConditionsTest', {
   testCases: [stack],
 });
-
-app.synth();
