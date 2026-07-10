@@ -2712,3 +2712,38 @@ describe('Episodic strategy validation edge cases tests', () => {
     }).toThrow('Namespace with templates should contain valid variables: /journey/{badVariable}/episodes');
   });
 });
+
+describe('Memory removal policy / defaultChild', () => {
+  test('sets the CfnMemory as the default child', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const memory = new Memory(stack, 'test-memory', {
+      memoryName: 'test_memory',
+      expirationDuration: Duration.days(30),
+    });
+
+    // THEN
+    expect(memory.node.defaultChild).toBeDefined();
+    expect((memory.node.defaultChild as cdk.CfnResource).cfnResourceType).toBe('AWS::BedrockAgentCore::Memory');
+  });
+
+  test('applyRemovalPolicy propagates to the CfnMemory resource', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const memory = new Memory(stack, 'test-memory', {
+      memoryName: 'test_memory',
+      expirationDuration: Duration.days(30),
+    });
+
+    // WHEN
+    memory.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::BedrockAgentCore::Memory', {
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
+    });
+  });
+});
