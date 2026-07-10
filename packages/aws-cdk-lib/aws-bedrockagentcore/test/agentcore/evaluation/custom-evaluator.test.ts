@@ -11,19 +11,19 @@
  *  and limitations under the License.
  */
 
-import { Template, Match } from '../../../../assertions';
+import { Match, Template } from '../../../../assertions';
 import * as iam from '../../../../aws-iam';
 import * as kms from '../../../../aws-kms';
 import * as lambda from '../../../../aws-lambda';
 import { App, Duration, Lazy, Stack } from '../../../../core';
 import {
+  BuiltinEvaluator,
+  DataSourceConfig,
+  EvaluationLevel,
   Evaluator,
   EvaluatorConfig,
   EvaluatorRatingScale,
   EvaluatorSelector,
-  EvaluationLevel,
-  BuiltinEvaluator,
-  DataSourceConfig,
   OnlineEvaluationConfig,
 } from '../../../lib';
 
@@ -363,7 +363,7 @@ describe('Evaluator', () => {
 
   describe('EvaluatorSelector.custom() with imported evaluator', () => {
     test('imported evaluator resolves correctly in OnlineEvaluationConfig', () => {
-      const imported = Evaluator.fromEvaluatorId(stack, 'ImportedEvaluator', 'eval-abc123');
+      const imported = Evaluator.fromEvaluatorId(stack, 'ImportedEvaluator', 'Builtin.abc123');
 
       new OnlineEvaluationConfig(stack, 'TestEvaluation', {
         onlineEvaluationConfigName: 'test_evaluation',
@@ -381,7 +381,7 @@ describe('Evaluator', () => {
       template.hasResourceProperties('AWS::BedrockAgentCore::OnlineEvaluationConfig', {
         Evaluators: [
           { EvaluatorId: 'Builtin.Helpfulness' },
-          { EvaluatorId: 'eval-abc123' },
+          { EvaluatorId: 'Builtin.abc123' },
         ],
       });
     });

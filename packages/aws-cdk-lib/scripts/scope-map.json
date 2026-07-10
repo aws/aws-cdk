@@ -533,6 +533,13 @@
       }
     ]
   },
+  "aws-controlcatalog": {
+    "scopes": [
+      {
+        "namespace": "AWS::ControlCatalog"
+      }
+    ]
+  },
   "aws-controltower": {
     "scopes": [
       {
@@ -558,6 +565,13 @@
     "scopes": [
       {
         "namespace": "AWS::DataBrew"
+      }
+    ]
+  },
+  "aws-dataexchange": {
+    "scopes": [
+      {
+        "namespace": "AWS::DataExchange"
       }
     ]
   },
@@ -1450,6 +1464,13 @@
     "scopes": [
       {
         "namespace": "AWS::OSIS"
+      }
+    ]
+  },
+  "aws-outposts": {
+    "scopes": [
+      {
+        "namespace": "AWS::Outposts"
       }
     ]
   },
