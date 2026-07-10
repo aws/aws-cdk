@@ -403,7 +403,7 @@ export interface RtpProtocolProps {
   readonly port: number;
   /**
    * Forward Error Correction setting
-   * @default ForwardErrorCorrection.DISABLED
+   * @default - ForwardErrorCorrection.DISABLED (the MediaConnect service default)
    */
   readonly forwardErrorCorrection?: ForwardErrorCorrection;
 }

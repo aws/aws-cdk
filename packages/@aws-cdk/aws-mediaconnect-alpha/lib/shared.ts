@@ -388,7 +388,7 @@ export interface VpcInterfaceConfig {
   /**
    * The type of network interface. Use `EFA` for CDI workflows.
    *
-   * @default NetworkInterface.ENA
+   * @default - NetworkInterface.ENA (the MediaConnect service default)
    */
   readonly networkInterfaceType?: NetworkInterface;
   /**
@@ -428,7 +428,7 @@ export interface VpcInterfaceDefineProps {
   /**
    * The type of network interface. Use `EFA` for CDI workflows.
    *
-   * @default NetworkInterface.ENA
+   * @default - NetworkInterface.ENA (the MediaConnect service default)
    */
   readonly networkInterfaceType?: NetworkInterface;
 }

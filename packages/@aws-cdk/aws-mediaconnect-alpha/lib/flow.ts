@@ -387,7 +387,7 @@ export interface NdiDiscoveryServerConfig {
   /**
    * The port for the NDI discovery server. Defaults to 5959 if a custom port isn't specified.
    *
-   * @default 5959
+   * @default - 5959 (the MediaConnect service default)
    */
   readonly discoveryServerPort?: number;
   /**
@@ -781,7 +781,7 @@ export interface FlowProps {
   /**
    * Determines the processing capacity and feature set of the flow. Set this optional parameter to LARGE if you want to enable NDI outputs on the flow.
    *
-   * @default FlowSize.MEDIUM
+   * @default - FlowSize.MEDIUM (the MediaConnect service default)
    */
   readonly flowSize?: FlowSize;
 
