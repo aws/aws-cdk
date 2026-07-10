@@ -455,7 +455,7 @@ export interface EncodingConfig {
    *
    * The supported range is 10 Mbps – 50 Mbps.
    *
-   * @default - 20 Mbps
+   * @default - 20 Mbps (the MediaConnect service default)
    */
   readonly videoMaxBitrate?: Bitrate;
 }
