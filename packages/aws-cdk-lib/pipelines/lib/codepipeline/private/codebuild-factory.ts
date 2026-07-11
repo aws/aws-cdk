@@ -229,9 +229,6 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       throw new UnscopedValidationError(lit`RequiresCodebuildActionRequires`, `CodeBuild action '${this.stepId}' requires an input (and the pipeline doesn't have a Source to fall back to). Add an input or a pipeline source.`);
     }
 
-    // ponytail: assumes the CodeBuild compute type gets credentials from the ECS container
-    // metadata endpoint (true for standard CodeBuild, not for Lambda compute). Upgrade path:
-    // detect projectOptions.buildEnvironment.computeType and pick Ec2InstanceMetadata instead.
     const assumeRoleCommands = this.props.assumeRole ? [
       `aws configure --profile cdk-assume-role set role_arn ${this.props.assumeRole.roleArn}`,
       'aws configure --profile cdk-assume-role set credential_source EcsContainer',
