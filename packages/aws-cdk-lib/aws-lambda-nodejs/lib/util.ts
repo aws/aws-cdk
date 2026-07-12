@@ -1,6 +1,7 @@
 import type { SpawnSyncOptions } from 'child_process';
 import { spawnSync } from 'child_process';
 import * as fs from 'fs';
+import { createRequire } from 'module';
 import * as path from 'path';
 import { Runtime } from '../../aws-lambda';
 import { UnscopedValidationError } from '../../core';
@@ -91,12 +92,21 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
 }
 
 /**
- * Returns a module version by requiring its package.json file
+ * Returns a module version by requiring its package.json file.
+ *
+ * Resolves from `process.cwd()` so packages installed in workspace-local
+ * `node_modules/` (e.g. npm workspaces) are found when they are not hoisted
+ * to the monorepo root. A bare `require()` would resolve from this module's
+ * location under `aws-cdk-lib` and miss those installs.
+ *
+ * @see https://github.com/aws/aws-cdk/issues/37545
  */
 export function tryGetModuleVersionFromRequire(mod: string): string | undefined {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    return require(`${mod}/package.json`).version;
+    // Resolve relative to the project where `cdk synth` is invoked, not from
+    // aws-cdk-lib's own node_modules path.
+    const req = createRequire(path.join(process.cwd(), 'package.json'));
+    return req(`${mod}/package.json`).version;
   } catch (err) {
     return undefined;
   }
