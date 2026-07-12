@@ -6,7 +6,8 @@ import { FeatureFlags } from './feature-flags';
 import type { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
 import { type IPropertyInjector, PropertyInjectors } from './prop-injectors';
-import type { IPolicyValidationPluginBeta1 } from './validation';
+import type { IPolicyValidationPlugin, IPolicyValidationPluginBeta1 } from './validation';
+import { _toBeta1Plugin } from './validation';
 import * as public_cxapi from '../../cx-api';
 import { _convertCloudAssembly, _convertCloudAssemblyBuilder } from '../../cx-api';
 import { lit } from './private/literal-string';
@@ -96,6 +97,7 @@ export interface StageProps {
    * synthesis will be interrupted and the report displayed to the user.
    *
    * @default - no validation plugins are used
+   * @deprecated Use `Validations.of(stage).addPlugins()` instead.
    */
   readonly policyValidationBeta1?: IPolicyValidationPluginBeta1[];
 
@@ -183,7 +185,11 @@ export class Stage extends Construct {
    *
    * @default - no validation plugins are used
    */
-  public readonly policyValidationBeta1: IPolicyValidationPluginBeta1[] = [];
+  public get policyValidationBeta1(): IPolicyValidationPluginBeta1[] {
+    return this._policyValidation.map(_toBeta1Plugin);
+  }
+
+  private readonly _policyValidation: IPolicyValidationPlugin[] = [];
 
   constructor(scope: Construct, id: string, props: StageProps = {}) {
     super(scope, id);
@@ -211,8 +217,26 @@ export class Stage extends Construct {
     this.stageName = [this.parentStage?.stageName, props.stageName ?? id].filter(x => x).join('-');
 
     if (props.policyValidationBeta1) {
-      this.policyValidationBeta1 = props.policyValidationBeta1;
+      this._policyValidation.push(...props.policyValidationBeta1);
     }
+  }
+
+  /**
+   * Register a validation plugin on this stage.
+   *
+   * @internal
+   */
+  public _addValidationPlugins(...plugins: IPolicyValidationPlugin[]): void {
+    this._policyValidation.push(...plugins);
+  }
+
+  /**
+   * Returns the raw validation plugins without Beta1 wrapping.
+   *
+   * @internal
+   */
+  public get _validationPlugins(): IPolicyValidationPlugin[] {
+    return [...this._policyValidation];
   }
 
   /**
@@ -262,7 +286,8 @@ export class Stage extends Construct {
 
     // If the construct paths set has changed
     if (!this.constructPathSetsAreEqual(this.constructPathsCache, newConstructPaths)) {
-      const errorMessage = 'Synthesis has been called multiple times and the construct tree was modified after the first synthesis.';
+      const diff = this.constructPathSetsDiff(this.constructPathsCache, newConstructPaths).join(', ');
+      const errorMessage = `Synthesis has been called multiple times and the construct tree was modified after the first synthesis (${diff})`;
       if (options.errorOnDuplicateSynth ?? true) {
         throw new ValidationError(lit`ConstructTreeModifiedAfterSynth`, errorMessage + ' This is not allowed. Remove multple synth() calls and do not modify the construct tree after the first synth().', this);
       } else {
@@ -301,6 +326,34 @@ export class Stage extends Construct {
       }
     }
     return true;
+  }
+
+  /**
+   * Returns a list of +/- marked construct paths that have been added or removed between the 2 sets
+   */
+  private constructPathSetsDiff(set1: Set<string>, set2: Set<string>): string[] {
+    const ret: string[] = [];
+
+    for (const id of set1) {
+      if (!set2.has(id)) {
+        ret.push(`-${id}`);
+      }
+    }
+    for (const id of set2) {
+      if (!set1.has(id)) {
+        ret.push(`+${id}`);
+      }
+    }
+
+    // Simplify the diff by removing any construct paths that are a suffix of another construct path in the diff.
+    // We're doing it inefficiently, but this work is rare.
+    ret.sort((a, b) => a.length - b.length);
+    for (let i = 0; i < ret.length; i++) {
+      const prefix = ret[i] + '/';
+      stripInPlace(ret, i + 1, (x) => x.startsWith(prefix));
+    }
+
+    return ret;
   }
 
   private createBuilder(outdir?: string) {
@@ -360,4 +413,16 @@ export interface StageSynthesisOptions {
    * @default false
    */
   readonly aspectStabilization?: boolean;
+}
+
+/**
+ * Mutate an array in place by removing all elements starting from `startIndex` that match the predicate.
+ */
+function stripInPlace<A>(arr: A[], startIndex: number, predicate: (a: A) => boolean): void {
+  for (let i = startIndex; i < arr.length; i++) {
+    if (predicate(arr[i])) {
+      arr.splice(i, 1);
+      i--;
+    }
+  }
 }

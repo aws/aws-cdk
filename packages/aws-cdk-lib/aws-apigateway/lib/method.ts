@@ -15,9 +15,12 @@ import { RestApiBase } from './restapi';
 import { validateHttpMethod } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import { Annotations, ArnFormat, FeatureFlags, Lazy, Names, Resource, Stack } from '../../core';
+import { Annotations, ArnFormat, FeatureFlags, Names, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID } from '../../cx-api';
@@ -168,6 +171,7 @@ export interface MethodProps {
 }
 
 @propertyInjectable
+@noBoxStackTraces
 export class Method extends Resource {
   /**
    * Uniquely identifies this class.
@@ -184,7 +188,7 @@ export class Method extends Resource {
    */
   public readonly api: IRestApi;
 
-  private readonly methodResponses: MethodResponse[] = [];
+  private readonly methodResponses: IArrayBox<MethodResponse> = Box.fromArray();
 
   constructor(scope: Construct, id: string, props: MethodProps) {
     super(scope, id);
@@ -256,7 +260,7 @@ export class Method extends Resource {
       authorizerId,
       requestParameters: options.requestParameters || defaultMethodOptions.requestParameters,
       integration: this.renderIntegration(bindResult),
-      methodResponses: Lazy.any({ produce: () => this.renderMethodResponses(this.methodResponses) }, { omitEmptyArray: true }),
+      methodResponses: this.methodResponses.derive(mrs => this.renderMethodResponses(mrs)),
       requestModels: this.renderRequestModels(options.requestModels),
       requestValidatorId: this.requestValidatorId(options),
       authorizationScopes: authorizationScopes,
@@ -362,6 +366,14 @@ export class Method extends Resource {
       credentials = Stack.of(this).formatArn({ service: 'iam', region: '', account: '*', resource: 'user', arnFormat: ArnFormat.SLASH_RESOURCE_NAME, resourceName: '*' });
     }
 
+    // Determine connectionId from vpcLink (V1) or vpcLinkV2 (V2)
+    let connectionId: string | undefined;
+    if (options.vpcLinkV2) {
+      connectionId = options.vpcLinkV2.vpcLinkRef.vpcLinkId;
+    } else if (options.vpcLink) {
+      connectionId = options.vpcLink.vpcLinkId;
+    }
+
     return {
       type: bindResult.type,
       uri: bindResult.uri,
@@ -374,14 +386,15 @@ export class Method extends Resource {
       passthroughBehavior: options.passthroughBehavior,
       integrationResponses: options.integrationResponses,
       connectionType: options.connectionType,
-      connectionId: options.vpcLink ? options.vpcLink.vpcLinkId : undefined,
+      connectionId,
+      integrationTarget: options.integrationTarget,
       credentials,
       timeoutInMillis: options.timeout?.toMilliseconds(),
       responseTransferMode: options.responseTransferMode,
     };
   }
 
-  private renderMethodResponses(methodResponses: MethodResponse[] | undefined): CfnMethod.MethodResponseProperty[] | undefined {
+  private renderMethodResponses(methodResponses: readonly MethodResponse[] | undefined): CfnMethod.MethodResponseProperty[] | undefined {
     if (!methodResponses) {
       // Fall back to nothing
       return undefined;

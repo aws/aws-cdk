@@ -1375,6 +1375,8 @@ export class Cluster extends ClusterBase {
       bootstrapSelfManagedAddons: props.bootstrapSelfManagedAddons,
     });
 
+    this.node.defaultChild = resource;
+
     let kubectlSubnets = this._kubectlProviderOptions?.privateSubnets;
 
     if (this.endpointAccess._config.privateAccess && privateSubnets.length !== 0) {
@@ -1443,6 +1445,14 @@ export class Cluster extends ClusterBase {
     const commonCommandOptions = [`--region ${stack.region}`];
 
     if (props.kubectlProviderOptions) {
+      if (this._kubectlProviderOptions?.securityGroup !== undefined &&
+          this._kubectlProviderOptions?.securityGroups !== undefined) {
+        throw new ValidationError(
+          lit`SecurityGroupConflict`,
+          'Cannot specify both "securityGroup" and "securityGroups". Use "securityGroups" only.',
+          this,
+        );
+      }
       this._kubectlProvider = new KubectlProvider(this, 'KubectlProvider', {
         cluster: this,
         role: this._kubectlProviderOptions?.role,
@@ -1451,6 +1461,10 @@ export class Cluster extends ClusterBase {
         environment: this._kubectlProviderOptions?.environment,
         memory: this._kubectlProviderOptions?.memory,
         privateSubnets: kubectlSubnets,
+        securityGroups: this._kubectlProviderOptions?.securityGroups
+          ?? (this._kubectlProviderOptions?.securityGroup
+            ? [this._kubectlProviderOptions.securityGroup]
+            : undefined),
       });
 
       // give the handler role admin access to the cluster
@@ -1543,7 +1557,7 @@ export class Cluster extends ClusterBase {
    *
    * This method creates an `AccessEntry` construct that grants the specified IAM principal the cluster admin
    * access permissions. This allows the IAM principal to perform the actions permitted
-   * by the cluster admin acces.
+   * by the cluster admin access.
    * [disable-awslint:no-grants]
    *
    * @param id - The ID of the `AccessEntry` construct to be created.

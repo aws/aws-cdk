@@ -3,12 +3,18 @@ import { CfnJobQueue } from './batch.generated';
 import { toISchedulingPolicy } from './private/ref-utils';
 import type { ISchedulingPolicy } from './scheduling-policy';
 import type { Duration, IResource } from '../../core';
-import { ArnFormat, Lazy, Resource, Stack, ValidationError } from '../../core';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { ArnFormat, Resource, Stack, ValidationError } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import type { IComputeEnvironmentRef, IJobQueueRef, ISchedulingPolicyRef, JobQueueReference } from '../../interfaces/generated/aws-batch-interfaces.generated';
+import type {
+  IComputeEnvironmentRef,
+  IJobQueueRef,
+  ISchedulingPolicyRef,
+  JobQueueReference,
+} from '../../interfaces/generated/aws-batch-interfaces.generated';
 
 /**
  * Represents a JobQueue
@@ -267,7 +273,7 @@ export class JobQueue extends Resource implements IJobQueue {
     return new Import(scope, id);
   }
 
-  public readonly computeEnvironments: OrderedComputeEnvironment[];
+  private readonly _computeEnvironments: IArrayBox<OrderedComputeEnvironment>;
   public readonly priority: number;
   public readonly enabled?: boolean;
   private readonly _schedulingPolicy?: ISchedulingPolicyRef;
@@ -281,6 +287,10 @@ export class JobQueue extends Resource implements IJobQueue {
       resource: 'job-queue',
       resourceName: this.physicalName,
     });
+  }
+
+  public get computeEnvironments(): OrderedComputeEnvironment[] {
+    return this._computeEnvironments.getMutable();
   }
 
   @memoizedGetter
@@ -308,19 +318,17 @@ export class JobQueue extends Resource implements IJobQueue {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.computeEnvironments = props?.computeEnvironments ?? [];
+    this._computeEnvironments = Box.fromArray(props?.computeEnvironments ?? []);
     this.priority = props?.priority ?? 1;
     this.enabled = props?.enabled;
     this._schedulingPolicy = props?.schedulingPolicy;
 
     this.resource = new CfnJobQueue(this, 'Resource', {
-      computeEnvironmentOrder: Lazy.any({
-        produce: () => this.computeEnvironments.map((ce) => {
-          return {
-            computeEnvironment: ce.computeEnvironment.computeEnvironmentRef.computeEnvironmentArn,
-            order: ce.order,
-          };
-        }),
+      computeEnvironmentOrder: this._computeEnvironments.map((ce) => {
+        return {
+          computeEnvironment: ce.computeEnvironment.computeEnvironmentRef.computeEnvironmentArn,
+          order: ce.order,
+        };
       }),
       priority: this.priority,
       jobQueueName: props?.jobQueueName,
@@ -329,11 +337,11 @@ export class JobQueue extends Resource implements IJobQueue {
       jobStateTimeLimitActions: this.renderJobStateTimeLimitActions(props?.jobStateTimeLimitActions),
     });
 
-    this.node.addValidation({ validate: () => validateOrderedComputeEnvironments(this.computeEnvironments) });
+    this.node.addValidation({ validate: () => validateOrderedComputeEnvironments(this._computeEnvironments.get()) });
   }
 
   addComputeEnvironment(computeEnvironment: IComputeEnvironmentRef, order: number): void {
-    this.computeEnvironments.push({
+    this._computeEnvironments.push({
       computeEnvironment,
       order,
     });
@@ -369,7 +377,7 @@ export class JobQueue extends Resource implements IJobQueue {
   }
 }
 
-function validateOrderedComputeEnvironments(computeEnvironments: OrderedComputeEnvironment[]): string[] {
+function validateOrderedComputeEnvironments(computeEnvironments: readonly OrderedComputeEnvironment[]): string[] {
   const seenOrders: number[] = [];
 
   for (const ce of computeEnvironments) {

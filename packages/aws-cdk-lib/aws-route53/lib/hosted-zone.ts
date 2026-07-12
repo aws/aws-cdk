@@ -1,21 +1,30 @@
 import type { Construct } from 'constructs';
 import { HostedZoneGrants } from './hosted-zone-grants';
 import type { HostedZoneProviderProps } from './hosted-zone-provider';
-import type { GrantDelegationOptions, HostedZoneAttributes, IHostedZone, PublicHostedZoneAttributes, PrivateHostedZoneAttributes } from './hosted-zone-ref';
+import type {
+  GrantDelegationOptions,
+  HostedZoneAttributes,
+  IHostedZone,
+  PrivateHostedZoneAttributes,
+  PublicHostedZoneAttributes,
+} from './hosted-zone-ref';
 import type { IKeySigningKey } from './key-signing-key';
 import { KeySigningKey } from './key-signing-key';
 import { CaaAmazonRecord, ZoneDelegationRecord } from './record-set';
 import type { CfnKeySigningKey, HostedZoneReference } from './route53.generated';
-import { CfnHostedZone, CfnDNSSEC } from './route53.generated';
+import { CfnDNSSEC, CfnHostedZone } from './route53.generated';
 import { makeHostedZoneArn, validateZoneName } from './util';
 import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
 import * as cxschema from '../../cloud-assembly-schema';
 import type { Duration } from '../../core';
-import { ContextProvider, Lazy, Resource, Stack } from '../../core';
+import { ContextProvider, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -71,7 +80,7 @@ export interface HostedZoneProps extends CommonHostedZoneProps {
  */
 export interface ZoneSigningOptions {
   /**
-   * The customer-managed KMS key that that will be used to sign the records.
+   * The customer-managed KMS key that will be used to sign the records.
    *
    * The KMS Key must be unique for each KSK within a hosted zone. Additionally, the
    * KMS key must be an asymetric customer-managed key using the ECC_NIST_P256 algorithm.
@@ -95,6 +104,7 @@ export interface ZoneSigningOptions {
  * specific domain, such as example.com and its subdomains (acme.example.com, zenith.example.com)
  */
 @propertyInjectable
+@noBoxStackTraces
 export class HostedZone extends Resource implements IHostedZone {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.HostedZone';
@@ -221,7 +231,11 @@ export class HostedZone extends Resource implements IHostedZone {
   /**
    * VPCs to which this hosted zone will be added
    */
-  protected readonly vpcs = new Array<CfnHostedZone.VPCProperty>();
+  private readonly _vpcs: IArrayBox<CfnHostedZone.VPCProperty> = Box.fromArray();
+
+  protected get vpcs(): CfnHostedZone.VPCProperty[] {
+    return [...this._vpcs.get()];
+  }
 
   /**
    * The key signing key used to sign the hosted zone.
@@ -247,7 +261,7 @@ export class HostedZone extends Resource implements IHostedZone {
       name: zoneName,
       hostedZoneConfig: props.comment ? { comment: props.comment } : undefined,
       queryLoggingConfig: props.queryLogsLogGroupArn ? { cloudWatchLogsLogGroupArn: props.queryLogsLogGroupArn } : undefined,
-      vpcs: Lazy.any({ produce: () => this.vpcs.length === 0 ? undefined : this.vpcs }),
+      vpcs: this._vpcs,
     });
 
     this.hostedZoneId = resource.ref;
@@ -272,7 +286,7 @@ export class HostedZone extends Resource implements IHostedZone {
    */
   @MethodMetadata()
   public addVpc(vpc: ec2.IVpc) {
-    this.vpcs.push({ vpcId: vpc.vpcId, vpcRegion: vpc.env.region ?? Stack.of(vpc).region });
+    this._vpcs.push({ vpcId: vpc.vpcId, vpcRegion: vpc.env.region ?? Stack.of(vpc).region });
   }
 
   /**
@@ -319,6 +333,19 @@ export interface PublicHostedZoneProps extends CommonHostedZoneProps {
    * @default false
    */
   readonly caaAmazon?: boolean;
+
+  /**
+   * Whether to enable accelerated recovery for this hosted zone.
+   *
+   * Accelerated recovery reduces the time to recovery when a hosted zone
+   * becomes unavailable due to DNS resolution issues.
+   *
+   * This feature is only available for public hosted zones.
+   *
+   * @default - no accelerated recovery
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/accelerated-recovery.html
+   */
+  readonly acceleratedRecoveryEnabled?: boolean;
 
   /**
    * A principal which is trusted to assume a role for zone delegation
@@ -434,6 +461,13 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
     super(scope, id, props);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    if (props.acceleratedRecoveryEnabled !== undefined) {
+      const cfnHostedZone = this.node.defaultChild as CfnHostedZone;
+      cfnHostedZone.hostedZoneFeatures = {
+        enableAcceleratedRecovery: props.acceleratedRecoveryEnabled,
+      };
+    }
 
     if (props.caaAmazon) {
       new CaaAmazonRecord(this, 'CaaAmazon', {
