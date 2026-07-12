@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "54.0.0",
   "files": {
     "6e8c2853ad81b105a094fe9e2d26092f504bc7e44d7246b7365d1dae4cbb262b": {
       "displayName": "aws-ecs-cluster-existing-namespace Template",
