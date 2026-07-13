@@ -37,7 +37,7 @@
     "@aws-sdk/client-rds": "3.632.0",
     "@aws-sdk/client-s3": "3.632.0",
     "@aws-sdk/client-cognito-identity-provider": "3.632.0",
-    "axios": "^1.17.0",
+    "axios": "^1.18.1",
     "delay": "5.0.0"
   },
   "dependencies": {
@@ -52,7 +52,7 @@
     "@aws-cdk/lambda-layer-kubectl-v35": "^2.2.2",
     "@aws-cdk/region-info": "0.0.0",
     "aws-cdk-lib": "0.0.0",
-    "cdk8s": "2.70.69",
+    "cdk8s": "2.70.83",
     "cdk8s-plus-27": "2.9.5",
     "constructs": "^10.5.0"
   },
