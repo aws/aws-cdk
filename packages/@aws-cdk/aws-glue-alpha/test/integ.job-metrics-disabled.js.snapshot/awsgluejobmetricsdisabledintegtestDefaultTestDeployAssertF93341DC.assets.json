@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "files": {
     "6611813c56ee5ec64f812f46caf03748d8b30fea6e344cc7ac25035891a6dfe8": {
       "source": {
@@ -14,16 +14,16 @@
         }
       }
     },
-    "80d51b935b1e911ee44e9464852f30f10f7ad2e85eb974a0af4e20b638aa9be4": {
+    "fa805d78b04f9d703404bb414a17d17ba94ef0305e1aeb6dd8f3dccde79b90b6": {
       "displayName": "awsgluejobmetricsdisabledintegtestDefaultTestDeployAssertF93341DC Template",
       "source": {
         "path": "awsgluejobmetricsdisabledintegtestDefaultTestDeployAssertF93341DC.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-c9fa304f": {
+        "current_account-current_region-5ac24866": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "80d51b935b1e911ee44e9464852f30f10f7ad2e85eb974a0af4e20b638aa9be4.json",
+          "objectKey": "fa805d78b04f9d703404bb414a17d17ba94ef0305e1aeb6dd8f3dccde79b90b6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

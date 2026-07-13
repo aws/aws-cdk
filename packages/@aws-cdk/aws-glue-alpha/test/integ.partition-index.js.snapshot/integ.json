@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "testCases": {
     "glue-partition-index-integ/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "gluepartitionindexintegDefaultTestDeployAssert364C2B0F"
     }
   },
-  "minimumCliVersion": "2.1125.0"
+  "minimumCliVersion": "2.1126.0"
 }

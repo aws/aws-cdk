@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@nx/workspace": "^20",
-    "@types/node": "18.19.129",
+    "@types/node": "^20",
     "@types/prettier": "2.6.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "aws-sdk-js-codemod": "^2.4.5",
@@ -38,16 +38,19 @@
     "standard-version": "^9.5.0",
     "ts-jest": "^29.4.11",
     "ts-node": "^10.9.2",
-    "typescript": "~5.5.4"
+    "typescript": "~5.9.3"
   },
   "resolutions": {
+    "array-includes": "3.1.8",
+    "es-abstract": "1.23.9",
     "colors": "1.4.0",
     "markdown-it": "^12.3.2",
     "string-width": "^4.2.3",
     "@types/babel__traverse": "7.18.2",
     "@smithy/types": "3.5.0",
     "@types/minimatch": "^5.1.2",
-    "tar": "^7.5.7"
+    "tar": "^7.5.7",
+    "@aws-cdk/service-spec-types": "0.0.259"
   },
   "repository": {
     "type": "git",
@@ -141,6 +144,10 @@
       "@aws-cdk/pipelines/aws-sdk/**",
       "@aws-cdk/yaml-cfn/yaml",
       "@aws-cdk/yaml-cfn/yaml/**",
+      "aws-cdk-lib/@balena/dockerignore",
+      "aws-cdk-lib/@balena/dockerignore/**",
+      "aws-cdk-lib/@aws/cloudformation-validate",
+      "aws-cdk-lib/@aws/cloudformation-validate/**",
       "aws-cdk-lib/@aws-cdk/cloud-assembly-api",
       "aws-cdk-lib/@aws-cdk/cloud-assembly-api/**",
       "aws-cdk-lib/@balena/dockerignore",
@@ -176,8 +183,9 @@
     ]
   },
   "dependencies": {
+    "@aws-cdk/service-spec-types": "0.0.259",
     "string-width": "^4.2.3",
-    "tar": "^7.5.7"
+    "tar": "^7.5.16"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

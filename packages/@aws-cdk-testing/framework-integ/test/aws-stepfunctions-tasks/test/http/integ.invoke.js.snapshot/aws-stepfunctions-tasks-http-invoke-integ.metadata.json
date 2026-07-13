@@ -1,0 +1,588 @@
+{
+  "/aws-stepfunctions-tasks-http-invoke-integ": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/http/integ.invoke.js:26:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/AuthorizerHandler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "handler": "*",
+        "runtime": "*",
+        "code": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "handler": "*"
+      }
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/Authorizer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/Connection": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "authorization": "*"
+      }
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/StateMachine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "definitionBody": "*",
+        "timeout": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/AuthorizerHandler/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/AuthorizerHandler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuthorizerHandler0112B303"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/http/integ.invoke.js:27:27)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/AuthorizerHandler/awsstepfunctionstaskshttpinvokeintegAuthorizerECFD3F1C:Permissions": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuthorizerHandlerawsstepfunctionstaskshttpinvokeintegAuthorizerECFD3F1CPermissions7F5D78AD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "NodejsFunction.addPermission (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:170:9)",
+        "WrappedClass.addDefaultPermissionRole (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/authorizers/lambda.js:125:22)",
+        "WrappedClass.setupPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/authorizers/lambda.js:115:18)",
+        "new TokenAuthorizer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/authorizers/lambda.js:218:18)",
+        "new TokenAuthorizer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/http/integ.invoke.js:31:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/Authorizer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuthorizerBD825682"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TokenAuthorizer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/authorizers/lambda.js:211:30)",
+        "new TokenAuthorizer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/http/integ.invoke.js:31:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegRestApiF8B59B0D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:806:30)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/http/integ.invoke.js:36:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Deployment": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "api": "*",
+        "retainDeployments": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/DeploymentStage.prod": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "deployment": "*"
+      }
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Endpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegRestApiEndpoint7BEB0C53"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass._configureDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:527:13)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:822:18)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/http/integ.invoke.js:36:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/Connection/Connection": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Connection07624BCD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Connection (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events/lib/connection.js:324:30)",
+        "new Connection (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/http/integ.invoke.js:58:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/StateMachine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/StateMachine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachine2E01A3A5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new StateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.js:447:30)",
+        "new StateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/http/integ.invoke.js:67:12)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/Exports/Output{\"Ref\":\"StateMachine2E01A3A5\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefStateMachine2E01A3A5BA46F753"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1113:17)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/http/integ.invoke.js:86:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/AuthorizerHandler/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuthorizerHandlerServiceRole5F40A014"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/http/integ.invoke.js:27:27)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/AuthorizerHandler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Deployment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegRestApiDeploymentD67E59EC852098a1c127ca9d7d16d22086273910"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Deployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/deployment.js:136:29)",
+        "new Deployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass._configureDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:515:38)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:822:18)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/http/integ.invoke.js:36:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/DeploymentStage.prod/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegRestApiDeploymentStageprod29E2686A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Stage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/stage.js:370:30)",
+        "new Stage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass._configureDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:523:36)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:822:18)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/http/integ.invoke.js:36:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Default/test": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "parent": "*",
+        "pathPart": "*"
+      }
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/StateMachine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRoleB840431D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new StateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.js:392:39)",
+        "new StateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/http/integ.invoke.js:67:12)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/StateMachine/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Default/test/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegRestApitest58FEA9C5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Resource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:339:30)",
+        "new Resource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "RootResource.addResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:77:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/http/integ.invoke.js:37:10)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Default/test/GET": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "resource": "*",
+        "httpMethod": "*",
+        "integration": "*",
+        "options": {
+          "authorizer": "*",
+          "methodResponses": [
+            {
+              "statusCode": "*"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMethodResponse": [
+          {
+            "statusCode": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/StateMachine/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRoleDefaultPolicyDF1E6607"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.addToRolePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.js:484:23)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new StateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.js:402:26)",
+        "new StateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/http/integ.invoke.js:67:12)"
+      ]
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Default/test/GET/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegRestApitestGET52631013"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/method.js:202:30)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addMethod (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:90:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/http/integ.invoke.js:37:30)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

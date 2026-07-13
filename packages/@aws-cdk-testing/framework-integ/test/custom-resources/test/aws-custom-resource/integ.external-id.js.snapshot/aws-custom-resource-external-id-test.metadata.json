@@ -3,20 +3,20 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/aws-custom-resource/integ.external-id.js:32:15)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/aws-custom-resource/integ.external-id.js:65:15)",
         "...node internals..."
       ]
     },
     {
       "type": "aws:cdk:asset",
       "data": {
-        "path": "asset.2a7dce285d9e8889d82d23f62c85baa7de5d0861151a9e01d0e58855559b38c1",
-        "id": "2a7dce285d9e8889d82d23f62c85baa7de5d0861151a9e01d0e58855559b38c1",
+        "path": "asset.9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125",
+        "id": "9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125",
         "packaging": "zip",
-        "sourceHash": "2a7dce285d9e8889d82d23f62c85baa7de5d0861151a9e01d0e58855559b38c1",
-        "s3BucketParameter": "AssetParameters2a7dce285d9e8889d82d23f62c85baa7de5d0861151a9e01d0e58855559b38c1S3Bucket3B180569",
-        "s3KeyParameter": "AssetParameters2a7dce285d9e8889d82d23f62c85baa7de5d0861151a9e01d0e58855559b38c1S3VersionKey80B4D97A",
-        "artifactHashParameter": "AssetParameters2a7dce285d9e8889d82d23f62c85baa7de5d0861151a9e01d0e58855559b38c1ArtifactHashC3BC40C2"
+        "sourceHash": "9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125",
+        "s3BucketParameter": "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125S3Bucket3A1A78D2",
+        "s3KeyParameter": "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125S3VersionKey6FACC166",
+        "artifactHashParameter": "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125ArtifactHash4C4494A5"
       }
     }
   ],
@@ -97,9 +97,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/aws-custom-resource/integ.external-id.js:35:28)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/aws-custom-resource/integ.external-id.js:68:28)",
         "...node internals..."
       ]
     }
@@ -241,15 +241,15 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "AwsCustomResourceSingletonFunction.ensureLambda (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:272:20)",
-        "new SingletonFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:135:40)",
-        "new SingletonFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AwsCustomResourceSingletonFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated.js:9:9)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:263:30)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/aws-custom-resource/integ.external-id.js:46:1)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "AwsCustomResourceSingletonFunction.ensureLambda (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:313:20)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:176:40)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsCustomResourceSingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated.js:42:9)",
+        "new AwsCustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:304:30)",
+        "new AwsCustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/aws-custom-resource/integ.external-id.js:79:1)",
         "...node internals..."
       ]
     }
@@ -262,14 +262,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
-        "WrappedClass.<anonymous> (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "WrappedClass.addToPolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:536:29)",
-        "WrappedClass.<anonymous> (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/aws-custom-resource/integ.external-id.js:41:20)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.addToPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:577:29)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/aws-custom-resource/integ.external-id.js:74:20)",
         "...node internals..."
       ]
     }
@@ -282,12 +282,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:290:35)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/aws-custom-resource/integ.external-id.js:46:1)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsCustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:331:35)",
+        "new AwsCustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/aws-custom-resource/integ.external-id.js:79:1)",
         "...node internals..."
       ]
     }
@@ -300,12 +300,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:331:32)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/aws-custom-resource/integ.external-id.js:46:1)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsCustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:372:32)",
+        "new AwsCustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/aws-custom-resource/integ.external-id.js:79:1)",
         "...node internals..."
       ]
     }
@@ -318,16 +318,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "AwsCustomResourceSingletonFunction.ensureLambda (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:272:20)",
-        "new SingletonFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:135:40)",
-        "new SingletonFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AwsCustomResourceSingletonFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated.js:9:9)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:263:30)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "AwsCustomResourceSingletonFunction.ensureLambda (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:313:20)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:176:40)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsCustomResourceSingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated.js:42:9)",
+        "new AwsCustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:304:30)",
+        "new AwsCustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
       ]
     }
   ],
@@ -337,66 +337,66 @@
       "data": "*"
     }
   ],
-  "/aws-custom-resource-external-id-test/AssetParameters/2a7dce285d9e8889d82d23f62c85baa7de5d0861151a9e01d0e58855559b38c1/S3Bucket": [
+  "/aws-custom-resource-external-id-test/AssetParameters/9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125/S3Bucket": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "AssetParameters2a7dce285d9e8889d82d23f62c85baa7de5d0861151a9e01d0e58855559b38c1S3Bucket3B180569"
+      "data": "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125S3Bucket3A1A78D2"
     },
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new FileAssetParameters (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/asset-parameters.js:15:36)",
-        "LegacyStackSynthesizer.doAddFileAsset (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:199:22)",
-        "LegacyStackSynthesizer.addFileAsset (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:85:25)",
-        "Stack.addFileAsset (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:834:37)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:90: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:90:5)",
-        "withoutDeprecationWarnings (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:237:16)",
-        "LegacyStackSynthesizer.addFileAsset (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:90:20)",
-        "new Asset (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3-assets/lib/asset.js:104:44)",
-        "AssetCode.bind (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/code.js:392:26)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:632:37)"
+        "new FileAssetParameters (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/asset-parameters.js:15:36)",
+        "LegacyStackSynthesizer.doAddFileAsset (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:240:22)",
+        "LegacyStackSynthesizer.addFileAsset (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:126:25)",
+        "Stack.addFileAsset (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:875:37)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:131: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:131:5)",
+        "withoutDeprecationWarnings (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:278:16)",
+        "LegacyStackSynthesizer.addFileAsset (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:131:20)",
+        "new Asset (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-assets/lib/asset.js:145:44)",
+        "AssetCode.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/code.js:433:26)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:673:37)"
       ]
     }
   ],
-  "/aws-custom-resource-external-id-test/AssetParameters/2a7dce285d9e8889d82d23f62c85baa7de5d0861151a9e01d0e58855559b38c1/S3VersionKey": [
+  "/aws-custom-resource-external-id-test/AssetParameters/9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125/S3VersionKey": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "AssetParameters2a7dce285d9e8889d82d23f62c85baa7de5d0861151a9e01d0e58855559b38c1S3VersionKey80B4D97A"
+      "data": "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125S3VersionKey6FACC166"
     },
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new FileAssetParameters (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/asset-parameters.js:19:35)",
-        "LegacyStackSynthesizer.doAddFileAsset (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:199:22)",
-        "LegacyStackSynthesizer.addFileAsset (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:85:25)",
-        "Stack.addFileAsset (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:834:37)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:90: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:90:5)",
-        "withoutDeprecationWarnings (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:237:16)",
-        "LegacyStackSynthesizer.addFileAsset (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:90:20)",
-        "new Asset (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3-assets/lib/asset.js:104:44)",
-        "AssetCode.bind (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/code.js:392:26)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:632:37)"
+        "new FileAssetParameters (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/asset-parameters.js:19:35)",
+        "LegacyStackSynthesizer.doAddFileAsset (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:240:22)",
+        "LegacyStackSynthesizer.addFileAsset (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:126:25)",
+        "Stack.addFileAsset (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:875:37)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:131: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:131:5)",
+        "withoutDeprecationWarnings (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:278:16)",
+        "LegacyStackSynthesizer.addFileAsset (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:131:20)",
+        "new Asset (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-assets/lib/asset.js:145:44)",
+        "AssetCode.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/code.js:433:26)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:673:37)"
       ]
     }
   ],
-  "/aws-custom-resource-external-id-test/AssetParameters/2a7dce285d9e8889d82d23f62c85baa7de5d0861151a9e01d0e58855559b38c1/ArtifactHash": [
+  "/aws-custom-resource-external-id-test/AssetParameters/9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125/ArtifactHash": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "AssetParameters2a7dce285d9e8889d82d23f62c85baa7de5d0861151a9e01d0e58855559b38c1ArtifactHashC3BC40C2"
+      "data": "AssetParameters9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125ArtifactHash4C4494A5"
     },
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new FileAssetParameters (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/asset-parameters.js:23:38)",
-        "LegacyStackSynthesizer.doAddFileAsset (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:199:22)",
-        "LegacyStackSynthesizer.addFileAsset (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:85:25)",
-        "Stack.addFileAsset (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:834:37)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:90: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:90:5)",
-        "withoutDeprecationWarnings (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:237:16)",
-        "LegacyStackSynthesizer.addFileAsset (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:90:20)",
-        "new Asset (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3-assets/lib/asset.js:104:44)",
-        "AssetCode.bind (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/code.js:392:26)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:632:37)"
+        "new FileAssetParameters (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/asset-parameters.js:23:38)",
+        "LegacyStackSynthesizer.doAddFileAsset (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:240:22)",
+        "LegacyStackSynthesizer.addFileAsset (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:126:25)",
+        "Stack.addFileAsset (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:875:37)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:131: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:131:5)",
+        "withoutDeprecationWarnings (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:278:16)",
+        "LegacyStackSynthesizer.addFileAsset (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/legacy.js:131:20)",
+        "new Asset (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-assets/lib/asset.js:145:44)",
+        "AssetCode.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/code.js:433:26)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:673:37)"
       ]
     }
   ]

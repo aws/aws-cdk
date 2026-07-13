@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallGluegetJob6b166eaabdaab4362694e965eee1555d": {
+  "AwsApiCallGluegetJobea6ea7cf268d52d579aeb4fbf49ea890": {
    "Type": "Custom::DeployAssert@SdkCallGluegetJob",
    "Properties": {
     "ServiceToken": {
@@ -11,12 +11,12 @@
     },
     "service": "Glue",
     "api": "getJob",
-    "expected": "{\"$ObjectLike\":{\"Job\":{\"DefaultArguments\":{\"--enable-observability-metrics\":\"true\"}}}}",
+    "expected": "{\"$ObjectLike\":{\"Job\":{\"DefaultArguments\":{\"name\":\"not\",\"pattern\":{\"name\":\"objectLike\",\"pattern\":{\"--enable-observability-metrics\":{\"name\":\"anyValue\"}},\"partial\":true}}}}}",
     "parameters": {
-     "JobName": "\"PySparkETLJobSelectiveMetrics\""
+     "JobName": "\"PySparkETLJobNoMetrics\""
     },
     "flattenResponse": "false",
-    "salt": "1780563044603"
+    "salt": "1780997762668"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -55,6 +55,15 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "glue:GetJob"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -65,7 +74,7 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
@@ -85,9 +94,38 @@
      "ApplicationLogLevel": "FATAL"
     }
    }
+  },
+  "AwsApiCallGluegetJob6b166eaabdaab4362694e965eee1555d": {
+   "Type": "Custom::DeployAssert@SdkCallGluegetJob",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Glue",
+    "api": "getJob",
+    "expected": "{\"$ObjectLike\":{\"Job\":{\"DefaultArguments\":{\"name\":\"objectLike\",\"pattern\":{\"--enable-observability-metrics\":\"true\"},\"partial\":true}}}}",
+    "parameters": {
+     "JobName": "\"PySparkETLJobSelectiveMetrics\""
+    },
+    "flattenResponse": "false",
+    "salt": "1780997762672"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
+  "AssertionResultsAwsApiCallGluegetJobea6ea7cf268d52d579aeb4fbf49ea890": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallGluegetJobea6ea7cf268d52d579aeb4fbf49ea890",
+     "assertion"
+    ]
+   }
+  },
   "AssertionResultsAwsApiCallGluegetJob6b166eaabdaab4362694e965eee1555d": {
    "Value": {
     "Fn::GetAtt": [

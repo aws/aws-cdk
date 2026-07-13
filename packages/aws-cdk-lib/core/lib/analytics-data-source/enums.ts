@@ -588,15 +588,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "AMPLIFY_MANAGED",
     "AMPLIFY_MANAGED_NO_COOKIES"
   ],
-  "CacheEngine": [
-    "valkey",
-    "valkey_7",
-    "valkey_8",
-    "redis",
-    "redis_7",
-    "memcached",
-    "memcached_1.6"
-  ],
   "Capability": [
     "ALL",
     "AUDIT_CONTROL",
@@ -1143,7 +1134,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "nodejs16.x",
     "nodejs18.x",
     "nodejs20.x",
-    "nodejs22.x"
+    "nodejs22.x",
+    "nodejs24.x"
   ],
   "CustomThreatProtectionMode": [
     "ENFORCED",
@@ -2251,6 +2243,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "g6",
     "graphics6-efficient",
     "g6e",
+    "graphics7-efficient",
+    "g7e",
     "graphics-ram-6",
     "gr6",
     "parallel2",
@@ -3563,6 +3557,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     0,
     1
   ],
+  "ReferenceStrength": [
+    "strong",
+    "weak",
+    "both"
+  ],
   "RegistryType": [
     "private",
     "public"
@@ -4519,10 +4518,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "UsagePlanKeyType": [
     "API_KEY"
-  ],
-  "UserEngine": [
-    "valkey",
-    "redis"
   ],
   "UserPoolDefaultAction": [
     "ALLOW",

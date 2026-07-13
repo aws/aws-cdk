@@ -1,13 +1,4 @@
 {
-  "/aws-cdk-glue": [
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.partition-index.js:9:15)",
-        "...node internals..."
-      ]
-    }
-  ],
   "/aws-cdk-glue/DataBucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -58,88 +49,30 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
-        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
-        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
-        "synthesizeTree (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
-        "synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
-        "App.synth (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "App.synth (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
-      ]
     }
   ],
   "/aws-cdk-glue/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
-        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
-        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
-        "synthesizeTree (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
-        "synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
-        "App.synth (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "App.synth (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
-      ]
     }
   ],
   "/aws-cdk-glue/DataBucket/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "DataBucketE3889A50"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
-        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.partition-index.js:10:16)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-glue/MyDatabase/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "MyDatabase1E2517DB"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Database (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/database.js:129:29)",
-        "new Database (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.partition-index.js:11:18)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-glue/CSVTable/Table": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CSVTableE499CABA"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:155:29)",
-        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.partition-index.js:31:18)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-glue/CSVTable/partition-index-index1": [
@@ -214,21 +147,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "GluePartitionIndexHandler80355590"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.getOrCreatePartitionIndexProvider (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:176:25)",
-        "WrappedClass.addPartitionIndex (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:137:63)",
-        "/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195: (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:6)",
-        "Array.forEach (:)",
-        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:39)",
-        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.partition-index.js:31:18)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-glue/GluePartitionIndexHandler/LogGroup": [
@@ -299,21 +217,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "GluePartitionIndexIsComplete6C5D3B60"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.getOrCreatePartitionIndexProvider (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:184:35)",
-        "WrappedClass.addPartitionIndex (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:137:63)",
-        "/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195: (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:6)",
-        "Array.forEach (:)",
-        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:39)",
-        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.partition-index.js:31:18)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-glue/GluePartitionIndexIsComplete/LogGroup": [
@@ -454,15 +357,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "JSONTable00348F1D"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:155:29)",
-        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.partition-index.js:47:19)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-glue/JSONTable/partition-index-year-month-awscdkglueJSONTable937C116B": [
@@ -475,59 +369,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CSVTablepartitionindexindex1295EC599"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "WrappedClass.addPartitionIndex (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:146:46)",
-        "/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195: (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:6)",
-        "Array.forEach (:)",
-        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:39)",
-        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.partition-index.js:31:18)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-glue/CSVTable/partition-index-index2/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CSVTablepartitionindexindex256C55CE5"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "WrappedClass.addPartitionIndex (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:146:46)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.partition-index.js:43:10)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-glue/GluePartitionIndexHandler/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "GluePartitionIndexHandlerServiceRole55440DC9"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.getOrCreatePartitionIndexProvider (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:176:25)",
-        "WrappedClass.addPartitionIndex (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:137:63)",
-        "/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195: (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:6)",
-        "Array.forEach (:)",
-        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:39)",
-        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
-      ]
     }
   ],
   "/aws-cdk-glue/GluePartitionIndexHandler/ServiceRole/DefaultPolicy": [
@@ -586,42 +439,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "GluePartitionIndexHandlerLogGroupB29518FE"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new LogGroup (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
-        "new LogGroup (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:773:34)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.getOrCreatePartitionIndexProvider (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:176:25)",
-        "WrappedClass.addPartitionIndex (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:137:63)",
-        "/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195: (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:6)",
-        "Array.forEach (:)",
-        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:39)",
-        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
-      ]
     }
   ],
   "/aws-cdk-glue/GluePartitionIndexIsComplete/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "GluePartitionIndexIsCompleteServiceRole85B4CA5D"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.getOrCreatePartitionIndexProvider (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:184:35)",
-        "WrappedClass.addPartitionIndex (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:137:63)",
-        "/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195: (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:6)",
-        "Array.forEach (:)",
-        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:39)",
-        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
-      ]
     }
   ],
   "/aws-cdk-glue/GluePartitionIndexIsComplete/ServiceRole/DefaultPolicy": [
@@ -680,21 +503,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "GluePartitionIndexIsCompleteLogGroup445A89F3"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new LogGroup (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
-        "new LogGroup (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:773:34)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.getOrCreatePartitionIndexProvider (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:184:35)",
-        "WrappedClass.addPartitionIndex (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:137:63)",
-        "/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195: (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:6)",
-        "Array.forEach (:)",
-        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:39)",
-        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
-      ]
     }
   ],
   "/aws-cdk-glue/GluePartitionIndexProvider/framework-onEvent/ServiceRole": [
@@ -773,21 +581,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "GluePartitionIndexProviderframeworkonEvent1E276D27"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.getOrCreatePartitionIndexProvider (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:192:26)",
-        "WrappedClass.addPartitionIndex (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:137:63)",
-        "/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195: (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:6)",
-        "Array.forEach (:)",
-        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:39)"
-      ]
     }
   ],
   "/aws-cdk-glue/GluePartitionIndexProvider/framework-onEvent/LogGroup": [
@@ -866,21 +659,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "GluePartitionIndexProviderframeworkisComplete6D7C2A0A"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:150:49)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.getOrCreatePartitionIndexProvider (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:192:26)",
-        "WrappedClass.addPartitionIndex (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:137:63)",
-        "/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195: (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:6)",
-        "Array.forEach (:)",
-        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:39)"
-      ]
     }
   ],
   "/aws-cdk-glue/GluePartitionIndexProvider/framework-isComplete/LogGroup": [
@@ -959,21 +737,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "GluePartitionIndexProviderframeworkonTimeout2F0DB5AC"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:151:46)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.getOrCreatePartitionIndexProvider (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:192:26)",
-        "WrappedClass.addPartitionIndex (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:137:63)",
-        "/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195: (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:6)",
-        "Array.forEach (:)",
-        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:39)"
-      ]
     }
   ],
   "/aws-cdk-glue/GluePartitionIndexProvider/framework-onTimeout/LogGroup": [
@@ -1031,101 +794,30 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "GluePartitionIndexProviderwaiterstatemachine2737456E"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new WaiterStateMachine (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/waiter-state-machine.js:133:30)",
-        "new WaiterStateMachine (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:153:44)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.getOrCreatePartitionIndexProvider (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:192:26)",
-        "WrappedClass.addPartitionIndex (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:137:63)",
-        "/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195: (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:6)",
-        "Array.forEach (:)",
-        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:39)",
-        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
-      ]
     }
   ],
   "/aws-cdk-glue/JSONTable/partition-index-year-month-awscdkglueJSONTable937C116B/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "JSONTablepartitionindexyearmonthawscdkglueJSONTable937C116B26F5733E"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "WrappedClass.addPartitionIndex (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:146:46)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.partition-index.js:55:11)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-glue/GluePartitionIndexHandler/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "GluePartitionIndexHandlerServiceRoleDefaultPolicyDAAD4C7E"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
-        "WrappedClass.<anonymous> (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "WrappedClass.addToRolePolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:213:23)",
-        "WrappedClass.addPartitionIndex (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:144:17)",
-        "/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195: (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:6)",
-        "Array.forEach (:)",
-        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:39)"
-      ]
     }
   ],
   "/aws-cdk-glue/GluePartitionIndexIsComplete/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "GluePartitionIndexIsCompleteServiceRoleDefaultPolicyA82EED66"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
-        "WrappedClass.<anonymous> (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "WrappedClass.addToRolePolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:213:23)",
-        "WrappedClass.addPartitionIndex (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:145:27)",
-        "/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195: (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:6)",
-        "Array.forEach (:)",
-        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:39)"
-      ]
     }
   ],
   "/aws-cdk-glue/GluePartitionIndexProvider/framework-onEvent/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "GluePartitionIndexProviderframeworkonEventServiceRoleF32A273B"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.getOrCreatePartitionIndexProvider (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:192:26)",
-        "WrappedClass.addPartitionIndex (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:137:63)",
-        "/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195: (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:6)"
-      ]
     }
   ],
   "/aws-cdk-glue/GluePartitionIndexProvider/framework-onEvent/ServiceRole/DefaultPolicy": [
@@ -1200,42 +892,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "GluePartitionIndexProviderframeworkonEventLogGroupFEC00451"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new LogGroup (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
-        "new LogGroup (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:773:34)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.getOrCreatePartitionIndexProvider (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:192:26)",
-        "WrappedClass.addPartitionIndex (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:137:63)",
-        "/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195: (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:6)"
-      ]
     }
   ],
   "/aws-cdk-glue/GluePartitionIndexProvider/framework-isComplete/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "GluePartitionIndexProviderframeworkisCompleteServiceRole00825DDB"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:150:49)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.getOrCreatePartitionIndexProvider (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:192:26)",
-        "WrappedClass.addPartitionIndex (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:137:63)",
-        "/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195: (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:6)"
-      ]
     }
   ],
   "/aws-cdk-glue/GluePartitionIndexProvider/framework-isComplete/ServiceRole/DefaultPolicy": [
@@ -1302,42 +964,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "GluePartitionIndexProviderframeworkisCompleteLogGroup4259B2A0"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new LogGroup (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
-        "new LogGroup (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:773:34)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:150:49)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.getOrCreatePartitionIndexProvider (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:192:26)",
-        "WrappedClass.addPartitionIndex (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:137:63)",
-        "/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195: (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:6)"
-      ]
     }
   ],
   "/aws-cdk-glue/GluePartitionIndexProvider/framework-onTimeout/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "GluePartitionIndexProviderframeworkonTimeoutServiceRole0F3C08AE"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:151:46)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.getOrCreatePartitionIndexProvider (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:192:26)",
-        "WrappedClass.addPartitionIndex (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:137:63)",
-        "/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195: (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:6)"
-      ]
     }
   ],
   "/aws-cdk-glue/GluePartitionIndexProvider/framework-onTimeout/ServiceRole/DefaultPolicy": [
@@ -1404,42 +1036,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "GluePartitionIndexProviderframeworkonTimeoutLogGroup4F2EECC6"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new LogGroup (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
-        "new LogGroup (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:773:34)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:151:46)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.getOrCreatePartitionIndexProvider (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:192:26)",
-        "WrappedClass.addPartitionIndex (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:137:63)",
-        "/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195: (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:6)"
-      ]
     }
   ],
   "/aws-cdk-glue/GluePartitionIndexProvider/waiter-state-machine/Role/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "GluePartitionIndexProviderwaiterstatemachineRole6A1A51C3"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new WaiterStateMachine (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/waiter-state-machine.js:102:26)",
-        "new WaiterStateMachine (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:153:44)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.getOrCreatePartitionIndexProvider (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:192:26)",
-        "WrappedClass.addPartitionIndex (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/table-base.js:137:63)",
-        "/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195: (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:195:6)",
-        "Array.forEach (:)"
-      ]
     }
   ],
   "/aws-cdk-glue/GluePartitionIndexProvider/waiter-state-machine/Role/DefaultPolicy": [
@@ -1484,84 +1086,24 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "GluePartitionIndexProviderframeworkonEventServiceRoleDefaultPolicyB7D483A9"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
-        "WrappedClass.<anonymous> (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "Grant.addToPrincipal (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
-        "Grant.addToPrincipalOrResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
-        "WrappedClass.grant (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:483:35)",
-        "WrappedClass.grantInvoke (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:287:26)",
-        "WrappedClass.addPermissions (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:179:38)"
-      ]
     }
   ],
   "/aws-cdk-glue/GluePartitionIndexProvider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "GluePartitionIndexProviderframeworkisCompleteServiceRoleDefaultPolicy0726692A"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
-        "WrappedClass.<anonymous> (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "Grant.addToPrincipal (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
-        "Grant.addToPrincipalOrResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
-        "WrappedClass.grant (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:483:35)",
-        "WrappedClass.grantInvoke (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:287:26)",
-        "WrappedClass.addPermissions (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:179:38)"
-      ]
     }
   ],
   "/aws-cdk-glue/GluePartitionIndexProvider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "GluePartitionIndexProviderframeworkonTimeoutServiceRoleDefaultPolicy322FC284"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
-        "WrappedClass.<anonymous> (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "Grant.addToPrincipal (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
-        "Grant.addToPrincipalOrResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
-        "WrappedClass.grant (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:483:35)",
-        "WrappedClass.grantInvoke (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:287:26)",
-        "WrappedClass.addPermissions (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:179:38)"
-      ]
     }
   ],
   "/aws-cdk-glue/GluePartitionIndexProvider/waiter-state-machine/Role/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "GluePartitionIndexProviderwaiterstatemachineRoleDefaultPolicy05E35202"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
-        "WrappedClass.<anonymous> (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "Grant.addToPrincipal (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
-        "Grant.addToPrincipalOrResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
-        "WrappedClass.grant (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:483:35)",
-        "WrappedClass.grantInvoke (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:287:26)",
-        "new WaiterStateMachine (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/waiter-state-machine.js:105:37)"
-      ]
     }
   ]
 }

@@ -124,7 +124,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -199,7 +199,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "15cfa3d121e93480bdbdc93cbd66a8e2423fdb099acdb8bf6b781bdbd2cc0d13.zip"
+     "S3Key": "0d190ab3a7eebcba7b48fb964ad675ae643ba49e6d24f4f2682609c53215f210.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -210,7 +210,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "CustomS3PutObjectsCustomResourceProviderRole40D98C91"
@@ -416,7 +416,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "2a7dce285d9e8889d82d23f62c85baa7de5d0861151a9e01d0e58855559b38c1.zip"
+     "S3Key": "9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -425,7 +425,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Timeout": 120
    },
    "DependsOn": [
