@@ -89,6 +89,7 @@
     "@aws-sdk/client-glue": "3.632.0",
     "@types/jest": "^29.5.14",
     "aws-cdk-lib": "0.0.0",
+    "aws-sdk-client-mock": "4.1.0",
     "constructs": "^10.5.0",
     "jest": "^29.7.0"
   },
@@ -113,6 +114,5 @@
       "naming/package-matches-directory",
       "assert/assert-dependency"
     ]
-  },
-  "dependencies": {}
+  }
 }

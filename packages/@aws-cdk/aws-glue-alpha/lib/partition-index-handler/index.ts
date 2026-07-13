@@ -41,9 +41,13 @@ export async function onEvent(event: any) {
     }
     return { PhysicalResourceId: IndexName };
   } else if (event.RequestType === 'Update') {
+    // The service API offers no update operation on partition indexes,
+    // so here we either throw an error or do nothing, depending on
+    // whether there was any change in resource properties.
+
     const oldKeys = event.OldResourceProperties?.Keys;
     if (JSON.stringify(oldKeys) !== JSON.stringify(Keys)) {
-    // For auto-generated index names, this should be unreachable. CDK derives index names from keys, so key changes always produce a new resource
+      // For auto-generated index names, this should be unreachable. CDK derives index names from keys, so key changes always produce a new resource
       throw new PartitionIndexError('Partition index keys cannot be updated. Delete and recreate the index instead.');
     }
     return { PhysicalResourceId: IndexName };
