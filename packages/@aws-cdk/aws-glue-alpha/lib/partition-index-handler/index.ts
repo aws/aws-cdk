@@ -72,7 +72,7 @@ export async function isComplete(event: any) {
 
   if (event.RequestType === 'Delete') {
     const index = await findPartitionIndex(DatabaseName, TableName, IndexName);
-    if (!index || index.IndexStatus !== 'DELETING') {
+    if (!index) {
       return { IsComplete: true };
     }
     return { IsComplete: false };
