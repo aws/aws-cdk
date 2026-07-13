@@ -1444,6 +1444,12 @@
       "VPC_LINK"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/integrations/alb.ts": {
+    "AlbIntegrationProtocol": [
+      "http",
+      "https"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/json-schema.ts": {
     "JsonSchemaVersion": [
       "http://json-schema.org/draft-04/schema#",

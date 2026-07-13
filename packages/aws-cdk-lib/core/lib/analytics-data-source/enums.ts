@@ -189,6 +189,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "stateUpdatedTimestamp",
     "timestamp"
   ],
+  "AlbIntegrationProtocol": [
+    "http",
+    "https"
+  ],
   "AlbScheme": [
     "internal",
     "internet-facing"

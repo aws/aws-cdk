@@ -1091,7 +1091,8 @@
       "ALL_VIEWER",
       "ELEMENTAL_MEDIA_TAILOR",
       "ALL_VIEWER_AND_CLOUDFRONT_2022",
-      "ALL_VIEWER_EXCEPT_HOST_HEADER"
+      "ALL_VIEWER_EXCEPT_HOST_HEADER",
+      "HOST_HEADER_ONLY"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/response-headers-policy.ts": {

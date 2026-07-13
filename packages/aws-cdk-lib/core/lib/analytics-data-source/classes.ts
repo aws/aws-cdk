@@ -5923,6 +5923,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'vpcLink': {
           'vpcLinkId': '*'
         },
+        'vpcLinkV2': '*',
+        'integrationTarget': '*',
         'responseTransferMode': 'ResponseTransferMode'
       },
       'proxy': 'boolean',
