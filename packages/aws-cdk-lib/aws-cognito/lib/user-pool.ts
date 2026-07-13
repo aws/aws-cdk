@@ -681,6 +681,18 @@ export enum CustomThreatProtectionMode {
 }
 
 /**
+ * The issuer type for the token issuer URL of the user pool.
+ *
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-sign-in-user-pool-issuer.html
+ */
+export enum UserPoolIssuerType {
+  /** Uses the traditional region-specific issuer URL format */
+  ORIGINAL = 'ORIGINAL',
+  /** Uses a multi-Region issuer URL that serves identical JWKS content across regions */
+  UPDATED = 'UPDATED',
+}
+
+/**
  * Props for the UserPool construct
  */
 export interface UserPoolProps {
@@ -952,6 +964,17 @@ export interface UserPoolProps {
    * @default - no value
    */
   readonly customThreatProtectionMode?: CustomThreatProtectionMode;
+
+  /**
+   * The issuer type for the token issuer URL of the user pool.
+   *
+   * When set to `UPDATED`, the user pool uses a multi-Region issuer URL that serves identical
+   * JWKS content across regions for improved resilience and efficiency.
+   *
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-sign-in-user-pool-issuer.html
+   * @default - no issuer configuration is set (service default behavior)
+   */
+  readonly issuerType?: UserPoolIssuerType;
 }
 
 /**
@@ -1293,6 +1316,12 @@ export class UserPool extends UserPoolBase {
       userPoolTier: props.featurePlan,
       deletionProtection: defaultDeletionProtection(props.deletionProtection),
     });
+    if (props.issuerType !== undefined) {
+      userPool.addPropertyOverride('IssuerConfiguration', {
+        Type: props.issuerType,
+      });
+    }
+
     userPool.applyRemovalPolicy(props.removalPolicy);
 
     this.userPoolId = userPool.ref;

@@ -4,8 +4,9 @@ import { Match, Template } from '../../assertions';
 import { Role, ServicePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
-import { CfnParameter, Duration, Stack, Tags } from '../../core';
-import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail, AdvancedSecurityMode, LambdaVersion, FeaturePlan, PasskeyUserVerification, StandardThreatProtectionMode, CustomThreatProtectionMode } from '../lib';
+import * as cdk from '../../core';
+import { CfnParameter, Duration, Stack, Tags, Validations } from '../../core';
+import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail, AdvancedSecurityMode, LambdaVersion, FeaturePlan, PasskeyUserVerification, StandardThreatProtectionMode, CustomThreatProtectionMode, UserPoolIssuerType } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -2700,6 +2701,54 @@ describe('email MFA test', () => {
           passwordHistorySize,
         },
       })).toThrow(`\`passwordHistorySize\` must be between 0 and 24 (received: ${passwordHistorySize}).`);
+    });
+  });
+});
+
+describe('issuerType', () => {
+  test('issuerType is configured as ORIGINAL', () => {
+    const app = new cdk.App();
+    Validations.of(app).acknowledge(
+      { id: 'CloudFormation-Validate::F3002', reason: 'IssuerConfiguration is not yet in the local CFN spec' },
+    );
+    const stack = new Stack(app, 'TestStack');
+
+    new UserPool(stack, 'Pool', {
+      issuerType: UserPoolIssuerType.ORIGINAL,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      IssuerConfiguration: {
+        Type: 'ORIGINAL',
+      },
+    });
+  });
+
+  test('issuerType is configured as UPDATED', () => {
+    const app = new cdk.App();
+    Validations.of(app).acknowledge(
+      { id: 'CloudFormation-Validate::F3002', reason: 'IssuerConfiguration is not yet in the local CFN spec' },
+    );
+    const stack = new Stack(app, 'TestStack');
+
+    new UserPool(stack, 'Pool', {
+      issuerType: UserPoolIssuerType.UPDATED,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      IssuerConfiguration: {
+        Type: 'UPDATED',
+      },
+    });
+  });
+
+  test('issuerType is not present if option is not provided', () => {
+    const stack = new Stack();
+
+    new UserPool(stack, 'Pool');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      IssuerConfiguration: Match.absent(),
     });
   });
 });
