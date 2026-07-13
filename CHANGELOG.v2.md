@@ -21,13 +21,8 @@ All notable changes to this project will be documented in this file. See [standa
 * **backup:** lifecycle and vault lock validations reject tokenized durations ([#38264](https://github.com/aws/aws-cdk/issues/38264)) ([0ff20a3](https://github.com/aws/aws-cdk/commit/0ff20a3ae85f7412afe522f8917cf728547b137f)), closes [#38263](https://github.com/aws/aws-cdk/issues/38263) [#38246](https://github.com/aws/aws-cdk/issues/38246) [#37751](https://github.com/aws/aws-cdk/issues/37751) [#25943](https://github.com/aws/aws-cdk/issues/25943) [#38246](https://github.com/aws/aws-cdk/issues/38246) [#37751](https://github.com/aws/aws-cdk/issues/37751) [#25943](https://github.com/aws/aws-cdk/issues/25943)
 * **certificatemanager:** use hasOwnProperty in apexDomain to prevent prototype collision ([#37195](https://github.com/aws/aws-cdk/issues/37195)) ([ec38947](https://github.com/aws/aws-cdk/commit/ec3894712e06fddc05936d5911333695498b78f3)), closes [#37193](https://github.com/aws/aws-cdk/issues/37193)
 * **elasticloadbalancingv2:** improve handling for `dropInvalidHeaderFields` in case of default or switching from true to false ([#36483](https://github.com/aws/aws-cdk/issues/36483)) ([208b9db](https://github.com/aws/aws-cdk/commit/208b9db31ad3728b4898be12887e7310dbea2c0e)), closes [#36409](https://github.com/aws/aws-cdk/issues/36409)
-* **lambda:** allow SnapStart for container image functions ([#38265](https://github.com/aws/aws-cdk/issues/38265)) ([586dc4f](https://github.com/aws/aws-cdk/commit/586dc4f8488450e80bb849a0537adf552b3f6208)), closes [#30898](https://github.com/aws/aws-cdk/issues/30898)
 * **lambda:** validations reject tokenized provisioned concurrency and async invoke config values ([#38246](https://github.com/aws/aws-cdk/issues/38246)) ([4aa7e78](https://github.com/aws/aws-cdk/commit/4aa7e787560e57cf80b9412bc55a27492319e5ef)), closes [#38245](https://github.com/aws/aws-cdk/issues/38245) [#37197](https://github.com/aws/aws-cdk/issues/37197) [#36275](https://github.com/aws/aws-cdk/issues/36275) [#37197](https://github.com/aws/aws-cdk/issues/37197)
 
-
-### Reverts
-
-* **lambda:** revert SnapStart for container image functions ([#38265](https://github.com/aws/aws-cdk/issues/38265)) ([#38281](https://github.com/aws/aws-cdk/issues/38281)) ([3b92863](https://github.com/aws/aws-cdk/commit/3b928637f11f61cb8dd49a341222cd6df653d1b3))
 
 ## [2.261.0](https://github.com/aws/aws-cdk/compare/v2.260.0...v2.261.0) (2026-07-02)
 
