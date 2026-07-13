@@ -181,7 +181,6 @@
        "Action": [
         "glue:CreatePartitionIndex",
         "glue:DeletePartitionIndex",
-        "glue:GetPartitionIndexes",
         "glue:GetTable",
         "glue:UpdateTable"
        ],
@@ -304,7 +303,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "65be1017cb4d61876eef2315bb94d95f2d756212edef6031bb6c9e292b847dcf.zip"
+     "S3Key": "48250813838ab0be0ab64e344398a5ef20ad00eb8409c769066b55f87db21299.zip"
     },
     "Handler": "index.onEvent",
     "Role": {
@@ -378,11 +377,8 @@
      "Statement": [
       {
        "Action": [
-        "glue:CreatePartitionIndex",
-        "glue:DeletePartitionIndex",
         "glue:GetPartitionIndexes",
-        "glue:GetTable",
-        "glue:UpdateTable"
+        "glue:GetTable"
        ],
        "Effect": "Allow",
        "Resource": [
@@ -503,7 +499,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "65be1017cb4d61876eef2315bb94d95f2d756212edef6031bb6c9e292b847dcf.zip"
+     "S3Key": "48250813838ab0be0ab64e344398a5ef20ad00eb8409c769066b55f87db21299.zip"
     },
     "Handler": "index.isComplete",
     "Role": {

@@ -10,15 +10,35 @@ class PartitionIndexError extends Error {
 
 const glue = new GlueClient({});
 
+async function findPartitionIndex(DatabaseName: string, TableName: string, IndexName: string) {
+  const resp = await glue.send(new GetPartitionIndexesCommand({ DatabaseName, TableName }));
+  // Glue lowercases index names, so compare case-insensitively
+  return (resp.PartitionIndexDescriptorList || []).find(
+    (i) => i.IndexName!.toLowerCase() === IndexName.toLowerCase(),
+  );
+}
+
 export async function onEvent(event: any) {
   const { DatabaseName, TableName, IndexName, Keys } = event.ResourceProperties;
 
   if (event.RequestType === 'Create') {
-    await glue.send(new CreatePartitionIndexCommand({
-      DatabaseName,
-      TableName,
-      PartitionIndex: { IndexName, Keys },
-    }));
+    try {
+      await glue.send(new CreatePartitionIndexCommand({
+        DatabaseName,
+        TableName,
+        PartitionIndex: { IndexName, Keys },
+      }));
+    } catch (e: any) {
+      // The index may already exist if it was created out-of-band or by a previous
+      // resource being replaced (CloudFormation creates the replacement before deleting
+      // the old resource). Treat this as success and let isComplete verify its state.
+      if (e.name === 'AlreadyExistsException') {
+        // eslint-disable-next-line no-console
+        console.log(`Partition index ${IndexName} already exists on ${DatabaseName}.${TableName} - reusing existing index`);
+      } else {
+        throw e;
+      }
+    }
     return { PhysicalResourceId: IndexName };
   } else if (event.RequestType === 'Update') {
     const oldKeys = event.OldResourceProperties?.Keys;
@@ -51,21 +71,14 @@ export async function isComplete(event: any) {
   const { DatabaseName, TableName, IndexName } = event.ResourceProperties;
 
   if (event.RequestType === 'Delete') {
-    const resp = await glue.send(new GetPartitionIndexesCommand({ DatabaseName, TableName }));
-    const index = (resp.PartitionIndexDescriptorList || []).find(
-      (i) => i.IndexName!.toLowerCase() === IndexName.toLowerCase(),
-    );
+    const index = await findPartitionIndex(DatabaseName, TableName, IndexName);
     if (!index || index.IndexStatus !== 'DELETING') {
       return { IsComplete: true };
     }
     return { IsComplete: false };
   }
 
-  const resp = await glue.send(new GetPartitionIndexesCommand({ DatabaseName, TableName }));
-  // Glue lowercases index names, so compare case-insensitively
-  const index = (resp.PartitionIndexDescriptorList || []).find(
-    (i) => i.IndexName!.toLowerCase() === IndexName.toLowerCase(),
-  );
+  const index = await findPartitionIndex(DatabaseName, TableName, IndexName);
 
   if (!index) return { IsComplete: false };
   if (index.IndexStatus === 'ACTIVE') return { IsComplete: true };

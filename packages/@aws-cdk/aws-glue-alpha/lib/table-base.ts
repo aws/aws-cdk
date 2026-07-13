@@ -303,12 +303,19 @@ export abstract class TableBase extends Resource implements ITable {
 
     // Add scoped permissions for this table's Glue resources
     // https://docs.aws.amazon.com/service-authorization/latest/reference/list_awsglue.html
-    const tablePolicy = new iam.PolicyStatement({
-      actions: ['glue:CreatePartitionIndex', 'glue:DeletePartitionIndex', 'glue:GetPartitionIndexes', 'glue:GetTable', 'glue:UpdateTable'],
-      resources: [this.tableArn, this.database.databaseArn, this.database.catalogArn],
-    });
-    handler.addToRolePolicy(tablePolicy);
-    isCompleteHandler.addToRolePolicy(tablePolicy);
+    const resources = [this.tableArn, this.database.databaseArn, this.database.catalogArn];
+
+    // onEvent creates and deletes indexes; UpdateTable/GetTable are required by those APIs.
+    handler.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['glue:CreatePartitionIndex', 'glue:DeletePartitionIndex', 'glue:GetTable', 'glue:UpdateTable'],
+      resources,
+    }));
+
+    // isComplete only polls index status via GetPartitionIndexes (which requires GetTable).
+    isCompleteHandler.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['glue:GetPartitionIndexes', 'glue:GetTable'],
+      resources,
+    }));
 
     const partitionIndexCustomResource = new CustomResource(this, `partition-index-${indexName}`, {
       resourceType: 'Custom::GluePartitionIndex',
