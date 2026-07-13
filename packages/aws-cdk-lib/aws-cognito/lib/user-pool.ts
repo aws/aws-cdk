@@ -1315,13 +1315,8 @@ export class UserPool extends UserPoolBase {
       userAttributeUpdateSettings: this.configureUserAttributeChanges(props),
       userPoolTier: props.featurePlan,
       deletionProtection: defaultDeletionProtection(props.deletionProtection),
+      issuerConfiguration: props.issuerType !== undefined ? { type: props.issuerType } : undefined,
     });
-    if (props.issuerType !== undefined) {
-      userPool.addPropertyOverride('IssuerConfiguration', {
-        Type: props.issuerType,
-      });
-    }
-
     userPool.applyRemovalPolicy(props.removalPolicy);
 
     this.userPoolId = userPool.ref;

@@ -2709,7 +2709,7 @@ describe('issuerType', () => {
   test('issuerType is configured as ORIGINAL', () => {
     const app = new cdk.App();
     Validations.of(app).acknowledge(
-      { id: 'CloudFormation-Validate::F3002', reason: 'IssuerConfiguration is not yet in the local CFN spec' },
+      { id: 'CloudFormation-Validate::F3002', reason: 'IssuerConfiguration is not yet recognized by the local CFN validation plugin' },
     );
     const stack = new Stack(app, 'TestStack');
 
@@ -2727,7 +2727,7 @@ describe('issuerType', () => {
   test('issuerType is configured as UPDATED', () => {
     const app = new cdk.App();
     Validations.of(app).acknowledge(
-      { id: 'CloudFormation-Validate::F3002', reason: 'IssuerConfiguration is not yet in the local CFN spec' },
+      { id: 'CloudFormation-Validate::F3002', reason: 'IssuerConfiguration is not yet recognized by the local CFN validation plugin' },
     );
     const stack = new Stack(app, 'TestStack');
 
