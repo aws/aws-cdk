@@ -1,5 +1,66 @@
 {
   "version": "54.0.0",
   "title": "Validation Report",
-  "pluginReports": []
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.2.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F0001",
+          "description": "Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": ""
+            }
+          ]
+        }
+      ],
+      "suppressedViolations": [
+        {
+          "ruleName": "F3002",
+          "description": "Code.S3ObjectStorageMode: Additional properties are not allowed ('S3ObjectStorageMode' was unexpected)",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "LambdaS3ObjectStorageModeStack/Function/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "/private/tmp/aws-cdk-mainline-0193/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-s3-object-storage-mode.js.snapshot/LambdaS3ObjectStorageModeStack.template.json",
+                "logicalId": "Function76856677",
+                "propertyPaths": [
+                  "Properties.Code.S3ObjectStorageMode"
+                ]
+              }
+            },
+            {
+              "constructPath": "LambdaS3ObjectStorageModeStack/LayerVersion/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "/private/tmp/aws-cdk-mainline-0193/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-s3-object-storage-mode.js.snapshot/LambdaS3ObjectStorageModeStack.template.json",
+                "logicalId": "LayerVersion3878DA3A",
+                "propertyPaths": [
+                  "Properties.Content.S3ObjectStorageMode"
+                ]
+              }
+            }
+          ],
+          "acknowledgedId": "CloudFormation-Validate::F3002",
+          "reason": "cloudformation-validate does not recognize Content.S3ObjectStorageMode yet",
+          "acknowledgedAt": "LambdaS3ObjectStorageModeStack/LayerVersion/Resource",
+          "acknowledgedStackTrace": "Validations.recordAcknowledgment (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/core/lib/validation/validations.js:129:25)\nValidations.acknowledge (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/core/lib/validation/validations.js:122:18)\nnew LayerVersion (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/aws-lambda/lib/layers.js:179:47)\nnew LayerVersion (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)\nnew TestStack (/private/tmp/aws-cdk-mainline-0193/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-s3-object-storage-mode.js:120:9)\nObject.<anonymous> (/private/tmp/aws-cdk-mainline-0193/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-s3-object-storage-mode.js:127:17)\nModule._compile (node:internal/modules/cjs/loader:1854:14)\nObject..js (node:internal/modules/cjs/loader:1985:10)\nModule.load (node:internal/modules/cjs/loader:1577:32)\nModule._load (node:internal/modules/cjs/loader:1379:12)\nwrapModuleLoad (node:internal/modules/cjs/loader:255:19)\nModule.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\nnode:internal/main/run_main_module:33:47"
+        }
+      ]
+    }
+  ]
 }

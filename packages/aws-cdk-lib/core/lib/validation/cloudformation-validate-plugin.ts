@@ -1,5 +1,5 @@
 import { RegoEngine, TemplateFile, version } from '@aws/cloudformation-validate';
-import type { Engine, EngineConfig, RuleInfo, Severity, StandardDiagnostic } from '@aws/cloudformation-validate';
+import type { Engine, EngineConfig, RuleInfo, Severity } from '@aws/cloudformation-validate';
 import type { PolicyValidationPluginReport, PolicyViolatingResource } from './report';
 import type { IPolicyValidationPlugin, IPolicyValidationContext } from './validation';
 
@@ -117,7 +117,7 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
       });
 
       for (const diagnostic of report.diagnostics) {
-        if (IGNORE_RULES.has(diagnostic.ruleId) || isKnownValidatorLagDiagnostic(diagnostic)) {
+        if (IGNORE_RULES.has(diagnostic.ruleId)) {
           continue;
         }
 
@@ -158,15 +158,6 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
       violations,
     };
   }
-}
-
-function isKnownValidatorLagDiagnostic(diagnostic: StandardDiagnostic): boolean {
-  // The L1 model knows these properties, but cloudformation-validate 1.2.0-beta does not.
-  return diagnostic.ruleId === 'F3002'
-    && (
-      (diagnostic.resourceType === 'AWS::Lambda::Function' && diagnostic.propertyPath === 'Properties.Code.S3ObjectStorageMode')
-      || (diagnostic.resourceType === 'AWS::Lambda::LayerVersion' && diagnostic.propertyPath === 'Properties.Content.S3ObjectStorageMode')
-    );
 }
 
 function mapSeverity(severity: Severity): string {

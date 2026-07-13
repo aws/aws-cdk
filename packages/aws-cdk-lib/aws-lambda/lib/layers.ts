@@ -11,7 +11,7 @@ import {
 } from './lambda.generated';
 import { Runtime } from './runtime';
 import type { IResource, RemovalPolicy } from '../../core';
-import { Resource } from '../../core';
+import { Resource, Validations } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
@@ -236,6 +236,10 @@ export class LayerVersion extends LayerVersionBase {
       description: props.description,
       layerName: this.physicalName,
       licenseInfo: props.license,
+    });
+    Validations.of(resource).acknowledge({
+      id: 'CloudFormation-Validate::F3002',
+      reason: 'cloudformation-validate does not recognize Content.S3ObjectStorageMode yet',
     });
 
     if (props.removalPolicy) {

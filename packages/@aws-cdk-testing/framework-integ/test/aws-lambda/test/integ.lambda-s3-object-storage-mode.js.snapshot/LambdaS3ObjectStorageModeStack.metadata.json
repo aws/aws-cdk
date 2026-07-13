@@ -264,6 +264,33 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
+    },
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::F3002": "cloudformation-validate does not recognize Code.S3ObjectStorageMode yet"
+      },
+      "trace": [
+        "Validations.recordAcknowledgment (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/core/lib/validation/validations.js:129:25)",
+        "Validations.acknowledge (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/core/lib/validation/validations.js:122:18)",
+        "new Function (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/aws-lambda/lib/function.js:774:52)",
+        "new Function (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "BucketDeploymentSingletonFunction.ensureLambda (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:313:20)",
+        "new SingletonFunction (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:176:40)",
+        "new SingletonFunction (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new BucketDeploymentSingletonFunction (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated.js:42:9)",
+        "new BucketDeployment (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:196:29)",
+        "new BucketDeployment (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/private/tmp/aws-cdk-mainline-0193/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-s3-object-storage-mode.js:59:28)",
+        "Object.<anonymous> (/private/tmp/aws-cdk-mainline-0193/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-s3-object-storage-mode.js:127:17)",
+        "Module._compile (node:internal/modules/cjs/loader:1854:14)",
+        "Object..js (node:internal/modules/cjs/loader:1985:10)",
+        "Module.load (node:internal/modules/cjs/loader:1577:32)",
+        "Module._load (node:internal/modules/cjs/loader:1379:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
     }
   ],
   "/LambdaS3ObjectStorageModeStack/CodeObjectVersion/Provider": [
@@ -377,6 +404,33 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
+    },
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::F3002": "cloudformation-validate does not recognize Code.S3ObjectStorageMode yet"
+      },
+      "trace": [
+        "Validations.recordAcknowledgment (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/core/lib/validation/validations.js:129:25)",
+        "Validations.acknowledge (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/core/lib/validation/validations.js:122:18)",
+        "new Function (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/aws-lambda/lib/function.js:774:52)",
+        "new Function (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "AwsCustomResourceSingletonFunction.ensureLambda (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:313:20)",
+        "new SingletonFunction (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:176:40)",
+        "new SingletonFunction (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsCustomResourceSingletonFunction (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated.js:42:9)",
+        "new AwsCustomResource (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:304:30)",
+        "new AwsCustomResource (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/private/tmp/aws-cdk-mainline-0193/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-s3-object-storage-mode.js:93:31)",
+        "Object.<anonymous> (/private/tmp/aws-cdk-mainline-0193/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-s3-object-storage-mode.js:127:17)",
+        "Module._compile (node:internal/modules/cjs/loader:1854:14)",
+        "Object..js (node:internal/modules/cjs/loader:1985:10)",
+        "Module.load (node:internal/modules/cjs/loader:1577:32)",
+        "Module._load (node:internal/modules/cjs/loader:1379:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
     }
   ],
   "/LambdaS3ObjectStorageModeStack/Function/ServiceRole": [
@@ -399,18 +453,54 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "Function76856677"
+    },
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::F3002": "cloudformation-validate does not recognize Code.S3ObjectStorageMode yet"
+      },
+      "trace": [
+        "Validations.recordAcknowledgment (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/core/lib/validation/validations.js:129:25)",
+        "Validations.acknowledge (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/core/lib/validation/validations.js:122:18)",
+        "new Function (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/aws-lambda/lib/function.js:774:52)",
+        "new Function (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/private/tmp/aws-cdk-mainline-0193/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-s3-object-storage-mode.js:115:9)",
+        "Object.<anonymous> (/private/tmp/aws-cdk-mainline-0193/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-s3-object-storage-mode.js:127:17)",
+        "Module._compile (node:internal/modules/cjs/loader:1854:14)",
+        "Object..js (node:internal/modules/cjs/loader:1985:10)",
+        "Module.load (node:internal/modules/cjs/loader:1577:32)",
+        "Module._load (node:internal/modules/cjs/loader:1379:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
     }
   ],
   "/LambdaS3ObjectStorageModeStack/LayerVersion/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "LayerVersion3878DA3A"
-    }
-  ],
-  "/LambdaS3ObjectStorageModeStack/Exports/Output{\"Ref\":\"Function76856677\"}": [
+    },
     {
-      "type": "aws:cdk:logicalId",
-      "data": "ExportsOutputRefFunction76856677C48862D5"
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::F3002": "cloudformation-validate does not recognize Content.S3ObjectStorageMode yet"
+      },
+      "trace": [
+        "Validations.recordAcknowledgment (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/core/lib/validation/validations.js:129:25)",
+        "Validations.acknowledge (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/core/lib/validation/validations.js:122:18)",
+        "new LayerVersion (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/aws-lambda/lib/layers.js:179:47)",
+        "new LayerVersion (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/private/tmp/aws-cdk-mainline-0193/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-s3-object-storage-mode.js:120:9)",
+        "Object.<anonymous> (/private/tmp/aws-cdk-mainline-0193/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-s3-object-storage-mode.js:127:17)",
+        "Module._compile (node:internal/modules/cjs/loader:1854:14)",
+        "Object..js (node:internal/modules/cjs/loader:1985:10)",
+        "Module.load (node:internal/modules/cjs/loader:1577:32)",
+        "Module._load (node:internal/modules/cjs/loader:1379:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
     }
   ],
   "/LambdaS3ObjectStorageModeStack/CodeBucket/Policy/Resource": [
@@ -435,6 +525,31 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "DeployLambdaCodeAwsCliLayer8743C498"
+    },
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::F3002": "cloudformation-validate does not recognize Content.S3ObjectStorageMode yet"
+      },
+      "trace": [
+        "Validations.recordAcknowledgment (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/core/lib/validation/validations.js:129:25)",
+        "Validations.acknowledge (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/core/lib/validation/validations.js:122:18)",
+        "new LayerVersion (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/aws-lambda/lib/layers.js:179:47)",
+        "new LayerVersion (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsCliLayer (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/lambda-layer-awscli/lib/awscli-layer.js:118:13)",
+        "new AwsCliLayer (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new BucketDeployment (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:198:26)",
+        "new BucketDeployment (/private/tmp/aws-cdk-mainline-0193/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/private/tmp/aws-cdk-mainline-0193/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-s3-object-storage-mode.js:59:28)",
+        "Object.<anonymous> (/private/tmp/aws-cdk-mainline-0193/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-s3-object-storage-mode.js:127:17)",
+        "Module._compile (node:internal/modules/cjs/loader:1854:14)",
+        "Object..js (node:internal/modules/cjs/loader:1985:10)",
+        "Module.load (node:internal/modules/cjs/loader:1577:32)",
+        "Module._load (node:internal/modules/cjs/loader:1379:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
     }
   ],
   "/LambdaS3ObjectStorageModeStack/DeployLambdaCode/Asset1/AssetBucket": [
