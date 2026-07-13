@@ -1,13 +1,4 @@
 {
-  "/aws-glue-security-configuration": [
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.security-configuration.js:7:15)",
-        "...node internals..."
-      ]
-    }
-  ],
   "/aws-glue-security-configuration/Key": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -36,72 +27,24 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
-        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
-        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
-        "synthesizeTree (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
-        "synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
-        "App.synth (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "App.synth (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
-      ]
     }
   ],
   "/aws-glue-security-configuration/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
-        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
-        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
-        "synthesizeTree (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
-        "synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
-        "App.synth (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "App.synth (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
-      ]
     }
   ],
   "/aws-glue-security-configuration/Key/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Key961B73FD"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Key (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key.js:651:30)",
-        "new Key (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.security-configuration.js:8:13)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-glue-security-configuration/KeyedSC/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "KeyedSC862A23F3"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new SecurityConfiguration (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/security-configuration.js:188:30)",
-        "new SecurityConfiguration (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.security-configuration.js:10:1)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-glue-security-configuration/KeylessSC/Key": [
@@ -114,47 +57,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "KeylessSC42E312EC"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new SecurityConfiguration (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/security-configuration.js:188:30)",
-        "new SecurityConfiguration (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.security-configuration.js:26:1)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-glue-security-configuration/S3SC/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "S3SCE31C83BE"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new SecurityConfiguration (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/security-configuration.js:188:30)",
-        "new SecurityConfiguration (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.security-configuration.js:39:1)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-glue-security-configuration/KeylessSC/Key/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "KeylessSCKey4D3DE803"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Key (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key.js:651:30)",
-        "new Key (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new SecurityConfiguration (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/security-configuration.js:160:64)",
-        "new SecurityConfiguration (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.security-configuration.js:26:1)",
-        "...node internals..."
-      ]
     }
   ]
 }

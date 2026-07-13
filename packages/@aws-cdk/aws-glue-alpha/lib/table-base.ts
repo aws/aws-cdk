@@ -2,6 +2,7 @@ import * as path from 'path';
 import type { CfnTable } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import type { IResource } from 'aws-cdk-lib/core';
 import { ArnFormat, CustomResource, Duration, Fn, Lazy, Names, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
@@ -351,32 +352,30 @@ export abstract class TableBase extends Resource implements ITable {
       };
     }
 
-    const handler = new lambda.Function(stack, 'GluePartitionIndexHandler', {
-      runtime: lambda.determineLatestNodeRuntime(stack),
-      code: lambda.Code.fromAsset(path.join(__dirname, 'partition-index-handler'), {
-        exclude: ['*.ts', '*.d.ts'],
-      }),
-      handler: 'index.onEvent',
-      timeout: Duration.minutes(1),
-    });
-
-    const isCompleteHandler = new lambda.Function(stack, 'GluePartitionIndexIsComplete', {
-      runtime: lambda.determineLatestNodeRuntime(stack),
-      code: lambda.Code.fromAsset(path.join(__dirname, 'partition-index-handler'), {
-        exclude: ['*.ts', '*.d.ts'],
-      }),
-      handler: 'index.isComplete',
-      timeout: Duration.minutes(1),
-    });
+    // Bundle @aws-sdk/client-glue into the asset so the handlers do not rely on the
+    // SDK version shipped with the Lambda runtime.
+    const entry = path.join(__dirname, 'partition-index-handler', 'index.js');
+    const onEventHandler = makeHandler('GluePartitionIndexHandler', 'onEvent');
+    const isCompleteHandler = makeHandler('GluePartitionIndexIsComplete', 'isComplete');
 
     const provider = new cr.Provider(stack, providerId, {
-      onEventHandler: handler,
-      isCompleteHandler: isCompleteHandler,
+      onEventHandler,
+      isCompleteHandler,
       queryInterval: Duration.seconds(10),
       totalTimeout: Duration.hours(1),
     });
 
-    return { provider, handler, isCompleteHandler };
+    return { provider, handler: onEventHandler, isCompleteHandler };
+
+    function makeHandler(id: string, handlerName: string) {
+      return new NodejsFunction(stack, id, {
+        runtime: lambda.determineLatestNodeRuntime(stack),
+        entry,
+        handler: handlerName,
+        timeout: Duration.minutes(1),
+        bundling: { bundleAwsSDK: true },
+      });
+    }
   }
 
   private generateIndexName(keys: string[]): string {

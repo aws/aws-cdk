@@ -22,9 +22,25 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "runtime": "*",
-        "code": "*",
+        "entry": "*",
         "handler": "*",
-        "timeout": "*"
+        "timeout": "*",
+        "bundling": {
+          "bundleAwsSDK": true
+        },
+        "code": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "entry": "*",
+        "handler": "*",
+        "timeout": "*",
+        "bundling": {
+          "bundleAwsSDK": true
+        }
       }
     }
   ],
@@ -33,9 +49,25 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "runtime": "*",
-        "code": "*",
+        "entry": "*",
         "handler": "*",
-        "timeout": "*"
+        "timeout": "*",
+        "bundling": {
+          "bundleAwsSDK": true
+        },
+        "code": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "entry": "*",
+        "handler": "*",
+        "timeout": "*",
+        "bundling": {
+          "bundleAwsSDK": true
+        }
       }
     }
   ],

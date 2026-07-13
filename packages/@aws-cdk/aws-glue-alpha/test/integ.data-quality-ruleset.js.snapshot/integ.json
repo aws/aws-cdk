@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "testCases": {
     "glue-data-quality-ruleset/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "gluedataqualityrulesetDefaultTestDeployAssertDE1B6FD7"
     }
   },
-  "minimumCliVersion": "2.1123.0"
+  "minimumCliVersion": "2.1126.0"
 }

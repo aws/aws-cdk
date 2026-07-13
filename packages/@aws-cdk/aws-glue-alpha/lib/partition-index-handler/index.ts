@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { GlueClient, CreatePartitionIndexCommand, DeletePartitionIndexCommand, GetPartitionIndexesCommand } from '@aws-sdk/client-glue';
 
 class PartitionIndexError extends Error {
@@ -11,6 +10,7 @@ class PartitionIndexError extends Error {
 const glue = new GlueClient({});
 
 async function findPartitionIndex(DatabaseName: string, TableName: string, IndexName: string) {
+  // Glue caps partition indexes at 3/table, so results always fit in one page
   const resp = await glue.send(new GetPartitionIndexesCommand({ DatabaseName, TableName }));
   // Glue lowercases index names, so compare case-insensitively
   return (resp.PartitionIndexDescriptorList || []).find(
