@@ -17,60 +17,6 @@
       "data": "*"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexHandler": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "runtime": "*",
-        "entry": "*",
-        "handler": "*",
-        "timeout": "*",
-        "bundling": {
-          "bundleAwsSDK": true
-        },
-        "code": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "runtime": "*",
-        "entry": "*",
-        "handler": "*",
-        "timeout": "*",
-        "bundling": {
-          "bundleAwsSDK": true
-        }
-      }
-    }
-  ],
-  "/aws-cdk-glue/GluePartitionIndexIsComplete": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "runtime": "*",
-        "entry": "*",
-        "handler": "*",
-        "timeout": "*",
-        "bundling": {
-          "bundleAwsSDK": true
-        },
-        "code": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "runtime": "*",
-        "entry": "*",
-        "handler": "*",
-        "timeout": "*",
-        "bundling": {
-          "bundleAwsSDK": true
-        }
-      }
-    }
-  ],
   "/aws-cdk-glue/JSONTable": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -119,269 +65,57 @@
       "data": "*"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexHandler/ServiceRole": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Handler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
+        "runtime": "*",
+        "entry": "*",
+        "handler": "*",
+        "timeout": "*",
+        "bundling": {
+          "bundleAwsSDK": true
         },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
+        "code": "*"
       }
     },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
-    }
-  ],
-  "/aws-cdk-glue/GluePartitionIndexHandler/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexHandler80355590"
-    }
-  ],
-  "/aws-cdk-glue/GluePartitionIndexHandler/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "logGroupName": "*"
+        "runtime": "*",
+        "entry": "*",
+        "handler": "*",
+        "timeout": "*",
+        "bundling": {
+          "bundleAwsSDK": true
+        }
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexIsComplete/ServiceRole": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/IsComplete": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
+        "runtime": "*",
+        "entry": "*",
+        "handler": "*",
+        "timeout": "*",
+        "bundling": {
+          "bundleAwsSDK": true
         },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
+        "code": "*"
       }
     },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
-    }
-  ],
-  "/aws-cdk-glue/GluePartitionIndexIsComplete/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexIsComplete6C5D3B60"
-    }
-  ],
-  "/aws-cdk-glue/GluePartitionIndexIsComplete/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "logGroupName": "*"
-      }
-    }
-  ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-onEvent": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "code": "*",
-        "description": "*",
         "runtime": "*",
+        "entry": "*",
         "handler": "*",
         "timeout": "*",
-        "loggingFormat": "JSON",
-        "applicationLogLevelV2": "FATAL",
-        "logGroup": "*",
-        "vpc": "*",
-        "vpcSubnets": "*",
-        "securityGroups": "*",
-        "role": "*",
-        "functionName": "*",
-        "environmentEncryption": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEnvironment": [
-          "*",
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEnvironment": [
-          "*",
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEnvironment": [
-          "*",
-          "*"
-        ]
-      }
-    }
-  ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-isComplete": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "code": "*",
-        "description": "*",
-        "runtime": "*",
-        "handler": "*",
-        "timeout": "*",
-        "loggingFormat": "JSON",
-        "applicationLogLevelV2": "FATAL",
-        "logGroup": "*",
-        "vpc": "*",
-        "vpcSubnets": "*",
-        "securityGroups": "*",
-        "role": "*",
-        "functionName": "*",
-        "environmentEncryption": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEnvironment": [
-          "*",
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEnvironment": [
-          "*",
-          "*"
-        ]
-      }
-    }
-  ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-onTimeout": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "code": "*",
-        "description": "*",
-        "runtime": "*",
-        "handler": "*",
-        "timeout": "*",
-        "loggingFormat": "JSON",
-        "applicationLogLevelV2": "FATAL",
-        "logGroup": "*",
-        "vpc": "*",
-        "vpcSubnets": "*",
-        "securityGroups": "*",
-        "role": "*",
-        "functionName": "*",
-        "environmentEncryption": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEnvironment": [
-          "*",
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEnvironment": [
-          "*",
-          "*"
-        ]
+        "bundling": {
+          "bundleAwsSDK": true
+        }
       }
     }
   ],
@@ -409,13 +143,269 @@
       "data": "CSVTablepartitionindexindex256C55CE5"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexHandler/ServiceRole/Resource": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Handler/ServiceRole": [
     {
-      "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexHandlerServiceRole55440DC9"
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexHandler/ServiceRole/DefaultPolicy": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Handler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GluePartitionIndexProviderHandler8F3561B4"
+    }
+  ],
+  "/aws-cdk-glue/GluePartitionIndexProvider/Handler/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-glue/GluePartitionIndexProvider/IsComplete/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-glue/GluePartitionIndexProvider/IsComplete/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GluePartitionIndexProviderIsComplete185F42C6"
+    }
+  ],
+  "/aws-cdk-glue/GluePartitionIndexProvider/IsComplete/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-onEvent": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "description": "*",
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "loggingFormat": "JSON",
+        "applicationLogLevelV2": "FATAL",
+        "logGroup": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "role": "*",
+        "functionName": "*",
+        "environmentEncryption": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-isComplete": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "description": "*",
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "loggingFormat": "JSON",
+        "applicationLogLevelV2": "FATAL",
+        "logGroup": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "role": "*",
+        "functionName": "*",
+        "environmentEncryption": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-onTimeout": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "description": "*",
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "loggingFormat": "JSON",
+        "applicationLogLevelV2": "FATAL",
+        "logGroup": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "role": "*",
+        "functionName": "*",
+        "environmentEncryption": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-glue/JSONTable/partition-index-year-month-awscdkglueJSONTable937C116B/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "JSONTablepartitionindexyearmonthawscdkglueJSONTable937C116B26F5733E"
+    }
+  ],
+  "/aws-cdk-glue/GluePartitionIndexProvider/Handler/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GluePartitionIndexProviderHandlerServiceRole567D4263"
+    }
+  ],
+  "/aws-cdk-glue/GluePartitionIndexProvider/Handler/ServiceRole/DefaultPolicy": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -451,35 +441,27 @@
           {}
         ]
       }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexHandler/Code/AssetBucket": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Handler/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexHandler/LogGroup/Resource": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Handler/LogGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexHandlerLogGroupB29518FE"
+      "data": "GluePartitionIndexProviderHandlerLogGroup8A26B56B"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexIsComplete/ServiceRole/Resource": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/IsComplete/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexIsCompleteServiceRole85B4CA5D"
+      "data": "GluePartitionIndexProviderIsCompleteServiceRoleF638094F"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexIsComplete/ServiceRole/DefaultPolicy": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/IsComplete/ServiceRole/DefaultPolicy": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -515,29 +497,21 @@
           {}
         ]
       }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexIsComplete/Code/AssetBucket": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/IsComplete/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexIsComplete/LogGroup/Resource": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/IsComplete/LogGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexIsCompleteLogGroup445A89F3"
+      "data": "GluePartitionIndexProviderIsCompleteLogGroupAF9136F0"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-onEvent/ServiceRole": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-onEvent/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -609,13 +583,13 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-onEvent/Resource": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-onEvent/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderframeworkonEvent1E276D27"
+      "data": "GluePartitionIndexProviderframeworkonEvent9EEDD9A0"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-onEvent/LogGroup": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-onEvent/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -623,7 +597,7 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-isComplete/ServiceRole": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-isComplete/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -687,13 +661,13 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-isComplete/Resource": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-isComplete/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderframeworkisComplete6D7C2A0A"
+      "data": "GluePartitionIndexProviderframeworkisCompleteBBA241CB"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-isComplete/LogGroup": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-isComplete/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -701,7 +675,7 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-onTimeout/ServiceRole": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-onTimeout/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -765,13 +739,13 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-onTimeout/Resource": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-onTimeout/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderframeworkonTimeout2F0DB5AC"
+      "data": "GluePartitionIndexProviderframeworkonTimeout3A6FA654"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-onTimeout/LogGroup": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-onTimeout/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -779,7 +753,7 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/waiter-state-machine/Role": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/waiter-state-machine/Role": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -822,37 +796,31 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/waiter-state-machine/Resource": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/waiter-state-machine/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderwaiterstatemachine2737456E"
+      "data": "GluePartitionIndexProviderwaiterstatemachineBE4B3645"
     }
   ],
-  "/aws-cdk-glue/JSONTable/partition-index-year-month-awscdkglueJSONTable937C116B/Default": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Handler/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "JSONTablepartitionindexyearmonthawscdkglueJSONTable937C116B26F5733E"
+      "data": "GluePartitionIndexProviderHandlerServiceRoleDefaultPolicy14EB7A4B"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexHandler/ServiceRole/DefaultPolicy/Resource": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/IsComplete/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexHandlerServiceRoleDefaultPolicyDAAD4C7E"
+      "data": "GluePartitionIndexProviderIsCompleteServiceRoleDefaultPolicyDC2B1266"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexIsComplete/ServiceRole/DefaultPolicy/Resource": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-onEvent/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexIsCompleteServiceRoleDefaultPolicyA82EED66"
+      "data": "GluePartitionIndexProviderframeworkonEventServiceRole5A596EAB"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-onEvent/ServiceRole/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderframeworkonEventServiceRoleF32A273B"
-    }
-  ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-onEvent/ServiceRole/DefaultPolicy": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -914,97 +882,25 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-onEvent/Code/AssetBucket": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-onEvent/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-onEvent/LogGroup/Resource": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-onEvent/LogGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderframeworkonEventLogGroupFEC00451"
+      "data": "GluePartitionIndexProviderframeworkonEventLogGroup0C10D125"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-isComplete/ServiceRole/Resource": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-isComplete/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderframeworkisCompleteServiceRole00825DDB"
+      "data": "GluePartitionIndexProviderframeworkisCompleteServiceRole0E884EEE"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-isComplete/ServiceRole/DefaultPolicy": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    }
-  ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-isComplete/Code/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-isComplete/LogGroup/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderframeworkisCompleteLogGroup4259B2A0"
-    }
-  ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-onTimeout/ServiceRole/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderframeworkonTimeoutServiceRole0F3C08AE"
-    }
-  ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-onTimeout/ServiceRole/DefaultPolicy": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -1058,25 +954,97 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-onTimeout/Code/AssetBucket": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-isComplete/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-onTimeout/LogGroup/Resource": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-isComplete/LogGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderframeworkonTimeoutLogGroup4F2EECC6"
+      "data": "GluePartitionIndexProviderframeworkisCompleteLogGroupB7D914FA"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/waiter-state-machine/Role/Resource": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-onTimeout/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderwaiterstatemachineRole6A1A51C3"
+      "data": "GluePartitionIndexProviderframeworkonTimeoutServiceRole4787CE37"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/waiter-state-machine/Role/DefaultPolicy": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-onTimeout/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-onTimeout/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GluePartitionIndexProviderframeworkonTimeoutLogGroupFDB3235B"
+    }
+  ],
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/waiter-state-machine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GluePartitionIndexProviderwaiterstatemachineRole9BCE40A7"
+    }
+  ],
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/waiter-state-machine/Role/DefaultPolicy": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -1114,28 +1082,28 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderframeworkonEventServiceRoleDefaultPolicyB7D483A9"
+      "data": "GluePartitionIndexProviderframeworkonEventServiceRoleDefaultPolicy1566B399"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderframeworkisCompleteServiceRoleDefaultPolicy0726692A"
+      "data": "GluePartitionIndexProviderframeworkisCompleteServiceRoleDefaultPolicy8F475083"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderframeworkonTimeoutServiceRoleDefaultPolicy322FC284"
+      "data": "GluePartitionIndexProviderframeworkonTimeoutServiceRoleDefaultPolicyE4D5AA5C"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/waiter-state-machine/Role/DefaultPolicy/Resource": [
+  "/aws-cdk-glue/GluePartitionIndexProvider/Provider/waiter-state-machine/Role/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderwaiterstatemachineRoleDefaultPolicy05E35202"
+      "data": "GluePartitionIndexProviderwaiterstatemachineRoleDefaultPolicy420503E7"
     }
   ]
 }

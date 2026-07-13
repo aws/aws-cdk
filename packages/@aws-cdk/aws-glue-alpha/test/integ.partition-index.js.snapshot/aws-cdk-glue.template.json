@@ -86,7 +86,7 @@
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
-      "GluePartitionIndexProviderframeworkonEvent1E276D27",
+      "GluePartitionIndexProviderframeworkonEvent9EEDD9A0",
       "Arn"
      ]
     },
@@ -102,10 +102,10 @@
     ]
    },
    "DependsOn": [
-    "GluePartitionIndexHandlerServiceRoleDefaultPolicyDAAD4C7E",
-    "GluePartitionIndexHandlerServiceRole55440DC9",
-    "GluePartitionIndexIsCompleteServiceRoleDefaultPolicyA82EED66",
-    "GluePartitionIndexIsCompleteServiceRole85B4CA5D"
+    "GluePartitionIndexProviderHandlerServiceRoleDefaultPolicy14EB7A4B",
+    "GluePartitionIndexProviderHandlerServiceRole567D4263",
+    "GluePartitionIndexProviderIsCompleteServiceRoleDefaultPolicyDC2B1266",
+    "GluePartitionIndexProviderIsCompleteServiceRoleF638094F"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -115,7 +115,7 @@
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
-      "GluePartitionIndexProviderframeworkonEvent1E276D27",
+      "GluePartitionIndexProviderframeworkonEvent9EEDD9A0",
       "Arn"
      ]
     },
@@ -133,15 +133,15 @@
    },
    "DependsOn": [
     "CSVTablepartitionindexindex1295EC599",
-    "GluePartitionIndexHandlerServiceRoleDefaultPolicyDAAD4C7E",
-    "GluePartitionIndexHandlerServiceRole55440DC9",
-    "GluePartitionIndexIsCompleteServiceRoleDefaultPolicyA82EED66",
-    "GluePartitionIndexIsCompleteServiceRole85B4CA5D"
+    "GluePartitionIndexProviderHandlerServiceRoleDefaultPolicy14EB7A4B",
+    "GluePartitionIndexProviderHandlerServiceRole567D4263",
+    "GluePartitionIndexProviderIsCompleteServiceRoleDefaultPolicyDC2B1266",
+    "GluePartitionIndexProviderIsCompleteServiceRoleF638094F"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "GluePartitionIndexHandlerServiceRole55440DC9": {
+  "GluePartitionIndexProviderHandlerServiceRole567D4263": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -172,7 +172,7 @@
     ]
    }
   },
-  "GluePartitionIndexHandlerServiceRoleDefaultPolicyDAAD4C7E": {
+  "GluePartitionIndexProviderHandlerServiceRoleDefaultPolicy14EB7A4B": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -288,15 +288,15 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "GluePartitionIndexHandlerServiceRoleDefaultPolicyDAAD4C7E",
+    "PolicyName": "GluePartitionIndexProviderHandlerServiceRoleDefaultPolicy14EB7A4B",
     "Roles": [
      {
-      "Ref": "GluePartitionIndexHandlerServiceRole55440DC9"
+      "Ref": "GluePartitionIndexProviderHandlerServiceRole567D4263"
      }
     ]
    }
   },
-  "GluePartitionIndexHandler80355590": {
+  "GluePartitionIndexProviderHandler8F3561B4": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
@@ -308,7 +308,7 @@
     "Handler": "index.onEvent",
     "Role": {
      "Fn::GetAtt": [
-      "GluePartitionIndexHandlerServiceRole55440DC9",
+      "GluePartitionIndexProviderHandlerServiceRole567D4263",
       "Arn"
      ]
     },
@@ -316,11 +316,11 @@
     "Timeout": 60
    },
    "DependsOn": [
-    "GluePartitionIndexHandlerServiceRoleDefaultPolicyDAAD4C7E",
-    "GluePartitionIndexHandlerServiceRole55440DC9"
+    "GluePartitionIndexProviderHandlerServiceRoleDefaultPolicy14EB7A4B",
+    "GluePartitionIndexProviderHandlerServiceRole567D4263"
    ]
   },
-  "GluePartitionIndexHandlerLogGroupB29518FE": {
+  "GluePartitionIndexProviderHandlerLogGroup8A26B56B": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "LogGroupName": {
@@ -329,7 +329,7 @@
       [
        "/aws/lambda/",
        {
-        "Ref": "GluePartitionIndexHandler80355590"
+        "Ref": "GluePartitionIndexProviderHandler8F3561B4"
        }
       ]
      ]
@@ -339,7 +339,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "GluePartitionIndexIsCompleteServiceRole85B4CA5D": {
+  "GluePartitionIndexProviderIsCompleteServiceRoleF638094F": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -370,7 +370,7 @@
     ]
    }
   },
-  "GluePartitionIndexIsCompleteServiceRoleDefaultPolicyA82EED66": {
+  "GluePartitionIndexProviderIsCompleteServiceRoleDefaultPolicyDC2B1266": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -484,15 +484,15 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "GluePartitionIndexIsCompleteServiceRoleDefaultPolicyA82EED66",
+    "PolicyName": "GluePartitionIndexProviderIsCompleteServiceRoleDefaultPolicyDC2B1266",
     "Roles": [
      {
-      "Ref": "GluePartitionIndexIsCompleteServiceRole85B4CA5D"
+      "Ref": "GluePartitionIndexProviderIsCompleteServiceRoleF638094F"
      }
     ]
    }
   },
-  "GluePartitionIndexIsComplete6C5D3B60": {
+  "GluePartitionIndexProviderIsComplete185F42C6": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
@@ -504,7 +504,7 @@
     "Handler": "index.isComplete",
     "Role": {
      "Fn::GetAtt": [
-      "GluePartitionIndexIsCompleteServiceRole85B4CA5D",
+      "GluePartitionIndexProviderIsCompleteServiceRoleF638094F",
       "Arn"
      ]
     },
@@ -512,11 +512,11 @@
     "Timeout": 60
    },
    "DependsOn": [
-    "GluePartitionIndexIsCompleteServiceRoleDefaultPolicyA82EED66",
-    "GluePartitionIndexIsCompleteServiceRole85B4CA5D"
+    "GluePartitionIndexProviderIsCompleteServiceRoleDefaultPolicyDC2B1266",
+    "GluePartitionIndexProviderIsCompleteServiceRoleF638094F"
    ]
   },
-  "GluePartitionIndexIsCompleteLogGroup445A89F3": {
+  "GluePartitionIndexProviderIsCompleteLogGroupAF9136F0": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "LogGroupName": {
@@ -525,7 +525,7 @@
       [
        "/aws/lambda/",
        {
-        "Ref": "GluePartitionIndexIsComplete6C5D3B60"
+        "Ref": "GluePartitionIndexProviderIsComplete185F42C6"
        }
       ]
      ]
@@ -535,7 +535,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "GluePartitionIndexProviderframeworkonEventServiceRoleF32A273B": {
+  "GluePartitionIndexProviderframeworkonEventServiceRole5A596EAB": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -566,7 +566,7 @@
     ]
    }
   },
-  "GluePartitionIndexProviderframeworkonEventServiceRoleDefaultPolicyB7D483A9": {
+  "GluePartitionIndexProviderframeworkonEventServiceRoleDefaultPolicy1566B399": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -577,13 +577,13 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "GluePartitionIndexHandler80355590",
+          "GluePartitionIndexProviderHandler8F3561B4",
           "Arn"
          ]
         },
         {
          "Fn::GetAtt": [
-          "GluePartitionIndexIsComplete6C5D3B60",
+          "GluePartitionIndexProviderIsComplete185F42C6",
           "Arn"
          ]
         },
@@ -593,7 +593,7 @@
           [
            {
             "Fn::GetAtt": [
-             "GluePartitionIndexHandler80355590",
+             "GluePartitionIndexProviderHandler8F3561B4",
              "Arn"
             ]
            },
@@ -607,7 +607,7 @@
           [
            {
             "Fn::GetAtt": [
-             "GluePartitionIndexIsComplete6C5D3B60",
+             "GluePartitionIndexProviderIsComplete185F42C6",
              "Arn"
             ]
            },
@@ -623,13 +623,13 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "GluePartitionIndexHandler80355590",
+          "GluePartitionIndexProviderHandler8F3561B4",
           "Arn"
          ]
         },
         {
          "Fn::GetAtt": [
-          "GluePartitionIndexIsComplete6C5D3B60",
+          "GluePartitionIndexProviderIsComplete185F42C6",
           "Arn"
          ]
         }
@@ -639,21 +639,21 @@
        "Action": "states:StartExecution",
        "Effect": "Allow",
        "Resource": {
-        "Ref": "GluePartitionIndexProviderwaiterstatemachine2737456E"
+        "Ref": "GluePartitionIndexProviderwaiterstatemachineBE4B3645"
        }
       }
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "GluePartitionIndexProviderframeworkonEventServiceRoleDefaultPolicyB7D483A9",
+    "PolicyName": "GluePartitionIndexProviderframeworkonEventServiceRoleDefaultPolicy1566B399",
     "Roles": [
      {
-      "Ref": "GluePartitionIndexProviderframeworkonEventServiceRoleF32A273B"
+      "Ref": "GluePartitionIndexProviderframeworkonEventServiceRole5A596EAB"
      }
     ]
    }
   },
-  "GluePartitionIndexProviderframeworkonEvent1E276D27": {
+  "GluePartitionIndexProviderframeworkonEvent9EEDD9A0": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
@@ -662,23 +662,23 @@
      },
      "S3Key": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip"
     },
-    "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-glue/GluePartitionIndexProvider)",
+    "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-glue/GluePartitionIndexProvider/Provider)",
     "Environment": {
      "Variables": {
       "USER_ON_EVENT_FUNCTION_ARN": {
        "Fn::GetAtt": [
-        "GluePartitionIndexHandler80355590",
+        "GluePartitionIndexProviderHandler8F3561B4",
         "Arn"
        ]
       },
       "USER_IS_COMPLETE_FUNCTION_ARN": {
        "Fn::GetAtt": [
-        "GluePartitionIndexIsComplete6C5D3B60",
+        "GluePartitionIndexProviderIsComplete185F42C6",
         "Arn"
        ]
       },
       "WAITER_STATE_MACHINE_ARN": {
-       "Ref": "GluePartitionIndexProviderwaiterstatemachine2737456E"
+       "Ref": "GluePartitionIndexProviderwaiterstatemachineBE4B3645"
       }
      }
     },
@@ -689,7 +689,7 @@
     },
     "Role": {
      "Fn::GetAtt": [
-      "GluePartitionIndexProviderframeworkonEventServiceRoleF32A273B",
+      "GluePartitionIndexProviderframeworkonEventServiceRole5A596EAB",
       "Arn"
      ]
     },
@@ -697,11 +697,11 @@
     "Timeout": 900
    },
    "DependsOn": [
-    "GluePartitionIndexProviderframeworkonEventServiceRoleDefaultPolicyB7D483A9",
-    "GluePartitionIndexProviderframeworkonEventServiceRoleF32A273B"
+    "GluePartitionIndexProviderframeworkonEventServiceRoleDefaultPolicy1566B399",
+    "GluePartitionIndexProviderframeworkonEventServiceRole5A596EAB"
    ]
   },
-  "GluePartitionIndexProviderframeworkonEventLogGroupFEC00451": {
+  "GluePartitionIndexProviderframeworkonEventLogGroup0C10D125": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "LogGroupName": {
@@ -710,7 +710,7 @@
       [
        "/aws/lambda/",
        {
-        "Ref": "GluePartitionIndexProviderframeworkonEvent1E276D27"
+        "Ref": "GluePartitionIndexProviderframeworkonEvent9EEDD9A0"
        }
       ]
      ]
@@ -720,7 +720,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "GluePartitionIndexProviderframeworkisCompleteServiceRole00825DDB": {
+  "GluePartitionIndexProviderframeworkisCompleteServiceRole0E884EEE": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -751,7 +751,7 @@
     ]
    }
   },
-  "GluePartitionIndexProviderframeworkisCompleteServiceRoleDefaultPolicy0726692A": {
+  "GluePartitionIndexProviderframeworkisCompleteServiceRoleDefaultPolicy8F475083": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -762,13 +762,13 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "GluePartitionIndexHandler80355590",
+          "GluePartitionIndexProviderHandler8F3561B4",
           "Arn"
          ]
         },
         {
          "Fn::GetAtt": [
-          "GluePartitionIndexIsComplete6C5D3B60",
+          "GluePartitionIndexProviderIsComplete185F42C6",
           "Arn"
          ]
         },
@@ -778,7 +778,7 @@
           [
            {
             "Fn::GetAtt": [
-             "GluePartitionIndexHandler80355590",
+             "GluePartitionIndexProviderHandler8F3561B4",
              "Arn"
             ]
            },
@@ -792,7 +792,7 @@
           [
            {
             "Fn::GetAtt": [
-             "GluePartitionIndexIsComplete6C5D3B60",
+             "GluePartitionIndexProviderIsComplete185F42C6",
              "Arn"
             ]
            },
@@ -808,13 +808,13 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "GluePartitionIndexHandler80355590",
+          "GluePartitionIndexProviderHandler8F3561B4",
           "Arn"
          ]
         },
         {
          "Fn::GetAtt": [
-          "GluePartitionIndexIsComplete6C5D3B60",
+          "GluePartitionIndexProviderIsComplete185F42C6",
           "Arn"
          ]
         }
@@ -823,15 +823,15 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "GluePartitionIndexProviderframeworkisCompleteServiceRoleDefaultPolicy0726692A",
+    "PolicyName": "GluePartitionIndexProviderframeworkisCompleteServiceRoleDefaultPolicy8F475083",
     "Roles": [
      {
-      "Ref": "GluePartitionIndexProviderframeworkisCompleteServiceRole00825DDB"
+      "Ref": "GluePartitionIndexProviderframeworkisCompleteServiceRole0E884EEE"
      }
     ]
    }
   },
-  "GluePartitionIndexProviderframeworkisComplete6D7C2A0A": {
+  "GluePartitionIndexProviderframeworkisCompleteBBA241CB": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
@@ -840,18 +840,18 @@
      },
      "S3Key": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip"
     },
-    "Description": "AWS CDK resource provider framework - isComplete (aws-cdk-glue/GluePartitionIndexProvider)",
+    "Description": "AWS CDK resource provider framework - isComplete (aws-cdk-glue/GluePartitionIndexProvider/Provider)",
     "Environment": {
      "Variables": {
       "USER_ON_EVENT_FUNCTION_ARN": {
        "Fn::GetAtt": [
-        "GluePartitionIndexHandler80355590",
+        "GluePartitionIndexProviderHandler8F3561B4",
         "Arn"
        ]
       },
       "USER_IS_COMPLETE_FUNCTION_ARN": {
        "Fn::GetAtt": [
-        "GluePartitionIndexIsComplete6C5D3B60",
+        "GluePartitionIndexProviderIsComplete185F42C6",
         "Arn"
        ]
       }
@@ -864,7 +864,7 @@
     },
     "Role": {
      "Fn::GetAtt": [
-      "GluePartitionIndexProviderframeworkisCompleteServiceRole00825DDB",
+      "GluePartitionIndexProviderframeworkisCompleteServiceRole0E884EEE",
       "Arn"
      ]
     },
@@ -872,11 +872,11 @@
     "Timeout": 900
    },
    "DependsOn": [
-    "GluePartitionIndexProviderframeworkisCompleteServiceRoleDefaultPolicy0726692A",
-    "GluePartitionIndexProviderframeworkisCompleteServiceRole00825DDB"
+    "GluePartitionIndexProviderframeworkisCompleteServiceRoleDefaultPolicy8F475083",
+    "GluePartitionIndexProviderframeworkisCompleteServiceRole0E884EEE"
    ]
   },
-  "GluePartitionIndexProviderframeworkisCompleteLogGroup4259B2A0": {
+  "GluePartitionIndexProviderframeworkisCompleteLogGroupB7D914FA": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "LogGroupName": {
@@ -885,7 +885,7 @@
       [
        "/aws/lambda/",
        {
-        "Ref": "GluePartitionIndexProviderframeworkisComplete6D7C2A0A"
+        "Ref": "GluePartitionIndexProviderframeworkisCompleteBBA241CB"
        }
       ]
      ]
@@ -895,7 +895,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "GluePartitionIndexProviderframeworkonTimeoutServiceRole0F3C08AE": {
+  "GluePartitionIndexProviderframeworkonTimeoutServiceRole4787CE37": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -926,7 +926,7 @@
     ]
    }
   },
-  "GluePartitionIndexProviderframeworkonTimeoutServiceRoleDefaultPolicy322FC284": {
+  "GluePartitionIndexProviderframeworkonTimeoutServiceRoleDefaultPolicyE4D5AA5C": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -937,13 +937,13 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "GluePartitionIndexHandler80355590",
+          "GluePartitionIndexProviderHandler8F3561B4",
           "Arn"
          ]
         },
         {
          "Fn::GetAtt": [
-          "GluePartitionIndexIsComplete6C5D3B60",
+          "GluePartitionIndexProviderIsComplete185F42C6",
           "Arn"
          ]
         },
@@ -953,7 +953,7 @@
           [
            {
             "Fn::GetAtt": [
-             "GluePartitionIndexHandler80355590",
+             "GluePartitionIndexProviderHandler8F3561B4",
              "Arn"
             ]
            },
@@ -967,7 +967,7 @@
           [
            {
             "Fn::GetAtt": [
-             "GluePartitionIndexIsComplete6C5D3B60",
+             "GluePartitionIndexProviderIsComplete185F42C6",
              "Arn"
             ]
            },
@@ -983,13 +983,13 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "GluePartitionIndexHandler80355590",
+          "GluePartitionIndexProviderHandler8F3561B4",
           "Arn"
          ]
         },
         {
          "Fn::GetAtt": [
-          "GluePartitionIndexIsComplete6C5D3B60",
+          "GluePartitionIndexProviderIsComplete185F42C6",
           "Arn"
          ]
         }
@@ -998,15 +998,15 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "GluePartitionIndexProviderframeworkonTimeoutServiceRoleDefaultPolicy322FC284",
+    "PolicyName": "GluePartitionIndexProviderframeworkonTimeoutServiceRoleDefaultPolicyE4D5AA5C",
     "Roles": [
      {
-      "Ref": "GluePartitionIndexProviderframeworkonTimeoutServiceRole0F3C08AE"
+      "Ref": "GluePartitionIndexProviderframeworkonTimeoutServiceRole4787CE37"
      }
     ]
    }
   },
-  "GluePartitionIndexProviderframeworkonTimeout2F0DB5AC": {
+  "GluePartitionIndexProviderframeworkonTimeout3A6FA654": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
@@ -1015,18 +1015,18 @@
      },
      "S3Key": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip"
     },
-    "Description": "AWS CDK resource provider framework - onTimeout (aws-cdk-glue/GluePartitionIndexProvider)",
+    "Description": "AWS CDK resource provider framework - onTimeout (aws-cdk-glue/GluePartitionIndexProvider/Provider)",
     "Environment": {
      "Variables": {
       "USER_ON_EVENT_FUNCTION_ARN": {
        "Fn::GetAtt": [
-        "GluePartitionIndexHandler80355590",
+        "GluePartitionIndexProviderHandler8F3561B4",
         "Arn"
        ]
       },
       "USER_IS_COMPLETE_FUNCTION_ARN": {
        "Fn::GetAtt": [
-        "GluePartitionIndexIsComplete6C5D3B60",
+        "GluePartitionIndexProviderIsComplete185F42C6",
         "Arn"
        ]
       }
@@ -1039,7 +1039,7 @@
     },
     "Role": {
      "Fn::GetAtt": [
-      "GluePartitionIndexProviderframeworkonTimeoutServiceRole0F3C08AE",
+      "GluePartitionIndexProviderframeworkonTimeoutServiceRole4787CE37",
       "Arn"
      ]
     },
@@ -1047,11 +1047,11 @@
     "Timeout": 900
    },
    "DependsOn": [
-    "GluePartitionIndexProviderframeworkonTimeoutServiceRoleDefaultPolicy322FC284",
-    "GluePartitionIndexProviderframeworkonTimeoutServiceRole0F3C08AE"
+    "GluePartitionIndexProviderframeworkonTimeoutServiceRoleDefaultPolicyE4D5AA5C",
+    "GluePartitionIndexProviderframeworkonTimeoutServiceRole4787CE37"
    ]
   },
-  "GluePartitionIndexProviderframeworkonTimeoutLogGroup4F2EECC6": {
+  "GluePartitionIndexProviderframeworkonTimeoutLogGroupFDB3235B": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "LogGroupName": {
@@ -1060,7 +1060,7 @@
       [
        "/aws/lambda/",
        {
-        "Ref": "GluePartitionIndexProviderframeworkonTimeout2F0DB5AC"
+        "Ref": "GluePartitionIndexProviderframeworkonTimeout3A6FA654"
        }
       ]
      ]
@@ -1070,7 +1070,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "GluePartitionIndexProviderwaiterstatemachineRole6A1A51C3": {
+  "GluePartitionIndexProviderwaiterstatemachineRole9BCE40A7": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -1087,7 +1087,7 @@
     }
    }
   },
-  "GluePartitionIndexProviderwaiterstatemachineRoleDefaultPolicy05E35202": {
+  "GluePartitionIndexProviderwaiterstatemachineRoleDefaultPolicy420503E7": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -1098,13 +1098,13 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "GluePartitionIndexProviderframeworkisComplete6D7C2A0A",
+          "GluePartitionIndexProviderframeworkisCompleteBBA241CB",
           "Arn"
          ]
         },
         {
          "Fn::GetAtt": [
-          "GluePartitionIndexProviderframeworkonTimeout2F0DB5AC",
+          "GluePartitionIndexProviderframeworkonTimeout3A6FA654",
           "Arn"
          ]
         },
@@ -1114,7 +1114,7 @@
           [
            {
             "Fn::GetAtt": [
-             "GluePartitionIndexProviderframeworkisComplete6D7C2A0A",
+             "GluePartitionIndexProviderframeworkisCompleteBBA241CB",
              "Arn"
             ]
            },
@@ -1128,7 +1128,7 @@
           [
            {
             "Fn::GetAtt": [
-             "GluePartitionIndexProviderframeworkonTimeout2F0DB5AC",
+             "GluePartitionIndexProviderframeworkonTimeout3A6FA654",
              "Arn"
             ]
            },
@@ -1141,15 +1141,15 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "GluePartitionIndexProviderwaiterstatemachineRoleDefaultPolicy05E35202",
+    "PolicyName": "GluePartitionIndexProviderwaiterstatemachineRoleDefaultPolicy420503E7",
     "Roles": [
      {
-      "Ref": "GluePartitionIndexProviderwaiterstatemachineRole6A1A51C3"
+      "Ref": "GluePartitionIndexProviderwaiterstatemachineRole9BCE40A7"
      }
     ]
    }
   },
-  "GluePartitionIndexProviderwaiterstatemachine2737456E": {
+  "GluePartitionIndexProviderwaiterstatemachineBE4B3645": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
     "DefinitionString": {
@@ -1159,14 +1159,14 @@
        "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":10,\"MaxAttempts\":360,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
        {
         "Fn::GetAtt": [
-         "GluePartitionIndexProviderframeworkisComplete6D7C2A0A",
+         "GluePartitionIndexProviderframeworkisCompleteBBA241CB",
          "Arn"
         ]
        },
        "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
        {
         "Fn::GetAtt": [
-         "GluePartitionIndexProviderframeworkonTimeout2F0DB5AC",
+         "GluePartitionIndexProviderframeworkonTimeout3A6FA654",
          "Arn"
         ]
        },
@@ -1176,14 +1176,14 @@
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "GluePartitionIndexProviderwaiterstatemachineRole6A1A51C3",
+      "GluePartitionIndexProviderwaiterstatemachineRole9BCE40A7",
       "Arn"
      ]
     }
    },
    "DependsOn": [
-    "GluePartitionIndexProviderwaiterstatemachineRoleDefaultPolicy05E35202",
-    "GluePartitionIndexProviderwaiterstatemachineRole6A1A51C3"
+    "GluePartitionIndexProviderwaiterstatemachineRoleDefaultPolicy420503E7",
+    "GluePartitionIndexProviderwaiterstatemachineRole9BCE40A7"
    ]
   },
   "JSONTable00348F1D": {
@@ -1256,7 +1256,7 @@
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
-      "GluePartitionIndexProviderframeworkonEvent1E276D27",
+      "GluePartitionIndexProviderframeworkonEvent9EEDD9A0",
       "Arn"
      ]
     },
@@ -1273,10 +1273,10 @@
     ]
    },
    "DependsOn": [
-    "GluePartitionIndexHandlerServiceRoleDefaultPolicyDAAD4C7E",
-    "GluePartitionIndexHandlerServiceRole55440DC9",
-    "GluePartitionIndexIsCompleteServiceRoleDefaultPolicyA82EED66",
-    "GluePartitionIndexIsCompleteServiceRole85B4CA5D"
+    "GluePartitionIndexProviderHandlerServiceRoleDefaultPolicy14EB7A4B",
+    "GluePartitionIndexProviderHandlerServiceRole567D4263",
+    "GluePartitionIndexProviderIsCompleteServiceRoleDefaultPolicyDC2B1266",
+    "GluePartitionIndexProviderIsCompleteServiceRoleF638094F"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

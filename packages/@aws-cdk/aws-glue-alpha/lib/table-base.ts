@@ -7,7 +7,7 @@ import type { IResource } from 'aws-cdk-lib/core';
 import { ArnFormat, CustomResource, Duration, Fn, Lazy, Names, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import * as cr from 'aws-cdk-lib/custom-resources';
-import type { Construct } from 'constructs';
+import { Construct } from 'constructs';
 import type { DataFormat } from './data-format';
 import type { IDatabase } from './database';
 import { generatePartitionProjectionParameters, type PartitionProjection } from './partition-projection';
@@ -258,6 +258,14 @@ export abstract class TableBase extends Resource implements ITable {
    */
   private partitionIndexCustomResources: CustomResource[] = [];
 
+  /**
+   * Whether this table has already granted its partition-index permissions to
+   * the shared provider handlers. The grants are identical for every index on
+   * the table, so we only add them once to avoid bloating the shared inline
+   * role policy (and its 10,240-character limit) with duplicate statements.
+   */
+  private partitionIndexPermissionsGranted = false;
+
   constructor(scope: Construct, id: string, props: TableBaseProps) {
     super(scope, id, {
       physicalName: props.tableName ??
@@ -300,23 +308,30 @@ export abstract class TableBase extends Resource implements ITable {
     this.validatePartitionIndex(index);
 
     const indexName = index.indexName ?? this.generateIndexName(index.keyNames);
-    const { provider, handler, isCompleteHandler } = this.getOrCreatePartitionIndexProvider();
+    const provider = this.getOrCreatePartitionIndexProvider();
 
-    // Add scoped permissions for this table's Glue resources
-    // https://docs.aws.amazon.com/service-authorization/latest/reference/list_awsglue.html
-    const resources = [this.tableArn, this.database.databaseArn, this.database.catalogArn];
+    // The grants are identical for every index on this table, so only add them
+    // once. Adding them per-index would push duplicate statements onto the shared
+    // handler roles and risk the 10,240-character inline policy limit.
+    if (!this.partitionIndexPermissionsGranted) {
+      // Add scoped permissions for this table's Glue resources
+      // https://docs.aws.amazon.com/service-authorization/latest/reference/list_awsglue.html
+      const resources = [this.tableArn, this.database.databaseArn, this.database.catalogArn];
 
-    // onEvent creates and deletes indexes; UpdateTable/GetTable are required by those APIs.
-    handler.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['glue:CreatePartitionIndex', 'glue:DeletePartitionIndex', 'glue:GetTable', 'glue:UpdateTable'],
-      resources,
-    }));
+      // onEvent creates and deletes indexes; UpdateTable/GetTable are required by those APIs.
+      provider.onEventHandler.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['glue:CreatePartitionIndex', 'glue:DeletePartitionIndex', 'glue:GetTable', 'glue:UpdateTable'],
+        resources,
+      }));
 
-    // isComplete only polls index status via GetPartitionIndexes (which requires GetTable).
-    isCompleteHandler.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['glue:GetPartitionIndexes', 'glue:GetTable'],
-      resources,
-    }));
+      // isComplete only polls index status via GetPartitionIndexes (which requires GetTable).
+      provider.isCompleteHandler.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['glue:GetPartitionIndexes', 'glue:GetTable'],
+        resources,
+      }));
+
+      this.partitionIndexPermissionsGranted = true;
+    }
 
     const partitionIndexCustomResource = new CustomResource(this, `partition-index-${indexName}`, {
       resourceType: 'Custom::GluePartitionIndex',
@@ -330,8 +345,8 @@ export abstract class TableBase extends Resource implements ITable {
     });
 
     // Ensure IAM policies are created before the custom resource invokes the handlers
-    partitionIndexCustomResource.node.addDependency(handler.role!);
-    partitionIndexCustomResource.node.addDependency(isCompleteHandler.role!);
+    partitionIndexCustomResource.node.addDependency(provider.onEventHandler.role!);
+    partitionIndexCustomResource.node.addDependency(provider.isCompleteHandler.role!);
 
     // Depend on previous partition index to avoid race condition
     if (numPartitions > 0) {
@@ -340,42 +355,8 @@ export abstract class TableBase extends Resource implements ITable {
     this.partitionIndexCustomResources.push(partitionIndexCustomResource);
   }
 
-  private getOrCreatePartitionIndexProvider(): { provider: cr.Provider; handler: lambda.Function; isCompleteHandler: lambda.Function } {
-    const providerId = 'GluePartitionIndexProvider';
-    const stack = Stack.of(this);
-    const existingProvider = stack.node.tryFindChild(providerId) as cr.Provider;
-    if (existingProvider) {
-      return {
-        provider: existingProvider,
-        handler: stack.node.findChild('GluePartitionIndexHandler') as lambda.Function,
-        isCompleteHandler: stack.node.findChild('GluePartitionIndexIsComplete') as lambda.Function,
-      };
-    }
-
-    // Bundle @aws-sdk/client-glue into the asset so the handlers do not rely on the
-    // SDK version shipped with the Lambda runtime.
-    const entry = path.join(__dirname, 'partition-index-handler', 'index.js');
-    const onEventHandler = makeHandler('GluePartitionIndexHandler', 'onEvent');
-    const isCompleteHandler = makeHandler('GluePartitionIndexIsComplete', 'isComplete');
-
-    const provider = new cr.Provider(stack, providerId, {
-      onEventHandler,
-      isCompleteHandler,
-      queryInterval: Duration.seconds(10),
-      totalTimeout: Duration.hours(1),
-    });
-
-    return { provider, handler: onEventHandler, isCompleteHandler };
-
-    function makeHandler(id: string, handlerName: string) {
-      return new NodejsFunction(stack, id, {
-        runtime: lambda.determineLatestNodeRuntime(stack),
-        entry,
-        handler: handlerName,
-        timeout: Duration.minutes(1),
-        bundling: { bundleAwsSDK: true },
-      });
-    }
+  private getOrCreatePartitionIndexProvider(): PartitionIndexProvider {
+    return PartitionIndexProvider.getOrCreate(this);
   }
 
   private generateIndexName(keys: string[]): string {
@@ -489,6 +470,80 @@ export abstract class TableBase extends Resource implements ITable {
       ],
       actions,
     });
+  }
+}
+
+const PARTITION_INDEX_PROVIDER_SYMBOL = Symbol.for('@aws-cdk/aws-glue-alpha.PartitionIndexProvider');
+
+/**
+ * A stack-singleton custom resource provider that manages Glue partition indexes.
+ *
+ * All partition-indexed tables in a stack share a single provider (and its two
+ * Lambda handlers) to avoid provisioning a provider framework per table. The
+ * provider and handlers are grouped under this single construct so only one
+ * fixed id (`GluePartitionIndexProvider`) is placed at stack scope.
+ */
+class PartitionIndexProvider extends Construct {
+  /**
+   * Returns the stack-singleton provider, creating it if it does not yet exist.
+   */
+  public static getOrCreate(scope: Construct): PartitionIndexProvider {
+    const stack = Stack.of(scope);
+    const id = 'GluePartitionIndexProvider';
+    const existing = stack.node.tryFindChild(id);
+    if (existing) {
+      if (!PartitionIndexProvider.isPartitionIndexProvider(existing)) {
+        throw new ValidationError(
+          lit`PartitionIndexProviderIdConflict`,
+          `Another construct with the id "${id}" already exists in the stack. This id is reserved for the Glue partition index provider.`,
+          scope,
+        );
+      }
+      return existing;
+    }
+    return new PartitionIndexProvider(stack, id);
+  }
+
+  private static isPartitionIndexProvider(x: any): x is PartitionIndexProvider {
+    return x !== null && typeof x === 'object' && PARTITION_INDEX_PROVIDER_SYMBOL in x;
+  }
+
+  public readonly onEventHandler: lambda.Function;
+  public readonly isCompleteHandler: lambda.Function;
+  private readonly provider: cr.Provider;
+
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    Object.defineProperty(this, PARTITION_INDEX_PROVIDER_SYMBOL, { value: true });
+
+    // Bundle @aws-sdk/client-glue into the asset so the handlers do not rely on the
+    // SDK version shipped with the Lambda runtime.
+    const entry = path.join(__dirname, 'partition-index-handler', 'index.js');
+    const makeHandler = (handlerId: string, handlerName: string) => new NodejsFunction(this, handlerId, {
+      runtime: lambda.determineLatestNodeRuntime(this),
+      entry,
+      handler: handlerName,
+      timeout: Duration.minutes(1),
+      bundling: { bundleAwsSDK: true },
+    });
+
+    this.onEventHandler = makeHandler('Handler', 'onEvent');
+    this.isCompleteHandler = makeHandler('IsComplete', 'isComplete');
+
+    this.provider = new cr.Provider(this, 'Provider', {
+      onEventHandler: this.onEventHandler,
+      isCompleteHandler: this.isCompleteHandler,
+      queryInterval: Duration.seconds(10),
+      totalTimeout: Duration.hours(1),
+    });
+  }
+
+  /**
+   * The service token to wire into partition index custom resources.
+   */
+  public get serviceToken(): string {
+    return this.provider.serviceToken;
   }
 }
 

@@ -395,6 +395,58 @@ describe('parition indexes', () => {
         ]),
       );
     });
+
+    test('grants partition index permissions to the handler roles only once per table', () => {
+      const stack = new cdk.Stack();
+      skipBundling(stack);
+      const database = new glue.Database(stack, 'Database');
+
+      const table = new glue.S3Table(stack, 'Table', {
+        database,
+        columns: [{ name: 'col', type: glue.Schema.STRING }],
+        partitionKeys: [
+          { name: 'year', type: glue.Schema.SMALL_INT },
+          { name: 'month', type: glue.Schema.SMALL_INT },
+          { name: 'day', type: glue.Schema.SMALL_INT },
+        ],
+        dataFormat: glue.DataFormat.JSON,
+      });
+
+      table.addPartitionIndex({ indexName: 'index1', keyNames: ['year'] });
+      table.addPartitionIndex({ indexName: 'index2', keyNames: ['month'] });
+      table.addPartitionIndex({ indexName: 'index3', keyNames: ['day'] });
+
+      const template = Template.fromStack(stack);
+
+      // The onEvent handler policy must contain exactly one CreatePartitionIndex
+      // statement, not one per index.
+      const policies = template.findResources('AWS::IAM::Policy');
+      const createStatements = Object.values(policies).flatMap((policy: any) =>
+        policy.Properties.PolicyDocument.Statement.filter(
+          (s: any) => Array.isArray(s.Action) && s.Action.includes('glue:CreatePartitionIndex'),
+        ),
+      );
+      expect(createStatements).toHaveLength(1);
+    });
+
+    test('throws if a foreign construct occupies the provider id', () => {
+      const stack = new cdk.Stack();
+      skipBundling(stack);
+      const database = new glue.Database(stack, 'Database');
+
+      // Squat on the reserved provider id at stack scope.
+      new cdk.CfnResource(stack, 'GluePartitionIndexProvider', { type: 'AWS::CloudFormation::WaitConditionHandle' });
+
+      const table = new glue.S3Table(stack, 'Table', {
+        database,
+        columns: [{ name: 'col', type: glue.Schema.STRING }],
+        partitionKeys: [{ name: 'year', type: glue.Schema.SMALL_INT }],
+        dataFormat: glue.DataFormat.JSON,
+      });
+
+      expect(() => table.addPartitionIndex({ indexName: 'index1', keyNames: ['year'] }))
+        .toThrow(/id "GluePartitionIndexProvider" already exists/);
+    });
   });
 });
 
