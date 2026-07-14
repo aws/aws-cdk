@@ -70,25 +70,9 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "runtime": "*",
-        "entry": "*",
+        "code": "*",
         "handler": "*",
-        "timeout": "*",
-        "bundling": {
-          "bundleAwsSDK": true
-        },
-        "code": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "runtime": "*",
-        "entry": "*",
-        "handler": "*",
-        "timeout": "*",
-        "bundling": {
-          "bundleAwsSDK": true
-        }
+        "timeout": "*"
       }
     }
   ],
@@ -97,25 +81,9 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "runtime": "*",
-        "entry": "*",
+        "code": "*",
         "handler": "*",
-        "timeout": "*",
-        "bundling": {
-          "bundleAwsSDK": true
-        },
-        "code": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "runtime": "*",
-        "entry": "*",
-        "handler": "*",
-        "timeout": "*",
-        "bundling": {
-          "bundleAwsSDK": true
-        }
+        "timeout": "*"
       }
     }
   ],
@@ -497,12 +465,6 @@
           {}
         ]
       }
-    }
-  ],
-  "/aws-cdk-glue/GluePartitionIndexProvider/IsComplete/Code/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
     }
   ],
   "/aws-cdk-glue/GluePartitionIndexProvider/IsComplete/LogGroup/Resource": [
