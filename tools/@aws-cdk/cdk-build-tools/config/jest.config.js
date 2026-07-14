@@ -1,3 +1,4 @@
+const { jestMaxWorkers } = require('./jest-max-workers');
 const thisPackagesPackageJson = require(`${process.cwd()}/package.json`);
 const setupFilesAfterEnv = [];
 if ('aws-cdk-lib' in thisPackagesPackageJson.devDependencies ?? {}) {
@@ -36,8 +37,10 @@ module.exports = {
       'ts-jest'
     ],
   },
-  // Jest is resource greedy so this shouldn't be more than 50%
-  maxWorkers: '50%',
+  // Jest is resource greedy. Bound the worker count with an absolute cap (see
+  // jest-max-workers.js) so it does not scale with cores and exhaust memory on
+  // large CI machines. Override with CDKBUILD_JEST_MAX_WORKERS.
+  maxWorkers: jestMaxWorkers(),
   testEnvironment: 'node',
   coverageThreshold: {
     global: {
