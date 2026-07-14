@@ -1,3 +1,10 @@
+/**
+ * This test requires manual setup and will fail without it:
+ * - A Route53 public hosted zone you own (env vars: HOSTED_ZONE_ID, HOSTED_ZONE_NAME, DOMAIN_NAME)
+ * - The hosted zone must be authoritative for the domain so ACM DNS validation succeeds
+ * - A Cognito user pool is created to act as the OIDC IdP
+ * - A Lambda function signs in via the ALB's OIDC-authenticated endpoint to verify the flow
+ */
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as cognito from 'aws-cdk-lib/aws-cognito';

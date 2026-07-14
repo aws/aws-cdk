@@ -34,8 +34,11 @@ import type * as s3 from '../../aws-s3';
 import type * as secretsmanager from '../../aws-secretsmanager';
 import type { Duration, IResource } from '../../core';
 import { Annotations, ArnFormat, Aws, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization, UnscopedValidationError, ValidationError } from '../../core';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import type { IArrayBox, IBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IProjectRef, ProjectReference } from '../../interfaces/generated/aws-codebuild-interfaces.generated';
 
@@ -290,7 +293,7 @@ abstract class ProjectBase extends Resource implements IProject {
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new ValidationError('Only VPC-associated Projects have security groups to manage. Supply the "vpc" parameter when creating the Project', this);
+      throw new ValidationError(lit`OnlyVpcAssociatedProjectsSecurity`, 'Only VPC-associated Projects have security groups to manage. Supply the "vpc" parameter when creating the Project', this);
     }
     return this._connections;
   }
@@ -811,6 +814,7 @@ export interface BindToCodePipelineOptions {
  * A representation of a CodeBuild Project.
  */
 @propertyInjectable
+@noBoxStackTraces
 export class Project extends ProjectBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codebuild.Project';
@@ -906,7 +910,7 @@ export class Project extends ProjectBase {
         const fragments = Tokenization.reverseString(cfnEnvVariable.value);
         for (const token of fragments.tokens) {
           if (token instanceof SecretValue) {
-            throw new UnscopedValidationError(`Plaintext environment variable '${name}' contains a secret value! ` +
+            throw new UnscopedValidationError(lit`PlaintextEnvironmentVariableContainsSecret`, `Plaintext environment variable '${name}' contains a secret value! ` +
               'This means the value of this variable will be visible in plain text in the AWS Console. ' +
               "Please consider using CodeBuild's SecretsManager environment variables feature instead. " +
               "If you'd like to continue with having this secret in the plaintext environment variables, " +
@@ -940,7 +944,7 @@ export class Project extends ProjectBase {
           if (envVariableValue.startsWith('arn:')) {
             const parsedArn = stack.splitArn(envVariableValue, ArnFormat.COLON_RESOURCE_NAME);
             if (!parsedArn.resourceName) {
-              throw new UnscopedValidationError('SecretManager ARN is missing the name of the secret: ' + envVariableValue);
+              throw new UnscopedValidationError(lit`SecretsManagerArnMissingSecretName`, 'SecretManager ARN is missing the name of the secret: ' + envVariableValue);
             }
 
             // the value of the property can be a complex string, separated by ':';
@@ -1079,13 +1083,13 @@ export class Project extends ProjectBase {
 
   private readonly source: ISource;
   private readonly buildImage: IBuildImage;
-  private readonly _secondarySources: CfnProject.SourceProperty[];
-  private readonly _secondarySourceVersions: CfnProject.ProjectSourceVersionProperty[];
+  private readonly _secondarySources: IArrayBox<CfnProject.SourceProperty>;
+  private readonly _secondarySourceVersions: IArrayBox<CfnProject.ProjectSourceVersionProperty>;
   private readonly resource: CfnProject;
-  private readonly _secondaryArtifacts: CfnProject.ArtifactsProperty[];
-  private _encryptionKey?: kms.IKey;
-  private readonly _fileSystemLocations: CfnProject.ProjectFileSystemLocationProperty[];
-  private _batchServiceRole?: iam.Role;
+  private readonly _secondaryArtifacts: IArrayBox<CfnProject.ArtifactsProperty>;
+  private readonly _encryptionKey: IBox<kms.IKey | undefined> = Box.fromValue<kms.IKey | undefined>(undefined);
+  private readonly _fileSystemLocations: IArrayBox<CfnProject.ProjectFileSystemLocationProperty>;
+  private readonly _batchServiceRole: IBox<iam.Role | undefined> = Box.fromValue<iam.Role | undefined>(undefined);
 
   constructor(scope: Construct, id: string, props: ProjectProps) {
     super(scope, id, {
@@ -1107,7 +1111,7 @@ export class Project extends ProjectBase {
     this.source = props.source || new NoSource();
     const sourceConfig = this.source.bind(this, this);
     if (props.badge && !this.source.badgeSupported) {
-      throw new ValidationError(`Badge is not supported for source type ${this.source.type}`, this);
+      throw new ValidationError(lit`BadgeSupportedSourceType`, `Badge is not supported for source type ${this.source.type}`, this);
     }
 
     const artifacts = props.artifacts
@@ -1126,17 +1130,17 @@ export class Project extends ProjectBase {
     const environmentVariables = props.environmentVariables || {};
     const buildSpec = props.buildSpec;
     if (this.source.type === NO_SOURCE_TYPE && (buildSpec === undefined || !buildSpec.isImmediate)) {
-      throw new ValidationError("If the Project's source is NoSource, you need to provide a concrete buildSpec", this);
+      throw new ValidationError(lit`ProjectSSourceNosource`, "If the Project's source is NoSource, you need to provide a concrete buildSpec", this);
     }
 
-    this._secondarySources = [];
-    this._secondarySourceVersions = [];
-    this._fileSystemLocations = [];
+    this._secondarySources = Box.fromArray();
+    this._secondarySourceVersions = Box.fromArray();
+    this._fileSystemLocations = Box.fromArray();
     for (const secondarySource of props.secondarySources || []) {
       this.addSecondarySource(secondarySource);
     }
 
-    this._secondaryArtifacts = [];
+    this._secondaryArtifacts = Box.fromArray();
     for (const secondaryArtifact of props.secondaryArtifacts || []) {
       this.addSecondaryArtifact(secondaryArtifact);
     }
@@ -1149,7 +1153,7 @@ export class Project extends ProjectBase {
 
     if (!Token.isUnresolved(props.autoRetryLimit) && (props.autoRetryLimit !== undefined)) {
       if (props.autoRetryLimit < 0 || props.autoRetryLimit > 10) {
-        throw new ValidationError(`autoRetryLimit must be a value between 0 and 10, got ${props.autoRetryLimit}.`, this);
+        throw new ValidationError(lit`AutoRetryLimitValue`, `autoRetryLimit must be a value between 0 and 10, got ${props.autoRetryLimit}.`, this);
       }
     }
 
@@ -1162,33 +1166,27 @@ export class Project extends ProjectBase {
       artifacts: artifactsConfig.artifactsProperty,
       serviceRole: this.role.roleArn,
       environment: this.renderEnvironment(props, environmentVariables),
-      fileSystemLocations: Lazy.any({ produce: () => this.renderFileSystemLocations() }),
-      // lazy, because we have a setter for it in setEncryptionKey
+      fileSystemLocations: Token.asAny(this._fileSystemLocations.derive(arr => arr.length === 0 ? undefined : arr)),
+      // deferred, because we have a setter for it in setEncryptionKey
       // The 'alias/aws/s3' default is necessary because leaving the `encryptionKey` field
       // empty will not remove existing encryptionKeys during an update (ref. t/D17810523)
-      encryptionKey: Lazy.string({ produce: () => this._encryptionKey ? this._encryptionKey.keyArn : 'alias/aws/s3' }),
+      // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
+      encryptionKey: Token.asString(Box.combine({ key: this._encryptionKey }, ({ key }) => key ? key.keyArn : 'alias/aws/s3')),
       badgeEnabled: props.badge,
       cache: cache._toCloudFormation(),
       name: this.physicalName,
       timeoutInMinutes: props.timeout && props.timeout.toMinutes(),
       queuedTimeoutInMinutes: props.queuedTimeout && props.queuedTimeout.toMinutes(),
       concurrentBuildLimit: props.concurrentBuildLimit,
-      secondarySources: Lazy.any({ produce: () => this.renderSecondarySources() }),
-      secondarySourceVersions: Lazy.any({ produce: () => this.renderSecondarySourceVersions() }),
-      secondaryArtifacts: Lazy.any({ produce: () => this.renderSecondaryArtifacts() }),
+      secondarySources: Token.asAny(this._secondarySources.derive(arr => arr.length === 0 ? undefined : arr)),
+      secondarySourceVersions: Token.asAny(this._secondarySourceVersions.derive(arr => arr.length === 0 ? undefined : arr)),
+      secondaryArtifacts: Token.asAny(this._secondaryArtifacts.derive(arr => arr.length === 0 ? undefined : arr)),
       triggers: sourceConfig.buildTriggers,
       sourceVersion: sourceConfig.sourceVersion,
       vpcConfig: this.configureVpc(props),
       visibility: props.visibility,
       logsConfig: this.renderLoggingConfiguration(props.logging),
-      buildBatchConfig: Lazy.any({
-        produce: () => {
-          const config: CfnProject.ProjectBuildBatchConfigProperty | undefined = this._batchServiceRole ? {
-            serviceRole: this._batchServiceRole.roleArn,
-          } : undefined;
-          return config;
-        },
-      }),
+      buildBatchConfig: Token.asAny(this._batchServiceRole.derive(role => role ? { serviceRole: role.roleArn } : undefined)),
       autoRetryLimit: props.autoRetryLimit,
     });
 
@@ -1248,11 +1246,11 @@ export class Project extends ProjectBase {
 
   @MethodMetadata()
   public enableBatchBuilds(): BatchBuildConfig | undefined {
-    if (!this._batchServiceRole) {
-      this._batchServiceRole = new iam.Role(this, 'BatchServiceRole', {
+    if (!this._batchServiceRole.get()) {
+      const batchRole = new iam.Role(this, 'BatchServiceRole', {
         assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
       });
-      this._batchServiceRole.addToPrincipalPolicy(new iam.PolicyStatement({
+      batchRole.addToPrincipalPolicy(new iam.PolicyStatement({
         resources: [Lazy.string({
           produce: () => this.projectArn,
         })],
@@ -1262,9 +1260,10 @@ export class Project extends ProjectBase {
           'codebuild:RetryBuild',
         ],
       }));
+      this._batchServiceRole.set(batchRole);
     }
     return {
-      role: this._batchServiceRole,
+      role: this._batchServiceRole.get()!,
     };
   }
 
@@ -1277,7 +1276,7 @@ export class Project extends ProjectBase {
   @MethodMetadata()
   public addSecondarySource(secondarySource: ISource): void {
     if (!secondarySource.identifier) {
-      throw new ValidationError('The identifier attribute is mandatory for secondary sources', this);
+      throw new ValidationError(lit`IdentifierAttributeMandatorySecondarySources`, 'The identifier attribute is mandatory for secondary sources', this);
     }
     const secondarySourceConfig = secondarySource.bind(this, this);
     this._secondarySources.push(secondarySourceConfig.sourceProperty);
@@ -1309,7 +1308,7 @@ export class Project extends ProjectBase {
   @MethodMetadata()
   public addSecondaryArtifact(secondaryArtifact: IArtifacts): void {
     if (!secondaryArtifact.identifier) {
-      throw new ValidationError('The identifier attribute is mandatory for secondary artifacts', this);
+      throw new ValidationError(lit`IdentifierAttributeMandatorySecondaryArtifacts`, 'The identifier attribute is mandatory for secondary artifacts', this);
     }
     this._secondaryArtifacts.push(secondaryArtifact.bind(this, this).artifactsProperty);
   }
@@ -1324,7 +1323,7 @@ export class Project extends ProjectBase {
   public bindToCodePipeline(_scope: Construct, options: BindToCodePipelineOptions): void {
     // work around a bug in CodeBuild: it ignores the KMS key set on the pipeline,
     // and always uses its own, project-level key
-    if (options.artifactBucket.encryptionKey && !this._encryptionKey) {
+    if (options.artifactBucket.encryptionKey && !this._encryptionKey.get()) {
       // we cannot safely do this assignment if the key is of type kms.Key,
       // and belongs to a stack in a different account or region than the project
       // (that would cause an illegal reference, as KMS keys don't have physical names)
@@ -1353,7 +1352,7 @@ export class Project extends ProjectBase {
   }
 
   private set encryptionKey(encryptionKey: kms.IKey) {
-    this._encryptionKey = encryptionKey;
+    this._encryptionKey.set(encryptionKey);
     encryptionKey.grantEncryptDecrypt(this);
   }
 
@@ -1397,7 +1396,7 @@ export class Project extends ProjectBase {
     errors.push(...this.validateLambdaBuildImage(this.buildImage, props));
 
     if (errors.length > 0) {
-      throw new ValidationError('Invalid CodeBuild environment: ' + errors.join('\n'), this);
+      throw new ValidationError(lit`InvalidCodeBuildEnvironment`, 'Invalid CodeBuild environment: ' + errors.join('\n'), this);
     }
 
     const imagePullPrincipalType = this.isLambdaBuildImage(this.buildImage) ? undefined :
@@ -1447,30 +1446,6 @@ export class Project extends ProjectBase {
     };
   }
 
-  private renderFileSystemLocations(): CfnProject.ProjectFileSystemLocationProperty[] | undefined {
-    return this._fileSystemLocations.length === 0
-      ? undefined
-      : this._fileSystemLocations;
-  }
-
-  private renderSecondarySources(): CfnProject.SourceProperty[] | undefined {
-    return this._secondarySources.length === 0
-      ? undefined
-      : this._secondarySources;
-  }
-
-  private renderSecondarySourceVersions(): CfnProject.ProjectSourceVersionProperty[] | undefined {
-    return this._secondarySourceVersions.length === 0
-      ? undefined
-      : this._secondarySourceVersions;
-  }
-
-  private renderSecondaryArtifacts(): CfnProject.ArtifactsProperty[] | undefined {
-    return this._secondaryArtifacts.length === 0
-      ? undefined
-      : this._secondaryArtifacts;
-  }
-
   private configureFleet({ fleet }: BuildEnvironment): { fleetArn: string } | undefined {
     if (!fleet) {
       return undefined;
@@ -1478,7 +1453,7 @@ export class Project extends ProjectBase {
 
     // If the fleetArn is resolved, the fleet is imported and we cannot validate the environment type
     if (Token.isUnresolved(fleet.fleetArn) && this.buildImage.type !== fleet.environmentType) {
-      throw new ValidationError(`The environment type of the fleet (${fleet.environmentType}) must match the environment type of the build image (${this.buildImage.type})`, this);
+      throw new ValidationError(lit`EnvironmentTypeFleet`, `The environment type of the fleet (${fleet.environmentType}) must match the environment type of the build image (${this.buildImage.type})`, this);
     }
 
     return { fleetArn: fleet.fleetArn };
@@ -1492,7 +1467,7 @@ export class Project extends ProjectBase {
    */
   private configureVpc(props: ProjectProps): CfnProject.VpcConfigProperty | undefined {
     if ((props.securityGroups || props.allowAllOutbound !== undefined) && !props.vpc) {
-      throw new ValidationError('Cannot configure \'securityGroup\' or \'allowAllOutbound\' without configuring a VPC', this);
+      throw new ValidationError(lit`CannotConfigureSecurityGroupAllow`, 'Cannot configure \'securityGroup\' or \'allowAllOutbound\' without configuring a VPC', this);
     }
 
     if (!props.vpc) { return undefined; }
@@ -1507,7 +1482,7 @@ export class Project extends ProjectBase {
     }
 
     if ((props.securityGroups && props.securityGroups.length > 0) && props.allowAllOutbound !== undefined) {
-      throw new ValidationError('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.', this);
+      throw new ValidationError(lit`ConfigureAllowOutboundDirectlySupplied`, 'Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.', this);
     }
 
     let securityGroups: ec2.ISecurityGroup[];
@@ -1543,7 +1518,7 @@ export class Project extends ProjectBase {
       s3Config = {
         status: (s3Logs.enabled ?? true) ? 'ENABLED' : 'DISABLED',
         location: `${s3Logs.bucket.bucketName}` + (s3Logs.prefix ? `/${s3Logs.prefix}` : ''),
-        encryptionDisabled: s3Logs.encrypted,
+        encryptionDisabled: s3Logs.encrypted !== undefined ? !s3Logs.encrypted : undefined,
       };
       s3Logs.bucket?.grantWrite(this);
     }
@@ -1553,7 +1528,7 @@ export class Project extends ProjectBase {
       const status = (cloudWatchLogs.enabled ?? true) ? 'ENABLED' : 'DISABLED';
 
       if (status === 'ENABLED' && !(cloudWatchLogs.logGroup)) {
-        throw new ValidationError('Specifying a LogGroup is required if CloudWatch logging for CodeBuild is enabled', this);
+        throw new ValidationError(lit`SpecifyingLogGroupRequiredCloud`, 'Specifying a LogGroup is required if CloudWatch logging for CodeBuild is enabled', this);
       }
       cloudWatchLogs.logGroup?.grantWrite(this);
 
@@ -1629,7 +1604,7 @@ export class Project extends ProjectBase {
     if ((sourceType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE ||
         artifactsType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) &&
         (sourceType !== artifactsType)) {
-      throw new ValidationError('Both source and artifacts must be set to CodePipeline', this);
+      throw new ValidationError(lit`SourceArtifactsSetCodePipeline`, 'Both source and artifacts must be set to CodePipeline', this);
     }
   }
 
@@ -2351,6 +2326,14 @@ export class MacBuildImage implements IBuildImage {
    */
   public static readonly BASE_15: IBuildImage = new MacBuildImage({
     imageId: 'aws/codebuild/macos-arm-base:15',
+    imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
+  });
+
+  /**
+   * Corresponds to the CodeBuild image `aws/codebuild/macos-arm-base:26`.
+   */
+  public static readonly BASE_26: IBuildImage = new MacBuildImage({
+    imageId: 'aws/codebuild/macos-arm-base:26',
     imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
   });
 

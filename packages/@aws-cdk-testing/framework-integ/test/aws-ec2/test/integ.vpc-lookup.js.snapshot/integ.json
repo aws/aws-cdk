@@ -1,12 +1,16 @@
 {
-  "version": "21.0.0",
+  "version": "48.0.0",
   "testCases": {
-    "ArchiveTest/DefaultTest": {
+    "VpcLookupTest/DefaultTest": {
       "stacks": [
         "StackUnderTest"
       ],
-      "assertionStack": "ArchiveTest/DefaultTest/DeployAssert",
-      "assertionStackName": "ArchiveTestDefaultTestDeployAssert3405726A"
+      "regions": [
+        "us-east-1"
+      ],
+      "assertionStack": "VpcLookupTest/DefaultTest/DeployAssert",
+      "assertionStackName": "VpcLookupTestDefaultTestDeployAssertA6677202"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

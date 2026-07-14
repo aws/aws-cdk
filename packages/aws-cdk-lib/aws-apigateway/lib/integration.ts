@@ -1,10 +1,11 @@
 import type { Method } from './method';
 import type { IVpcLink } from './vpc-link';
 import { VpcLink } from './vpc-link';
+import type * as apigwv2 from '../../aws-apigatewayv2';
 import type * as iam from '../../aws-iam';
-import type { Duration } from '../../core';
-import { Lazy } from '../../core';
+import { Lazy, type Duration } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * The response transfer mode of the integration
@@ -96,7 +97,7 @@ export interface IntegrationOptions {
    *   { "application/json": "{ \"statusCode\": 200 }" }
    * ```
    *
-   * @see http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
    */
   readonly requestTemplates?: { [contentType: string]: string };
 
@@ -105,7 +106,7 @@ export interface IntegrationOptions {
    *
    * By default, the value must be between 50 milliseconds and 29 seconds.
    * The upper bound can be increased for regional and private Rest APIs only,
-   * via a quota increase request for your acccount.
+   * via a quota increase request for your account.
    * This increase might require a reduction in your account-level throttle quota limit.
    *
    * See {@link https://docs.aws.amazon.com/apigateway/latest/developerguide/limits.html Amazon API Gateway quotas} for more details.
@@ -132,8 +133,33 @@ export interface IntegrationOptions {
   /**
    * The VpcLink used for the integration.
    * Required if connectionType is VPC_LINK
+   *
+   * Use this for NLB integrations. For ALB integrations, use `vpcLinkV2` instead.
    */
   readonly vpcLink?: IVpcLink;
+
+  /**
+   * The VPC Link V2 used for the integration.
+   *
+   * VPC Links V2 enable private integrations that connect your REST API directly to Application Load Balancers.
+   *
+   * When using `vpcLinkV2`, you must also specify `integrationTarget` with the ARN of the ALB.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-vpc-links-v2.html
+   * @default - No VPC Link V2
+   */
+  readonly vpcLinkV2?: apigwv2.IVpcLinkRef;
+
+  /**
+   * The ALB ARN to send the request to.
+   *
+   * Only supported for private integrations that use VPC links V2.
+   * When using this property, you must also specify `vpcLinkV2`.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-private-integration.html
+   * @default - No integration target
+   */
+  readonly integrationTarget?: string;
 
   /**
    * The response transfer mode for the integration.
@@ -209,11 +235,12 @@ export interface IntegrationConfig {
   readonly integrationHttpMethod?: string;
 
   /**
-   * This value is included in computing the Deployment's fingerprint. When the fingerprint
-   * changes, a new deployment is triggered.
+   * This value is included in computing the Deployment's fingerprint.
+   * When the fingerprint changes, a new deployment is triggered.
    * This property should contain values associated with the Integration that upon changing
    * should trigger a fresh the Deployment needs to be refreshed.
-   * @default undefined deployments are not triggered for any change to this integration.
+   *
+   * @default undefined - deployments are not triggered for any change to this integration.
    */
   readonly deploymentToken?: string;
 }
@@ -228,30 +255,38 @@ export class Integration {
   constructor(private readonly props: IntegrationProps) {
     const options = this.props.options || { };
     if (options.credentialsPassthrough !== undefined && options.credentialsRole !== undefined) {
-      throw new UnscopedValidationError('\'credentialsPassthrough\' and \'credentialsRole\' are mutually exclusive');
+      throw new UnscopedValidationError(lit`CredentialsPassthroughCredentialsRoleMutually`, '\'credentialsPassthrough\' and \'credentialsRole\' are mutually exclusive');
     }
 
-    if (options.connectionType === ConnectionType.VPC_LINK && options.vpcLink === undefined) {
-      throw new UnscopedValidationError('\'connectionType\' of VPC_LINK requires \'vpcLink\' prop to be set');
+    if (options.connectionType === ConnectionType.VPC_LINK && options.vpcLink === undefined && options.vpcLinkV2 === undefined) {
+      throw new UnscopedValidationError(lit`VpcLinkRequired`, '\'connectionType\' of VPC_LINK requires \'vpcLink\' or \'vpcLinkV2\' prop to be set');
     }
 
-    if (options.connectionType === ConnectionType.INTERNET && options.vpcLink !== undefined) {
-      throw new UnscopedValidationError('cannot set \'vpcLink\' where \'connectionType\' is INTERNET');
+    if (options.connectionType === ConnectionType.INTERNET && (options.vpcLink !== undefined || options.vpcLinkV2 !== undefined)) {
+      throw new UnscopedValidationError(lit`CannotSetVpcLinkConnection`, 'cannot set \'vpcLink\' or \'vpcLinkV2\' where \'connectionType\' is INTERNET');
+    }
+
+    if (options.vpcLink !== undefined && options.vpcLinkV2 !== undefined) {
+      throw new UnscopedValidationError(lit`VpcLinkMutuallyExclusive`, '\'vpcLink\' and \'vpcLinkV2\' are mutually exclusive');
+    }
+
+    if (options.integrationTarget !== undefined && options.vpcLinkV2 === undefined) {
+      throw new UnscopedValidationError(lit`IntegrationTargetRequiresVpcLinkV2`, '\'integrationTarget\' requires \'vpcLinkV2\' to be set');
     }
 
     if (options.timeout && !options.timeout.isUnresolved() && options.timeout.toMilliseconds() < 50) {
-      throw new UnscopedValidationError('Integration timeout must be greater than 50 milliseconds.');
+      throw new UnscopedValidationError(lit`MustBeIntegrationTimeoutGreater`, 'Integration timeout must be greater than 50 milliseconds.');
     }
 
     if (props.type !== IntegrationType.MOCK && !props.integrationHttpMethod) {
-      throw new UnscopedValidationError('integrationHttpMethod is required for non-mock integration types.');
+      throw new UnscopedValidationError(lit`IntegrationHttpMethodRequiredNon`, 'integrationHttpMethod is required for non-mock integration types.');
     }
 
     if (
       options.responseTransferMode === ResponseTransferMode.STREAM &&
       ![IntegrationType.AWS_PROXY, IntegrationType.HTTP_PROXY].includes(props.type)
     ) {
-      throw new UnscopedValidationError(`ResponseTransferMode STREAM is only supported for AWS_PROXY and HTTP_PROXY integration types, got: ${props.type}`);
+      throw new UnscopedValidationError(lit`ResponseTransferModeSupportedInteg`, `ResponseTransferMode STREAM is only supported for AWS_PROXY and HTTP_PROXY integration types, got: ${props.type}`);
     }
   }
 
@@ -263,7 +298,8 @@ export class Integration {
     let uri = this.props.uri;
     const options = this.props.options;
 
-    if (options?.connectionType === ConnectionType.VPC_LINK && uri === undefined) {
+    // For VPC Link V1, auto-generate URI from NLB DNS name if not provided
+    if (options?.connectionType === ConnectionType.VPC_LINK && options?.vpcLink && uri === undefined) {
       uri = Lazy.string({
         // needs to be a lazy since the targets can be added to the VpcLink construct after initialization.
         produce: () => {
@@ -271,20 +307,27 @@ export class Integration {
           if (vpcLink instanceof VpcLink) {
             const targets = vpcLink._targetDnsNames;
             if (targets.length > 1) {
-              throw new ValidationError("'uri' is required when there are more than one NLBs in the VPC Link", method);
+              throw new ValidationError(lit`IsRequiredUriRequiredThere`, "'uri' is required when there are more than one NLBs in the VPC Link", method);
             } else {
               return `http://${targets[0]}`;
             }
           } else {
-            throw new ValidationError("'uri' is required when the 'connectionType' is VPC_LINK", method);
+            throw new ValidationError(lit`IsRequiredUriRequiredConnectiontype`, "'uri' is required when the 'connectionType' is VPC_LINK", method);
           }
         },
       });
     }
+
+    // Determine connection type based on vpcLink or vpcLinkV2
+    let connectionType = options?.connectionType;
+    if (options?.vpcLink || options?.vpcLinkV2) {
+      connectionType = ConnectionType.VPC_LINK;
+    }
+
     return {
       options: {
         ...options,
-        connectionType: options?.vpcLink ? ConnectionType.VPC_LINK : options?.connectionType,
+        connectionType,
       },
       type: this.props.type,
       uri,
@@ -415,7 +458,7 @@ export interface IntegrationResponse {
    *   pre-encode these values based on the destination specified in the
    *   request.
    *
-   * @see http://docs.aws.amazon.com/apigateway/latest/developerguide/request-response-data-mappings.html
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/request-response-data-mappings.html
    */
   readonly responseParameters?: { [destination: string]: string };
 
@@ -424,7 +467,7 @@ export interface IntegrationResponse {
    * Specify templates as key-value pairs, with a content type as the key and
    * a template as the value.
    *
-   * @see http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
    */
   readonly responseTemplates?: { [contentType: string]: string };
 }

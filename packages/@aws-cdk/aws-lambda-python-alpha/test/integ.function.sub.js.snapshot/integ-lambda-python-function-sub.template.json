@@ -38,15 +38,15 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "eef2fb23b619f037f697f4a27f8222232f65cb2bcc1e46ee560f3cdbdc685b1f.zip"
+     "S3Key": "9c2b2409c5ea446b630557813cb2fbb53f26a7a3fa7961618e9bfa75b4cdb572.zip"
     },
+    "Handler": "inner.custom_index.custom_handler",
     "Role": {
      "Fn::GetAtt": [
       "myhandlerServiceRole77891068",
       "Arn"
      ]
     },
-    "Handler": "inner.custom_index.custom_handler",
     "Runtime": "python3.8"
    },
    "DependsOn": [

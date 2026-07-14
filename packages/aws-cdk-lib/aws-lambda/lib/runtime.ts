@@ -50,6 +50,9 @@ export enum RuntimeFamily {
  *
  * If you need to use a runtime name that doesn't exist as a static member, you
  * can instantiate a `Runtime` object, e.g: `new Runtime('nodejs99.99')`.
+ *
+ * For NodeJS lambda functions, it is recommended to use the latest LTS NodeJS runtime available
+ * (`Runtime.NODEJS_LATEST`) to keep the lambda function up-to-date.
  */
 export class Runtime {
   /** A list of all known `Runtime`'s. */
@@ -118,7 +121,7 @@ export class Runtime {
    * The latest NodeJS version currently available in ALL regions (not necessarily the latest NodeJS version
    * available in YOUR region).
    */
-  public static readonly NODEJS_LATEST = new Runtime('nodejs22.x', RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
+  public static readonly NODEJS_LATEST = new Runtime('nodejs24.x', RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
 
   /**
    * The NodeJS 22.x runtime (nodejs22.x)
@@ -350,6 +353,11 @@ export class Runtime {
   public static readonly RUBY_3_4 = new Runtime('ruby3.4', RuntimeFamily.RUBY);
 
   /**
+   * The Ruby 4.0 runtime (ruby4.0)
+   */
+  public static readonly RUBY_4_0 = new Runtime('ruby4.0', RuntimeFamily.RUBY);
+
+  /**
    * The custom provided runtime (provided)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest provided.al2023 runtime.
    */
@@ -453,7 +461,7 @@ export class Runtime {
 export function determineLatestNodeRuntime(scope: Construct): Runtime {
   // Runtime regional fact should always return a known runtime string that Runtime can index off, but for type
   // safety we also default it here.
-  const runtimeName = Stack.of(scope).regionalFact(FactName.LATEST_NODE_RUNTIME, Runtime.NODEJS_22_X.name);
+  const runtimeName = Stack.of(scope).regionalFact(FactName.LATEST_NODE_RUNTIME, Runtime.NODEJS_24_X.name);
   return new Runtime(runtimeName, RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
 }
 

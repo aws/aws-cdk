@@ -150,6 +150,14 @@ export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccess
 export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
 export const NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT = '@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault';
 export const STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT = '@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint';
+export const CLOUDFRONT_FUNCTION_DEFAULT_RUNTIME_V2_0 = '@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0';
+export const ELB_USE_POST_QUANTUM_TLS_POLICY = '@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy';
+export const AUTOMATIC_L1_TRAITS = '@aws-cdk/core:automaticL1Traits';
+export const BATCH_DEFAULT_AL2023 = '@aws-cdk/aws-batch:defaultToAL2023';
+export const EKS_DEFAULT_AL2023 = '@aws-cdk/aws-eks:defaultToAL2023';
+export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInValidationReport';
+export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackReferences';
+export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1751,7 +1759,6 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
   },
 
-  //////////////////////////////////////////////////////////////////////
   [ROUTE53_PATTERNS_USE_DISTRIBUTION]: {
     type: FlagType.ApiDefault,
     summary: 'Use the `Distribution` resource instead of `CloudFrontWebDistribution`',
@@ -1762,6 +1769,168 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.233.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Define a `CloudFrontWebDistribution` explicitly',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CLOUDFRONT_FUNCTION_DEFAULT_RUNTIME_V2_0]: {
+    type: FlagType.ApiDefault,
+    summary: 'Use cloudfront-js-2.0 as the default runtime for CloudFront Functions',
+    detailsMd: `
+      When enabled, CloudFront Functions will use cloudfront-js-2.0 runtime by default instead of cloudfront-js-1.0.
+      The runtime can still be configured explicitly using the \`runtime\` property.
+
+      If \`keyValueStore\` is specified, the runtime will always be cloudfront-js-2.0 regardless of this flag.`,
+    introducedIn: { v2: '2.245.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Set `runtime: FunctionRuntime.JS_1_0` explicitly to use the v1.0 runtime.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ELB_USE_POST_QUANTUM_TLS_POLICY]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default',
+    detailsMd: `
+      When this feature flag is enabled, HTTPS and TLS listeners that do not have an explicit
+      \`sslPolicy\` will use the post-quantum cryptography policy
+      \`ELBSecurityPolicy-TLS13-1-2-PQ-2025-09\` by default.
+
+      This policy uses the non-restricted variant (without -Res-) to maintain AES-CBC cipher support
+      for TLS 1.2 clients, ensuring nearly 100% backward compatibility with the previous CDK default.
+      Post-quantum policies provide protection against "Harvest Now, Decrypt Later" attacks using
+      hybrid ML-KEM key exchange.
+
+      When disabled (default), no explicit SSL policy is set, preserving the existing CDK behavior
+      where \`RECOMMENDED_TLS\` (\`ELBSecurityPolicy-TLS13-1-2-2021-06\`) is used.
+    `,
+    introducedIn: { v2: '2.245.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable this feature flag to preserve existing behavior where no explicit SSL policy is set.',
+  },
+
+  [AUTOMATIC_L1_TRAITS]: {
+    type: FlagType.ApiDefault,
+    summary: 'Automatically use the default L1 traits for L1 constructs`',
+    detailsMd: `
+      When enabled, the construct library will apply default L1 traits for types that
+      have no traits defined yet. Traits regulate behaviors such as how to create
+      resource policies, or how to find an encryption key for a given L1 construct.
+      `,
+    introducedIn: { v2: '2.239.0' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: true },
+    compatibilityWithOldBehaviorMd: 'Register traits explicitly for each resource type',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [BATCH_DEFAULT_AL2023]: {
+    type: FlagType.ApiDefault,
+    summary: 'Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2',
+    detailsMd: `
+      When enabled, EC2 Batch compute environments (both ECS and EKS) that do not specify an \`imageType\`
+      will default to \`ECS_AL2023\` or \`EKS_AL2023\` instead of the deprecated \`ECS_AL2\` or \`EKS_AL2\`
+      (Amazon Linux 2, reaching EOL June 2026 for ECS; already EOL for EKS).
+
+      For EKS compute environments with a launch template, \`userdataType\` will automatically be set
+      to \`EKS_NODEADM\` when an AL2023 image type is used, as required by the AWS Batch API.
+
+      When disabled, the default \`imageType\` remains \`ECS_AL2\` / \`EKS_AL2\` for backward compatibility.`,
+    introducedIn: { v2: '2.249.0' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: `Explicitly set \`imageType\` to \`ECS_AL2\` or \`EKS_AL2\` in your compute environment images configuration.
+
+**Warning**: Enabling this flag on existing stacks may cause compute environment replacement, which terminates running jobs. To migrate safely, first pin existing environments to their current imageType explicitly, then enable the flag.`,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EKS_DEFAULT_AL2023]: {
+    type: FlagType.ApiDefault,
+    summary: 'Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2',
+    detailsMd: `
+      When enabled, EKS managed node groups that do not specify an \`amiType\` will default to
+      AL2023 AMI types (AL2023_x86_64_STANDARD, AL2023_ARM_64_STANDARD) instead of the deprecated
+      AL2 types (AL2_x86_64, AL2_ARM_64).
+
+      This only affects non-GPU instance types. GPU instances continue to default to AL2_x86_64_GPU
+      because AL2023 splits GPU support into separate NVIDIA and Neuron AMI variants.
+
+      Amazon Linux 2 reached end of support on November 26, 2025. AL2023 is the AWS-recommended default.
+
+      When disabled, the default AMI types remain AL2 for backward compatibility.`,
+    introducedIn: { v2: '2.259.0' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: `Explicitly set \`amiType\` to the desired AL2 type (e.g., \`NodegroupAmiType.AL2_X86_64\`) in your nodegroup configuration.
+
+**Warning**: Enabling this flag on existing stacks will cause node group replacement, which terminates running pods. To migrate safely, first pin existing node groups to their current amiType explicitly, then enable the flag for new node groups.`,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ANNOTATIONS_IN_VALIDATION_REPORT]: {
+    type: FlagType.VisibleContext,
+    summary: 'Include construct annotations (warnings and errors) in the policy validation report',
+    detailsMd: `
+      When enabled, construct annotations added via \`Annotations.of()\` or \`Validations.of()\`
+      are collected post-synthesis and included in the policy validation report alongside
+      plugin violations. Annotations appear under a "Construct Annotations" source entry.
+
+      When disabled, annotations are only displayed through the CLI's standard metadata
+      output (e.g. \`[Warning at /path] message\`) and do not appear in the validation report.
+
+      Note: enabling this flag may cause annotations to appear twice — once in the CLI's
+      standard output and once in the validation report — until the CLI is updated to
+      consolidate both displays.`,
+    introducedIn: { v2: '2.253.0' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [DEFAULT_CROSS_STACK_REFERENCES]: {
+    type: FlagType.VisibleContext,
+    summary: 'Controls whether cross-region stack references are strong, weak, or both',
+    detailsMd: `
+      Controls the default type of cross-region stack references. Accepted values are
+      \`"strong"\`, \`"weak"\`, and \`"both"\`. This setting only affects same-account,
+      cross-region references. Cross-account references are always weak, and same-region
+      references are always strong (Fn::ImportValue).
+
+      The flag is read from the **consumer** stack's context, not the producer's.
+
+      - \`"strong"\` (default): Uses ExportWriter/ExportReader custom resources that
+        write values to SSM Parameters in the consuming region. This prevents the
+        producing stack from being deleted while consumers exist.
+      - \`"weak"\`: Uses Fn::GetStackOutput to read an output directly from the
+        producing stack. Simpler (no extra infrastructure), but the producing stack
+        can be deleted independently of consumers.
+      - \`"both"\`: A transitional state for migrating from strong to weak. The producer
+        keeps the ExportWriter (continues writing to SSM) and also adds an Output. The
+        consumer switches to Fn::GetStackOutput. This allows removing the ExportReader
+        without breaking anything.
+
+      **Migration from strong to weak**: set to \`"both"\` and deploy, then set to
+      \`"weak"\` and deploy again.
+
+      **Migration from weak to strong**: set directly to \`"strong"\` (single deployment).`,
+    introducedIn: { v2: '2.254.0' },
+    recommendedValue: 'weak',
+    unconfiguredBehavesLike: { v2: 'strong' },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [VALIDATE_AGAINST_DEFAULT_RULES]: {
+    type: FlagType.VisibleContext,
+    summary: 'Treat CloudFormation Validate findings as errors',
+    detailsMd: `
+      The CDK always validates synthesized templates against a default set of CloudFormation
+      rules during synthesis. These rules include schema validation, best-practice linting,
+      and common misconfiguration detection.
+
+      When this flag is explicitly set to \`true\`, violations are treated as errors and will
+      fail synthesis. When unconfigured, violations are reported as warnings only.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
   },
 };
 

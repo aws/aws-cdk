@@ -30,6 +30,7 @@ describe('AgentAlias', () => {
       stack: stack,
       env: { account: stack.account, region: stack.region },
       applyRemovalPolicy: jest.fn(),
+      with: jest.fn(),
     };
   });
 
