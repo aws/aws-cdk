@@ -157,6 +157,7 @@ export const BATCH_DEFAULT_AL2023 = '@aws-cdk/aws-batch:defaultToAL2023';
 export const EKS_DEFAULT_AL2023 = '@aws-cdk/aws-eks:defaultToAL2023';
 export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInValidationReport';
 export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackReferences';
+export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1856,7 +1857,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       Amazon Linux 2 reached end of support on November 26, 2025. AL2023 is the AWS-recommended default.
 
       When disabled, the default AMI types remain AL2 for backward compatibility.`,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.259.0' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
     compatibilityWithOldBehaviorMd: `Explicitly set \`amiType\` to the desired AL2 type (e.g., \`NodegroupAmiType.AL2_X86_64\`) in your nodegroup configuration.
@@ -1914,6 +1915,22 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.254.0' },
     recommendedValue: 'weak',
     unconfiguredBehavesLike: { v2: 'strong' },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [VALIDATE_AGAINST_DEFAULT_RULES]: {
+    type: FlagType.VisibleContext,
+    summary: 'Treat CloudFormation Validate findings as errors',
+    detailsMd: `
+      The CDK always validates synthesized templates against a default set of CloudFormation
+      rules during synthesis. These rules include schema validation, best-practice linting,
+      and common misconfiguration detection.
+
+      When this flag is explicitly set to \`true\`, violations are treated as errors and will
+      fail synthesis. When unconfigured, violations are reported as warnings only.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
   },
 };
 

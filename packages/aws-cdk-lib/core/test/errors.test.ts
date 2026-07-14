@@ -88,6 +88,26 @@ Relates to construct:
     }
   });
 
+  test('stack includes jsii host trace frames when available', () => {
+    const TRACE_SYMBOL = Symbol.for('jsii.context.hostStackTrace');
+    (global as any)[TRACE_SYMBOL] = [
+      ['/home/user/.venv/lib/python3.14/site-packages/aws_cdk/__init__.py', 100, 0, '__init__'],
+      ['/home/user/app.py', 42, 8, 'MyStack.__init__'],
+      ['/home/user/main.py', 10, 1, '<module>'],
+    ];
+
+    try {
+      const error = new UnscopedValidationError(lit`TestError`, 'test message');
+
+      expect(error.stack).toContain('MyStack.__init__ (/home/user/app.py:42:8)');
+      expect(error.stack).toContain('<module> (/home/user/main.py:10:1)');
+      // First frame (site-packages) should be dropped
+      expect(error.stack).not.toContain('site-packages');
+    } finally {
+      delete (global as any)[TRACE_SYMBOL];
+    }
+  });
+
   test('most recent error codes is written to disk', async () => {
     const file = path.join(os.tmpdir(), 'errors.txt');
     await rm(file, { force: true });
