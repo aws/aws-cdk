@@ -162,7 +162,7 @@ describe('cfn resource', () => {
       const stack = new core.Stack(app, 'TestStack');
       const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
       const resource2 = new core.CfnResource(stack, 'Resource2', { type: 'Test::Resource::Fake2' });
-      resource1.addDependency(resource2);
+      resource1.addResourceDependency(resource2);
 
       expect(app.synth().getStackByName(stack.stackName).template.Resources).toEqual({
         Resource1: {
@@ -182,7 +182,7 @@ describe('cfn resource', () => {
       const stack = new core.Stack(app, 'TestStack');
       const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
       const resource2 = new core.CfnResource(stack, 'Resource2', { type: 'Test::Resource::Fake2' });
-      resource1.addDependency(resource2);
+      resource1.addResourceDependency(resource2);
       resource1.removeDependency(resource2);
 
       expect(app.synth().getStackByName(stack.stackName).template.Resources).toEqual({
@@ -207,10 +207,10 @@ describe('cfn resource', () => {
       const resource2 = new core.CfnResource(stack2, 'Resource2', { type: 'Test::Resource::Fake2' });
       const resource3 = new core.CfnResource(stack1, 'Resource3', { type: 'Test::Resource::Fake3' });
 
-      resource1.addDependency(resource2);
+      resource1.addResourceDependency(resource2);
       // Adding the same resource dependency twice should be a no-op
-      resource1.addDependency(resource2);
-      resource1.addDependency(resource3);
+      resource1.addResourceDependency(resource2);
+      resource1.addResourceDependency(resource3);
       expect(stack1.dependencies.length).toEqual(1);
       expect(stack1.dependencies[0].node.id).toEqual(stack2.node.id);
       // obtainDependencies should assemble and flatten resource-to-resource dependencies even across stacks
@@ -231,7 +231,7 @@ describe('cfn resource', () => {
       const resource2 = new core.CfnResource(stack2, 'Resource2', { type: 'Test::Resource::Fake2' });
       const resource3 = new core.CfnResource(stack3, 'Resource3', { type: 'Test::Resource::Fake3' });
 
-      resource1.addDependency(resource2);
+      resource1.addResourceDependency(resource2);
       // Adding the same resource dependency twice should be a no-op
       resource1.replaceDependency(resource2, resource3);
       expect(stack1.dependencies).toEqual([stack3]);
@@ -248,7 +248,7 @@ describe('cfn resource', () => {
       const app = new core.App();
       const stack = new core.Stack(app, 'TestStack');
       const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
-      resource1.addDependency(resource1);
+      resource1.addResourceDependency(resource1);
 
       expect(app.synth().getStackByName(stack.stackName).template.Resources).toEqual({
         Resource1: {
@@ -270,7 +270,7 @@ describe('cfn resource', () => {
       const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
       const resource2 = new NoSynthResource(stack, 'Resource2', { type: 'Test::Resource::Fake2' });
       resource1.removeDependency(resource2);
-      resource1.addDependency(resource2);
+      resource1.addResourceDependency(resource2);
 
       expect(app.synth().getStackByName(stack.stackName).template.Resources).toEqual({
         Resource1: {

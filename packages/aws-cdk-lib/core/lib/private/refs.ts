@@ -253,7 +253,7 @@ function resolveValue(consumer: Stack, reference: CfnReference, strengthOverride
         `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
         'Cross stack/region references are only supported for stacks with an explicit region defined. ');
     }
-    consumer.addDependency(producer,
+    consumer.addStackDependency(producer,
       `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
 
     if (strength === 'strong') {
@@ -284,7 +284,7 @@ function resolveValue(consumer: Stack, reference: CfnReference, strengthOverride
   // add a dependency between the producer and the consumer. dependency logic
   // will take care of applying the dependency at the right level (e.g. the
   // top-level stacks).
-  consumer.addDependency(producer,
+  consumer.addStackDependency(producer,
     `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
 
   if (strength === 'strong') {

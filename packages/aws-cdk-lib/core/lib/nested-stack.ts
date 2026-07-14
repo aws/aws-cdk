@@ -18,8 +18,7 @@ import { NestedStackSynthesizer } from './stack-synthesizers';
 import { Token } from './token';
 import * as cxapi from '../../cx-api';
 import { lit } from './private/literal-string';
-
-const NESTED_STACK_SYMBOL = Symbol.for('@aws-cdk/core.NestedStack');
+import { markAsNestedStack, isMarkedAsNestedStack } from './private/type-testing';
 
 /**
  * Initialization props for the `NestedStack` construct.
@@ -114,7 +113,7 @@ export class NestedStack extends Stack {
    * Checks if `x` is an object of type `NestedStack`.
    */
   public static isNestedStack(x: any): x is NestedStack {
-    return x != null && typeof(x) === 'object' && NESTED_STACK_SYMBOL in x;
+    return x != null && typeof(x) === 'object' && isMarkedAsNestedStack(x);
   }
 
   public readonly templateFile: string;
@@ -142,7 +141,7 @@ export class NestedStack extends Stack {
 
     const parentScope = new Construct(scope, id + '.NestedStack');
 
-    Object.defineProperty(this, NESTED_STACK_SYMBOL, { value: true });
+    markAsNestedStack(this);
 
     // this is the file name of the synthesized template file within the cloud assembly
     this.templateFile = `${Names.uniqueId(this)}.nested.template.json`;

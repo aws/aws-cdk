@@ -1802,7 +1802,7 @@ describe('stack', () => {
         RefToResource1: resourceA.ref,
       },
     });
-    resource2.addDependency(resourceB);
+    resource2.addResourceDependency(resourceB);
 
     // THEN
     const assembly = app.synth();

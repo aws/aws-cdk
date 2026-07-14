@@ -149,7 +149,7 @@ export abstract class CustomResourceProviderBase extends Construct {
     });
 
     if (this.role) {
-      this.handler.addDependency(this.role);
+      this.handler.addResourceDependency(this.role);
     }
 
     if (metadata) {

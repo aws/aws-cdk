@@ -7,7 +7,7 @@ import { CfnRefElement } from './cfn-element';
 import type { CfnCreationPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
 import { CfnDeletionPolicy } from './cfn-resource-policy';
 import type { Construct, Node } from 'constructs';
-import { addDependency, obtainDependencies, removeDependency } from './deps';
+import { addDependency, obtainDependencies, removeDependency } from './private/deps';
 import { CfnReference } from './private/cfn-reference';
 import type { Reference } from './reference';
 import type { RemovalPolicyOptions } from './removal-policy';
@@ -332,10 +332,17 @@ export class CfnResource extends CfnRefElement {
    * Indicates that this resource depends on another resource and cannot be
    * provisioned unless the other resource has been successfully provisioned.
    *
-   * @deprecated use addDependency
+   * This can be used for resources across stacks (or nested stack) boundaries
+   * and the dependency will automatically be transferred to the relevant scope.
+   *
+   * This method has been deprecated in favor of `addResourceDependency`, which makes it
+   * more clear that this method operates at a different level from the
+   * construct-level `construct.node.addDependency()` mechanism.
+   *
+   * @deprecated Use `addResourceDependency` instead.
    */
   public addDependsOn(target: CfnResource) {
-    return this.addDependency(target);
+    return this.addResourceDependency(target);
   }
 
   /**
@@ -345,13 +352,27 @@ export class CfnResource extends CfnRefElement {
    * This can be used for resources across stacks (or nested stack) boundaries
    * and the dependency will automatically be transferred to the relevant scope.
    */
-  public addDependency(target: CfnResource) {
+  public addResourceDependency(target: CfnResource) {
     // skip this dependency if the target is not part of the output
     if (!target.shouldSynthesize()) {
       return;
     }
 
-    addDependency(this, target, `{${this.node.path}}.addDependency({${target.node.path}})`);
+    addDependency(this, target, `<${this.node.path}>.addResourceDependency(<${target.node.path}>)`);
+  }
+
+  /**
+   * Indicates that this resource depends on another resource and cannot be
+   * provisioned unless the other resource has been successfully provisioned.
+   *
+   * This method has been deprecated in favor of `addResourceDependency`, which makes it
+   * more clear that this method operates at a different level from the
+   * construct-level `construct.node.addDependency()` mechanism.
+   *
+   * @deprecated Use `addResourceDependency` instead.
+   */
+  public addDependency(target: CfnResource) {
+    return this.addResourceDependency(target);
   }
 
   /**
@@ -387,7 +408,7 @@ export class CfnResource extends CfnRefElement {
   public replaceDependency(target: CfnResource, newTarget: CfnResource): void {
     if (this.obtainDependencies().includes(target)) {
       this.removeDependency(target);
-      this.addDependency(newTarget);
+      this.addResourceDependency(newTarget);
     } else {
       throw new ValidationError(lit`DoesDepend`, `"${this.node.path}" does not depend on "${target.node.path}"`, this);
     }

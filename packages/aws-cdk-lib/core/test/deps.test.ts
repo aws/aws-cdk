@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import * as core from '../lib';
 import { Names } from '../lib';
-import { addDependency, obtainDependencies, removeDependency } from '../lib/deps';
+import { addDependency, obtainDependencies, removeDependency } from '../lib/private/deps';
 
 describe('deps', () => {
   describe('dependency methods', () => {
@@ -123,6 +123,41 @@ describe('deps', () => {
       // For symmetry, removing a dependency that doesn't exist should be a no-op
       removeDependency(resource1, resource2);
       expect(stack1.dependencies.length).toEqual(0);
+    });
+
+    test('node.addDependency stack dependencies should not be superlinear in size of stack', () => {
+      const nStacks = 10;
+      const baseN = 35;
+
+      const growthFactor = 4; // Should take 4x the time, not 16x (or worse)
+      const errorMargin = 2; // Have some measurement margin of error
+
+      const small = runTest(baseN);
+      const large = runTest(baseN * growthFactor);
+
+      console.log({ small, large });
+
+      expect(large).toBeLessThan(small * growthFactor * errorMargin);
+
+      function runTest(nResources: number) {
+        const start = Date.now();
+
+        const app = new core.App();
+
+        let lastStack: core.Stack | undefined;
+        for (let i = 0; i < nStacks; i++) {
+          const stack = new core.Stack(app, `TestStack${i}`);
+          for (let j = 0; j < nResources; j++) {
+            new core.CfnResource(stack, `Resource${j}`, { type: 'Test::Resource::Fake' });
+          }
+          lastStack?.node.addDependency(stack);
+          lastStack = stack;
+        }
+
+        app.synth();
+
+        return Date.now() - start;
+      }
     });
   });
 });

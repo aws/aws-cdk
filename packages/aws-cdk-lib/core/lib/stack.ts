@@ -33,7 +33,6 @@ import { profileFn } from './private/perf';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { minimatch } = require('minimatch');
 
-const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
 const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
 
 export const STACK_RESOURCE_LIMIT_CONTEXT = '@aws-cdk/core:stackResourceLimit';
@@ -229,7 +228,7 @@ export class Stack extends Construct implements ITaggable {
    * We do attribute detection since we can't reliably use 'instanceof'.
    */
   public static isStack(this: void, x: any): x is Stack {
-    return x !== null && typeof (x) === 'object' && STACK_SYMBOL in x;
+    return x !== null && typeof (x) === 'object' && isMarkedAsStack(x);
   }
 
   /**
@@ -509,7 +508,7 @@ export class Stack extends Construct implements ITaggable {
     this._crossRegionReferences = !!props.crossRegionReferences;
     this._suppressTemplateIndentation = props.suppressTemplateIndentation ?? this.node.tryGetContext(SUPPRESS_TEMPLATE_INDENTATION_CONTEXT) ?? false;
 
-    Object.defineProperty(this, STACK_SYMBOL, { value: true });
+    markAsStack(this);
 
     if (!this.node.tryGetContext(cxapi.DISABLE_CREATION_STACK_TRACES) || debugModeEnabled()) {
       this.node.addMetadata(cxschema.ArtifactMetadataEntryType.CREATION_STACK, captureStackTrace(new.target));
@@ -754,9 +753,29 @@ export class Stack extends Construct implements ITaggable {
    *
    * This can be used to define dependencies between any two stacks within an
    * app, and also supports nested stacks.
+   *
+   * Stack dependencies may not cross Stage boundaries.
+   *
+   * This function has been deprecated; instead use `addStackDependency`, which
+   * more clearly indicates that this is a dependency mechanism distinct from
+   * the construct-level `construct.node.addDependency` mechanism.
+   *
+   * @deprecated Use `addStackDependency` instead.
    */
   public addDependency(target: Stack, reason?: string) {
-    addDependency(this, target, reason ?? `{${this.node.path}}.addDependency({${target.node.path}})`);
+    this.addStackDependency(target, reason);
+  }
+
+  /**
+   * Add a dependency between this stack and another stack.
+   *
+   * This can be used to define dependencies between any two stacks within an
+   * app, and also supports nested stacks.
+   *
+   * Stack dependencies may not cross Stage boundaries.
+   */
+  public addStackDependency(target: Stack, reason?: string) {
+    addDependency(this, target, reason ?? `{${this.node.path}}.addStackDependency({${target.node.path}})`);
   }
 
   /**
@@ -1932,8 +1951,8 @@ function count(xs: string[]): Record<string, number> {
 /* eslint-disable import/order */
 import { CfnOutput } from './cfn-output';
 import { ReferenceStrength } from './cross-stack-reference-strength';
-import type { Element } from './deps';
-import { addDependency } from './deps';
+import type { Element } from './private/deps';
+import { addDependency } from './private/deps';
 import { Names } from './names';
 import { Reference } from './reference';
 import type { IResolvable } from './resolvable';
@@ -1956,6 +1975,7 @@ import { AssumptionError, UnscopedValidationError, ValidationError } from './err
 import { lit } from './private/literal-string';
 import { debugModeEnabled } from './debug';
 import { captureStackTrace } from './private/stack-trace';
+import { markAsStack, isMarkedAsStack } from './private/type-testing';
 /* eslint-enable import/order */
 
 function makeCustomCoupledReference(value: any, strength: ReferenceStrength): CustomCoupledReference {

@@ -11,8 +11,7 @@ import { _toBeta1Plugin } from './validation';
 import * as public_cxapi from '../../cx-api';
 import { _convertCloudAssembly, _convertCloudAssemblyBuilder } from '../../cx-api';
 import { lit } from './private/literal-string';
-
-const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');
+import { isMarkedAsStage, markAsStage } from './private/type-testing';
 
 /**
  * Initialization props for a stage.
@@ -134,7 +133,7 @@ export class Stage extends Construct {
    *
    */
   public static isStage(this: void, x: any): x is Stage {
-    return x !== null && typeof(x) === 'object' && STAGE_SYMBOL in x;
+    return x !== null && typeof(x) === 'object' && isMarkedAsStage(x);
   }
 
   /**
@@ -203,7 +202,7 @@ export class Stage extends Construct {
       injectors.add(...props.propertyInjectors);
     }
 
-    Object.defineProperty(this, STAGE_SYMBOL, { value: true });
+    markAsStage(this);
 
     this.constructPathsCache = new Set<string>();
     this.parentStage = Stage.of(this);
