@@ -4,7 +4,7 @@
   "pluginReports": [
     {
       "pluginName": "CloudFormation Validate",
-      "pluginVersion": "1.5.0",
+      "pluginVersion": "1.5.0-beta",
       "conclusion": "success",
       "violations": [
         {

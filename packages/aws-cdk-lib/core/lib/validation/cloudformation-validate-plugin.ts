@@ -96,7 +96,7 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
   public get ruleIds(): string[] | undefined {
     return this.engine.listRules()
       // Pretend the ignored rules don't exist
-      .filter((r: RuleInfo) => !IGNORE_RULES.has(r.id))
+      .filter((r: RuleInfo) => !IGNORE_RULES.has(r.id) && r.severity !== 'INFO' && r.severity !== 'DEBUG')
       .map((r: RuleInfo) => r.id);
   }
 
