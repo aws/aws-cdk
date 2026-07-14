@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 * **redshift-alpha:** quote identifiers and escape literals containing special characters ([#38269](https://github.com/aws/aws-cdk/issues/38269)) ([3cb6844](https://github.com/aws/aws-cdk/commit/3cb684493ba4a86c8f96b3c57bb1df3541db87b7))
 
+
 ## [2.261.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.260.0-alpha.0...v2.261.0-alpha.0) (2026-07-02)
 
 
