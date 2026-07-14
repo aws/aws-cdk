@@ -234,6 +234,7 @@ describe('staging', () => {
       'stack.metadata.json',
       'stack.template.json',
       'tree.json',
+      'validation-report.json',
     ]);
   });
 
@@ -258,6 +259,7 @@ describe('staging', () => {
       'cdk.out',
       'manifest.json',
       'tree.json',
+      'validation-report.json',
     ]);
   });
 
@@ -324,6 +326,7 @@ describe('staging', () => {
       'stack.metadata.json',
       'stack.template.json',
       'tree.json',
+      'validation-report.json',
     ]);
 
     // shows a message before bundling
@@ -356,6 +359,7 @@ describe('staging', () => {
       'stack.metadata.json',
       'stack.template.json',
       'tree.json',
+      'validation-report.json',
     ]);
 
     expect(asset.assetHash).toEqual('b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4');
@@ -406,6 +410,7 @@ describe('staging', () => {
       'stack.metadata.json',
       'stack.template.json',
       'tree.json',
+      'validation-report.json',
     ]);
   });
 
@@ -452,6 +457,7 @@ describe('staging', () => {
       'stack.metadata.json',
       'stack.template.json',
       'tree.json',
+      'validation-report.json',
     ]);
 
     // Only one fingerprinting
@@ -503,6 +509,7 @@ describe('staging', () => {
       'stack.metadata.json',
       'stack.template.json',
       'tree.json',
+      'validation-report.json',
     ]);
   });
 
@@ -551,6 +558,7 @@ describe('staging', () => {
       'stack.metadata.json',
       'stack.template.json',
       'tree.json',
+      'validation-report.json',
     ]);
   });
 
@@ -606,6 +614,7 @@ describe('staging', () => {
       'stack.metadata.json',
       'stack.template.json',
       'tree.json',
+      'validation-report.json',
     ]);
   });
 
@@ -685,6 +694,7 @@ describe('staging', () => {
       'stack.metadata.json',
       'stack.template.json',
       'tree.json',
+      'validation-report.json',
     ]);
   });
 
@@ -786,6 +796,7 @@ describe('staging', () => {
       'stack.metadata.json',
       'stack.template.json',
       'tree.json',
+      'validation-report.json',
     ]);
   });
 
@@ -1428,6 +1439,7 @@ describe('staging', () => {
       'stack.metadata.json',
       'stack.template.json',
       'tree.json',
+      'validation-report.json',
     ]);
     expect(fs.readdirSync(path.join(assembly.directory, 'asset.f43148c61174f444925231b5849b468f21e93b5d1469cd07c53625ffd039ef48'))).toEqual([
       'test.zip', // bundle dir with "touched" bundled output file
@@ -1507,6 +1519,7 @@ describe('staging', () => {
       'stack.metadata.json',
       'stack.template.json',
       'tree.json',
+      'validation-report.json',
     ]);
     expect(staging.packaging).toEqual(FileAssetPackaging.ZIP_DIRECTORY);
     expect(staging.isArchive).toEqual(true);
@@ -1555,6 +1568,7 @@ describe('staging', () => {
       'stack.metadata.json',
       'stack.template.json',
       'tree.json',
+      'validation-report.json',
     ]);
     expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
     expect(staging.isArchive).toEqual(false);
@@ -1587,6 +1601,7 @@ describe('staging', () => {
       'stack.metadata.json',
       'stack.template.json',
       'tree.json',
+      'validation-report.json',
     ]);
     expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
     expect(staging.isArchive).toEqual(false);
@@ -1619,6 +1634,7 @@ describe('staging', () => {
       'stack.metadata.json',
       'stack.template.json',
       'tree.json',
+      'validation-report.json',
     ]);
     expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
     expect(staging.isArchive).toEqual(false);
@@ -1652,6 +1668,7 @@ describe('staging', () => {
       'stack.metadata.json',
       'stack.template.json',
       'tree.json',
+      'validation-report.json',
     ]);
     expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
     expect(staging.isArchive).toEqual(false);
@@ -1705,6 +1722,7 @@ describe('staging with docker cp', () => {
       'stack.metadata.json',
       'stack.template.json',
       'tree.json',
+      'validation-report.json',
     ]);
     expect(fs.readdirSync(path.join(assembly.directory, 'asset.0ec371a2022d29dfd83f5df104e0f01b34233a4e3e839c3c4ec62008f0b9a0e8'))).toEqual([
       'test.zip', // bundle dir with "touched" bundled output file
@@ -1753,6 +1771,7 @@ describe('staging with docker cp', () => {
       'stack.metadata.json',
       'stack.template.json',
       'tree.json',
+      'validation-report.json',
     ]);
     expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
     expect(staging.isArchive).toEqual(false);
@@ -1787,6 +1806,7 @@ describe('staging with docker cp', () => {
       'stack.metadata.json',
       'stack.template.json',
       'tree.json',
+      'validation-report.json',
     ]);
     expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
     expect(staging.isArchive).toEqual(false);

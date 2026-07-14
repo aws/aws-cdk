@@ -1,5 +1,4 @@
 import { spawnSync } from 'child_process';
-import * as crypto from 'crypto';
 import { isAbsolute, join } from 'path';
 import type { DockerCacheOption } from './assets';
 import { ExecutionError, UnscopedValidationError } from './errors';
@@ -387,33 +386,41 @@ export class DockerImage extends BundlingDockerImage {
       throw new UnscopedValidationError(lit`MustBeFileRelativeDocker`, `"file" must be relative to the docker build directory. Got ${options.file}`);
     }
 
-    // Image tag derived from path and build options
-    const input = JSON.stringify({ path, ...options });
-    const tagHash = crypto.createHash('sha256').update(input).digest('hex');
-    const tag = `cdk-${tagHash}`;
-
-    const dockerArgs: string[] = [
-      'build', '-t', tag,
-      ...(options.file ? ['-f', join(path, options.file)] : []),
-      ...(options.platform ? ['--platform', options.platform] : []),
-      ...(options.network ? ['--network', options.network] : []),
-      ...(options.targetStage ? ['--target', options.targetStage] : []),
-      ...(options.cacheFrom ? [...options.cacheFrom.map(cacheFrom => ['--cache-from', this.cacheOptionToFlag(cacheFrom)]).flat()] : []),
-      ...(options.cacheTo ? ['--cache-to', this.cacheOptionToFlag(options.cacheTo)] : []),
-      ...(options.cacheDisabled ? ['--no-cache'] : []),
-      ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
-      ...flatten(Object.entries(options.buildContexts || {}).map(([k, v]) => ['--build-context', `${k}=${v}`])),
-      path,
-    ];
-
-    dockerExec(dockerArgs);
-
     // Fingerprints the directory containing the Dockerfile we're building and
     // differentiates the fingerprint based on build arguments. We do this so
     // we can provide a stable image hash. Otherwise, the image ID will be
     // different every time the Docker layer cache is cleared, due primarily to
     // timestamps.
     const hash = FileSystem.fingerprint(path, { extraHash: JSON.stringify(options) });
+    const tag = `cdk-${hash}`;
+
+    // Skip the build if the image already exists in the local Docker daemon.
+    // The tag is content-addressed from the build context and all options,
+    // so an existing image with this tag is guaranteed to be up-to-date.
+    //
+    // NOTE: we don't support properly hashing all possible types of `--build-context`
+    // yet, so if we detect any of those we skip the cache check and hope the `docker
+    // build` itself is fairly quick in figuring out caching.
+    const usingBuildContexts = Object.keys(options.buildContexts ?? {}).length > 0;
+
+    if (usingBuildContexts || !this.imageAlreadyExists(tag)) {
+      const dockerArgs: string[] = [
+        'build', '-t', tag,
+        ...(options.file ? ['-f', join(path, options.file)] : []),
+        ...(options.platform ? ['--platform', options.platform] : []),
+        ...(options.network ? ['--network', options.network] : []),
+        ...(options.targetStage ? ['--target', options.targetStage] : []),
+        ...(options.cacheFrom ? [...options.cacheFrom.map(cacheFrom => ['--cache-from', this.cacheOptionToFlag(cacheFrom)]).flat()] : []),
+        ...(options.cacheTo ? ['--cache-to', this.cacheOptionToFlag(options.cacheTo)] : []),
+        ...(options.cacheDisabled ? ['--no-cache'] : []),
+        ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
+        ...flatten(Object.entries(options.buildContexts || {}).map(([k, v]) => ['--build-context', `${k}=${v}`])),
+        path,
+      ];
+
+      dockerExec(dockerArgs);
+    }
+
     return new DockerImage(tag, hash);
   }
 
@@ -424,6 +431,14 @@ export class DockerImage extends BundlingDockerImage {
    */
   public static override fromRegistry(image: string) {
     return new DockerImage(image);
+  }
+
+  private static imageAlreadyExists(tag: string): boolean {
+    const prog = process.env.CDK_DOCKER ?? 'docker';
+    const proc = spawnSync(prog, ['image', 'inspect', tag], {
+      stdio: 'ignore',
+    });
+    return proc.status === 0;
   }
 
   private static cacheOptionToFlag(option: DockerCacheOption): string {
