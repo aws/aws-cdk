@@ -378,14 +378,21 @@ describe('auto scaling group', () => {
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
 
-    expect(() => new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       minCapacity: cdk.Lazy.number({ produce: () => 5 }),
       maxCapacity: cdk.Lazy.number({ produce: () => 1 }),
       desiredCapacity: cdk.Lazy.number({ produce: () => 20 }),
-    })).not.toThrow();
+    });
+
+    // THEN: no exception
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+      MinSize: '5',
+      MaxSize: '1',
+      DesiredCapacity: '20',
+    });
   });
 
   test('maxCapacity defaults to minCapacity when using Token', () => {
