@@ -1,33 +1,20 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import * as private_cxapi from '@aws-cdk/cloud-assembly-api';
 import type { IConstruct } from 'constructs';
-import { AnnotationPlugin } from './annotation-plugin';
-import { collectAcknowledgedRuleIds } from './collect-acknowledged-rule-ids';
-import { collectAnnotationReport } from './collect-annotation-report';
 import { generateFeatureFlagReport } from './feature-flag-report';
 import { lit } from './literal-string';
 import { MetadataResource } from './metadata-resource';
 import { prepareApp } from './prepare-app';
 import { TreeMetadata } from './tree-metadata';
-import * as cxapi from '../../../cx-api';
 import { _convertCloudAssemblyBuilder } from '../../../cx-api/lib/legacy-moved';
 import { Annotations } from '../annotations';
 import { App } from '../app';
 import { _aspectTreeRevisionReader, AspectApplication, AspectPriority, Aspects } from '../aspect';
-import { AssumptionError, UnscopedValidationError } from '../errors';
-import { FeatureFlags } from '../feature-flags';
-import { FileSystem } from '../fs';
+import { UnscopedValidationError } from '../errors';
 import { Stack } from '../stack';
 import type { ISynthesisSession } from '../stack-synthesizers/types';
 import type { StageSynthesisOptions } from '../stage';
 import { Stage } from '../stage';
-import type { IPolicyValidationPlugin } from '../validation';
-import { ConstructTree } from '../validation/private/construct-tree';
-import type { NamedValidationPluginReport } from '../validation/private/report';
-import { PolicyValidationReportFormatter } from '../validation/private/report';
-
-const LEGACY_POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
+import { validateTemplates } from './synthesis-validation';
 
 /**
  * Options for `synthesize()`
@@ -76,152 +63,9 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): p
 
   const assembly = builder.buildAssembly();
 
-  invokeValidationPlugins(root, builder.outdir, assembly);
+  validateTemplates(root, builder.outdir, assembly);
 
   return assembly;
-}
-
-/**
- * Find all the assemblies in the app, including all levels of nested assemblies
- * and return a map where the assemblyId is the key
- */
-function getAssemblies(root: App, rootAssembly: private_cxapi.CloudAssembly): Map<string, private_cxapi.CloudAssembly> {
-  const assemblies = new Map<string, private_cxapi.CloudAssembly>();
-  assemblies.set(root.artifactId, rootAssembly);
-  visitAssemblies(root, 'pre', construct => {
-    const stage = construct as Stage;
-    if (stage.parentStage && assemblies.has(stage.parentStage.artifactId)) {
-      assemblies.set(
-        stage.artifactId,
-        assemblies.get(stage.parentStage.artifactId)!.getNestedAssembly(stage.artifactId),
-      );
-    }
-  });
-  return assemblies;
-}
-
-/**
- * Invoke validation plugins for all stages in an App.
- */
-function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: private_cxapi.CloudAssembly) {
-  if (!App.isApp(root)) return;
-  let hash: string | undefined;
-  const assemblies = getAssemblies(root, assembly);
-  const templatePathsByPlugin: Map<IPolicyValidationPlugin, string[]> = new Map();
-  visitAssemblies(root, 'post', construct => {
-    if (Stage.isStage(construct)) {
-      for (const plugin of construct._validationPlugins) {
-        if (!templatePathsByPlugin.has(plugin)) {
-          templatePathsByPlugin.set(plugin, []);
-        }
-        let assemblyToUse = assemblies.get(construct.artifactId);
-        if (!assemblyToUse) throw new AssumptionError(lit`ValidationFailed`, `Validation failed, cannot find cloud assembly for stage ${construct.stageName}`);
-        templatePathsByPlugin.get(plugin)!.push(...assemblyToUse.stacksRecursively.map(stack => stack.templateFullPath));
-      }
-    }
-  });
-
-  // Build the unified list of plugins to run
-  const plugins: Array<{ plugin: IPolicyValidationPlugin; templatePaths: string[] }> = [];
-
-  // 1. User-registered plugins
-  for (const [plugin, paths] of templatePathsByPlugin.entries()) {
-    plugins.push({ plugin, templatePaths: paths });
-  }
-
-  // 2. Construct annotations (as a plugin, only if there are annotations to report)
-  if (FeatureFlags.of(root).isEnabled(cxapi.ANNOTATIONS_IN_VALIDATION_REPORT)) {
-    const annotationReport = collectAnnotationReport(root, assembly.directory);
-    if (annotationReport) {
-      plugins.push({ plugin: new AnnotationPlugin(annotationReport), templatePaths: [] });
-    }
-  }
-
-  if (plugins.length === 0) return;
-
-  // eslint-disable-next-line no-console
-  console.error('Performing Policy Validations\n');
-
-  if (templatePathsByPlugin.size > 0) {
-    hash = FileSystem.fingerprint(outdir);
-  }
-
-  // Run all plugins through the same loop
-  const reports: NamedValidationPluginReport[] = [];
-  for (const { plugin, templatePaths } of plugins) {
-    try {
-      const report = plugin.validate({ templatePaths });
-      reports.push({ ...report, pluginName: plugin.name, pluginVersion: plugin.version });
-    } catch (e: any) {
-      reports.push({
-        success: false,
-        pluginName: plugin.name,
-        pluginVersion: plugin.version,
-        violations: [],
-        metadata: {
-          error: `Validation plugin '${plugin.name}' failed: ${e.message}`,
-        },
-      });
-    }
-    if (hash && FileSystem.fingerprint(outdir) !== hash) {
-      throw new AssumptionError(lit`IllegalOperationValidationPlugin`, `Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
-    }
-  }
-
-  // Filter out suppressed violations. Collect all acknowledged rule IDs
-  // from construct metadata across the tree, then remove matching violations
-  // from reports. Fatal violations cannot be suppressed.
-  //
-  // Rule matching: violations are matched as <pluginName>::<ruleName> with
-  // spaces replaced by dashes. Users suppress with:
-  //   Validations.of(x).acknowledge({ id: '<plugin-name>::<rule-id>' })
-  const acknowledgedRuleIds = collectAcknowledgedRuleIds(root);
-  if (acknowledgedRuleIds.size > 0) {
-    for (let i = 0; i < reports.length; i++) {
-      const pluginName = reports[i].pluginName.replace(/ /g, '-');
-      const filtered = reports[i].violations.filter(v => {
-        if (v.severity === 'fatal') return true;
-        const ruleId = `${pluginName}::${v.ruleName.replace(/ /g, '-')}`;
-        return !acknowledgedRuleIds.has(ruleId);
-      });
-      if (filtered.length !== reports[i].violations.length) {
-        reports[i] = {
-          ...reports[i],
-          violations: filtered,
-          success: filtered.every(v => v.severity !== 'error' && v.severity !== 'fatal'),
-        };
-      }
-    }
-  }
-
-  if (reports.length > 0) {
-    const tree = new ConstructTree(root);
-    const formatter = new PolicyValidationReportFormatter(tree);
-    const failOnErrors = root.node.tryGetContext(cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT) ?? true;
-    const writeLegacyReport = root.node.tryGetContext(cxapi.VALIDATION_REPORT_JSON_CONTEXT) ?? false;
-
-    const reportFile = path.join(assembly.directory, cxapi.VALIDATION_REPORT_FILE);
-    const jsonOutput = formatter.formatJson(reports, assembly.version);
-    fs.writeFileSync(reportFile, JSON.stringify(jsonOutput, undefined, 2));
-
-    if (writeLegacyReport) {
-      const legacyReportFile = path.join(assembly.directory, LEGACY_POLICY_VALIDATION_FILE_PATH);
-      const legacyOutput = formatter.formatLegacyJson(reports);
-      fs.writeFileSync(legacyReportFile, JSON.stringify(legacyOutput, undefined, 2));
-    }
-
-    if (failOnErrors) {
-      const output = formatter.formatPrettyPrinted(reports);
-      // eslint-disable-next-line no-console
-      console.error(output);
-      const failed = reports.some(r => !r.success);
-      if (failed) {
-        // eslint-disable-next-line no-console
-        console.error(`Validation failed. A copy of this report can be found in '${reportFile}'`);
-        process.exitCode = 1;
-      }
-    }
-  }
 }
 
 const CUSTOM_SYNTHESIS_SYM = Symbol.for('@aws-cdk/core:customSynthesis');
@@ -521,24 +365,6 @@ function validateTree(root: IConstruct) {
   if (errors.length > 0) {
     const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
     throw new UnscopedValidationError(lit`ValidationFailedWithErrors`, `Validation failed with the following errors:\n  ${errorList}`);
-  }
-}
-
-/**
- * Visit the given construct tree in either pre or post order, only looking at Assemblies
- */
-function visitAssemblies(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => void) {
-  if (order === 'pre') {
-    cb(root);
-  }
-
-  for (const child of root.node.children) {
-    if (!Stage.isStage(child)) { continue; }
-    visitAssemblies(child, order, cb);
-  }
-
-  if (order === 'post') {
-    cb(root);
   }
 }
 
