@@ -7,6 +7,8 @@ test('generation of alts from CfnFunction', () => {
   const stack = new cdk.Stack(app, 'Stack');
   new sam.CfnFunction(stack, 'MyAPI', {
     codeUri: 'build/',
+    handler: 'index.handler',
+    runtime: 'nodejs20.x',
     events: {
       GetResource: {
         type: 'Api',

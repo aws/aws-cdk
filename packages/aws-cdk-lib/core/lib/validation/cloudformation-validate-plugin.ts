@@ -2,6 +2,7 @@ import { RegoEngine, TemplateFile, version } from '@aws/cloudformation-validate'
 import type { Engine, EngineConfig, RuleInfo, Severity } from '@aws/cloudformation-validate';
 import type { PolicyValidationPluginReport, PolicyViolatingResource } from './report';
 import type { IPolicyValidationPlugin, IPolicyValidationContext } from './validation';
+import * as cxapi from '../../../cx-api';
 
 interface MutableViolation {
   ruleName: string;
@@ -105,12 +106,24 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
     for (const templatePath of context.templatePaths) {
       const templateFile = new TemplateFile(templatePath);
       const report = this.engine.validateStandard(templateFile, {
+        // Environment-agnostic stacks use these cx-api sentinels in the cloud assembly. Omitting
+        // them lets the engine model the pseudo-parameters symbolically instead of validating the
+        // sentinel text as if it were a real account or region.
         pseudoParameterOverrides: {
-          accountId: context.accountId,
-          region: context.region,
+          accountId: context.accountId === cxapi.UNKNOWN_ACCOUNT ? undefined : context.accountId,
+          region: context.region === cxapi.UNKNOWN_REGION ? undefined : context.region,
         },
         exclude: {
           ids: [...IGNORE_RULES],
+          services: [{
+            // CDK still synthesizes AWS::AutoScaling::LaunchConfiguration for applications using
+            // the legacy launch-configuration behavior. Auto Scaling remains deployable despite
+            // its maintenance-mode classification, so suppress only its W3697 lifecycle warning
+            // rather than hiding lifecycle findings for every service.
+            // <https://github.com/aws-cloudformation/cloudformation-validate/issues/37>
+            ruleId: 'W3697',
+            service: 'AWS::AutoScaling',
+          }],
         },
         severityLevel: 'WARN',
       });
@@ -179,34 +192,15 @@ const IGNORE_RULES = new Set([
   // Will be silenced forever.
   'W1020',
 
-  // WHAT: Condition can never be false.
-  // WHY: The engine assumes AWS::Partition can only ever equal 'aws', which is not true. Should be removed.
-  'W1028',
-
   // WHAT: Validate AMI format (must look like ami-xxxx)
   // WHY: CDK uses `AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>` to resolve AMIs, which the engine doesn't understand.
   // Should be removed after <https://github.com/aws-cloudformation/cloudformation-validate/issues/34> is resolved.
   'E1152', 'W2506',
 
-  // WHAT: Service in maintenance mode
-  // WHY: AutoScaling is not too bad yet, but we can't silence on a per-service basis.
-  // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/37>.
-  'W3697',
-
-  // WHAT: Read only property 'XXX' should not be specified
-  // WHY: Read-only property determination is not reliable.
-  // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/38>.
-  'E3040',
-
   // WHAT: That's not a valid attribute!
   // WHY: The source of truth is too limited.
   // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/39>.
   'E9004',
-
-  // WHAT: Action 'XXX' (category 'Deploy') has 0 input artifacts, expected at least 1
-  // WHY: There are valid cases in which an action may have 0 artifacts, such as `ActionMode: CHANGE_SET_EXECUTE`
-  // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/44>.
-  'E3702',
 
   // WHAT: "Hardcoded account ID in ARN — use AWS::AccountId pseudo-parameter"
   // WHY: In some cases, the engine reports this violation even when the AWS::AccountId was used.
@@ -223,31 +217,10 @@ const IGNORE_RULES = new Set([
   // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/46>.
   'E1150',
 
-  // WHAT: Passing an incorrect enum value is a FATAL error
-  // WHY: This should not be a FATAL; we can't assume that we know everything about every service going into the future.
-  // Fatals cannot be silenced, this is too broad.
-  // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/47>.
-  'F3030',
-
-  // WHAT: HealthCheckPort must be set to 'traffic-port' when HostPort is 0
-  // WHY: The rule does not respect the default HealthCheckPort is 'traffic-port'
-  // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/42>.
-  'E3049',
-
-  // WHAT: Ref values match the consuming property
-  // WHY: Incorrect validation of Ref function when tokens are involved
-  // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/50>
-  'W1030',
-
   // WHAT: Regional inferences cannot be trusted
   // WHY: The engine assumes that the region is always 'us-east-1' when evaluating certain rules, which is not true.
   // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/49>.
   'E3620', 'E3652', 'E3628',
-
-  // WHAT: Duplicate Subnet IDs in array
-  // WHY: Different {Fn::ImportValue}s are considered the same.
-  // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/52>.
-  'W9007',
 
   // WHAT: Circular dependency detection
   // WHY: Something seems fishy about it
@@ -263,16 +236,6 @@ const IGNORE_RULES = new Set([
   // WHY: Hardcoding an ARN is part of the behavior of some constructs (e.g., setting up multi-account DynamoDB table replicas)
   'W9002',
 
-  // WHAT: Invalid type of field
-  // WHY: { Fn::GetStackOutput } not recognized
-  // <https://github.com/aws-cloudformation/cloudformation-validate/issues/56>
-  'F3012',
-
-  // WHAT: CloudFront origin doesn't exist
-  // WHY: It does exist, it's just very long.
-  // <https://github.com/aws-cloudformation/cloudformation-validate/issues/57>
-  'E3057',
-
   // WHAT: Array must be non-empty
   // WHY: requirement seems to be hallucinated by the engine
   // <https://github.com/aws-cloudformation/cloudformation-validate/issues/62>
@@ -281,7 +244,7 @@ const IGNORE_RULES = new Set([
   // WHAT: Validate maximum string length, string matches regex
   // WHY: At least { Ref: 'AWS::AccountId' } produces a string that does not validate according to common rules.
   // <https://github.com/aws-cloudformation/cloudformation-validate/issues/65>
-  'F3031', 'F3033',
+  'F3033',
 
   // WHAT: Parameter 'X': Default must be a string
   // WHY: Using Fn::GetStackOutput as the argument for Default incorrectly triggers this rule
@@ -292,9 +255,4 @@ const IGNORE_RULES = new Set([
   // WHY: Resources like Deployment and Stage are needed to actually deploy a RestApi, even when the body comes from S3
   // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/64>
   'W3660',
-
-  // WHAT: Mutex fields on AWS::CloudWatch::Alarm
-  // WHY: The engine doesn't know about a new field that recently got added, which is also fine to supply.
-  // <https://github.com/aws-cloudformation/cloudformation-validate/issues/67>
-  'F3014',
 ]);

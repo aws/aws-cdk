@@ -307,7 +307,7 @@ describe('function', () => {
     test('applies source arn condition if principal has conditions', () => {
       const stack = new cdk.Stack();
       const fn = newTestLambda(stack);
-      const sourceArn = 'arn:aws:s3:::my-bucket';
+      const sourceArn = 'arn:aws:events:us-east-1:123456789012:rule/my-rule';
       const service = 'my-service';
       const principal = new iam.PrincipalWithConditions(new iam.ServicePrincipal(service), {
         ArnLike: {
@@ -4497,8 +4497,8 @@ test('test 2.87.0 version hash stability', () => {
     },
   });
   cdk.Validations.of(app).acknowledge({
-    id: 'CloudFormation-Validate::E3071',
-    reason: 'Node 99.x supports inline code',
+    id: 'CloudFormation-Validate::W3030',
+    reason: 'node99.x is intentionally fictional to preserve this historical hash fixture',
   });
   const stack = new cdk.Stack(app, 'Stack');
 
