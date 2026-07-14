@@ -120,7 +120,7 @@
     "@aws-cdk/asset-awscli-v1": "2.2.282",
     "@aws-cdk/asset-node-proxy-agent-v6": "^2.1.2",
     "@aws-cdk/cloud-assembly-api": "^2.2.6",
-    "@aws-cdk/cloud-assembly-schema": "^54.10.0",
+    "@aws-cdk/cloud-assembly-schema": "^54.11.0",
     "@aws/cloudformation-validate": "1.2.0-beta",
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
@@ -168,7 +168,7 @@
     "@types/lodash": "^4.17.24",
     "@types/mime-types": "^2.1.4",
     "@types/punycode": "^2.1.4",
-    "aws-cdk": "^2.1130.0",
+    "aws-cdk": "^2.1131.0",
     "aws-sdk-client-mock": "4.1.0",
     "aws-sdk-client-mock-jest": "4.1.0",
     "cdk8s": "2.70.83",
@@ -186,7 +186,7 @@
     "ts-mock-imports": "^1.3.19",
     "ts-node": "^10.9.2",
     "typescript": "~5.9.3",
-    "typescript-json-schema": "^0.67.4"
+    "typescript-json-schema": "^0.68.0"
   },
   "peerDependencies": {
     "constructs": "^10.5.0"
