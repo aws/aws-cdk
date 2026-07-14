@@ -39,6 +39,11 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
+          # Required since actions/checkout v7 to check out fork PR code from a
+          # pull_request_target workflow. Gated behind the
+          # pr/needs-integration-tests-deployment label and the
+          # deployment-integ-test environment on an isolated runner.
+          allow-unsafe-pr-checkout: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
