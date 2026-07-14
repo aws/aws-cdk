@@ -108,8 +108,6 @@
       "@aws-cdk/aws-ecr-assets/minimatch/**",
       "@aws-cdk/aws-events-targets/aws-sdk",
       "@aws-cdk/aws-events-targets/aws-sdk/**",
-      "@aws-cdk/aws-glue-alpha/@aws-sdk/client-glue",
-      "@aws-cdk/aws-glue-alpha/@aws-sdk/client-glue/**",
       "@aws-cdk/aws-imagebuilder-alpha/yaml",
       "@aws-cdk/aws-imagebuilder-alpha/yaml/**",
       "@aws-cdk/aws-iot-actions-alpha/case",

@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { GlueClient, CreatePartitionIndexCommand, DeletePartitionIndexCommand, GetPartitionIndexesCommand } from '@aws-sdk/client-glue';
 
 class PartitionIndexError extends Error {

@@ -2,7 +2,6 @@ import * as path from 'path';
 import type { CfnTable } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import type { IResource } from 'aws-cdk-lib/core';
 import { ArnFormat, CustomResource, Duration, Fn, Lazy, Names, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
@@ -517,15 +516,15 @@ class PartitionIndexProvider extends Construct {
 
     Object.defineProperty(this, PARTITION_INDEX_PROVIDER_SYMBOL, { value: true });
 
-    // Bundle @aws-sdk/client-glue into the asset so the handlers do not rely on the
-    // SDK version shipped with the Lambda runtime.
-    const entry = path.join(__dirname, 'partition-index-handler', 'index.js');
-    const makeHandler = (handlerId: string, handlerName: string) => new NodejsFunction(this, handlerId, {
+    // The handler is pre-bundled with @aws-sdk/client-glue at build time (via
+    // scripts/bundle-handler.sh) so that it does not rely on the SDK version
+    // shipped with the Lambda runtime.
+    const code = lambda.Code.fromAsset(path.join(__dirname, 'partition-index-handler.bundle'));
+    const makeHandler = (handlerId: string, handlerName: string) => new lambda.Function(this, handlerId, {
       runtime: lambda.determineLatestNodeRuntime(this),
-      entry,
-      handler: handlerName,
+      code,
+      handler: `index.${handlerName}`,
       timeout: Duration.minutes(1),
-      bundling: { bundleAwsSDK: true },
     });
 
     this.onEventHandler = makeHandler('Handler', 'onEvent');
