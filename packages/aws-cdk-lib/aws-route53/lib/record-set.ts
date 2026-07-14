@@ -231,7 +231,7 @@ export interface RecordSetOptions {
   /**
    * Whether to delete the same record set in the hosted zone if it already exists (dangerous!)
    *
-   * This allows to deploy a new record set while minimizing the downtime because the
+   * This allows you to deploy a new record set while minimizing the downtime because the
    * new record set will be created immediately after the existing one is deleted. It
    * also avoids "manual" actions to delete existing record sets.
    *
