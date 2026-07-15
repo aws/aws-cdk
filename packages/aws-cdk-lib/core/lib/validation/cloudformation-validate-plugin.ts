@@ -309,4 +309,14 @@ const IGNORE_RULES = new Set([
   // WHY: The engine doesn't know about a new field that recently got added, which is also fine to supply.
   // <https://github.com/aws-cloudformation/cloudformation-validate/issues/67>
   'F3014',
+
+  // WHAT: Lambda Permission should always have a SourceAccount
+  // WHY: It doesn't seem to detect the account that's there in the ARN?
+  // <https://github.com/aws-cloudformation/cloudformation-validate/issues/183>
+  'W3663',
+
+  // WHAT: Invalid RDS instance type
+  // WHY: Not sure if the list is correct?
+  // <https://github.com/aws-cloudformation/cloudformation-validate/issues/184>.
+  'E3025',
 ]);
