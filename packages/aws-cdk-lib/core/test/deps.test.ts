@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import * as core from '../lib';
 import { Names } from '../lib';
-import { addDependency, obtainDependencies, removeDependency } from '../lib/private/deps';
+import { dispatchDependencyOperation } from '../lib/private/deps';
 
 describe('deps', () => {
   describe('dependency methods', () => {
@@ -10,7 +10,8 @@ describe('deps', () => {
       const stack = new core.Stack(app, 'TestStack');
       const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
       const resource2 = new core.CfnResource(stack, 'Resource2', { type: 'Test::Resource::Fake2' });
-      addDependency(resource1, resource2);
+
+      resource1.addResourceDependency(resource2);
 
       expect(app.synth().getStackByName(stack.stackName).template.Resources).toEqual({
         Resource1: {
@@ -30,8 +31,8 @@ describe('deps', () => {
       const stack = new core.Stack(app, 'TestStack');
       const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
       const resource2 = new core.CfnResource(stack, 'Resource2', { type: 'Test::Resource::Fake2' });
-      addDependency(resource1, resource2);
-      removeDependency(resource1, resource2);
+      resource1.addResourceDependency(resource2);
+      resource1.removeResourceDependency(resource2);
 
       expect(app.synth().getStackByName(stack.stackName).template.Resources).toEqual({
         Resource1: {
@@ -55,18 +56,18 @@ describe('deps', () => {
       const resource2 = new core.CfnResource(stack2, 'Resource2', { type: 'Test::Resource::Fake2' });
       const resource3 = new core.CfnResource(stack1, 'Resource3', { type: 'Test::Resource::Fake3' });
 
-      addDependency(resource1, resource2);
+      resource1.addResourceDependency(resource2);
       // Adding the same resource dependency twice should be a no-op
-      addDependency(resource1, resource2);
-      addDependency(resource1, resource3);
+      resource1.addDependency(resource2);
+      resource1.addDependency(resource3);
       expect(stack1.dependencies.length).toEqual(1);
       expect(stack1.dependencies[0].node.id).toEqual(stack2.node.id);
       // obtainDependencies should assemble and flatten resource-to-resource dependencies even across stacks
-      expect(obtainDependencies(resource1).map(x => x.node.path)).toEqual([resource3.node.path, resource2.node.path]);
+      expect(resource1.obtainDependencies().map(x => x.node.path)).toEqual([resource3.node.path, resource2.node.path]);
 
-      removeDependency(resource1, resource2);
+      resource1.removeResourceDependency(resource2);
       // For symmetry, removing a dependency that doesn't exist should be a no-op
-      removeDependency(resource1, resource2);
+      resource1.removeResourceDependency(resource2);
       expect(stack1.dependencies.length).toEqual(0);
     });
 
@@ -74,7 +75,7 @@ describe('deps', () => {
       const app = new core.App();
       const stack = new core.Stack(app, 'TestStack');
       const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
-      addDependency(resource1, resource1);
+      resource1.addResourceDependency(resource1);
 
       expect(app.synth().getStackByName(stack.stackName).template.Resources).toEqual({
         Resource1: {
@@ -89,7 +90,12 @@ describe('deps', () => {
       const resource1 = new core.CfnResource(stack1, 'Resource1', { type: 'Test::Resource::Fake1' });
 
       // If source is the common stack, this should be a noop
-      addDependency(stack1, resource1);
+      dispatchDependencyOperation({
+        kind: 'add',
+        source: stack1,
+        target: resource1,
+        reason: 'test',
+      });
       expect(stack1.dependencies.length).toEqual(0);
     });
 
@@ -98,9 +104,12 @@ describe('deps', () => {
       const stack1 = new core.Stack(app, 'TestStack1');
       const resource1 = new core.CfnResource(stack1, 'Resource1', { type: 'Test::Resource::Fake1' });
 
-      expect(() => {
-        addDependency(resource1, stack1);
-      }).toThrow(/cannot depend on /);
+      expect(() => dispatchDependencyOperation({
+        kind: 'add',
+        source: resource1,
+        target: stack1,
+        reason: 'test',
+      })).toThrow(/cannot depend on /);
     });
 
     test('can explicitly add, obtain, and remove dependencies across nested stacks', () => {
@@ -113,15 +122,15 @@ describe('deps', () => {
       const resource1 = new core.CfnResource(nestedStack1, 'Resource1', { type: 'Test::Resource::Fake1' });
       const resource2 = new core.CfnResource(nestedStack2, 'Resource2', { type: 'Test::Resource::Fake2' });
 
-      addDependency(resource1, resource2);
+      resource1.addDependency(resource2);
       // Adding the same resource dependency twice should be a no-op
-      addDependency(resource1, resource2);
+      resource1.addDependency(resource2);
       expect(nestedStack1.dependencies.length).toEqual(1);
       expect(nestedStack1.dependencies[0].node.id).toEqual(nestedStack2.node.id);
 
-      removeDependency(resource1, resource2);
+      resource1.removeDependency(resource2);
       // For symmetry, removing a dependency that doesn't exist should be a no-op
-      removeDependency(resource1, resource2);
+      resource1.removeDependency(resource2);
       expect(stack1.dependencies.length).toEqual(0);
     });
 

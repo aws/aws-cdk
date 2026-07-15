@@ -183,7 +183,7 @@ describe('cfn resource', () => {
       const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
       const resource2 = new core.CfnResource(stack, 'Resource2', { type: 'Test::Resource::Fake2' });
       resource1.addResourceDependency(resource2);
-      resource1.removeDependency(resource2);
+      resource1.removeResourceDependency(resource2);
 
       expect(app.synth().getStackByName(stack.stackName).template.Resources).toEqual({
         Resource1: {
@@ -216,9 +216,9 @@ describe('cfn resource', () => {
       // obtainDependencies should assemble and flatten resource-to-resource dependencies even across stacks
       expect(resource1.obtainDependencies().map(x => x.node.path)).toEqual([resource3.node.path, resource2.node.path]);
 
-      resource1.removeDependency(resource2);
+      resource1.removeResourceDependency(resource2);
       // For symmetry, removing a dependency that doesn't exist should be a no-op
-      resource1.removeDependency(resource2);
+      resource1.removeResourceDependency(resource2);
       expect(stack1.dependencies.length).toEqual(0);
     });
 
@@ -269,7 +269,7 @@ describe('cfn resource', () => {
 
       const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
       const resource2 = new NoSynthResource(stack, 'Resource2', { type: 'Test::Resource::Fake2' });
-      resource1.removeDependency(resource2);
+      resource1.removeResourceDependency(resource2);
       resource1.addResourceDependency(resource2);
 
       expect(app.synth().getStackByName(stack.stackName).template.Resources).toEqual({

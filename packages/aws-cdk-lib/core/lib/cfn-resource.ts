@@ -387,7 +387,7 @@ export class CfnResource extends CfnRefElement {
    * This can be used for resources across stacks (including nested stacks)
    * and the dependency will automatically be removed from the relevant scope.
    */
-  public removeDependency(target: CfnResource): void {
+  public removeResourceDependency(target: CfnResource): void {
     // skip this dependency if the target is not part of the output
     if (!target.shouldSynthesize()) {
       return;
@@ -398,6 +398,18 @@ export class CfnResource extends CfnRefElement {
       source: this,
       target,
     });
+  }
+
+  /**
+   * Indicates that this resource no longer depends on another resource.
+   *
+   * This can be used for resources across stacks (including nested stacks)
+   * and the dependency will automatically be removed from the relevant scope.
+   *
+   * @deprecated Use `removeResourceDependency` instead
+   */
+  public removeDependency(target: CfnResource): void {
+    return this.removeResourceDependency(target);
   }
 
   /**
@@ -427,7 +439,7 @@ export class CfnResource extends CfnRefElement {
    */
   public replaceDependency(target: CfnResource, newTarget: CfnResource): void {
     if (this.obtainDependencies().includes(target)) {
-      this.removeDependency(target);
+      this.removeResourceDependency(target);
       this.addResourceDependency(newTarget);
     } else {
       throw new ValidationError(lit`CannotReplaceDependency`, `"${this.node.path}" does not depend on "${target.node.path}"`, this);
