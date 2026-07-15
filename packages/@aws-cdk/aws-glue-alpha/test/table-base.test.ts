@@ -434,8 +434,10 @@ describe('parition indexes', () => {
       skipBundling(stack);
       const database = new glue.Database(stack, 'Database');
 
-      // Squat on the reserved provider id at stack scope.
-      new cdk.CfnResource(stack, 'GluePartitionIndexProvider', { type: 'AWS::CloudFormation::WaitConditionHandle' });
+      // Squat on the reserved provider id at stack scope. The id embeds the
+      // stack's `addr` so that it is stable per stack yet collision-resistant.
+      const reservedId = `GluePartitionIndexProvider${stack.node.addr}`;
+      new cdk.CfnResource(stack, reservedId, { type: 'AWS::CloudFormation::WaitConditionHandle' });
 
       const table = new glue.S3Table(stack, 'Table', {
         database,
@@ -445,7 +447,7 @@ describe('parition indexes', () => {
       });
 
       expect(() => table.addPartitionIndex({ indexName: 'index1', keyNames: ['year'] }))
-        .toThrow(/id "GluePartitionIndexProvider" already exists/);
+        .toThrow(new RegExp(`id "${reservedId}" already exists`));
     });
   });
 });

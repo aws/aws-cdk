@@ -2,7 +2,7 @@
   "version": "54.0.0",
   "files": {
     "32ea0d49272e01598af5be13f167a9a9c8cba4fe753478094e202de39ff82b6d": {
-      "displayName": "GluePartitionIndexProvider/Handler/Code",
+      "displayName": "GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Handler/Code",
       "source": {
         "path": "asset.32ea0d49272e01598af5be13f167a9a9c8cba4fe753478094e202de39ff82b6d.bundle",
         "packaging": "zip"
@@ -16,7 +16,7 @@
       }
     },
     "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e": {
-      "displayName": "GluePartitionIndexProvider/Provider/framework-onEvent/Code",
+      "displayName": "GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-onEvent/Code",
       "source": {
         "path": "asset.775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e",
         "packaging": "zip"
@@ -29,16 +29,16 @@
         }
       }
     },
-    "301387d1a8f55d770f08077166340a60424399ace7cb3f194a5810294bb287ce": {
+    "25b380d77505b7e7873fe9858a8cf27bcdec783ec8470cce23a91235403ff297": {
       "displayName": "aws-cdk-glue Template",
       "source": {
         "path": "aws-cdk-glue.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-97c41c5e": {
+        "current_account-current_region-f435aa25": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "301387d1a8f55d770f08077166340a60424399ace7cb3f194a5810294bb287ce.json",
+          "objectKey": "25b380d77505b7e7873fe9858a8cf27bcdec783ec8470cce23a91235403ff297.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

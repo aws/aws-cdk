@@ -373,9 +373,11 @@ export abstract class TableBase extends Resource implements ITable {
     if (!this.partitionKeys || this.partitionKeys.length === 0) {
       throw new ValidationError(lit`NoPartitionKeysForIndex`, 'The table must have partition keys to create a partition index', this);
     }
-    const keyNames = this.partitionKeys.map(pk => pk.name);
-    if (!index.keyNames.every(k => keyNames.includes(k))) {
-      throw new ValidationError(lit`IndexKeysNotPartitionKeys`, `All index keys must also be partition keys. Got ${index.keyNames} but partition key names are ${keyNames}`, this);
+    if (!Token.isUnresolved(index.keyNames) && !index.keyNames.some(k => Token.isUnresolved(k))) {
+      const keyNames = this.partitionKeys.map(pk => pk.name);
+      if (!index.keyNames.every(k => keyNames.includes(k))) {
+        throw new ValidationError(lit`IndexKeysNotPartitionKeys`, `All index keys must also be partition keys. Got ${index.keyNames} but partition key names are ${keyNames}`, this);
+      }
     }
   }
 
@@ -480,7 +482,7 @@ const PARTITION_INDEX_PROVIDER_SYMBOL = Symbol.for('@aws-cdk/aws-glue-alpha.Part
  * All partition-indexed tables in a stack share a single provider (and its two
  * Lambda handlers) to avoid provisioning a provider framework per table. The
  * provider and handlers are grouped under this single construct so only one
- * fixed id (`GluePartitionIndexProvider`) is placed at stack scope.
+ * id is placed at stack scope.
  */
 class PartitionIndexProvider extends Construct {
   /**
@@ -488,7 +490,15 @@ class PartitionIndexProvider extends Construct {
    */
   public static getOrCreate(scope: Construct): PartitionIndexProvider {
     const stack = Stack.of(scope);
-    const id = 'GluePartitionIndexProvider';
+    // The suffix is derived from the STACK (not `scope`) on purpose: `addr` is a
+    // deterministic hash of the construct path, so every call within the same
+    // stack yields the same suffix and thus resolves to the SAME singleton
+    // provider via `tryFindChild`. Deriving from `scope` (the table) would
+    // instead give a different id per table and provision one provider per
+    // table. `node.addr` is used rather than `Names.uniqueId`/`uniqueResourceName`
+    // because those filter the reserved `Default` id (the id of a nameless root
+    // stack) and then throw on the resulting empty path; `addr` never throws.
+    const id = `GluePartitionIndexProvider${stack.node.addr}`;
     const existing = stack.node.tryFindChild(id);
     if (existing) {
       if (!PartitionIndexProvider.isPartitionIndexProvider(existing)) {
