@@ -40,6 +40,16 @@ export function dispatchDependencyOperation(op: DependencyOperation) {
     return;
   }
 
+  if (process.env.CDK_DEBUG_DEPS) {
+    if (op.kind === 'add') {
+      // eslint-disable-next-line no-console
+      console.error(`[CDK_DEBUG_DEPS] applying dependency ${op.reason}`);
+    } else {
+      // eslint-disable-next-line no-console
+      console.error(`[CDK_DEBUG_DEPS] removing construct dependency ${op.source.node.path} -> ${op.target.node.path}`);
+    }
+  }
+
   const sourcePath = dependencyContainerPath(op.source);
   const targetPath = dependencyContainerPath(op.target);
   const parentI = sharedDependencyContainerIndex(sourcePath, targetPath);
@@ -100,6 +110,12 @@ function doDispatch(source: DependencyContainer, target: DependencyContainer, op
       // L1 resource dependendencies
       for (const sourceResource of dependingResourcesFor(source)) {
         for (const targetResource of dependingResourcesFor(target)) {
+          // Some constructs add a dependency on their containing parent, which would expand to themselves here.
+          // Skip self-dependencies.
+          if (sourceResource === targetResource) {
+            continue;
+          }
+
           if (op.kind === 'add') {
             sourceResource._addResourceDependency(targetResource);
           } else {

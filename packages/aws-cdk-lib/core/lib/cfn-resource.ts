@@ -353,7 +353,7 @@ export class CfnResource extends CfnRefElement {
    * This can be used for resources across stacks (or nested stack) boundaries
    * and the dependency will automatically be transferred to the relevant scope.
    */
-  public addResourceDependency(target: CfnResource) {
+  public addResourceDependency(target: CfnResource, reason?: string) {
     // skip this dependency if the target is not part of the output
     if (!target.shouldSynthesize()) {
       return;
@@ -363,7 +363,7 @@ export class CfnResource extends CfnRefElement {
       kind: 'add',
       source: this,
       target,
-      reason: `<${this.node.path}>.addResourceDependency(<${target.node.path}>)`,
+      reason: reason ?? `<${this.node.path}>.addResourceDependency(<${target.node.path}>)`,
     });
   }
 
@@ -425,7 +425,7 @@ export class CfnResource extends CfnRefElement {
 
     let stack: Stack | undefined = Stack.of(this);
     while (stack) {
-      ret.push(...stack._stackDependenciesCausedBy(this));
+      ret.push(...stack._stackDependenciesCausedBy(this).filter((x) => Stack.isStack(x) || CfnResource.isCfnResource(x)));
       stack = stack.nestedStackParent;
     }
 
@@ -493,6 +493,11 @@ export class CfnResource extends CfnRefElement {
       this.dependsOn = new Set();
     }
     this.dependsOn.add(target);
+
+    if (process.env.CDK_DEBUG_DEPS) {
+      // eslint-disable-next-line no-console
+      console.error(`[CDK_DEBUG_DEPS] resource "${this.node.path}" depends on "${target.node.path}"`);
+    }
   }
 
   /**
@@ -514,6 +519,11 @@ export class CfnResource extends CfnRefElement {
    */
   public _removeResourceDependency(target: CfnResource) {
     this.dependsOn?.delete(target);
+
+    if (process.env.CDK_DEBUG_DEPS) {
+      // eslint-disable-next-line no-console
+      console.error(`[CDK_DEBUG_DEPS] resource "${this.node.path}" no longer depends on "${target.node.path}"`);
+    }
   }
 
   /**
@@ -582,6 +592,7 @@ export class CfnResource extends CfnRefElement {
 
       return Array
         .from(dependsOn)
+        .filter((r) => r.shouldSynthesize())
         .sort((x, y) => x.node.path.localeCompare(y.node.path))
         .map(r => r.logicalId);
     }

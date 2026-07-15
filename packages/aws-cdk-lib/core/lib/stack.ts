@@ -1112,14 +1112,20 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
-   * Return the stacks this stack depends on, for dependencies caused by the given construct.
+   * Return the stacks dependencies caused by the given construct.
+   *
+   * Returns the target resources that the dependency has been added for.
+   *
+   * I'm not sure this method is useful in any way, but we are keeping it in
+   * to maintain exact behavior as guaranteed by unit tests.
    *
    * @internal
    */
-  public _stackDependenciesCausedBy(source: IConstruct): Stack[] {
-    return Object.values(this._stackDependencies)
-      .filter((dep) => dep.reasons.some((reason) => reason.source === source))
-      .map((dep) => dep.stack);
+  public _stackDependenciesCausedBy(source: IConstruct): IConstruct[] {
+    return Array.from(new Set(Object.values(this._stackDependencies)
+      .flatMap((dep) => dep.reasons)
+      .filter((reason) => reason.source === source)
+      .map((reason) => reason.target)));
   }
 
   /**
