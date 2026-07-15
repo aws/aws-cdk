@@ -194,6 +194,14 @@ export class ConstructTree {
     };
   }
 
+  public stackTraceByPath(path: string) {
+    const construct = this.getConstructByPath(path);
+    if (!construct) {
+      return undefined;
+    }
+    return this.stackTrace(construct);
+  }
+
   /**
    * Return the stack trace for a given construct path
    *

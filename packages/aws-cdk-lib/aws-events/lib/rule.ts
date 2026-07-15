@@ -11,7 +11,7 @@ import { mergeEventPattern, renderEventPattern } from './util';
 import type { IRole, IRoleRef } from '../../aws-iam';
 import { PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import type { IResource } from '../../core';
-import { App, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat, Annotations, ValidationError } from '../../core';
+import { App, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat, Annotations, ValidationError, Validations } from '../../core';
 import type { IArrayBox, IBox } from '../../core/lib/helpers-internal';
 import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -436,6 +436,10 @@ export class Rule extends Resource implements IRule {
             maxLength: 64 - statementPrefix.length,
           }),
           principal: sourceAccount,
+        });
+        Validations.of(eventBusPolicyStack).acknowledge({
+          id: 'CloudFormation-Validate::W9009',
+          reason: 'action is deprecated, but still in use for historical reasons',
         });
       }
       // deploy the event bus permissions before the source stack

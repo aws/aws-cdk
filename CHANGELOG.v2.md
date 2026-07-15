@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.262.0](https://github.com/aws/aws-cdk/compare/v2.261.0...v2.262.0) (2026-07-15)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#38275](https://github.com/aws/aws-cdk/issues/38275)) ([2b1c632](https://github.com/aws/aws-cdk/commit/2b1c632dc2ab754882bdae066555879d8c702944))
+* **bedrockagentcore:** support service/region in IAM credential provider for gateway targets ([#37697](https://github.com/aws/aws-cdk/issues/37697)) ([08a2543](https://github.com/aws/aws-cdk/commit/08a25439b2fdf874526e8ed2cc91789ce0d85ef6)), closes [#37696](https://github.com/aws/aws-cdk/issues/37696)
+* **cloudfront:** add Managed-HostHeaderOnly origin request policy ([#38236](https://github.com/aws/aws-cdk/issues/38236)) ([0e66e47](https://github.com/aws/aws-cdk/commit/0e66e47f66a93c5813cab47cb17d5dff913f1049)), closes [#38234](https://github.com/aws/aws-cdk/issues/38234)
+* **core:** templates are validated against a comprehensive default rule set ([#38135](https://github.com/aws/aws-cdk/issues/38135)) ([023c5bf](https://github.com/aws/aws-cdk/commit/023c5bf54816e5a0bdea355944d3db4a4d718bf9))
+
+
+### Bug Fixes
+
+* **aws-cdk-lib:** fatal validations don't show plugin name ([#38273](https://github.com/aws/aws-cdk/issues/38273)) ([a88d1ba](https://github.com/aws/aws-cdk/commit/a88d1bad3fa328569c30f3b143481fd1a7df954e))
+* **aws-cdk-lib:** validation namespaces for annotations are inconsistent ([#38256](https://github.com/aws/aws-cdk/issues/38256)) ([75893d9](https://github.com/aws/aws-cdk/commit/75893d9fb827b7d1c27073ab2a3018b2e7edccbd))
+* **backup:** lifecycle and vault lock validations reject tokenized durations ([#38264](https://github.com/aws/aws-cdk/issues/38264)) ([0ff20a3](https://github.com/aws/aws-cdk/commit/0ff20a3ae85f7412afe522f8917cf728547b137f)), closes [#38263](https://github.com/aws/aws-cdk/issues/38263) [#38246](https://github.com/aws/aws-cdk/issues/38246) [#37751](https://github.com/aws/aws-cdk/issues/37751) [#25943](https://github.com/aws/aws-cdk/issues/25943) [#38246](https://github.com/aws/aws-cdk/issues/38246) [#37751](https://github.com/aws/aws-cdk/issues/37751) [#25943](https://github.com/aws/aws-cdk/issues/25943)
+* **certificatemanager:** use hasOwnProperty in apexDomain to prevent prototype collision ([#37195](https://github.com/aws/aws-cdk/issues/37195)) ([ec38947](https://github.com/aws/aws-cdk/commit/ec3894712e06fddc05936d5911333695498b78f3)), closes [#37193](https://github.com/aws/aws-cdk/issues/37193)
+* **core:** synth crashes with EISDIR on a symlink-to-directory when a validation plugin is registered ([#38299](https://github.com/aws/aws-cdk/issues/38299)) ([be0fdc4](https://github.com/aws/aws-cdk/commit/be0fdc4c83497393320a8860fc5e7c4e1c76130a)), closes [#38295](https://github.com/aws/aws-cdk/issues/38295)
+* **elasticloadbalancingv2:** improve handling for `dropInvalidHeaderFields` in case of default or switching from true to false ([#36483](https://github.com/aws/aws-cdk/issues/36483)) ([208b9db](https://github.com/aws/aws-cdk/commit/208b9db31ad3728b4898be12887e7310dbea2c0e)), closes [#36409](https://github.com/aws/aws-cdk/issues/36409)
+* **lambda:** validations reject tokenized provisioned concurrency and async invoke config values ([#38246](https://github.com/aws/aws-cdk/issues/38246)) ([4aa7e78](https://github.com/aws/aws-cdk/commit/4aa7e787560e57cf80b9412bc55a27492319e5ef)), closes [#38245](https://github.com/aws/aws-cdk/issues/38245) [#37197](https://github.com/aws/aws-cdk/issues/37197) [#36275](https://github.com/aws/aws-cdk/issues/36275) [#37197](https://github.com/aws/aws-cdk/issues/37197)
+
+
 ## [2.261.0](https://github.com/aws/aws-cdk/compare/v2.260.0...v2.261.0) (2026-07-02)
 
 

@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import { Template } from '../../assertions';
 import { Bucket, CfnBucket } from '../../aws-s3';
 import * as cxschema from '../../cloud-assembly-schema';
-import { App, CfnResource, Stack, Tag, Tags } from '../lib';
+import { App, CfnResource, Stack, Tag, Tags, Validations } from '../lib';
 import type { IAspect } from '../lib/aspect';
 import { Aspects, AspectPriority, _aspectTreeRevisionReader } from '../lib/aspect';
 import { MissingRemovalPolicies, RemovalPolicies } from '../lib/removal-policies';
@@ -408,6 +408,11 @@ describe('aspect', () => {
 
   test('RemovalPolicy: multiple aspects in chain', () => {
     const app = new App();
+    Validations.of(app).acknowledge(
+      { id: 'CloudFormation-Validate::F3016', reason: 'SNAPSHOT technically doesnt make sense here' },
+      { id: 'CloudFormation-Validate::F0018', reason: 'SNAPSHOT technically doesnt make sense here' },
+    );
+
     const stack = new Stack(app, 'My-Stack');
     new Bucket(stack, 'my-bucket', {
       removalPolicy: RemovalPolicy.RETAIN,

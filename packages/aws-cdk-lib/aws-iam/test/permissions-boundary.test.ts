@@ -168,11 +168,11 @@ test('unapply inherited boundary from a user: order 2', () => {
 });
 
 test.each([
-  [undefined, false, 'OVERRIDDEN'],
-  [AspectPriority.MUTATING, false, 'OVERRIDDEN'],
-  [AspectPriority.MUTATING, true, 'OVERRIDDEN'],
+  [undefined, false, 'arn:aws:iam::123456789012:policy/Overridden'],
+  [AspectPriority.MUTATING, false, 'arn:aws:iam::123456789012:policy/Overridden'],
+  [AspectPriority.MUTATING, true, 'arn:aws:iam::123456789012:policy/Overridden'],
   // custom DEFAULT, builtin MUTATING: custom wins and override is not applied
-  [undefined, true, 'BASE'],
+  [undefined, true, 'arn:aws:iam::123456789012:policy/Base'],
 ])('overriding works if base PB is applied using Aspect with prio %p (feature flag %p)', (basePrio, featureFlag, winner) => {
   // When a custom aspect is used to apply a permissions boundary, and the built-in APIs to override it,
   // the override still works.
@@ -186,7 +186,7 @@ test.each([
   Aspects.of(stack).add({
     visit(node) {
       if (node instanceof CfnResource && node.cfnResourceType === 'AWS::IAM::Role') {
-        node.addPropertyOverride('PermissionsBoundary', 'BASE');
+        node.addPropertyOverride('PermissionsBoundary', 'arn:aws:iam::123456789012:policy/Base');
       }
     },
   }, {
@@ -199,7 +199,7 @@ test.each([
 
   // WHEN
   iam.PermissionsBoundary.of(role).apply({
-    managedPolicyArn: 'OVERRIDDEN',
+    managedPolicyArn: 'arn:aws:iam::123456789012:policy/Overridden',
   } as any);
 
   // THEN

@@ -1,5 +1,6 @@
 import * as cdk from '../../core';
 import * as ecs from '../lib';
+import { acknowledgeTestValidationRules } from './util';
 
 describe('amis', () => {
   test.each([
@@ -11,6 +12,7 @@ describe('amis', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app);
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new ecs.BottleRocketImage({

@@ -1,0 +1,48 @@
+{
+  "version": "54.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.1.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F3002",
+          "description": "BogusProperty: Additional properties are not allowed ('BogusProperty' was unexpected)",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "CloudFormationValidatePluginStack/MyBucket/Resource",
+              "constructFqn": "aws-cdk-lib.aws_s3.CfnBucket",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/core/test/integ.cloudformation-validate-plugin.js.snapshot/CloudFormationValidatePluginStack.template.json",
+                "logicalId": "MyBucketF68F3FF0",
+                "propertyPaths": [
+                  "Properties.BogusProperty"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "F0001",
+          "description": "Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

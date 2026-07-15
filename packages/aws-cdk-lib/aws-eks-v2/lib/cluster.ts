@@ -1375,6 +1375,8 @@ export class Cluster extends ClusterBase {
       bootstrapSelfManagedAddons: props.bootstrapSelfManagedAddons,
     });
 
+    this.node.defaultChild = resource;
+
     let kubectlSubnets = this._kubectlProviderOptions?.privateSubnets;
 
     if (this.endpointAccess._config.privateAccess && privateSubnets.length !== 0) {

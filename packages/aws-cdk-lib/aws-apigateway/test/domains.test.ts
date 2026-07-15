@@ -1,7 +1,7 @@
 import { Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
 import { Bucket } from '../../aws-s3';
-import { Fn, Stack } from '../../core';
+import { Fn, Stack, Validations } from '../../core';
 import * as apigw from '../lib';
 
 /* eslint-disable @stylistic/quote-props */
@@ -14,26 +14,26 @@ describe('domains', () => {
 
     // WHEN
     const regionalDomain = new apigw.DomainName(stack, 'my-domain', {
-      domainName: 'example.com',
+      domainName: 'example.com/region',
       certificate: cert,
       endpointType: apigw.EndpointType.REGIONAL,
     });
 
     const edgeDomain = new apigw.DomainName(stack, 'your-domain', {
-      domainName: 'example.com',
+      domainName: 'example.com/edge',
       certificate: cert,
       endpointType: apigw.EndpointType.EDGE,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
-      'DomainName': 'example.com',
+      'DomainName': 'example.com/region',
       'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' },
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
-      'DomainName': 'example.com',
+      'DomainName': 'example.com/edge',
       'EndpointConfiguration': { 'Types': ['EDGE'] },
       'CertificateArn': { 'Ref': 'Cert5C9FAEC1' },
     });
@@ -357,6 +357,7 @@ describe('domains', () => {
       endpointType: apigw.EndpointType.EDGE,
       mapping: api,
     });
+    Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::BasePathMapping', {
@@ -387,6 +388,7 @@ describe('domains', () => {
         mapping: api,
         basePath: 'v1/api',
       });
+      Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::ApiMapping', {
@@ -450,6 +452,8 @@ describe('domains', () => {
         domainName: 'foo.com',
         certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       });
+      Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
+
       domain.addApiMapping(api.deploymentStage);
       domain.addApiMapping(api.deploymentStage, { basePath: '//' });
       domain.addApiMapping(api.deploymentStage, {
@@ -519,6 +523,7 @@ describe('domains', () => {
         domainName: 'foo.com',
         certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       });
+      Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
       // WHEN
       domain.addApiMapping(api.deploymentStage, {
@@ -584,6 +589,7 @@ describe('domains', () => {
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       endpointType: apigw.EndpointType.REGIONAL,
     });
+    Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
     api1.root.addMethod('GET');
     api2.root.addMethod('GET');
 
@@ -835,6 +841,8 @@ describe('domains', () => {
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       endpointType: apigw.EndpointType.REGIONAL,
     });
+    Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
+
     api1.root.addMethod('GET');
     api2.root.addMethod('GET');
 
@@ -887,6 +895,7 @@ describe('domains', () => {
       },
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
     });
+    Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
       'DomainName': 'example.com',
@@ -908,6 +917,8 @@ describe('domains', () => {
         version: 'version',
       },
     });
+    Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
+
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
       'DomainName': 'example.com',
       'EndpointConfiguration': { 'Types': ['REGIONAL'] },
@@ -926,6 +937,7 @@ describe('domains', () => {
         endpointType: apigw.EndpointType.REGIONAL,
       },
     }).root.addMethod('GET');
+    Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::BasePathMapping', {
@@ -957,6 +969,7 @@ describe('domains', () => {
         endpointType: apigw.EndpointType.REGIONAL,
       },
     }).root.addMethod('GET');
+    Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::BasePathMapping', {
@@ -984,6 +997,7 @@ describe('domains', () => {
       securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
       endpointAccessMode: apigw.EndpointAccessMode.STRICT,
     });
+    Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // WHEN - should not throw
     expect(() => {
