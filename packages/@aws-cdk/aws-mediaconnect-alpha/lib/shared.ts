@@ -510,6 +510,9 @@ export interface StaticKeyEncryption {
   /**
    * IAM role that MediaConnect assumes to access the Secrets Manager secret.
    *
+   * If provided, the role is used as-is; you must grant it the necessary permissions
+   * yourself.
+   *
    * @default - a scoped role is auto-created with read access to the secret (including
    * `kms:Decrypt` for a customer-managed key) and a confused-deputy trust condition. See
    * the **Encryption** section of the module README for the generated trust policy.
@@ -539,6 +542,9 @@ export interface StaticKeyEncryption {
 export interface SrtPasswordEncryption {
   /**
    * IAM role that MediaConnect assumes to access the Secrets Manager secret.
+   *
+   * If provided, the role is used as-is; you must grant it the necessary permissions
+   * yourself.
    *
    * @default - a scoped role is auto-created with read access to the secret and a
    * confused-deputy trust condition. See the **Encryption** section of the module README
@@ -571,6 +577,9 @@ export interface TransitEncryption {
   /**
    * IAM role that MediaConnect assumes to access the Secrets Manager secret.
    *
+   * If provided, the role is used as-is; you must grant it the necessary permissions
+   * yourself.
+   *
    * @default - a scoped role is auto-created with read access to the secret and a
    * confused-deputy trust condition. See the **Encryption** section of the module README
    * for the generated trust policy.
@@ -602,6 +611,9 @@ export interface RouterSrtEncryption {
   /**
    * IAM role that MediaConnect assumes to access the Secrets Manager secret.
    *
+   * If provided, the role is used as-is; you must grant it the necessary permissions
+   * yourself.
+   *
    * @default - a scoped role is auto-created with read access to the secret and a
    * confused-deputy trust condition. See the **Encryption** section of the module README
    * for the generated trust policy.
@@ -628,6 +640,9 @@ export enum EncryptionKeyType {
  * `kms:Decrypt` when the secret has a CMK, and a trust policy with `aws:SourceAccount`
  * (plus `aws:SourceArn` when `sourceArn` is given). The returned `grant` lets callers order
  * the role's secret-read policy before the consuming resource — required for router I/O.
+ *
+ * A provided role is used as-is and is not granted secret access — the caller is
+ * responsible for ensuring it can read the secret (and decrypt its KMS key, if any).
  *
  * @see https://docs.aws.amazon.com/mediaconnect/latest/ug/cross-service-confused-deputy-prevention.html
  * @internal

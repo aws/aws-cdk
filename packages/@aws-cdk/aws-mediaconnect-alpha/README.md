@@ -991,7 +991,9 @@ MediaConnect supports two types of encryption:
 
 Note: CFN exposes only `static-key` and `srt-password` for flow output encryption today; SPEKE is not currently part of the surface.
 
-**Auto-created IAM role.** Every encryption struct accepts an optional `role`. Omit it and the consuming construct creates a scoped role for you: trust policy for `mediaconnect.amazonaws.com` with `aws:SourceAccount` + `aws:SourceArn` conditions (confused-deputy protection), and just enough permission to read the provided secret (including `kms:Decrypt` when the secret uses a customer-managed KMS key). Provide your own `role` when you need stricter control or a shared identity.
+**Auto-created IAM role.** Every encryption struct accepts an optional `role`. Omit it and the consuming construct creates a scoped role for you: trust policy for `mediaconnect.amazonaws.com` with `aws:SourceAccount` + `aws:SourceArn` conditions (confused-deputy protection), and just enough permission to read the provided secret (including `kms:Decrypt` when the secret uses a customer-managed KMS key).
+
+**Providing your own role.** If you supply a `role`, it's used as-is — the construct does **not** grant it any permissions. You must grant it the necessary permissions yourself. Provide your own role when you need stricter control or a shared identity.
 
 **Trust-policy scope: flows vs. routers.** When the L2 auto-creates a role, it also pins `aws:SourceArn` to the consuming resource:
 
