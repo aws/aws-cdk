@@ -35,6 +35,11 @@ export function reifyConstructDependencies(root: IConstruct) {
  * This finds the closest related dependency containers and applies the right operation.
  */
 export function dispatchDependencyOperation(op: DependencyOperation) {
+  if (op.source === op.target) {
+    // We can summarily skip self-dependencies
+    return;
+  }
+
   const sourcePath = dependencyContainerPath(op.source);
   const targetPath = dependencyContainerPath(op.target);
   const parentI = sharedDependencyContainerIndex(sourcePath, targetPath);

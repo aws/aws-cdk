@@ -5,8 +5,8 @@ import { debugModeEnabled } from '../debug';
 import { Stack } from '../stack';
 import { Stage } from '../stage';
 import { iterateDfsPostorder, iterateDfsPreorder } from './construct-iteration';
+import { reifyConstructDependencies } from './deps';
 import { writePropertyAssignmentMetadataForConstruct } from './resolve';
-import { reifyConstructDependencies } from './synthesis-dependencies';
 
 function writePropertyAssignmentMetadata(root: IConstruct) {
   if (!debugModeEnabled()) return;
