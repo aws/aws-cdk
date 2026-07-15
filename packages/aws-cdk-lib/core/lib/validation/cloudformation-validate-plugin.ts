@@ -110,8 +110,8 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
         // them lets the engine model the pseudo-parameters symbolically instead of validating the
         // sentinel text as if it were a real account or region.
         pseudoParameterOverrides: {
-          accountId: context.accountId === cxapi.UNKNOWN_ACCOUNT ? undefined : context.accountId,
-          region: context.region === cxapi.UNKNOWN_REGION ? undefined : context.region,
+          accountId: context.accountId,
+          region: context.region,
         },
         exclude: {
           ids: [...IGNORE_RULES],
