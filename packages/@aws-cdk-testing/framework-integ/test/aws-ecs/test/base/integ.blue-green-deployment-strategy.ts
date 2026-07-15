@@ -167,8 +167,24 @@ const target = service.loadBalancerTarget({
 target.attachToApplicationTargetGroup(blueTargetGroup);
 
 // Create integration test
-new integ.IntegTest(app, 'aws-ecs-blue-green', {
+const integTest = new integ.IntegTest(app, 'aws-ecs-blue-green', {
   testCases: [stack],
 });
+
+// Assert that both deployment alarms are present on the deployed service. This guards
+// against a regression where enableDeploymentAlarms() replaced, rather than appended to,
+// the alarm names configured via the FargateService constructor (see issue #36308).
+const describeServices = integTest.assertions.awsApiCall('ECS', 'describeServices', {
+  cluster: cluster.clusterArn,
+  services: [service.serviceArn],
+});
+
+describeServices.assertAtPath(
+  'services.0.deploymentConfiguration.alarms.alarmNames',
+  integ.ExpectedResult.arrayWith([
+    integ.Match.stringLikeRegexp('MyCustomAlarm'),
+    integ.Match.stringLikeRegexp('AnotherCustomAlarm'),
+  ]),
+);
 
 app.synth();
