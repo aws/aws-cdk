@@ -544,7 +544,7 @@ class PartitionIndexProvider extends Construct {
       onEventHandler: this.onEventHandler,
       isCompleteHandler: this.isCompleteHandler,
       queryInterval: Duration.seconds(10),
-      totalTimeout: Duration.hours(1),
+      totalTimeout: Duration.minutes(15),
     });
   }
 
