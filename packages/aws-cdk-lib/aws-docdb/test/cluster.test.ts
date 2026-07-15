@@ -626,6 +626,56 @@ describe('DatabaseCluster', () => {
     });
   });
 
+  test('instanceMaintenanceWindow propagates to all auto-created instances', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+      },
+      vpc,
+      preferredMaintenanceWindow: 'tue:04:17-tue:04:47',
+      instances: 2,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
+      instanceMaintenanceWindow: 'sat:09:00-sat:09:30',
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::DocDB::DBCluster', {
+      PreferredMaintenanceWindow: 'tue:04:17-tue:04:47',
+    });
+    template.resourceCountIs('AWS::DocDB::DBInstance', 2);
+    template.allResources('AWS::DocDB::DBInstance', {
+      Properties: Match.objectLike({
+        PreferredMaintenanceWindow: 'sat:09:00-sat:09:30',
+      }),
+    });
+  });
+
+  test('maintenance window is omitted on instances when instanceMaintenanceWindow is not set', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+      },
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBInstance', {
+      PreferredMaintenanceWindow: Match.absent(),
+    });
+  });
+
   test('can configure CloudWatchLogs for audit', () => {
     // GIVEN
     const stack = testStack();

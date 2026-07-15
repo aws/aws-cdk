@@ -190,6 +190,25 @@ export interface DatabaseClusterProps {
   readonly preferredMaintenanceWindow?: string;
 
   /**
+   * The weekly time range during which system maintenance can occur on the cluster's instances, in UTC.
+   *
+   * The cluster-level `preferredMaintenanceWindow` applies to cluster-wide maintenance events; this prop
+   * applies to each auto-created instance independently. To use the same window for both, set this prop
+   * to the same value as `preferredMaintenanceWindow`.
+   *
+   * Format: `ddd:hh24:mi-ddd:hh24:mi`. Must be at least 30 minutes long.
+   * Example: 'sat:09:00-sat:09:30'
+   *
+   * Only applicable to provisioned clusters; has no effect on serverless clusters because they do not
+   * create instances.
+   *
+   * @default - a 30-minute window selected at random from an 8-hour block of time for each AWS Region,
+   * occurring on a random day of the week.
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/db-instance-maintain.html#maintenance-window
+   */
+  readonly instanceMaintenanceWindow?: string;
+
+  /**
    * The removal policy to apply when the cluster and its instances are removed
    * or replaced during a stack update, or when the stack is deleted. This
    * removal policy also applies to the implicit security group created for the
@@ -676,6 +695,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
           dbInstanceClass: databaseInstanceType(props.instanceType!),
           enablePerformanceInsights: props.enablePerformanceInsights,
           caCertificateIdentifier: caCertificateIdentifier,
+          preferredMaintenanceWindow: props.instanceMaintenanceWindow,
         });
 
         instance.applyRemovalPolicy(instanceRemovalPolicy, {
