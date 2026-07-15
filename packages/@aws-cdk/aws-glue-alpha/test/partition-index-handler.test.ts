@@ -58,12 +58,34 @@ describe('onEvent', () => {
       });
     });
 
-    test('swallows AlreadyExistsException and still reports success', async () => {
+    test('swallows AlreadyExistsException when the existing index has matching keys', async () => {
       glueMock.on(CreatePartitionIndexCommand).rejects(awsError('AlreadyExistsException'));
+      glueMock.on(GetPartitionIndexesCommand).resolves({
+        PartitionIndexDescriptorList: [{
+          IndexName: 'my-index',
+          Keys: [{ Name: 'year', Type: 'string' }, { Name: 'month', Type: 'string' }],
+          IndexStatus: 'ACTIVE',
+        }],
+      });
 
       const result = await onEvent(event('Create'));
 
       expect(result).toEqual({ PhysicalResourceId: 'my-index' });
+    });
+
+    test('throws when the existing index has different keys', async () => {
+      glueMock.on(CreatePartitionIndexCommand).rejects(awsError('AlreadyExistsException'));
+      glueMock.on(GetPartitionIndexesCommand).resolves({
+        PartitionIndexDescriptorList: [{
+          IndexName: 'my-index',
+          Keys: [{ Name: 'year', Type: 'string' }, { Name: 'day', Type: 'string' }],
+          IndexStatus: 'ACTIVE',
+        }],
+      });
+
+      await expect(onEvent(event('Create'))).rejects.toThrow(
+        /Partition index my-index already exists on my-database\.my-table with different keys/,
+      );
     });
 
     test('rethrows any other error', async () => {

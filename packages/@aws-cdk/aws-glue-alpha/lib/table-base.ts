@@ -359,6 +359,10 @@ export abstract class TableBase extends Resource implements ITable {
   }
 
   private generateIndexName(keys: string[]): string {
+    if (keys.some(k => Token.isUnresolved(k))) {
+      const uniqueId = Names.uniqueId(this);
+      return uniqueId.substring(Math.max(0, uniqueId.length - 80));
+    }
     const prefix = keys.join('-') + '-';
     const uniqueId = Names.uniqueId(this);
     const maxIndexLength = 80; // arbitrarily specified

@@ -34,8 +34,16 @@ export async function onEvent(event: any) {
       // resource being replaced (CloudFormation creates the replacement before deleting
       // the old resource). Treat this as success and let isComplete verify its state.
       if (e.name === 'AlreadyExistsException') {
+        const existing = await findPartitionIndex(DatabaseName, TableName, IndexName);
+        const existingKeys = existing?.Keys?.map((k: any) => k.Name);
+        if (!existing || JSON.stringify(existingKeys?.sort()) !== JSON.stringify([...Keys].sort())) {
+          throw new PartitionIndexError(
+            `Partition index ${IndexName} already exists on ${DatabaseName}.${TableName} with different keys ` +
+              `(existing: ${JSON.stringify(existingKeys)}, requested: ${JSON.stringify(Keys)}). Delete the existing index first.`,
+          );
+        }
         // eslint-disable-next-line no-console
-        console.log(`Partition index ${IndexName} already exists on ${DatabaseName}.${TableName} - reusing existing index`);
+        console.log(`Partition index ${IndexName} already exists with matching keys - reusing`);
       } else {
         throw e;
       }
@@ -88,6 +96,7 @@ export async function isComplete(event: any) {
   if (!index) return { IsComplete: false };
   if (index.IndexStatus === 'ACTIVE') return { IsComplete: true };
   if (index.IndexStatus === 'CREATING') return { IsComplete: false };
+  if (index.IndexStatus === 'DELETING') return { IsComplete: false };
 
   const errorDetails = index.BackfillErrors?.length
     ? ` Backfill errors: ${JSON.stringify(index.BackfillErrors)}`
