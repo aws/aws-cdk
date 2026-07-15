@@ -69,6 +69,22 @@ describe('Memory default tests', () => {
     expect(memoryWithDefaultExpiry.expirationDuration?.toDays()).toBe(90);
   });
 
+  test('Should apply removal policy via the L2 construct', () => {
+    const removalStack = new cdk.Stack(new cdk.App(), 'removal-stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const removalMemory = new Memory(removalStack, 'removal-memory', {
+      memoryName: 'removal_memory',
+      expirationDuration: Duration.days(30),
+    });
+    expect(() => removalMemory.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY)).not.toThrow();
+
+    const cfnMemory = removalMemory.node.defaultChild as cdk.CfnResource;
+    expect(cfnMemory).toBeDefined();
+    expect(cfnMemory.cfnOptions.deletionPolicy).toBe('Delete');
+    expect(cfnMemory.cfnOptions.updateReplacePolicy).toBe('Delete');
+  });
+
   test('Should have service role with confused deputy conditions', () => {
     template.hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {

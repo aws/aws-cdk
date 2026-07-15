@@ -746,6 +746,10 @@ export class Memory extends MemoryBase {
     // CFN Resource
     // ------------------------------------------------------
     this.__resource = new CfnMemory(this, 'Memory', cfnProps);
+    // Explicitly set the default child: the construct also creates a `Role`
+    // child (`ServiceRole`), so CDK does not auto-assign the Cfn resource as
+    // the default child, which breaks `applyRemovalPolicy()`.
+    this.node.defaultChild = this.__resource;
 
     this.memoryId = this.__resource.attrMemoryId;
     this.memoryArn = this.__resource.attrMemoryArn;
