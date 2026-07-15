@@ -1850,7 +1850,7 @@ describe('stack', () => {
     childA._addAssemblyDependency(child1, { source: resourceA, target: resource1 });
     childA._addAssemblyDependency(child1, { source: resourceA, target: resource2 });
 
-    expect(childA._obtainAssemblyDependencies({ source: resourceA }))
+    expect(childA._stackDependenciesCausedBy({ source: resourceA }))
       .toEqual([resource1, resource2]);
 
     const assembly = app.synth();
@@ -1867,7 +1867,7 @@ describe('stack', () => {
 
     childA._addAssemblyDependency(child1);
 
-    expect(childA._obtainAssemblyDependencies({ source: childA }))
+    expect(childA._stackDependenciesCausedBy({ source: childA }))
       .toEqual([child1]);
 
     const assembly = app.synth();
@@ -1902,9 +1902,9 @@ describe('stack', () => {
     const child2 = new Stack(parent, 'Child2');
 
     child2._addAssemblyDependency(child1);
-    const depsBefore = child2._obtainAssemblyDependencies({ source: child2 });
+    const depsBefore = child2._stackDependenciesCausedBy({ source: child2 });
     child2._addAssemblyDependency(child1);
-    expect(depsBefore).toEqual(child2._obtainAssemblyDependencies({ source: child2 }));
+    expect(depsBefore).toEqual(child2._stackDependenciesCausedBy({ source: child2 }));
   });
 
   test('_removeAssemblyDependency removes one StackDependencyReason of two from _stackDependencies', () => {
@@ -1920,7 +1920,7 @@ describe('stack', () => {
     childA._addAssemblyDependency(child1, { source: resourceA, target: resource2 });
     childA._removeAssemblyDependency(child1, { source: resourceA, target: resource1 });
 
-    expect(childA._obtainAssemblyDependencies({ source: resourceA })).toEqual([resource2]);
+    expect(childA._stackDependenciesCausedBy({ source: resourceA })).toEqual([resource2]);
 
     const assembly = app.synth();
 
@@ -1942,7 +1942,7 @@ describe('stack', () => {
     childA._removeAssemblyDependency(child1, { source: resourceA, target: resource1 });
     childA._removeAssemblyDependency(child1, { source: resourceA, target: resource2 });
 
-    expect(childA._obtainAssemblyDependencies({ source: childA })).toEqual([]);
+    expect(childA._stackDependenciesCausedBy({ source: childA })).toEqual([]);
 
     const assembly = app.synth();
 
@@ -1959,7 +1959,7 @@ describe('stack', () => {
     childA._addAssemblyDependency(child1);
     childA._removeAssemblyDependency(child1);
 
-    expect(childA._obtainAssemblyDependencies({ source: childA })).toEqual([]);
+    expect(childA._stackDependenciesCausedBy({ source: childA })).toEqual([]);
 
     const assembly = app.synth();
 

@@ -7,7 +7,7 @@ import { CfnRefElement } from './cfn-element';
 import type { CfnCreationPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
 import { CfnDeletionPolicy } from './cfn-resource-policy';
 import type { Construct, Node } from 'constructs';
-import { addDependency, obtainDependencies, removeDependency } from './private/deps';
+import { dispatchDependencyOperation } from './private/deps';
 import { CfnReference } from './private/cfn-reference';
 import type { Reference } from './reference';
 import type { RemovalPolicyOptions } from './removal-policy';
@@ -24,6 +24,7 @@ import { deepMerge } from './private/deep-merge';
 import type { ResourceEnvironment } from './environment';
 import { lit } from './private/literal-string';
 import { captureStackTrace } from './private/stack-trace';
+import { Stack } from './stack';
 
 export interface CfnResourceProps {
   /**
@@ -358,7 +359,12 @@ export class CfnResource extends CfnRefElement {
       return;
     }
 
-    addDependency(this, target, `<${this.node.path}>.addResourceDependency(<${target.node.path}>)`);
+    dispatchDependencyOperation({
+      kind: 'add',
+      source: this,
+      target,
+      reason: `<${this.node.path}>.addResourceDependency(<${target.node.path}>)`,
+    });
   }
 
   /**
@@ -387,17 +393,31 @@ export class CfnResource extends CfnRefElement {
       return;
     }
 
-    removeDependency(this, target);
+    dispatchDependencyOperation({
+      kind: 'remove',
+      source: this,
+      target,
+    });
   }
 
   /**
-   * Retrieves an array of resources this resource depends on.
+   * Retrieves an array of resources and stacks this resource depends on.
    *
-   * This assembles dependencies on resources across stacks (including nested stacks)
-   * automatically.
+   * For resources depended on directly, returns the `CfnResource` object. For
+   * dependencies on other stacks, returns the `Stack` object. The order of the
+   * array is not guaranteed.
    */
-  public obtainDependencies() {
-    return obtainDependencies(this);
+  public obtainDependencies(): Array<CfnResource | Stack> {
+    const ret: Array<CfnResource | Stack> = [];
+    ret.push(...this._directResourceDependencies());
+
+    let stack: Stack | undefined = Stack.of(this);
+    while (stack) {
+      ret.push(...stack._stackDependenciesCausedBy(this));
+      stack = stack.nestedStackParent;
+    }
+
+    return ret;
   }
 
   /**
@@ -410,7 +430,7 @@ export class CfnResource extends CfnRefElement {
       this.removeDependency(target);
       this.addResourceDependency(newTarget);
     } else {
-      throw new ValidationError(lit`DoesDepend`, `"${this.node.path}" does not depend on "${target.node.path}"`, this);
+      throw new ValidationError(lit`CannotReplaceDependency`, `"${this.node.path}" does not depend on "${target.node.path}"`, this);
     }
   }
 
@@ -450,12 +470,9 @@ export class CfnResource extends CfnRefElement {
   }
 
   /**
-   * Called by the `addDependency` helper function in order to realize a direct
-   * dependency between two resources that are directly defined in the same
-   * stacks.
+   * Called by `dispatchDependencyOperation` to realize a dependency between two resources.
    *
-   * Use `resource.addDependency` to define the dependency between two resources,
-   * which also takes stack boundaries into account.
+   * All validation for appropriate scope has already been done, cycle detection has not been done yet.
    *
    * @internal
    */
@@ -469,14 +486,17 @@ export class CfnResource extends CfnRefElement {
   /**
    * Get a shallow copy of dependencies between this resource and other resources
    * in the same stack.
+   *
+   * @internal
    */
-  public obtainResourceDependencies() {
+  public _directResourceDependencies() {
     return Array.from(this.dependsOn?.values() ?? []);
   }
 
   /**
-   * Remove a dependency between this resource and other resources in the same
-   * stack.
+   * Called by `dispatchDependencyOperation` to remove a dependency between two resources.
+   *
+   * All validation for appropriateness has already been done.
    *
    * @internal
    */
@@ -731,4 +751,3 @@ export function traceProperty(node: Node, propertyName: string) {
     });
   }
 }
-
