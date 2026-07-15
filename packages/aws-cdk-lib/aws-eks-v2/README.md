@@ -317,6 +317,45 @@ cluster.addNodegroupCapacity('custom-node-group', {
 });
 ```
 
+#### Default AMI type (under feature flag)
+
+By default, managed node groups that do not set `amiType` use `AL2_X86_64` (or `AL2_ARM_64` for
+ARM instances). Amazon Linux 2 EKS-optimized AMIs reached end of support on **November 26, 2025**.
+AL2023 is the AWS-recommended default.
+
+New applications should enable the `@aws-cdk/aws-eks:defaultToAL2023` feature flag in `cdk.json`:
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-eks:defaultToAL2023": true
+  }
+}
+```
+
+When the flag is enabled, the default AMI type for x86_64 instances becomes
+`AL2023_X86_64_STANDARD`, and for ARM instances it becomes `AL2023_ARM_64_STANDARD`. GPU
+instances continue to default to `AL2_X86_64_GPU` because AL2023 splits GPU support into
+separate NVIDIA and Neuron AMI variants — GPU users must pick a variant explicitly.
+
+**Migration for existing applications.** Enabling this flag on an existing app will cause
+managed node groups that previously defaulted to AL2 to be replaced with AL2023 on the next
+deploy, which terminates running pods. To roll out safely, pin every existing node group to its
+current AMI type first, and only then enable the flag as shown below. Then gradually unpin the
+AMI for the nodes you want to upgrade.
+
+```ts
+declare const cluster: eks.Cluster;
+
+// Pin existing node groups to AL2 explicitly before enabling the flag.
+cluster.addNodegroupCapacity('workers', {
+  instanceTypes: [new ec2.InstanceType('m5.large')],
+  amiType: eks.NodegroupAmiType.AL2_X86_64,
+});
+```
+
+Explicitly setting `amiType` will pin it — it is not affected by the feature flag.
+
 ### Fargate profiles
 
 AWS Fargate is a technology that provides on-demand, right-sized compute
@@ -431,7 +470,7 @@ To deploy the controller on your EKS cluster, configure the `albController` prop
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_34,
   albController: {
-    version: eks.AlbControllerVersion.V2_8_2,
+    version: eks.AlbControllerVersion.V3_2_2,
   },
 });
 ```
@@ -444,7 +483,7 @@ import { KubectlV35Layer } from '@aws-cdk/lambda-layer-kubectl-v35';
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_34,
   albController: {
-    version: eks.AlbControllerVersion.V2_8_2,
+    version: eks.AlbControllerVersion.V3_2_2,
     additionalHelmChartValues: {
       enableWafv2: false
     }
@@ -458,7 +497,7 @@ To overwrite an existing ALB controller service account, use the `overwriteServi
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_34,
   albController: {
-    version: eks.AlbControllerVersion.V2_8_2,
+    version: eks.AlbControllerVersion.V3_2_2,
     overwriteServiceAccount: true,
   },
 });
@@ -478,7 +517,7 @@ aws-load-balancer-controller-76bd6c7586-fqxph   1/1     Running   0          109
 ...
 ```
 
-Every Kubernetes manifest that utilizes the ALB Controller is effectively dependant on the controller.
+Every Kubernetes manifest that utilizes the ALB Controller is effectively dependent on the controller.
 If the controller is deleted before the manifest, it might result in dangling ELB/ALB resources.
 Currently, the EKS construct library does not detect such dependencies, and they should be done explicitly.
 
@@ -557,7 +596,7 @@ If you want to use an existing kubectl provider function, for example with tight
 
 ```ts
 const handlerRole = iam.Role.fromRoleArn(this, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
-// get the serivceToken from the custom resource provider
+// get the serviceToken from the custom resource provider
 const functionArn = lambda.Function.fromFunctionName(this, 'ProviderOnEventFunc', 'ProviderframeworkonEvent-XXX').functionArn;
 const kubectlProvider = eks.KubectlProvider.fromKubectlProviderAttributes(this, 'KubectlProvider', {
   serviceToken: functionArn,

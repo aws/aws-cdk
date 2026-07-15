@@ -1,6 +1,139 @@
 /**
  * Violation produced by the validation plugin.
  */
+export interface PolicyViolation {
+  /**
+   * The name of the rule.
+   */
+  readonly ruleName: string;
+
+  /**
+   * The description of the violation.
+   */
+  readonly description: string;
+
+  /**
+   * The resources violating this rule.
+   */
+  readonly violatingResources: PolicyViolatingResource[];
+
+  /**
+   * How to fix the violation.
+   *
+   * @default - no fix is provided
+   */
+  readonly fix?: string;
+
+  /**
+   * The severity of the violation, only used for reporting purposes.
+   * This is useful for helping the user discriminate between warnings,
+   * errors, information, etc.
+   *
+   * @default - no severity
+   */
+  readonly severity?: string;
+
+  /**
+   * Additional metadata to include with the rule results.
+   * This can be used to provide additional information that is
+   * plugin specific. The data provided here will be rendered as is.
+   *
+   * @default - no rule metadata
+   */
+  readonly ruleMetadata?: { readonly [key: string]: string };
+}
+
+/**
+ * Resource violating a specific rule.
+ */
+export interface PolicyViolatingResource {
+  /**
+   * The logical ID of the resource in the CloudFormation template.
+   *
+   * Required for plugin-sourced violations that operate on CloudFormation
+   * templates. Mutually exclusive with `constructPath`.
+   *
+   * @default - no resource logical ID
+   */
+  readonly resourceLogicalId?: string;
+
+  /**
+   * The construct path of the violating construct.
+   *
+   * Use this for violations that originate from constructs rather than
+   * CloudFormation resources (e.g. annotations added via `Annotations.of()`
+   * or `Validations.of()`). When provided, the report will use this path
+   * directly instead of deriving it from the resource logical ID.
+   * Mutually exclusive with `resourceLogicalId`.
+   *
+   * @default - construct path is derived from the resource logical ID
+   */
+  readonly constructPath?: string;
+
+  /**
+   * The locations in the CloudFormation template that pose the violations.
+   *
+   * TODO: Define whether this is from the root of the template, or from the
+   * resource itself. Not sure this is well-defined at the moment.
+   */
+  readonly locations: string[];
+
+  /**
+   * The path to the CloudFormation template that contains this resource
+   *
+   * @default - no template path
+   */
+  readonly templatePath?: string;
+}
+
+/**
+ * The final status of the validation report
+ */
+export enum PolicyValidationReportStatus {
+  /**
+   * No violations were found
+   */
+  SUCCESS = 'success',
+
+  /**
+   * At least one violation was found
+   */
+  FAILURE = 'failure',
+}
+
+/**
+ * The report emitted by the plugin after evaluation.
+ */
+export interface PolicyValidationPluginReport {
+  /**
+   * List of violations in the report.
+   */
+  readonly violations: PolicyViolation[];
+
+  /**
+   * Whether or not the report was successful.
+   */
+  readonly success: boolean;
+
+  /**
+   * The version of the plugin that created the report.
+   * @default - no version
+   */
+  readonly pluginVersion?: string;
+
+  /**
+   * Arbitrary information about the report.
+   *
+   * @default - no metadata
+   */
+  readonly metadata?: { readonly [key: string]: string };
+}
+
+/**
+ * Violation produced by the validation plugin.
+ *
+ * @deprecated Use `PolicyViolation` instead.
+ */
 export interface PolicyViolationBeta1 {
   /**
    * The name of the rule.
@@ -45,6 +178,8 @@ export interface PolicyViolationBeta1 {
 
 /**
  * Resource violating a specific rule.
+ *
+ * @deprecated Use `PolicyViolatingResource` instead.
  */
 export interface PolicyViolatingResourceBeta1 {
   /**
@@ -65,6 +200,8 @@ export interface PolicyViolatingResourceBeta1 {
 
 /**
  * The final status of the validation report
+ *
+ * @deprecated Use `PolicyValidationReportStatus` instead.
  */
 export enum PolicyValidationReportStatusBeta1 {
   /**
@@ -80,6 +217,8 @@ export enum PolicyValidationReportStatusBeta1 {
 
 /**
  * The report emitted by the plugin after evaluation.
+ *
+ * @deprecated Use `PolicyValidationPluginReport` instead.
  */
 export interface PolicyValidationPluginReportBeta1 {
   /**

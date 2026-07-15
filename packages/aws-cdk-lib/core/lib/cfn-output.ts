@@ -56,11 +56,11 @@ export class CfnOutput extends CfnElement {
     super(scope, id);
 
     if (props.value === undefined) {
-      throw new ValidationError('MissingValueCloudFormationOutput', `Missing value for CloudFormation output at path "${this.node.path}"`, this);
+      throw new ValidationError(lit`MissingValueCloudFormationOutput`, `Missing value for CloudFormation output at path "${this.node.path}"`, this);
     } else if (Array.isArray(props.value)) {
       // `props.value` is a string, but because cross-stack exports allow passing any,
       // we need to check for lists here.
-      throw new ValidationError('CloudformationOutputGivenString', `CloudFormation output was given a string list instead of a string at path "${this.node.path}"`, this);
+      throw new ValidationError(lit`CloudformationOutputGivenString`, `CloudFormation output was given a string list instead of a string at path "${this.node.path}"`, this);
     }
 
     this._description = props.description;
@@ -147,13 +147,14 @@ export class CfnOutput extends CfnElement {
    */
   public get importValue() {
     // We made _exportName mutable so this will have to be lazy.
+    // eslint-disable-next-line no-restricted-syntax
     return Fn.importValue(Lazy.uncachedString({
       produce: (ctx) => {
         if (Stack.of(ctx.scope) === this.stack) {
-          throw new ValidationError('ImportvaluePropertyShouldOnly', `'importValue' property of '${this.node.path}' should only be used in a different Stack`, this);
+          throw new ValidationError(lit`ImportvaluePropertyShouldOnly`, `'importValue' property of '${this.node.path}' should only be used in a different Stack`, this);
         }
         if (!this._exportName) {
-          throw new ValidationError('ExportnameCfnoutputOrderOutput', `Add an exportName to the CfnOutput at '${this.node.path}' in order to use 'output.importValue'`, this);
+          throw new ValidationError(lit`ExportnameCfnoutputOrderOutput`, `Add an exportName to the CfnOutput at '${this.node.path}' in order to use 'output.importValue'`, this);
         }
 
         return this._exportName;
@@ -201,4 +202,5 @@ import { Lazy } from './lazy';
 import { Stack } from './stack';
 import { Token } from './token';
 import { ValidationError } from './errors';
+import { lit } from './private/literal-string';
 

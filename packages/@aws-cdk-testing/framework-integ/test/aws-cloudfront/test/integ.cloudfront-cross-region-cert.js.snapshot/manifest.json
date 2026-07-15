@@ -1,5 +1,5 @@
 {
-  "version": "50.0.0",
+  "version": "54.0.0",
   "artifacts": {
     "integ-acm-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-us-east-1/9fa33286609db27845f4df290a1118fa0fb6eb3e7a49da50062bcc8955404bfb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-us-east-1/aa817e6df2a5877d435f03a1bd0e08dd1cbadb3631cf0bba7369a54c57a5fa02.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,65 +33,7 @@
       "dependencies": [
         "integ-acm-stack.assets"
       ],
-      "metadata": {
-        "/integ-acm-stack/Cert": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "domainName": "*",
-              "validation": "*"
-            }
-          }
-        ],
-        "/integ-acm-stack/Cert/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Cert5C9FAEC1"
-          }
-        ],
-        "/integ-acm-stack/ExportsWriteruseast2828FA26B/Resource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-acm-stack/ExportsWriteruseast2828FA26B/Resource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsWriteruseast2828FA26B86FBEFA7"
-          }
-        ],
-        "/integ-acm-stack/Custom::CrossRegionExportWriterCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/integ-acm-stack/Custom::CrossRegionExportWriterCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1"
-          }
-        ],
-        "/integ-acm-stack/Custom::CrossRegionExportWriterCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A"
-          }
-        ],
-        "/integ-acm-stack/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/integ-acm-stack/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "integ-acm-stack.metadata.json",
       "displayName": "integ-acm-stack"
     },
     "integ-cloudfront-stack.assets": {
@@ -111,7 +53,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-us-east-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-us-east-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-us-east-2/69f4180b47a412e433d26813c8d6e94d7a5d4a9f34e254f6b51871b479b10aaf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-us-east-2/173bf3aef4d916df4c1117eb4eb6dda2320aa0005565013dee28fec797a6c36b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -127,72 +69,7 @@
         "integ-acm-stack",
         "integ-cloudfront-stack.assets"
       ],
-      "metadata": {
-        "/integ-cloudfront-stack/Distro": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "defaultBehavior": {
-                "origin": "*"
-              },
-              "certificate": "*",
-              "domainNames": "*"
-            }
-          }
-        ],
-        "/integ-cloudfront-stack/Distro/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Distro87EBE6BA"
-          }
-        ],
-        "/integ-cloudfront-stack/ExportsReader/Resource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/integ-cloudfront-stack/ExportsReader/Resource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsReader8B249524"
-          }
-        ],
-        "/integ-cloudfront-stack/Custom::CrossRegionExportReaderCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/integ-cloudfront-stack/Custom::CrossRegionExportReaderCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD"
-          }
-        ],
-        "/integ-cloudfront-stack/Custom::CrossRegionExportReaderCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68"
-          }
-        ],
-        "/integ-cloudfront-stack/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/integ-cloudfront-stack/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "integ-cloudfront-stack.metadata.json",
       "displayName": "integ-cloudfront-stack"
     },
     "integcloudfrontcrossregionacmDefaultTestDeployAssertD48673AA.assets": {
@@ -227,20 +104,7 @@
       "dependencies": [
         "integcloudfrontcrossregionacmDefaultTestDeployAssertD48673AA.assets"
       ],
-      "metadata": {
-        "/integ-cloudfront-cross-region-acm/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/integ-cloudfront-cross-region-acm/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "integcloudfrontcrossregionacmDefaultTestDeployAssertD48673AA.metadata.json",
       "displayName": "integ-cloudfront-cross-region-acm/DefaultTest/DeployAssert"
     },
     "aws-cdk-lib/feature-flag-report": {
@@ -535,6 +399,7 @@
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
           "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
           },
@@ -732,12 +597,47 @@
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
           "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1101.0"
+  "minimumCliVersion": "2.1126.0"
 }

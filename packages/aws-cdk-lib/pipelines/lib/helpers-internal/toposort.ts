@@ -1,5 +1,6 @@
 import type { GraphNode } from './graph';
 import { UnscopedValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 
 export function printDependencyMap<A>(dependencies: Map<GraphNode<A>, Set<GraphNode<A>>>) {
   const lines = ['---'];
@@ -18,7 +19,7 @@ export function topoSort<A>(nodes: Set<GraphNode<A>>, dependencies: Map<GraphNod
     // All elements with no more deps in the set can be ordered
     const selectable = Array.from(remaining.values()).filter(e => {
       if (!dependencies.has(e)) {
-        throw new UnscopedValidationError('ValidationError', `No key for ${e}`);
+        throw new UnscopedValidationError(lit`ValidationError`, `No key for ${e}`);
       }
       return dependencies.get(e)!.size === 0;
     });
@@ -29,7 +30,7 @@ export function topoSort<A>(nodes: Set<GraphNode<A>>, dependencies: Map<GraphNod
       const cycle = findCycle(dependencies);
 
       if (fail) {
-        throw new UnscopedValidationError('DependencyCycleGraph', `Dependency cycle in graph: ${cycle.map(n => n.id).join(' => ')}`);
+        throw new UnscopedValidationError(lit`DependencyCycleGraph`, `Dependency cycle in graph: ${cycle.map(n => n.id).join(' => ')}`);
       }
 
       // If we're trying not to fail, pick one at random from the cycle and treat it
@@ -60,7 +61,7 @@ function findCycle<A>(deps: Map<GraphNode<A>, Set<GraphNode<A>>>): GraphNode<A>[
     const cycle = recurse(node, [node]);
     if (cycle) { return cycle; }
   }
-  throw new UnscopedValidationError('CycleFound', 'No cycle found. Assertion failure!');
+  throw new UnscopedValidationError(lit`CycleFound`, 'No cycle found. Assertion failure!');
 
   function recurse(node: GraphNode<A>, path: GraphNode<A>[]): GraphNode<A>[] | undefined {
     for (const dep of deps.get(node) ?? []) {

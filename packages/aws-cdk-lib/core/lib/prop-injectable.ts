@@ -1,5 +1,6 @@
 import type { Construct, IConstruct } from 'constructs';
 import { AssumptionError } from './errors';
+import { lit } from './private/literal-string';
 import { applyInjectors } from './prop-injectors-helpers';
 
 interface PropertyInjectableConstructConstructor {
@@ -29,7 +30,7 @@ export function propertyInjectable<T extends PropertyInjectableConstructConstruc
     constructor(scope: Construct, id: string, props: object, ...args: any[]) {
       const uniqueId = constructor.PROPERTY_INJECTION_ID;
       if (uniqueId === undefined) {
-        throw new AssumptionError('ConstructStaticPropertyInjectionIdProperty', 'Construct must have a static PROPERTY_INJECTION_ID property');
+        throw new AssumptionError(lit`ConstructStaticPropertyInjectionIdProperty`, 'Construct must have a static PROPERTY_INJECTION_ID property');
       }
 
       props = applyInjectors(uniqueId, props, {

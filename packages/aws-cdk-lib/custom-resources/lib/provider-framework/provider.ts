@@ -11,6 +11,7 @@ import type * as kms from '../../../aws-kms';
 import * as lambda from '../../../aws-lambda';
 import type * as logs from '../../../aws-logs';
 import { Duration, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
 const RUNTIME_HANDLER_PATH = path.join(__dirname, 'runtime');
@@ -236,17 +237,17 @@ export class Provider extends Construct implements ICustomResourceProvider {
         || props.waiterStateMachineLogOptions
         || props.disableWaiterStateMachineLogging !== undefined
       ) {
-        throw new ValidationError('InvalidConfigurationWithoutIsCompleteHandler', '"queryInterval", "totalTimeout", "waiterStateMachineLogOptions", and "disableWaiterStateMachineLogging" '
+        throw new ValidationError(lit`InvalidConfigurationWithoutIsCompleteHandler`, '"queryInterval", "totalTimeout", "waiterStateMachineLogOptions", and "disableWaiterStateMachineLogging" '
           + 'can only be configured if "isCompleteHandler" is specified. '
           + 'Otherwise, they have no meaning', this);
       }
     }
 
     if (props.role && (props.frameworkOnEventRole || props.frameworkCompleteAndTimeoutRole)) {
-      throw new ValidationError('ConflictingRoleConfiguration', 'Cannot specify both "role" and any of "frameworkOnEventRole" or "frameworkCompleteAndTimeoutRole".', this);
+      throw new ValidationError(lit`ConflictingRoleConfiguration`, 'Cannot specify both "role" and any of "frameworkOnEventRole" or "frameworkCompleteAndTimeoutRole".', this);
     }
     if (!props.isCompleteHandler && props.frameworkCompleteAndTimeoutRole) {
-      throw new ValidationError('FrameworkCompleteAndTimeoutRoleWithoutIsCompleteHandler', 'Cannot specify "frameworkCompleteAndTimeoutRole" when "isCompleteHandler" is not specified.', this);
+      throw new ValidationError(lit`FrameworkCompleteAndTimeoutRoleWithoutIsCompleteHandler`, 'Cannot specify "frameworkCompleteAndTimeoutRole" when "isCompleteHandler" is not specified.', this);
     }
 
     this.onEventHandler = props.onEventHandler;

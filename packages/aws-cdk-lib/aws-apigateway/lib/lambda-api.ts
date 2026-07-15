@@ -9,13 +9,14 @@ import { RestApi } from './restapi';
 import type * as lambda from '../../aws-lambda';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface LambdaRestApiProps extends RestApiProps {
   /**
    * The default Lambda function that handles all requests from this API.
    *
-   * This handler will be used as a the default integration for all methods in
+   * This handler will be used as the default integration for all methods in
    * this API, unless specified otherwise in `addMethod`.
    */
   readonly handler: lambda.IFunction;
@@ -63,7 +64,7 @@ export class LambdaRestApi extends RestApi {
 
   constructor(scope: Construct, id: string, props: LambdaRestApiProps) {
     if (props.options?.defaultIntegration || props.defaultIntegration) {
-      throw new ValidationError('CannotSpecifyDefaultIntegrationSince', 'Cannot specify "defaultIntegration" since Lambda integration is automatically defined', scope);
+      throw new ValidationError(lit`CannotSpecifyDefaultIntegrationSince`, 'Cannot specify "defaultIntegration" since Lambda integration is automatically defined', scope);
     }
 
     super(scope, id, {
@@ -99,13 +100,13 @@ export class LambdaRestApi extends RestApi {
 }
 
 function addResourceThrows(): Resource {
-  throw new UnscopedValidationError('CannotCallAddResourceProxying', 'Cannot call \'addResource\' on a proxying LambdaRestApi; set \'proxy\' to false');
+  throw new UnscopedValidationError(lit`CannotCallAddResourceProxying`, 'Cannot call \'addResource\' on a proxying LambdaRestApi; set \'proxy\' to false');
 }
 
 function addMethodThrows(): Method {
-  throw new UnscopedValidationError('CannotCallAddMethodProxying', 'Cannot call \'addMethod\' on a proxying LambdaRestApi; set \'proxy\' to false');
+  throw new UnscopedValidationError(lit`CannotCallAddMethodProxying`, 'Cannot call \'addMethod\' on a proxying LambdaRestApi; set \'proxy\' to false');
 }
 
 function addProxyThrows(): ProxyResource {
-  throw new UnscopedValidationError('CannotCallAddProxyProxying', 'Cannot call \'addProxy\' on a proxying LambdaRestApi; set \'proxy\' to false');
+  throw new UnscopedValidationError(lit`CannotCallAddProxyProxying`, 'Cannot call \'addProxy\' on a proxying LambdaRestApi; set \'proxy\' to false');
 }
