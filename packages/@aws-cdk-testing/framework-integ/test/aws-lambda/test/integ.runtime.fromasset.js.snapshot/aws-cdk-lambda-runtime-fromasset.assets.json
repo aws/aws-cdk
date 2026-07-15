@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "files": {
     "ff6ca8da1c8c599aa9f53b242d0e817f8a336ad653e62805a13a5ad46ea7ebe1": {
       "displayName": "MyFunctionJava21/Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "ed2103202e35d0bfa07fd6f3c7bd34981f6f920d26dc8cac33e5014f8e4bb5c2": {
+    "1bac9bbe83138375309f8ae8a9a2e13137fa0095c7d371f299c8a131f9aa9762": {
       "displayName": "aws-cdk-lambda-runtime-fromasset Template",
       "source": {
         "path": "aws-cdk-lambda-runtime-fromasset.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-e2c07afa": {
+        "current_account-current_region-d77bcc21": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "ed2103202e35d0bfa07fd6f3c7bd34981f6f920d26dc8cac33e5014f8e4bb5c2.json",
+          "objectKey": "1bac9bbe83138375309f8ae8a9a2e13137fa0095c7d371f299c8a131f9aa9762.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
