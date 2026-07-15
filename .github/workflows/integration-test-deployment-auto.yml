@@ -26,7 +26,7 @@ jobs:
       pull-requests: read
     steps:
       - name: Checkout for path filtering
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
@@ -93,7 +93,7 @@ jobs:
 
     steps:
       - name: Checkout HEAD
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
@@ -111,7 +111,7 @@ jobs:
 
       - name: Load Docker images
         id: docker-cache
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: |
             ~/.docker-images.tar
@@ -122,7 +122,7 @@ jobs:
         run: docker image load --input ~/.docker-images.tar
 
       - name: Cache build artifacts
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.s3buildcache

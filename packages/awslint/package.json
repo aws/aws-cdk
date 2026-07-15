@@ -18,12 +18,12 @@
     "awslint": "bin/awslint"
   },
   "dependencies": {
-    "@jsii/spec": "1.129.0",
+    "@jsii/spec": "1.138.0",
     "chalk": "^4",
     "fs-extra": "^9.1.0",
-    "jsii-reflect": "1.129.0",
+    "jsii-reflect": "1.138.0",
     "change-case": "^4.1.2",
-    "yargs": "^16.2.0"
+    "yargs": "^16.2.2"
   },
   "devDependencies": {
     "@aws-cdk/eslint-config": "0.0.0",
@@ -32,7 +32,7 @@
     "@types/jest": "^29.5.14",
     "@types/yargs": "^15.0.20",
     "jest": "^29.7.0",
-    "typescript": "~5.5.4"
+    "typescript": "~5.9.3"
   },
   "repository": {
     "type": "git",
@@ -52,6 +52,11 @@
   ],
   "maturity": "developer-preview",
   "stability": "experimental",
+  "pkglint": {
+    "exclude": [
+      "package-info/maturity"
+    ]
+  },
   "engines": {
     "node": ">= 20.0.0"
   },

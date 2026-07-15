@@ -1,0 +1,536 @@
+{
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:38:38)",
+        "new IntegTestCase (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:253:19)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)"
+      ]
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)"
+      ]
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/AwsApiCallLambdainvokedb736d79e35a1f0deac17952003f9410/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/AwsApiCallLambdainvokedb736d79e35a1f0deac17952003f9410/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallLambdainvokedb736d79e35a1f0deac17952003f9410"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:84:25)",
+        "recurse (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:307:38)",
+        "recurse (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "recurse (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "recurse (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "recurse (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "invokeAspectsV2 (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:279:5)",
+        "synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:37:9)",
+        "App.synth (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:78:26)",
+        "SingletonFunction.ensureFunction (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new AwsApiCall (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:47:25)",
+        "DeployAssert.awsApiCall (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "assertLambdaPasses (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:262:41)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:286:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:126:28)",
+        "SingletonFunction.ensureFunction (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new AwsApiCall (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:47:25)",
+        "DeployAssert.awsApiCall (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "assertLambdaPasses (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:262:41)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:286:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:78:26)",
+        "SingletonFunction.ensureFunction (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new WaiterStateMachine (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:62:35)",
+        "AwsApiCall.waitForAssertions (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:286:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:126:28)",
+        "SingletonFunction.ensureFunction (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new WaiterStateMachine (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:62:35)",
+        "AwsApiCall.waitForAssertions (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:286:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:78:26)",
+        "SingletonFunction.ensureFunction (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new WaiterStateMachine (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:66:33)",
+        "AwsApiCall.waitForAssertions (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:286:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:126:28)",
+        "SingletonFunction.ensureFunction (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new WaiterStateMachine (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:66:33)",
+        "AwsApiCall.waitForAssertions (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:286:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/AwsApiCallLambdainvoke726cc91457b9a495040ddc52d05c37de/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/AwsApiCallLambdainvoke726cc91457b9a495040ddc52d05c37de/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallLambdainvoke726cc91457b9a495040ddc52d05c37de"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:84:25)",
+        "recurse (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:307:38)",
+        "recurse (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "recurse (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "recurse (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "recurse (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "invokeAspectsV2 (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:279:5)",
+        "synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:37:9)",
+        "App.synth (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/AwsApiCallLambdainvoke591572bcb72a1c987a40a8c5fd2488d7/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/AwsApiCallLambdainvoke591572bcb72a1c987a40a8c5fd2488d7/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallLambdainvoke591572bcb72a1c987a40a8c5fd2488d7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:84:25)",
+        "recurse (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:307:38)",
+        "recurse (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "recurse (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "recurse (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "recurse (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "invokeAspectsV2 (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:279:5)",
+        "synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:37:9)",
+        "App.synth (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/AwsApiCallLambdainvokedb736d79e35a1f0deac17952003f9410/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallLambdainvokedb736d79e35a1f0deac17952003f9410"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "DeployAssert.awsApiCall (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "assertLambdaPasses (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:262:41)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:286:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/AwsApiCallLambdainvokedb736d79e35a1f0deac17952003f9410/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallLambdainvokedb736d79e35a1f0deac17952003f9410WaitForRoleDD77ACA0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:70:22)",
+        "AwsApiCall.waitForAssertions (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:286:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/AwsApiCallLambdainvokedb736d79e35a1f0deac17952003f9410/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallLambdainvokedb736d79e35a1f0deac17952003f9410WaitFor1422418F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:120:26)",
+        "AwsApiCall.waitForAssertions (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:286:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/AwsApiCallLambdainvoke726cc91457b9a495040ddc52d05c37de/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallLambdainvoke726cc91457b9a495040ddc52d05c37de"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "DeployAssert.awsApiCall (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "assertLambdaPasses (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:262:41)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:287:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/AwsApiCallLambdainvoke726cc91457b9a495040ddc52d05c37de/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallLambdainvoke726cc91457b9a495040ddc52d05c37deWaitForRoleACA011DA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:70:22)",
+        "AwsApiCall.waitForAssertions (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:287:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/AwsApiCallLambdainvoke726cc91457b9a495040ddc52d05c37de/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallLambdainvoke726cc91457b9a495040ddc52d05c37deWaitFor59CEF9AE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:120:26)",
+        "AwsApiCall.waitForAssertions (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:287:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/AwsApiCallLambdainvoke591572bcb72a1c987a40a8c5fd2488d7/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallLambdainvoke591572bcb72a1c987a40a8c5fd2488d7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "DeployAssert.awsApiCall (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "assertLambdaPasses (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:262:41)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:288:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/AwsApiCallLambdainvoke591572bcb72a1c987a40a8c5fd2488d7/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallLambdainvoke591572bcb72a1c987a40a8c5fd2488d7WaitForRoleA08AF976"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:70:22)",
+        "AwsApiCall.waitForAssertions (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:288:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/AwsApiCallLambdainvoke591572bcb72a1c987a40a8c5fd2488d7/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallLambdainvoke591572bcb72a1c987a40a8c5fd2488d7WaitFor46844C38"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:120:26)",
+        "AwsApiCall.waitForAssertions (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:288:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/AwsApiCallLambdainvokedb736d79e35a1f0deac17952003f9410/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallLambdainvokedb736d79e35a1f0deac17952003f9410WaitForIsCompleteProviderInvokeB12BCE65"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
+        "new WaiterStateMachine (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:130:33)",
+        "AwsApiCall.waitForAssertions (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:286:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/AwsApiCallLambdainvokedb736d79e35a1f0deac17952003f9410/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallLambdainvokedb736d79e35a1f0deac17952003f9410WaitForTimeoutProviderInvoke4A5D54C8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
+        "new WaiterStateMachine (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:131:25)",
+        "AwsApiCall.waitForAssertions (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:286:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/AwsApiCallLambdainvoke726cc91457b9a495040ddc52d05c37de/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallLambdainvoke726cc91457b9a495040ddc52d05c37deWaitForIsCompleteProviderInvoke826E5177"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
+        "new WaiterStateMachine (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:130:33)",
+        "AwsApiCall.waitForAssertions (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:287:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/AwsApiCallLambdainvoke726cc91457b9a495040ddc52d05c37de/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallLambdainvoke726cc91457b9a495040ddc52d05c37deWaitForTimeoutProviderInvoke03AC5BFD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
+        "new WaiterStateMachine (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:131:25)",
+        "AwsApiCall.waitForAssertions (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:287:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/AwsApiCallLambdainvoke591572bcb72a1c987a40a8c5fd2488d7/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallLambdainvoke591572bcb72a1c987a40a8c5fd2488d7WaitForIsCompleteProviderInvokeB1FADE13"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
+        "new WaiterStateMachine (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:130:33)",
+        "AwsApiCall.waitForAssertions (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:288:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert/AwsApiCallLambdainvoke591572bcb72a1c987a40a8c5fd2488d7/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallLambdainvoke591572bcb72a1c987a40a8c5fd2488d7WaitForTimeoutProviderInvoke9EF833AC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
+        "new WaiterStateMachine (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:131:25)",
+        "AwsApiCall.waitForAssertions (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/identity/integ.identity-grants.js:288:1)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

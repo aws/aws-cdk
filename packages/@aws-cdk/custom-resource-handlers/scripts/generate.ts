@@ -1,4 +1,5 @@
 
+import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as esbuild from 'esbuild';
@@ -22,7 +23,8 @@ async function main() {
         fs.copyFileSync(component.sourceCode, outfile);
       }
       const codeDirectory = path.dirname(outfile).split('/').pop() ?? '';
-      module.build(component, codeDirectory);
+      const sourceHash = calculateDirectoryHash(path.dirname(outfile));
+      module.build(component, codeDirectory, sourceHash);
     }
 
     if (module.hasComponents) {
@@ -105,6 +107,32 @@ export function calculateOutfile(file: string) {
   fileContents[fileContents.lastIndexOf('lib')] = 'dist';
 
   return fileContents.join(path.sep);
+}
+
+/**
+ * Calculate a deterministic content hash of a bundled handler directory. The
+ * hash is baked into the code-generated framework classes and used as the
+ * Asset hash at synth time so the S3 object key remains stable unless the
+ * bundled code actually changes.
+ */
+export function calculateDirectoryHash(directory: string): string {
+  const hash = crypto.createHash('sha256');
+  const walk = (dir: string) => {
+    const entries = fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name));
+    for (const entry of entries) {
+      const full = path.join(dir, entry.name);
+      const rel = path.relative(directory, full);
+      if (entry.isDirectory()) {
+        hash.update(`D:${rel}\n`);
+        walk(full);
+      } else if (entry.isFile()) {
+        hash.update(`F:${rel}\n`);
+        hash.update(fs.readFileSync(full));
+      }
+    }
+  };
+  walk(directory);
+  return hash.digest('hex');
 }
 
 function ignoreWarnings(result: esbuild.BuildResult) {
