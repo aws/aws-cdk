@@ -1,16 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { CfnTable } from 'aws-cdk-lib/aws-glue';
-import * as cxapi from 'aws-cdk-lib/cx-api';
 import * as glue from '../lib';
-
-/**
- * Partition index handlers are bundled with esbuild via `NodejsFunction`. Skip
- * bundling in unit tests so they don't require the esbuild toolchain to run.
- */
-function skipBundling(stack: cdk.Stack) {
-  stack.node.setContext(cxapi.BUNDLING_STACKS, []);
-}
 
 test('unpartitioned JSON table', () => {
   const app = new cdk.App();
@@ -240,7 +231,6 @@ test('table.node.defaultChild', () => {
 describe('parition indexes', () => {
   test('fails with > 3 indexes', () => {
     const stack = new cdk.Stack();
-    skipBundling(stack);
     const database = new glue.Database(stack, 'Database');
 
     const indexes: glue.PartitionIndex[] = [{
@@ -274,7 +264,6 @@ describe('parition indexes', () => {
 
   test('no indexName', () => {
     const stack = new cdk.Stack();
-    skipBundling(stack);
     const database = new glue.Database(stack, 'Database');
 
     const indexes: glue.PartitionIndex[] = [{
@@ -364,7 +353,6 @@ describe('parition indexes', () => {
 
     test('each new partition index depends on the previous one', () => {
       const stack = new cdk.Stack();
-      skipBundling(stack);
       const database = new glue.Database(stack, 'Database');
 
       const table = new glue.S3Table(stack, 'Table', {
@@ -398,7 +386,6 @@ describe('parition indexes', () => {
 
     test('grants partition index permissions to the handler roles only once per table', () => {
       const stack = new cdk.Stack();
-      skipBundling(stack);
       const database = new glue.Database(stack, 'Database');
 
       const table = new glue.S3Table(stack, 'Table', {
@@ -431,7 +418,6 @@ describe('parition indexes', () => {
 
     test('throws if a foreign construct occupies the provider id', () => {
       const stack = new cdk.Stack();
-      skipBundling(stack);
       const database = new glue.Database(stack, 'Database');
 
       // Squat on the reserved provider id at stack scope. The id embeds the

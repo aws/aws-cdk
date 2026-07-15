@@ -2,16 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as cxapi from 'aws-cdk-lib/cx-api';
 import * as glue from '../lib';
-
-/**
- * Partition index handlers are bundled with esbuild via `NodejsFunction`. Skip
- * bundling in unit tests so they don't require the esbuild toolchain to run.
- */
-function skipBundling(stack: cdk.Stack) {
-  stack.node.setContext(cxapi.BUNDLING_STACKS, []);
-}
 
 const externalDataLocation = 'default_db.public.test';
 const readPermissions = [
@@ -355,7 +346,6 @@ describe('add partition index', () => {
 
   test('fails with > 3 indexes', () => {
     const stack = new cdk.Stack();
-    skipBundling(stack);
     const database = new glue.Database(stack, 'Database');
     const connection = new glue.Connection(stack, 'Connection', {
       connectionName: 'my_connection',

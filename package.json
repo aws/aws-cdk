@@ -149,8 +149,6 @@
       "aws-cdk-lib/@aws/cloudformation-validate",
       "aws-cdk-lib/@aws/cloudformation-validate/**",
       "aws-cdk-lib/@balena/dockerignore",
-      "aws-cdk-lib/@balena/dockerignore",
-      "aws-cdk-lib/@balena/dockerignore/**",
       "aws-cdk-lib/@balena/dockerignore/**",
       "aws-cdk-lib/case",
       "aws-cdk-lib/case/**",

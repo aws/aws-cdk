@@ -117,6 +117,9 @@
     "exclude": [
       "naming/package-matches-directory",
       "assert/assert-dependency"
+    ],
+    "requireBundledFiles": [
+      "lib/partition-index-handler.bundle/index.js"
     ]
   }
 }

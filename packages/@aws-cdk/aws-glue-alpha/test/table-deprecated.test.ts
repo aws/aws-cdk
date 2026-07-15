@@ -4,17 +4,8 @@ import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as cxapi from 'aws-cdk-lib/cx-api';
 import * as glue from '../lib';
 import type { PartitionIndex } from '../lib';
-
-/**
- * Partition index handlers are bundled with esbuild via `NodejsFunction`. Skip
- * bundling in unit tests so they don't require the esbuild toolchain to run.
- */
-function skipBundling(stack: cdk.Stack) {
-  stack.node.setContext(cxapi.BUNDLING_STACKS, []);
-}
 
 test('unpartitioned JSON table', () => {
   const app = new cdk.App();
@@ -968,7 +959,6 @@ describe('add partition index', () => {
 
   test('fails with > 3 indexes', () => {
     const stack = new cdk.Stack();
-    skipBundling(stack);
     const database = new glue.Database(stack, 'Database');
 
     const indexes: PartitionIndex[] = [{
