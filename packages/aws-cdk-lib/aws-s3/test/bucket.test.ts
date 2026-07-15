@@ -142,6 +142,37 @@ describe('bucket', () => {
     });
   });
 
+  test.each([
+    [undefined, s3.BucketEncryption.S3_MANAGED],
+    [s3.BucketEncryption.UNENCRYPTED, s3.BucketEncryption.S3_MANAGED],
+    [s3.BucketEncryption.S3_MANAGED, s3.BucketEncryption.S3_MANAGED],
+    [s3.BucketEncryption.KMS_MANAGED, s3.BucketEncryption.KMS_MANAGED],
+    [s3.BucketEncryption.KMS, s3.BucketEncryption.KMS],
+    [s3.BucketEncryption.DSSE_MANAGED, s3.BucketEncryption.DSSE_MANAGED],
+    [s3.BucketEncryption.DSSE, s3.BucketEncryption.DSSE],
+  ])('exposes the effective encryption mode for %p', (encryption, expected) => {
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'MyBucket', { encryption });
+
+    expect(bucket.encryption).toBe(expected);
+  });
+
+  test('reflects changes to the underlying encryption configuration', () => {
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+    const resource = bucket.node.defaultChild as s3.CfnBucket;
+
+    resource.bucketEncryption = {
+      serverSideEncryptionConfiguration: [{
+        serverSideEncryptionByDefault: {
+          sseAlgorithm: 'aws:kms:dsse',
+        },
+      }],
+    };
+
+    expect(bucket.encryption).toBe(s3.BucketEncryption.DSSE_MANAGED);
+  });
+
   test('empty blockedEncryptionTypes not allowed', () => {
     const stack = new cdk.Stack();
 
@@ -1678,6 +1709,7 @@ describe('bucket', () => {
 
       expect(bucket.bucketArn).toEqual(bucketArn);
       expect(stack.resolve(bucket.bucketName)).toEqual('my-bucket');
+      expect(bucket.encryption).toBeUndefined();
 
       Template.fromStack(stack).templateMatches({});
     });
@@ -1693,6 +1725,16 @@ describe('bucket', () => {
 
       // at this point we technically didn't create any resources in the consuming stack.
       Template.fromStack(stack).templateMatches({});
+    });
+
+    test('import can specify its effective encryption mode', () => {
+      const stack = new cdk.Stack();
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'my-bucket',
+        encryption: s3.BucketEncryption.DSSE_MANAGED,
+      });
+
+      expect(bucket.encryption).toBe(s3.BucketEncryption.DSSE_MANAGED);
     });
 
     test('import can also be used to import arbitrary ARNs', () => {
@@ -1834,6 +1876,18 @@ describe('bucket', () => {
       expect(stack.resolve(bucket.bucketArn)).toStrictEqual({
         'Fn::GetAtt': ['CfnBucket', 'Arn'],
       });
+    });
+
+    test("correctly reflects the 'encryption' property", () => {
+      cfnBucket.bucketEncryption = {
+        serverSideEncryptionConfiguration: [{
+          serverSideEncryptionByDefault: {
+            sseAlgorithm: 'aws:kms',
+          },
+        }],
+      };
+
+      expect(bucket.encryption).toBe(s3.BucketEncryption.KMS_MANAGED);
     });
 
     test('allows setting the RemovalPolicy of the underlying resource', () => {

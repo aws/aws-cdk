@@ -40,6 +40,9 @@ const bucket = new s3.Bucket(this, 'MyEncryptedBucket', {
 
 // you can access the encryption key:
 assert(bucket.encryptionKey instanceof kms.Key);
+
+// and inspect the effective encryption mode:
+assert(bucket.encryption === s3.BucketEncryption.KMS);
 ```
 
 You can also supply your own key:
@@ -72,7 +75,13 @@ const bucket = new s3.Bucket(this, 'Buck', {
 });
 
 assert(bucket.encryptionKey == null);
+assert(bucket.encryption === s3.BucketEncryption.KMS_MANAGED);
 ```
+
+The `encryption` property reflects the effective default encryption mode for buckets
+defined in the CDK app, including changes made directly to the underlying `CfnBucket`.
+It is `undefined` when the encryption configuration is unresolved or an imported bucket
+does not specify `BucketAttributes.encryption`.
 
 Enable DSSE encryption:
 
