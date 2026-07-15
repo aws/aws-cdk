@@ -850,7 +850,7 @@ currently only supports Node.js-based user handlers, represents permissions as r
 JSON blobs instead of `iam.PolicyStatement` objects, and it does not have
 support for asynchronous waiting (handler cannot exceed the 15min lambda
 timeout). The `CustomResourceProviderRuntime` supports runtime `nodejs12.x`,
-`nodejs14.x`, `nodejs16.x`, `nodejs18.x`, `nodejs20.x`, and `nodejs22.x`.
+`nodejs14.x`, `nodejs16.x`, `nodejs18.x`, `nodejs20.x`, `nodejs22.x` and `nodejs24.x`.
 
 [`@aws-cdk/core.CustomResourceProvider`]: https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_core.CustomResourceProvider.html
 
@@ -864,7 +864,7 @@ stack-unique identifier and returns the service token:
 ```ts
 const serviceToken = CustomResourceProvider.getOrCreate(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_22_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_24_X,
   description: "Lambda function created by the custom resource provider",
 });
 
@@ -1706,19 +1706,64 @@ permissions boundary attached.
 
 For more details see the [Permissions Boundary](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_iam-readme.html#permissions-boundaries) section in the IAM guide.
 
-## Policy Validation
+## Template and Policy Validation
 
-If you or your organization use (or would like to use) any policy validation tool, such as
-[CloudFormation
-Guard](https://docs.aws.amazon.com/cfn-guard/latest/ug/what-is-guard.html) or
-[OPA](https://www.openpolicyagent.org/), to define constraints on your
-CloudFormation template, you can incorporate them into the CDK application.
-By using the appropriate plugin, you can make the CDK application check the
-generated CloudFormation templates against your policies immediately after
-synthesis. If there are any violations, the synthesis will fail and a report
-will be printed to the console or to a file (see below).
+To improve iteration speed on your infrastructure and get feedback on your
+changes as early as possible, the CloudFormation templates produced by CDK are
+validated immediately after synthesis. They will be automatically validated
+against a comprehensive set of rules, checking for potential deployment failures
+and AWS best practices.
 
-### For application developers
+You can extend the set of validations with additional plugins if you want,
+like [cdk-nag](https://github.com/cdklabs/cdk-nag) which is focused on
+standards compliance, or you can write your own organization-specific validations.
+
+If there are any violations, the synthesis will fail and a report will be
+printed to the console and to a file.
+
+### CloudFormationValidatePlugin
+
+By default, a default rule set is added in the form of the
+`CloudFormationValidatePlugin`, which is powered by
+[@aws/cloudformation-validate](https://github.com/aws-cloudformation/cloudformation-validate).
+
+This rule set checks for misconfigurations that will fail deployments (which
+will be reported as errors), and for violations of AWS best practices (reported
+as warnings). To suppress a reported warning or error, add the following to
+your application:
+
+```ts fixture=validation-plugin
+const app = new App();
+
+// You can use any scope here, closer to the violation is safer
+Validations.of(app).acknowledge({
+  id: 'CloudFormation-Validate::W9999',
+  reason: 'This is not recommended but we have a good reason to do it like this',
+});
+```
+
+The plugin supports loading custom Rego or CloudFormation guard rule sets, which you
+can configure if you add instantiate the plugin explicitly to your app:
+
+```ts fixture=validation-plugin
+const app = new App();
+
+// Rules text, read from disk perhaps
+declare const myRules: string;
+
+Validations.of(app).addPlugins(new CloudFormationValidatePlugin({
+  guardRules: [{
+    name: 'My rules',
+    content: myRules,
+  }],
+}));
+```
+
+### Additional plugins
+
+You can also add custom plugins like [cdk-nag](https://github.com/cdklabs/cdk-nag) and
+[CfnGuardValidator](https://github.com/cdklabs/cdk-validator-cfnguard),
+or author custom plugins for validation tools such as [OPA](https://www.openpolicyagent.org/).
 
 To use one or more validation plugins in your application, use the
 `Validations.of()` API:
@@ -1744,6 +1789,8 @@ validation.
 > application can. They can read data from the filesystem, access the network
 > etc. It's your responsibility as the consumer of a plugin to verify that it is
 > secure to use.
+
+### Validation Reporting
 
 By default, the report is output in two ways:
 
@@ -1829,6 +1876,9 @@ scenarios are (non-exhaustive list):
   valid)
 - Warn if the user is using a deprecated API
 
+*Annotations* feed into the *Validations* mechanism, so any construct-level
+*annotation you add will be reported via the validations report.
+
 ### Acknowledging Warnings
 
 If you would like to run with `--strict` mode enabled (warnings will throw
@@ -1848,6 +1898,12 @@ warning by the `id`.
 
 ```ts
 Annotations.of(this).acknowledgeWarning('IAM:Group:MaxPoliciesExceeded', 'Account has quota increased to 20');
+
+// Because Annotations ultimately become Validations, you can also acknowledge the Validation
+Validations.of(this).acknowledge({
+  id: 'Construct-Annotations::IAM:Group:MaxPoliciesExceeded',
+  reason: 'Account has quota increased to 20',
+});
 ```
 
 ### Acknowledging Infos
@@ -1859,6 +1915,12 @@ Unlike warnings, info messages are not affected by the `--strict` mode and will 
 ```ts
 Annotations.of(this).addInfoV2('my-lib:Construct.someInfo', 'Some message explaining the info');
 Annotations.of(this).acknowledgeInfo('my-lib:Construct.someInfo', 'This info can be ignored');
+
+// Because Annotations ultimately become Validations, you can also acknowledge the Validation
+Validations.of(this).acknowledge({
+  id: 'Construct-Annotations::my-lib:Construct.someInfo',
+  reason: 'Some message explaining the info',
+});
 ```
 
 ## Mixins
@@ -1903,7 +1965,7 @@ Mixins.of(myBucket)
 // Advanced: Apply to constructs matching a selector, e.g. match by ID
 Mixins.of(
   scope,
-  ConstructSelector.byId("prod/**") 
+  ConstructSelector.byId("prod/**")
 ).apply(new CustomProdSecurityConfig());
 
 // Advanced: Require a mixin to be applied to every node in the construct tree
@@ -1958,7 +2020,7 @@ Mixins.of(
 // Apply to constructs matching a pattern
 Mixins.of(
   scope,
-  ConstructSelector.byId("prod/**") 
+  ConstructSelector.byId("prod/**")
 ).apply(new CustomProdSecurityConfig());
 
 // The default is to apply to all constructs in the scope
@@ -2255,12 +2317,12 @@ Going from an Aspect to a Mixin, the Aspect will be applied to every node.
 The goal of Blueprint Property Injection is to provide builders an automatic way to set default property values.
 
 Construct authors can declare that a Construct can have it properties injected by adding `@propertyInjectable`
-class decorator and specifying `PROPERTY_INJECTION_ID` readonly property.  
+class decorator and specifying `PROPERTY_INJECTION_ID` readonly property.
 All L2 Constructs will support Property Injection so organizations can write injectors to set their Construct Props.
 
 Organizations can set default property values to a Construct by writing Injectors for builders to consume.
 
-Here is a simple example of an Injector for APiKey that sets enabled to false.  
+Here is a simple example of an Injector for APiKey that sets enabled to false.
 
 ```ts fixture=README-Injectable
 class ApiKeyPropsInjector implements IPropertyInjector {

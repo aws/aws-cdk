@@ -116,6 +116,8 @@ Flags come in three types:
 | [@aws-cdk/aws-batch:defaultToAL2023](#aws-cdkaws-batchdefaulttoal2023) | Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2 | 2.249.0 | new default |
 | [@aws-cdk/core:annotationsInValidationReport](#aws-cdkcoreannotationsinvalidationreport) | Include construct annotations (warnings and errors) in the policy validation report | 2.253.0 | config |
 | [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-region stack references are strong, weak, or both | 2.254.0 | config |
+| [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | 2.259.0 | new default |
+| [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | V2NEXT | config |
 
 <!-- END table -->
 
@@ -159,6 +161,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
     "@aws-cdk/aws-efs:denyAnonymousAccess": true,
     "@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId": true,
+    "@aws-cdk/aws-eks:defaultToAL2023": true,
     "@aws-cdk/aws-eks:nodegroupNameAttribute": true,
     "@aws-cdk/aws-eks:useNativeOidcProvider": true,
     "@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault": true,
@@ -201,6 +204,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/core:aspectPrioritiesMutating": true,
     "@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics": true,
     "@aws-cdk/core:checkSecretUsage": true,
+    "@aws-cdk/core:defaultCrossStackReferences": "weak",
     "@aws-cdk/core:enableAdditionalMetadataCollection": true,
     "@aws-cdk/core:enablePartitionLiterals": true,
     "@aws-cdk/core:explicitStackTags": true,
@@ -209,6 +213,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
       "aws",
       "aws-cn"
     ],
+    "@aws-cdk/core:validateAgainstDefaultRules": true,
     "@aws-cdk/core:validateSnapshotRemovalPolicy": true,
     "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false,
     "@aws-cdk/customresources:installLatestAwsSdkDefault": false,
@@ -2497,7 +2502,55 @@ The flag is read from the **consumer** stack's context, not the producer's.
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| 2.254.0 | `"strong"` | `"strong"` |
+| 2.254.0 | `"strong"` | `"weak"` |
+
+
+### @aws-cdk/aws-eks:defaultToAL2023
+
+*Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2*
+
+Flag type: New default behavior
+
+When enabled, EKS managed node groups that do not specify an `amiType` will default to
+AL2023 AMI types (AL2023_x86_64_STANDARD, AL2023_ARM_64_STANDARD) instead of the deprecated
+AL2 types (AL2_x86_64, AL2_ARM_64).
+
+This only affects non-GPU instance types. GPU instances continue to default to AL2_x86_64_GPU
+because AL2023 splits GPU support into separate NVIDIA and Neuron AMI variants.
+
+Amazon Linux 2 reached end of support on November 26, 2025. AL2023 is the AWS-recommended default.
+
+When disabled, the default AMI types remain AL2 for backward compatibility.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.259.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Explicitly set `amiType` to the desired AL2 type (e.g., `NodegroupAmiType.AL2_X86_64`) in your nodegroup configuration.
+
+**Warning**: Enabling this flag on existing stacks will cause node group replacement, which terminates running pods. To migrate safely, first pin existing node groups to their current amiType explicitly, then enable the flag for new node groups.
+
+
+### @aws-cdk/core:validateAgainstDefaultRules
+
+*Treat CloudFormation Validate findings as errors*
+
+Flag type: Configuration option
+
+The CDK always validates synthesized templates against a default set of CloudFormation
+rules during synthesis. These rules include schema validation, best-practice linting,
+and common misconfiguration detection.
+
+When this flag is explicitly set to `true`, violations are treated as errors and will
+fail synthesis. When unconfigured, violations are reported as warnings only.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->
