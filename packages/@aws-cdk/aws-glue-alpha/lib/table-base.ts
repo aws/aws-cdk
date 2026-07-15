@@ -361,7 +361,9 @@ export abstract class TableBase extends Resource implements ITable {
   private generateIndexName(keys: string[]): string {
     if (keys.some(k => Token.isUnresolved(k))) {
       const uniqueId = Names.uniqueId(this);
-      return uniqueId.substring(Math.max(0, uniqueId.length - 80));
+      const suffix = `-${this.partitionIndexCustomResources.length}`;
+      const maxLen = 80 - suffix.length;
+      return uniqueId.substring(Math.max(0, uniqueId.length - maxLen)) + suffix;
     }
     const prefix = keys.join('-') + '-';
     const uniqueId = Names.uniqueId(this);
@@ -377,9 +379,10 @@ export abstract class TableBase extends Resource implements ITable {
     if (!this.partitionKeys || this.partitionKeys.length === 0) {
       throw new ValidationError(lit`NoPartitionKeysForIndex`, 'The table must have partition keys to create a partition index', this);
     }
-    if (!Token.isUnresolved(index.keyNames) && !index.keyNames.some(k => Token.isUnresolved(k))) {
+    if (!Token.isUnresolved(index.keyNames)) {
       const keyNames = this.partitionKeys.map(pk => pk.name);
-      if (!index.keyNames.every(k => keyNames.includes(k))) {
+      const concreteKeys = index.keyNames.filter(k => !Token.isUnresolved(k));
+      if (concreteKeys.length > 0 && !concreteKeys.every(k => keyNames.includes(k))) {
         throw new ValidationError(lit`IndexKeysNotPartitionKeys`, `All index keys must also be partition keys. Got ${index.keyNames} but partition key names are ${keyNames}`, this);
       }
     }
