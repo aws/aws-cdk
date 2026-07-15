@@ -299,14 +299,13 @@ export interface DatabaseClusterProps {
   /**
    * Specifies whether to manage the master user password with AWS Secrets Manager.
    *
-   * When set to true, AWS DocumentDB will automatically generate and manage the master user password in AWS Secrets Manager.
+   * When set to true, Amazon DocumentDB will automatically generate and manage the master user password in AWS Secrets Manager.
    * This provides enhanced security and automatic password rotation capabilities.
    *
    * Constraint: You can't manage the master user password with AWS Secrets Manager if `masterUser.password` is specified.
    *
-   * CloudFormation does not expose the ARN of the secret created by this option, so the
-   * `secret` property of the cluster remains `undefined`. See the module README for how to
-   * import the managed secret in your application.
+   * The `secret` property of the cluster is not set when using this option. See the
+   * module README for how to access the managed secret.
    *
    * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/docdb-secrets-manager.html
    * @default false
