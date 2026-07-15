@@ -36,9 +36,9 @@ export async function onEvent(event: any) {
       if (e.name === 'AlreadyExistsException') {
         const existing = await findPartitionIndex(DatabaseName, TableName, IndexName);
         const existingKeys = existing?.Keys?.map((k: any) => k.Name);
-        if (!existing || JSON.stringify(existingKeys?.sort()) !== JSON.stringify([...Keys].sort())) {
+        if (!existing || JSON.stringify(existingKeys) !== JSON.stringify(Keys)) {
           throw new PartitionIndexError(
-            `Partition index ${IndexName} already exists on ${DatabaseName}.${TableName} with different keys ` +
+            `Partition index ${IndexName} already exists on ${DatabaseName}.${TableName} with different or reordered keys ` +
               `(existing: ${JSON.stringify(existingKeys)}, requested: ${JSON.stringify(Keys)}). Delete the existing index first.`,
           );
         }
@@ -62,6 +62,7 @@ export async function onEvent(event: any) {
     return { PhysicalResourceId: IndexName };
   } else if (event.RequestType === 'Delete') {
     try {
+      '';
       await glue.send(new DeletePartitionIndexCommand({
         DatabaseName,
         TableName,

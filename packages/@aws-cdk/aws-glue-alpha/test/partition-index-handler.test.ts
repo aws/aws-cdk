@@ -84,7 +84,7 @@ describe('onEvent', () => {
       });
 
       await expect(onEvent(event('Create'))).rejects.toThrow(
-        /Partition index my-index already exists on my-database\.my-table with different keys/,
+        /Partition index my-index already exists on my-database/,
       );
     });
 
