@@ -585,7 +585,8 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
       browserConfigs: props.browserConfigs?.map(browserType => ({
         browserType,
       })),
-      resourcesToReplicateTags: props.resourcesToReplicateTags,
+      // CloudFormation requires at least one entry; omit the property entirely for an empty array
+      resourcesToReplicateTags: props.resourcesToReplicateTags?.length ? props.resourcesToReplicateTags : undefined,
     });
     this._resource = resource;
 

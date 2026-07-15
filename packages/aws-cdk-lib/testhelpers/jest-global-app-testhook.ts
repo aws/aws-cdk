@@ -15,7 +15,6 @@ const APP_INIT_HOOK_SYMBOL = Symbol.for('@aws-cdk/core.App#initHook');
     { id: 'CloudFormation-Validate::E1151', reason: 'vpc-12345 is not a valid VPC ID' },
     { id: 'CloudFormation-Validate::W2001', reason: 'Parameter is not used in the template' },
     { id: 'CloudFormation-Validate::E1156', reason: 'Many of our Role ARN literals are bogus' },
-    { id: 'CloudFormation-Validate::E3652', reason: 'Elasticsearch instance not available in that region' },
     { id: 'CloudFormation-Validate::W2501', reason: 'Hardcoded credentials are only for tests' },
     { id: 'CloudFormation-Validate::E3027', reason: 'Cron expressions are not valid' },
     { id: 'CloudFormation-Validate::F1020', reason: 'Invalid {Ref} targets in tests' },
@@ -29,8 +28,14 @@ const APP_INIT_HOOK_SYMBOL = Symbol.for('@aws-cdk/core.App#initHook');
     { id: 'CloudFormation-Validate::W9010', reason: 'Hardcoded AMI IDs are fine in tests' },
     { id: 'CloudFormation-Validate::E3710', reason: 'We still have tests for shutdown services' },
     { id: 'CloudFormation-Validate::F3006', reason: 'We invent a lot of resource types for tests.' },
-    { id: 'CloudFormation-Validate::E3702', reason: 'Structurally malformed CodePipeline tests.' },
     { id: 'CloudFormation-Validate::E3677', reason: 'ZipFile does not support node99.x' },
+<<<<<<< HEAD
     { id: 'CloudFormation-Validate::W9012', reason: 'We inject bogus AWS AccountIds on the regular (12345) and so on' },
+=======
+    { id: 'CloudFormation-Validate::E1150', reason: 'Tests import security groups with placeholder IDs; the templates are never deployed so the format does not matter' },
+    { id: 'CloudFormation-Validate::W9013', reason: 'Fake account IDs in ARNs are fine in tests; there is no real account to protect' },
+    { id: 'CloudFormation-Validate::W3030', reason: 'Invalid enum values are deliberate test inputs; nothing is deployed' },
+    { id: 'CloudFormation-Validate::W9012', reason: 'Tests use short fake account IDs for readability; no real environment is targeted' },
+>>>>>>> f54c62ac9b (Update)
   );
 };

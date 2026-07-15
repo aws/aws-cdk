@@ -242,7 +242,6 @@ describe('CodeInterpreterCustom static methods tests', () => {
       },
     });
 
-    cdk.Validations.of(app).acknowledge({ id: 'CloudFormation-Validate::F0001', reason: 'Empty stack used for import-only tests' });
     template = Template.fromStack(stack);
   });
 

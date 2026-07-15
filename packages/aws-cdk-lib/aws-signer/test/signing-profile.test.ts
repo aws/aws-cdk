@@ -91,6 +91,9 @@ describe('signing profile', () => {
   test('default with some tags', () => {
     const platform = signer.Platform.AWS_LAMBDA_SHA384_ECDSA;
     const signing = new signer.SigningProfile(stack, 'SigningProfile', { platform });
+    // tag3 is added with an empty value to verify CDK passes it through; the engine's
+    // min-length-1 check on tag values fires only because of that intentional empty string.
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::F3033', reason: 'Empty tag value is intentional for this test' });
 
     cdk.Tags.of(signing).add('tag1', 'value1');
     cdk.Tags.of(signing).add('tag2', 'value2');
