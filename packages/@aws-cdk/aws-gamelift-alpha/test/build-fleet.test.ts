@@ -49,8 +49,16 @@ describe('build fleet', () => {
             CertificateConfiguration: {
               CertificateType: 'DISABLED',
             },
-            MaxSize: 1,
-            MinSize: 0,
+            Locations: Match.arrayWith([
+              Match.objectLike({
+                Location: { Ref: 'AWS::Region' },
+                LocationCapacity: {
+                  DesiredEC2Instances: 0,
+                  MaxSize: 1,
+                  MinSize: 0,
+                },
+              }),
+            ]),
             RuntimeConfiguration: {
               ServerProcesses: [
                 {
@@ -130,7 +138,7 @@ describe('build fleet', () => {
 
     test('with too much locations from constructor', () => {
       let incorrectLocations: gamelift.Location[] = [];
-      for (let i = 0; i < 101; i++) {
+      for (let i = 0; i < 100; i++) {
         incorrectLocations.push({
           region: 'eu-west-1',
         });
@@ -146,12 +154,12 @@ describe('build fleet', () => {
             launchPath: 'test-launch-path',
           }],
         },
-      })).toThrow(/No more than 100 locations are allowed per fleet, given 101/);
+      })).toThrow(/No more than 99 remote locations are allowed per fleet, given 100/);
     });
 
     test('with too much locations', () => {
       let locations: gamelift.Location[] = [];
-      for (let i = 0; i < 100; i++) {
+      for (let i = 0; i < 99; i++) {
         locations.push({
           region: 'eu-west-1',
         });
@@ -388,9 +396,11 @@ describe('build fleet', () => {
       Template.fromStack(stack).hasResource('AWS::GameLift::Fleet', {
         Properties:
               {
-                Locations: [{
-                  Location: 'eu-west-1',
-                }],
+                Locations: Match.arrayWith([
+                  Match.objectLike({
+                    Location: 'eu-west-1',
+                  }),
+                ]),
               },
       });
     });
@@ -402,14 +412,16 @@ describe('build fleet', () => {
       Template.fromStack(stack).hasResource('AWS::GameLift::Fleet', {
         Properties:
                 {
-                  Locations: [{
-                    Location: 'eu-west-1',
-                    LocationCapacity: {
-                      DesiredEC2Instances: 3,
-                      MinSize: 1,
-                      MaxSize: 4,
-                    },
-                  }],
+                  Locations: Match.arrayWith([
+                    Match.objectLike({
+                      Location: 'eu-west-1',
+                      LocationCapacity: {
+                        DesiredEC2Instances: 3,
+                        MinSize: 1,
+                        MaxSize: 4,
+                      },
+                    }),
+                  ]),
                 },
       });
     });
