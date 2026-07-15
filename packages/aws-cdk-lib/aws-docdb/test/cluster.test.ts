@@ -1441,6 +1441,8 @@ describe('DatabaseCluster', () => {
         MasterUsername: 'admin',
         MasterUserPassword: Match.absent(),
       });
+      // The construct must not create its own secret when the password is managed by the service
+      Template.fromStack(stack).resourceCountIs('AWS::SecretsManager::Secret', 0);
     });
 
     test('can specify KMS key for managed master user password', () => {

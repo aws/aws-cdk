@@ -3,9 +3,11 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as cdk from 'aws-cdk-lib';
 import type * as constructs from 'constructs';
 import { DatabaseCluster } from 'aws-cdk-lib/aws-docdb';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 
 class TestStack extends cdk.Stack {
+  public readonly cluster: DatabaseCluster;
+
   constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -16,7 +18,7 @@ class TestStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
-    new DatabaseCluster(this, 'Database', {
+    this.cluster = new DatabaseCluster(this, 'Database', {
       manageMasterUserPassword: true,
       masterUser: {
         username: 'docdbuser',
@@ -34,6 +36,20 @@ const app = new cdk.App();
 
 const stack = new TestStack(app, 'aws-cdk-docdb-cluster-managed-password');
 
-new IntegTest(app, 'aws-cdk-docdb-cluster-managed-password-integ', {
+const test = new IntegTest(app, 'aws-cdk-docdb-cluster-managed-password-integ', {
   testCases: [stack],
 });
+
+// Verify that the managed master user secret was created for the cluster
+const describeClusters = test.assertions.awsApiCall('DocDB', 'describeDBClusters', {
+  DBClusterIdentifier: stack.cluster.clusterIdentifier,
+});
+describeClusters.expect(ExpectedResult.objectLike({
+  DBClusters: Match.arrayWith([
+    Match.objectLike({
+      MasterUserSecret: Match.objectLike({
+        SecretArn: Match.stringLikeRegexp('^arn:aws:secretsmanager:'),
+      }),
+    }),
+  ]),
+}));

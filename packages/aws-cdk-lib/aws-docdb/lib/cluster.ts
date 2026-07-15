@@ -304,6 +304,11 @@ export interface DatabaseClusterProps {
    *
    * Constraint: You can't manage the master user password with AWS Secrets Manager if `masterUser.password` is specified.
    *
+   * CloudFormation does not expose the ARN of the secret created by this option, so the
+   * `secret` property of the cluster remains `undefined`. See the module README for how to
+   * import the managed secret in your application.
+   *
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/docdb-secrets-manager.html
    * @default false
    */
   readonly manageMasterUserPassword?: boolean;
@@ -311,21 +316,26 @@ export interface DatabaseClusterProps {
   /**
    * The AWS KMS key to encrypt a secret that is automatically generated and managed in AWS Secrets Manager.
    *
-   * This setting is valid only if the master user password is managed by Amazon DocumentDB in AWS Secrets Manager for the DB cluster.
+   * This setting is valid only if the master user password is managed by Amazon DocumentDB in AWS Secrets Manager
+   * for the DB cluster (i.e. when `manageMasterUserPassword` is true).
    * If you don't specify this property, then the `aws/secretsmanager` KMS key is used to encrypt the secret.
    *
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/docdb-secrets-manager.html
    * @default - default AWS managed key `aws/secretsmanager`
    */
   readonly masterUserSecretKmsKey?: kms.IKey;
 
   /**
-   * Specifies whether to rotate the secret managed by AWS Secrets Manager for the master user password.
+   * Specifies whether to trigger an immediate one-time rotation of the master user password
+   * managed by AWS Secrets Manager.
    *
-   * This setting is valid only if the master user password is managed by Amazon DocumentDB in AWS Secrets Manager for the cluster.
-   * The secret value contains the updated password.
+   * Takes effect only in an update to an existing cluster; it has no effect at cluster
+   * creation. It does NOT establish scheduled rotation - Amazon DocumentDB rotates the
+   * managed secret every 7 days by default.
    *
-   * When you rotate the master user password, the change must be applied immediately.
+   * This setting is valid only if `manageMasterUserPassword` is true.
    *
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/docdb-secrets-manager.html
    * @default false
    */
   readonly rotateMasterUserPassword?: boolean;
@@ -604,15 +614,15 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
     // Validate manageMasterUserPassword constraints
     if (props.manageMasterUserPassword && props.masterUser.password) {
-      throw new ValidationError('You can\'t manage the master user password with AWS Secrets Manager if masterUser.password is specified', this);
+      throw new ValidationError(lit`ManageMasterUserPasswordConflictsWithPassword`, 'You can\'t manage the master user password with AWS Secrets Manager if masterUser.password is specified', this);
     }
 
     if (props.masterUserSecretKmsKey && !props.manageMasterUserPassword) {
-      throw new ValidationError('masterUserSecretKmsKey is valid only if manageMasterUserPassword is true', this);
+      throw new ValidationError(lit`MasterUserSecretKmsKeyRequiresManagedPassword`, 'masterUserSecretKmsKey is valid only if manageMasterUserPassword is true', this);
     }
 
     if (props.rotateMasterUserPassword && !props.manageMasterUserPassword) {
-      throw new ValidationError('rotateMasterUserPassword is valid only if manageMasterUserPassword is true', this);
+      throw new ValidationError(lit`RotateMasterUserPasswordRequiresManagedPassword`, 'rotateMasterUserPassword is valid only if manageMasterUserPassword is true', this);
     }
 
     // Create the secret manager secret if no password is specified and manageMasterUserPassword is false
