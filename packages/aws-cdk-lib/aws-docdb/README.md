@@ -122,7 +122,7 @@ const cluster = new docdb.DatabaseCluster(this, 'Database', {
 ```
 
 When `manageMasterUserPassword` is enabled:
-- AWS DocumentDB automatically generates a secure password
+- Amazon DocumentDB automatically generates a secure password
 - The password is stored in AWS Secrets Manager
 - You cannot specify `masterUser.password` (it will be auto-generated)
 - The secret is automatically rotated every 7 days by default
