@@ -2,7 +2,6 @@ import { RegoEngine, TemplateFile, version } from '@aws/cloudformation-validate'
 import type { Engine, EngineConfig, RuleInfo, Severity } from '@aws/cloudformation-validate';
 import type { PolicyValidationPluginReport, PolicyViolatingResource } from './report';
 import type { IPolicyValidationPlugin, IPolicyValidationContext } from './validation';
-import * as cxapi from "../../../cx-api/index";
 
 interface MutableViolation {
   ruleName: string;
