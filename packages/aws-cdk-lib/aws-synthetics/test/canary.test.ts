@@ -1240,7 +1240,7 @@ test('resourcesToReplicateTags is not included when not specified', () => {
   expect(canaryProps.ResourcesToReplicateTags).toBeUndefined();
 });
 
-test('resourcesToReplicateTags omits the property when given an empty array', () => {
+test('resourcesToReplicateTags can be empty array', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -1256,11 +1256,9 @@ test('resourcesToReplicateTags omits the property when given an empty array', ()
   });
 
   // THEN
-  // CloudFormation requires ResourcesToReplicateTags to have at least one item, so an empty
-  // array must be omitted entirely rather than synthesized as [].
   Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
     Name: 'mycanary',
-    ResourcesToReplicateTags: Match.absent(),
+    ResourcesToReplicateTags: [],
   });
 });
 

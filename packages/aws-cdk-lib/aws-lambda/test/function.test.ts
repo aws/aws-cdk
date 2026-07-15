@@ -309,10 +309,6 @@ describe('function', () => {
       const fn = newTestLambda(stack);
       const sourceArn = 'arn:aws:sqs:us-east-1:1111111111:MyQueue';
       const service = 'my-service';
-      // The S3 bucket ARN intentionally has no account id, so the engine's confused-deputy
-      // check (SourceArn should be paired with SourceAccount) fires. This test only verifies
-      // the SourceArn condition wiring, so acknowledge it for this stack only.
-      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W3663', reason: 'Test SourceArn has no account id; SourceAccount is out of scope for this test' });
       const principal = new iam.PrincipalWithConditions(new iam.ServicePrincipal(service), {
         ArnLike: {
           'aws:SourceArn': sourceArn,
@@ -4000,6 +3996,7 @@ describe('function', () => {
 
     test('runtime validation for snapStart', () => {
       const stack = new cdk.Stack();
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W2531', reason: 'Intentionally testing on old runtime' });
       cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W2530', reason: 'SnapStart is incomplete, we know' });
 
       expect(() => new lambda.Function(stack, 'MyLambda', {

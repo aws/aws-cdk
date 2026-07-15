@@ -10,9 +10,6 @@ describe('destination', () => {
     const role = new iam.Role(stack, 'Role', {
       assumedBy: new iam.ServicePrincipal('logs.us-east-2.amazonaws.com'),
     });
-    // No policy statements are added, so DestinationPolicy resolves to an empty string and
-    // the engine's min-length-1 check fires. This test only asserts the other properties.
-    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::F3033', reason: 'Destination has no policy statements in this test' });
 
     // WHEN
     new CrossAccountDestination(stack, 'Dest', {

@@ -377,10 +377,6 @@ describe('auto scaling group', () => {
   test('validation is not performed when using Tokens', () => {
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
-    // This test deliberately synthesizes MaxSize < MinSize to prove CDK skips its own
-    // capacity validation for Tokens. The resolved template is genuinely invalid, so
-    // acknowledge the engine's (correct) MaxSize/MinSize finding for this stack only.
-    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3706', reason: 'Intentionally invalid capacities to verify Token validation is skipped' });
 
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),

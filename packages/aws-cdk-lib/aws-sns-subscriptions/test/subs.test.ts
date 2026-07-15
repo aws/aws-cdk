@@ -3,7 +3,7 @@ import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
-import { App, CfnParameter, Duration, RemovalPolicy, Stack, Token, Validations } from '../../core';
+import { App, CfnParameter, Duration, RemovalPolicy, Stack, Token } from '../../core';
 import * as cxapi from '../../cx-api';
 import * as subs from '../lib';
 
@@ -2058,9 +2058,6 @@ test('region property is present on an imported topic - lambda', () => {
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });
-  // The imported topic ARN uses a placeholder account, so the generated Lambda permission's
-  // SourceArn has no real account id and the engine's confused-deputy check fires.
-  Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W3663', reason: 'Imported topic ARN uses a placeholder account; SourceAccount is out of scope for this test' });
   imported.addSubscription(new subs.LambdaSubscription(func));
 
   Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
