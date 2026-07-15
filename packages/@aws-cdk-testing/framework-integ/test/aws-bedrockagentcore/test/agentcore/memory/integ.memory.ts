@@ -86,6 +86,14 @@ new agentcore.Memory(stack, 'MemoryWithSelfManagedStrategy', {
   ],
 });
 
+// Create a memory and apply a removal policy via the L2 (exercises applyRemovalPolicy,
+// which requires the CfnMemory to be set as the construct's default child - see #38262)
+const memoryWithRemovalPolicy = new agentcore.Memory(stack, 'MemoryWithRemovalPolicy', {
+  memoryName: 'memory_with_removal_policy',
+  expirationDuration: cdk.Duration.days(30),
+});
+memoryWithRemovalPolicy.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+
 // Create a memory with built-in episodic strategy
 new agentcore.Memory(stack, 'MemoryWithBuiltinEpisodicEx', {
   memoryName: 'memory_with_builtin_episodic_example',

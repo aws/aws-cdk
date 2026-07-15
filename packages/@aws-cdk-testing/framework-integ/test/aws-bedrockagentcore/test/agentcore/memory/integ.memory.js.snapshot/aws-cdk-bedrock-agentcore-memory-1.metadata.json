@@ -615,5 +615,41 @@
         "new Memory (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.js:576:22)"
       ]
     }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithRemovalPolicy": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (integ.memory.ts)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithRemovalPolicy/ServiceRole": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (integ.memory.ts)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithRemovalPolicy/Memory": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (integ.memory.ts)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithRemovalPolicy/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (integ.memory.ts)",
+        "...node internals..."
+      ]
+    }
   ]
 }
