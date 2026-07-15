@@ -127,6 +127,12 @@ When `manageMasterUserPassword` is enabled:
 - You cannot specify `masterUser.password` (it will be auto-generated)
 - The secret is automatically rotated every 7 days by default
 
+By default (without `manageMasterUserPassword`), the construct creates and manages a Secrets Manager
+secret for the master password, and rotation must be configured explicitly with `addRotationSingleUser()`,
+which deploys a rotation Lambda function. The `manageMasterUserPassword` option delegates password management
+entirely to the DocumentDB service, which includes built-in automatic rotation every 7 days without requiring
+Lambda functions.
+
 ### Custom KMS Key for Secret Encryption
 
 You can specify a custom KMS key to encrypt the managed secret:
@@ -148,7 +154,10 @@ const cluster = new docdb.DatabaseCluster(this, 'Database', {
 
 ### Manual Password Rotation
 
-To manually trigger password rotation for a managed secret:
+To trigger an immediate one-time rotation of the managed master user password, set
+`rotateMasterUserPassword` to `true` on an existing cluster and deploy the change. It has no
+effect when creating a new cluster, and it does not change the automatic rotation schedule
+(the managed secret is rotated every 7 days by default).
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -158,12 +167,53 @@ const cluster = new docdb.DatabaseCluster(this, 'Database', {
   masterUser: {
     username: 'myuser',
   },
-  rotateMasterUserPassword: true, // Triggers immediate password rotation
+  rotateMasterUserPassword: true, // One-time rotation, takes effect when applied to an existing cluster
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.MEMORY5, ec2.InstanceSize.LARGE),
   vpc,
 });
 ```
 
+### Accessing the Managed Secret
+
+The ARN of the secret created by `manageMasterUserPassword` is not provided by CloudFormation currently
+(unlike `AWS::RDS::DBCluster`, the `AWS::DocDB::DBCluster` resource has no `MasterUserSecret.SecretArn`
+attribute), so the `secret` property of the cluster remains `undefined` and cannot be used to grant
+access to the managed secret.
+
+You can retrieve the secret ARN dynamically using a custom resource:
+
+```ts
+import * as cr from 'aws-cdk-lib/custom-resources';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+
+declare const cluster: docdb.DatabaseCluster;
+declare const role: iam.Role;
+
+// Call rds:DescribeDBClusters to retrieve the managed secret ARN at deploy time
+const getSecretArn = new cr.AwsCustomResource(this, 'GetManagedSecretArn', {
+  onUpdate: {
+    service: 'DocDB',
+    action: 'describeDBClusters',
+    parameters: {
+      DBClusterIdentifier: cluster.clusterIdentifier,
+    },
+    physicalResourceId: cr.PhysicalResourceId.of('GetManagedSecretArn'),
+  },
+  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+  }),
+});
+
+const managedSecret = secretsmanager.Secret.fromSecretAttributes(this, 'ManagedSecret', {
+  secretCompleteArn: getSecretArn.getResponseField('DBClusters.0.MasterUserSecret.SecretArn'),
+});
+managedSecret.grantRead(role);
+```
+
+If the secret is encrypted with a customer managed KMS key (`masterUserSecretKmsKey`), also pass
+`encryptionKey` to `Secret.fromSecretAttributes()` so that `grantRead()` grants `kms:Decrypt` on the
+key as well.
 
 ## Rotating credentials
 
