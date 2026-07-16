@@ -725,7 +725,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * Stack dependencies may not cross Stage boundaries.
    *
-   * This function has been deprecated; instead use `addStackDependency`, which
+   * This method has been renamed to `addStackDependency`, which
    * more clearly indicates that this is a dependency mechanism distinct from
    * the construct-level `construct.node.addDependency` mechanism.
    *
