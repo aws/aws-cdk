@@ -33,8 +33,6 @@ import { profileFn } from './private/perf';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { minimatch } = require('minimatch');
 
-const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
-
 export const STACK_RESOURCE_LIMIT_CONTEXT = '@aws-cdk/core:stackResourceLimit';
 
 const SUPPRESS_TEMPLATE_INDENTATION_CONTEXT = '@aws-cdk/core:suppressTemplateIndentation';
@@ -228,7 +226,7 @@ export class Stack extends Construct implements ITaggable {
    * We do attribute detection since we can't reliably use 'instanceof'.
    */
   public static isStack(this: void, x: any): x is Stack {
-    return x !== null && typeof (x) === 'object' && isMarkedAsStack(x);
+    return STACK_TYPE.isMarked(x);
   }
 
   /**
@@ -239,36 +237,7 @@ export class Stack extends Construct implements ITaggable {
    * @param construct The construct to start the search from.
    */
   public static of(construct: IConstruct): Stack {
-    // we want this to be as cheap as possible. cache this result by mutating
-    // the object. anecdotally, at the time of this writing, @aws-cdk/core unit
-    // tests hit this cache 1,112 times, @aws-cdk/aws-cloudformation unit tests
-    // hit this 2,435 times).
-    const cache = (construct as any)[MY_STACK_CACHE] as Stack | undefined;
-    if (cache) {
-      return cache;
-    } else {
-      const value = _lookup(construct);
-      Object.defineProperty(construct, MY_STACK_CACHE, {
-        enumerable: false,
-        writable: false,
-        configurable: false,
-        value,
-      });
-      return value;
-    }
-
-    function _lookup(c: IConstruct): Stack {
-      if (Stack.isStack(c)) {
-        return c;
-      }
-
-      const _scope = c.node.scope;
-      if (Stage.isStage(c) || !_scope) {
-        throw new ValidationError(lit`ShouldBeCreatedInStackScope`, `${construct.constructor?.name ?? 'Construct'} at '${Node.of(construct).path}' should be created in the scope of a Stack, but no Stack found`, c);
-      }
-
-      return _lookup(_scope);
-    }
+    return stackOf(construct);
   }
 
   /**
@@ -508,7 +477,7 @@ export class Stack extends Construct implements ITaggable {
     this._crossRegionReferences = !!props.crossRegionReferences;
     this._suppressTemplateIndentation = props.suppressTemplateIndentation ?? this.node.tryGetContext(SUPPRESS_TEMPLATE_INDENTATION_CONTEXT) ?? false;
 
-    markAsStack(this);
+    STACK_TYPE.mark(this);
 
     if (!this.node.tryGetContext(cxapi.DISABLE_CREATION_STACK_TRACES) || debugModeEnabled()) {
       this.node.addMetadata(cxschema.ArtifactMetadataEntryType.CREATION_STACK, captureStackTrace(new.target));
@@ -1941,7 +1910,7 @@ import { AssumptionError, UnscopedValidationError, ValidationError } from './err
 import { lit } from './private/literal-string';
 import { debugModeEnabled } from './debug';
 import { captureStackTrace } from './private/stack-trace';
-import { markAsStack, isMarkedAsStack } from './private/type-testing';
+import { STACK_TYPE, stackOf } from './private/core-construct-finders';
 import { dispatchDependencyOperation } from './private/deps';
 /* eslint-enable import/order */
 

@@ -6,7 +6,7 @@ import { lit } from '../private/literal-string';
 import type { Stack } from '../stack';
 import type { Stage } from '../stage';
 import { iterateDfsPreorder } from './construct-iteration';
-import { isMarkedAsNestedStack, isMarkedAsStack, isMarkedAsStage } from './type-testing';
+import { NESTED_STACK_TYPE, STACK_TYPE, STAGE_TYPE } from './core-construct-finders';
 
 /**
  * Turn all dependencies added via `source.node.addDependency(target)` into concrete dependencies.
@@ -174,11 +174,11 @@ function dependencyContainerPath(start: IConstruct): DependencyContainer[] {
   let construct: IConstruct | undefined = start;
   while (construct) {
     let candidate: DependencyContainer | undefined;
-    if (isMarkedAsStage(construct)) {
+    if (STAGE_TYPE.isMarked(construct)) {
       candidate = { type: 'stage', construct };
-    } else if (isMarkedAsNestedStack(construct)) {
+    } else if (NESTED_STACK_TYPE.isMarked(construct)) {
       candidate = { type: 'nested-stack', construct };
-    } else if (isMarkedAsStack(construct)) {
+    } else if (STACK_TYPE.isMarked(construct)) {
       candidate = { type: 'stack', construct };
     } else {
       // Only the first time do we do the construct itself; all other constructs on

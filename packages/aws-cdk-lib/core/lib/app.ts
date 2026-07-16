@@ -13,8 +13,7 @@ import { Stage } from './stage';
 import type { IPolicyValidationPluginBeta1 } from './validation/validation';
 import * as cxapi from '../../cx-api';
 import type * as public_cxapi from '../../cx-api';
-
-const APP_SYMBOL = Symbol.for('@aws-cdk/core.App');
+import { appOf, APP_TYPE } from './private/core-construct-finders';
 
 /**
  * Can hold a function to globally initialize Apps.
@@ -188,11 +187,9 @@ export interface AppProps {
 export class App extends Stage {
   /**
    * Return the app that is the root of the construct tree, if available.
-   *
    */
-  public static of(construct: IConstruct): Stage | undefined {
-    const root = construct.node.root;
-    return App.isApp(root) ? root : undefined;
+  public static of(construct: IConstruct): App | undefined {
+    return appOf(construct);
   }
 
   /**
@@ -201,7 +198,7 @@ export class App extends Stage {
    * @param obj The object to evaluate
    */
   public static isApp(obj: any): obj is App {
-    return APP_SYMBOL in obj;
+    return APP_TYPE.isMarked(obj);
   }
 
   /**
@@ -245,7 +242,7 @@ export class App extends Stage {
       this._addValidationPlugins(...props.policyValidationBeta1);
     }
 
-    Object.defineProperty(this, APP_SYMBOL, { value: true });
+    APP_TYPE.mark(this);
 
     this.loadContext(props.context, props.postCliContext);
 

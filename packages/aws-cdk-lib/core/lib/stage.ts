@@ -1,9 +1,10 @@
 import * as private_cxapi from '@aws-cdk/cloud-assembly-api';
-import { type IConstruct, Construct, Node } from 'constructs';
+import { type IConstruct, Construct } from 'constructs';
 import type { Environment } from './environment';
 import { ValidationError } from './errors';
 import { FeatureFlags } from './feature-flags';
 import type { PermissionsBoundary } from './permissions-boundary';
+import { STAGE_TYPE, stageOf } from './private/core-construct-finders';
 import { synthesize } from './private/synthesis';
 import { type IPropertyInjector, PropertyInjectors } from './prop-injectors';
 import type { IPolicyValidationPlugin, IPolicyValidationPluginBeta1 } from './validation';
@@ -11,7 +12,6 @@ import { _toBeta1Plugin } from './validation';
 import * as public_cxapi from '../../cx-api';
 import { _convertCloudAssembly, _convertCloudAssemblyBuilder } from '../../cx-api';
 import { lit } from './private/literal-string';
-import { isMarkedAsStage, markAsStage } from './private/type-testing';
 
 /**
  * Initialization props for a stage.
@@ -125,7 +125,7 @@ export class Stage extends Construct {
    *
    */
   public static of(construct: IConstruct): Stage | undefined {
-    return Node.of(construct).scopes.reverse().slice(1).find(Stage.isStage);
+    return stageOf(construct);
   }
 
   /**
@@ -133,7 +133,7 @@ export class Stage extends Construct {
    *
    */
   public static isStage(this: void, x: any): x is Stage {
-    return x !== null && typeof(x) === 'object' && isMarkedAsStage(x);
+    return STAGE_TYPE.isMarked(x);
   }
 
   /**
@@ -202,7 +202,7 @@ export class Stage extends Construct {
       injectors.add(...props.propertyInjectors);
     }
 
-    markAsStage(this);
+    STAGE_TYPE.mark(this);
 
     this.constructPathsCache = new Set<string>();
     this.parentStage = Stage.of(this);

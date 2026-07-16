@@ -18,7 +18,7 @@ import { NestedStackSynthesizer } from './stack-synthesizers';
 import { Token } from './token';
 import * as cxapi from '../../cx-api';
 import { lit } from './private/literal-string';
-import { markAsNestedStack, isMarkedAsNestedStack } from './private/type-testing';
+import { markAsNestedStack, isMarkedAsNestedStack } from './private/core-construct-finders';
 
 /**
  * Initialization props for the `NestedStack` construct.
