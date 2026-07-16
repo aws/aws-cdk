@@ -30,8 +30,8 @@ const CONFIG = {
 };
 
 const REASON_DESCRIPTIONS = {
-  pending_approval: 'CI run is waiting for maintainer approval',
-  no_ci_activity: 'no CI activity on the head commit (approval skipped or never triggered)',
+  pending_approval: { short: '🔒 Pending CI approval' },
+  no_ci_activity: { short: '⚠️ No CI activity' },
 };
 
 const DRY_RUN = process.env.DRY_RUN === 'true';
@@ -106,12 +106,28 @@ async function needsAttention({ github, owner, repo, pr }) {
 }
 
 /**
- * Renders the tracking issue body. PRs are referenced by bare `#<number>`
- * links so GitHub renders their titles -- this avoids embedding (and having to
- * sanitize) arbitrary PR title text in the Markdown.
+ * Escapes PR title text for safe embedding in a Markdown table cell: pipes
+ * would break the table layout, and stray whitespace/newlines are collapsed.
+ */
+function sanitizeTitle(title) {
+  return title.replace(/\s+/g, ' ').replace(/\|/g, '\\|').trim();
+}
+
+/**
+ * Renders the tracking issue body as a Markdown table. PR titles are
+ * sanitized before embedding; PR links use absolute URLs so they render
+ * correctly regardless of where the issue lives.
  */
 function renderIssueBody({ owner, repo, weekKey, flaggedPrs }) {
   const workflowUrl = `https://github.com/${owner}/${repo}/blob/main/.github/workflows/pending-maintainer-action-check.yml`;
+  const counts = {};
+  for (const { reason } of flaggedPrs) {
+    counts[reason] = (counts[reason] ?? 0) + 1;
+  }
+  const summary = Object.entries(counts)
+    .map(([reason, n]) => `${REASON_DESCRIPTIONS[reason]?.short ?? reason}: ${n}`)
+    .join(' · ');
+
   const lines = [
     `Beginning-contributor PRs pending maintainer CI action for week **${weekKey}**.`,
     '',
@@ -122,8 +138,17 @@ function renderIssueBody({ owner, repo, weekKey, flaggedPrs }) {
   if (flaggedPrs.length === 0) {
     lines.push('No PRs currently pending maintainer CI action. :tada:');
   } else {
+    lines.push(
+      `**${flaggedPrs.length} PR(s)** — ${summary}`,
+      '',
+      '| PR | Title | Author | Created | Reason |',
+      '|----|-------|--------|---------|--------|',
+    );
     for (const { pr, reason } of flaggedPrs) {
-      lines.push(`- #${pr.number} (@${pr.user.login}) — ${REASON_DESCRIPTIONS[reason] ?? reason}`);
+      const link = `[#${pr.number}](https://github.com/${owner}/${repo}/pull/${pr.number})`;
+      const created = pr.created_at.slice(0, 10);
+      const reasonText = REASON_DESCRIPTIONS[reason]?.short ?? reason;
+      lines.push(`| ${link} | ${sanitizeTitle(pr.title)} | @${pr.user.login} | ${created} | ${reasonText} |`);
     }
   }
 
