@@ -33,7 +33,7 @@ For more information, visit [Signing Profiles in AWS Signer](https://docs.aws.am
 The following code sets up a signing profile for signing lambda code bundles -
 
 ```ts
-const signingProfile = new signer.SigningProfile(this, 'SigningProfile', { 
+const signingProfile = new signer.SigningProfile(this, 'SigningProfile', {
   platform: signer.Platform.AWS_LAMBDA_SHA384_ECDSA,
 });
 ```
