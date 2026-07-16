@@ -67,7 +67,10 @@ async function fetchLabeledOpenPrs({ github, owner, repo, label }) {
 /**
  * Determines whether a PR needs maintainer attention (pending CI approval or
  * no CI activity at all), based on its head commit's workflow runs and
- * combined commit status.
+ * combined commit status. For flagged PRs, also returns `pendingSince`: the
+ * time the PR entered the pending state (the last push -- approximated by the
+ * earliest action_required run's creation time, or the head commit date when
+ * no runs exist).
  */
 async function needsAttention({ github, owner, repo, pr }) {
   const { data: workflowRuns } = await github.rest.actions.listWorkflowRunsForRepo({
@@ -78,9 +81,12 @@ async function needsAttention({ github, owner, repo, pr }) {
   });
   const runs = workflowRuns.workflow_runs;
 
-  const hasActionRequired = runs.some((run) => run.conclusion === 'action_required');
-  if (hasActionRequired) {
-    return { needsAttention: true, reason: 'pending_approval' };
+  const actionRequiredRuns = runs.filter((run) => run.conclusion === 'action_required');
+  if (actionRequiredRuns.length > 0) {
+    const pendingSince = actionRequiredRuns
+      .map((run) => run.created_at)
+      .sort()[0];
+    return { needsAttention: true, reason: 'pending_approval', pendingSince };
   }
 
   const buildRun = runs.find((run) => CONFIG.buildWorkflowPaths.includes(run.path));
@@ -98,7 +104,12 @@ async function needsAttention({ github, owner, repo, pr }) {
     if (status.state === 'pending' && status.total_count === 0) {
       // No workflow runs at all and no commit statuses -- approval was skipped
       // (or never triggered) and nothing else ran either.
-      return { needsAttention: true, reason: 'no_ci_activity' };
+      const { data: commit } = await github.rest.repos.getCommit({
+        owner,
+        repo,
+        ref: pr.head.sha,
+      });
+      return { needsAttention: true, reason: 'no_ci_activity', pendingSince: commit.commit.committer.date };
     }
   }
 
@@ -138,17 +149,24 @@ function renderIssueBody({ owner, repo, weekKey, flaggedPrs }) {
   if (flaggedPrs.length === 0) {
     lines.push('No PRs currently pending maintainer CI action. :tada:');
   } else {
-    lines.push(
-      `**${flaggedPrs.length} PR(s)** — ${summary}`,
-      '',
-      '| PR | Title | Author | Created | Reason |',
-      '|----|-------|--------|---------|--------|',
-    );
-    for (const { pr, reason } of flaggedPrs) {
-      const link = `[#${pr.number}](https://github.com/${owner}/${repo}/pull/${pr.number})`;
-      const created = pr.created_at.slice(0, 10);
-      const reasonText = REASON_DESCRIPTIONS[reason]?.short ?? reason;
-      lines.push(`| ${link} | ${sanitizeTitle(pr.title)} | @${pr.user.login} | ${created} | ${reasonText} |`);
+    lines.push(`**${flaggedPrs.length} PR(s)** — ${summary}`);
+    for (const reason of Object.keys(counts)) {
+      // Oldest pending first, so the most stale PRs surface at the top.
+      const group = flaggedPrs
+        .filter((f) => f.reason === reason)
+        .sort((a, b) => a.pendingSince.localeCompare(b.pendingSince));
+      lines.push(
+        '',
+        `### ${REASON_DESCRIPTIONS[reason]?.short ?? reason} (${group.length})`,
+        '',
+        '| PR | Title | Author | Pending since |',
+        '|----|-------|--------|---------------|',
+      );
+      for (const { pr, pendingSince } of group) {
+        const link = `[#${pr.number}](https://github.com/${owner}/${repo}/pull/${pr.number})`;
+        const days = Math.floor((Date.now() - new Date(pendingSince)) / 86400000);
+        lines.push(`| ${link} | ${sanitizeTitle(pr.title)} | @${pr.user.login} | ${pendingSince.slice(0, 10)} (${days}d) |`);
+      }
     }
   }
 
@@ -199,15 +217,15 @@ module.exports = async ({ github, context }) => {
         continue;
       }
 
-      const { needsAttention: flag, reason } = await needsAttention({ github, owner, repo, pr });
+      const { needsAttention: flag, reason, pendingSince } = await needsAttention({ github, owner, repo, pr });
 
       if (!flag) {
         console.log(`PR #${prNumber}: no action needed (${reason})`);
         continue;
       }
 
-      console.log(`PR #${prNumber}: needs attention (${reason})`);
-      flaggedPrs.push({ pr, reason });
+      console.log(`PR #${prNumber}: needs attention (${reason}, pending since ${pendingSince})`);
+      flaggedPrs.push({ pr, reason, pendingSince });
     } catch (error) {
       console.error(`Error processing PR #${prNumber}:`, error.message);
     }
