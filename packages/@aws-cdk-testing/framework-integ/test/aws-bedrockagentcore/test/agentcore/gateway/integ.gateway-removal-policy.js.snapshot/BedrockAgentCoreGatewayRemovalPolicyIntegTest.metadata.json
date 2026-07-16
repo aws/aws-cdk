@@ -1,0 +1,24 @@
+{
+  "/BedrockAgentCoreGatewayRemovalPolicyIntegTest": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/BedrockAgentCoreGatewayRemovalPolicyIntegTest/RemovalPolicyGateway": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/BedrockAgentCoreGatewayRemovalPolicyIntegTest/RemovalPolicyGateway/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/BedrockAgentCoreGatewayRemovalPolicyIntegTest/RemovalPolicyGateway/ServiceRole/Resource": null,
+  "/BedrockAgentCoreGatewayRemovalPolicyIntegTest/RemovalPolicyGateway/Resource": null,
+  "/BedrockAgentCoreGatewayRemovalPolicyIntegTest/BootstrapVersion": null,
+  "/BedrockAgentCoreGatewayRemovalPolicyIntegTest/CheckBootstrapVersion": null
+}
