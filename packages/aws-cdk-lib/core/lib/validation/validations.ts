@@ -4,6 +4,7 @@ import { Annotations } from '../annotations';
 import { UnscopedValidationError } from '../errors';
 import { AnnotationPlugin } from '../private/annotation-plugin';
 import { lit } from '../private/literal-string';
+import { enhancedStackTrace } from '../private/stack-trace';
 import { Stage } from '../stage';
 
 /**
@@ -128,7 +129,8 @@ export class Validations {
     this.scope.node.addMetadata(
       Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
       { [id]: reason },
-      { stackTrace: true },
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      { stackTraceOverride: enhancedStackTrace(this.recordAcknowledgment) },
     );
   }
 
