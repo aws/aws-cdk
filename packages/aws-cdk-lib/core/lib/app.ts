@@ -188,7 +188,9 @@ export class App extends Stage {
   /**
    * Return the app that is the root of the construct tree, if available.
    */
-  public static of(construct: IConstruct): App | undefined {
+  public static of(construct: IConstruct): Stage | undefined {
+    // This cannot return `App` because we inherit this method from `Stage` and jsii doesn't allow us
+    // to change the return type (even though it is static T_T)
     return appOf(construct);
   }
 
