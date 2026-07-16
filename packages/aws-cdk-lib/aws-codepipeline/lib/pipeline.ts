@@ -422,6 +422,7 @@ abstract class PipelineBase extends Resource implements IPipeline {
   public get pipelineRef(): PipelineReference {
     return {
       pipelineName: this.pipelineName,
+      pipelineArn: this.pipelineArn,
     };
   }
 

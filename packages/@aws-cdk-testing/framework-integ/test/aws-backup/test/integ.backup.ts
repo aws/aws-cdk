@@ -73,6 +73,39 @@ class TestStack extends Stack {
       }),
       scheduleExpressionTimezone: TimeZone.ETC_UTC,
     }));
+
+    // Tokenized durations (resolved at deploy time) must skip synth-time
+    // range/ordering validation and defer to AWS Backup.
+    const moveToColdStorageDays = new CfnParameter(this, 'MoveToColdStorageDays', {
+      type: 'Number',
+      default: 30,
+    });
+    const deleteAfterDays = new CfnParameter(this, 'DeleteAfterDays', {
+      type: 'Number',
+      default: 120,
+    });
+    const minRetentionDays = new CfnParameter(this, 'MinRetentionDays', {
+      type: 'Number',
+      default: 5,
+    });
+
+    const tokenVault = new backup.BackupVault(this, 'TokenLockVault', {
+      removalPolicy: RemovalPolicy.DESTROY,
+      lockConfiguration: {
+        minRetention: Duration.days(minRetentionDays.valueAsNumber),
+      },
+    });
+
+    const tokenPlan = new backup.BackupPlan(this, 'TokenPlan', { backupVault: tokenVault });
+    tokenPlan.addRule(new backup.BackupPlanRule({
+      deleteAfter: Duration.days(deleteAfterDays.valueAsNumber),
+      moveToColdStorageAfter: Duration.days(moveToColdStorageDays.valueAsNumber),
+      copyActions: [{
+        destinationBackupVault: secondaryVault,
+        deleteAfter: Duration.days(deleteAfterDays.valueAsNumber),
+        moveToColdStorageAfter: Duration.days(moveToColdStorageDays.valueAsNumber),
+      }],
+    }));
   }
 }
 

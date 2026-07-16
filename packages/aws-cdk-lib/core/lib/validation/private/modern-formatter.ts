@@ -80,7 +80,7 @@ function formatViolationBlock(fileRoot: string, v: FlattenedViolation): string {
     lines.push(`   ${Colorize.grey(`Acknowledge with '${ackId(v)}'`)}`);
   } else {
     // If not acknowledgeable, we should still show the rule name for reference.
-    lines.push(`   ${Colorize.grey(`Rule ${sanitize(v.ruleName)}`)}`);
+    lines.push(`   ${Colorize.grey(`Rule ${sanitize(ackId(v))}`)}`);
   }
 
   return lines.join('\n');
