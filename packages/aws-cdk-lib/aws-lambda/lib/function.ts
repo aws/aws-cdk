@@ -39,7 +39,7 @@ import type * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import type { IAspect, RemovalPolicy, Size } from '../../core';
 import {
-  Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, Lazy,
+  Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn,
   Names, Stack, Token,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
@@ -372,7 +372,8 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
 
   /**
    * Enable SnapStart for Lambda Function.
-   * SnapStart is currently supported for Java 11, Java 17, Python 3.12, Python 3.13, and .NET 8 runtime
+   * SnapStart is currently supported for Java 11, Java 17, Python 3.12, Python 3.13, and .NET 8 runtime,
+   * as well as container image (OCI) deployments.
    *
    * @default - No snapstart
    */
@@ -724,13 +725,11 @@ export class Function extends FunctionBase {
     const cfn = this._currentVersion.node.defaultChild as CfnResource;
     const originalLogicalId = this.stack.resolve(cfn.logicalId) as string;
 
-    cfn.overrideLogicalId(Lazy.uncachedString({
-      produce: () => {
-        const hash = calculateFunctionHash(this, this.hashMixins.join(''));
-        const logicalId = trimFromStart(originalLogicalId, 255 - 32);
-        return `${logicalId}${hash}`;
-      },
-    }));
+    cfn.overrideLogicalId(Token.asString(this.hashMixins.derive((mixins) => {
+      const hash = calculateFunctionHash(this, mixins.join(''));
+      const logicalId = trimFromStart(originalLogicalId, 255 - 32);
+      return `${logicalId}${hash}`;
+    })));
 
     return this._currentVersion;
   }
@@ -978,7 +977,7 @@ export class Function extends FunctionBase {
   private _currentVersion?: Version;
 
   private _architecture?: Architecture;
-  private hashMixins = new Array<string>();
+  private hashMixins = Box.fromArray<string>([], { omitEmpty: false });
 
   /**
    * The tenancy configuration for this function.
@@ -1721,11 +1720,12 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     // SnapStart does not support Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB.
     // SnapStart doesn't support provisioned concurrency either, but that's configured at the version level,
     // so it can't be checked at function set up time
-    // SnapStart supports the Java 11 and Java 17 (java11 and java17) managed runtimes.
+    // Runtime eligibility is enforced via Runtime.supportsSnapStart; container images (FROM_IMAGE)
+    // are exempt because the runtime inside the image cannot be introspected and is validated by the service.
     // See https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html
     Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:snapStartRequirePublish', 'SnapStart only supports published Lambda versions. Ignore if function already has published versions.');
 
-    if (!props.runtime.supportsSnapStart) {
+    if (props.runtime !== Runtime.FROM_IMAGE && !props.runtime.supportsSnapStart) {
       throw new ValidationError(lit`SnapStartCurrentlySupportedRuntime`, `SnapStart currently not supported by runtime ${props.runtime.name}`, this);
     }
 
