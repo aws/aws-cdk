@@ -376,6 +376,10 @@ describe('auto scaling group', () => {
 
   test('validation is not performed when using Tokens', () => {
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+    cdk.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::E3706',
+      reason: 'Post-synth validation would otherwise still catch this',
+    });
     const vpc = mockVpc(stack);
 
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
