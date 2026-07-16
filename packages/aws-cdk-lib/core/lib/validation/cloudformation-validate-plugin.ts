@@ -314,9 +314,4 @@ const IGNORE_RULES = new Set([
   // WHY: It doesn't seem to detect the account that's there in the ARN?
   // <https://github.com/aws-cloudformation/cloudformation-validate/issues/183>
   'W3663',
-
-  // WHAT: Invalid RDS instance type
-  // WHY: Not sure if the list is correct?
-  // <https://github.com/aws-cloudformation/cloudformation-validate/issues/184>.
-  'E3025',
 ]);
