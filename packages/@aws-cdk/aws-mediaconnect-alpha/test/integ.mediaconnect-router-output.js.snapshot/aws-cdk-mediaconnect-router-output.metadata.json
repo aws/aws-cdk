@@ -1,0 +1,137 @@
+{
+  "/aws-cdk-mediaconnect-router-output/network": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output/rtpOutput": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output/srtOutput": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output/TestMediaLiveInput": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestMediaLiveInput"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output/mediaLiveOutput": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output/mediaLiveNoInput": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output/TestFlow2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output/flowOutput": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output/flowNoConnection": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output/network/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "network39EEAA36"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output/rtpOutput/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "rtpOutput36AD8ECF"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output/srtOutput/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "srtOutputD58FCB58"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output/mediaLiveOutput/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "mediaLiveOutputE23D6C1F"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output/mediaLiveNoInput/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "mediaLiveNoInput79B218C4"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output/TestFlow2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestFlow204BC1479"
+    },
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W9009": "cfn-validate false positive: MediaConnect Flow.Source is required and not deprecated (see cloudformation-validate#144)"
+      },
+      "trace": [
+        "Validations.recordAcknowledgment (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:129:25)",
+        "Validations.acknowledge (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:122:18)",
+        "new Flow (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow.js:908:48)",
+        "new Flow (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-router-output.js:128:14)",
+        "Module._compile (node:internal/modules/cjs/loader:1761:14)",
+        "Object..js (node:internal/modules/cjs/loader:1893:10)",
+        "Module.load (node:internal/modules/cjs/loader:1481:32)",
+        "Module._load (node:internal/modules/cjs/loader:1300:12)",
+        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:245:24)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output/flowOutput/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "flowOutputC9CABCE8"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output/flowNoConnection/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "flowNoConnectionB95A438A"
+    }
+  ]
+}
