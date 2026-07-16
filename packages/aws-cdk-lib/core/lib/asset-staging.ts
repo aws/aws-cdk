@@ -13,8 +13,8 @@ import { clearLargeFileFingerprintCache } from './fs/fingerprint';
 import { Names } from './names';
 import { AssetBundlingVolumeCopy, AssetBundlingBindMount } from './private/asset-staging';
 import { Cache } from './private/cache';
-import { stageOf } from './private/core-construct-finders';
-import { Stack } from './stack';
+import { stackOf, stageOf } from './private/core-construct-finders';
+import type { Stack } from './stack';
 import * as cxapi from '../../cx-api';
 import { lit } from './private/literal-string';
 import { profileSpan } from './private/perf';
@@ -199,7 +199,7 @@ export class AssetStaging extends Construct {
     let skip = false;
     if (props.bundling) {
       // Check if we actually have to bundle for this stack
-      skip = !Stack.of(this).bundlingRequired;
+      skip = !stackOf(this).bundlingRequired;
       const bundling = props.bundling;
       stageThisAsset = () => this.stageByBundling(bundling, skip);
     } else {

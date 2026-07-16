@@ -307,7 +307,7 @@ export class Stage extends Construct {
     function recurse(root: IConstruct) {
       paths.add(root.node.path);
       for (const child of root.node.children) {
-        if (!Stage.isStage(child)) {
+        if (!STAGE_TYPE.isMarked(child)) {
           recurse(child);
         }
       }

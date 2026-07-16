@@ -25,6 +25,7 @@ import type { ResourceEnvironment } from './environment';
 import { lit } from './private/literal-string';
 import { captureStackTrace } from './private/stack-trace';
 import { Stack } from './stack';
+import { STACK_TYPE } from './private/core-construct-finders';
 
 export interface CfnResourceProps {
   /**
@@ -425,7 +426,7 @@ export class CfnResource extends CfnRefElement {
 
     let stack: Stack | undefined = Stack.of(this);
     while (stack) {
-      ret.push(...stack._stackDependenciesCausedBy(this).filter((x) => Stack.isStack(x) || CfnResource.isCfnResource(x)));
+      ret.push(...stack._stackDependenciesCausedBy(this).filter((x) => STACK_TYPE.isMarked(x) || CfnResource.isCfnResource(x)));
       stack = stack.nestedStackParent;
     }
 

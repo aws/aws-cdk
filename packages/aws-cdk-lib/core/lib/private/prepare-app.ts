@@ -2,9 +2,9 @@ import type { IConstruct } from 'constructs';
 import { resolveReferences } from './refs';
 import { CfnResource } from '../cfn-resource';
 import { debugModeEnabled } from '../debug';
-import { Stack } from '../stack';
-import { Stage } from '../stage';
+import type { Stack } from '../stack';
 import { iterateDfsPostorder, iterateDfsPreorder } from './construct-iteration';
+import { STACK_TYPE, stageOf } from './core-construct-finders';
 import { reifyConstructDependencies } from './deps';
 import { writePropertyAssignmentMetadataForConstruct } from './resolve';
 
@@ -81,13 +81,13 @@ function findAllNestedStacks(root: IConstruct) {
   const result = new Array<Stack>();
 
   const includeStack = (stack: IConstruct): stack is Stack => {
-    if (!Stack.isStack(stack)) { return false; }
+    if (!STACK_TYPE.isMarked(stack)) { return false; }
     if (!stack.nested) { return false; }
 
     // test: if we are not within a stage, then include it.
-    if (!Stage.of(stack)) { return true; }
+    if (!stageOf(stack)) { return true; }
 
-    return Stage.of(stack) === root;
+    return stageOf(stack) === root;
   };
 
   // create a list of all nested stacks in depth-first post order this means

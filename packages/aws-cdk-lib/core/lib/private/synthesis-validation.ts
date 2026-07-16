@@ -12,8 +12,9 @@ import { App } from '../app';
 import { _aspectTreeRevisionReader } from '../aspect';
 import { AssumptionError, UnscopedValidationError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
-import { Stage } from '../stage';
+import type { Stage } from '../stage';
 import type { IPolicyValidationPlugin } from '../validation';
+import { STAGE_TYPE } from './core-construct-finders';
 import { profileSpan } from './perf';
 import { CloudFormationValidatePlugin } from '../validation/cloudformation-validate-plugin';
 import { ConstructTree } from '../validation/private/construct-tree';
@@ -34,7 +35,7 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
   const stacksByPlugin: Map<IPolicyValidationPlugin, private_cxapi.CloudFormationStackArtifact[]> = new Map();
 
   visitAssemblies(root, 'post', construct => {
-    if (Stage.isStage(construct)) {
+    if (STAGE_TYPE.isMarked(construct)) {
       const stageAssembly = assemblies.get(construct.artifactId);
       if (!stageAssembly) throw new AssumptionError(lit`ValidationFailed`, `Validation failed, cannot find cloud assembly for stage ${construct.stageName}`);
 
@@ -377,7 +378,7 @@ export function visitAssemblies(root: IConstruct, order: 'pre' | 'post', cb: (x:
   }
 
   for (const child of root.node.children) {
-    if (!Stage.isStage(child)) { continue; }
+    if (!STAGE_TYPE.isMarked(child)) { continue; }
     visitAssemblies(child, order, cb);
   }
 
@@ -438,7 +439,7 @@ function hashFile(filePath: string): string {
 function hasUserRegisteredCloudFormationValidatePlugin(root: IConstruct): boolean {
   let count = 0;
   visitAssemblies(root, 'post', construct => {
-    if (!Stage.isStage(construct)) return;
+    if (!STAGE_TYPE.isMarked(construct)) return;
     for (const plugin of construct._validationPlugins) {
       if (!(plugin instanceof CloudFormationValidatePlugin)) continue;
       if (construct !== root) {

@@ -21,7 +21,7 @@ import { Lazy } from '../lazy';
 import { Names } from '../names';
 import type { Reference } from '../reference';
 import type { IResolvable, IResolveContext } from '../resolvable';
-import { Stack } from '../stack';
+import type { Stack } from '../stack';
 import { Token, Tokenization } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
 import { iterateDfsPreorder } from './construct-iteration';
@@ -32,6 +32,7 @@ import type {
   RoleReference,
 } from '../../../interfaces/generated/aws-iam-interfaces.generated';
 import { ReferenceStrength } from '../cross-stack-reference-strength';
+import { stackOf } from './core-construct-finders';
 
 export const STRING_LIST_REFERENCE_DELIMITER = '||';
 
@@ -96,7 +97,7 @@ export function resolveReferences(scope: IConstruct): void {
   const { refs, overrides } = findAllReferences(scope);
 
   for (const { source, value } of refs) {
-    const consumer = Stack.of(source);
+    const consumer = stackOf(source);
 
     // resolve the value in the context of the consumer
     if (!value.hasValueForStack(consumer)) {
@@ -106,7 +107,7 @@ export function resolveReferences(scope: IConstruct): void {
   }
 
   for (const { source, override } of overrides) {
-    const consumer = Stack.of(source);
+    const consumer = stackOf(source);
     const resolved = resolveValue(consumer, override.reference, override.strength);
     override.assignValue(resolved);
   }
@@ -116,7 +117,7 @@ export function resolveReferences(scope: IConstruct): void {
  * Resolves the value for `reference` in the context of `consumer`.
  */
 function resolveValue(consumer: Stack, reference: CfnReference, strengthOverride?: ReferenceStrength): IResolvable {
-  const producer = Stack.of(reference.target);
+  const producer = stackOf(reference.target);
   const producerAccount = !Token.isUnresolved(producer.account) ? producer.account : cxapi.UNKNOWN_ACCOUNT;
   const producerRegion = !Token.isUnresolved(producer.region) ? producer.region : cxapi.UNKNOWN_REGION;
   const consumerAccount = !Token.isUnresolved(consumer.account) ? consumer.account : cxapi.UNKNOWN_ACCOUNT;
@@ -189,7 +190,7 @@ function resolveValue(consumer: Stack, reference: CfnReference, strengthOverride
         'Cross stack/region references are only supported for stacks with an explicit region defined. ');
     }
 
-    const producerStackArn = Stack.of(reference.target).formatArn({
+    const producerStackArn = stackOf(reference.target).formatArn({
       service: 'cloudformation',
       resource: 'stack',
       resourceName: `${producer.stackName}/*`,
@@ -362,7 +363,7 @@ function findAllReferences(root: IConstruct) {
  * and returning an "Fn::ImportValue" token.
  */
 function createImportValue(reference: Reference): Intrinsic {
-  const exportingStack = Stack.of(reference.target);
+  const exportingStack = stackOf(reference.target);
   let importExpr;
 
   if (reference.typeHint === ResolutionTypeHint.STRING_LIST) {
@@ -377,7 +378,7 @@ function createImportValue(reference: Reference): Intrinsic {
 }
 
 function getOrCreateExportWriter(reference: Reference, importStack: Stack): { exportWriter: ExportWriter; exportName: string } {
-  const referenceStack = Stack.of(reference.target);
+  const referenceStack = stackOf(reference.target);
   const exportingStack = referenceStack.nestedStackParent ?? referenceStack;
 
   const exportable = getExportable(exportingStack, reference);
@@ -421,7 +422,7 @@ function createCrossRegionExportOnly(reference: Reference, importStack: Stack): 
  * Generate a unique physical name for the export
  */
 function generateExportName(importStack: Stack, reference: Reference, id: string): string {
-  const referenceStack = Stack.of(reference.target);
+  const referenceStack = stackOf(reference.target);
 
   const components = [
     referenceStack.stackName ?? '',
@@ -484,7 +485,7 @@ function createGetStackOutputRole(scope: Construct, id: string, props: GetStackO
   });
   resource.addPropertyOverride('RoleName', roleName);
 
-  const roleArn = Stack.of(scope).formatArn({
+  const roleArn = stackOf(scope).formatArn({
     service: 'iam',
     resource: 'role',
     resourceName: roleName,
@@ -539,7 +540,7 @@ function createGetStackOutputPolicy(
 }
 
 function createGetStackOutput(reference: Reference, options: GetStackOutputOptions = {}): Intrinsic {
-  const exportingStack = Stack.of(reference.target);
+  const exportingStack = stackOf(reference.target);
 
   const resolved = JSON.stringify(exportingStack.resolve(reference));
   const outputId = 'Output' + resolved;
@@ -676,7 +677,7 @@ function createNestedStackOutput(producer: Stack, reference: Reference): CfnRefe
  * Will create Outputs along the chain of Nested Stacks, and return the final `{ Fn::GetAtt }`.
  */
 export function referenceNestedStackValueInParent(reference: Reference, targetStack: Stack): Intrinsic {
-  let currentStack = Stack.of(reference.target);
+  let currentStack = stackOf(reference.target);
   if (currentStack !== targetStack && !isNested(currentStack, targetStack)) {
     throw new UnscopedValidationError(lit`ReferencedResourceMustBeInTargetStack`, `Referenced resource must be in stack '${targetStack.node.path}', got '${reference.target.node.path}'`);
   }
@@ -684,8 +685,8 @@ export function referenceNestedStackValueInParent(reference: Reference, targetSt
   const isNestedListReference = currentStack !== targetStack && reference.typeHint === ResolutionTypeHint.STRING_LIST;
 
   while (currentStack !== targetStack) {
-    reference = createNestedStackOutput(Stack.of(reference.target), reference);
-    currentStack = Stack.of(reference.target);
+    reference = createNestedStackOutput(stackOf(reference.target), reference);
+    currentStack = stackOf(reference.target);
   }
 
   if (isNestedListReference) {

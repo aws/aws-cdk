@@ -1749,7 +1749,7 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
 
   for (const child of Node.of(node).children) {
     // Don't recurse into a substack
-    if (Stack.isStack(child)) { continue; }
+    if (STACK_TYPE.isMarked(child)) { continue; }
 
     cfnElements(child, into);
   }
