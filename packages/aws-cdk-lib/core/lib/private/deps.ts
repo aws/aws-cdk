@@ -57,7 +57,9 @@ export function dispatchDependencyOperation(op: DependencyOperation) {
   validateNoStagesCrossed(sourcePath, targetPath, op);
   validateNoParentChildDependency(sourcePath, targetPath, parentI, op);
 
-  doDispatch(sourcePath[parentI + 1], targetPath[parentI + 1], op);
+  if (parentI < sourcePath.length - 1 && parentI < targetPath.length - 1) {
+    doDispatch(sourcePath[parentI + 1], targetPath[parentI + 1], op);
+  }
 }
 
 type DependencyContainer =
@@ -75,20 +77,31 @@ function validateNoStagesCrossed(sourcePath: DependencyContainer[], targetPath: 
   }
 }
 
+/**
+ * Validate parent-child relationships.
+ *
+ * If the shared parent is the last element in either path, then one of the
+ * constructs is a parent of the other. This can only happen for dependency containers,
+ * so [nested] stacks and stages.
+ */
 function validateNoParentChildDependency(
   sourcePath: DependencyContainer[],
   targetPath: DependencyContainer[],
   parentI: number,
   op: DependencyOperation,
 ) {
-  // If the shared parent is the last element in either path, then one of the constructs is a parent of the other, which is not allowed.
-  if (parentI === sourcePath.length - 1) {
-    throw new UnscopedValidationError(lit`CannotDependOnChild`, `Construct '${op.source.node.path}' cannot depend on a child construct '${op.target.node.path}'`);
+  if (parentI === targetPath.length - 1) {
+    throw new UnscopedValidationError(lit`CannotDependOnParent`, `'${op.source.node.path}' cannot depend on parent ${targetPath[parentI].type} '${op.target.node.path}'`);
   }
 
-  if (parentI === targetPath.length - 1) {
-    throw new UnscopedValidationError(lit`CannotDependOnParent`, `Construct '${op.source.node.path}' cannot depend on a parent construct '${op.target.node.path}'`);
-  }
+  // The below should be equally illegal because it is as nonsensical as the
+  // reverse case. However, we have unit tests in place to verify that we
+  // traditionally treated this as a no-op, so we will continue to do so.
+  void sourcePath;
+
+  // if (parentI === sourcePath.length - 1) {
+  //   throw new UnscopedValidationError(lit`CannotDependOnChild`, `Construct '${op.source.node.path}' cannot depend on a child construct '${op.target.node.path}'`);
+  // }
 }
 
 function doDispatch(source: DependencyContainer, target: DependencyContainer, op: DependencyOperation) {
