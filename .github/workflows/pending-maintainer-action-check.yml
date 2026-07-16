@@ -5,28 +5,30 @@ on:
   workflow_dispatch: # Manual trigger
     inputs:
       dry_run:
-        description: "If true, log intended changes without writing to the project board"
+        description: "If true, log intended changes without creating or updating the tracking issue"
         type: boolean
         default: false
 
 permissions:
   contents: read
+  issues: write
 
 jobs:
-  update_project_status:
-    # this workflow will always fail in forks; bail if this isn't running in the upstream
-    if: github.repository == 'aws/aws-cdk'
+  update_tracking_issue:
+    # scheduled runs should only happen in the upstream repo; manual dispatch is
+    # allowed anywhere (e.g. to validate changes in a fork)
+    if: github.repository == 'aws/aws-cdk' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     environment: automation
     steps:
       - uses: actions/checkout@v6
 
-      - name: Flag PRs pending maintainer action
+      - name: Track PRs pending maintainer action
         uses: actions/github-script@v9
         env:
           DRY_RUN: ${{ inputs.dry_run == true }}
         with:
-          github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
+          github-token: ${{ secrets.PROJEN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const script = require('./scripts/prioritization/pending-maintainer-action.js')
-            await script({github})
+            await script({github, context})

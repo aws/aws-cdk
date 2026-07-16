@@ -1,48 +1,53 @@
 /**
- * Monitors open `beginning-contributor` PRs and flags the ones that need maintainer
- * action by setting "Needs Attention" = "Yes" on the CDK AC Priority Board
- * (github.com/orgs/aws/projects/302).
+ * Monitors open `beginning-contributor` PRs and tracks the ones that need
+ * maintainer action in a weekly tracking issue.
  *
  * A PR needs attention when either:
  *   - CI is pending approval (a workflow run for the PR's head commit has
  *     conclusion `action_required`), or
- *   - CI was approved (or skipped approval) but never reported a result back
- *     (no workflow runs and no commit statuses for the head commit, or a
- *     completed build run with no commit status).
+ *   - CI never started (no workflow runs and no commit statuses for the head
+ *     commit -- approval was skipped or never triggered).
  *
- * Both cases set the same "Needs Attention: Yes" flag -- this script does not
- * distinguish between the two reasons on the board itself (see console logs
- * for the specific reason per PR).
+ * Each week gets its own tracking issue, identified by the marker label
+ * (`ci-pending-tracking`) plus an ISO week key in the title (e.g. `2026-W29`).
+ * On the first run of a week the issue is created; subsequent runs in the same
+ * week update its body with the current list of pending PRs. Issues from
+ * previous weeks are left open for maintainers to review and close manually.
  *
- * Validated against a personal test board (github.com/users/pahud/projects/2)
- * before being pointed at the real aws/aws-cdk production board. Supports a
- * DRY_RUN mode (set env DRY_RUN=true) to log intended mutations without
- * writing to the board -- recommended for the first run against production.
+ * Supports a DRY_RUN mode (set env DRY_RUN=true) to log intended issue
+ * creation/updates without writing anything.
  */
 
 const CONFIG = {
-  owner: 'aws',
-  repo: 'aws-cdk',
   label: 'beginning-contributor',
+  trackingLabel: 'ci-pending-tracking',
   // Stable identifiers (workflow file paths) for the PR build workflows, since the
   // display `name:` field can be renamed at any time.
   buildWorkflowPaths: [
     '.github/workflows/pr-build.yml',
     '.github/workflows/codebuild-pr-build.yml',
   ],
-  project: {
-    // CDK AC Priority Board: https://github.com/orgs/aws/projects/302/views/9
-    // TBC: confirm this is the intended board/view for this automation before
-    // merging -- picked because it already has a single-select "Needs Attention"
-    // field with a "Yes" option, matching this script's flag-only design.
-    ownerLogin: 'aws',
-    projectId: 'PVT_kwDOACIPmc4A7TlP',
-    needsAttentionFieldId: 'PVTSSF_lADOACIPmc4A7TlPzgxfri8',
-    needsAttentionYesOptionId: 'aa729dd3',
-  },
+};
+
+const REASON_DESCRIPTIONS = {
+  pending_approval: 'CI run is waiting for maintainer approval',
+  no_ci_activity: 'no CI activity on the head commit (approval skipped or never triggered)',
 };
 
 const DRY_RUN = process.env.DRY_RUN === 'true';
+
+/**
+ * Returns the ISO 8601 week key (e.g. `2026-W29`) for a date.
+ */
+function isoWeekKey(d) {
+  const date = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  // Shift to the Thursday of the current ISO week (ISO weeks are keyed by their Thursday).
+  const day = date.getUTCDay() || 7;
+  date.setUTCDate(date.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+  const week = Math.ceil(((date - yearStart) / 86400000 + 1) / 7);
+  return `${date.getUTCFullYear()}-W${String(week).padStart(2, '0')}`;
+}
 
 /**
  * Fetches all open, non-draft PRs with the configured label.
@@ -60,9 +65,9 @@ async function fetchLabeledOpenPrs({ github, owner, repo, label }) {
 }
 
 /**
- * Determines whether a PR needs maintainer attention (pending approval or
- * pending build result), based on its head commit's workflow runs and combined
- * commit status.
+ * Determines whether a PR needs maintainer attention (pending CI approval or
+ * no CI activity at all), based on its head commit's workflow runs and
+ * combined commit status.
  */
 async function needsAttention({ github, owner, repo, pr }) {
   const { data: workflowRuns } = await github.rest.actions.listWorkflowRunsForRepo({
@@ -84,108 +89,75 @@ async function needsAttention({ github, owner, repo, pr }) {
     return { needsAttention: false, reason: 'build_in_progress' };
   }
 
-  const { data: status } = await github.rest.repos.getCombinedStatusForRef({
-    owner,
-    repo,
-    ref: pr.head.sha,
-  });
-  const noCommitStatuses = status.state === 'pending' && status.total_count === 0;
-
-  if (noCommitStatuses && runs.length === 0) {
-    // No workflow runs at all and no commit statuses -- approval was skipped
-    // (or never triggered) and nothing else ran either.
-    return { needsAttention: true, reason: 'no_ci_activity' };
-  }
-
-  if (noCommitStatuses && buildRun && buildRun.conclusion !== null) {
-    // Build ran to completion but never reported a commit status back.
-    return { needsAttention: true, reason: 'build_completed_no_status' };
+  if (runs.length === 0) {
+    const { data: status } = await github.rest.repos.getCombinedStatusForRef({
+      owner,
+      repo,
+      ref: pr.head.sha,
+    });
+    if (status.state === 'pending' && status.total_count === 0) {
+      // No workflow runs at all and no commit statuses -- approval was skipped
+      // (or never triggered) and nothing else ran either.
+      return { needsAttention: true, reason: 'no_ci_activity' };
+    }
   }
 
   return { needsAttention: false, reason: 'ok' };
 }
 
 /**
- * Looks up the project item for a PR within the configured project, if it's
- * already been added to the board.
+ * Renders the tracking issue body. PRs are referenced by bare `#<number>`
+ * links so GitHub renders their titles -- this avoids embedding (and having to
+ * sanitize) arbitrary PR title text in the Markdown.
  */
-async function findProjectItem({ github, contentId, projectId }) {
-  const result = await github.graphql(
-    `
-      query($contentId: ID!) {
-        node(id: $contentId) {
-          ... on PullRequest {
-            projectItems(first: 100) {
-              nodes {
-                id
-                project { id }
-                fieldValues(first: 20) {
-                  nodes {
-                    ... on ProjectV2ItemFieldSingleSelectValue {
-                      name
-                      field {
-                        ... on ProjectV2SingleSelectField { name }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    `,
-    { contentId }
-  );
+function renderIssueBody({ owner, repo, weekKey, flaggedPrs }) {
+  const workflowUrl = `https://github.com/${owner}/${repo}/blob/main/.github/workflows/pending-maintainer-action-check.yml`;
+  const lines = [
+    `Beginning-contributor PRs pending maintainer CI action for week **${weekKey}**.`,
+    '',
+    `_Last updated: ${new Date().toISOString()} (refreshed daily by the [Pending Maintainer Action Check workflow](${workflowUrl}))_`,
+    '',
+  ];
 
-  return result?.node?.projectItems?.nodes?.find((item) => item.project.id === projectId);
-}
-
-async function addItemToProject({ github, projectId, contentId }) {
-  const result = await github.graphql(
-    `
-      mutation($input: AddProjectV2ItemByIdInput!) {
-        addProjectV2ItemById(input: $input) {
-          item { id }
-        }
-      }
-    `,
-    { input: { projectId, contentId } }
-  );
-  return result.addProjectV2ItemById.item.id;
-}
-
-async function updateSingleSelectField({ github, projectId, itemId, fieldId, optionId }) {
-  await github.graphql(
-    `
-      mutation($input: UpdateProjectV2ItemFieldValueInput!) {
-        updateProjectV2ItemFieldValue(input: $input) {
-          projectV2Item { id }
-        }
-      }
-    `,
-    {
-      input: {
-        projectId,
-        itemId,
-        fieldId,
-        value: { singleSelectOptionId: optionId },
-      },
+  if (flaggedPrs.length === 0) {
+    lines.push('No PRs currently pending maintainer CI action. :tada:');
+  } else {
+    for (const { pr, reason } of flaggedPrs) {
+      lines.push(`- #${pr.number} (@${pr.user.login}) — ${REASON_DESCRIPTIONS[reason] ?? reason}`);
     }
-  );
+  }
+
+  lines.push('', 'Close this issue once all listed PRs have been handled.');
+  return lines.join('\n');
 }
 
-module.exports = async ({ github }) => {
-  const { owner, repo, label, project } = CONFIG;
+/**
+ * Finds this week's tracking issue (marker label + week key in title), if it
+ * already exists.
+ */
+async function findTrackingIssue({ github, owner, repo, weekKey }) {
+  const issues = await github.paginate(github.rest.issues.listForRepo, {
+    owner,
+    repo,
+    state: 'open',
+    labels: CONFIG.trackingLabel,
+    per_page: 100,
+  });
+  return issues.find((issue) => !issue.pull_request && issue.title.includes(weekKey));
+}
+
+module.exports = async ({ github, context }) => {
+  const { owner, repo } = context.repo;
+  const { label } = CONFIG;
 
   if (DRY_RUN) {
-    console.log('DRY_RUN=true -- no board mutations will be made, only logged.');
+    console.log('DRY_RUN=true -- no issue will be created or updated, only logged.');
   }
 
   const prs = await fetchLabeledOpenPrs({ github, owner, repo, label });
   console.log(`Found ${prs.length} open "${label}" PR(s) on ${owner}/${repo}`);
 
-  let flaggedCount = 0;
+  const flaggedPrs = [];
 
   for (const item of prs) {
     const prNumber = item.number;
@@ -210,55 +182,47 @@ module.exports = async ({ github }) => {
       }
 
       console.log(`PR #${prNumber}: needs attention (${reason})`);
-
-      const existingItem = await findProjectItem({
-        github,
-        contentId: pr.node_id,
-        projectId: project.projectId,
-      });
-
-      let itemId;
-      if (existingItem) {
-        itemId = existingItem.id;
-        const currentAttention = existingItem.fieldValues.nodes.find(
-          (fv) => fv.field?.name === 'Needs Attention'
-        )?.name;
-
-        if (currentAttention === 'Yes') {
-          console.log(`PR #${prNumber}: already flagged Needs Attention on board, skipping`);
-          flaggedCount += 1;
-          continue;
-        }
-      } else {
-        if (DRY_RUN) {
-          console.log(`PR #${prNumber}: [DRY RUN] would add to project board`);
-        } else {
-          itemId = await addItemToProject({
-            github,
-            projectId: project.projectId,
-            contentId: pr.node_id,
-          });
-          console.log(`PR #${prNumber}: added to project board`);
-        }
-      }
-
-      if (DRY_RUN) {
-        console.log(`PR #${prNumber}: [DRY RUN] would set Needs Attention = Yes`);
-      } else {
-        await updateSingleSelectField({
-          github,
-          projectId: project.projectId,
-          itemId,
-          fieldId: project.needsAttentionFieldId,
-          optionId: project.needsAttentionYesOptionId,
-        });
-        console.log(`PR #${prNumber}: set Needs Attention = Yes`);
-      }
-      flaggedCount += 1;
+      flaggedPrs.push({ pr, reason });
     } catch (error) {
       console.error(`Error processing PR #${prNumber}:`, error.message);
     }
   }
 
-  console.log(`Done. ${flaggedCount} PR(s) flagged as Needs Attention${DRY_RUN ? ' (dry run)' : ''}.`);
+  const weekKey = isoWeekKey(new Date());
+  const title = `CI pending maintainer action: week ${weekKey}`;
+  const existingIssue = await findTrackingIssue({ github, owner, repo, weekKey });
+
+  if (flaggedPrs.length === 0 && !existingIssue) {
+    console.log(`No PRs pending maintainer action and no tracking issue for ${weekKey}; nothing to do.`);
+    return;
+  }
+
+  const body = renderIssueBody({ owner, repo, weekKey, flaggedPrs });
+
+  if (existingIssue) {
+    if (DRY_RUN) {
+      console.log(`[DRY RUN] would update tracking issue #${existingIssue.number} with ${flaggedPrs.length} PR(s)`);
+    } else {
+      await github.rest.issues.update({
+        owner,
+        repo,
+        issue_number: existingIssue.number,
+        body,
+      });
+      console.log(`Updated tracking issue #${existingIssue.number} with ${flaggedPrs.length} PR(s)`);
+    }
+  } else {
+    if (DRY_RUN) {
+      console.log(`[DRY RUN] would create tracking issue "${title}" with ${flaggedPrs.length} PR(s)`);
+    } else {
+      const { data: issue } = await github.rest.issues.create({
+        owner,
+        repo,
+        title,
+        body,
+        labels: [CONFIG.trackingLabel],
+      });
+      console.log(`Created tracking issue #${issue.number} ("${title}") with ${flaggedPrs.length} PR(s)`);
+    }
+  }
 };

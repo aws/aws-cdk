@@ -142,7 +142,7 @@ Owner: CDK Support team
 
 ### Pending Maintainer Action Check
 
-[pending-maintainer-action-check.yml](pending-maintainer-action-check.yml): GitHub action that runs daily to flag beginning-contributor PRs that need maintainer action — either CI approval or build result investigation. Sets "Needs Attention" on the [CDK AC Priority Board](https://github.com/orgs/aws/projects/302/views/9) for matching PRs.
+[pending-maintainer-action-check.yml](pending-maintainer-action-check.yml): GitHub action that runs daily to track beginning-contributor PRs that need maintainer CI action (pending workflow approval, or no CI activity at all). Creates a weekly tracking issue (labeled `ci-pending-tracking`, with an ISO week key in the title) listing the pending PRs, and keeps it updated throughout the week.
 Owner: Core CDK team
 
 ### Issue sync
