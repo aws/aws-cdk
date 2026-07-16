@@ -1,0 +1,26 @@
+{
+  "/aws-cdk-mediaconnect-flow/flow": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow/flow/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "flowAF0E31A5"
+    }
+  ]
+}
