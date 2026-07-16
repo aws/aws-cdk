@@ -81,7 +81,7 @@ export function engineDescription(engine: IEngine) {
  * Enable if explicitly provided or if the RemovalPolicy has been set to RETAIN
  */
 export function defaultDeletionProtection(deletionProtection?: boolean, removalPolicy?: RemovalPolicy): boolean | undefined {
-  return deletionProtection ?? (removalPolicy === RemovalPolicy.RETAIN ? true : undefined);
+  return deletionProtection ?? (removalPolicy === RemovalPolicy.RETAIN || removalPolicy === RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE ? true : undefined);
 }
 
 /**
@@ -197,8 +197,8 @@ export function renderSnapshotCredentials(scope: Construct, credentials?: Snapsh
  *  (undefined)         -> DESTROY (base policy is assumed to be SNAPSHOT)
  */
 export function helperRemovalPolicy(basePolicy?: RemovalPolicy): RemovalPolicy {
-  return basePolicy === RemovalPolicy.RETAIN
-    ? RemovalPolicy.RETAIN
+  return basePolicy === RemovalPolicy.RETAIN || basePolicy === RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE
+    ? basePolicy
     : RemovalPolicy.DESTROY;
 }
 
