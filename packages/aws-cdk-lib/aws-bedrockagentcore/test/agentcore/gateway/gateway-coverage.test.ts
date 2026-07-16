@@ -486,6 +486,15 @@ describe('Gateway grant methods tests', () => {
     });
   });
 
+  test('Should apply removal policy via the L2 construct', () => {
+    expect(() => gateway.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY)).not.toThrow();
+
+    const cfnGateway = gateway.node.defaultChild as cdk.CfnResource;
+    expect(cfnGateway).toBeDefined();
+    expect(cfnGateway.cfnOptions.deletionPolicy).toBe('Delete');
+    expect(cfnGateway.cfnOptions.updateReplacePolicy).toBe('Delete');
+  });
+
   test('Should grant custom actions to IAM principal scoped to gateway ARN', () => {
     gateway.grant(grantee, 'bedrock-agentcore:GetGateway', 'bedrock-agentcore:ListGatewayTargets');
 

@@ -594,6 +594,10 @@ export class Gateway extends GatewayBase {
     this.createdAt = _resource.attrCreatedAt;
     this.updatedAt = _resource.attrUpdatedAt;
     this.statusReason = _resource.attrStatusReasons;
+    // Explicitly set the default child: the construct also creates a ServiceRole
+    // and (for some authorizers) a UserPool child, so CDK does not auto-assign
+    // the Cfn resource as the default child, which breaks applyRemovalPolicy().
+    this.node.defaultChild = _resource;
   }
 
   /**
