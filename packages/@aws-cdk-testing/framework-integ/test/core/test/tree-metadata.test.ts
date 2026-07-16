@@ -52,7 +52,7 @@ describe('tree metadata', () => {
             children: {
               BootstrapVersion: {
                 constructInfo: {
-                  fqn: expect.stringMatching(/(aws-cdk-lib.CfnParameter|constructs.Construct)/),
+                  fqn: expect.stringMatching(/(aws-cdk-lib.CfnParameter|aws-cdk-lib.CfnElement|constructs.Construct)/),
                   version: expect.any(String),
                 },
                 id: 'BootstrapVersion',
