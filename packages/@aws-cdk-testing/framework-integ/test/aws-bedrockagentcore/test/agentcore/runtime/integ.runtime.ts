@@ -72,6 +72,16 @@ const testFunction = new lambda.Function(stack, 'TestInvokerFunction', {
 // Grant invoke permissions - this will include sub-resource wildcard in IAM policy
 runtime.grantInvoke(testFunction);
 
+// Verify applyRemovalPolicy works on the L2 (sets DeletionPolicy/UpdateReplacePolicy on the CfnRuntime)
+const runtimeWithRemovalPolicy = new agentcore.Runtime(stack, 'RuntimeWithRemovalPolicy', {
+  runtimeName: 'removal_policy_runtime',
+  description: 'Runtime used to verify applyRemovalPolicy on the L2',
+  agentRuntimeArtifact: runtimeArtifact,
+  protocolConfiguration: agentcore.ProtocolType.HTTP,
+  networkConfiguration: agentcore.RuntimeNetworkConfiguration.usingPublicNetwork(),
+});
+runtimeWithRemovalPolicy.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+
 // Output runtime and endpoint information for verification
 new cdk.CfnOutput(stack, 'RuntimeId', {
   value: runtime.agentRuntimeId,
