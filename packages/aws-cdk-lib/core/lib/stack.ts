@@ -742,6 +742,10 @@ export class Stack extends Construct implements ITaggable {
    * app, and also supports nested stacks.
    *
    * Stack dependencies may not cross Stage boundaries.
+   *
+   * This method only adds dependencies between stacks. If you are looking
+   * for  a generic construct-to-construct dependency mechanism, use
+   * `construct.node.addDependency` instead.
    */
   public addStackDependency(target: Stack, reason?: string) {
     dispatchDependencyOperation({

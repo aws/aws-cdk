@@ -353,6 +353,10 @@ export class CfnResource extends CfnRefElement {
    *
    * This can be used for resources across stacks (or nested stack) boundaries
    * and the dependency will automatically be transferred to the relevant scope.
+   *
+   * This method requires adding dependencies between L1 resources. If you are
+   * looking for a generic construct-to-construct dependency mechanism that works
+   * for all constructs including L2s, use `construct.node.addDependency` instead.
    */
   public addResourceDependency(target: CfnResource, reason?: string) {
     // skip this dependency if the target is not part of the output
