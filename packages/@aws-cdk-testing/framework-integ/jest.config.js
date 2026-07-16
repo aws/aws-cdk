@@ -11,4 +11,9 @@ module.exports = {
   ],
 
   testEnvironment: 'node',
+
+  // Acknowledge test-only CloudFormationValidatePlugin warnings.
+  setupFilesAfterEnv: [
+    'aws-cdk-lib/testhelpers/jest-global-app-testhook',
+  ],
 };

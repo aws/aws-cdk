@@ -1,5 +1,5 @@
 // Registers a global App init hook that acknowledges common validation warnings for unit tests.
-// Used via Jest's `setupFilesAfterEnv` in both aws-cdk-lib and alpha module test suites.
+// Used via Jest's `setupFilesAfterEnv` in aws-cdk-lib, alpha module, and framework-integ test suites.
 
 import * as cdk from '../core';
 
