@@ -59,7 +59,10 @@ describe('lambda version', () => {
   test('create a version with event invoke config', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
+    cdk.Validations.of(stack).acknowledge(
+      { id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' },
+      { id: 'CloudFormation-Validate::W3030', reason: 'Tests intentionally use a bogus runtime' },
+    );
     const fn = new lambda.Function(stack, 'Fn', {
       runtime: THE_RUNTIME,
       handler: 'index.handler',
@@ -139,7 +142,10 @@ describe('lambda version', () => {
   testDeprecated('addAlias can be used to add an alias that points to a version', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
+    cdk.Validations.of(stack).acknowledge(
+      { id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' },
+      { id: 'CloudFormation-Validate::W3030', reason: 'Tests intentionally use a bogus runtime' },
+    );
     const fn = new lambda.Function(stack, 'Fn', {
       runtime: THE_RUNTIME,
       handler: 'index.handler',
