@@ -1,6 +1,6 @@
 import { CreatePartitionIndexCommand, DeletePartitionIndexCommand, GetPartitionIndexesCommand, GlueClient } from '@aws-sdk/client-glue';
 import { mockClient } from 'aws-sdk-client-mock';
-import { isComplete, onEvent } from '../lib/partition-index-handler';
+import { isComplete, onEvent } from '../../lib/aws-glue-alpha/partition-index-handler';
 
 const glueMock = mockClient(GlueClient);
 

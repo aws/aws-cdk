@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 /*
  * Custom resource handler for Glue partition indexes.
  *
@@ -26,6 +25,8 @@
  *   5. index status:  ACTIVE -> DONE ;  CREATING/DELETING/missing -> wait ;
  *                     FAILED/other -> throw (deploy fails).
  */
+// @aws-sdk/* modules available at runtime for lambdas >= Node18
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { GlueClient, CreatePartitionIndexCommand, DeletePartitionIndexCommand, GetPartitionIndexesCommand } from '@aws-sdk/client-glue';
 
 class PartitionIndexError extends Error {
@@ -42,7 +43,7 @@ async function findPartitionIndex(DatabaseName: string, TableName: string, Index
   const resp = await glue.send(new GetPartitionIndexesCommand({ DatabaseName, TableName }));
   // Glue lowercases index names, so compare case-insensitively
   return (resp.PartitionIndexDescriptorList || []).find(
-    (i) => i.IndexName!.toLowerCase() === IndexName.toLowerCase(),
+    (i) => i.IndexName?.toLowerCase() === IndexName.toLowerCase(),
   );
 }
 
@@ -73,7 +74,6 @@ export async function onEvent(event: any) {
               `(existing: ${JSON.stringify(existingKeys)}, requested: ${JSON.stringify(Keys)}). Delete the existing index first.`,
           );
         }
-        // eslint-disable-next-line no-console
         console.log(`Partition index ${IndexName} already exists with matching keys - reusing`);
       } else {
         throw e;
@@ -131,7 +131,6 @@ export async function onEvent(event: any) {
       }));
     } catch (e: any) {
       if (e.name === 'EntityNotFoundException') {
-        // eslint-disable-next-line no-console
         console.log(`Partition index ${IndexName} not found on ${DatabaseName}.${TableName} - may have been deleted out-of-band`);
       } else {
         throw e;

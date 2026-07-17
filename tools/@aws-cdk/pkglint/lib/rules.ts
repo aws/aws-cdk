@@ -1818,64 +1818,6 @@ export class MixinsSubmoduleExport extends ValidationRule {
 }
 
 /**
- * Verify that files which are bundled at build time (and therefore not tracked
- * in git) are actually present and non-empty before the package is published.
- *
- * Some packages generate assets during the build - for example
- * `aws-glue-alpha` bundles a Lambda handler via a `pre` script in `cdk-build`.
- * These artifacts are `.gitignore`d but re-included in the npm tarball via
- * `.npmignore` (`!*.js`). If the bundling step silently fails or is skipped,
- * an empty or missing asset would be published without any error. This rule
- * turns that into a hard failure at lint time.
- *
- * Opt in by listing the required paths (relative to the package root) under
- * `pkglint.requireBundledFiles` in package.json:
- *
- *     "pkglint": {
- *       "requireBundledFiles": [
- *         "lib/partition-index-handler.bundle/index.js"
- *       ]
- *     }
- *
- * The check is skipped when the package has not been compiled yet (its `main`
- * entry point is absent), because pkglint also runs pre-build on source-only
- * checkouts where bundled artifacts do not exist. During a real `cdk-build`
- * the `pre` script and compilation both run before pkglint, so the artifacts
- * are present when this rule is enforced.
- */
-export class BundledFilesArePresent extends ValidationRule {
-  public readonly name = 'package-info/require-bundled-files';
-
-  public validate(pkg: PackageJson): void {
-    const required: string[] = pkg.json.pkglint?.requireBundledFiles ?? [];
-    if (required.length === 0) { return; }
-
-    // Only enforce once the package has been compiled. On a fresh, un-built
-    // checkout the bundled artifacts are gitignored and absent, and pkglint
-    // may run before the build - skip in that case to avoid false failures.
-    const main = pkg.json.main;
-    if (!main || !fs.existsSync(path.join(pkg.packageRoot, main))) {
-      return;
-    }
-
-    for (const relPath of required) {
-      const fullPath = path.join(pkg.packageRoot, relPath);
-      if (!fs.existsSync(fullPath)) {
-        pkg.report({
-          ruleName: this.name,
-          message: `Required bundled file is missing: '${relPath}'. It must be generated during the build (e.g. by a 'pre' script) so it is included in the published package.`,
-        });
-      } else if (fs.statSync(fullPath).size === 0) {
-        pkg.report({
-          ruleName: this.name,
-          message: `Required bundled file is empty: '${relPath}'. The bundling step likely failed - an empty asset must not be published.`,
-        });
-      }
-    }
-  }
-}
-
-/**
  * Determine whether this is a JSII package
  *
  * A package is a JSII package if there is 'jsii' section in the package.json

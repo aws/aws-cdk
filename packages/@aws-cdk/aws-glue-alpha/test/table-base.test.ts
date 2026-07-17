@@ -500,26 +500,6 @@ describe('parition indexes', () => {
       );
       expect(createStatements).toHaveLength(2);
     });
-
-    test('throws if a foreign construct occupies the provider id', () => {
-      const stack = new cdk.Stack();
-      const database = new glue.Database(stack, 'Database');
-
-      // Squat on the reserved provider id at stack scope. The id embeds the
-      // stack's `addr` so that it is stable per stack yet collision-resistant.
-      const reservedId = `GluePartitionIndexProvider${stack.node.addr}`;
-      new cdk.CfnResource(stack, reservedId, { type: 'AWS::CloudFormation::WaitConditionHandle' });
-
-      const table = new glue.S3Table(stack, 'Table', {
-        database,
-        columns: [{ name: 'col', type: glue.Schema.STRING }],
-        partitionKeys: [{ name: 'year', type: glue.Schema.SMALL_INT }],
-        dataFormat: glue.DataFormat.JSON,
-      });
-
-      expect(() => table.addPartitionIndex({ indexName: 'index1', keyNames: ['year'] }))
-        .toThrow(new RegExp(`id "${reservedId}" already exists`));
-    });
   });
 });
 

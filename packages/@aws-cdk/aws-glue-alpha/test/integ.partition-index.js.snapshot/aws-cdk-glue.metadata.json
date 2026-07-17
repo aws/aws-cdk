@@ -65,26 +65,34 @@
       "data": "*"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Handler": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Handler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "runtime": "*",
+        "timeout": "*",
         "code": "*",
         "handler": "*",
-        "timeout": "*"
+        "runtime": "*"
       }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/IsComplete": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/IsComplete": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "runtime": "*",
+        "timeout": "*",
         "code": "*",
         "handler": "*",
-        "timeout": "*"
+        "runtime": "*"
       }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
     }
   ],
   "/aws-cdk-glue/JSONTable/Table": [
@@ -111,7 +119,7 @@
       "data": "CSVTablepartitionindexindex256C55CE5"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Handler/ServiceRole": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Handler/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -159,13 +167,13 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Handler/Resource": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Handler/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3bHandlerD50DFEC8"
+      "data": "awscdkawsgluealphaPartitionIndexProviderHandlerE1740A06"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Handler/LogGroup": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Handler/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -173,7 +181,7 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/IsComplete/ServiceRole": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/IsComplete/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -221,13 +229,13 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/IsComplete/Resource": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/IsComplete/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3bIsComplete8746E9E5"
+      "data": "awscdkawsgluealphaPartitionIndexProviderIsComplete0893CD8C"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/IsComplete/LogGroup": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/IsComplete/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -235,7 +243,7 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-onEvent": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-onEvent": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -283,7 +291,7 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-isComplete": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-isComplete": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -322,7 +330,7 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-onTimeout": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-onTimeout": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -367,13 +375,13 @@
       "data": "JSONTablepartitionindexyearmonthawscdkglueJSONTable937C116B26F5733E"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Handler/ServiceRole/Resource": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Handler/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3bHandlerServiceRoleE00E5CED"
+      "data": "awscdkawsgluealphaPartitionIndexProviderHandlerServiceRole303F5F62"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Handler/ServiceRole/DefaultPolicy": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Handler/ServiceRole/DefaultPolicy": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -411,25 +419,25 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Handler/Code/AssetBucket": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Handler/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Handler/LogGroup/Resource": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Handler/LogGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3bHandlerLogGroup2C928237"
+      "data": "awscdkawsgluealphaPartitionIndexProviderHandlerLogGroup8E433B5B"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/IsComplete/ServiceRole/Resource": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/IsComplete/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3bIsCompleteServiceRoleB7E30DEA"
+      "data": "awscdkawsgluealphaPartitionIndexProviderIsCompleteServiceRole2FCB8267"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/IsComplete/ServiceRole/DefaultPolicy": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/IsComplete/ServiceRole/DefaultPolicy": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -467,13 +475,19 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/IsComplete/LogGroup/Resource": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/IsComplete/Code/AssetBucket": [
     {
-      "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3bIsCompleteLogGroupAABBE6E6"
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-onEvent/ServiceRole": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/IsComplete/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "awscdkawsgluealphaPartitionIndexProviderIsCompleteLogGroup58834B02"
+    }
+  ],
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-onEvent/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -545,13 +559,13 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-onEvent/Resource": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-onEvent/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3bProviderframeworkonEventFCC6A394"
+      "data": "awscdkawsgluealphaPartitionIndexProviderframeworkonEventC84EA1EC"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-onEvent/LogGroup": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-onEvent/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -559,7 +573,7 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-isComplete/ServiceRole": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-isComplete/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -623,13 +637,13 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-isComplete/Resource": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-isComplete/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3bProviderframeworkisComplete3BDAE2BB"
+      "data": "awscdkawsgluealphaPartitionIndexProviderframeworkisComplete5725C648"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-isComplete/LogGroup": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-isComplete/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -637,7 +651,7 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-onTimeout/ServiceRole": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-onTimeout/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -701,13 +715,13 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-onTimeout/Resource": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-onTimeout/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3bProviderframeworkonTimeoutFB974606"
+      "data": "awscdkawsgluealphaPartitionIndexProviderframeworkonTimeout776FC8F8"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-onTimeout/LogGroup": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-onTimeout/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -715,7 +729,7 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/waiter-state-machine/Role": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/waiter-state-machine/Role": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -758,31 +772,31 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/waiter-state-machine/Resource": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/waiter-state-machine/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3bProviderwaiterstatemachineBBA2A15D"
+      "data": "awscdkawsgluealphaPartitionIndexProviderwaiterstatemachineD73BC19E"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Handler/ServiceRole/DefaultPolicy/Resource": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Handler/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3bHandlerServiceRoleDefaultPolicy8C56DBBE"
+      "data": "awscdkawsgluealphaPartitionIndexProviderHandlerServiceRoleDefaultPolicyBACAF1B6"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/IsComplete/ServiceRole/DefaultPolicy/Resource": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/IsComplete/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3bIsCompleteServiceRoleDefaultPolicyD8F39593"
+      "data": "awscdkawsgluealphaPartitionIndexProviderIsCompleteServiceRoleDefaultPolicyF8256777"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-onEvent/ServiceRole/Resource": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-onEvent/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3bProviderframeworkonEventServiceRole6BA3598B"
+      "data": "awscdkawsgluealphaPartitionIndexProviderframeworkonEventServiceRoleB171B2EB"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -844,97 +858,25 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-onEvent/Code/AssetBucket": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-onEvent/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-onEvent/LogGroup/Resource": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-onEvent/LogGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3bProviderframeworkonEventLogGroup18B51725"
+      "data": "awscdkawsgluealphaPartitionIndexProviderframeworkonEventLogGroup32C32150"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-isComplete/ServiceRole/Resource": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-isComplete/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3bProviderframeworkisCompleteServiceRole0055BDDE"
+      "data": "awscdkawsgluealphaPartitionIndexProviderframeworkisCompleteServiceRole6741A4AA"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-isComplete/ServiceRole/DefaultPolicy": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    }
-  ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-isComplete/Code/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-isComplete/LogGroup/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3bProviderframeworkisCompleteLogGroupC3780F49"
-    }
-  ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-onTimeout/ServiceRole/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3bProviderframeworkonTimeoutServiceRole71CE9B35"
-    }
-  ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-onTimeout/ServiceRole/DefaultPolicy": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -988,25 +930,97 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-onTimeout/Code/AssetBucket": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-isComplete/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-onTimeout/LogGroup/Resource": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-isComplete/LogGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3bProviderframeworkonTimeoutLogGroup7C49780F"
+      "data": "awscdkawsgluealphaPartitionIndexProviderframeworkisCompleteLogGroup949CD139"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/waiter-state-machine/Role/Resource": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-onTimeout/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3bProviderwaiterstatemachineRole463F6395"
+      "data": "awscdkawsgluealphaPartitionIndexProviderframeworkonTimeoutServiceRoleFA2BF574"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/waiter-state-machine/Role/DefaultPolicy": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-onTimeout/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-onTimeout/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "awscdkawsgluealphaPartitionIndexProviderframeworkonTimeoutLogGroup0270A05E"
+    }
+  ],
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/waiter-state-machine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "awscdkawsgluealphaPartitionIndexProviderwaiterstatemachineRole655FF907"
+    }
+  ],
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/waiter-state-machine/Role/DefaultPolicy": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -1044,28 +1058,28 @@
       }
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3bProviderframeworkonEventServiceRoleDefaultPolicyCBC0E420"
+      "data": "awscdkawsgluealphaPartitionIndexProviderframeworkonEventServiceRoleDefaultPolicy986ACCE7"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3bProviderframeworkisCompleteServiceRoleDefaultPolicyB58E0A1D"
+      "data": "awscdkawsgluealphaPartitionIndexProviderframeworkisCompleteServiceRoleDefaultPolicy15F55D85"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3bProviderframeworkonTimeoutServiceRoleDefaultPolicyA8D2CAFA"
+      "data": "awscdkawsgluealphaPartitionIndexProviderframeworkonTimeoutServiceRoleDefaultPolicy2024C86F"
     }
   ],
-  "/aws-cdk-glue/GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3b/Provider/waiter-state-machine/Role/DefaultPolicy/Resource": [
+  "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider/waiter-state-machine/Role/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "GluePartitionIndexProviderc84b4da9ba4c1d7c44e204aa0e475b9a7ade9a3b3bProviderwaiterstatemachineRoleDefaultPolicy9E5324F8"
+      "data": "awscdkawsgluealphaPartitionIndexProviderwaiterstatemachineRoleDefaultPolicyBEBB19B4"
     }
   ]
 }

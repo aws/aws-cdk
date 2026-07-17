@@ -1,7 +1,6 @@
-import * as path from 'path';
 import type { CfnTable } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
+import type * as lambda from 'aws-cdk-lib/aws-lambda';
 import type { IResource } from 'aws-cdk-lib/core';
 import { ArnFormat, CustomResource, Duration, Fn, Lazy, Names, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
 import { lit, md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
@@ -12,6 +11,7 @@ import type { IDatabase } from './database';
 import { generatePartitionProjectionParameters, type PartitionProjection } from './partition-projection';
 import type { Column } from './schema';
 import type { StorageParameter } from './storage-parameter';
+import { PartitionIndexIsCompleteFunction, PartitionIndexOnEventFunction } from '../custom-resource-handlers/dist/aws-glue-alpha/partition-index-provider.generated';
 
 /**
  * Properties of a Partition Index.
@@ -484,8 +484,6 @@ export abstract class TableBase extends Resource implements ITable {
   }
 }
 
-const PARTITION_INDEX_PROVIDER_SYMBOL = Symbol.for('@aws-cdk/aws-glue-alpha.PartitionIndexProvider');
-
 /**
  * A stack-singleton custom resource provider that manages Glue partition indexes.
  *
@@ -500,31 +498,10 @@ class PartitionIndexProvider extends Construct {
    */
   public static getOrCreate(scope: Construct): PartitionIndexProvider {
     const stack = Stack.of(scope);
-    // The suffix is derived from the STACK (not `scope`) on purpose: `addr` is a
-    // deterministic hash of the construct path, so every call within the same
-    // stack yields the same suffix and thus resolves to the SAME singleton
-    // provider via `tryFindChild`. Deriving from `scope` (the table) would
-    // instead give a different id per table and provision one provider per
-    // table. `node.addr` is used rather than `Names.uniqueId`/`uniqueResourceName`
-    // because those filter the reserved `Default` id (the id of a nameless root
-    // stack) and then throw on the resulting empty path; `addr` never throws.
-    const id = `GluePartitionIndexProvider${stack.node.addr}`;
-    const existing = stack.node.tryFindChild(id);
-    if (existing) {
-      if (!PartitionIndexProvider.isPartitionIndexProvider(existing)) {
-        throw new ValidationError(
-          lit`PartitionIndexProviderIdConflict`,
-          `Another construct with the id "${id}" already exists in the stack. This id is reserved for the Glue partition index provider.`,
-          scope,
-        );
-      }
-      return existing;
-    }
-    return new PartitionIndexProvider(stack, id);
-  }
-
-  private static isPartitionIndexProvider(x: any): x is PartitionIndexProvider {
-    return x !== null && typeof x === 'object' && PARTITION_INDEX_PROVIDER_SYMBOL in x;
+    // A fixed, namespaced id makes this a stack singleton: every call within the
+    // same stack resolves to the same child via `tryFindChild`.
+    const id = '@aws-cdk/aws-glue-alpha.PartitionIndexProvider';
+    return (stack.node.tryFindChild(id) as PartitionIndexProvider) ?? new PartitionIndexProvider(stack, id);
   }
 
   public readonly onEventHandler: lambda.Function;
@@ -534,21 +511,17 @@ class PartitionIndexProvider extends Construct {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    Object.defineProperty(this, PARTITION_INDEX_PROVIDER_SYMBOL, { value: true });
-
-    // The handler is pre-bundled with @aws-sdk/client-glue at build time (via
-    // scripts/bundle-handler.sh) so that it does not rely on the SDK version
-    // shipped with the Lambda runtime.
-    const code = lambda.Code.fromAsset(path.join(__dirname, 'partition-index-handler.bundle'));
-    const makeHandler = (handlerId: string, handlerName: string) => new lambda.Function(this, handlerId, {
-      runtime: lambda.determineLatestNodeRuntime(this),
-      code,
-      handler: `index.${handlerName}`,
+    // The handler source lives in `@aws-cdk/custom-resource-handlers` and is code
+    // generated + airlifted into this package at build time (see
+    // scripts/airlift-custom-resource-handlers.sh), following the pattern used by the
+    // other alpha modules (aws-amplify-alpha, aws-redshift-alpha). The @aws-sdk/client-glue
+    // module is provided by the Lambda runtime rather than bundled into the asset.
+    this.onEventHandler = new PartitionIndexOnEventFunction(this, 'Handler', {
       timeout: Duration.minutes(1),
     });
-
-    this.onEventHandler = makeHandler('Handler', 'onEvent');
-    this.isCompleteHandler = makeHandler('IsComplete', 'isComplete');
+    this.isCompleteHandler = new PartitionIndexIsCompleteFunction(this, 'IsComplete', {
+      timeout: Duration.minutes(1),
+    });
 
     this.provider = new cr.Provider(this, 'Provider', {
       onEventHandler: this.onEventHandler,
