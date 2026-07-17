@@ -354,7 +354,7 @@ export class CfnResource extends CfnRefElement {
    * This can be used for resources across stacks (or nested stack) boundaries
    * and the dependency will automatically be transferred to the relevant scope.
    *
-   * This method requires adding dependencies between L1 resources. If you are
+   * This method only adds dependencies between L1 resources. If you are
    * looking for a generic construct-to-construct dependency mechanism that works
    * for all constructs including L2s, use `construct.node.addDependency` instead.
    */
@@ -376,9 +376,9 @@ export class CfnResource extends CfnRefElement {
    * Indicates that this resource depends on another resource and cannot be
    * provisioned unless the other resource has been successfully provisioned.
    *
-   * This method has been renamed to `addResourceDependency`, which makes it
-   * more clear that this method operates at a different level from the
-   * construct-level `construct.node.addDependency()` mechanism.
+   * This method has been renamed to `addResourceDependency` to more clearly
+   * set it apart from `construct.node.addDependency`. See the documentation
+   * of that function for more details.
    *
    * @deprecated Use `addResourceDependency` instead.
    */

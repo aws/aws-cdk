@@ -725,9 +725,9 @@ export class Stack extends Construct implements ITaggable {
    *
    * Stack dependencies may not cross Stage boundaries.
    *
-   * This method has been renamed to `addStackDependency`, which
-   * more clearly indicates that this is a dependency mechanism distinct from
-   * the construct-level `construct.node.addDependency` mechanism.
+   * This method has been renamed to `addStackDependency` to more clearly
+   * set it apart from `construct.node.addDependency`. See the documentation
+   * of that function for more details.
    *
    * @deprecated Use `addStackDependency` instead.
    */
@@ -744,7 +744,7 @@ export class Stack extends Construct implements ITaggable {
    * Stack dependencies may not cross Stage boundaries.
    *
    * This method only adds dependencies between stacks. If you are looking
-   * for  a generic construct-to-construct dependency mechanism, use
+   * for a generic construct-to-construct dependency mechanism, use
    * `construct.node.addDependency` instead.
    */
   public addStackDependency(target: Stack, reason?: string) {
