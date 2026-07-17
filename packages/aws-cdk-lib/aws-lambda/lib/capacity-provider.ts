@@ -107,7 +107,7 @@ export interface CapacityProviderProps {
    *
    * @default - Service creates a default log group at /aws/lambda/capacity-provider/<name>
    */
-  readonly logGroup?: logs.ILogGroup;
+  readonly logGroup?: logs.ILogGroupRef;
 
   /**
    * The level of detail for capacity provider system logs.
@@ -473,7 +473,7 @@ export class CapacityProvider extends CapacityProviderBase {
       kmsKeyArn: props.kmsKey?.keyArn,
       telemetryConfig: props.logGroup || props.systemLogLevel ? {
         loggingConfig: {
-          logGroup: props.logGroup?.logGroupName,
+          logGroup: props.logGroup?.logGroupRef.logGroupName,
           systemLogLevel: props.systemLogLevel,
         },
       } : undefined,

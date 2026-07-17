@@ -813,6 +813,7 @@ You can configure system logging to monitor capacity provider scaling activity:
 
 ```ts
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as logs from 'aws-cdk-lib/aws-logs';
 
 const vpc = new ec2.Vpc(this, 'MyVpc');
 const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
@@ -820,6 +821,9 @@ const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
 const capacityProvider = new lambda.CapacityProvider(this, 'MyCapacityProvider', {
   subnets: vpc.privateSubnets,
   securityGroups: [securityGroup],
+  logGroup: new logs.LogGroup(this, 'CpLogs', {
+    logGroupName: '/aws/lambda/capacity-provider/my-cp',
+  }),
   systemLogLevel: lambda.SystemLogLevel.DEBUG,
 });
 ```

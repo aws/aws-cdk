@@ -554,6 +554,15 @@
     ]
    }
   },
+  "CpLogGroup34FBACFC": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/lambda/capacity-provider/integ-test",
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "CapacityProvider7AA4F436": {
    "Type": "AWS::Lambda::CapacityProvider",
    "Properties": {
@@ -585,6 +594,9 @@
     },
     "TelemetryConfig": {
      "LoggingConfig": {
+      "LogGroup": {
+       "Ref": "CpLogGroup34FBACFC"
+      },
       "SystemLogLevel": "DEBUG"
      }
     },

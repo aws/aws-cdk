@@ -669,6 +669,11 @@ describe('capacity provider', () => {
   });
 
   describe('telemetry config', () => {
+    beforeEach(() => {
+      // TelemetryConfig is not yet in the bundled CFN schema — acknowledge the validation warning
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::F3002', reason: 'TelemetryConfig is a newly launched property not yet in the bundled schema' });
+    });
+
     test('sets TelemetryConfig with systemLogLevel only', () => {
       // WHEN
       new lambda.CapacityProvider(stack, 'CP', {

@@ -1,56 +1,14 @@
 {
-  "/CapacityProviderAllFieldsTest/DefaultTest/DeployAssert": [
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new DeployAssert (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:39:38)",
-        "new IntegTestCase (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
-        "new IntegTest (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
-        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js:61:1)",
-        "...node internals..."
-      ]
-    }
-  ],
   "/CapacityProviderAllFieldsTest/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:294:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:194:9)",
-        "DefaultStackSynthesizer.synthesize (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:335:18)",
-        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:3)",
-        "visit (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:524:9)",
-        "visit (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:521:9)",
-        "visit (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:521:9)",
-        "visit (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:521:9)",
-        "synthesizeTree (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:460:5)",
-        "synthesize (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:88:5)"
-      ]
     }
   ],
   "/CapacityProviderAllFieldsTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:194:9)",
-        "DefaultStackSynthesizer.synthesize (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:335:18)",
-        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:3)",
-        "visit (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:524:9)",
-        "visit (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:521:9)",
-        "visit (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:521:9)",
-        "visit (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:521:9)",
-        "synthesizeTree (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:460:5)",
-        "synthesize (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:88:5)"
-      ]
     }
   ]
 }
