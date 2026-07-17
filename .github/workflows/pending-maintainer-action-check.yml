@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: automation
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Track PRs pending maintainer action
         uses: actions/github-script@v9

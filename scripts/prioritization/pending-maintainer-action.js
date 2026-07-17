@@ -39,7 +39,8 @@ const DRY_RUN = process.env.DRY_RUN === 'true';
 
 /**
  * Returns the week key for a date, combining the ISO 8601 week number with
- * the date of the Monday that week starts on (e.g. `2026-July13-W29`).
+ * the date of the Monday that week starts on (e.g. `2026-July13-W29`). The
+ * year reflects the Monday's calendar year.
  */
 function isoWeekKey(d) {
   const date = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
@@ -48,11 +49,13 @@ function isoWeekKey(d) {
   date.setUTCDate(date.getUTCDate() + 4 - day);
   const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
   const week = Math.ceil(((date - yearStart) / 86400000 + 1) / 7);
-  // Monday of the ISO week (3 days before its Thursday).
+  // Monday of the ISO week (3 days before its Thursday). The year prefix uses
+  // the Monday's calendar year (not the ISO week-year) so the date part of the
+  // key always reads as a real calendar date, e.g. `2025-December29-W01`.
   const monday = new Date(date);
   monday.setUTCDate(monday.getUTCDate() - 3);
   const monthName = monday.toLocaleString('en-US', { month: 'long', timeZone: 'UTC' });
-  return `${date.getUTCFullYear()}-${monthName}${monday.getUTCDate()}-W${String(week).padStart(2, '0')}`;
+  return `${monday.getUTCFullYear()}-${monthName}${monday.getUTCDate()}-W${String(week).padStart(2, '0')}`;
 }
 
 /**
@@ -79,11 +82,14 @@ async function fetchLabeledOpenPrs({ github, owner, repo, label }) {
  * no runs exist).
  */
 async function needsAttention({ github, owner, repo, pr }) {
+  // per_page is the API maximum: a head SHA on this repo can accumulate 20+
+  // runs, and missing an action_required run here would silently drop a
+  // pending PR from the report.
   const { data: workflowRuns } = await github.rest.actions.listWorkflowRunsForRepo({
     owner,
     repo,
     head_sha: pr.head.sha,
-    per_page: 20,
+    per_page: 100,
   });
   const runs = workflowRuns.workflow_runs;
 
