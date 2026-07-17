@@ -5,7 +5,7 @@ import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import { FeatureFlags, Names, ValidationError } from '../../core';
 import * as cxapi from '../../cx-api';
-import { regionFromArn } from './private/util';
+import { regionFromArn, snsServicePrincipal as resolveSnsServicePrincipal } from './private/util';
 import { lit } from '../../core/lib/private/literal-string';
 
 /**
@@ -38,7 +38,7 @@ export class SqsSubscription implements sns.ITopicSubscription {
     if (!Construct.isConstruct(this.queue)) {
       throw new ValidationError(lit`SuppliedQueueObjectInstanceConstruct`, 'The supplied Queue object must be an instance of Construct', topic);
     }
-    const snsServicePrincipal = new iam.ServicePrincipal('sns.amazonaws.com');
+    const snsServicePrincipal = resolveSnsServicePrincipal(topic, this.queue);
 
     // if the queue is encrypted by AWS managed KMS key (alias/aws/sqs),
     // throw error message
