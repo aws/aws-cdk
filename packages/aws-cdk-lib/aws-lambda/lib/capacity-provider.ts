@@ -7,7 +7,7 @@ import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
 import { Annotations, Arn, ArnFormat, Resource, Stack, Token, ValidationError } from '../../core';
-import type { CfnTag, IResource } from '../../core';
+import type { IResource } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
@@ -113,11 +113,18 @@ export interface CapacityProviderProps {
 }
 
 /**
+ * A collection of tags represented as key-value string pairs.
+ */
+export interface Tags {
+  readonly [key: string]: string;
+}
+
+/**
  * Configuration for propagating tags to managed resources created by a capacity provider.
  *
  * Use static factory methods to create instances:
  * ```
- * propagateTags: lambda.PropagateTags.explicit([{ key: 'env', value: 'prod' }])
+ * propagateTags: lambda.PropagateTags.explicit({ env: 'prod', team: 'platform' })
  * ```
  */
 export class PropagateTags {
@@ -131,9 +138,9 @@ export class PropagateTags {
   /**
    * Propagate the specified tags to all managed resources.
    *
-   * @param tags Tags to propagate. Maximum 40 tags.
+   * @param tags A map of tag keys to values to propagate. Maximum 40 tags.
    */
-  public static explicit(tags: CfnTag[]): PropagateTags {
+  public static explicit(tags: Tags): PropagateTags {
     return new PropagateTags('Explicit', tags);
   }
 
@@ -145,9 +152,9 @@ export class PropagateTags {
   /**
    * The explicit tags to propagate (only for Explicit mode).
    */
-  public readonly explicitTags?: CfnTag[];
+  public readonly explicitTags?: Tags;
 
-  private constructor(mode: string, explicitTags?: CfnTag[]) {
+  private constructor(mode: string, explicitTags?: Tags) {
     this.mode = mode;
     this.explicitTags = explicitTags;
   }
@@ -507,7 +514,12 @@ export class CapacityProvider extends CapacityProviderBase {
       instanceRequirements,
       capacityProviderScalingConfig,
       kmsKeyArn: props.kmsKey?.keyArn,
-      propagateTags: props.propagateTags,
+      propagateTags: props.propagateTags ? {
+        mode: props.propagateTags.mode,
+        explicitTags: props.propagateTags.explicitTags
+          ? Object.entries(props.propagateTags.explicitTags).map(([key, value]) => ({ key, value }))
+          : undefined,
+      } : undefined,
     });
   }
 
@@ -538,8 +550,8 @@ export class CapacityProvider extends CapacityProviderBase {
       this.validateScalingPolicies(props.scalingOptions, validationErrorCPName);
     }
 
-    if (props.propagateTags?.explicitTags && !Token.isUnresolved(props.propagateTags.explicitTags) && props.propagateTags.explicitTags.length > 40) {
-      throw new ValidationError(lit`PropagateTagsExplicitTagsMaximum`, `propagateTags explicit tags can have at most 40 tags, but ${validationErrorCPName} has ${props.propagateTags.explicitTags.length}.`, this);
+    if (props.propagateTags?.explicitTags && !Token.isUnresolved(props.propagateTags.explicitTags) && Object.keys(props.propagateTags.explicitTags).length > 40) {
+      throw new ValidationError(lit`PropagateTagsExplicitTagsMaximum`, `propagateTags explicit tags can have at most 40 tags, but ${validationErrorCPName} has ${Object.keys(props.propagateTags.explicitTags).length}.`, this);
     }
   }
 

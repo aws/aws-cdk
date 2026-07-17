@@ -673,10 +673,10 @@ describe('capacity provider', () => {
       new lambda.CapacityProvider(stack, 'MyCapacityProvider', {
         subnets,
         securityGroups: [securityGroup],
-        propagateTags: lambda.PropagateTags.explicit([
-          { key: 'env', value: 'prod' },
-          { key: 'team', value: 'platform' },
-        ]),
+        propagateTags: lambda.PropagateTags.explicit({
+          env: 'prod',
+          team: 'platform',
+        }),
       });
 
       // THEN
@@ -723,7 +723,10 @@ describe('capacity provider', () => {
 
     test('throws when explicit tags exceed 40', () => {
       // GIVEN
-      const tooManyTags = Array.from({ length: 41 }, (_, i) => ({ key: `key${i}`, value: `value${i}` }));
+      const tooManyTags: { [key: string]: string } = {};
+      for (let i = 0; i < 41; i++) {
+        tooManyTags[`key${i}`] = `value${i}`;
+      }
 
       // THEN
       expect(() => {
