@@ -123,11 +123,13 @@ async function needsAttention({ github, owner, repo, pr }) {
 }
 
 /**
- * Escapes PR title text for safe embedding in a Markdown table cell: pipes
- * would break the table layout, and stray whitespace/newlines are collapsed.
+ * Escapes PR title text for safe embedding in a Markdown table cell:
+ * backslashes are escaped first (so they can't neutralize the pipe escaping),
+ * pipes would break the table layout, and stray whitespace/newlines are
+ * collapsed.
  */
 function sanitizeTitle(title) {
-  return title.replace(/\s+/g, ' ').replace(/\|/g, '\\|').trim();
+  return title.replace(/\s+/g, ' ').replace(/\\/g, '\\\\').replace(/\|/g, '\\|').trim();
 }
 
 /**
