@@ -7,12 +7,12 @@ import type { ConstructInfo } from './runtime-info';
 import { constructInfoFromConstruct } from './runtime-info';
 import { ArtifactType } from '../../../cloud-assembly-schema';
 import { Annotations } from '../annotations';
-import { Stack } from '../stack';
 import type { ISynthesisSession } from '../stack-synthesizers';
 import type { IInspectable } from '../tree';
 import { TreeInspector } from '../tree';
 import { iterateBfs } from './construct-iteration';
 import { AssumptionError } from '../errors';
+import { stackOf } from './core-construct-finders';
 import { lit } from './literal-string';
 
 const FILE_PATH = 'tree.json';
@@ -74,7 +74,7 @@ export class TreeMetadata extends Construct {
     // get attributes from the inspector
     if (canInspect(construct)) {
       construct.inspect(inspector);
-      return Stack.of(construct).resolve(inspector.attributes);
+      return stackOf(construct).resolve(inspector.attributes);
     }
     return undefined;
   }

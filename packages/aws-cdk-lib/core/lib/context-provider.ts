@@ -4,6 +4,8 @@ import { Annotations } from './annotations';
 import { ValidationError } from './errors';
 import { lit } from './private/literal-string';
 import { Stack } from './stack';
+import { stackOf } from './private/core-construct-finders';
+import { lit } from './private/literal-string';
 import { Token } from './token';
 import type * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
@@ -136,7 +138,7 @@ export class ContextProvider {
    * @returns the context key or undefined if a key cannot be rendered (due to tokens used in any of the props)
    */
   public static getKey(scope: Construct, options: GetContextKeyOptions): GetContextKeyResult {
-    const stack = Stack.of(scope);
+    const stack = stackOf(scope);
 
     const props = {
       ...(options.includeEnvironment ?? true ? { account: stack.account, region: stack.region } : {}),
@@ -162,7 +164,7 @@ export class ContextProvider {
       throw new ValidationError(lit`ConflictingMustExistOptions`, 'Only supply one of \'mustExist\' and \'ignoreErrorOnMissingContext\'', scope);
     }
 
-    const stack = Stack.of(scope);
+    const stack = stackOf(scope);
 
     if (Token.isUnresolved(stack.account) || Token.isUnresolved(stack.region)) {
       throw new ValidationError(lit`StackAccountRegionNotSpecified`, `Cannot retrieve value from context provider ${options.provider} since account/region ` +

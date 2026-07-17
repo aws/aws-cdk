@@ -2,8 +2,8 @@ import * as path from 'path';
 import type { IConstruct } from 'constructs';
 import type { IPolicyValidationPlugin, IPolicyValidationContext } from '../validation';
 import { iterateDfsPreorder } from './construct-iteration';
+import { stackOf } from './core-construct-finders';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { Stack } from '../stack';
 import type { NamedValidationPluginReport } from '../validation/private/report';
 import type { PolicyValidationPluginReport, PolicyViolation, PolicyViolatingResource } from '../validation/report';
 
@@ -55,7 +55,7 @@ export function collectAnnotationReport(root: IConstruct, outdir: string): IPoli
 
       let templatePath: string | undefined;
       try {
-        templatePath = path.join(outdir, Stack.of(construct).templateFile);
+        templatePath = path.join(outdir, stackOf(construct).templateFile);
       } catch {
         // Construct is not inside a Stack
       }
