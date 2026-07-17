@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Annotations } from './annotations';
 import type { CfnCondition } from './cfn-condition';
 // import required to be here, otherwise causes a cycle when running the generated JavaScript
@@ -5,21 +6,24 @@ import type { CfnCondition } from './cfn-condition';
 import { CfnRefElement } from './cfn-element';
 import type { CfnCreationPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
 import { CfnDeletionPolicy } from './cfn-resource-policy';
-import type { Construct } from 'constructs';
-import { Node } from 'constructs';
+import type { Construct, Node } from 'constructs';
 import { addDependency, obtainDependencies, removeDependency } from './deps';
 import { CfnReference } from './private/cfn-reference';
 import type { Reference } from './reference';
 import type { RemovalPolicyOptions } from './removal-policy';
 import { RemovalPolicy } from './removal-policy';
+import { debugModeEnabled } from './debug';
 import { TagManager } from './tag-manager';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 import { FeatureFlags } from './feature-flags';
 import type { ResolutionTypeHint } from './type-hints';
 import * as cxapi from '../../cx-api';
+import type { ReferenceStrength } from './cross-stack-reference-strength';
 import { ValidationError } from './errors';
 import { deepMerge } from './private/deep-merge';
 import type { ResourceEnvironment } from './environment';
+import { lit } from './private/literal-string';
+import { captureStackTrace } from './private/stack-trace';
 
 export interface CfnResourceProps {
   /**
@@ -43,7 +47,7 @@ export class CfnResource extends CfnRefElement {
    * Check whether the given object is a CfnResource
    */
   public static isCfnResource(this: void, x: any): x is CfnResource {
-    return x !== null && typeof(x) === 'object' && x.cfnResourceType !== undefined;
+    return x !== null && typeof (x) === 'object' && x.cfnResourceType !== undefined;
   }
 
   // MAINTAINERS NOTE: this class serves as the base class for the generated L1
@@ -75,7 +79,7 @@ export class CfnResource extends CfnRefElement {
   /**
    * An object to be merged on top of the entire resource definition.
    */
-  private readonly rawOverrides: any = {};
+  private readonly rawOverrides: any = Object.create(null); // Prevent prototype pollution
 
   /**
    * Logical IDs of dependencies.
@@ -83,6 +87,10 @@ export class CfnResource extends CfnRefElement {
    * Is filled during prepare().
    */
   private dependsOn: Set<CfnResource> | undefined;
+
+  private _crossStackReferenceStrength?: ReferenceStrength;
+
+  protected readonly cfnPropertyNames: Record<string, string> = {};
 
   /**
    * Creates a resource construct.
@@ -92,7 +100,7 @@ export class CfnResource extends CfnRefElement {
     super(scope, id);
 
     if (!props.type) {
-      throw new ValidationError('The `type` property is required', this);
+      throw new ValidationError(lit`IsRequiredPropertyRequired`, 'The `type` property is required', this);
     }
 
     this.cfnResourceType = props.type;
@@ -101,8 +109,8 @@ export class CfnResource extends CfnRefElement {
     // if aws:cdk:enable-path-metadata is set, embed the current construct's
     // path in the CloudFormation template, so it will be possible to trace
     // back to the actual construct path.
-    if (Node.of(this).tryGetContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
-      this.addMetadata(cxapi.PATH_METADATA_KEY, Node.of(this).path);
+    if (this.node.tryGetContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
+      this.addMetadata(cxapi.PATH_METADATA_KEY, this.node.path);
     }
   }
 
@@ -167,8 +175,8 @@ export class CfnResource extends CfnRefElement {
         // error if flag is set, warn if flag is not
         const problematicSnapshotPolicy = !snapshottableResourceTypes.includes(this.cfnResourceType);
         if (problematicSnapshotPolicy) {
-          if (FeatureFlags.of(this).isEnabled(cxapi.VALIDATE_SNAPSHOT_REMOVAL_POLICY) ) {
-            throw new ValidationError(`${this.cfnResourceType} does not support snapshot removal policy`, this);
+          if (FeatureFlags.of(this).isEnabled(cxapi.VALIDATE_SNAPSHOT_REMOVAL_POLICY)) {
+            throw new ValidationError(lit`SnapshotRemovalNotSupported`, `${this.cfnResourceType} does not support snapshot removal policy`, this);
           } else {
             Annotations.of(this).addWarningV2(`@aws-cdk/core:${this.cfnResourceType}SnapshotRemovalPolicyIgnored`, `${this.cfnResourceType} does not support snapshot removal policy. This policy will be ignored.`);
           }
@@ -179,13 +187,32 @@ export class CfnResource extends CfnRefElement {
         break;
 
       default:
-        throw new ValidationError(`Invalid removal policy: ${policy}`, this);
+        throw new ValidationError(lit`InvalidRemovalPolicy`, `Invalid removal policy: ${policy}`, this);
     }
 
     this.cfnOptions.deletionPolicy = deletionPolicy;
     if (options.applyToUpdateReplacePolicy !== false) {
       this.cfnOptions.updateReplacePolicy = updateReplacePolicy;
     }
+  }
+
+  /**
+   * Sets the cross-stack reference strength for this resource.
+   *
+   * When set, any cross-stack reference to this resource will use the specified
+   * strength instead of the global default from the consuming stack's context.
+   *
+   * @param strength - The reference strength to use for this resource.
+   */
+  public applyCrossStackReferenceStrength(strength: ReferenceStrength): void {
+    this._crossStackReferenceStrength = strength;
+  }
+
+  /**
+   * @internal
+   */
+  public get _crossStackReferenceStrengthOverride(): ReferenceStrength | undefined {
+    return this._crossStackReferenceStrength;
   }
 
   /**
@@ -255,9 +282,9 @@ export class CfnResource extends CfnRefElement {
 
       // if we can't recurse further or the previous value is not an
       // object overwrite it with an object.
-      const isObject = curr[key] != null && typeof(curr[key]) === 'object' && !Array.isArray(curr[key]);
+      const isObject = curr[key] != null && typeof (curr[key]) === 'object' && !Array.isArray(curr[key]);
       if (!isObject) {
-        curr[key] = {};
+        curr[key] = Object.create(null); // Prevent prototype pollution
       }
 
       curr = curr[key];
@@ -284,6 +311,8 @@ export class CfnResource extends CfnRefElement {
    * @param value The value
    */
   public addPropertyOverride(propertyPath: string, value: any) {
+    const parts = splitOnPeriods(propertyPath);
+    traceProperty(this.node, parts[0]);
     this.addOverride(`Properties.${propertyPath}`, value);
   }
 
@@ -293,6 +322,10 @@ export class CfnResource extends CfnRefElement {
    */
   public addPropertyDeletionOverride(propertyPath: string) {
     this.addPropertyOverride(propertyPath, undefined);
+  }
+
+  public cfnPropertyName(cdkPropertyName: string): string | undefined {
+    return this.cfnPropertyNames[cdkPropertyName];
   }
 
   /**
@@ -327,7 +360,7 @@ export class CfnResource extends CfnRefElement {
    * This can be used for resources across stacks (including nested stacks)
    * and the dependency will automatically be removed from the relevant scope.
    */
-  public removeDependency(target: CfnResource) : void {
+  public removeDependency(target: CfnResource): void {
     // skip this dependency if the target is not part of the output
     if (!target.shouldSynthesize()) {
       return;
@@ -351,12 +384,12 @@ export class CfnResource extends CfnRefElement {
    * @param target The dependency to replace
    * @param newTarget The new dependency to add
    */
-  public replaceDependency(target: CfnResource, newTarget: CfnResource) : void {
+  public replaceDependency(target: CfnResource, newTarget: CfnResource): void {
     if (this.obtainDependencies().includes(target)) {
       this.removeDependency(target);
       this.addDependency(newTarget);
     } else {
-      throw new ValidationError(`"${Node.of(this).path}" does not depend on "${Node.of(target).path}"`, this);
+      throw new ValidationError(lit`DoesDepend`, `"${this.node.path}" does not depend on "${target.node.path}"`, this);
     }
   }
 
@@ -436,7 +469,7 @@ export class CfnResource extends CfnRefElement {
    */
   public _toCloudFormation(): object {
     if (!this.shouldSynthesize()) {
-      return { };
+      return {};
     }
 
     try {
@@ -523,7 +556,7 @@ export class CfnResource extends CfnRefElement {
     return props;
   }
 
-  protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {
+  protected renderProperties(props: { [key: string]: any }): { [key: string]: any } {
     return props;
   }
 
@@ -655,3 +688,26 @@ function splitOnPeriods(x: string): string[] {
   ret.reverse();
   return ret;
 }
+
+/**
+ * Records a metadata entry on a construct node to trace a property assignment.
+ *
+ * When debug mode is enabled (via the `CDK_DEBUG` environment variable),
+ * this attaches `aws:cdk:propertyAssignment` metadata to the given node,
+ * including a stack trace pointing back to the caller. This is useful for
+ * diagnosing where a particular property value was set during synthesis.
+ *
+ * This is a no-op when debug mode is not enabled.
+ *
+ * @param node the construct node to attach the metadata to.
+ * @param propertyName the name of the property being assigned.
+ */
+export function traceProperty(node: Node, propertyName: string) {
+  if (debugModeEnabled()) {
+    node.addMetadata(cxschema.ArtifactMetadataEntryType.PROPERTY_ASSIGNMENT, {
+      propertyName,
+      stackTrace: captureStackTrace(traceProperty),
+    });
+  }
+}
+

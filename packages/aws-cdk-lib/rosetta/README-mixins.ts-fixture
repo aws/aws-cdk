@@ -8,8 +8,9 @@ import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as iam from 'aws-cdk-lib/aws-iam';
 
-import { Mixins, Mixin, IConstructSelector } from 'aws-cdk-lib/core';
+import { Mixins, Mixin, IConstructSelector, Shims, Aspects } from 'aws-cdk-lib/core';
 import { IMixin } from 'constructs';
+import { IAspect } from 'aws-cdk-lib/core';
 import { BucketAutoDeleteObjects, BucketBlockPublicAccess } from 'aws-cdk-lib/aws-s3/mixins';
 
 declare const scope: Construct;
@@ -23,6 +24,9 @@ class CustomProdSecurityConfig extends Mixin {
 
 class CustomBucket extends Construct {}
 
+class EnableBucketVersioning implements IAspect {
+  visit(node: IConstruct): void {}
+}
 
 declare const bucketAccessLogsMixin: IMixin;
 declare const bucket: s3.CfnBucket;

@@ -14,6 +14,7 @@ import * as cxapi from '../../cx-api';
 import { isGpuInstanceType } from './private/nodegroup';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -467,25 +468,25 @@ export class Nodegroup extends Resource implements INodegroup {
     withResolved(this.desiredSize, this.maxSize, (desired, max) => {
       if (desired === undefined) {return ;}
       if (desired > max) {
-        throw new ValidationError(`Desired capacity ${desired} can't be greater than max size ${max}`, this);
+        throw new ValidationError(lit`DesiredCapacityCannotBeGreaterThanMaxSize`, `Desired capacity ${desired} can't be greater than max size ${max}`, this);
       }
     });
 
     withResolved(this.desiredSize, this.minSize, (desired, min) => {
       if (desired === undefined) {return ;}
       if (desired < min) {
-        throw new ValidationError(`Minimum capacity ${min} can't be greater than desired size ${desired}`, this);
+        throw new ValidationError(lit`MinimumCapacityCannotBeGreaterThanDesiredSize`, `Minimum capacity ${min} can't be greater than desired size ${desired}`, this);
       }
     });
 
     if (props.launchTemplateSpec && props.diskSize) {
       // see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
       // and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-disksize
-      throw new ValidationError('diskSize must be specified within the launch template', this);
+      throw new ValidationError(lit`DiskSizeMustBeSpecifiedInLaunchTemplate`, 'diskSize must be specified within the launch template', this);
     }
 
     if (props.instanceType && props.instanceTypes) {
-      throw new ValidationError('"instanceType is deprecated, please use "instanceTypes" only.', this);
+      throw new ValidationError(lit`InstanceTypeDeprecated`, '"instanceType is deprecated, please use "instanceTypes" only.', this);
     }
 
     if (props.instanceType) {
@@ -506,15 +507,25 @@ export class Nodegroup extends Resource implements INodegroup {
 
       // if the user explicitly configured an ami type, make sure it's included in the possibleAmiTypes
       if (props.amiType && !possibleAmiTypes.includes(props.amiType)) {
-        throw new ValidationError(`The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes.join(', ').toUpperCase()} or don't specify any`, this);
+        throw new ValidationError(lit`AmiTypeDoesNotMatchInstanceArchitecture`, `The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes.join(', ').toUpperCase()} or don't specify any`, this);
       }
 
       // if the user explicitly configured a Windows ami type, make sure the instanceType is allowed
       if (props.amiType && windowsAmiTypes.includes(props.amiType) &&
       instanceTypes.filter(isWindowsSupportedInstanceType).length < instanceTypes.length) {
-        throw new ValidationError('The specified instanceType does not support Windows workloads. '
+        throw new ValidationError(lit`InstanceTypeDoesNotSupportWindows`, 'The specified instanceType does not support Windows workloads. '
         + 'Amazon EC2 instance types C3, C4, D2, I2, M4 (excluding m4.16xlarge), M6a.x, and '
         + 'R3 instances aren\'t supported for Windows workloads.', this);
+      }
+
+      // Warn users when the EKS_DEFAULT_AL2023 flag is enabled and amiType is not set,
+      // then GPU instance types are intentionally NOT migrated to AL2023.
+      const useAL2023 = FeatureFlags.of(this).isEnabled(cxapi.EKS_DEFAULT_AL2023) ?? false;
+      const isGpuNodegroup = instanceTypes.some(isGpuInstanceType);
+      if (!props.amiType && useAL2023 && isGpuNodegroup) {
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:gpuInstancesUseAL2',
+          'GPU instance types will continue to use AL2 even with the @aws-cdk/aws-eks:defaultToAL2023 feature flag enabled because '
+            + 'AL2023 splits GPU support into AL2023_X86_64_NVIDIA and AL2023_X86_64_NEURON variants. To use AL2023, explicitly set amiType to the corresponding variant.');
       }
     }
 
@@ -555,9 +566,11 @@ export class Nodegroup extends Resource implements INodegroup {
        * Case 1: If launchTemplate is explicitly specified with custom AMI, we cannot specify amiType, or the node group deployment will fail.
        * As we don't know if the custom AMI is specified in the lauchTemplate, we just use props.amiType.
        *
-       * Case 2: If launchTemplate is not specified, we try to determine amiType from the instanceTypes and it could be either AL2 or Bottlerocket.
-       * To avoid breaking changes, we use possibleAmiTypes[0] if amiType is undefined and make sure AL2 is always the first element in possibleAmiTypes
-       * as AL2 is previously the `expectedAmi` and this avoids breaking changes.
+       * Case 2: If launchTemplate is not specified, we try to determine amiType from the instanceTypes and it could be either AL2, AL2023, or Bottlerocket.
+       * When `amiType` is undefined we fall back to `possibleAmiTypes[0]`. The first element
+       * depends on the `@aws-cdk/aws-eks:defaultToAL2023` feature flag: AL2 when the flag is
+       * off (default, for backwards compatibility), AL2023 when the flag is on. GPU instance types
+       * continue to use `AL2_X86_64_GPU` irrespective of the feature flag.
        *
        * That being said, users now either have to explicitly specify correct amiType or just leave it undefined.
        */
@@ -638,17 +651,17 @@ export class Nodegroup extends Resource implements INodegroup {
   private validateUpdateConfig(maxUnavailable?: number, maxUnavailablePercentage?: number) {
     if (!maxUnavailable && !maxUnavailablePercentage) return;
     if (maxUnavailable && maxUnavailablePercentage) {
-      throw new ValidationError('maxUnavailable and maxUnavailablePercentage are not allowed to be defined together', this);
+      throw new ValidationError(lit`MaxUnavailableAndPercentageMutuallyExclusive`, 'maxUnavailable and maxUnavailablePercentage are not allowed to be defined together', this);
     }
     if (maxUnavailablePercentage && (maxUnavailablePercentage < 1 || maxUnavailablePercentage > 100)) {
-      throw new ValidationError(`maxUnavailablePercentage must be between 1 and 100, got ${maxUnavailablePercentage}`, this);
+      throw new ValidationError(lit`MaxUnavailablePercentageOutOfRange`, `maxUnavailablePercentage must be between 1 and 100, got ${maxUnavailablePercentage}`, this);
     }
     if (maxUnavailable) {
       if (maxUnavailable > this.maxSize) {
-        throw new ValidationError(`maxUnavailable must be lower than maxSize (${this.maxSize}), got ${maxUnavailable}`, this);
+        throw new ValidationError(lit`MaxUnavailableExceedsMaxSize`, `maxUnavailable must be lower than maxSize (${this.maxSize}), got ${maxUnavailable}`, this);
       }
       if (maxUnavailable < 1 || maxUnavailable > 100) {
-        throw new ValidationError(`maxUnavailable must be between 1 and 100, got ${maxUnavailable}`, this);
+        throw new ValidationError(lit`MaxUnavailableOutOfRange`, `maxUnavailable must be between 1 and 100, got ${maxUnavailable}`, this);
       }
     }
   }
@@ -665,23 +678,35 @@ export class Nodegroup extends Resource implements INodegroup {
 }
 
 /**
- * AMI types of different architectures. Make sure AL2 is always the first element, which will be the default
+ * AMI types of different architectures. The first element is the default.
  * AmiType if amiType and launchTemplateSpec are both undefined.
  */
-const arm64AmiTypes: NodegroupAmiType[] = [
-  NodegroupAmiType.AL2_ARM_64,
-  NodegroupAmiType.AL2023_ARM_64_STANDARD,
-  NodegroupAmiType.BOTTLEROCKET_ARM_64,
-];
-const x8664AmiTypes: NodegroupAmiType[] = [
-  NodegroupAmiType.AL2_X86_64,
-  NodegroupAmiType.AL2023_X86_64_STANDARD,
-  NodegroupAmiType.BOTTLEROCKET_X86_64,
-  NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
-  NodegroupAmiType.WINDOWS_CORE_2022_X86_64,
-  NodegroupAmiType.WINDOWS_FULL_2019_X86_64,
-  NodegroupAmiType.WINDOWS_FULL_2022_X86_64,
-];
+const arm64AmiTypes = (useAL2023: boolean): NodegroupAmiType[] =>
+  [
+    ...(useAL2023 ? [
+      NodegroupAmiType.AL2023_ARM_64_STANDARD,
+      NodegroupAmiType.AL2_ARM_64,
+    ] : [
+      NodegroupAmiType.AL2_ARM_64,
+      NodegroupAmiType.AL2023_ARM_64_STANDARD,
+    ]),
+    NodegroupAmiType.BOTTLEROCKET_ARM_64,
+  ];
+const x8664AmiTypes = (useAL2023: boolean): NodegroupAmiType[] =>
+  [
+    ...(useAL2023 ? [
+      NodegroupAmiType.AL2023_X86_64_STANDARD,
+      NodegroupAmiType.AL2_X86_64,
+    ] : [
+      NodegroupAmiType.AL2_X86_64,
+      NodegroupAmiType.AL2023_X86_64_STANDARD,
+    ]),
+    NodegroupAmiType.BOTTLEROCKET_X86_64,
+    NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
+    NodegroupAmiType.WINDOWS_CORE_2022_X86_64,
+    NodegroupAmiType.WINDOWS_FULL_2019_X86_64,
+    NodegroupAmiType.WINDOWS_FULL_2022_X86_64,
+  ];
 const windowsAmiTypes: NodegroupAmiType[] = [
   NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
   NodegroupAmiType.WINDOWS_CORE_2022_X86_64,
@@ -723,19 +748,21 @@ function getPossibleAmiTypes(scope: Construct, instanceTypes: InstanceType[]): N
   function typeToArch(instanceType: InstanceType): AmiArchitecture {
     return isGpuInstanceType(instanceType) ? 'GPU' : instanceType.architecture;
   }
+
+  const useAL2023 = FeatureFlags.of(scope).isEnabled(cxapi.EKS_DEFAULT_AL2023) ?? false;
   const archAmiMap = new Map<AmiArchitecture, NodegroupAmiType[]>([
-    [InstanceArchitecture.ARM_64, arm64AmiTypes],
-    [InstanceArchitecture.X86_64, x8664AmiTypes],
+    [InstanceArchitecture.ARM_64, arm64AmiTypes(useAL2023)],
+    [InstanceArchitecture.X86_64, x8664AmiTypes(useAL2023)],
     ['GPU', gpuAmiTypes],
   ]);
   const architectures: Set<AmiArchitecture> = new Set(instanceTypes.map(typeToArch));
 
   if (architectures.size === 0) { // protective code, the current implementation will never result in this.
-    throw new ValidationError(`Cannot determine any ami type compatible with instance types: ${instanceTypes.map(i => i.toString()).join(', ')}`, scope);
+    throw new ValidationError(lit`CannotDetermineCompatibleAmiType`, `Cannot determine any ami type compatible with instance types: ${instanceTypes.map(i => i.toString()).join(', ')}`, scope);
   }
 
   if (architectures.size > 1) {
-    throw new ValidationError('instanceTypes of different architectures is not allowed', scope);
+    throw new ValidationError(lit`InstanceTypesDifferentArchitecturesNotAllowed`, 'instanceTypes of different architectures is not allowed', scope);
   }
 
   return archAmiMap.get(Array.from(architectures)[0])!;

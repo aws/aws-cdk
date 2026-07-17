@@ -12,6 +12,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
+import * as cxapi from '../../cx-api';
 import * as eks from '../lib';
 import { HelmChart } from '../lib';
 import { KubectlProvider } from '../lib/kubectl-provider';
@@ -1823,6 +1824,45 @@ describe('cluster', () => {
       });
     });
 
+    test('default cluster capacity with EKS_DEFAULT_AL2023 flag uses AL2023_x86_64_STANDARD', () => {
+      // GIVEN
+      const app = new cdk.App({ context: { [cxapi.EKS_DEFAULT_AL2023]: true } });
+      const stack = new cdk.Stack(app, 'Stack');
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        defaultCapacity: 1,
+        version: CLUSTER_VERSION,
+        prune: false,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+        AmiType: 'AL2023_x86_64_STANDARD',
+      });
+    });
+
+    test('default cluster capacity with EKS_DEFAULT_AL2023 flag and ARM64 instance uses AL2023_ARM_64_STANDARD', () => {
+      // GIVEN
+      const app = new cdk.App({ context: { [cxapi.EKS_DEFAULT_AL2023]: true } });
+      const stack = new cdk.Stack(app, 'Stack');
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        defaultCapacity: 1,
+        version: CLUSTER_VERSION,
+        prune: false,
+        defaultCapacityInstance: new ec2.InstanceType('m6g.medium'),
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+        AmiType: 'AL2023_ARM_64_STANDARD',
+      });
+    });
+
     test('addAutoScalingGroupCapacity with T4g instance type comes with nodegroup with correct AmiType', () => {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
@@ -2325,6 +2365,74 @@ describe('cluster', () => {
             'Arn',
           ],
         },
+      });
+    });
+
+    test('warns when kubectl private subnets include isolated subnets', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 2,
+        natGateways: 0,
+        subnetConfiguration: [
+          { name: 'Isolated', subnetType: ec2.SubnetType.PRIVATE_ISOLATED, cidrMask: 24 },
+        ],
+      });
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        vpc,
+        vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_ISOLATED }],
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+        prune: false,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasWarning('/Stack/Cluster', Match.stringLikeRegexp('Isolated subnets are being used for kubectl private subnets'));
+    });
+
+    test('does not throw when kubectl private subnets are PRIVATE_WITH_EGRESS', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 2,
+        natGateways: 1,
+        subnetConfiguration: [
+          { name: 'Public', subnetType: ec2.SubnetType.PUBLIC, cidrMask: 24 },
+          { name: 'Private', subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS, cidrMask: 24 },
+        ],
+      });
+
+      // THEN - should not throw
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        vpc,
+        vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }],
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+        prune: false,
+      });
+    });
+
+    test('does not throw for imported VPC with isolated subnets (may have VPC endpoints)', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const vpc = ec2.Vpc.fromVpcAttributes(stack, 'Vpc', {
+        vpcId: 'vpc-123',
+        availabilityZones: ['us-east-1a', 'us-east-1b'],
+        isolatedSubnetIds: ['subnet-1', 'subnet-2'],
+      });
+
+      // THEN - should not throw because imported VPCs may have VPC endpoints
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        vpc,
+        vpcSubnets: [{ subnets: vpc.isolatedSubnets }],
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+        prune: false,
       });
     });
 
@@ -4203,6 +4311,45 @@ describe('cluster', () => {
           },
         },
       });
+    });
+  });
+});
+
+describe('deletionProtection', () => {
+  test.each([
+    true, false,
+  ])('deletionProtection(%s) should work', (deletionProtection) => {
+    // GIVEN
+    const { stack } = testFixture();
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      deletionProtection,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+      Config: {
+        deletionProtection,
+      },
+    });
+  });
+
+  test('deletionProtection defaults to undefined when not specified', () => {
+    // GIVEN
+    const { stack } = testFixture();
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+      Config: {
+        deletionProtection: Match.absent(),
+      },
     });
   });
 });

@@ -9,6 +9,7 @@ import { toILogGroup } from '../../aws-logs/lib/private/ref-utils';
 import * as s3 from '../../aws-s3';
 import type { IResource } from '../../core';
 import {
+  Validations,
   CfnResource,
   FeatureFlags,
   PhysicalName,
@@ -21,6 +22,7 @@ import {
   ValidationError,
 } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { S3_CREATE_DEFAULT_LOGGING_POLICY } from '../../cx-api';
 
@@ -476,12 +478,12 @@ class FirehoseDestination extends FlowLogDestination {
 
   public bind(scope: Construct, flowLog: FlowLog): FlowLogDestinationConfig {
     if (!!this.props.deliveryStreamArn === !!this.props.deliveryStream) {
-      throw new ValidationError('Specify exactly one of either deliveryStream or deliveryStreamArn.', scope);
+      throw new ValidationError(lit`SpecifyExactlyOneDeliveryStream`, 'Specify exactly one of either deliveryStream or deliveryStreamArn.', scope);
     }
     if (this.props.deliveryStream) {
       const compareAccount = Token.compareStrings(this.props.deliveryStream.env.account, flowLog.env.account);
       if (compareAccount === TokenComparison.DIFFERENT && !this.props.iamRole) {
-        throw new ValidationError('The iamRole is required for cross-account log delivery.', scope);
+        throw new ValidationError(lit`IamRoleRequiredCrossAccount`, 'The iamRole is required for cross-account log delivery.', scope);
       }
     }
 
@@ -954,10 +956,10 @@ export class FlowLog extends FlowLogBase {
     let trafficType: FlowLogTrafficType | undefined = props.trafficType ?? FlowLogTrafficType.ALL;
     if (props.resourceType.resourceType === 'TransitGateway' || props.resourceType.resourceType === 'TransitGatewayAttachment') {
       if (props.trafficType) {
-        throw new ValidationError('trafficType is not supported for Transit Gateway and Transit Gateway Attachment', this);
+        throw new ValidationError(lit`TrafficTypeSupportedTransitGateway`, 'trafficType is not supported for Transit Gateway and Transit Gateway Attachment', this);
       }
       if (props.maxAggregationInterval && props.maxAggregationInterval !== FlowLogMaxAggregationInterval.ONE_MINUTE) {
-        throw new ValidationError('maxAggregationInterval must be set to ONE_MINUTE for Transit Gateway and Transit Gateway Attachment', this);
+        throw new ValidationError(lit`MaxAggregationIntervalSetTransit`, 'maxAggregationInterval must be set to ONE_MINUTE for Transit Gateway and Transit Gateway Attachment', this);
       }
       trafficType = undefined;
     }
@@ -989,5 +991,14 @@ export class FlowLog extends FlowLogBase {
 
     this.flowLogId = flowLog.ref;
     this.node.defaultChild = flowLog;
+
+    Validations.of(this).acknowledge({
+      id: 'CloudFormation-Validate::F3002',
+      reason: 'AWS::EC2::FlowLog DestinationOptions accepts properties in camelCase, even they are listed as PascalCase in the spec',
+    });
+    Validations.of(this).acknowledge({
+      id: 'CloudFormation-Validate::F3003',
+      reason: 'AWS::EC2::FlowLog DestinationOptions accepts properties in camelCase, even they are listed as PascalCase in the spec',
+    });
   }
 }
