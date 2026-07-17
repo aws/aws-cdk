@@ -504,6 +504,25 @@ describe('BundledFilesArePresent', () => {
     expect(pkgJson.hasReports).toBe(false);
   });
 
+  test('is skipped when the package has no main entry point', async () => {
+    // No `main` field means we cannot confirm the package is built, so the
+    // bundled artifacts may legitimately be absent -> do not enforce.
+    fakeModule = new FakeModule({
+      files: {
+        'package.json': {
+          pkglint: { requireBundledFiles: ['lib/handler.bundle/index.js'] },
+        },
+      },
+    });
+    const dirPath = await fakeModule.tmpdir();
+
+    const rule = new rules.BundledFilesArePresent();
+    const pkgJson = new PackageJson(path.join(dirPath, 'package.json'));
+    rule.validate(pkgJson);
+
+    expect(pkgJson.hasReports).toBe(false);
+  });
+
   test('is a no-op when the package does not opt in', async () => {
     fakeModule = new FakeModule({
       files: {

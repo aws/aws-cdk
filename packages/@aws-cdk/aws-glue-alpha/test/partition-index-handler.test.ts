@@ -105,10 +105,31 @@ describe('onEvent', () => {
       expect(glueMock.commandCalls(CreatePartitionIndexCommand)).toHaveLength(0);
     });
 
-    test('throws when the keys change', async () => {
+    test('kicks off deletion of the old index when the keys change', async () => {
+      glueMock.on(DeletePartitionIndexCommand).resolves({});
+
+      const result = await onEvent(event('Update', {
+        OldResourceProperties: { ...baseProperties, Keys: ['year'] },
+      }));
+
+      expect(result).toEqual({ PhysicalResourceId: 'my-index' });
+      expect(glueMock.commandCalls(DeletePartitionIndexCommand)).toHaveLength(1);
+      expect(glueMock.commandCalls(DeletePartitionIndexCommand)[0].args[0].input).toEqual({
+        DatabaseName: 'my-database',
+        TableName: 'my-table',
+        IndexName: 'my-index',
+      });
+      // No CreatePartitionIndex here: recreation is driven by isComplete once the
+      // old index has finished deleting.
+      expect(glueMock.commandCalls(CreatePartitionIndexCommand)).toHaveLength(0);
+    });
+
+    test('swallows EntityNotFoundException while kicking off deletion on a key change', async () => {
+      glueMock.on(DeletePartitionIndexCommand).rejects(awsError('EntityNotFoundException'));
+
       await expect(onEvent(event('Update', {
         OldResourceProperties: { ...baseProperties, Keys: ['year'] },
-      }))).rejects.toThrow('Partition index keys cannot be updated');
+      }))).resolves.toEqual({ PhysicalResourceId: 'my-index' });
     });
   });
 
@@ -203,6 +224,64 @@ describe('isComplete', () => {
       });
 
       await expect(isComplete(event('Delete'))).resolves.toEqual({ IsComplete: false });
+    });
+  });
+
+  describe('Update with changed keys', () => {
+    const changedEvent = () => event('Update', {
+      OldResourceProperties: { ...baseProperties, Keys: ['year'] },
+    });
+
+    test('waits while the old index is still present with its old keys', async () => {
+      glueMock.on(GetPartitionIndexesCommand).resolves({
+        PartitionIndexDescriptorList: [{
+          IndexName: 'my-index',
+          Keys: [{ Name: 'year', Type: 'string' }],
+          IndexStatus: 'ACTIVE',
+        }],
+      });
+
+      await expect(isComplete(changedEvent())).resolves.toEqual({ IsComplete: false });
+      expect(glueMock.commandCalls(CreatePartitionIndexCommand)).toHaveLength(0);
+    });
+
+    test('creates the replacement once the old index is gone', async () => {
+      glueMock.on(GetPartitionIndexesCommand).resolves({ PartitionIndexDescriptorList: [] });
+      glueMock.on(CreatePartitionIndexCommand).resolves({});
+
+      await expect(isComplete(changedEvent())).resolves.toEqual({ IsComplete: false });
+      expect(glueMock.commandCalls(CreatePartitionIndexCommand)).toHaveLength(1);
+      expect(glueMock.commandCalls(CreatePartitionIndexCommand)[0].args[0].input).toEqual({
+        DatabaseName: 'my-database',
+        TableName: 'my-table',
+        PartitionIndex: { IndexName: 'my-index', Keys: ['year', 'month'] },
+      });
+    });
+
+    test('does not recreate while the replacement is CREATING with the new keys', async () => {
+      glueMock.on(GetPartitionIndexesCommand).resolves({
+        PartitionIndexDescriptorList: [{
+          IndexName: 'my-index',
+          Keys: [{ Name: 'year', Type: 'string' }, { Name: 'month', Type: 'string' }],
+          IndexStatus: 'CREATING',
+        }],
+      });
+
+      await expect(isComplete(changedEvent())).resolves.toEqual({ IsComplete: false });
+      expect(glueMock.commandCalls(CreatePartitionIndexCommand)).toHaveLength(0);
+    });
+
+    test('is complete once the replacement carries the new keys and is ACTIVE', async () => {
+      glueMock.on(GetPartitionIndexesCommand).resolves({
+        PartitionIndexDescriptorList: [{
+          IndexName: 'my-index',
+          Keys: [{ Name: 'year', Type: 'string' }, { Name: 'month', Type: 'string' }],
+          IndexStatus: 'ACTIVE',
+        }],
+      });
+
+      await expect(isComplete(changedEvent())).resolves.toEqual({ IsComplete: true });
+      expect(glueMock.commandCalls(CreatePartitionIndexCommand)).toHaveLength(0);
     });
   });
 });

@@ -1854,7 +1854,7 @@ export class BundledFilesArePresent extends ValidationRule {
     // checkout the bundled artifacts are gitignored and absent, and pkglint
     // may run before the build - skip in that case to avoid false failures.
     const main = pkg.json.main;
-    if (main && !fs.existsSync(path.join(pkg.packageRoot, main))) {
+    if (!main || !fs.existsSync(path.join(pkg.packageRoot, main))) {
       return;
     }
 

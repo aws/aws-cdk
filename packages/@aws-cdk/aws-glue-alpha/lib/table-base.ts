@@ -4,7 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import type { IResource } from 'aws-cdk-lib/core';
 import { ArnFormat, CustomResource, Duration, Fn, Lazy, Names, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { lit, md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import type { DataFormat } from './data-format';
@@ -257,14 +257,6 @@ export abstract class TableBase extends Resource implements ITable {
    */
   private partitionIndexCustomResources: CustomResource[] = [];
 
-  /**
-   * Whether this table has already granted its partition-index permissions to
-   * the shared provider handlers. The grants are identical for every index on
-   * the table, so we only add them once to avoid bloating the shared inline
-   * role policy (and its 10,240-character limit) with duplicate statements.
-   */
-  private partitionIndexPermissionsGranted = false;
-
   constructor(scope: Construct, id: string, props: TableBaseProps) {
     super(scope, id, {
       physicalName: props.tableName ??
@@ -307,29 +299,28 @@ export abstract class TableBase extends Resource implements ITable {
     this.validatePartitionIndex(index);
 
     const indexName = index.indexName ?? this.generateIndexName(index.keyNames);
-    const provider = this.getOrCreatePartitionIndexProvider();
+    const provider = PartitionIndexProvider.getOrCreate(this);
 
     // The grants are identical for every index on this table, so only add them
-    // once. Adding them per-index would push duplicate statements onto the shared
-    // handler roles and risk the 10,240-character inline policy limit.
-    if (!this.partitionIndexPermissionsGranted) {
+    // once.
+    if (numPartitions === 0) {
       // Add scoped permissions for this table's Glue resources
       // https://docs.aws.amazon.com/service-authorization/latest/reference/list_awsglue.html
       const resources = [this.tableArn, this.database.databaseArn, this.database.catalogArn];
 
-      // onEvent creates and deletes indexes; UpdateTable/GetTable are required by those APIs.
-      provider.onEventHandler.addToRolePolicy(new iam.PolicyStatement({
-        actions: ['glue:CreatePartitionIndex', 'glue:DeletePartitionIndex', 'glue:GetTable', 'glue:UpdateTable'],
-        resources,
-      }));
-
-      // isComplete only polls index status via GetPartitionIndexes (which requires GetTable).
-      provider.isCompleteHandler.addToRolePolicy(new iam.PolicyStatement({
-        actions: ['glue:GetPartitionIndexes', 'glue:GetTable'],
-        resources,
-      }));
-
-      this.partitionIndexPermissionsGranted = true;
+      // Both handlers create, delete, and inspect indexes: onEvent creates/deletes on
+      // Create/Delete/Update, and isComplete recreates the index while driving a
+      // key-change update (delete -> recreate -> ACTIVE). UpdateTable/GetTable are
+      // required by the CreatePartitionIndex/DeletePartitionIndex APIs.
+      const actions = [
+        'glue:GetPartitionIndexes',
+        'glue:CreatePartitionIndex',
+        'glue:DeletePartitionIndex',
+        'glue:GetTable',
+        'glue:UpdateTable',
+      ];
+      provider.onEventHandler.addToRolePolicy(new iam.PolicyStatement({ actions, resources }));
+      provider.isCompleteHandler.addToRolePolicy(new iam.PolicyStatement({ actions, resources }));
     }
 
     const partitionIndexCustomResource = new CustomResource(this, `partition-index-${indexName}`, {
@@ -354,22 +345,34 @@ export abstract class TableBase extends Resource implements ITable {
     this.partitionIndexCustomResources.push(partitionIndexCustomResource);
   }
 
-  private getOrCreatePartitionIndexProvider(): PartitionIndexProvider {
-    return PartitionIndexProvider.getOrCreate(this);
-  }
-
   private generateIndexName(keys: string[]): string {
-    if (keys.some(k => Token.isUnresolved(k))) {
-      const uniqueId = Names.uniqueId(this);
-      const suffix = `-${this.partitionIndexCustomResources.length}`;
-      const maxLen = 80 - suffix.length;
-      return uniqueId.substring(Math.max(0, uniqueId.length - maxLen)) + suffix;
+    const maxIndexLength = 80;
+    if (Token.isUnresolved(keys) || keys.some(k => Token.isUnresolved(k))) {
+      // The index name is derived from the key names, so tokenized keys leave
+      // nothing stable to generate from: any auto-generated name would have to
+      // fall back to the index's position on the table, which shifts if indexes
+      // are added, removed, or reordered - silently replacing indexes that did
+      // not actually change. Require an explicit, stable name instead.
+      throw new ValidationError(
+        lit`TokenizedIndexKeysRequireName`,
+        'cannot auto-generate a stable partition index name from tokenized key names; ' +
+          'specify `indexName` explicitly when index keys are not known at synthesis time',
+        this,
+      );
     }
     const prefix = keys.join('-') + '-';
     const uniqueId = Names.uniqueId(this);
-    const maxIndexLength = 80; // arbitrarily specified
-    const startIndex = Math.max(0, uniqueId.length - (maxIndexLength - prefix.length));
-    return prefix + uniqueId.substring(startIndex);
+    if (prefix.length < maxIndexLength) {
+      // Common case: trim the uniqueId tail so the whole name fits under the cap.
+      const startIndex = Math.max(0, uniqueId.length - (maxIndexLength - prefix.length));
+      return prefix + uniqueId.substring(startIndex);
+    }
+    // The joined key names alone exceed the budget (long key names), so trimming
+    // the uniqueId is not enough. Truncate the prefix and append a hash of the
+    // table path plus the full key list, so two different (long) key sets cannot
+    // collide after truncation.
+    const hash = md5hash(uniqueId + '-' + keys.join('-')).slice(0, 8);
+    return prefix.substring(0, maxIndexLength - hash.length - 1) + '-' + hash;
   }
 
   private validatePartitionIndex(index: PartitionIndex) {
