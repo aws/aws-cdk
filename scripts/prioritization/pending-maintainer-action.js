@@ -9,7 +9,8 @@
  *     commit -- approval was skipped or never triggered).
  *
  * Each week gets its own tracking issue, identified by the marker label
- * (`ci-pending-tracking`) plus an ISO week key in the title (e.g. `2026-W29`).
+ * (`ci-pending-tracking`) plus an ISO week key in the title (e.g.
+ * `2026-July13-W29`, where `July13` is the Monday the week starts on).
  * On the first run of a week the issue is created; subsequent runs in the same
  * week update its body with the current list of pending PRs. Issues from
  * previous weeks are left open for maintainers to review and close manually.
@@ -37,7 +38,8 @@ const REASON_DESCRIPTIONS = {
 const DRY_RUN = process.env.DRY_RUN === 'true';
 
 /**
- * Returns the ISO 8601 week key (e.g. `2026-W29`) for a date.
+ * Returns the week key for a date, combining the ISO 8601 week number with
+ * the date of the Monday that week starts on (e.g. `2026-July13-W29`).
  */
 function isoWeekKey(d) {
   const date = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
@@ -46,7 +48,11 @@ function isoWeekKey(d) {
   date.setUTCDate(date.getUTCDate() + 4 - day);
   const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
   const week = Math.ceil(((date - yearStart) / 86400000 + 1) / 7);
-  return `${date.getUTCFullYear()}-W${String(week).padStart(2, '0')}`;
+  // Monday of the ISO week (3 days before its Thursday).
+  const monday = new Date(date);
+  monday.setUTCDate(monday.getUTCDate() - 3);
+  const monthName = monday.toLocaleString('en-US', { month: 'long', timeZone: 'UTC' });
+  return `${date.getUTCFullYear()}-${monthName}${monday.getUTCDate()}-W${String(week).padStart(2, '0')}`;
 }
 
 /**
