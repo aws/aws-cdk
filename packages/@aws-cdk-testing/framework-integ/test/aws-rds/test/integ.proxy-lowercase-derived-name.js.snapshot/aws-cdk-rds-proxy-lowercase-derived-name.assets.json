@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "76f674b36f3edcbbb3927df295004261bb40526cd473ec2afaaf5028a8791c6b": {
+      "displayName": "aws-cdk-rds-proxy-lowercase-derived-name Template",
+      "source": {
+        "path": "aws-cdk-rds-proxy-lowercase-derived-name.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-71e141b6": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "76f674b36f3edcbbb3927df295004261bb40526cd473ec2afaaf5028a8791c6b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
