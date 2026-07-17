@@ -207,7 +207,7 @@ export function eventNamespaceName(eventName: string) {
  * Convert event name to pattern method name (AcknowledgementCompleted -> acknowledgementCompletedPattern)
  */
 export function eventPatternMethodName(eventName: string) {
-  const prefixes = ['AWS', 'EC2', 'RDS', 'KMS', 'DNS', 'S3', 'ECR', 'EBS', 'ECS', 'EMR', 'DLM', 'FIS', 'FTP', 'SFT', 'AS2', 'QLDB'];
+  const prefixes = ['AWS', 'EC2', 'RDS', 'KMS', 'DNS', 'S3', 'ECR', 'EBS', 'ECS', 'EMR', 'DLM', 'FIS', 'FTP', 'SFT', 'AS2', 'QLDB', 'IVS'];
 
   const prefix = prefixes.find(p => eventName.startsWith(p));
 
