@@ -2,10 +2,9 @@ import * as path from 'path';
 import type { IConstruct } from 'constructs';
 import type { IPolicyValidationPlugin, IPolicyValidationContext } from '../validation';
 import { iterateDfsPreorder } from './construct-iteration';
+import { stackOf, stageOf } from './core-construct-finders';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { CfnResource } from '../cfn-resource';
-import { Stack } from '../stack';
-import { Stage } from '../stage';
 import type { NamedValidationPluginReport } from '../validation/private/report';
 import type { PolicyValidationPluginReport, PolicyViolation, PolicyViolatingResource } from '../validation/report';
 
@@ -57,14 +56,14 @@ export function collectAnnotationReport(root: IConstruct, outdir: string): IPoli
 
       let templatePath: string | undefined;
       try {
-        const fullTemplatePath = path.join(Stage.of(construct)?.outdir ?? '.', Stack.of(construct).templateFile);
+        const fullTemplatePath = path.join(stageOf(construct)?.outdir ?? '.', stackOf(construct).templateFile);
         templatePath = path.relative(outdir, fullTemplatePath);
       } catch (e) {
         // Construct is not inside a Stack
       }
 
       const resourceLogicalId = CfnResource.isCfnResource(construct)
-        ? Stack.of(construct).resolve(construct.logicalId)
+        ? stackOf(construct).resolve(construct.logicalId)
         : undefined;
 
       const violatingResource: PolicyViolatingResource = {
