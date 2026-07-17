@@ -6,10 +6,18 @@ import { DISABLE_CREATION_STACK_TRACES, VALIDATE_SNAPSHOT_REMOVAL_POLICY } from 
 import * as core from '../lib';
 import { Names } from '../lib';
 
+let app: core.App;
+beforeEach(() => {
+  app = new core.App();
+  core.Validations.of(app).acknowledge({
+    id: 'CloudFormation-Validate::F3003',
+    reason: 'Yeah we are missing some required properties',
+  });
+});
+
 describe('cfn resource', () => {
   describe('._toCloudFormation', () => {
     test('does not call renderProperties with an undefined value', () => {
-      const app = new core.App();
       const stack = new core.Stack(app, 'TestStack');
       const resource = new core.CfnResource(stack, 'DefaultResource', { type: 'Test::Resource::Fake' });
 
@@ -28,7 +36,6 @@ describe('cfn resource', () => {
     });
 
     test('renders "Properties" for a resource that has only properties set to "false"', () => {
-      const app = new core.App();
       const stack = new core.Stack(app, 'TestStack');
       new core.CfnResource(stack, 'Resource', {
         type: 'Test::Resource::Fake',
@@ -63,7 +70,6 @@ describe('cfn resource', () => {
     test.each(supportedResources) (
       'works as expected when used on supported resources (old behavior)', (resourceType) => {
         // GIVEN
-        const app = new core.App();
         core.Validations.of(app).acknowledge({
           id: 'CloudFormation-Validate::F3017',
           reason: 'Required properties missing',
@@ -90,11 +96,11 @@ describe('cfn resource', () => {
     test.each(supportedResources) (
       'works as expected when used on supported resources (under feature flag)', (resourceType) => {
         // GIVEN
-        const app = new core.App({ context: { [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: true } });
-        core.Validations.of(app).acknowledge({
-          id: 'CloudFormation-Validate::F3017',
-          reason: 'Required properties missing',
-        });
+        app = new core.App({ context: { [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: true } });
+        core.Validations.of(app).acknowledge(
+          { id: 'CloudFormation-Validate::F3017', reason: 'Required properties missing' },
+          { id: 'CloudFormation-Validate::F3003', reason: 'Required properties missing' },
+        );
         const stack = new core.Stack(app, 'TestStack');
         const resource = new core.CfnResource(stack, 'Resource', {
           type: resourceType,
@@ -116,7 +122,6 @@ describe('cfn resource', () => {
 
     test('warns on unsupported resources (without feature flag)', () => {
       // GIVEN
-      const app = new core.App();
       core.Validations.of(app).acknowledge({
         id: 'CloudFormation-Validate::F3016',
         reason: 'SNAPSHOT technically doesnt make sense here',
@@ -145,7 +150,7 @@ describe('cfn resource', () => {
 
     test('fails on unsupported resources (under feature flag)', () => {
       // GIVEN
-      const app = new core.App({ context: { [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: true } });
+      app = new core.App({ context: { [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: true } });
       const stack = new core.Stack(app);
       const resource = new core.CfnResource(stack, 'Resource', {
         type: 'AWS::Lambda::Function',
@@ -158,7 +163,6 @@ describe('cfn resource', () => {
 
   describe('dependency methods', () => {
     test('can explicitly add a dependency between resources', () => {
-      const app = new core.App();
       const stack = new core.Stack(app, 'TestStack');
       const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
       const resource2 = new core.CfnResource(stack, 'Resource2', { type: 'Test::Resource::Fake2' });
@@ -178,7 +182,6 @@ describe('cfn resource', () => {
     });
 
     test('can explicitly remove a dependency between resources', () => {
-      const app = new core.App();
       const stack = new core.Stack(app, 'TestStack');
       const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
       const resource2 = new core.CfnResource(stack, 'Resource2', { type: 'Test::Resource::Fake2' });
@@ -196,7 +199,6 @@ describe('cfn resource', () => {
     });
 
     test('can explicitly add, obtain, and remove dependencies across stacks', () => {
-      const app = new core.App();
       const stack1 = new core.Stack(app, 'TestStack1');
       // Use a really long construct id to identify issues between Names.uniqueId and Names.uniqueResourceName
       const reallyLongConstructId = 'A'.repeat(247);
@@ -223,7 +225,6 @@ describe('cfn resource', () => {
     });
 
     test('can explicitly add, then replace dependencies across stacks', () => {
-      const app = new core.App();
       const stack1 = new core.Stack(app, 'TestStack1');
       const stack2 = new core.Stack(app, 'TestStack2');
       const stack3 = new core.Stack(app, 'TestStack3');
@@ -245,7 +246,6 @@ describe('cfn resource', () => {
     });
 
     test('do nothing if source is target', () => {
-      const app = new core.App();
       const stack = new core.Stack(app, 'TestStack');
       const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
       resource1.addDependency(resource1);
@@ -258,7 +258,6 @@ describe('cfn resource', () => {
     });
 
     test('do nothing if target does not synth', () => {
-      const app = new core.App();
       const stack = new core.Stack(app, 'TestStack');
 
       class NoSynthResource extends core.CfnResource {
@@ -280,7 +279,6 @@ describe('cfn resource', () => {
     });
 
     test('replace throws an error if oldTarget is not depended on', () => {
-      const app = new core.App();
       const stack = new core.Stack(app, 'TestStack');
 
       const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
@@ -294,7 +292,6 @@ describe('cfn resource', () => {
 
   test('applyRemovalPolicy default includes Update policy', () => {
     // GIVEN
-    const app = new core.App();
     const stack = new core.Stack(app, 'TestStack');
     const resource = new core.CfnResource(stack, 'DefaultResource', { type: 'Test::Resource::Fake' });
 
@@ -313,7 +310,6 @@ describe('cfn resource', () => {
 
   test('can switch off updating Update policy', () => {
     // GIVEN
-    const app = new core.App();
     core.Validations.of(app).acknowledge({
       id: 'CloudFormation-Validate::W3011',
       reason: 'Did not apply both policies, just for testing',
@@ -337,7 +333,6 @@ describe('cfn resource', () => {
 
   test('can add metadata', () => {
     // GIVEN
-    const app = new core.App();
     const stack = new core.Stack(app, 'TestStack');
     const resource = new core.CfnResource(stack, 'DefaultResource', { type: 'Test::Resource::Fake' });
 
@@ -357,7 +352,6 @@ describe('cfn resource', () => {
 
   test('can read metadata', () => {
     // GIVEN
-    const app = new core.App();
     const stack = new core.Stack(app, 'TestStack');
     const resource = new core.CfnResource(stack, 'DefaultResource', { type: 'Test::Resource::Fake' });
     resource.addMetadata('Beep', 'Boop');
@@ -374,7 +368,6 @@ describe('cfn resource', () => {
       }
     }
 
-    const app = new core.App();
     const stack = new core.Stack(app, 'TestStack');
     const subtree = new Construct(stack, 'subtree');
 
@@ -395,7 +388,6 @@ describe('cfn resource', () => {
   });
 
   test('CfnResource cannot be created outside Stack', () => {
-    const app = new core.App();
     expect(() => {
       new core.CfnResource(app, 'Resource', {
         type: 'Some::Resource',
@@ -407,7 +399,6 @@ describe('cfn resource', () => {
    * Stages start a new scope, which does not count as a Stack anymore
    */
   test('CfnResource cannot be in Stage in Stack', () => {
-    const app = new core.App();
     const stack = new core.Stack(app, 'Stack');
     const stage = new core.Stage(stack, 'Stage');
     expect(() => {
@@ -418,7 +409,6 @@ describe('cfn resource', () => {
   });
 
   test('CfnResource has logical ID metadata with stack trace attached', () => {
-    const app = new core.App();
     const stack = new core.Stack(app, 'Stack');
     const res = new core.CfnResource(stack, 'SomeCfnResource', {
       type: 'Some::Resource',
@@ -439,7 +429,7 @@ describe('cfn resource', () => {
       process.env.CDK_DEBUG = '1';
     }
     try {
-      const app = new core.App({
+      app = new core.App({
         context: {
           [DISABLE_CREATION_STACK_TRACES]: disableStack,
         },
@@ -463,7 +453,6 @@ describe('cfn resource', () => {
   });
 
   test('isCfnResource returns true with a CfnResource', () => {
-    const app = new core.App();
     const stack = new core.Stack(app, 'Stack');
     const res = new core.CfnResource(stack, 'SomeCfnResource', {
       type: 'Some::Resource',
@@ -474,7 +463,6 @@ describe('cfn resource', () => {
   });
 
   test('isCfnResource returns false with a construct', () => {
-    const app = new core.App();
     const stack = new core.Stack(app, 'Stack');
 
     // THEN
@@ -488,7 +476,6 @@ describe('cfn resource', () => {
 
   test('no prototype pollution in addoverride', () => {
     assertNoPrototypePollution(() => {
-      const app = new core.App();
       const stack = new core.Stack(app, 'Stack');
       const res = new core.CfnResource(stack, 'Resource', { type: 'AWS::Resource' });
 
@@ -512,7 +499,6 @@ describe('cfn resource', () => {
     });
 
     test('traces the top-level property for a simple path', () => {
-      const app = new core.App();
       const stack = new core.Stack(app, 'Stack');
       const res = new core.CfnResource(stack, 'Resource', { type: 'AWS::S3::Bucket' });
 
@@ -525,7 +511,6 @@ describe('cfn resource', () => {
     });
 
     test('traces only the top-level property for a nested path', () => {
-      const app = new core.App();
       const stack = new core.Stack(app, 'Stack');
       const res = new core.CfnResource(stack, 'Resource', { type: 'AWS::S3::Bucket' });
 
@@ -539,7 +524,6 @@ describe('cfn resource', () => {
     test('does not trace when debug mode is disabled', () => {
       delete process.env.CDK_DEBUG;
 
-      const app = new core.App();
       const stack = new core.Stack(app, 'Stack');
       const res = new core.CfnResource(stack, 'Resource', { type: 'AWS::S3::Bucket' });
 
