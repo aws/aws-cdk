@@ -48,14 +48,11 @@ export function snsServicePrincipal(topic: sns.ITopic, subscriber: IResource): i
   const isSubscriberOptIn = RegionInfo.get(subscriberRegion).isOptInRegion;
 
   if (isSubscriberOptIn) {
-    // Cannot use ServicePrincipal with { region } here because the queue policy is
-    // rendered in the subscriber's stack, making stack.region === opts.region, which
-    // causes ServicePrincipalToken to skip regionalization. Use a static principal instead.
     return iam.ServicePrincipal.fromStaticServicePrincipleName(`sns.${subscriberRegion}.amazonaws.com`);
   }
 
   if (isTopicOptIn) {
-    return new iam.ServicePrincipal('sns.amazonaws.com', { region: topicRegion });
+    return iam.ServicePrincipal.fromStaticServicePrincipleName(`sns.${topicRegion}.amazonaws.com`);
   }
 
   return new iam.ServicePrincipal('sns.amazonaws.com');
