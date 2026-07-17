@@ -1,0 +1,86 @@
+{
+  "/aws-cdk-mediaconnect-bridge-source/Gateway": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-bridge-source/IngressBridge": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-bridge-source/IngressAdditionalSource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-bridge-source/FeederFlow": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-bridge-source/EgressBridge": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-bridge-source/EgressAdditionalSource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-bridge-source/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-bridge-source/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-bridge-source/Gateway/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Gateway43CB3636"
+    }
+  ],
+  "/aws-cdk-mediaconnect-bridge-source/IngressBridge/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IngressBridge39ECBE25"
+    }
+  ],
+  "/aws-cdk-mediaconnect-bridge-source/IngressAdditionalSource/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IngressAdditionalSourceF4CE0178"
+    }
+  ],
+  "/aws-cdk-mediaconnect-bridge-source/FeederFlow/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FeederFlowA5D8B2EC"
+    }
+  ],
+  "/aws-cdk-mediaconnect-bridge-source/EgressBridge/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EgressBridge777128C1"
+    }
+  ],
+  "/aws-cdk-mediaconnect-bridge-source/EgressAdditionalSource/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EgressAdditionalSource0F3A274F"
+    }
+  ]
+}

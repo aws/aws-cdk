@@ -403,7 +403,7 @@ function snapshotFileHashes(dir: string): Map<string, string> {
 
 function hasModifiedPreExistingFiles(snapshot: Map<string, string>): boolean {
   for (const [filePath, originalHash] of snapshot) {
-    if (!fs.existsSync(filePath) || hashFile(filePath) !== originalHash) {
+    if (!fileOrSymlinkExists(filePath) || hashFile(filePath) !== originalHash) {
       return true;
     }
   }
@@ -416,8 +416,12 @@ function collectFilePaths(dir: string): string[] {
     for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
       const full = path.join(current, entry.name);
       if (entry.isDirectory()) {
+        // `isDirectory()` is false for a symlink-to-directory, so we never recurse
+        // through symlinks (avoids following links out of the cloud assembly / cycles).
         walk(full);
-      } else {
+      } else if (entry.isFile() || entry.isSymbolicLink()) {
+        // Collect regular files and symlinks (including symlink-to-directory). The
+        // symlink is hashed by its target path in hashFile(), never dereferenced.
         results.push(full);
       }
     }
@@ -427,8 +431,26 @@ function collectFilePaths(dir: string): string[] {
 }
 
 function hashFile(filePath: string): string {
-  const content = fs.readFileSync(filePath);
+  // Dereferencing a symlink-to-directory with readFileSync() throws EISDIR, so hash
+  // the link target string instead of the (non-existent) file contents.
+  const content = fs.lstatSync(filePath).isSymbolicLink()
+    ? Buffer.from(fs.readlinkSync(filePath))
+    : fs.readFileSync(filePath);
   return crypto.createHash('sha256').update(content).digest('hex');
+}
+
+/**
+ * Like fs.existsSync(), but does not follow symlinks: a symlink (even a dangling
+ * one) counts as existing. This prevents preserved symlinks in the cloud assembly
+ * from being misreported as "deleted by a validation plugin".
+ */
+function fileOrSymlinkExists(p: string): boolean {
+  try {
+    fs.lstatSync(p);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**
