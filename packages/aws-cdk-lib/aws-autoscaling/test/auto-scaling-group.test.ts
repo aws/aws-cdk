@@ -173,7 +173,7 @@ describe('auto scaling group', () => {
       keyName: 'key-name',
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       instanceMonitoring: autoscaling.Monitoring.DETAILED,
-      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySG', 'most-secure'),
+      securityGroup: mockSecurityGroup(stack),
       role: iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/MockRole'),
       userData,
       associatePublicIpAddress: true,
@@ -333,7 +333,7 @@ describe('auto scaling group', () => {
     const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
       machineImage: new ec2.AmazonLinuxImage(),
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
-      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySG', 'most-secure'),
+      securityGroup: mockSecurityGroup(stack),
       vpc,
     });
     autoScalingGroup.addSecurityGroup(new ec2.SecurityGroup(stack, 'AddedSG', { vpc }));
@@ -966,7 +966,7 @@ describe('auto scaling group', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
-    const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySG', 'most-secure');
+    const securityGroup = mockSecurityGroup(stack);
 
     // WHEN
     new autoscaling.AutoScalingGroup(stack, 'MyASG', {
@@ -2367,7 +2367,7 @@ describe('auto scaling group', () => {
           cpuType: ec2.AmazonLinuxCpuType.X86_64,
         }),
         userData: ec2.UserData.forLinux(),
-        securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySG2', 'most-secure'),
+        securityGroup: mockSecurityGroup(stack),
         role: iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/HelloDude'),
       }),
       vpc: mockVpc(stack),
@@ -3141,6 +3141,14 @@ test('throws if updatePolicy is set with AutoScalingReplacingUpdate when migrate
 });
 
 function mockSecurityGroup(stack: cdk.Stack) {
+  const existing = stack.node.tryFindChild('MySG');
+  if (existing) {
+    return existing as ec2.ISecurityGroup;
+  }
+  cdk.Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::E1150',
+    reason: 'Using a bogus Security Group Id',
+  });
   return ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySG', 'most-secure');
 }
 

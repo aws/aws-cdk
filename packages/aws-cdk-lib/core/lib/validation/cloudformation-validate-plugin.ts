@@ -204,8 +204,18 @@ const IGNORE_RULES = new Set([
   // WHY: Hardcoding an ARN is part of the behavior of some constructs (e.g., setting up multi-account DynamoDB table replicas)
   'W9002',
 
+  // WHAT: Hardcoded account IDs in ARNs
+  // WHY: Hardcoding an account ID in ARNs is commonly done in CDK when we are setting up large applications that
+  // span accounts.
+  'W9013',
+
   // WHAT: Lambda Permission should always have a SourceAccount
   // WHY: It doesn't seem to detect the account that's there in the ARN?
   // <https://github.com/aws-cloudformation/cloudformation-validate/issues/183>
   'W3663',
+
+  // WHAT: value type tracking (parameter default should be a string)
+  // WHY: When the value is imported, it is considered not a string.
+  // <https://github.com/aws-cloudformation/cloudformation-validate/issues/194>
+  'E2001',
 ]);

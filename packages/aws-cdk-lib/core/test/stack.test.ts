@@ -29,6 +29,8 @@ describe('stack', () => {
     Validations.of(app).acknowledge(
       { id: 'CloudFormation-Validate::F3002', reason: "For cross-stack tests, we don't care about property names being valid" },
       { id: 'CloudFormation-Validate::F3003', reason: "For cross-stack tests, we don't care about property names being valid" },
+      { id: 'CloudFormation-Validate::E9004', reason: 'We are using non-existing property names' },
+      { id: 'CloudFormation-Validate::F6101', reason: 'We are doing nonsensical type manipulations in these tests' },
     );
     return app;
   }
