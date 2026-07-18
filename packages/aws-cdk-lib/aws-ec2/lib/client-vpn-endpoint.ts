@@ -22,7 +22,7 @@ import { SecurityGroup } from './security-group';
 import type { IVpc, SubnetSelection } from './vpc';
 import type { ISAMLProviderRef } from '../../aws-iam';
 import * as logs from '../../aws-logs';
-import { CfnOutput, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
+import { CfnOutput, Lazy, Resource, TagManager, TagType, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -351,12 +351,24 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
 
   public readonly targetNetworksAssociated: IDependable;
 
+  /**
+   * TagManager for applying tags via TagSpecifications on the Client VPN endpoint.
+   *
+   * `AWS::EC2::ClientVpnEndpoint` is not a standard taggable L1 (it uses
+   * TagSpecifications instead of Tags), so `Tags.of(this)` is wired through
+   * this manager — same approach as LaunchTemplate.
+   */
+  protected readonly tags: TagManager;
+
   private readonly _targetNetworksAssociated = new DependencyGroup();
 
   constructor(scope: Construct, id: string, props: ClientVpnEndpointProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    // Needed so Tags.of(endpoint) can apply tags; the generated L1 is not ITaggable.
+    this.tags = new TagManager(TagType.STANDARD, 'AWS::EC2::ClientVpnEndpoint');
 
     if (!Token.isUnresolved(props.vpc.vpcCidrBlock)) {
       const clientCidr = new CidrBlock(props.cidr);
@@ -404,6 +416,18 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
     })];
     this.connections = new Connections({ securityGroups });
 
+    const tagSpecifications = Lazy.any({
+      produce: () => {
+        if (!this.tags.hasTags()) {
+          return undefined;
+        }
+        return [{
+          resourceType: 'client-vpn-endpoint',
+          tags: this.tags.renderTags(),
+        }];
+      },
+    });
+
     const endpoint = new CfnClientVpnEndpoint(this, 'Resource', {
       authenticationOptions: renderAuthenticationOptions(props.clientCertificateArn, props.userBasedAuthentication),
       clientCidrBlock: props.cidr,
@@ -436,6 +460,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
           bannerText: props.clientLoginBanner,
         }
         : undefined,
+      tagSpecifications,
     });
 
     this.endpointId = endpoint.ref;
