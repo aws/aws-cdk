@@ -1258,6 +1258,8 @@ Currently MCP is the only protocol available. To configure it, use the `protocol
 - Instructions: Guidance for how to use the gateway with your tools
 - Semantic search: Smart tool discovery that finds the right tools without typical limits. It improves accuracy by finding relevant tools based on context
 - Supported versions: Which MCP protocol versions the gateway can use
+- Session timeout: How long a session stays active before it expires (between 15 minutes and 8 hours, defaults to 1 hour)
+- Response streaming: Whether the gateway streams responses from targets back to the client
 
 ```typescript fixture=default
 const gateway = new agentcore.Gateway(this, "MyGateway", {
@@ -1266,6 +1268,8 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
     instructions: "Use this gateway to connect to external MCP tools",
     searchType: agentcore.McpGatewaySearchType.SEMANTIC,
     supportedVersions: [agentcore.MCPProtocolVersion.MCP_2025_03_26],
+    sessionTimeout: Duration.hours(2),
+    enableResponseStreaming: true,
   }),
 });
 ```
