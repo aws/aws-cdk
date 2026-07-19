@@ -532,7 +532,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     // DocDB clusters require a subnet group with subnets from at least two AZs.
     // We cannot test whether the subnets are in different AZs, but at least we can test the amount.
     // See https://docs.aws.amazon.com/documentdb/latest/developerguide/replication.html#replication.high-availability
-    if (subnetIds.length < 2) {
+    if (!Token.isUnresolved(subnetIds) && subnetIds.length < 2) {
       throw new ValidationError(lit`ClusterRequiresAtLeastTwoSubnets`, `Cluster requires at least 2 subnets, got ${subnetIds.length}`, this);
     }
 
