@@ -8,10 +8,10 @@ import { NodeHttpHandler } from '@smithy/node-http-handler';
 
 import { ProxyAgent } from 'proxy-agent';
 import { ClusterResourceHandler } from './cluster';
-import { EksClient } from './common';
+import type { EksClient } from './common';
 import * as consts from './consts';
 import { FargateProfileResourceHandler } from './fargate';
-import { IsCompleteResponse } from '../../copied-from-aws-cdk-lib/provider-framework-types';
+import type { IsCompleteResponse } from '../../copied-from-aws-cdk-lib/provider-framework-types';
 
 const proxyAgent = new ProxyAgent();
 const awsConfig = {

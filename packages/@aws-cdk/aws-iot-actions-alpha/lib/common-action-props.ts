@@ -1,4 +1,4 @@
-import * as iam from 'aws-cdk-lib/aws-iam';
+import type * as iam from 'aws-cdk-lib/aws-iam';
 
 /**
  * Common properties shared by Actions it access to AWS service.

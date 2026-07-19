@@ -1,9 +1,11 @@
-import { Construct, Node } from 'constructs';
+import type { Construct } from 'constructs';
+import { Node } from 'constructs';
 import { Annotations } from './annotations';
 import { ValidationError } from './errors';
-import { Stack } from './stack';
+import { stackOf } from './private/core-construct-finders';
+import { lit } from './private/literal-string';
 import { Token } from './token';
-import * as cxschema from '../../cloud-assembly-schema';
+import type * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -134,7 +136,7 @@ export class ContextProvider {
    * @returns the context key or undefined if a key cannot be rendered (due to tokens used in any of the props)
    */
   public static getKey(scope: Construct, options: GetContextKeyOptions): GetContextKeyResult {
-    const stack = Stack.of(scope);
+    const stack = stackOf(scope);
 
     const props = {
       ...(options.includeEnvironment ?? true ? { account: stack.account, region: stack.region } : {}),
@@ -143,7 +145,7 @@ export class ContextProvider {
     };
 
     if (Object.values(props).find(x => Token.isUnresolved(x))) {
-      throw new ValidationError(
+      throw new ValidationError(lit`ContextProviderPropsContainTokens`,
         `Cannot determine scope for context provider ${options.provider}.\n` +
         'This usually happens when one or more of the provider props have unresolved tokens', scope);
     }
@@ -157,13 +159,13 @@ export class ContextProvider {
 
   public static getValue(scope: Construct, options: GetContextValueOptions): GetContextValueResult {
     if ((options.mustExist !== undefined) && (options.ignoreErrorOnMissingContext !== undefined)) {
-      throw new ValidationError('Only supply one of \'mustExist\' and \'ignoreErrorOnMissingContext\'', scope);
+      throw new ValidationError(lit`ConflictingMustExistOptions`, 'Only supply one of \'mustExist\' and \'ignoreErrorOnMissingContext\'', scope);
     }
 
-    const stack = Stack.of(scope);
+    const stack = stackOf(scope);
 
     if (Token.isUnresolved(stack.account) || Token.isUnresolved(stack.region)) {
-      throw new ValidationError(`Cannot retrieve value from context provider ${options.provider} since account/region ` +
+      throw new ValidationError(lit`StackAccountRegionNotSpecified`, `Cannot retrieve value from context provider ${options.provider} since account/region ` +
                       'are not specified at the stack level. Configure "env" with an account and region when ' +
                       'you define your stack.' +
                       'See https://docs.aws.amazon.com/cdk/latest/guide/environments.html for more details.', scope);
@@ -203,7 +205,7 @@ export class ContextProvider {
       });
 
       if (providerError !== undefined) {
-        Annotations.of(scope).addError(providerError);
+        Annotations.of(scope)._addTrackableError(lit`ContextProviderError`, providerError);
       }
 
       return { value: options.dummyValue };

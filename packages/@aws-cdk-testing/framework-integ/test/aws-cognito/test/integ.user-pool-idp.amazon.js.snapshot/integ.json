@@ -1,14 +1,13 @@
 {
-  "version": "36.0.0",
+  "version": "48.0.0",
   "testCases": {
-    "integ.user-pool-idp.amazon": {
+    "integ-user-pool-idp-amazon-test/DefaultTest": {
       "stacks": [
         "integ-user-pool-idp-amazon"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "integ-user-pool-idp-amazon-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integuserpoolidpamazontestDefaultTestDeployAssert091F9D50"
     }
   },
-  "synthContext": {},
-  "enableLookups": false
+  "minimumCliVersion": "2.1033.0"
 }

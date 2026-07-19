@@ -1,4 +1,4 @@
-import { Duration } from '../../core';
+import type { Duration } from '../../core';
 
 /**
  * An ECR life cycle rule

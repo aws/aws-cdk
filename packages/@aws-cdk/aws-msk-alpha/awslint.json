@@ -1,5 +1,19 @@
 {
-    "exclude": [
-        "props-physical-name:@aws-cdk/aws-msk-alpha.ServerlessClusterProps"
-    ]
+  "exclude": [
+    "props-physical-name:@aws-cdk/aws-msk-alpha.ServerlessClusterProps",
+    "prefer-ref-interface:@aws-cdk/aws-msk-alpha.ClusterProps.vpc",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.ClientVpnEndpointOptions.securityGroups",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.SubnetSelection.subnets",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.ISubnet.associateNetworkAcl.acl",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.InterfaceVpcEndpointOptions.securityGroups",
+    "prefer-ref-interface:@aws-cdk/aws-msk-alpha.BrokerLogging.cloudwatchLogGroup",
+    "prefer-ref-interface:@aws-cdk/aws-msk-alpha.S3LoggingConfiguration.bucket",
+    "prefer-ref-interface:aws-cdk-lib.aws_s3.GrantReplicationPermissionDestinationProps.bucket",
+    "prefer-ref-interface:aws-cdk-lib.aws_s3.GrantReplicationPermissionDestinationProps.encryptionKey",
+    "prefer-ref-interface:aws-cdk-lib.aws_s3.GrantReplicationPermissionProps.sourceDecryptionKey",
+    "prefer-ref-interface:@aws-cdk/aws-msk-alpha.ClusterProps.securityGroups",
+    "prefer-ref-interface:@aws-cdk/aws-msk-alpha.VpcConfig.vpc",
+    "prefer-ref-interface:@aws-cdk/aws-msk-alpha.VpcConfig.securityGroups",
+    "interface-extends-ref:@aws-cdk/aws-msk-alpha.ICluster"
+  ]
 }

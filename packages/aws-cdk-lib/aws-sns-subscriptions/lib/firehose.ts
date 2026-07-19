@@ -1,10 +1,11 @@
 import { Construct } from 'constructs';
-import { SubscriptionProps } from './subscription';
+import type { SubscriptionProps } from './subscription';
 import * as iam from '../../aws-iam';
-import * as firehose from '../../aws-kinesisfirehose';
+import type * as firehose from '../../aws-kinesisfirehose';
 import * as sns from '../../aws-sns';
 import { Names, ValidationError } from '../../core';
 import { regionFromArn } from './private/util';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Properties for an Amazon Data Firehose subscription
@@ -42,7 +43,7 @@ export class FirehoseSubscription implements sns.ITopicSubscription {
     // Create subscription under *consuming* construct to make sure it ends up
     // in the correct stack in cases of cross-stack subscriptions.
     if (!Construct.isConstruct(this.deliveryStream)) {
-      throw new ValidationError('The supplied delivery stream object must be an instance of Construct', topic);
+      throw new ValidationError(lit`SuppliedDeliveryStreamObjectInstance`, 'The supplied delivery stream object must be an instance of Construct', topic);
     }
 
     // Permissions based on SNS documentation:
@@ -62,7 +63,7 @@ export class FirehoseSubscription implements sns.ITopicSubscription {
     // if the topic and delivery stream are created in different stacks
     // then we need to make sure the topic is created first
     if (topic instanceof sns.Topic && topic.stack !== this.deliveryStream.stack) {
-      this.deliveryStream.stack.addDependency(topic.stack);
+      this.deliveryStream.stack.addStackDependency(topic.stack);
     }
 
     return {

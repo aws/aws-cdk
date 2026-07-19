@@ -2,6 +2,225 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.261.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.260.0-alpha.0...v2.261.0-alpha.0) (2026-07-02)
+
+
+### Features
+
+* **metrics-facade-alpha:** generate metrics facades ([#37334](https://github.com/aws/aws-cdk/issues/37334)) ([aa9beb0](https://github.com/aws/aws-cdk/commit/aa9beb08e6740c16a682a93921959f2574d7ca99))
+
+## [2.260.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.259.0-alpha.0...v2.260.0-alpha.0) (2026-06-16)
+
+## [2.259.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.258.1-alpha.0...v2.259.0-alpha.0) (2026-06-11)
+
+## [2.258.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.258.0-alpha.0...v2.258.1-alpha.0) (2026-06-08)
+
+## [2.258.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.257.0-alpha.0...v2.258.0-alpha.0) (2026-06-04)
+
+
+### Features
+
+* **integ-tests-alpha:** add option to set the provider log level ([#38005](https://github.com/aws/aws-cdk/issues/38005)) ([c634a79](https://github.com/aws/aws-cdk/commit/c634a795de080df21b86fad191d05dfde884eb4e))
+
+
+### Bug Fixes
+
+* **custom-resource-handlers:** deterministic asset hashes for generated lambdas ([#37634](https://github.com/aws/aws-cdk/issues/37634)) ([6c3d5bc](https://github.com/aws/aws-cdk/commit/6c3d5bc36e19b8834319578fbd8525615a47a4b9)), closes [#34307](https://github.com/aws/aws-cdk/issues/34307)
+* **glue-alpha:** deprecate Ray Jobs ([#38055](https://github.com/aws/aws-cdk/issues/38055)) ([3fa428b](https://github.com/aws/aws-cdk/commit/3fa428b9b24d286841940cfff5200d16817196bf))
+* **glue-alpha:** restore notifyDelayAfter to PySpark and Scala Spark ETL jobs ([#37815](https://github.com/aws/aws-cdk/issues/37815)) ([05be88a](https://github.com/aws/aws-cdk/commit/05be88aa324635108076bdc648a4ee940d22a386)), closes [#33839](https://github.com/aws/aws-cdk/issues/33839)
+* **integ-tests-alpha:** assertion failures print too much unnecessary information ([#37974](https://github.com/aws/aws-cdk/issues/37974)) ([bc0de1d](https://github.com/aws/aws-cdk/commit/bc0de1dacc59b95a2e89f9c3ec96589e98b35ed2))
+* **mediapackagev2-alpha:** cdnAuth on OriginEndpoint now generates the required policy ([#38013](https://github.com/aws/aws-cdk/issues/38013)) ([1d56b46](https://github.com/aws/aws-cdk/commit/1d56b46abd477f188021d32d77551be1377765d0))
+
+## [2.257.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.256.1-alpha.0...v2.257.0-alpha.0) (2026-05-21)
+
+## [2.256.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.256.0-alpha.0...v2.256.1-alpha.0) (2026-05-20)
+
+## [2.256.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.255.0-alpha.0...v2.256.0-alpha.0) (2026-05-19)
+
+## [2.255.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.254.0-alpha.0...v2.255.0-alpha.0) (2026-05-18)
+
+### Features
+
+* **bedrock-agentcore-alpha:** Graduation of the library to stable. The **Policy** submodule is the only submodule that remains in alpha. All other constructs have graduated to stable in `aws-cdk-lib/aws-bedrockagentcore` and we recommend migrating to the stable versions  ([#37876](https://github.com/aws/aws-cdk/issues/37876)) ([00cf601](https://github.com/aws/aws-cdk/commit/00cf6015f30755653de7a541f79c944d4a68f423))
+
+
+## [2.254.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.253.1-alpha.0...v2.254.0-alpha.0) (2026-05-13)
+
+
+### Features
+
+* **bedrock-agentcore-alpha:** add tags support to Evaluator and OnlineEvaluationConfig ([#37804](https://github.com/aws/aws-cdk/issues/37804)) ([adbf88f](https://github.com/aws/aws-cdk/commit/adbf88faeb4d2b762563389aea160cfda496f200))
+* **bedrock-agentcore-alpha:** add identity L2 constructs ([#37610](https://github.com/aws/aws-cdk/issues/37610)) ([67c3af2](https://github.com/aws/aws-cdk/commit/67c3af260cedb8e610dff36f829afb36114dd93a))
+* **mediapackagev2-alpha:** add OAC integration between CloudFront and MediaPackageV2 ([#37701](https://github.com/aws/aws-cdk/issues/37701)) ([654f59c](https://github.com/aws/aws-cdk/commit/654f59c559f6eb2b5240e7885372ac82ea05a996))
+
+
+### Bug Fixes
+
+* **bedrock-agentcore-alpha:** fix cedar policy bug ([#37782](https://github.com/aws/aws-cdk/issues/37782)) ([e678d5c](https://github.com/aws/aws-cdk/commit/e678d5cc251f00a0a67bc308b562a3fddca6a73c)), closes [#37828](https://github.com/aws/aws-cdk/issues/37828)
+* **custom-resource-handlers:** deployment fails when parameter already exists ([#37852](https://github.com/aws/aws-cdk/issues/37852)) ([025c38c](https://github.com/aws/aws-cdk/commit/025c38ca989a234189b411df011a560a003107b3))
+
+## [2.253.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.253.0-alpha.0...v2.253.1-alpha.0) (2026-05-08)
+
+## [2.253.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.252.0-alpha.0...v2.253.0-alpha.0) (2026-05-06)
+
+
+### Features
+
+* **bedrock-agentcore-alpha:** add OnlineEvaluationConfig and Evaluator L2 constructs ([#37615](https://github.com/aws/aws-cdk/issues/37615)) ([c13de04](https://github.com/aws/aws-cdk/commit/c13de04223e32272b0c6c6dd4e2fca8e300fafa8)), closes [#37614](https://github.com/aws/aws-cdk/issues/37614)
+* **glue-alpha:** add extraPythonFiles support to PythonShellJob ([#37130](https://github.com/aws/aws-cdk/issues/37130)) ([c9c6f9c](https://github.com/aws/aws-cdk/commit/c9c6f9c1b7c12722d18a45bf8a02c09672f8720d)), closes [#34448](https://github.com/aws/aws-cdk/issues/34448)
+
+
+### Bug Fixes
+
+* **bedrock-agentcore-alpha:** self-managed memory strategy validation throws on unresolved tokens ([#37691](https://github.com/aws/aws-cdk/issues/37691)) ([7956537](https://github.com/aws/aws-cdk/commit/79565376cdb642d821625fe10ae5916e7d2e64fe)), closes [#37197](https://github.com/aws/aws-cdk/issues/37197)
+
+## [2.252.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.251.0-alpha.0...v2.252.0-alpha.0) (2026-04-29)
+
+## [2.251.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.250.0-alpha.0...v2.251.0-alpha.0) (2026-04-24)
+
+
+### Features
+
+* **bedrock-agentcore-alpha:** add L2 constructs for policy and policy engine  ([#37238](https://github.com/aws/aws-cdk/issues/37238)) ([1e89e7e](https://github.com/aws/aws-cdk/commit/1e89e7e921a9946cb9c23f967c6b7a33a6048de4))
+* **bedrock-agentcore-alpha:** add observability configuration for Runtime ([#36689](https://github.com/aws/aws-cdk/issues/36689)) ([34b43aa](https://github.com/aws/aws-cdk/commit/34b43aabe2c3a946ba286812b402ce946222d820)), closes [#36596](https://github.com/aws/aws-cdk/issues/36596)
+* **bedrock-agentcore-alpha:** support No Authorization for AgentCore Gateway ([#36610](https://github.com/aws/aws-cdk/issues/36610)) ([f20bd8e](https://github.com/aws/aws-cdk/commit/f20bd8e43700877f7166cdac3cd994876963bc67))
+* **dsql-alpha:** initial L2 construct ([#34599](https://github.com/aws/aws-cdk/issues/34599)) ([be1a458](https://github.com/aws/aws-cdk/commit/be1a45861a5138b6e397cf076e39dfe0a18d4e99)), closes [#34593](https://github.com/aws/aws-cdk/issues/34593)
+
+## [2.250.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.249.0-alpha.0...v2.250.0-alpha.0) (2026-04-14)
+
+## [2.249.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.248.0-alpha.0...v2.249.0-alpha.0) (2026-04-10)
+
+## [2.248.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.247.0-alpha.0...v2.248.0-alpha.0) (2026-04-02)
+
+## [2.247.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.246.0-alpha.0...v2.247.0-alpha.0) (2026-04-02)
+
+
+### Features
+
+* **mediapackagev2-alpha:** new L2 construct ([#37279](https://github.com/aws/aws-cdk/issues/37279)) ([7debfb9](https://github.com/aws/aws-cdk/commit/7debfb9c5e807fac5df6e9e0ea3097d72325ffbc))
+
+## [2.246.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.245.0-alpha.0...v2.246.0-alpha.0) (2026-03-31)
+
+## [2.245.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.244.0-alpha.0...v2.245.0-alpha.0) (2026-03-27)
+
+
+### Features
+
+* **s3tables-alpha:** add support for partition spec, sort order, and table properties ([#36811](https://github.com/aws/aws-cdk/issues/36811)) ([2696cd1](https://github.com/aws/aws-cdk/commit/2696cd16e8e2edc8d40f1443b9c87eb6171e5d1f))
+* **s3tables-alpha:** add metrics configuration support for TableBucket ([#37275](https://github.com/aws/aws-cdk/issues/37275)) ([e8786f5](https://github.com/aws/aws-cdk/commit/e8786f5d782d906971f933a2d6d432309d5384d7))
+* **s3tables-alpha:** implement ITaggableV2 on TableBucket and Table L2 constructs ([#37277](https://github.com/aws/aws-cdk/issues/37277)) ([69c8944](https://github.com/aws/aws-cdk/commit/69c8944ea3f4abf0f4218af2fc42c8e862e8cad3)), closes [#33054](https://github.com/aws/aws-cdk/issues/33054)
+
+## [2.244.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.243.0-alpha.0...v2.244.0-alpha.0) (2026-03-19)
+
+
+### Bug Fixes
+
+* **kinesisanalytics-flink-alpha:** mark deprecated flink runtimes as deprecated ([#37155](https://github.com/aws/aws-cdk/issues/37155)) ([0a89447](https://github.com/aws/aws-cdk/commit/0a894472650bb1a2c41050ae2b00581fb937c924))
+
+## [2.243.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.242.0-alpha.0...v2.243.0-alpha.0) (2026-03-11)
+
+## [2.242.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.241.0-alpha.0...v2.242.0-alpha.0) (2026-03-10)
+
+
+### Features
+
+* **mixins-preview:** allow passing resource objects into properties in CFN Property mixins ([#37148](https://github.com/aws/aws-cdk/issues/37148)) ([f238629](https://github.com/aws/aws-cdk/commit/f2386291a50961660135b6d13b576a3744fa5ecf))
+* **mixins-preview:** generate EventBridge pattern for all events ([#37081](https://github.com/aws/aws-cdk/issues/37081)) ([f30e836](https://github.com/aws/aws-cdk/commit/f30e8360112c724ce386f26d7d2bf10d6a58e479))
+* **mixins-preview:** support custom merge strategies via IMergeStrategy ([#37170](https://github.com/aws/aws-cdk/issues/37170)) ([0dec011](https://github.com/aws/aws-cdk/commit/0dec0113c45f5808e2afd45ac5be1d044e577a4b))
+
+## [2.241.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.240.0-alpha.0...v2.241.0-alpha.0) (2026-03-02)
+
+
+### Features
+
+* **mixins-preview:** add `recordFields` and `outputFormat` to Vended Logs Mixin ([#37042](https://github.com/aws/aws-cdk/issues/37042)) ([dd94c31](https://github.com/aws/aws-cdk/commit/dd94c312ae77cd9b51cbf6d544c85a2af6a7cdc8))
+* **mixins-preview:** cross account delivery destinations ([#36827](https://github.com/aws/aws-cdk/issues/36827)) ([a759eb6](https://github.com/aws/aws-cdk/commit/a759eb69d560ff039d09d62e91627bb267a664e5))
+
+## [2.240.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.239.0-alpha.0...v2.240.0-alpha.0) (2026-02-23)
+
+## [2.239.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.238.0-alpha.0...v2.239.0-alpha.0) (2026-02-19)
+
+### ⚠ BREAKING CHANGES
+
+redshift-alpha: update default node type from `DC2_LARGE` to `RA3_LARGE`
+
+### Features
+
+* **bedrock-agentcore-alpha:** add `fromCodeAsset` method to create runtime artifact with local code assets ([#36472](https://github.com/aws/aws-cdk/issues/36472)) ([c5a87e6](https://github.com/aws/aws-cdk/commit/c5a87e6682a3668de849d4c7a0913fdee3eb170c)), closes [#36473](https://github.com/aws/aws-cdk/issues/36473)
+* **bedrock-agentcore-alpha:** added new target type (api gateway) in agentcore gateway target. ([#36841](https://github.com/aws/aws-cdk/issues/36841)) ([0842754](https://github.com/aws/aws-cdk/commit/0842754ec56412a9b22f2e92f5aea7c86129ec52)), closes [#36817](https://github.com/aws/aws-cdk/issues/36817)
+* **mixins-preview:** add ECS ClusterSettingsMixin ([#36796](https://github.com/aws/aws-cdk/issues/36796)) ([b8ab5be](https://github.com/aws/aws-cdk/commit/b8ab5be8f2e0733433a55dd48b26e7f56f6e0393))
+* **mixins-preview:** add s3 bucket mixin for publicAccessBlock ([#36905](https://github.com/aws/aws-cdk/issues/36905)) ([feed4b2](https://github.com/aws/aws-cdk/commit/feed4b2690bd481e464dd3ececa4cba0997a03db))
+* **mixins-preview:** send Vended Logs to pre-created DeliveryDestination using `toDestination()` ([#36896](https://github.com/aws/aws-cdk/issues/36896)) ([48f1fe6](https://github.com/aws/aws-cdk/commit/48f1fe6aa86473a25ffdcf53cfecb5e1169b54db))
+
+
+### Bug Fixes
+
+* **redshift-alpha:** update default node type from `DC2_LARGE` to `RA3_LARGE` ([#36516](https://github.com/aws/aws-cdk/issues/36516)) ([ea19e5c](https://github.com/aws/aws-cdk/commit/ea19e5cde2e64d5cdcdfa3af41764542e77e221c)), closes [#36416](https://github.com/aws/aws-cdk/issues/36416)
+
+## [2.238.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.237.1-alpha.0...v2.238.0-alpha.0) (2026-02-09)
+
+
+### Features
+
+* **eks-v2-alpha:** add support for bootstrapSelfManagedAddons ([#36740](https://github.com/aws/aws-cdk/issues/36740)) ([1ffe38d](https://github.com/aws/aws-cdk/commit/1ffe38dc950a096cb5e1c1ee20f2c49899dc0a23))
+* **eks-v2-alpha:** add support for EKS hybrid nodes ([#36749](https://github.com/aws/aws-cdk/issues/36749)) ([48ace56](https://github.com/aws/aws-cdk/commit/48ace56d82537630fc339cb41962473a97375aea))
+
+
+### Bug Fixes
+
+* **eks-v2-alpha:** ensure kubectl provider and handler functions use the same vpc configuration  ([#36735](https://github.com/aws/aws-cdk/issues/36735)) ([4e02f08](https://github.com/aws/aws-cdk/commit/4e02f0896069105dae83c46f19f1b346a546ad57)), closes [#34878](https://github.com/aws/aws-cdk/issues/34878) [#34877](https://github.com/aws/aws-cdk/issues/34877)
+* **ivs-alpha:** add region constraints to integration tests ([#36851](https://github.com/aws/aws-cdk/issues/36851)) ([d55fec4](https://github.com/aws/aws-cdk/commit/d55fec42357410b8263b814b931daf5dccc5c5e3))
+* **mixins-preview:** apply mixins in order ([#36847](https://github.com/aws/aws-cdk/issues/36847)) ([726060c](https://github.com/aws/aws-cdk/commit/726060c0ea9f57de4c6e13c1f50c330e4fc2608e))
+* **mixins-preview:** apply mixins in order in `MixinApplicator` ([#36877](https://github.com/aws/aws-cdk/issues/36877)) ([09db1c9](https://github.com/aws/aws-cdk/commit/09db1c99710c9f8e91774e767de93fff1a0d2650)), closes [#36847](https://github.com/aws/aws-cdk/issues/36847)
+
+## [2.237.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.237.0-alpha.0...v2.237.1-alpha.0) (2026-02-03)
+
+## [2.237.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.236.0-alpha.0...v2.237.0-alpha.0) (2026-02-02)
+
+
+### Features
+
+* **bedrock-agentcore-alpha:** add support for custom claims and scopes to runtime/gateway authorizers ([#36810](https://github.com/aws/aws-cdk/issues/36810)) ([a3abcd0](https://github.com/aws/aws-cdk/commit/a3abcd010648e83bed273dff8f581291b5b3c902))
+* **eks-v2-alpha:** pass additional helm chart values to aws-load-balancer-controller ([#36754](https://github.com/aws/aws-cdk/issues/36754)) ([cf61814](https://github.com/aws/aws-cdk/commit/cf61814ac58448ddd70682e45c07dd8ca58c4fd1)), closes [/github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/helm/aws-load-balancer-controller/values.yaml#L199](https://github.com/aws//github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/helm/aws-load-balancer-controller/values.yaml/issues/L199)
+* **mixins-preview:** align Mixins API with latest RFC proposal ([#36825](https://github.com/aws/aws-cdk/issues/36825)) ([82c2fdb](https://github.com/aws/aws-cdk/commit/82c2fdb246557fa4804e2dc88ce16c28db52956c))
+* **mixins-preview:** handle destination bucket with KMS keys ([#36776](https://github.com/aws/aws-cdk/issues/36776)) ([950401f](https://github.com/aws/aws-cdk/commit/950401f405751a7634927af0d7667c97ddddd73d))
+
+
+### Bug Fixes
+
+* **bedrock-agentcore-alpha:** construct ID collision when multiple schemas are set ([#36565](https://github.com/aws/aws-cdk/issues/36565)) ([9ebfb62](https://github.com/aws/aws-cdk/commit/9ebfb62d6c6599bee2bf477cdc6b4b6da0a4030a)), closes [#36559](https://github.com/aws/aws-cdk/issues/36559)
+
+## [2.236.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.235.1-alpha.0...v2.236.0-alpha.0) (2026-01-23)
+
+
+### Features
+
+* **bedrock-agentcore-alpha:** added episodic memory strategy ([#36591](https://github.com/aws/aws-cdk/issues/36591)) ([21dcfc6](https://github.com/aws/aws-cdk/commit/21dcfc6807a3876e2275bdac6f1e4f7564a66100))
+* **bedrock-agentcore-alpha:** added gateway interceptors ([#36604](https://github.com/aws/aws-cdk/issues/36604)) ([ba8aa48](https://github.com/aws/aws-cdk/commit/ba8aa48a33b1e008194d6b6b13d10c41019f56b4))
+* **bedrock-agentcore-alpha:** make physical name properties optional for AgentCore resources ([#36354](https://github.com/aws/aws-cdk/issues/36354)) ([5137d81](https://github.com/aws/aws-cdk/commit/5137d811a92eb63f52d2bfa0713a660f5476839e)), closes [#36341](https://github.com/aws/aws-cdk/issues/36341)
+* **mixins-preview:** expose `BucketPolicyStatementsMixin` publicly ([#36771](https://github.com/aws/aws-cdk/issues/36771)) ([458156d](https://github.com/aws/aws-cdk/commit/458156dd43ced89c893687415d7c2a2fce141653))
+* **sagemaker:** add containerStartupHealthCheckTimeoutInSeconds support for EndpointConfig ([#35626](https://github.com/aws/aws-cdk/issues/35626)) ([47d707a](https://github.com/aws/aws-cdk/commit/47d707aac809fda8ec5302bf927380e8060d380a)), closes [#35566](https://github.com/aws/aws-cdk/issues/35566)
+
+### Bug Fixes
+
+* **eks-v2-alpha:** ensure kubectl provider access entry is depended upon by downstream resources ([#36734](https://github.com/aws/aws-cdk/issues/36734)) ([e104f45](https://github.com/aws/aws-cdk/commit/e104f45654177e87e2fb46510f77d02fcf20c499)), closes [#34898](https://github.com/aws/aws-cdk/issues/34898) [#34897](https://github.com/aws/aws-cdk/issues/34897)
+
+## [2.235.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.235.0-alpha.0...v2.235.1-alpha.0) (2026-01-19)
+
+## [2.235.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.234.1-alpha.0...v2.235.0-alpha.0) (2026-01-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bedrock-agentcore-alpha:** The User Pool Client will be replaced and new Resource Server and Domain resources will be added for existing Gateway stacks using the default Cognito authorizer.
+
+### Checklist
+- [x] My code adheres to the [CONTRIBUTING GUIDE](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and [DESIGN GUIDELINES](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md)
+
+### Bug Fixes
+
+* **bedrock-agentcore-alpha:** default Cognito User Pool for AgentCore Gateway is not set up for M2M authentication. ([#36323](https://github.com/aws/aws-cdk/issues/36323)) ([5a5605a](https://github.com/aws/aws-cdk/commit/5a5605aafdba676ea1d73edd3ebdbfaf7dfe668d))
+
 ## [2.234.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.234.0-alpha.0...v2.234.1-alpha.0) (2026-01-08)
 
 ## [2.234.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.233.0-alpha.0...v2.234.0-alpha.0) (2026-01-08)

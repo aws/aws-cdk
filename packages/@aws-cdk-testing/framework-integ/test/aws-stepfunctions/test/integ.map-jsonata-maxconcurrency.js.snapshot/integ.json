@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "cdk-stepfunctions-map-jsonata-maxconcurrency-integ/DefaultTest": {
+      "stacks": [
+        "cdk-stepfunctions-map-jsonata-maxconcurrency-stack"
+      ],
+      "assertionStack": "cdk-stepfunctions-map-jsonata-maxconcurrency-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkstepfunctionsmapjsonatamaxconcurrencyintegDefaultTestDeployAssertF93436CC"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

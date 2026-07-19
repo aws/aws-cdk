@@ -1,7 +1,8 @@
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { App, CfnOutput, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult, InvocationType, Match } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as destinations from 'aws-cdk-lib/aws-lambda-destinations';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 

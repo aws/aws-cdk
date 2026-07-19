@@ -1,10 +1,11 @@
 import { strictEqual } from 'assert';
 import { Template } from '../../assertions';
-import { ISubnet, Port, SecurityGroup, Subnet, Vpc } from '../../aws-ec2';
+import type { ISubnet } from '../../aws-ec2';
+import { Port, SecurityGroup, Subnet, Vpc } from '../../aws-ec2';
 import { Key } from '../../aws-kms';
 import { Aws, Duration, Stack, Token } from '../../core';
+import type { LustreConfiguration } from '../lib';
 import {
-  LustreConfiguration,
   LustreDeploymentType,
   LustreAutoImportPolicy,
   LustreFileSystem,

@@ -2,6 +2,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as cdk from 'aws-cdk-lib';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-ecs-integ');
@@ -45,6 +46,13 @@ service.registerLoadBalancerTargets(
   },
 );
 
+// Allow traffic from the NLB to the Fargate service on port 80
+service.connections.allowFrom(lb, ec2.Port.tcp(80));
+
 new cdk.CfnOutput(stack, 'LoadBalancerDNS', { value: lb.loadBalancerDnsName });
+
+new integ.IntegTest(app, 'NlbAwsvpcNwTest', {
+  testCases: [stack],
+});
 
 app.synth();

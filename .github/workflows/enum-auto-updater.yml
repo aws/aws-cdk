@@ -13,7 +13,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Check Out
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         
       - name: Set up Node
         uses: actions/setup-node@v6
@@ -23,7 +23,7 @@ jobs:
           NODE_OPTIONS: "--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
 
       - name: Install dependencies
-        run: cd tools/@aws-cdk/enum-updater && yarn install --frozen-lockfile && yarn build
+        run: yarn install --frozen-lockfile && cd tools/@aws-cdk/enum-updater && yarn build
 
       - name: Identify Missing Values and Apply Code Changes
         run: |

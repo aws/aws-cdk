@@ -1,8 +1,9 @@
 import { Construct } from 'constructs';
 import { Chain } from './chain';
-import { Parallel, ParallelProps } from './states/parallel';
+import type { ParallelProps } from './states/parallel';
+import { Parallel } from './states/parallel';
 import { State } from './states/state';
-import { IChainable, INextable } from './types';
+import type { IChainable, INextable } from './types';
 
 /**
  * Base class for reusable state machine fragments

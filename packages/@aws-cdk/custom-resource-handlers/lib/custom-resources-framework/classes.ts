@@ -1,30 +1,32 @@
 /* eslint-disable import/no-extraneous-dependencies */
+import type {
+  PropertySpec,
+  InterfaceSpec,
+  Expression,
+  ClassSpec,
+  Statement,
+} from '@cdklabs/typewriter';
 import {
   ClassType,
   stmt,
   expr,
   Type,
   Splat,
-  PropertySpec,
-  InterfaceSpec,
   InterfaceType,
   ObjectLiteral,
   MemberVisibility,
   SuperInitializer,
-  Expression,
-  ClassSpec,
   $T,
-  Statement,
 } from '@cdklabs/typewriter';
+import type { Runtime } from './config';
 import {
   CUSTOM_RESOURCE_PROVIDER,
   CUSTOM_RESOURCE_RUNTIME_FAMILY,
   CUSTOM_RESOURCE_SINGLETON,
   CUSTOM_RESOURCE_SINGLETON_LOG_GROUP,
   CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION,
-  Runtime,
 } from './config';
-import { HandlerFrameworkModule } from './framework';
+import type { HandlerFrameworkModule } from './framework';
 import {
   PATH_MODULE,
   CONSTRUCTS_MODULE,
@@ -105,6 +107,15 @@ export interface HandlerFrameworkClassProps {
    * @default MemberVisibility.Public
    */
   readonly constructorVisibility?: MemberVisibility;
+
+  /**
+   * Deterministic content hash of the bundled handler code. When supplied,
+   * the generated class emits this hash as the asset hash so the S3 object
+   * key for the Lambda code remains stable unless the code actually changes.
+   *
+   * @default - asset hash is computed at synth time from the bundled directory
+   */
+  readonly sourceHash?: string;
 }
 
 interface BuildRuntimePropertyOptions {
@@ -132,11 +143,15 @@ export abstract class HandlerFrameworkClass extends ClassType {
           scope.registerImport(LAMBDA_MODULE);
         }
 
+        const fromAssetArgs: Expression[] = [
+          PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
+        ];
+        if (props.sourceHash) {
+          fromAssetArgs.push(expr.object({ assetHash: expr.lit(props.sourceHash) }));
+        }
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
-          ['code', $T(LAMBDA_MODULE.Code).fromAsset(
-            PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
-          )],
+          ['code', $T(LAMBDA_MODULE.Code).fromAsset(...fromAssetArgs)],
           ['handler', expr.lit(props.handler)],
           ['runtime', this.buildRuntimeProperty(scope, { runtime: props.runtime })],
         ]);
@@ -224,11 +239,15 @@ export abstract class HandlerFrameworkClass extends ClassType {
           },
         });
 
+        const singletonFromAssetArgs: Expression[] = [
+          PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
+        ];
+        if (props.sourceHash) {
+          singletonFromAssetArgs.push(expr.object({ assetHash: expr.lit(props.sourceHash) }));
+        }
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
-          ['code', $T(LAMBDA_MODULE.Code).fromAsset(
-            PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
-          )],
+          ['code', $T(LAMBDA_MODULE.Code).fromAsset(...singletonFromAssetArgs)],
           ['handler', expr.lit(props.handler)],
           ['runtime', this.buildRuntimeProperty(scope, { runtime: props.runtime, isEvalNodejsProvider })],
         ]);

@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import * as cloudwatch from '../../aws-cloudwatch';
+import type { Construct } from 'constructs';
+import type * as cloudwatch from '../../aws-cloudwatch';
 import { Stack } from '../../core';
 
 /**
@@ -37,7 +37,7 @@ export class Ec2Action implements cloudwatch.IAlarmAction {
   /**
    * Returns an alarm action configuration to use an EC2 action as an alarm action
    */
-  bind(_scope: Construct, _alarm: cloudwatch.IAlarmRef): cloudwatch.AlarmActionConfig {
+  bind(_scope: Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
     return { alarmActionArn: `arn:${Stack.of(_scope).partition}:automate:${Stack.of(_scope).region}:ec2:${this.ec2Action}` };
   }
 }
