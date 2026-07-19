@@ -1,9 +1,13 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import * as route53 from 'aws-cdk-lib/aws-route53';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
+import {
+  ApplicationLoadBalancedFargateService,
+  ApplicationLoadBalancedServiceRecordType,
+} from 'aws-cdk-lib/aws-ecs-patterns';
 
 const app = new App();
 const stack = new Stack(app, 'aws-ecs-integ-alb-fg-ipv6');
@@ -13,6 +17,9 @@ const vpc = new ec2.Vpc(stack, 'Vpc', {
   restrictDefaultSecurityGroup: false,
 });
 const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+const hostedZone = new route53.PublicHostedZone(stack, 'HostedZone', {
+  zoneName: 'test.public',
+});
 
 const service = new ApplicationLoadBalancedFargateService(stack, 'myService', {
   cluster,
@@ -21,6 +28,9 @@ const service = new ApplicationLoadBalancedFargateService(stack, 'myService', {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
   ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+  domainName: 'service.test.public',
+  domainZone: hostedZone,
+  recordType: ApplicationLoadBalancedServiceRecordType.ALIAS_IPV4_IPV6,
 });
 
 const integ = new IntegTest(app, 'albFargateServiceTest', {
