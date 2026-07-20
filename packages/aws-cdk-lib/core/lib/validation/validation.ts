@@ -75,7 +75,7 @@ export interface IPolicyValidationContext {
   /**
    * The absolute path of all templates to be processed, along with the stack construct path for each template.
    */
-  readonly stackTemplates: StackTemplate[];
+  readonly stackTemplates: PolicyValidationStack[];
 
   /**
    * The account ID for these templates, if known
@@ -98,7 +98,10 @@ export interface IPolicyValidationContext {
   readonly appConstruct: IConstruct;
 }
 
-export interface StackTemplate {
+/**
+ * Information about a single stack that is being validated.
+ */
+export interface PolicyValidationStack {
   /**
    * The Stack's construct path
    */
