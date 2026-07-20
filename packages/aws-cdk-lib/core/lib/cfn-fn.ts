@@ -1,11 +1,11 @@
 import type { ICfnConditionExpression, ICfnRuleConditionExpression } from './cfn-condition';
 import { UnscopedValidationError } from './errors';
 import { minimalCloudFormationJoin } from './private/cloudformation-lang';
+import { stackOf } from './private/core-construct-finders';
 import { Intrinsic } from './private/intrinsic';
 import { lit } from './private/literal-string';
 import { Reference } from './reference';
 import type { IResolvable, IResolveContext } from './resolvable';
-import { Stack } from './stack';
 import { Token } from './token';
 
 /**
@@ -535,7 +535,7 @@ class FnFindInMap extends FnBase {
 
   public resolve(context: IResolveContext): any {
     if (this.defaultValue !== undefined) {
-      Stack.of(context.scope).addTransform('AWS::LanguageExtensions');
+      stackOf(context.scope).addTransform('AWS::LanguageExtensions');
     }
     return { 'Fn::FindInMap': [this.mapName, this.topLevelKey, this.secondLevelKey, this.defaultValue !== undefined ? { DefaultValue: this.defaultValue } : undefined] };
   }
@@ -946,7 +946,7 @@ class FnToJsonString implements IResolvable {
   }
 
   public resolve(context: IResolveContext): any {
-    Stack.of(context.scope).addTransform('AWS::LanguageExtensions');
+    stackOf(context.scope).addTransform('AWS::LanguageExtensions');
     return { 'Fn::ToJsonString': this.object };
   }
 
@@ -975,7 +975,7 @@ class FnLength implements IResolvable {
   }
 
   public resolve(context: IResolveContext): any {
-    Stack.of(context.scope).addTransform('AWS::LanguageExtensions');
+    stackOf(context.scope).addTransform('AWS::LanguageExtensions');
     return { 'Fn::Length': this.array };
   }
 
