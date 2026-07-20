@@ -1,0 +1,54 @@
+{
+ "Resources": {
+  "FlowA74D6E88": {
+   "Type": "AWS::MediaConnect::Flow",
+   "Properties": {
+    "Name": "srt-caller-source-flow",
+    "Source": {
+     "MinLatency": 120,
+     "Name": "srt-caller-source",
+     "Protocol": "srt-caller",
+     "SourceListenerAddress": "198.51.100.10",
+     "SourceListenerPort": 5000,
+     "StreamId": "integ-srt-caller-stream"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
