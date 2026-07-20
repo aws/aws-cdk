@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import type { PolicyValidationReportJson } from '@aws-cdk/cloud-assembly-schema';
 import { Construct } from 'constructs';
 import * as cxapi from '../../../cx-api';
 import * as core from '../../lib';
@@ -35,7 +36,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       ],
@@ -84,12 +85,12 @@ describe('validations', () => {
             {
               locations: ['test-location'],
               resourceLogicalId: 'DefaultResource',
-              templatePath: '/path/to/stack1.template.json',
+              templatePath: 'stack1.template.json',
             },
             {
               locations: ['test-location'],
               resourceLogicalId: 'DefaultResource',
-              templatePath: '/path/to/stack2.template.json',
+              templatePath: 'stack2.template.json',
             },
           ],
         }]),
@@ -117,7 +118,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'DefaultResource',
-            templatePath: '/path/to/Stage1stack1DDED8B6C.template.json',
+            templatePath: 'Stage1stack1DDED8B6C.template.json',
           }],
         }]),
       ],
@@ -130,7 +131,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'DefaultResource',
-            templatePath: '/path/to/Stage1stack1DDED8B6C.template.json',
+            templatePath: 'Stage1stack1DDED8B6C.template.json',
           }],
         }], '1.2.3'),
       ],
@@ -143,7 +144,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'DefaultResource',
-            templatePath: '/path/to/Stage2stack259BA718E.template.json',
+            templatePath: 'Stage2stack259BA718E.template.json',
           }],
         }]),
       ],
@@ -156,7 +157,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'DefaultResource',
-            templatePath: '/path/to/Stage2Stage3stack3A378CA7D.template.json',
+            templatePath: 'Stage2Stage3stack3A378CA7D.template.json',
           }],
         }]),
       ],
@@ -273,7 +274,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'SomeResource317FDD71',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       ],
@@ -308,7 +309,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
         new FakePlugin('plugin2', [{
@@ -317,7 +318,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       ],
@@ -343,7 +344,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       ],
@@ -373,7 +374,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       ],
@@ -459,7 +460,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       ],
@@ -495,7 +496,7 @@ describe('validations', () => {
               constructFqn: expect.stringMatching(/(aws-cdk-lib.CfnResource|Construct)/),
               libraryVersion: expect.any(String),
               cloudFormationResource: {
-                templatePath: '/path/to/Default.template.json',
+                templatePath: 'Default.template.json',
                 logicalId: 'Fake',
                 propertyPaths: ['test-location'],
               },
@@ -523,7 +524,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       ],
@@ -561,7 +562,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       ],
@@ -585,7 +586,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       ],
@@ -613,7 +614,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       ],
@@ -644,7 +645,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       ],
@@ -680,7 +681,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       ],
@@ -708,7 +709,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       ],
@@ -737,7 +738,7 @@ describe('validations', () => {
               constructFqn: expect.stringMatching(/(aws-cdk-lib.CfnResource|Construct)/),
               libraryVersion: expect.any(String),
               cloudFormationResource: {
-                templatePath: '/path/to/Default.template.json',
+                templatePath: 'Default.template.json',
                 logicalId: 'Fake',
                 propertyPaths: ['test-location'],
               },
@@ -768,6 +769,65 @@ describe('validations', () => {
     test('annotation warnings appear in validation report', () => {
       const app = new NonStrictApp({ context: annotationReportContext });
       const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new FailResource(construct, 'Resource');
+
+      core.Annotations.of(construct).addWarningV2('my-lib:SomeWarning', 'This is a warning');
+
+      redactAsmDir(app.synth());
+
+      // Warnings alone should not fail
+      expect(process.exitCode).toBeUndefined();
+
+      // Should show the annotation report
+      const output = mockErrorOutput();
+      expect(output).toContain(ANNOTATION_CAPTION);
+      expect(output).toContain('my-lib:SomeWarning');
+    });
+
+    test('annotation warnings have the right template path, even in nested assemblies', () => {
+      // GIVEN
+      const app = new NonStrictApp({ context: annotationReportContext });
+      const stack = new core.Stack(app, 'MyStack');
+      const r1 = new FailResource(stack, 'Resource');
+      core.Annotations.of(r1).addWarningV2('my-lib:SomeWarning', 'This is a warning');
+
+      const stage = new core.Stage(app, 'MyStage');
+      const stack2 = new core.Stack(stage, 'Stack2');
+      const r2 = new FailResource(stack2, 'Resource2');
+      core.Annotations.of(r2).addWarningV2('my-lib:SomeWarning', 'This is a warning');
+
+      // WHEN
+      const asm = redactAsmDir(app.synth());
+
+      // THEN
+      const validationReport: PolicyValidationReportJson = loadJson(path.join(asm.directory, 'validation-report.json'));
+      const report = validationReport.pluginReports.find(r => r.pluginName === 'Construct Annotations');
+      expect(report?.violations).toEqual([
+        expect.objectContaining({
+          ruleName: 'Annotation::my-lib:SomeWarning',
+          violatingConstructs: [
+            expect.objectContaining({
+              cloudFormationResource: expect.objectContaining({
+                logicalId: 'Resource',
+                templatePath: 'MyStack.template.json',
+              }),
+            }),
+            expect.objectContaining({
+              cloudFormationResource: expect.objectContaining({
+                logicalId: 'Resource2',
+                templatePath: 'assembly-MyStage/MyStageStack2DAB805FC.template.json',
+              }),
+            }),
+          ],
+        }),
+      ]);
+    });
+
+    test('annotation warnings in nested stage appear in validation report', () => {
+      const app = new NonStrictApp({ context: annotationReportContext });
+      const stage = new core.Stage(app, 'Stage');
+      const stack = new core.Stack(stage, 'MyStack');
       const construct = new Construct(stack, 'MyConstruct');
       new FailResource(construct, 'Resource');
 
@@ -870,7 +930,7 @@ describe('validations', () => {
             violatingResources: [{
               locations: ['test-location'],
               resourceLogicalId: 'Fake',
-              templatePath: '/path/to/Default.template.json',
+              templatePath: 'Default.template.json',
             }],
           }]),
         ],
@@ -1000,7 +1060,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['Properties/VersioningConfiguration'],
             resourceLogicalId: 'MyBucket',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       );
@@ -1035,7 +1095,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['Properties/VersioningConfiguration'],
             resourceLogicalId: 'MyBucket',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       );
@@ -1078,7 +1138,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: [],
             resourceLogicalId: 'BadResource',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       );
@@ -1110,7 +1170,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: [],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       );
@@ -1191,7 +1251,7 @@ describe('validations', () => {
         violatingResources: [{
           locations: ['test-location'],
           resourceLogicalId: 'Fake',
-          templatePath: '/path/to/Default.template.json',
+          templatePath: 'Default.template.json',
         }],
       }]));
       redactAsmDir(app.synth());
@@ -1382,7 +1442,7 @@ describe('validations', () => {
         ruleName: 'full-rule',
         violatingResources: [{
           resourceLogicalId: 'Fake',
-          templatePath: '/path/to/Default.template.json',
+          templatePath: 'Default.template.json',
           locations: ['Properties/Result'],
         }],
       }]));
@@ -1503,4 +1563,8 @@ class NonStrictApp extends core.App {
     super(options);
     this.node.setContext('@aws-cdk/core:strictCfnValidateErrors', false);
   }
+}
+
+function loadJson(filePath: string): any {
+  return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 }
