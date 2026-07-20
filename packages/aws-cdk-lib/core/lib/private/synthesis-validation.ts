@@ -327,6 +327,7 @@ function doInvokeValidationPlugins(
       try {
         const report = plugin.validate({
           templatePaths: stacks.map(s => s.templateFullPath),
+          stackTemplates: stacks.map(s => ({ stackConstructPath: s.hierarchicalId, templatePath: s.templateFullPath })),
           appConstruct: root,
           accountId,
           region,

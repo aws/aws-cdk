@@ -73,6 +73,11 @@ export interface IPolicyValidationContext {
   readonly templatePaths: string[];
 
   /**
+   * The absolute path of all templates to be processed, along with the stack construct path for each template.
+   */
+  readonly stackTemplates: StackTemplate[];
+
+  /**
    * The account ID for these templates, if known
    */
   readonly accountId: string | undefined;
@@ -91,6 +96,18 @@ export interface IPolicyValidationContext {
    * output.
    */
   readonly appConstruct: IConstruct;
+}
+
+export interface StackTemplate {
+  /**
+   * The Stack's construct path
+   */
+  readonly stackConstructPath: string;
+
+  /**
+   * The path to the template file on disk
+   */
+  readonly templatePath: string;
 }
 
 /**
@@ -171,6 +188,8 @@ export function _toBeta1Plugin(plugin: IPolicyValidationPlugin): IPolicyValidati
     validate(context: IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
       const report = plugin.validate({
         ...context,
+        // This is incorrect information -- it doesn't matter, this function shouldn't be used regardless.
+        stackTemplates: [],
         accountId: undefined,
         region: undefined,
       });
