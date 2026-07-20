@@ -5,8 +5,9 @@
  * A PR needs attention when either:
  *   - CI is pending approval (a workflow run for the PR's head commit has
  *     conclusion `action_required`), or
- *   - CI never started (no workflow runs and no commit statuses for the head
- *     commit -- approval was skipped or never triggered).
+ *   - the build never started (no build workflow run for the head commit and
+ *     no commit statuses -- CI approval was skipped or never triggered, even
+ *     if non-build `pull_request_target` workflows ran).
  *
  * Each week gets its own tracking issue, identified by the marker label
  * (`ci-pending-tracking`) plus an ISO week key in the title (e.g.
@@ -32,7 +33,7 @@ const CONFIG = {
 
 const REASON_DESCRIPTIONS = {
   pending_approval: { short: '🔒 Pending CI approval' },
-  no_ci_activity: { short: '⚠️ No CI activity' },
+  no_ci_activity: { short: '⚠️ No build CI activity' },
 };
 
 const DRY_RUN = process.env.DRY_RUN === 'true';
@@ -75,11 +76,11 @@ async function fetchLabeledOpenPrs({ github, owner, repo, label }) {
 
 /**
  * Determines whether a PR needs maintainer attention (pending CI approval or
- * no CI activity at all), based on its head commit's workflow runs and
- * combined commit status. For flagged PRs, also returns `pendingSince`: the
- * time the PR entered the pending state (the last push -- approximated by the
- * earliest action_required run's creation time, or the head commit date when
- * no runs exist).
+ * no build workflow activity at all), based on its head commit's workflow
+ * runs and combined commit status. For flagged PRs, also returns
+ * `pendingSince`: the time the PR entered the pending state (the last push --
+ * approximated by the earliest action_required run's creation time, or the
+ * head commit date when no build run exists).
  */
 async function needsAttention({ github, owner, repo, pr }) {
   // per_page is the API maximum: a head SHA on this repo can accumulate 20+
@@ -107,15 +108,17 @@ async function needsAttention({ github, owner, repo, pr }) {
     return { needsAttention: false, reason: 'build_in_progress' };
   }
 
-  if (runs.length === 0) {
+  if (!buildRun) {
     const { data: status } = await github.rest.repos.getCombinedStatusForRef({
       owner,
       repo,
       ref: pr.head.sha,
     });
     if (status.state === 'pending' && status.total_count === 0) {
-      // No workflow runs at all and no commit statuses -- approval was skipped
-      // (or never triggered) and nothing else ran either.
+      // Non-build workflows (pull_request_target: PR Linter, prioritization,
+      // etc.) may have run on the head commit, but the build workflow never
+      // started and is not awaiting approval, and nothing reported a commit
+      // status either -- CI approval was skipped or never triggered.
       const { data: commit } = await github.rest.repos.getCommit({
         owner,
         repo,
