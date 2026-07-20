@@ -1,0 +1,158 @@
+{
+  "/integ-lambda-python-function-dockercopy": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/aemada/pr37832-fix/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.dockercopy.js:37:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-dockercopy/my_handler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-dockercopy/FunctionArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TestStack (/Users/aemada/pr37832-fix/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.dockercopy.js:27:9)",
+        "<anonymous> (/Users/aemada/pr37832-fix/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.dockercopy.js:37:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-dockercopy/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
+        "App.synth (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-dockercopy/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
+        "App.synth (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-dockercopy/my_handler/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-dockercopy/my_handler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerD202FA8E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/aws-lambda/lib/function.js:694:29)",
+        "new Function (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonFunction (/Users/aemada/pr37832-fix/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
+        "new PythonFunction (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/aemada/pr37832-fix/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.dockercopy.js:19:20)",
+        "<anonymous> (/Users/aemada/pr37832-fix/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.dockercopy.js:37:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-dockercopy/Exports/Output{\"Ref\":\"myhandlerD202FA8E\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefmyhandlerD202FA8E369E8804"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/stack.js:1113:17)",
+        "createImportValue (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/private/synthesis.js:44:36)",
+        "App.synth (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/app.js:167:27)",
+        "<anonymous> (/Users/aemada/pr37832-fix/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.dockercopy.js:48:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-dockercopy/my_handler/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerServiceRole77891068"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/aws-lambda/lib/function.js:609:39)",
+        "new Function (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonFunction (/Users/aemada/pr37832-fix/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
+        "new PythonFunction (/Users/aemada/pr37832-fix/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/aemada/pr37832-fix/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.dockercopy.js:19:20)",
+        "<anonymous> (/Users/aemada/pr37832-fix/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.dockercopy.js:37:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-dockercopy/my_handler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ]
+}

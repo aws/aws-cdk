@@ -19,11 +19,11 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const pythonFunction39 = new lambda.PythonFunction(this, 'my_handler_inline', {
+    const pythonFunctionInline = new lambda.PythonFunction(this, 'my_handler_inline', {
       entry: path.join(__dirname, 'lambda-handler-pipenv'),
-      runtime: Runtime.PYTHON_3_9,
+      runtime: Runtime.PYTHON_3_11,
     });
-    this.functionNames.push(pythonFunction39.functionName);
+    this.functionNames.push(pythonFunctionInline.functionName);
 
     const pythonFunction310 = new lambda.PythonFunction(this, 'my_handler_python_310', {
       entry: path.join(__dirname, 'lambda-handler-pipenv'),
@@ -37,14 +37,14 @@ class TestStack extends Stack {
     });
     this.functionNames.push(pythonFunction311.functionName);
 
-    const pythonFunction39Excludes = new lambda.PythonFunction(this, 'my_handler_inline_excludes', {
+    const pythonFunctionInlineExcludes = new lambda.PythonFunction(this, 'my_handler_inline_excludes', {
       entry: path.join(__dirname, 'lambda-handler-pipenv'),
-      runtime: Runtime.PYTHON_3_9,
+      runtime: Runtime.PYTHON_3_11,
       bundling: {
         assetExcludes: ['.ignorefile'],
       },
     });
-    this.functionNames.push(pythonFunction39Excludes.functionName);
+    this.functionNames.push(pythonFunctionInlineExcludes.functionName);
 
     const pythonFunction310Excludes = new lambda.PythonFunction(this, 'my_handler_python_310_excludes', {
       entry: path.join(__dirname, 'lambda-handler-pipenv'),
