@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import type { PolicyValidationReportJson } from '@aws-cdk/cloud-assembly-schema';
 import { Construct } from 'constructs';
 import * as cxapi from '../../../cx-api';
 import * as core from '../../lib';
@@ -94,9 +95,9 @@ describe('CloudFormationValidatePlugin', () => {
     const asm = app.synth();
 
     // THEN
-    const validationReport = loadJson(path.join(asm.directory, 'validation-report.json'));
+    const validationReport = loadValidationReport(asm);
     const report = validationReport.pluginReports.find((r: any) => r.pluginName === 'CloudFormation Validate');
-    expect(report.violations).toEqual([
+    expect(report?.violations).toEqual([
       expect.objectContaining({
         ruleName: 'F3002',
         violatingConstructs: [
@@ -132,6 +133,78 @@ describe('CloudFormationValidatePlugin', () => {
     app.synth();
 
     expect(process.exitCode).toBeUndefined();
+  });
+
+  test('correctly reports errors at stack level instead of resource level', () => {
+    const app = new core.App({
+      context: {
+        [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: true,
+        [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: false,
+      },
+    });
+    // REmove any acknowledgements for this test, since we want to see the errors
+    (app.node as any)._metadata = [];
+
+    // F0001 missing resources
+    new core.Stack(app, 'TestStack');
+
+    const report = loadValidationReport(app.synth());
+    expect(report).toEqual(expect.objectContaining({
+      pluginReports: expect.arrayContaining([
+        expect.objectContaining({
+          pluginName: 'CloudFormation Validate',
+          violations: expect.arrayContaining([
+            expect.objectContaining({
+              ruleName: 'F0001',
+              violatingConstructs: expect.arrayContaining([
+                expect.objectContaining({
+                  constructPath: 'TestStack',
+                }),
+              ]),
+            }),
+          ]),
+        }),
+      ]),
+
+    }));
+  });
+
+  test('correctly reports errors for non-resources (e.g. Parameters) instead of resource level', () => {
+    const app = new core.App({
+      context: {
+        [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: true,
+        [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: false,
+      },
+    });
+    // REmove any acknowledgements for this test, since we want to see the errors
+    (app.node as any)._metadata = [];
+
+    const stack = new core.Stack(app, 'TestStack');
+    new core.CfnParameter(stack, 'MyParam', {
+      type: 'Blimp',
+    });
+
+    const report = loadValidationReport(app.synth());
+    expect(report).toEqual(expect.objectContaining({
+      pluginReports: expect.arrayContaining([
+        expect.objectContaining({
+          pluginName: 'CloudFormation Validate',
+          violations: expect.arrayContaining([
+            expect.objectContaining({
+              ruleName: 'F0001',
+              violatingConstructs: expect.arrayContaining([
+                expect.objectContaining({
+                  // TODO: Currently this references the stack, in the future perhaps we have more information
+                  // to reference the actual Parameter construct: <https://github.com/aws-cloudformation/cloudformation-validate/issues/201>
+                  constructPath: 'TestStack',
+                }),
+              ]),
+            }),
+          ]),
+        }),
+      ]),
+
+    }));
   });
 
   test('plugin can be instantiated directly with custom rules', () => {
@@ -214,6 +287,7 @@ describe('CloudFormationValidatePlugin', () => {
     const plugin = new core.CloudFormationValidatePlugin();
     const report = plugin.validate({
       templatePaths: [templatePath],
+      stackTemplates: [{ stackConstructPath: 'TestStack', templatePath }],
       appConstruct: new Construct(undefined as any, ''),
       accountId: undefined,
       region: undefined,
@@ -228,6 +302,7 @@ describe('CloudFormationValidatePlugin', () => {
   });
 });
 
-function loadJson(filePath: string): any {
-  return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+function loadValidationReport(asm: cxapi.CloudAssembly) {
+  const p = path.join(asm.directory, 'validation-report.json');
+  return JSON.parse(fs.readFileSync(p, { encoding: 'utf-8' })) as PolicyValidationReportJson;
 }
