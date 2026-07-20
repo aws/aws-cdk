@@ -330,6 +330,7 @@ function doInvokeValidationPlugins(
         const report = makeTemplatePathsRelative(plugin.validate({
           // path.resolve() because templateFullPath might not be as full as you'd expect
           templatePaths: stacks.map(s => s.templateFullPath),
+          stackTemplates: stacks.map(s => ({ stackConstructPath: s.hierarchicalId, templatePath: s.templateFullPath })),
           appConstruct: root,
           accountId: accountId !== cxapi.UNKNOWN_ACCOUNT ? accountId : undefined,
           region: region !== cxapi.UNKNOWN_REGION ? region : undefined,
