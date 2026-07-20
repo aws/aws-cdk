@@ -6,7 +6,7 @@ import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
-import { App, Aws, Duration, Stack, Token } from '../../core';
+import { App, Aws, Duration, Stack, Token, Validations } from '../../core';
 import type {
   CfnDistribution,
   IOrigin,
@@ -963,8 +963,12 @@ test('price class is included if provided', () => {
 });
 
 test('escape hatches are supported', () => {
+  Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::F3003',
+    reason: 'Missing required property in escape hatch',
+  });
   const dist = new Distribution(stack, 'Dist', {
-    defaultBehavior: { origin: defaultOrigin },
+    defaultBehavior: { origin: defaultOrigin() },
   });
   const cfnDist = dist.node.defaultChild as CfnDistribution;
   cfnDist.addPropertyOverride('DistributionConfig.DefaultCacheBehavior.ForwardedValues.Headers', ['*']);
