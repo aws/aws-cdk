@@ -460,7 +460,7 @@ export abstract class BaseLoadBalancer extends Resource {
     const lb = this.node.defaultChild;
     const bucketPolicy = bucket.policy?.node.defaultChild;
     if (lb && bucketPolicy && CfnResource.isCfnResource(lb) && CfnResource.isCfnResource(bucketPolicy)) {
-      lb.addDependency(bucketPolicy);
+      lb.addResourceDependency(bucketPolicy);
     }
   }
 

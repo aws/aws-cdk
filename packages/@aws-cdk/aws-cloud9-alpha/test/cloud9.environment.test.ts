@@ -11,6 +11,10 @@ let vpc: ec2.IVpc;
 
 beforeEach(() => {
   stack = new cdk.Stack();
+  cdk.Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::W3697',
+    reason: 'Maintenance mode',
+  });
   vpc = new ec2.Vpc(stack, 'VPC');
 });
 

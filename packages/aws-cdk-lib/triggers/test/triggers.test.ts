@@ -1,16 +1,25 @@
 import { Template } from '../../assertions';
 import * as lambda from '../../aws-lambda';
 import * as sns from '../../aws-sns';
-import { Duration, Stack } from '../../core';
+import { Duration, Stack, Validations } from '../../core';
 import * as triggers from '../lib';
 
 const THE_RUNTIME = new lambda.Runtime('node99.x', lambda.RuntimeFamily.NODEJS, {
   supportsInlineCode: true,
 });
 
+function testStack() {
+  const stack = new Stack();
+  Validations.of(stack).acknowledge(
+    { id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' },
+    { id: 'CloudFormation-Validate::W3030', reason: 'Tests intentionally use a bogus runtime' },
+  );
+  return stack;
+}
+
 test('minimal trigger function', () => {
   // GIVEN
-  const stack = new Stack();
+  const stack = testStack();
 
   // WHEN
   new triggers.TriggerFunction(stack, 'MyTrigger', {
@@ -29,7 +38,7 @@ test('minimal trigger function', () => {
 
 test('before/after', () => {
   // GIVEN
-  const stack = new Stack();
+  const stack = testStack();
   const topic1 = new sns.Topic(stack, 'Topic1');
   const topic2 = new sns.Topic(stack, 'Topic2');
   const topic3 = new sns.Topic(stack, 'Topic3');
@@ -72,7 +81,7 @@ test('before/after', () => {
 
 test('multiple functions', () => {
   // GIVEN
-  const stack = new Stack();
+  const stack = testStack();
 
   // WHEN
   new triggers.TriggerFunction(stack, 'MyTrigger', {
@@ -96,7 +105,8 @@ test('multiple functions', () => {
 
 test('minimal trigger', () => {
   // GIVEN
-  const stack = new Stack();
+  const stack = testStack();
+
   const func = new lambda.Function(stack, 'MyFunction', {
     handler: 'index.handler',
     runtime: THE_RUNTIME,
@@ -119,7 +129,8 @@ test('minimal trigger', () => {
 
 test('trigger with optional properties', () => {
   // GIVEN
-  const stack = new Stack();
+  const stack = testStack();
+
   const func = new lambda.Function(stack, 'MyFunction', {
     handler: 'index.handler',
     runtime: THE_RUNTIME,

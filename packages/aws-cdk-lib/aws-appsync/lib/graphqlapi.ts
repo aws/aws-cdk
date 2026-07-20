@@ -532,7 +532,7 @@ export interface GraphqlApiProps {
  */
 export interface GraphqlApiAttributes {
   /**
-   * an unique AWS AppSync GraphQL API identifier
+   * a unique AWS AppSync GraphQL API identifier
    * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
    */
   readonly graphqlApiId: string;
@@ -622,7 +622,7 @@ export class GraphqlApi extends GraphqlApiBase {
   }
 
   /**
-   * an unique AWS AppSync GraphQL API identifier
+   * a unique AWS AppSync GraphQL API identifier
    * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
    */
   public readonly apiId: string;
@@ -777,7 +777,7 @@ export class GraphqlApi extends GraphqlApiBase {
         apiId: this.apiId,
       });
 
-      domainNameAssociation.addDependency(this.domainNameResource);
+      domainNameAssociation.addResourceDependency(this.domainNameResource);
     }
 
     if (modes.some((mode) => mode.authorizationType === AuthorizationType.API_KEY)) {
@@ -786,7 +786,7 @@ export class GraphqlApi extends GraphqlApiBase {
       })?.apiKeyConfig;
       this.apiKeyResource = this.createAPIKey(config);
       if (this.schemaResource) {
-        this.apiKeyResource.addDependency(this.schemaResource);
+        this.apiKeyResource.addResourceDependency(this.schemaResource);
       }
       this.apiKey = this.apiKeyResource.attrApiKey;
     }
@@ -900,7 +900,7 @@ export class GraphqlApi extends GraphqlApiBase {
   @MethodMetadata()
   public addSchemaDependency(construct: CfnResource): boolean {
     if (this.schemaResource) {
-      construct.addDependency(this.schemaResource);
+      construct.addResourceDependency(this.schemaResource);
     }
     return true;
   }
