@@ -112,7 +112,6 @@ export interface CapacityProviderProps {
   readonly propagateTags?: PropagateTags;
 }
 
-
 /**
  * Configuration for propagating tags to managed resources created by a capacity provider.
  *
@@ -544,8 +543,14 @@ export class CapacityProvider extends CapacityProviderBase {
       this.validateScalingPolicies(props.scalingOptions, validationErrorCPName);
     }
 
-    if (props.propagateTags?.explicitTags && !Token.isUnresolved(props.propagateTags.explicitTags) && Object.keys(props.propagateTags.explicitTags).length > 40) {
-      throw new ValidationError(lit`PropagateTagsExplicitTagsMaximum`, `propagateTags explicit tags can have at most 40 tags, but ${validationErrorCPName} has ${Object.keys(props.propagateTags.explicitTags).length}.`, this);
+    if (props.propagateTags?.explicitTags && !Token.isUnresolved(props.propagateTags.explicitTags)
+      && Object.keys(props.propagateTags.explicitTags).length > 40) {
+      const tagCount = Object.keys(props.propagateTags.explicitTags).length;
+      throw new ValidationError(
+        lit`PropagateTagsExplicitTagsMaximum`,
+        `propagateTags explicit tags can have at most 40 tags, but ${validationErrorCPName} has ${tagCount}.`,
+        this,
+      );
     }
   }
 
