@@ -15,9 +15,7 @@ permissions:
 
 jobs:
   update_tracking_issue:
-    # scheduled runs should only happen in the upstream repo; manual dispatch is
-    # allowed anywhere (e.g. to validate changes in a fork)
-    if: github.repository == 'aws/aws-cdk' || github.event_name == 'workflow_dispatch'
+    if: github.repository == 'aws/aws-cdk'
     runs-on: ubuntu-latest
     environment: automation
     steps:
@@ -28,7 +26,7 @@ jobs:
         env:
           DRY_RUN: ${{ inputs.dry_run == true }}
         with:
-          github-token: ${{ secrets.PROJEN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           script: |
             const script = require('./scripts/prioritization/pending-maintainer-action.js')
             await script({github, context})
