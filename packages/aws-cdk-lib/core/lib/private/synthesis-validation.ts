@@ -330,8 +330,8 @@ function doInvokeValidationPlugins(
         const report = makeTemplatePathsRelative(plugin.validate({
           templatePaths: stacks.map(s => s.templateFullPath),
           appConstruct: root,
-          accountId,
-          region,
+          accountId: accountId !== cxapi.UNKNOWN_ACCOUNT ? accountId : undefined,
+          region: region !== cxapi.UNKNOWN_REGION ? region : undefined,
         }));
 
         if (hasModifiedPreExistingFiles(preExistingFileHashes)) {
