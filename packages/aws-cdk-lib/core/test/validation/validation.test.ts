@@ -4,6 +4,7 @@ import type { PolicyValidationReportJson } from '@aws-cdk/cloud-assembly-schema'
 import { Construct } from 'constructs';
 import * as cxapi from '../../../cx-api';
 import * as core from '../../lib';
+import type { App } from '../../lib';
 
 const ANNOTATION_CAPTION = 'Annotation';
 
@@ -1306,6 +1307,49 @@ describe('validations', () => {
       expect(warningsAfterAck).toHaveLength(0);
     });
 
+    test('relative templatePaths are absolutized correctly', () => {
+      const app = new NonStrictApp({
+        policyValidationBeta1: [
+          new RelativePathPlugin('test-plugin', [{
+            description: 'test recommendation',
+            ruleName: 'test-rule',
+            severity: 'medium',
+            ruleMetadata: {
+              id: 'abcdefg',
+            },
+            violatingResources: [{
+              locations: ['test-location'],
+              resourceLogicalId: 'Fake',
+              templatePath: 'cdk.out/Bla.template.json',
+            }],
+          }]),
+        ],
+      });
+      const stack = new core.Stack(app);
+      new FailResource(stack, 'Fake');
+
+      const assembly = app.synth();
+      const report = loadJson(path.join(assembly.directory, 'validation-report.json'));
+      expect(report).toEqual(expect.objectContaining({
+        pluginReports: expect.arrayContaining([
+          expect.objectContaining({
+            pluginName: 'test-plugin',
+            violations: expect.arrayContaining([
+              expect.objectContaining({
+                violatingConstructs: expect.arrayContaining([
+                  expect.objectContaining({
+                    cloudFormationResource: expect.objectContaining({
+                      templatePath: 'cdk.out/Bla.template.json',
+                    }),
+                  }),
+                ]),
+              }),
+            ]),
+          }),
+        ]),
+      }));
+    });
+
     test('acknowledge records to construct metadata', () => {
       // GIVEN
       const app = new NonStrictApp();
@@ -1469,7 +1513,40 @@ class FakePlugin implements core.IPolicyValidationPluginBeta1 {
   validate(_context: core.IPolicyValidationContextBeta1): core.PolicyValidationPluginReportBeta1 {
     return {
       success: this.violations.length === 0,
-      violations: this.violations,
+      violations: this.violations.map(v => ({
+        ...v,
+        violatingResources: v.violatingResources.map(r => ({
+          ...r,
+          templatePath: path.join((_context.appConstruct as App).outdir, r.templatePath),
+        })),
+      })),
+      pluginVersion: this.version,
+    };
+  }
+}
+
+class RelativePathPlugin implements core.IPolicyValidationPluginBeta1 {
+  constructor(
+    public readonly name: string,
+    private readonly violations: core.PolicyViolationBeta1[],
+    public readonly version?: string,
+    public readonly ruleIds?: string []) {
+  }
+
+  validate(_context: core.IPolicyValidationContextBeta1): core.PolicyValidationPluginReportBeta1 {
+    return {
+      success: this.violations.length === 0,
+      violations: this.violations.map(v => ({
+        ...v,
+        violatingResources: v.violatingResources.map(r => {
+          const absolutePath = path.join((_context.appConstruct as App).outdir, r.templatePath);
+
+          return {
+            ...r,
+            templatePath: path.relative(process.cwd(), absolutePath),
+          };
+        }),
+      })),
       pluginVersion: this.version,
     };
   }
