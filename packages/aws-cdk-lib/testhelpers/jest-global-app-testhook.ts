@@ -24,6 +24,8 @@ const APP_INIT_HOOK_SYMBOL = Symbol.for('@aws-cdk/core.App#initHook');
     { id: 'CloudFormation-Validate::W8003', reason: 'Condition always returns True or False' },
     { id: 'CloudFormation-Validate::W9002', reason: 'Hardcoded ARNs. Fine for tests.' },
     { id: 'CloudFormation-Validate::W9011', reason: 'Publicly accessible RDS instances are only for tests' },
+    { id: 'CloudFormation-Validate::W9012', reason: 'Tests use unknown-account as the account ID' },
+    { id: 'CloudFormation-Validate::W3663', reason: 'Some test permissions intentionally omit SourceAccount' },
     { id: 'CloudFormation-Validate::F3021', reason: 'Yes yes RDS passwords' },
     { id: 'CloudFormation-Validate::W2531', reason: 'There are many deprecated Lambda runtimes' },
     { id: 'CloudFormation-Validate::W9010', reason: 'Hardcoded AMI IDs are fine in tests' },

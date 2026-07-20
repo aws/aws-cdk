@@ -40,7 +40,7 @@ import * as sqs from '../../aws-sqs';
 import type { IAspect, RemovalPolicy, Size } from '../../core';
 import {
   Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn,
-  Names, Stack, Token, Validations,
+  Names, Stack, Token,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import type { IArrayBox, IMapBox } from '../../core/lib/helpers-internal';
@@ -1154,10 +1154,6 @@ export class Function extends FunctionBase {
       snapStart: this.configureSnapStart(props),
       loggingConfig: this.getLoggingConfig(props),
       recursiveLoop: props.recursiveLoop,
-    });
-    Validations.of(this.resource).acknowledge({
-      id: 'CloudFormation-Validate::F3002',
-      reason: 'cloudformation-validate does not recognize Code.S3ObjectStorageMode yet',
     });
 
     if ((props.tracing !== undefined) || (props.adotInstrumentation !== undefined)) {

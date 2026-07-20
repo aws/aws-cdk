@@ -4500,6 +4500,10 @@ test('test 2.87.0 version hash stability', () => {
     id: 'CloudFormation-Validate::E3071',
     reason: 'Node 99.x supports inline code',
   });
+  cdk.Validations.of(app).acknowledge({
+    id: 'CloudFormation-Validate::W3030',
+    reason: 'Node 99.x is intentional for version hash stability',
+  });
   const stack = new cdk.Stack(app, 'Stack');
 
   // WHEN
