@@ -95,7 +95,7 @@ const sourceBucketStack = new SourceBucketStack(app, 'child-stack', {
   bucket: destinationBucketStack.bucket,
 });
 
-sourceBucketStack.addDependency(destinationBucketStack);
+sourceBucketStack.addStackDependency(destinationBucketStack);
 // Add permissions policy on the source only after replication role is created
 // Comment these lines while deploying this integ test for the first time to avoid failure
 if (sourceBucketStack.bucket.replicationRoleArn) {
