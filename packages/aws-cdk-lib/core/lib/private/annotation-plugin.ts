@@ -38,7 +38,7 @@ export class AnnotationPlugin implements IPolicyValidationPlugin {
  * and convert them into a NamedValidationPluginReport that can be merged
  * into the same report pipeline as plugin violations.
  */
-export function collectAnnotationReport(root: IConstruct, outdir: string): IPolicyValidationPlugin | undefined {
+export function collectAnnotationReport(root: IConstruct): IPolicyValidationPlugin | undefined {
   const violationMap = new Map<string, PolicyViolation & { violatingResources: PolicyViolatingResource[] }>();
 
   for (const construct of iterateDfsPreorder(root)) {
@@ -56,8 +56,7 @@ export function collectAnnotationReport(root: IConstruct, outdir: string): IPoli
 
       let templatePath: string | undefined;
       try {
-        const fullTemplatePath = path.join(stageOf(construct)?.outdir ?? '.', stackOf(construct).templateFile);
-        templatePath = path.relative(outdir, fullTemplatePath);
+        templatePath = path.join(stageOf(construct)?.outdir ?? '.', stackOf(construct).templateFile);
       } catch (e) {
         // Construct is not inside a Stack
       }

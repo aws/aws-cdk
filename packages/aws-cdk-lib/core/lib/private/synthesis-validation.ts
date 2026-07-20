@@ -39,7 +39,7 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
       const stageAssembly = assemblies.get(construct.artifactId);
       if (!stageAssembly) throw new AssumptionError(lit`ValidationFailed`, `Validation failed, cannot find cloud assembly for stage ${construct.stageName}`);
 
-      const plugins = pluginsToEvaluate(root, construct, stageAssembly);
+      const plugins = pluginsToEvaluate(root, construct);
       for (const plugin of plugins) {
         if (!stacksByPlugin.has(plugin)) {
           stacksByPlugin.set(plugin, new Set());
@@ -202,7 +202,7 @@ function getAssemblies(root: App, rootAssembly: private_cxapi.CloudAssembly): Ma
 /**
  * Return the list of plugins to invoke for the given stage
  */
-function pluginsToEvaluate(root: IConstruct, stage: Stage, stageAssembly: private_cxapi.CloudAssembly): IPolicyValidationPlugin[] {
+function pluginsToEvaluate(root: IConstruct, stage: Stage): IPolicyValidationPlugin[] {
   const ret: IPolicyValidationPlugin[] = [];
 
   // 1. User-registered plugins
@@ -215,7 +215,7 @@ function pluginsToEvaluate(root: IConstruct, stage: Stage, stageAssembly: privat
 
   // 3. Construct annotations (as a plugin, only if there are annotations to report and only on the root)
   if (stage === root && FeatureFlags.of(root).isEnabled(cxapi.ANNOTATIONS_IN_VALIDATION_REPORT)) {
-    const annotationsPlugin = collectAnnotationReport(stage, stageAssembly.directory);
+    const annotationsPlugin = collectAnnotationReport(stage);
     if (annotationsPlugin) {
       ret.push(annotationsPlugin);
     }
@@ -328,6 +328,7 @@ function doInvokeValidationPlugins(
     const reports = stacksByEnv.map(({ accountId, region, stacks }) => {
       try {
         const report = makeTemplatePathsRelative(plugin.validate({
+          // path.resolve() because templateFullPath might not be as full as you'd expect
           templatePaths: stacks.map(s => s.templateFullPath),
           stackTemplates: stacks.map(s => ({ stackConstructPath: s.hierarchicalId, templatePath: s.templateFullPath })),
           appConstruct: root,
@@ -363,8 +364,8 @@ function doInvokeValidationPlugins(
   function makeTemplatePathsRelative(report: PolicyValidationPluginReport) {
     for (const v of report.violations) {
       for (const r of v.violatingResources) {
-        if (r.templatePath && path.isAbsolute(r.templatePath)) {
-          mutable(r).templatePath = path.relative(outdir, r.templatePath);
+        if (r.templatePath) {
+          mutable(r).templatePath = path.relative(outdir, path.resolve(r.templatePath));
         }
       }
     }
