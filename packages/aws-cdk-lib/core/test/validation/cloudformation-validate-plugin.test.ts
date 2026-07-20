@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import type { PolicyValidationReportJson } from '@aws-cdk/cloud-assembly-schema';
 import { Construct } from 'constructs';
 import * as cxapi from '../../../cx-api';
 import * as core from '../../lib';
@@ -73,6 +74,50 @@ describe('CloudFormationValidatePlugin', () => {
     expect(output).toContain(cxapi.VALIDATE_AGAINST_DEFAULT_RULES);
   });
 
+  test('template paths are assembly-relative, also for nested assemblies', () => {
+    const app = new core.App({
+      context: {
+        [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: false,
+      },
+    });
+    const stack = new core.Stack(app, 'TestStack');
+    new core.CfnResource(stack, 'MyBucket', {
+      type: 'AWS::S3::Bucket',
+      properties: { BogusProperty: 'invalid-value' },
+    });
+    const stage = new core.Stage(app, 'MyStage');
+    const stack2 = new core.Stack(stage, 'TestStack2');
+    new core.CfnResource(stack2, 'MyBucket2', {
+      type: 'AWS::S3::Bucket',
+      properties: { BogusProperty: 'invalid-value' },
+    });
+
+    const asm = app.synth();
+
+    // THEN
+    const validationReport = loadValidationReport(asm);
+    const report = validationReport.pluginReports.find((r: any) => r.pluginName === 'CloudFormation Validate');
+    expect(report?.violations).toEqual([
+      expect.objectContaining({
+        ruleName: 'F3002',
+        violatingConstructs: [
+          expect.objectContaining({
+            cloudFormationResource: expect.objectContaining({
+              logicalId: 'MyBucket2',
+              templatePath: 'assembly-MyStage/MyStageTestStack242E16257.template.json',
+            }),
+          }),
+          expect.objectContaining({
+            cloudFormationResource: expect.objectContaining({
+              logicalId: 'MyBucket',
+              templatePath: 'TestStack.template.json',
+            }),
+          }),
+        ],
+      }),
+    ]);
+  });
+
   test('succeeds with valid template', () => {
     const app = new core.App({
       context: {
@@ -88,6 +133,78 @@ describe('CloudFormationValidatePlugin', () => {
     app.synth();
 
     expect(process.exitCode).toBeUndefined();
+  });
+
+  test('correctly reports errors at stack level instead of resource level', () => {
+    const app = new core.App({
+      context: {
+        [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: true,
+        [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: false,
+      },
+    });
+    // REmove any acknowledgements for this test, since we want to see the errors
+    (app.node as any)._metadata = [];
+
+    // F0001 missing resources
+    new core.Stack(app, 'TestStack');
+
+    const report = loadValidationReport(app.synth());
+    expect(report).toEqual(expect.objectContaining({
+      pluginReports: expect.arrayContaining([
+        expect.objectContaining({
+          pluginName: 'CloudFormation Validate',
+          violations: expect.arrayContaining([
+            expect.objectContaining({
+              ruleName: 'F0001',
+              violatingConstructs: expect.arrayContaining([
+                expect.objectContaining({
+                  constructPath: 'TestStack',
+                }),
+              ]),
+            }),
+          ]),
+        }),
+      ]),
+
+    }));
+  });
+
+  test('correctly reports errors for non-resources (e.g. Parameters) instead of resource level', () => {
+    const app = new core.App({
+      context: {
+        [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: true,
+        [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: false,
+      },
+    });
+    // REmove any acknowledgements for this test, since we want to see the errors
+    (app.node as any)._metadata = [];
+
+    const stack = new core.Stack(app, 'TestStack');
+    new core.CfnParameter(stack, 'MyParam', {
+      type: 'Blimp',
+    });
+
+    const report = loadValidationReport(app.synth());
+    expect(report).toEqual(expect.objectContaining({
+      pluginReports: expect.arrayContaining([
+        expect.objectContaining({
+          pluginName: 'CloudFormation Validate',
+          violations: expect.arrayContaining([
+            expect.objectContaining({
+              ruleName: 'F0001',
+              violatingConstructs: expect.arrayContaining([
+                expect.objectContaining({
+                  // TODO: Currently this references the stack, in the future perhaps we have more information
+                  // to reference the actual Parameter construct: <https://github.com/aws-cloudformation/cloudformation-validate/issues/201>
+                  constructPath: 'TestStack',
+                }),
+              ]),
+            }),
+          ]),
+        }),
+      ]),
+
+    }));
   });
 
   test('plugin can be instantiated directly with custom rules', () => {
@@ -170,6 +287,7 @@ describe('CloudFormationValidatePlugin', () => {
     const plugin = new core.CloudFormationValidatePlugin();
     const report = plugin.validate({
       templatePaths: [templatePath],
+      stackTemplates: [{ stackConstructPath: 'TestStack', templatePath }],
       appConstruct: new Construct(undefined as any, ''),
       accountId: undefined,
       region: undefined,
@@ -183,3 +301,8 @@ describe('CloudFormationValidatePlugin', () => {
     fs.rmSync(tmpDir, { recursive: true });
   });
 });
+
+function loadValidationReport(asm: cxapi.CloudAssembly) {
+  const p = path.join(asm.directory, 'validation-report.json');
+  return JSON.parse(fs.readFileSync(p, { encoding: 'utf-8' })) as PolicyValidationReportJson;
+}
