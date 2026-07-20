@@ -73,6 +73,50 @@ describe('CloudFormationValidatePlugin', () => {
     expect(output).toContain(cxapi.VALIDATE_AGAINST_DEFAULT_RULES);
   });
 
+  test('template paths are assembly-relative, also for nested assemblies', () => {
+    const app = new core.App({
+      context: {
+        [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: false,
+      },
+    });
+    const stack = new core.Stack(app, 'TestStack');
+    new core.CfnResource(stack, 'MyBucket', {
+      type: 'AWS::S3::Bucket',
+      properties: { BogusProperty: 'invalid-value' },
+    });
+    const stage = new core.Stage(app, 'MyStage');
+    const stack2 = new core.Stack(stage, 'TestStack2');
+    new core.CfnResource(stack2, 'MyBucket2', {
+      type: 'AWS::S3::Bucket',
+      properties: { BogusProperty: 'invalid-value' },
+    });
+
+    const asm = app.synth();
+
+    // THEN
+    const validationReport = loadJson(path.join(asm.directory, 'validation-report.json'));
+    const report = validationReport.pluginReports.find((r: any) => r.pluginName === 'CloudFormation Validate');
+    expect(report.violations).toEqual([
+      expect.objectContaining({
+        ruleName: 'F3002',
+        violatingConstructs: [
+          expect.objectContaining({
+            cloudFormationResource: expect.objectContaining({
+              logicalId: 'MyBucket2',
+              templatePath: 'assembly-MyStage/MyStageTestStack242E16257.template.json',
+            }),
+          }),
+          expect.objectContaining({
+            cloudFormationResource: expect.objectContaining({
+              logicalId: 'MyBucket',
+              templatePath: 'TestStack.template.json',
+            }),
+          }),
+        ],
+      }),
+    ]);
+  });
+
   test('succeeds with valid template', () => {
     const app = new core.App({
       context: {
@@ -183,3 +227,7 @@ describe('CloudFormationValidatePlugin', () => {
     fs.rmSync(tmpDir, { recursive: true });
   });
 });
+
+function loadJson(filePath: string): any {
+  return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+}
