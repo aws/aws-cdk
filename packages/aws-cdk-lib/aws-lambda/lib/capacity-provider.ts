@@ -112,12 +112,6 @@ export interface CapacityProviderProps {
   readonly propagateTags?: PropagateTags;
 }
 
-/**
- * A collection of tags represented as key-value string pairs.
- */
-export interface Tags {
-  readonly [key: string]: string;
-}
 
 /**
  * Configuration for propagating tags to managed resources created by a capacity provider.
@@ -140,7 +134,7 @@ export class PropagateTags {
    *
    * @param tags A map of tag keys to values to propagate. Maximum 40 tags.
    */
-  public static explicit(tags: Tags): PropagateTags {
+  public static explicit(tags: { [key: string]: string }): PropagateTags {
     return new PropagateTags('Explicit', tags);
   }
 
@@ -152,9 +146,9 @@ export class PropagateTags {
   /**
    * The explicit tags to propagate (only for Explicit mode).
    */
-  public readonly explicitTags?: Tags;
+  public readonly explicitTags?: { [key: string]: string };
 
-  private constructor(mode: string, explicitTags?: Tags) {
+  private constructor(mode: string, explicitTags?: { [key: string]: string }) {
     this.mode = mode;
     this.explicitTags = explicitTags;
   }
