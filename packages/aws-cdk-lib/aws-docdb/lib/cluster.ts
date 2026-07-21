@@ -571,6 +571,11 @@ export class DatabaseCluster extends DatabaseClusterBase {
   private readonly cluster: CfnDBCluster;
 
   /**
+   * Whether the master user password is managed by Amazon DocumentDB in AWS Secrets Manager.
+   */
+  private readonly manageMasterUserPassword?: boolean;
+
+  /**
    * The VPC where the DB subnet group is created.
    */
   private readonly vpc: ec2.IVpc;
@@ -662,6 +667,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
     if (props.rotateMasterUserPassword && !props.manageMasterUserPassword) {
       throw new ValidationError(lit`RotateMasterUserPasswordRequiresManagedPassword`, 'rotateMasterUserPassword is valid only if manageMasterUserPassword is true', this);
     }
+
+    this.manageMasterUserPassword = props.manageMasterUserPassword;
 
     // Create the secret manager secret if no password is specified and manageMasterUserPassword is false
     let secret: DatabaseSecret | undefined;
@@ -838,6 +845,9 @@ export class DatabaseCluster extends DatabaseClusterBase {
    */
   @MethodMetadata()
   public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
+    if (this.manageMasterUserPassword) {
+      throw new ValidationError(lit`CannotAddRotationWithManageMasterUserPassword`, 'Cannot add rotation when `manageMasterUserPassword` is enabled. Amazon DocumentDB automatically rotates the master password when it manages the secret.', this);
+    }
     if (!this.secret) {
       throw new ValidationError(lit`CannotAddSingleUserRotationWithoutSecret`, 'Cannot add single user rotation for a cluster without secret.', this);
     }
@@ -864,6 +874,9 @@ export class DatabaseCluster extends DatabaseClusterBase {
    */
   @MethodMetadata()
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
+    if (this.manageMasterUserPassword) {
+      throw new ValidationError(lit`CannotAddRotationWithManageMasterUserPassword`, 'Cannot add rotation when `manageMasterUserPassword` is enabled. Amazon DocumentDB automatically rotates the master password when it manages the secret.', this);
+    }
     if (!this.secret) {
       throw new ValidationError(lit`CannotAddMultiUserRotationWithoutSecret`, 'Cannot add multi user rotation for a cluster without secret.', this);
     }
