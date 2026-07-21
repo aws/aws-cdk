@@ -1,7 +1,8 @@
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
-import { AccountPrincipal } from 'aws-cdk-lib/aws-iam';
+import { AccountPrincipal, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
 class LogGroupIntegStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
@@ -9,9 +10,10 @@ class LogGroupIntegStack extends Stack {
 
     const logGroup = new LogGroup(this, 'LogGroup', {});
 
-    logGroup.addToResourcePolicy(new AccountPrincipal(this.account), {
+    logGroup.addToResourcePolicy(new PolicyStatement({
       actions: ['logs:CreateLogStream'],
-    });
+      principals: [new AccountPrincipal(this.account)],
+    }));
   }
 }
 
