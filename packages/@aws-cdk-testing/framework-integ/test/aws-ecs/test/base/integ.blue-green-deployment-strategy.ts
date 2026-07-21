@@ -150,6 +150,11 @@ const service = new ecs.FargateService(stack, 'Service', {
 // Enable second deployment alarm
 service.enableDeploymentAlarms([alarm2.alarmName]);
 
+// Re-add an already-configured alarm. ECS accepts duplicate alarm names in
+// DeploymentConfiguration.Alarms.AlarmNames, so enableDeploymentAlarms() appends
+// them without de-duplication.
+service.enableDeploymentAlarms([alarm1.alarmName]);
+
 service.addLifecycleHook(new ecs.DeploymentLifecycleLambdaTarget(lambdaHook, 'PreScaleUp', {
   lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
 }));

@@ -771,6 +771,9 @@
        },
        {
         "Ref": "AnotherCustomAlarm221DEB18"
+       },
+       {
+        "Ref": "MyCustomAlarmBBB0BEE1"
        }
       ],
       "Enable": true,
