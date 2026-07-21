@@ -30,6 +30,8 @@ describe('stack', () => {
     Validations.of(app).acknowledge(
       { id: 'CloudFormation-Validate::F3002', reason: "For cross-stack tests, we don't care about property names being valid" },
       { id: 'CloudFormation-Validate::F3003', reason: "For cross-stack tests, we don't care about property names being valid" },
+      { id: 'CloudFormation-Validate::E9004', reason: 'We are using non-existing property names' },
+      { id: 'CloudFormation-Validate::F6101', reason: 'We are doing nonsensical type manipulations in these tests' },
     );
     return app;
   }
@@ -1161,6 +1163,37 @@ describe('stack', () => {
     );
     expect(relevantWarnings).toHaveLength(1);
     expect(relevantWarnings[0].path).toContain('Stack2');
+  });
+
+  test.each(['up', 'down'])('no cross-stack reference flag warning when referencing %s across nested stacks', (direction) => {
+    // GIVEN - context flag explicitly set to 'strong'
+    const app = makeCrossStackApp();
+    const stack1 = new Stack(app, 'Stack1');
+    const stack2 = new NestedStack(stack1, 'Stack2');
+
+    // WHEN
+    if (direction === 'up') {
+      const resource1 = new CfnResource(stack1, 'Resource1', { type: 'AWS::S3::Bucket' });
+      new CfnResource(stack2, 'Resource2', {
+        type: 'AWS::S3::Bucket',
+        properties: { Prop1: resource1.getAtt('Arn') },
+      });
+    } else {
+      const resource2 = new CfnResource(stack2, 'Resource2', { type: 'AWS::S3::Bucket' });
+      new CfnResource(stack1, 'Resource1', {
+        type: 'AWS::S3::Bucket',
+        properties: { Prop1: resource2.getAtt('Arn') },
+      });
+    }
+
+    const assembly = app.synth();
+    const warnings = getWarnings(assembly);
+
+    // THEN - no warning because nested stacks are not cross-stack references
+    const relevantWarnings = warnings.filter(w =>
+      w.message.includes('@aws-cdk/core:crossStackReferencesDefaultStrong'),
+    );
+    expect(relevantWarnings).toHaveLength(0);
   });
 
   test('cross-region strong references use ExportWriter/ExportReader', () => {
