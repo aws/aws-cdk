@@ -21,6 +21,15 @@ const MIN_ENGINE_VERSION_FOR_IO_OPTIMIZED_STORAGE = 5;
 const MIN_ENGINE_VERSION_FOR_SERVERLESS = 5;
 
 /**
+ * Matches the DocumentDB maintenance window format `ddd:hh24:mi-ddd:hh24:mi`
+ * Days: mon | tue | wed | thu | fri | sat | sun (case-insensitive).
+ * Time: 00-23 hour, 00-59 minute.
+ *
+ * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/db-instance-maintain.html#maintenance-window
+ */
+const MAINTENANCE_WINDOW_REGEX = /^(mon|tue|wed|thu|fri|sat|sun):(2[0-3]|[01]\d):[0-5]\d-(mon|tue|wed|thu|fri|sat|sun):(2[0-3]|[01]\d):[0-5]\d$/i;
+
+/**
  * ServerlessV2 scaling configuration for DocumentDB clusters
  */
 export interface ServerlessV2ScalingConfiguration {
@@ -190,7 +199,7 @@ export interface DatabaseClusterProps {
   readonly preferredMaintenanceWindow?: string;
 
   /**
-   * The weekly time range during which system maintenance can occur on the cluster's instances, in UTC.
+   * The weekly time range during which system maintenance can occur on the cluster's instances.
    *
    * The cluster-level `preferredMaintenanceWindow` applies to cluster-wide maintenance events; this prop
    * applies to each auto-created instance independently. To use the same window for both, set this prop
@@ -537,6 +546,17 @@ export class DatabaseCluster extends DatabaseClusterBase {
     if (!props.instanceType && !props.serverlessV2ScalingConfiguration) {
       throw new ValidationError(lit`InstanceTypeOrServerlessConfigurationRequired`, 'Either instanceType (for provisioned clusters) or serverlessV2ScalingConfiguration (for serverless clusters) must be specified', this);
     }
+
+    if (props.preferredMaintenanceWindow !== undefined && !Token.isUnresolved(props.preferredMaintenanceWindow)
+          && !MAINTENANCE_WINDOW_REGEX.test(props.preferredMaintenanceWindow)) {
+      throw new ValidationError(lit`InvalidClusterMaintenanceWindowFormat`, 'preferredMaintenanceWindow must be in the format ddd:hh24:mi-ddd:hh24:mi, e.g. sat:09:00-sat:09:30', this);
+    }
+
+    if (props.instanceMaintenanceWindow !== undefined && !Token.isUnresolved(props.instanceMaintenanceWindow)
+          && !MAINTENANCE_WINDOW_REGEX.test(props.instanceMaintenanceWindow)) {
+      throw new ValidationError(lit`InvalidInstanceMaintenanceWindowFormat`, 'instanceMaintenanceWindow must be in the format ddd:hh24:mi-ddd:hh24:mi, e.g. sat:09:00-sat:09:30', this);
+    }
+
     const isServerless = !!props.serverlessV2ScalingConfiguration;
     if (isServerless && props.instanceType) {
       throw new ValidationError(lit`CannotSpecifyBothInstanceTypeAndServerlessConfiguration`, 'Cannot specify both instanceType and serverlessV2ScalingConfiguration', this);
