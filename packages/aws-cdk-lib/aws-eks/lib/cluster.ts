@@ -37,7 +37,7 @@ import type * as kms from '../../aws-kms';
 import type * as lambda from '../../aws-lambda';
 import * as ssm from '../../aws-ssm';
 import type { IResource, Duration, Size, RemovalPolicy } from '../../core';
-import { Annotations, CfnOutput, CfnResource, Resource, Stack, Tags, Token, ValidationError, UnscopedValidationError, RemovalPolicies, FeatureFlags } from '../../core';
+import { Annotations, CfnOutput, CfnResource, Resource, Stack, Tags, Token, ValidationError, UnscopedValidationError, RemovalPolicies, FeatureFlags, Validations } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
@@ -1872,6 +1872,8 @@ export class Cluster extends ClusterBase {
       deletionProtection: props.deletionProtection,
     });
 
+    this.node.defaultChild = resource;
+
     if (this.endpointAccess._config.privateAccess && privateSubnets.length !== 0) {
       // when private access is enabled and the vpc has private subnets, lets connect
       // the provider to the vpc so that it will work even when restricting public access.
@@ -2872,6 +2874,10 @@ export class EksOptimizedImage implements ec2.IMachineImage {
    * Return the correct image
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
+    Validations.of(scope).acknowledge({
+      id: 'CloudFormation-Validate::W2506',
+      reason: 'SSM parameter is typed as String instead of AWS::SSM::Parameter::Value<AWS::EC2::Image::Id> for historical reasons.',
+    });
     const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
     return {
       imageId: ami,

@@ -118,6 +118,7 @@ Flags come in three types:
 | [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-region stack references are strong, weak, or both | 2.254.0 | config |
 | [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | 2.259.0 | new default |
 | [@aws-cdk/aws-s3:eventBridgeNotificationViaCfnProperty](#aws-cdkaws-s3eventbridgenotificationviacfnproperty) | When enabled, S3 EventBridge notifications are set directly on the bucket resource instead of through the notifications custom resource | V2NEXT | fix |
+| [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | V2NEXT | config |
 
 <!-- END table -->
 
@@ -214,6 +215,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
       "aws",
       "aws-cn"
     ],
+    "@aws-cdk/core:validateAgainstDefaultRules": true,
     "@aws-cdk/core:validateSnapshotRemovalPolicy": true,
     "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false,
     "@aws-cdk/customresources:installLatestAwsSdkDefault": false,
@@ -2567,6 +2569,26 @@ the custom resource and the bucket resource in a single deployment.
 | V2NEXT | `false` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to keep routing EventBridge notifications through the notifications custom resource.
+
+
+### @aws-cdk/core:validateAgainstDefaultRules
+
+*Treat CloudFormation Validate findings as errors*
+
+Flag type: Configuration option
+
+The CDK always validates synthesized templates against a default set of CloudFormation
+rules during synthesis. These rules include schema validation, best-practice linting,
+and common misconfiguration detection.
+
+When this flag is explicitly set to `true`, violations are treated as errors and will
+fail synthesis. When unconfigured, violations are reported as warnings only.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->

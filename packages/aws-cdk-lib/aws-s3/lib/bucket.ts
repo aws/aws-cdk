@@ -31,6 +31,7 @@ import {
   Stack,
   Token,
   Tokenization,
+  Validations,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import type { IArrayBox, IBox } from '../../core/lib/helpers-internal';
@@ -2537,6 +2538,7 @@ export class Bucket extends BucketBase {
   private readonly inventories: IArrayBox<Inventory> = Box.fromArray();
   private readonly _resource: CfnBucket;
   private readonly reflection: BucketReflection;
+  private _suppressedTypeCheck = false;
 
   constructor(scope: Construct, id: string, props: BucketProps = {}) {
     super(scope, id, {
@@ -2571,6 +2573,8 @@ export class Bucket extends BucketBase {
     this.ownershipControls = Box.fromValue<CfnBucket.OwnershipControlsProperty | undefined>(
       this.parseOwnershipControls(props.accessControl),
     );
+
+    this.acknowledgeAccessControl();
 
     const resource = new CfnBucket(this, 'Resource', {
       bucketName: this.physicalName,
@@ -2688,6 +2692,18 @@ export class Bucket extends BucketBase {
   }
 
   /**
+   * If we are using the accessControl property (for historical reasons), silence the warning about it.
+   */
+  private acknowledgeAccessControl() {
+    if (this.accessControl.get() !== undefined) {
+      Validations.of(this).acknowledge({
+        id: 'CloudFormation-Validate::W3045',
+        reason: 'accessControl is deprecated, but we are still using it for historical reasons.',
+      });
+    }
+  }
+
+  /**
    * Add a lifecycle rule to the bucket
    *
    * @param rule The rule to add
@@ -2695,6 +2711,16 @@ export class Bucket extends BucketBase {
   @MethodMetadata()
   public addLifecycleRule(rule: LifecycleRule) {
     this.lifecycleRules.push(rule);
+
+    if ((rule.objectSizeLessThan !== undefined || rule.objectSizeLessThan !== undefined) && !this._suppressedTypeCheck) {
+      // These are typed as numbers by CDK, but as strings by CloudFormation. The validation plugin is going to complain
+      // about the type mismatch, so suppress the warning for this construct if it's applicable.
+      Validations.of(this).acknowledge({
+        id: 'CloudFormation-Validate::W9003',
+        reason: 'LifecycleRule.objectSizeLessThan and LifecycleRule.objectSizeGreaterThan are numbers for historical reasons',
+      });
+      this._suppressedTypeCheck = true;
+    }
   }
 
   /**
@@ -3346,6 +3372,7 @@ export class Bucket extends BucketBase {
     } else {
       this.accessControl.set(BucketAccessControl.LOG_DELIVERY_WRITE);
       this.ownershipControls.set(this.parseOwnershipControls(BucketAccessControl.LOG_DELIVERY_WRITE));
+      this.acknowledgeAccessControl();
     }
   }
 

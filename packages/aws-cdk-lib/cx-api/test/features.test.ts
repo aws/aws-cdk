@@ -52,6 +52,7 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.EKS_DEFAULT_AL2023]: false,
     [feats.ANNOTATIONS_IN_VALIDATION_REPORT]: false,
     [feats.S3_EVENTBRIDGE_NOTIFICATION_VIA_CFN_PROPERTY]: false,
+    [feats.VALIDATE_AGAINST_DEFAULT_RULES]: false,
 
   });
 });

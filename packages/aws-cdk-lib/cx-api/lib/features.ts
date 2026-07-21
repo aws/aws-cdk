@@ -158,6 +158,7 @@ export const EKS_DEFAULT_AL2023 = '@aws-cdk/aws-eks:defaultToAL2023';
 export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInValidationReport';
 export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackReferences';
 export const S3_EVENTBRIDGE_NOTIFICATION_VIA_CFN_PROPERTY = '@aws-cdk/aws-s3:eventBridgeNotificationViaCfnProperty';
+export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1947,6 +1948,22 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to keep routing EventBridge notifications through the notifications custom resource.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [VALIDATE_AGAINST_DEFAULT_RULES]: {
+    type: FlagType.VisibleContext,
+    summary: 'Treat CloudFormation Validate findings as errors',
+    detailsMd: `
+      The CDK always validates synthesized templates against a default set of CloudFormation
+      rules during synthesis. These rules include schema validation, best-practice linting,
+      and common misconfiguration detection.
+
+      When this flag is explicitly set to \`true\`, violations are treated as errors and will
+      fail synthesis. When unconfigured, violations are reported as warnings only.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
   },
 };
 
