@@ -1549,6 +1549,45 @@ describe('DatabaseCluster', () => {
         });
       }).toThrow('rotateMasterUserPassword is valid only if manageMasterUserPassword is true');
     });
+
+    test('fails when addRotationSingleUser is called with manageMasterUserPassword enabled', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const cluster = new DatabaseCluster(stack, 'Database', {
+        manageMasterUserPassword: true,
+        masterUser: {
+          username: 'admin',
+        },
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      });
+
+      // WHEN/THEN
+      expect(() => {
+        cluster.addRotationSingleUser();
+      }).toThrow('Cannot add rotation when `manageMasterUserPassword` is enabled. Amazon DocumentDB automatically rotates the master password when it manages the secret.');
+    });
+
+    test('fails when addRotationMultiUser is called with manageMasterUserPassword enabled', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const cluster = new DatabaseCluster(stack, 'Database', {
+        manageMasterUserPassword: true,
+        masterUser: {
+          username: 'admin',
+        },
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      });
+      const userSecret = new DatabaseSecret(stack, 'UserSecret', { username: 'myuser' });
+
+      // WHEN/THEN
+      expect(() => {
+        cluster.addRotationMultiUser('MyUser', { secret: userSecret });
+      }).toThrow('Cannot add rotation when `manageMasterUserPassword` is enabled. Amazon DocumentDB automatically rotates the master password when it manages the secret.');
+    });
   });
 });
 
