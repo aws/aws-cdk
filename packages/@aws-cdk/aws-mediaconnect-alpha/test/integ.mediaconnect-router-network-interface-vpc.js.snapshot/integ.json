@@ -1,0 +1,13 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "cdk-integ-emx-router-network-interface-vpc/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediaconnect-router-ni-vpc"
+      ],
+      "assertionStack": "cdk-integ-emx-router-network-interface-vpc/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegemxrouternetworkinterfacevpcDefaultTestDeployAssertE28A34B8"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}

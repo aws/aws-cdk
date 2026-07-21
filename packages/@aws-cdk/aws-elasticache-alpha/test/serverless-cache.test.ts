@@ -1,14 +1,22 @@
-import { Stack, Size } from 'aws-cdk-lib';
+import { Stack, Size, Validations } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import { SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { AccessControl, CacheEngine, NoPasswordUser, ServerlessCache, UserEngine, UserGroup } from '../lib';
 
+let stack: Stack;
+beforeEach(() => {
+  stack = new Stack();
+  Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::F3032',
+    reason: 'Required array is empty',
+  });
+});
+
 describe('serverless cache', () => {
   describe('create valid templates', () => {
-    let stack: Stack, vpc: Vpc;
+    let vpc: Vpc;
     beforeEach(() => {
-      stack = new Stack();
       vpc = new Vpc(stack, 'VPC');
     });
 
@@ -130,9 +138,8 @@ describe('serverless cache', () => {
   });
 
   describe('validation errors', () => {
-    let stack: Stack, vpc: Vpc;
+    let vpc: Vpc;
     beforeEach(() => {
-      stack = new Stack();
       vpc = new Vpc(stack, 'VPC');
     });
 
@@ -344,9 +351,8 @@ describe('serverless cache', () => {
   });
 
   describe('CacheEngine class', () => {
-    let stack: Stack, vpc: Vpc;
+    let vpc: Vpc;
     beforeEach(() => {
-      stack = new Stack();
       vpc = new Vpc(stack, 'VPC');
     });
 

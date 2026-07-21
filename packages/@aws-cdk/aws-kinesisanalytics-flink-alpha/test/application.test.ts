@@ -189,11 +189,11 @@ describe('Application', () => {
   test('providing a custom runtime', () => {
     new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
-      runtime: flink.Runtime.of('custom'),
+      runtime: flink.Runtime.of('ZEPPELIN-FLINK-2_0'),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::KinesisAnalyticsV2::Application', {
-      RuntimeEnvironment: 'custom',
+      RuntimeEnvironment: 'ZEPPELIN-FLINK-2_0',
     });
   });
 
