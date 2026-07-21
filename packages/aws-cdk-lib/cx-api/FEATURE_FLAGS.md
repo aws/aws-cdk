@@ -117,6 +117,7 @@ Flags come in three types:
 | [@aws-cdk/core:annotationsInValidationReport](#aws-cdkcoreannotationsinvalidationreport) | Include construct annotations (warnings and errors) in the policy validation report | 2.253.0 | config |
 | [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-region stack references are strong, weak, or both | 2.254.0 | config |
 | [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | 2.259.0 | new default |
+| [@aws-cdk/aws-lambda:stableFunctionHash](#aws-cdkaws-lambdastablefunctionhash) | Use deterministic ordering for VpcConfig arrays and Lambda Layers in the Function version hash | V2NEXT | fix |
 | [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | V2NEXT | config |
 
 <!-- END table -->
@@ -179,6 +180,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion": true,
     "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": false,
     "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
+    "@aws-cdk/aws-lambda:stableFunctionHash": true,
     "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
     "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": true,
     "@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters": true,
@@ -2531,6 +2533,33 @@ When disabled, the default AMI types remain AL2 for backward compatibility.
 **Compatibility with old behavior:** Explicitly set `amiType` to the desired AL2 type (e.g., `NodegroupAmiType.AL2_X86_64`) in your nodegroup configuration.
 
 **Warning**: Enabling this flag on existing stacks will cause node group replacement, which terminates running pods. To migrate safely, first pin existing node groups to their current amiType explicitly, then enable the flag for new node groups.
+
+
+### @aws-cdk/aws-lambda:stableFunctionHash
+
+*Use deterministic ordering for VpcConfig arrays and Lambda Layers in the Function version hash*
+
+Flag type: Backwards incompatible bugfix
+
+The hash behind `fn.currentVersion` was sensitive to orderings that carry no
+semantic meaning: `VpcConfig.SubnetIds` and `VpcConfig.SecurityGroupIds` were
+hashed in the order returned by the VPC lookup, and Lambda Layers were hashed
+in insertion order (the layer sort used the default object comparator, which
+does not sort). The JSON key order of the layer configuration also leaked into
+the hash. As a result, the logical ID of the Lambda Version could change
+between synths even though the function configuration was identical, creating
+spurious new Versions.
+
+When this flag is enabled, these inputs are sorted deterministically before
+hashing. Enabling the flag changes the hash for functions that use a VPC or
+Layers, which replaces their Lambda Version (and anything referencing it, such
+as Aliases) once on the next deployment.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 ### @aws-cdk/core:validateAgainstDefaultRules

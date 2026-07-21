@@ -63,6 +63,7 @@ export const APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID = '@aws-cdk/aws-apigate
 export const EFS_DEFAULT_ENCRYPTION_AT_REST = '@aws-cdk/aws-efs:defaultEncryptionAtRest';
 export const LAMBDA_RECOGNIZE_VERSION_PROPS = '@aws-cdk/aws-lambda:recognizeVersionProps';
 export const LAMBDA_RECOGNIZE_LAYER_VERSION = '@aws-cdk/aws-lambda:recognizeLayerVersion';
+export const LAMBDA_STABLE_FUNCTION_HASH = '@aws-cdk/aws-lambda:stableFunctionHash';
 export const CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 = '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021';
 export const CHECK_SECRET_USAGE = '@aws-cdk/core:checkSecretUsage';
 export const TARGET_PARTITIONS = '@aws-cdk/core:target-partitions';
@@ -1928,6 +1929,29 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       When this flag is explicitly set to \`true\`, violations are treated as errors and will
       fail synthesis. When unconfigured, violations are reported as warnings only.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [LAMBDA_STABLE_FUNCTION_HASH]: {
+    type: FlagType.BugFix,
+    summary: 'Use deterministic ordering for VpcConfig arrays and Lambda Layers in the Function version hash',
+    detailsMd: `
+      The hash behind \`fn.currentVersion\` was sensitive to orderings that carry no
+      semantic meaning: \`VpcConfig.SubnetIds\` and \`VpcConfig.SecurityGroupIds\` were
+      hashed in the order returned by the VPC lookup, and Lambda Layers were hashed
+      in insertion order (the layer sort used the default object comparator, which
+      does not sort). The JSON key order of the layer configuration also leaked into
+      the hash. As a result, the logical ID of the Lambda Version could change
+      between synths even though the function configuration was identical, creating
+      spurious new Versions.
+
+      When this flag is enabled, these inputs are sorted deterministically before
+      hashing. Enabling the flag changes the hash for functions that use a VPC or
+      Layers, which replaces their Lambda Version (and anything referencing it, such
+      as Aliases) once on the next deployment.`,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
