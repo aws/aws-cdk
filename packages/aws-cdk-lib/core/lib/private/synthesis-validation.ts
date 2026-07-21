@@ -13,7 +13,7 @@ import { _aspectTreeRevisionReader } from '../aspect';
 import { AssumptionError, UnscopedValidationError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
 import type { Stage } from '../stage';
-import type { IPolicyValidationPlugin } from '../validation';
+import type { IPolicyValidationPlugin, PolicyValidationPluginReport } from '../validation';
 import { STAGE_TYPE } from './core-construct-finders';
 import { profileSpan } from './perf';
 import { CloudFormationValidatePlugin } from '../validation/cloudformation-validate-plugin';
@@ -32,19 +32,21 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
 
   using _span = profileSpan('validateTemplates', { telemetry: true });
   const assemblies = getAssemblies(root, assembly);
-  const stacksByPlugin: Map<IPolicyValidationPlugin, private_cxapi.CloudFormationStackArtifact[]> = new Map();
+  const stacksByPlugin: Map<IPolicyValidationPlugin, Set<private_cxapi.CloudFormationStackArtifact>> = new Map();
 
   visitAssemblies(root, 'post', construct => {
     if (STAGE_TYPE.isMarked(construct)) {
       const stageAssembly = assemblies.get(construct.artifactId);
       if (!stageAssembly) throw new AssumptionError(lit`ValidationFailed`, `Validation failed, cannot find cloud assembly for stage ${construct.stageName}`);
 
-      const plugins = pluginsToEvaluate(construct, construct, stageAssembly);
+      const plugins = pluginsToEvaluate(root, construct);
       for (const plugin of plugins) {
         if (!stacksByPlugin.has(plugin)) {
-          stacksByPlugin.set(plugin, []);
+          stacksByPlugin.set(plugin, new Set());
         }
-        stacksByPlugin.get(plugin)!.push(...stageAssembly.stacksRecursively);
+        for (const stack of stageAssembly.stacksRecursively) {
+          stacksByPlugin.get(plugin)!.add(stack);
+        }
       }
     }
   });
@@ -200,7 +202,7 @@ function getAssemblies(root: App, rootAssembly: private_cxapi.CloudAssembly): Ma
 /**
  * Return the list of plugins to invoke for the given stage
  */
-function pluginsToEvaluate(root: IConstruct, stage: Stage, stageAssembly: private_cxapi.CloudAssembly): IPolicyValidationPlugin[] {
+function pluginsToEvaluate(root: IConstruct, stage: Stage): IPolicyValidationPlugin[] {
   const ret: IPolicyValidationPlugin[] = [];
 
   // 1. User-registered plugins
@@ -211,9 +213,9 @@ function pluginsToEvaluate(root: IConstruct, stage: Stage, stageAssembly: privat
     ret.push(CloudFormationValidatePlugin._singletonInstance());
   }
 
-  // 3. Construct annotations (as a plugin, only if there are annotations to report)
-  if (FeatureFlags.of(root).isEnabled(cxapi.ANNOTATIONS_IN_VALIDATION_REPORT)) {
-    const annotationsPlugin = collectAnnotationReport(stage, stageAssembly.directory);
+  // 3. Construct annotations (as a plugin, only if there are annotations to report and only on the root)
+  if (stage === root && FeatureFlags.of(root).isEnabled(cxapi.ANNOTATIONS_IN_VALIDATION_REPORT)) {
+    const annotationsPlugin = collectAnnotationReport(stage);
     if (annotationsPlugin) {
       ret.push(annotationsPlugin);
     }
@@ -310,12 +312,12 @@ function collectSuppressions(root: App, reports: NamedValidationPluginReport[]) 
  */
 function doInvokeValidationPlugins(
   outdir: string,
-  plugins: Array<[IPolicyValidationPlugin, private_cxapi.CloudFormationStackArtifact[]]>,
+  plugins: Array<[IPolicyValidationPlugin, Set<private_cxapi.CloudFormationStackArtifact>]>,
   root: App,
 ) {
   const preExistingFileHashes = snapshotFileHashes(outdir);
 
-  return plugins.flatMap(([plugin, stacks]) => invokeSinglePlugin(plugin, stacks));
+  return plugins.flatMap(([plugin, stacks]) => invokeSinglePlugin(plugin, Array.from(stacks)));
 
   function invokeSinglePlugin(
     plugin: IPolicyValidationPlugin,
@@ -325,12 +327,14 @@ function doInvokeValidationPlugins(
 
     const reports = stacksByEnv.map(({ accountId, region, stacks }) => {
       try {
-        const report = plugin.validate({
+        const report = makeTemplatePathsRelative(plugin.validate({
+          // path.resolve() because templateFullPath might not be as full as you'd expect
           templatePaths: stacks.map(s => s.templateFullPath),
+          stackTemplates: stacks.map(s => ({ stackConstructPath: s.hierarchicalId, templatePath: s.templateFullPath })),
           appConstruct: root,
           accountId: accountId !== cxapi.UNKNOWN_ACCOUNT ? accountId : undefined,
           region: region !== cxapi.UNKNOWN_REGION ? region : undefined,
-        });
+        }));
 
         if (hasModifiedPreExistingFiles(preExistingFileHashes)) {
           throw new AssumptionError(lit`IllegalPluginOperation`, `Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
@@ -346,6 +350,27 @@ function doInvokeValidationPlugins(
     });
 
     return mergeReports(reports);
+  }
+
+  /**
+   * We gave the validation plugins absolute template paths.
+   *
+   * The most logical thing to do would be for them to stick the absolute paths in the report, but
+   * we want root-assembly-relative paths, otherwise assemblies are not self-contained.
+   *
+   * Ideally the API should have been designed to pass relative paths, but we
+   * can't change that anymore. So we have to fix up the report after the fact.
+   */
+  function makeTemplatePathsRelative(report: PolicyValidationPluginReport) {
+    for (const v of report.violations) {
+      for (const r of v.violatingResources) {
+        if (r.templatePath) {
+          mutable(r).templatePath = path.relative(outdir, path.resolve(r.templatePath));
+        }
+      }
+    }
+
+    return report;
   }
 }
 

@@ -5,6 +5,7 @@ import { UnscopedValidationError } from '../errors';
 import { AnnotationPlugin } from '../private/annotation-plugin';
 import { STAGE_TYPE, stageOf } from '../private/core-construct-finders';
 import { lit } from '../private/literal-string';
+import { enhancedStackTrace } from '../private/stack-trace';
 
 /**
  * An acknowledgment of a validation rule, used to suppress it from output.
@@ -128,7 +129,8 @@ export class Validations {
     this.scope.node.addMetadata(
       Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
       { [id]: reason },
-      { stackTrace: true },
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      { stackTraceOverride: enhancedStackTrace(this.recordAcknowledgment) },
     );
   }
 
