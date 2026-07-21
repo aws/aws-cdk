@@ -1380,7 +1380,7 @@ describe('validations', () => {
         m => m.type === core.Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
       );
       expect(ackEntries).toHaveLength(1);
-      expect(ackEntries[0].data).toEqual({ 'annotation::@aws-cdk/aws-s3:bucketNotEncrypted': 'Accepted risk' });
+      expect(ackEntries[0].data).toEqual({ 'Annotation::@aws-cdk/aws-s3:bucketNotEncrypted': 'Accepted risk' });
     });
 
     test('acknowledge with already-qualified ID does not double-acknowledge', () => {
