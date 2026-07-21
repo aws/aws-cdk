@@ -81,7 +81,8 @@ export function engineDescription(engine: IEngine) {
  * Enable if explicitly provided or if the RemovalPolicy has been set to RETAIN
  */
 export function defaultDeletionProtection(deletionProtection?: boolean, removalPolicy?: RemovalPolicy): boolean | undefined {
-  return deletionProtection ?? (removalPolicy === RemovalPolicy.RETAIN || removalPolicy === RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE ? true : undefined);
+  return deletionProtection ?? (removalPolicy === RemovalPolicy.RETAIN ||
+    removalPolicy === RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE ? true : undefined);
 }
 
 /**
