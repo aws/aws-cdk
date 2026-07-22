@@ -1,0 +1,103 @@
+{
+  "/cdk-integ-emx-flow-ndi/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "resolveValue (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:165:54)",
+        "resolveReferences (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:83:36)",
+        "App.synth (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "Object.<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-ndi.js:179:5)",
+        "Module._compile (node:internal/modules/cjs/loader:1761:14)",
+        "Object..js (node:internal/modules/cjs/loader:1893:10)",
+        "Module.load (node:internal/modules/cjs/loader:1481:32)",
+        "Module._load (node:internal/modules/cjs/loader:1300:12)",
+        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:245:24)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    }
+  ],
+  "/cdk-integ-emx-flow-ndi/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cdk-integ-emx-flow-ndi/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/cdk-integ-emx-flow-ndi/DefaultTest/DeployAssert/AwsApiCallMediaConnectdescribeFlow7c7c18129f4afcedeb986cebad7c7f12/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/cdk-integ-emx-flow-ndi/DefaultTest/DeployAssert/AwsApiCallMediaConnectdescribeFlow7c7c18129f4afcedeb986cebad7c7f12/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallMediaConnectdescribeFlow7c7c18129f4afcedeb986cebad7c7f12"
+    }
+  ],
+  "/cdk-integ-emx-flow-ndi/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/cdk-integ-emx-flow-ndi/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/cdk-integ-emx-flow-ndi/DefaultTest/DeployAssert/AwsApiCallMediaConnectdescribeFlowabce5b8378654fabdccf71e6a06acc3a/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/cdk-integ-emx-flow-ndi/DefaultTest/DeployAssert/AwsApiCallMediaConnectdescribeFlowabce5b8378654fabdccf71e6a06acc3a/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallMediaConnectdescribeFlowabce5b8378654fabdccf71e6a06acc3a"
+    }
+  ],
+  "/cdk-integ-emx-flow-ndi/DefaultTest/DeployAssert/AwsApiCallMediaConnectdescribeFlow7c7c18129f4afcedeb986cebad7c7f12/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallMediaConnectdescribeFlow7c7c18129f4afcedeb986cebad7c7f12"
+    }
+  ],
+  "/cdk-integ-emx-flow-ndi/DefaultTest/DeployAssert/AwsApiCallMediaConnectdescribeFlowabce5b8378654fabdccf71e6a06acc3a/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallMediaConnectdescribeFlowabce5b8378654fabdccf71e6a06acc3a"
+    }
+  ]
+}
