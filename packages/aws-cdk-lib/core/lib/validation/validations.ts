@@ -2,8 +2,10 @@ import type { IConstruct } from 'constructs';
 import type { IPolicyValidationPlugin } from './validation';
 import { Annotations } from '../annotations';
 import { UnscopedValidationError } from '../errors';
+import { AnnotationPlugin } from '../private/annotation-plugin';
+import { STAGE_TYPE, stageOf } from '../private/core-construct-finders';
 import { lit } from '../private/literal-string';
-import { Stage } from '../stage';
+import { enhancedStackTrace } from '../private/stack-trace';
 
 /**
  * An acknowledgment of a validation rule, used to suppress it from output.
@@ -47,16 +49,6 @@ export class Validations {
     return new Validations(scope);
   }
 
-  /**
-   * Well-known prefix for annotation-based validation rules.
-   *
-   * Every validation source identifies itself via a prefix so that
-   * `acknowledge()` can route suppressions to the correct handler.
-   * The `::` delimiter is reserved for separating the prefix from the
-   * rule name (e.g. `annotation::MyWarning`).
-   */
-  private static readonly ANNOTATION_PREFIX = 'annotation';
-
   private constructor(private readonly scope: IConstruct) {}
 
   /**
@@ -69,7 +61,7 @@ export class Validations {
    * @param plugins the validation plugins to add
    */
   public addPlugins(...plugins: IPolicyValidationPlugin[]): void {
-    const stage = Stage.isStage(this.scope) ? this.scope : Stage.of(this.scope);
+    const stage = STAGE_TYPE.isMarked(this.scope) ? this.scope : stageOf(this.scope);
     if (!stage) {
       throw new UnscopedValidationError(lit`NoStageForValidationPlugins`, 'Cannot add validation plugins on a construct without an enclosing Stage');
     }
@@ -137,7 +129,8 @@ export class Validations {
     this.scope.node.addMetadata(
       Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
       { [id]: reason },
-      { stackTrace: true },
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      { stackTraceOverride: enhancedStackTrace(this.recordAcknowledgment) },
     );
   }
 
@@ -146,9 +139,16 @@ export class Validations {
     if (parts.length > 2 || (parts.length === 2 && parts[0].length === 0)) {
       throw new UnscopedValidationError(lit`InvalidValidationId`, `Invalid validation rule ID '${id}'. The '::' delimiter is reserved for separating the prefix from the rule name (e.g. 'prefix::RuleName').`);
     }
-    if (parts.length === 2) {
-      return id;
+
+    if (parts.length === 1) {
+      return `${AnnotationPlugin.RULE_PREFIX}::${id}`;
     }
-    return `${Validations.ANNOTATION_PREFIX}::${id}`;
+
+    if (parts[0] === 'annotation') {
+      // Uppercase this
+      return `${AnnotationPlugin.RULE_PREFIX}::${parts[1]}`;
+    }
+
+    return id;
   }
 }

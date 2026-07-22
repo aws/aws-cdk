@@ -34,7 +34,7 @@ import type { ClusterReference, IClusterRef } from '../../aws-eks';
 import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
 import * as ssm from '../../aws-ssm';
-import { Annotations, CfnOutput, CfnResource, Resource, Tags, Token, Stack, UnscopedValidationError, FeatureFlags, RemovalPolicies } from '../../core';
+import { Annotations, CfnOutput, CfnResource, Resource, Tags, Token, Stack, UnscopedValidationError, FeatureFlags, RemovalPolicies, Validations } from '../../core';
 import type { IResource, Duration, ArnComponents, RemovalPolicy } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
@@ -1375,6 +1375,8 @@ export class Cluster extends ClusterBase {
       bootstrapSelfManagedAddons: props.bootstrapSelfManagedAddons,
     });
 
+    this.node.defaultChild = resource;
+
     let kubectlSubnets = this._kubectlProviderOptions?.privateSubnets;
 
     if (this.endpointAccess._config.privateAccess && privateSubnets.length !== 0) {
@@ -1555,7 +1557,7 @@ export class Cluster extends ClusterBase {
    *
    * This method creates an `AccessEntry` construct that grants the specified IAM principal the cluster admin
    * access permissions. This allows the IAM principal to perform the actions permitted
-   * by the cluster admin acces.
+   * by the cluster admin access.
    * [disable-awslint:no-grants]
    *
    * @param id - The ID of the `AccessEntry` construct to be created.
@@ -2333,6 +2335,10 @@ export class EksOptimizedImage implements ec2.IMachineImage {
    * Return the correct image
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
+    Validations.of(scope).acknowledge({
+      id: 'CloudFormation-Validate::W2506',
+      reason: 'SSM parameter is typed as String instead of AWS::SSM::Parameter::Value<AWS::EC2::Image::Id> for historical reasons.',
+    });
     const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
     return {
       imageId: ami,

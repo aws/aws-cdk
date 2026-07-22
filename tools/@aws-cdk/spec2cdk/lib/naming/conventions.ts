@@ -207,7 +207,7 @@ export function eventNamespaceName(eventName: string) {
  * Convert event name to pattern method name (AcknowledgementCompleted -> acknowledgementCompletedPattern)
  */
 export function eventPatternMethodName(eventName: string) {
-  const prefixes = ['AWS', 'EC2', 'RDS', 'KMS', 'DNS', 'S3', 'ECR', 'EBS', 'ECS', 'EMR', 'DLM', 'FIS', 'FTP', 'SFT', 'AS2', 'QLDB'];
+  const prefixes = ['AWS', 'EC2', 'RDS', 'KMS', 'DNS', 'S3', 'ECR', 'EBS', 'ECS', 'EMR', 'DLM', 'FIS', 'FTP', 'SFT', 'AS2', 'QLDB', 'IVS'];
 
   const prefix = prefixes.find(p => eventName.startsWith(p));
 
@@ -276,7 +276,53 @@ export function santitizeFieldName(name: string): string {
   return RESERVED_FIELD_NAMES_LIST.has(name) ? `${name}Property` : name;
 }
 
+/**
+ * Derive a TypeScript property name from a CloudWatch dimension name.
+ *
+ * Replaces non-alphanumeric characters (e.g. `:`, `/`) with `-` before passing
+ * to `propertyNameFromCloudFormation` so camelCasing produces a clean identifier.
+ */
+export function dimensionPropertyName(dimName: string): string {
+  return propertyNameFromCloudFormation(dimName.replace(/[^a-zA-Z0-9]/g, '-'));
+}
+
 const RESERVED_TYPE_NAMES_LIST = new Set(['Object', 'Tag', 'Math']);
 
 const RESERVED_FIELD_NAMES_LIST = new Set(['build']);
 
+/**
+ * Convert a known dimension value to an enum member name: MyEnum -> MY_ENUM
+ */
+export function dimensionEnumMemberName(value: string): string {
+  return value.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toUpperCase();
+}
+
+/**
+ * Convert a metric name to a camelCase method name like `invocations`.
+ *
+ * The method is already on a metrics class, so no `metric` prefix is added.
+ * Names that start with a digit are prefixed with `_` (e.g. `_4xxError`).
+ */
+export function metricMethodName(name: string): string {
+  const pascal = metricSanitizeName(name);
+  // Normalize HTTP status code patterns after PascalCasing (e.g. 4Xx -> 4xx, 5Xx -> 5xx)
+  const normalized = pascal.replace(/([2-5])xx/gi, '$1xx');
+  const stripped = normalized.replace(/^_/, '');
+  const camel = stripped.charAt(0).toLowerCase() + stripped.slice(1);
+  // Prefix with _ when the name starts with a digit (invalid JS identifier)
+  return /^\d/.test(camel) ? `_${camel}` : camel;
+}
+
+/**
+ * Sanitize a metric-related name to PascalCase
+ */
+export function metricSanitizeName(name: string): string {
+  return sanitizeTypeName(name.replace(/[^a-zA-Z0-9]/g, '-'));
+}
+
+/**
+ * Derive a dimension set class name from its name: "Function" → "FunctionMetrics"
+ */
+export function dimSetClassName(name: string): string {
+  return `${metricSanitizeName(name)}Metrics`;
+}

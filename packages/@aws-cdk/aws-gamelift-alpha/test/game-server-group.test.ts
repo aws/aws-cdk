@@ -13,6 +13,10 @@ describe('gameservergroup', () => {
 
     beforeEach(() => {
       stack = new cdk.Stack();
+      cdk.Validations.of(stack).acknowledge({
+        id: 'CloudFormation-Validate::F3032',
+        reason: 'Needs at least 2 servers',
+      });
       vpc = new ec2.Vpc(stack, 'vpc');
       launchTemplate = new ec2.LaunchTemplate(stack, 'LaunchTemplte', {});
     });
@@ -306,6 +310,11 @@ describe('gameservergroup', () => {
 
     beforeEach(() => {
       stack = new cdk.Stack(undefined, undefined, { env: { account: '000000000000', region: 'us-west-1' } });
+      cdk.Validations.of(stack).acknowledge({
+        id: 'CloudFormation-Validate::F3032',
+        reason: 'Needs at least 2 servers',
+      });
+
       vpc = new ec2.Vpc(stack, 'vpc');
       role = new iam.Role(stack, 'Role', {
         assumedBy: new iam.ServicePrincipal('gamelift.amazonaws.com'),
