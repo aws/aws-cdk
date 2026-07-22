@@ -807,6 +807,27 @@ const excludeCapacityProvider = new lambda.CapacityProvider(this, 'MyCapacityPro
 });
 ```
 
+### System Logging
+
+You can configure system logging to monitor capacity provider scaling activity:
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+const vpc = new ec2.Vpc(this, 'MyVpc');
+const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
+
+const capacityProvider = new lambda.CapacityProvider(this, 'MyCapacityProvider', {
+  subnets: vpc.privateSubnets,
+  securityGroups: [securityGroup],
+  logGroup: new logs.LogGroup(this, 'CpLogs', {
+    logGroupName: '/aws/lambda/capacity-provider/my-cp',
+  }),
+  systemLogLevel: lambda.SystemLogLevel.DEBUG,
+});
+```
+
 ### Tag Propagation
 
 You can propagate explicit tags to managed resources (EC2 instances, ENIs, EBS volumes) launched by the capacity provider:
@@ -944,6 +965,8 @@ const capacityProvider = new lambda.CapacityProvider(this, 'MyCapacityProvider',
 | maxVCpuCount | number | No | Maximum number of EC2 instances for scaling. |
 | scalingOptions | ScalingOptions | No | Scaling configuration including policies. |
 | kmsKey | IKey | No | KMS key for encrypting capacity provider data. |
+| logGroup | ILogGroup | No | CloudWatch log group for capacity provider system logs. |
+| systemLogLevel | SystemLogLevel | No | Level of detail for capacity provider system logs (DEBUG, INFO, WARN). |
 
 ## Lambda Insights
 

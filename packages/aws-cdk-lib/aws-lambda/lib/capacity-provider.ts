@@ -1,11 +1,14 @@
 import type { Construct } from 'constructs';
 import type { Architecture } from './architecture';
+import type { SystemLogLevel } from './function';
 import type { IFunction } from './function-base';
 import type { CfnFunction } from './lambda.generated';
 import { CfnCapacityProvider } from './lambda.generated';
 import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
+import type * as logs from '../../aws-logs';
+import type { IResource } from '../../core';
 import { Annotations, Arn, ArnFormat, Resource, Stack, Token, ValidationError } from '../../core';
 import type { IResource } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
@@ -110,6 +113,20 @@ export interface CapacityProviderProps {
    * @default - No tag propagation; tags are not propagated to managed resources.
    */
   readonly propagateTags?: PropagateTags;
+  
+    /**
+   * The CloudWatch log group for capacity provider system logs.
+   *
+   * @default - Service creates a default log group at /aws/lambda/capacity-provider/<name>
+   */
+  readonly logGroup?: logs.ILogGroupRef;
+
+  /**
+   * The level of detail for capacity provider system logs.
+   *
+   * @default - Service default applies (INFO)
+   */
+  readonly systemLogLevel?: SystemLogLevel;
 }
 
 /**
@@ -512,6 +529,12 @@ export class CapacityProvider extends CapacityProviderBase {
         explicitTags: props.propagateTags.explicitTags
           ? Object.entries(props.propagateTags.explicitTags).map(([key, value]) => ({ key, value }))
           : undefined,
+      } : undefined,
+      telemetryConfig: props.logGroup || props.systemLogLevel ? {
+        loggingConfig: {
+          logGroup: props.logGroup?.logGroupRef.logGroupName,
+          systemLogLevel: props.systemLogLevel,
+        },
       } : undefined,
     });
   }
