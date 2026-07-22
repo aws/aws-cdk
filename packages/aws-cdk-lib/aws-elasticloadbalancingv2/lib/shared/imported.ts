@@ -1,7 +1,8 @@
-import { Construct, DependencyGroup, IDependable } from 'constructs';
-import { ITargetGroup, TargetGroupImportProps } from './base-target-group';
+import type { IDependable } from 'constructs';
+import { Construct, DependencyGroup } from 'constructs';
+import type { ITargetGroup, TargetGroupImportProps } from './base-target-group';
 import * as cdk from '../../../core';
-import { aws_elasticloadbalancingv2 } from '../../../interfaces';
+import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
 
 /**
  * Base internal class for existing target groups

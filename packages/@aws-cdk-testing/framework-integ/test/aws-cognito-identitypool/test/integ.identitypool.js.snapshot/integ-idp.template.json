@@ -67,8 +67,7 @@
      "given_name": "given_name",
      "family_name": "family_name",
      "email": "email",
-     "gender": "gender",
-     "names": "names"
+     "gender": "gender"
     },
     "ProviderDetails": {
      "client_id": "google-client-id",
@@ -147,8 +146,7 @@
    "Properties": {
     "AttributeMapping": {
      "given_name": "name",
-     "email": "email",
-     "userId": "user_id"
+     "email": "email"
     },
     "ProviderDetails": {
      "client_id": "amzn-client-id",

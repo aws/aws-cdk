@@ -21,7 +21,6 @@ const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
 // Add capacity to it
 cluster.addCapacity('DefaultAutoScalingGroupCapacity', {
   instanceType: new ec2.InstanceType("t2.xlarge"),
-  desiredCapacity: 3,
 });
 
 const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
@@ -36,6 +35,9 @@ const ecsService = new ecs.Ec2Service(this, 'Service', {
   cluster,
   taskDefinition,
   minHealthyPercent: 100,
+  circuitBreaker: {
+    enable: true,
+  },
 });
 ```
 
@@ -127,7 +129,6 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 // Either add default capacity
 cluster.addCapacity('DefaultAutoScalingGroupCapacity', {
   instanceType: new ec2.InstanceType("t2.xlarge"),
-  desiredCapacity: 3,
 });
 
 // Or add customized capacity. Be sure to start the Amazon ECS-optimized AMI.
@@ -306,7 +307,7 @@ cluster.addCapacity('graviton-cluster', {
 });
 ```
 
-### Amazon Linux 2 (Neuron) Instances
+### Neuron Instances
 
 To launch Amazon EC2 Inf1, Trn1 or Inf2 instances, you can use the Amazon ECS optimized Amazon Linux 2 (Neuron) AMI. It comes pre-configured with AWS Inferentia and AWS Trainium drivers and the AWS Neuron runtime for Docker which makes running machine learning inference workloads easier on Amazon ECS.
 
@@ -360,7 +361,7 @@ cluster.addCapacity('ASGEncryptedSNS', {
 
 ### Container Insights
 
-On a cluster, CloudWatch Container Insights can be enabled by setting the `containerInsightsV2` property. [Container Insights](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cloudwatch-container-insights.html) 
+On a cluster, CloudWatch Container Insights can be enabled by setting the `containerInsightsV2` property. [Container Insights](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cloudwatch-container-insights.html)
 can be disabled, enabled, or enhanced.
 
 ```ts
@@ -807,6 +808,9 @@ const service = new ecs.FargateService(this, 'Service', {
   taskDefinition,
   desiredCount: 5,
   minHealthyPercent: 100,
+  circuitBreaker: {
+    enable: true,
+  },
 });
 ```
 
@@ -1678,10 +1682,12 @@ new ecs.Ec2Service(this, 'EC2Service', {
 
 Managed Instances Capacity Providers allow you to use AWS-managed EC2 instances for your ECS tasks while providing more control over instance selection than standard Fargate. AWS handles the instance lifecycle, patching, and maintenance while you can specify detailed instance requirements. You can  define detailed instance requirements to control which types of instances are used for your workloads.
 
+Capacity Option Type provides the purchasing option for the EC2 instances used in the capacity provider. Determines whether to use On-Demand or Spot instances. Valid values are `ON_DEMAND` and `SPOT`. Defaults to `ON_DEMAND` when not specified. Changing this value will trigger replacement of the capacity provider. For more information, see [Amazon EC2 billing and purchasing options](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-purchasing-options.html) in the Amazon EC2 User Guide.
+
 See [ECS documentation for Managed Instances Capacity Provider](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/managed-instances-capacity-providers-concept.html) for more documentation.
 
 #### IAM Roles Setup
-Managed instances require an infrastructure and an EC2 instance profile. You can either provide your own infrastructure role and/or instance profile, or let the construct create them automatically. 
+Managed instances require an infrastructure and an EC2 instance profile. You can either provide your own infrastructure role and/or instance profile, or let the construct create them automatically.
 
 Option 1: Let CDK create the role and instance profile automatically
 ```ts
@@ -1695,6 +1701,7 @@ const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
 });
 
 const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProvider', {
+  capacityOptionType: ecs.CapacityOptionType.SPOT,
   subnets: vpc.privateSubnets,
   securityGroups: [securityGroup],
   instanceRequirements: {
@@ -1830,33 +1837,33 @@ const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICap
     vCpuCountMax: 8,
     memoryMin: Size.gibibytes(4),
     memoryMax: Size.gibibytes(32),
-    
+
     // CPU preferences
     cpuManufacturers: [ec2.CpuManufacturer.INTEL, ec2.CpuManufacturer.AMD],
     instanceGenerations: [ec2.InstanceGeneration.CURRENT],
-    
+
     // Instance type filtering
     allowedInstanceTypes: ['m5.*', 'c5.*'],
-    
+
     // Performance characteristics
     burstablePerformance: ec2.BurstablePerformance.EXCLUDED,
     bareMetal: ec2.BareMetal.EXCLUDED,
-    
+
     // Accelerator requirements (for ML/AI workloads)
     acceleratorTypes: [ec2.AcceleratorType.GPU],
     acceleratorManufacturers: [ec2.AcceleratorManufacturer.NVIDIA],
     acceleratorNames: [ec2.AcceleratorName.T4, ec2.AcceleratorName.V100],
     acceleratorCountMin: 1,
-    
+
     // Storage requirements
     localStorage: ec2.LocalStorage.REQUIRED,
     localStorageTypes: [ec2.LocalStorageType.SSD],
     totalLocalStorageGBMin: 100,
-    
+
     // Network requirements
     networkInterfaceCountMin: 2,
     networkBandwidthGbpsMin: 10,
-    
+
     // Cost optimization
     onDemandMaxPricePercentageOverLowestPrice: 10,
   },
@@ -2142,6 +2149,46 @@ const service = new ecs.FargateService(this, 'Service', {
 ```
 
 > Visit [Amazon ECS support for configurable timeout for services running with Service Connect](https://aws.amazon.com/about-aws/whats-new/2024/01/amazon-ecs-configurable-timeout-service-connect/) for more details.
+
+### Service Connect Access Logs
+
+[Service Connect access logs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-connect-envoy-access-logs.html) provide detailed telemetry about individual requests processed by the Service Connect proxy, including HTTP methods, paths, response codes, and timing information.
+These logs complement application logs by capturing per-request traffic metadata.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  serviceConnectConfiguration: {
+    services: [
+      {
+        portMappingName: 'api',
+      },
+    ],
+    accessLogConfiguration: {
+      format: ecs.ServiceConnectAccessLogFormat.JSON,
+      includeQueryParameters: true,
+    },
+    // When configuring access log,
+    // you also need to configure the log driver accordingly.
+    logDriver: ecs.LogDrivers.awsLogs({
+      streamPrefix: 'prefix',
+    }),
+  },
+});
+```
+
+The `format` option determines the format of the access log output:
+
+- `ServiceConnectAccessLogFormat.TEXT` - Human-readable text format
+- `ServiceConnectAccessLogFormat.JSON` - Structured JSON format for log analysis tools
+
+The `includeQueryParameters` option specifies whether to include query parameters in the access logs.
+When enabled, query parameters from HTTP requests are included in the logs. Consider security and privacy implications, as query parameters may contain sensitive information such as request IDs and tokens.
+By default, this parameter is `false`.
 
 ## ServiceManagedVolume
 
@@ -2449,4 +2496,65 @@ new ecs.ExternalService(this, 'ExternalService', {
   taskDefinition,
   daemon: true,
 });
+```
+
+### Force New Deployment
+
+You can force a new deployment of a service without changing the task definition or desired count.
+This is useful when you want ECS to pull the latest container image with the same tag or to trigger a redeployment.
+
+When called without a nonce, a timestamp is generated automatically. This means every `cdk synth`
+produces a different template and every `cdk deploy` triggers a new deployment, regardless of
+whether any code has changed. To control when deployments happen, provide a stable nonce that only
+changes when you intentionally want to redeploy (e.g., an image digest or a version string).
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+});
+
+// Force a new deployment with an auto-generated nonce (deploys on every `cdk deploy`)
+service.forceNewDeployment();
+
+// Or provide your own nonce to control when deployments are triggered
+service.forceNewDeployment('my-custom-nonce-v2');
+```
+
+Alternatively, you can configure `forceNewDeployment` declaratively as a constructor option.
+This approach also allows you to explicitly disable the feature with `enabled: false`.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+// Force a new deployment on every `cdk deploy` by using a time-based nonce
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  forceNewDeployment: {
+    enabled: true,
+    nonce: Date.now().toString(),
+  },
+});
+```
+
+Calling the `forceNewDeployment()` method takes precedence over the constructor option. The nonce passed
+to the method (or the auto-generated one when none is provided) overrides any value configured through the
+`forceNewDeployment` property.
+
+## Mixins
+
+ECS provides [mixins](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#mixins) that can be applied to L1 and L2 constructs.
+
+### ClusterSettings
+
+Applies one or more cluster settings to an ECS cluster. If a setting with the same name already exists, its value is replaced:
+
+```ts
+new ecs.CfnCluster(this, 'Cluster')
+  .with(new ecs.mixins.ClusterSettings([{ name: 'containerInsights', value: 'enhanced' }]));
 ```

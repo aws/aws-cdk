@@ -51,6 +51,7 @@ new batch.EcsJobDefinition(stack, 'ECSJobDefn', {
       SSM_TIME: batch.Secret.fromSsmParameter(new ssm.StringParameter(stack, 'ssm', { stringValue: 'myString' })),
     },
   }),
+  skipDeregisterOnUpdate: true,
 });
 
 new batch.EcsJobDefinition(stack, 'ECSFargateJobDefn', {
@@ -80,6 +81,7 @@ new batch.EcsJobDefinition(stack, 'ECSFargateJobDefn', {
   ],
   schedulingPriority: 10,
   timeout: Duration.minutes(10),
+  skipDeregisterOnUpdate: true,
 });
 
 new batch.EcsJobDefinition(stack, 'ECSDockerJobDefn', {
@@ -90,6 +92,7 @@ new batch.EcsJobDefinition(stack, 'ECSDockerJobDefn', {
       directory: path.join(__dirname, 'batchjob-image'),
     })),
   }),
+  skipDeregisterOnUpdate: true,
 });
 
 // can successfully launch a Windows container
@@ -102,10 +105,9 @@ new batch.EcsJobDefinition(stack, 'WindowsJobDefinitio', {
     fargateCpuArchitecture: ecs.CpuArchitecture.X86_64,
     fargateOperatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_FULL,
   }),
+  skipDeregisterOnUpdate: true,
 });
 
 new integ.IntegTest(app, 'BatchEcsJobDefinitionTest', {
   testCases: [stack],
 });
-
-app.synth();

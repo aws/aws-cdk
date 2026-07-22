@@ -1,7 +1,8 @@
 
 import * as cdkp from '../../../lib';
 import { ManualApprovalStep, Step } from '../../../lib';
-import { Graph, GraphNode, PipelineGraph } from '../../../lib/helpers-internal';
+import type { GraphNode } from '../../../lib/helpers-internal';
+import { Graph, PipelineGraph } from '../../../lib/helpers-internal';
 import { flatten } from '../../../lib/private/javascript';
 import { AppWithOutput, AppWithExposedStacks, OneStackApp, TestApp } from '../../testhelpers/test-app';
 

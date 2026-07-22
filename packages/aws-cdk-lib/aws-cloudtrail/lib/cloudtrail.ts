@@ -1,15 +1,17 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnTrail } from './cloudtrail.generated';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import * as lambda from '../../aws-lambda';
+import type * as kms from '../../aws-kms';
+import type * as lambda from '../../aws-lambda';
 import * as logs from '../../aws-logs';
 import { toILogGroup } from '../../aws-logs/lib/private/ref-utils';
 import * as s3 from '../../aws-s3';
-import * as sns from '../../aws-sns';
+import type * as sns from '../../aws-sns';
 import { Annotations, Resource, Stack, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -119,7 +121,7 @@ export interface TrailProps {
 
   /** The Amazon S3 bucket
    *
-   * @default - if not supplied a bucket will be created with all the correct permisions
+   * @default - if not supplied a bucket will be created with all the correct permissions
    */
   readonly bucket?: s3.IBucket;
 
@@ -235,7 +237,14 @@ export class Trail extends Resource {
    * i.e. arn:aws:cloudtrail:us-east-2:123456789012:trail/myCloudTrail
    * @attribute
    */
-  public readonly trailArn: string;
+  @memoizedGetter
+  get trailArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'cloudtrail',
+      resource: 'trail',
+      resourceName: this.physicalName,
+    });
+  }
 
   /**
    * ARN of the Amazon SNS topic that's associated with the CloudTrail trail,
@@ -245,6 +254,7 @@ export class Trail extends Resource {
   public readonly trailSnsTopicArn: string;
 
   private readonly _logGroup?: logs.ILogGroupRef;
+  private readonly resource: CfnTrail;
 
   /**
    * The CloudWatch log group to which CloudTrail events are sent.
@@ -345,7 +355,7 @@ export class Trail extends Resource {
     this.node.addValidation({ validate: () => this.validateEventSelectors() });
 
     if (props.kmsKey && props.encryptionKey) {
-      throw new ValidationError('Both kmsKey and encryptionKey must not be specified. Use only encryptionKey', this);
+      throw new ValidationError(lit`KmsKeyEncryptionKeySpecified`, 'Both kmsKey and encryptionKey must not be specified. Use only encryptionKey', this);
     }
 
     if (props.insightTypes) {
@@ -372,11 +382,7 @@ export class Trail extends Resource {
       insightSelectors: this.insightTypeValues,
     });
 
-    this.trailArn = this.getResourceArnAttribute(trail.attrArn, {
-      service: 'cloudtrail',
-      resource: 'trail',
-      resourceName: this.physicalName,
-    });
+    this.resource = trail;
     this.trailSnsTopicArn = trail.attrSnsTopicArn;
 
     // Add a dependency on the bucket policy being updated, CloudTrail will test this upon creation.
@@ -407,11 +413,11 @@ export class Trail extends Resource {
   @MethodMetadata()
   public addEventSelector(dataResourceType: DataResourceType, dataResourceValues: string[], options: AddEventSelectorOptions = {}) {
     if (dataResourceValues.length > 250) {
-      throw new ValidationError('A maximum of 250 data elements can be in one event selector', this);
+      throw new ValidationError(lit`MaximumDataElementsOneEvent`, 'A maximum of 250 data elements can be in one event selector', this);
     }
 
     if (this.eventSelectors.length > 5) {
-      throw new ValidationError('A maximum of 5 event selectors are supported per trail.', this);
+      throw new ValidationError(lit`MaximumEventSelectorsSupportedPer`, 'A maximum of 5 event selectors are supported per trail.', this);
     }
 
     let includeAllManagementEvents;

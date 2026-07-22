@@ -1,14 +1,22 @@
-import { Node, Construct } from 'constructs';
-import { EventPattern } from './event-pattern';
-import { CfnEventBusPolicy, CfnRule, IEventBusRef, RuleReference } from './events.generated';
-import { EventCommonOptions } from './on-event-options';
-import { IRule } from './rule-ref';
+import type { Construct } from 'constructs';
+import { Node } from 'constructs';
+import type { EventPattern } from './event-pattern';
+import type { IEventBusRef, RuleReference } from './events.generated';
+import { CfnEventBusPolicy, CfnRule } from './events.generated';
+import type { EventCommonOptions } from './on-event-options';
+import type { IRule } from './rule-ref';
 import { Schedule } from './schedule';
-import { IRuleTarget } from './target';
+import type { IRuleTarget } from './target';
 import { mergeEventPattern, renderEventPattern } from './util';
-import { IRole, IRoleRef, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
-import { App, IResource, Lazy, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat, Annotations, ValidationError } from '../../core';
+import type { IRole, IRoleRef } from '../../aws-iam';
+import { PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
+import type { IResource } from '../../core';
+import { App, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat, Annotations, ValidationError, Validations } from '../../core';
+import type { IArrayBox, IBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -69,6 +77,7 @@ export interface RuleProps extends EventCommonOptions {
  * @resource AWS::Events::Rule
  */
 @propertyInjectable
+@noBoxStackTraces
 export class Rule extends Resource implements IRule {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-events.Rule';
@@ -98,8 +107,24 @@ export class Rule extends Resource implements IRule {
     });
   }
 
-  public readonly ruleArn: string;
-  public readonly ruleName: string;
+  /**
+   * The CfnRule resource
+   */
+  private readonly _resource: CfnRule;
+
+  @memoizedGetter
+  public get ruleArn(): string {
+    return this.getResourceArnAttribute(this._resource.attrArn, {
+      service: 'events',
+      resource: 'rule',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get ruleName(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
 
   public get ruleRef(): RuleReference {
     return {
@@ -107,8 +132,8 @@ export class Rule extends Resource implements IRule {
     };
   }
 
-  private readonly targets = new Array<CfnRule.TargetProperty>();
-  private readonly eventPattern: EventPattern = { };
+  private readonly targets: IArrayBox<CfnRule.TargetProperty> = Box.fromArray();
+  private readonly eventPattern: IBox<EventPattern>;
   private readonly scheduleExpression?: string;
   private readonly description?: string;
 
@@ -123,7 +148,7 @@ export class Rule extends Resource implements IRule {
     addConstructMetadata(this, props);
 
     if (props.eventBus && props.schedule) {
-      throw new ValidationError('Cannot associate rule with \'eventBus\' when using \'schedule\'', this);
+      throw new ValidationError(lit`CannotAssociateRuleWithEventBusWhenUsingSchedule`, 'Cannot associate rule with \'eventBus\' when using \'schedule\'', this);
     }
 
     this.description = props.description;
@@ -132,23 +157,18 @@ export class Rule extends Resource implements IRule {
     // add a warning on synth when minute is not defined in a cron schedule
     props.schedule?._bind(this);
 
-    const resource = new CfnRule(this, 'Resource', {
+    this.eventPattern = Box.fromValue<EventPattern>({});
+
+    this._resource = new CfnRule(this, 'Resource', {
       name: this.physicalName,
       description: this.description,
       state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
       scheduleExpression: this.scheduleExpression,
-      eventPattern: Lazy.any({ produce: () => this._renderEventPattern() }),
-      targets: Lazy.any({ produce: () => this.renderTargets() }),
+      eventPattern: this.eventPattern.derive(_ => this._renderEventPattern()),
+      targets: this.targets.derive(t => t.length === 0 ? undefined : t),
       eventBusName: props.eventBus && props.eventBus.eventBusRef.eventBusName,
       roleArn: props.role?.roleRef.roleArn,
     });
-
-    this.ruleArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'events',
-      resource: 'rule',
-      resourceName: this.physicalName,
-    });
-    this.ruleName = this.getResourceNameAttribute(resource.ref);
 
     this.addEventPattern(props.eventPattern);
 
@@ -200,27 +220,27 @@ export class Rule extends Resource implements IRule {
 
         // for cross-account or cross-region events, we require a concrete target account and region
         if (!targetAccount || Token.isUnresolved(targetAccount)) {
-          throw new ValidationError('You need to provide a concrete account for the target stack when using cross-account or cross-region events', this);
+          throw new ValidationError(lit`NeedConcreteAccountForTargetStack`, 'You need to provide a concrete account for the target stack when using cross-account or cross-region events', this);
         }
         if (!targetRegion || Token.isUnresolved(targetRegion)) {
-          throw new ValidationError('You need to provide a concrete region for the target stack when using cross-account or cross-region events', this);
+          throw new ValidationError(lit`NeedConcreteRegionForTargetStack`, 'You need to provide a concrete region for the target stack when using cross-account or cross-region events', this);
         }
         if (Token.isUnresolved(sourceAccount)) {
-          throw new ValidationError('You need to provide a concrete account for the source stack when using cross-account or cross-region events', this);
+          throw new ValidationError(lit`NeedConcreteAccountForSourceStack`, 'You need to provide a concrete account for the source stack when using cross-account or cross-region events', this);
         }
 
         // Don't exactly understand why this code was here (seems unlikely this rule would be violated), but
         // let's leave it in nonetheless.
         const sourceApp = this.node.root;
         if (!sourceApp || !App.isApp(sourceApp)) {
-          throw new ValidationError('Event stack which uses cross-account or cross-region targets must be part of a CDK app', this);
+          throw new ValidationError(lit`EventStackMustBePartOfCdkApp`, 'Event stack which uses cross-account or cross-region targets must be part of a CDK app', this);
         }
         const targetApp = Node.of(targetProps.targetResource).root;
         if (!targetApp || !App.isApp(targetApp)) {
-          throw new ValidationError('Target stack which uses cross-account or cross-region event targets must be part of a CDK app', this);
+          throw new ValidationError(lit`TargetStackMustBePartOfCdkApp`, 'Target stack which uses cross-account or cross-region event targets must be part of a CDK app', this);
         }
         if (sourceApp !== targetApp) {
-          throw new ValidationError('Event stack and target stack must belong to the same CDK app', this);
+          throw new ValidationError(lit`StacksMustBelongToSameCdkApp`, 'Event stack and target stack must belong to the same CDK app', this);
         }
 
         // The target of this Rule will be the default event bus of the target environment
@@ -241,7 +261,7 @@ export class Rule extends Resource implements IRule {
         const mirrorRuleScope = this.obtainMirrorRuleScope(targetStack, targetAccount, targetRegion);
         new MirrorRule(mirrorRuleScope, `${Names.uniqueId(this)}-${id}`, {
           targets: [target],
-          eventPattern: this.eventPattern,
+          eventPattern: this.eventPattern.getMutable(),
           schedule: this.scheduleExpression ? Schedule.expression(this.scheduleExpression) : undefined,
           description: this.description,
         }, this);
@@ -315,7 +335,7 @@ export class Rule extends Resource implements IRule {
     if (!eventPattern) {
       return;
     }
-    mergeEventPattern(this.eventPattern, eventPattern);
+    mergeEventPattern(this.eventPattern.getMutable(), eventPattern);
   }
 
   /**
@@ -324,7 +344,7 @@ export class Rule extends Resource implements IRule {
    * @internal
    */
   public _renderEventPattern(): any {
-    return renderEventPattern(this.eventPattern);
+    return renderEventPattern(this.eventPattern.getMutable());
   }
 
   protected validateRule() {
@@ -340,7 +360,7 @@ export class Rule extends Resource implements IRule {
       }
     }
 
-    if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
+    if (Object.keys(this.eventPattern.get()).length === 0 && !this.scheduleExpression) {
       errors.push('Either \'eventPattern\' or \'schedule\' must be defined');
     }
 
@@ -349,14 +369,6 @@ export class Rule extends Resource implements IRule {
     }
 
     return errors;
-  }
-
-  private renderTargets() {
-    if (this.targets.length === 0) {
-      return undefined;
-    }
-
-    return this.targets;
   }
 
   /**
@@ -425,9 +437,13 @@ export class Rule extends Resource implements IRule {
           }),
           principal: sourceAccount,
         });
+        Validations.of(eventBusPolicyStack).acknowledge({
+          id: 'CloudFormation-Validate::W9009',
+          reason: 'action is deprecated, but still in use for historical reasons',
+        });
       }
       // deploy the event bus permissions before the source stack
-      Stack.of(this).addDependency(eventBusPolicyStack);
+      Stack.of(this).addStackDependency(eventBusPolicyStack);
     }
   }
 
@@ -448,7 +464,7 @@ export class Rule extends Resource implements IRule {
     }
 
     // For now, we don't do the work for the support stack yet
-    throw new ValidationError('Cannot create a cross-account or cross-region rule for an imported resource (create a stack with the right environment for the imported resource)', this);
+    throw new ValidationError(lit`CannotCreateCrossAccountRuleForImportedResource`, 'Cannot create a cross-account or cross-region rule for an imported resource (create a stack with the right environment for the imported resource)', this);
   }
 
   /**

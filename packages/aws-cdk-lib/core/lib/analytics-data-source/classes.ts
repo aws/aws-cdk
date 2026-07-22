@@ -539,6 +539,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'description': '*'
     }
   },
+  '@aws-cdk.aws-dsql-alpha': {
+    'Cluster': {}
+  },
   '@aws-cdk.aws-ec2-alpha': {
     'IpamPool': {
       'ipamScopeId': '*',
@@ -1158,7 +1161,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
   '@aws-cdk.aws-elasticache-alpha': {
     'IamUser': {
       'userName': '*',
-      'engine': 'UserEngine',
+      'engine': '*',
       'userId': '*',
       'accessControl': '*',
       'grantConnect': [
@@ -1183,19 +1186,19 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'NoPasswordUser': {
       'userName': '*',
-      'engine': 'UserEngine',
+      'engine': '*',
       'userId': '*',
       'accessControl': '*'
     },
     'PasswordUser': {
       'userName': '*',
       'passwords': '*',
-      'engine': 'UserEngine',
+      'engine': '*',
       'userId': '*',
       'accessControl': '*'
     },
     'ServerlessCache': {
-      'engine': 'CacheEngine',
+      'engine': '*',
       'serverlessCacheName': '*',
       'description': '*',
       'cacheUsageLimits': {
@@ -1279,10 +1282,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'userGroup': {
         'userGroupName': '*',
-        'engine': 'UserEngine',
+        'engine': '*',
         'users': {
           'userId': '*',
-          'engine': 'UserEngine',
           'userName': '*',
           'userArn': '*',
           'stack': '*',
@@ -1297,10 +1299,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'UserGroup': {
       'userGroupName': '*',
-      'engine': 'UserEngine',
+      'engine': '*',
       'users': {
         'userId': '*',
-        'engine': 'UserEngine',
+        'engine': '*',
         'userName': '*',
         'userArn': '*',
         'stack': '*',
@@ -1313,7 +1315,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'addUser': [
         {
           'userId': '*',
-          'engine': 'UserEngine',
+          'engine': '*',
           'userName': '*',
           'userArn': '*',
           'stack': '*',
@@ -1826,6 +1828,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'enablePartitionFiltering': 'boolean',
       'storageParameters': '*',
       'parameters': '*',
+      'partitionProjection': '*',
       'grantRead': [
         {
           'grantPrincipal': {
@@ -1929,6 +1932,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'enablePartitionFiltering': 'boolean',
       'storageParameters': '*',
       'parameters': '*',
+      'partitionProjection': '*',
       'grantRead': [
         {
           'grantPrincipal': {
@@ -3621,6 +3625,177 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       ]
     }
   },
+  '@aws-cdk.aws-mediapackagev2-alpha': {
+    'ChannelPolicy': {
+      'channel': {
+        'channelGroupName': '*',
+        'channelName': '*',
+        'channelArn': '*',
+        'createdAt': '*',
+        'modifiedAt': '*',
+        'ingestEndpointUrls': '*',
+        'channelGroup': {
+          'channelGroupName': '*',
+          'channelGroupArn': '*',
+          'egressDomain': '*',
+          'createdAt': '*',
+          'modifiedAt': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'region': '*',
+        'grants': '*'
+      },
+      'policyDocument': '*'
+    },
+    'Channel': {
+      'channelGroup': {
+        'channelGroupName': '*',
+        'channelGroupArn': '*',
+        'egressDomain': '*',
+        'createdAt': '*',
+        'modifiedAt': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'channelName': '*',
+      'input': '*',
+      'description': '*',
+      'tags': '*',
+      'removalPolicy': 'RemovalPolicy'
+    },
+    'OriginEndpoint': {
+      'channel': {
+        'channelGroupName': '*',
+        'channelName': '*',
+        'channelArn': '*',
+        'createdAt': '*',
+        'modifiedAt': '*',
+        'ingestEndpointUrls': '*',
+        'channelGroup': {
+          'channelGroupName': '*',
+          'channelGroupArn': '*',
+          'egressDomain': '*',
+          'createdAt': '*',
+          'modifiedAt': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'region': '*',
+        'grants': '*'
+      },
+      'originEndpointName': '*',
+      'description': '*',
+      'tags': '*',
+      'manifests': '*',
+      'startoverWindow': '*',
+      'segment': {
+        'containerType': 'ContainerType',
+        'includeIframeOnlyStreams': 'boolean',
+        'scteFilter': 'ScteMessageType',
+        'scteInSegments': 'ScteInSegments',
+        'segmentDuration': '*',
+        'segmentName': '*',
+        'tsIncludeDvbSubtitles': 'boolean',
+        'tsUseAudioRenditionGroup': 'boolean',
+        'encryption': '*'
+      },
+      'forceEndpointConfigurationConditions': 'EndpointErrorConfiguration',
+      'cdnAuth': {
+        'secrets': {
+          'encryptionKey': {
+            'keyArn': '*',
+            'keyId': '*',
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'secretArn': '*',
+          'secretFullArn': '*',
+          'secretName': '*',
+          'secretValue': '*'
+        },
+        'role': {
+          'roleArn': '*',
+          'roleName': '*',
+          'assumeRoleAction': '*',
+          'policyFragment': '*',
+          'principalAccount': '*',
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'principalAccount': '*'
+          }
+        }
+      },
+      'removalPolicy': 'RemovalPolicy'
+    },
+    'ChannelGroup': {},
+    'OriginEndpointPolicy': {
+      'originEndpoint': {
+        'channelGroupName': '*',
+        'channelName': '*',
+        'originEndpointName': '*',
+        'originEndpointArn': '*',
+        'createdAt': '*',
+        'modifiedAt': '*',
+        'hlsManifestUrls': '*',
+        'lowLatencyHlsManifestUrls': '*',
+        'dashManifestUrls': '*',
+        'mssManifestUrls': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'policyDocument': '*',
+      'cdnAuth': {
+        'secrets': {
+          'encryptionKey': {
+            'keyArn': '*',
+            'keyId': '*',
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'secretArn': '*',
+          'secretFullArn': '*',
+          'secretName': '*',
+          'secretValue': '*'
+        },
+        'role': {
+          'roleArn': '*',
+          'roleName': '*',
+          'assumeRoleAction': '*',
+          'policyFragment': '*',
+          'principalAccount': '*',
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'principalAccount': '*'
+          }
+        }
+      }
+    }
+  },
   '@aws-cdk.aws-msk-alpha': {
     'Cluster': {
       'clusterName': '*',
@@ -4593,7 +4768,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'removalPolicy': 'RemovalPolicy'
+      'removalPolicy': 'RemovalPolicy',
+      'requestMetricsStatus': 'RequestMetricsStatus'
     },
     'TablePolicy': {
       'table': {
@@ -4640,10 +4816,32 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'icebergMetadata': {
         'icebergSchema': {
           'schemaFieldList': {
+            'id': '*',
             'name': '*',
             'required': 'boolean',
             'type': '*'
           }
+        },
+        'icebergPartitionSpec': {
+          'fields': {
+            'sourceId': '*',
+            'transform': '*',
+            'name': '*',
+            'fieldId': '*'
+          },
+          'specId': '*'
+        },
+        'icebergSortOrder': {
+          'fields': {
+            'sourceId': '*',
+            'direction': 'SortDirection',
+            'nullOrder': 'NullOrder'
+          },
+          'orderId': '*'
+        },
+        'tableProperties': {
+          'key': '*',
+          'value': '*'
         }
       },
       'snapshotManagement': {
@@ -4663,6 +4861,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'acceleratorType': '*',
         'initialInstanceCount': '*',
         'instanceType': '*',
+        'containerStartupHealthCheckTimeout': '*',
         'initialVariantWeight': '*',
         'model': {
           'modelArn': '*',
@@ -4722,6 +4921,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'acceleratorType': '*',
           'initialInstanceCount': '*',
           'instanceType': '*',
+          'containerStartupHealthCheckTimeout': '*',
           'initialVariantWeight': '*',
           'model': {
             'modelArn': '*',
@@ -4892,6 +5092,17 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'modelData': '*'
         }
       ]
+    },
+    'Pipeline': {
+      'grantStartPipelineExecution': [
+        {
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
+        }
+      ]
     }
   },
   '@aws-cdk.aws-servicecatalogappregistry-alpha': {
@@ -5006,1057 +5217,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'connections': '*'
       },
       'removalPolicy': 'RemovalPolicy'
-    }
-  },
-  '@aws-cdk.aws-eks-v2-alpha': {
-    'AccessEntry': {
-      'accessEntryName': '*',
-      'accessEntryType': 'AccessEntryType',
-      'cluster': {
-        'vpc': {
-          'vpcId': '*',
-          'vpcArn': '*',
-          'vpcCidrBlock': '*',
-          'publicSubnets': {
-            'availabilityZone': '*',
-            'subnetId': '*',
-            'internetConnectivityEstablished': '*',
-            'ipv4CidrBlock': '*',
-            'routeTable': {
-              'routeTableId': '*'
-            },
-            'stack': '*',
-            'node': '*',
-            'env': {
-              'account': '*',
-              'region': '*'
-            }
-          },
-          'availabilityZones': '*',
-          'vpnGatewayId': '*'
-        },
-        'clusterName': '*',
-        'clusterArn': '*',
-        'clusterEndpoint': '*',
-        'clusterCertificateAuthorityData': '*',
-        'clusterSecurityGroupId': '*',
-        'clusterSecurityGroup': {
-          'securityGroupId': '*',
-          'allowAllOutbound': 'boolean',
-          'canInlineRule': 'boolean',
-          'uniqueId': '*',
-          'connections': '*'
-        },
-        'clusterEncryptionConfigKeyArn': '*',
-        'openIdConnectProvider': {
-          'openIdConnectProviderArn': '*',
-          'openIdConnectProviderIssuer': '*'
-        },
-        'eksPodIdentityAgent': {
-          'addonName': '*',
-          'addonArn': '*'
-        },
-        'ipFamily': 'IpFamily',
-        'kubectlProviderOptions': {
-          'role': {
-            'roleArn': '*',
-            'roleName': '*',
-            'assumeRoleAction': '*',
-            'policyFragment': '*',
-            'principalAccount': '*',
-            'grantPrincipal': {
-              'assumeRoleAction': '*',
-              'principalAccount': '*'
-            }
-          },
-          'awscliLayer': {
-            'layerVersionArn': '*',
-            'compatibleRuntimes': '*'
-          },
-          'environment': '*',
-          'memory': '*'
-        },
-        'kubectlProvider': {
-          'serviceToken': '*'
-        },
-        'prune': 'boolean'
-      },
-      'accessPolicies': {
-        'accessScope': {
-          'namespaces': '*',
-          'type': 'AccessScopeType'
-        },
-        'policy': '*'
-      },
-      'principal': '*',
-      'addAccessPolicies': [
-        {
-          'accessScope': {
-            'namespaces': '*',
-            'type': 'AccessScopeType'
-          },
-          'policy': '*'
-        }
-      ]
-    },
-    'Addon': {
-      'addonName': '*',
-      'addonVersion': '*',
-      'cluster': {
-        'vpc': {
-          'vpcId': '*',
-          'vpcArn': '*',
-          'vpcCidrBlock': '*',
-          'publicSubnets': {
-            'availabilityZone': '*',
-            'subnetId': '*',
-            'internetConnectivityEstablished': '*',
-            'ipv4CidrBlock': '*',
-            'routeTable': {
-              'routeTableId': '*'
-            },
-            'stack': '*',
-            'node': '*',
-            'env': {
-              'account': '*',
-              'region': '*'
-            }
-          },
-          'availabilityZones': '*',
-          'vpnGatewayId': '*'
-        },
-        'clusterName': '*',
-        'clusterArn': '*',
-        'clusterEndpoint': '*',
-        'clusterCertificateAuthorityData': '*',
-        'clusterSecurityGroupId': '*',
-        'clusterSecurityGroup': {
-          'securityGroupId': '*',
-          'allowAllOutbound': 'boolean',
-          'canInlineRule': 'boolean',
-          'uniqueId': '*',
-          'connections': '*'
-        },
-        'clusterEncryptionConfigKeyArn': '*',
-        'openIdConnectProvider': {
-          'openIdConnectProviderArn': '*',
-          'openIdConnectProviderIssuer': '*'
-        },
-        'eksPodIdentityAgent': {
-          'addonName': '*',
-          'addonArn': '*'
-        },
-        'ipFamily': 'IpFamily',
-        'kubectlProviderOptions': {
-          'role': {
-            'roleArn': '*',
-            'roleName': '*',
-            'assumeRoleAction': '*',
-            'policyFragment': '*',
-            'principalAccount': '*',
-            'grantPrincipal': {
-              'assumeRoleAction': '*',
-              'principalAccount': '*'
-            }
-          },
-          'awscliLayer': {
-            'layerVersionArn': '*',
-            'compatibleRuntimes': '*'
-          },
-          'environment': '*',
-          'memory': '*'
-        },
-        'kubectlProvider': {
-          'serviceToken': '*'
-        },
-        'prune': 'boolean'
-      },
-      'preserveOnDelete': 'boolean',
-      'configurationValues': '*'
-    },
-    'Cluster': {
-      'compute': {
-        'nodePools': '*',
-        'nodeRole': {
-          'roleArn': '*',
-          'roleName': '*',
-          'assumeRoleAction': '*',
-          'policyFragment': '*',
-          'principalAccount': '*',
-          'grantPrincipal': {
-            'assumeRoleAction': '*',
-            'principalAccount': '*'
-          },
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        }
-      },
-      'defaultCapacity': '*',
-      'defaultCapacityInstance': '*',
-      'defaultCapacityType': 'DefaultCapacityType',
-      'bootstrapClusterCreatorAdminPermissions': 'boolean',
-      'outputConfigCommand': 'boolean',
-      'vpc': {
-        'vpcId': '*',
-        'vpcArn': '*',
-        'vpcCidrBlock': '*',
-        'publicSubnets': {
-          'availabilityZone': '*',
-          'subnetId': '*',
-          'internetConnectivityEstablished': '*',
-          'ipv4CidrBlock': '*',
-          'routeTable': {
-            'routeTableId': '*'
-          },
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        },
-        'availabilityZones': '*',
-        'vpnGatewayId': '*'
-      },
-      'vpcSubnets': {
-        'subnetType': 'SubnetType',
-        'availabilityZones': '*',
-        'subnetGroupName': '*',
-        'subnetName': '*',
-        'onePerAz': 'boolean',
-        'subnetFilters': '*',
-        'subnets': {
-          'availabilityZone': '*',
-          'subnetId': '*',
-          'internetConnectivityEstablished': '*',
-          'ipv4CidrBlock': '*',
-          'routeTable': {
-            'routeTableId': '*'
-          },
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        }
-      },
-      'role': {
-        'roleArn': '*',
-        'roleName': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
-      'clusterName': '*',
-      'securityGroup': {
-        'securityGroupId': '*',
-        'allowAllOutbound': 'boolean',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'canInlineRule': 'boolean',
-        'uniqueId': '*',
-        'connections': '*'
-      },
-      'version': '*',
-      'mastersRole': {
-        'roleArn': '*',
-        'roleName': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
-      'coreDnsComputeType': 'CoreDnsComputeType',
-      'endpointAccess': '*',
-      'prune': 'boolean',
-      'secretsEncryptionKey': '*',
-      'ipFamily': 'IpFamily',
-      'serviceIpv4Cidr': '*',
-      'albController': {
-        'version': '*',
-        'repository': '*',
-        'policy': '*'
-      },
-      'clusterLogging': 'ClusterLoggingTypes',
-      'tags': '*',
-      'kubectlProviderOptions': {
-        'role': {
-          'roleArn': '*',
-          'roleName': '*',
-          'assumeRoleAction': '*',
-          'policyFragment': '*',
-          'principalAccount': '*',
-          'grantPrincipal': {
-            'assumeRoleAction': '*',
-            'principalAccount': '*'
-          },
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        },
-        'awscliLayer': {
-          'layerVersionArn': '*',
-          'compatibleRuntimes': '*'
-        },
-        'environment': '*',
-        'securityGroup': {
-          'securityGroupId': '*',
-          'allowAllOutbound': 'boolean',
-          'canInlineRule': 'boolean',
-          'uniqueId': '*',
-          'connections': '*'
-        },
-        'memory': '*',
-        'privateSubnets': {
-          'availabilityZone': '*',
-          'subnetId': '*',
-          'internetConnectivityEstablished': '*',
-          'ipv4CidrBlock': '*',
-          'routeTable': {
-            'routeTableId': '*'
-          }
-        }
-      },
-      'grantAccess': [
-        '*',
-        '*',
-        {
-          'accessScope': {
-            'namespaces': '*',
-            'type': 'AccessScopeType'
-          },
-          'policy': '*'
-        }
-      ],
-      'grantClusterAdmin': [
-        '*',
-        '*'
-      ],
-      'getServiceLoadBalancerAddress': [
-        '*',
-        {
-          'timeout': '*',
-          'namespace': '*'
-        }
-      ],
-      'getIngressLoadBalancerAddress': [
-        '*',
-        {
-          'timeout': '*',
-          'namespace': '*'
-        }
-      ],
-      'addAutoScalingGroupCapacity': [
-        '*',
-        {
-          'instanceType': '*',
-          'bootstrapEnabled': 'boolean',
-          'bootstrapOptions': {
-            'useMaxPods': 'boolean',
-            'enableDockerBridge': 'boolean',
-            'awsApiRetryAttempts': '*',
-            'dockerConfigJson': '*',
-            'dnsClusterIp': '*',
-            'kubeletExtraArgs': '*',
-            'additionalArgs': '*'
-          },
-          'machineImageType': 'MachineImageType',
-          'minCapacity': '*',
-          'maxCapacity': '*',
-          'desiredCapacity': '*',
-          'keyName': '*',
-          'keyPair': {
-            'keyPairName': '*',
-            'type': 'KeyPairType',
-            'stack': '*',
-            'node': '*',
-            'env': {
-              'account': '*',
-              'region': '*'
-            }
-          },
-          'vpcSubnets': {
-            'subnetType': 'SubnetType',
-            'availabilityZones': '*',
-            'subnetGroupName': '*',
-            'subnetName': '*',
-            'onePerAz': 'boolean',
-            'subnetFilters': '*',
-            'subnets': {
-              'availabilityZone': '*',
-              'subnetId': '*',
-              'internetConnectivityEstablished': '*',
-              'ipv4CidrBlock': '*',
-              'routeTable': {
-                'routeTableId': '*'
-              }
-            }
-          },
-          'notificationsTopic': {
-            'topicArn': '*',
-            'topicName': '*',
-            'masterKey': {
-              'keyArn': '*',
-              'keyId': '*'
-            },
-            'contentBasedDeduplication': 'boolean',
-            'fifo': 'boolean'
-          },
-          'notifications': {
-            'scalingEvents': '*'
-          },
-          'allowAllOutbound': 'boolean',
-          'updateType': 'UpdateType',
-          'rollingUpdateConfiguration': {
-            'maxBatchSize': '*',
-            'minInstancesInService': '*',
-            'minSuccessfulInstancesPercent': '*',
-            'pauseTime': '*',
-            'waitOnResourceSignals': 'boolean',
-            'suspendProcesses': 'ScalingProcess'
-          },
-          'replacingUpdateMinSuccessfulInstancesPercent': '*',
-          'ignoreUnmodifiedSizeProperties': 'boolean',
-          'resourceSignalCount': '*',
-          'associatePublicIpAddress': 'boolean',
-          'spotPrice': '*',
-          'healthCheck': '*',
-          'healthChecks': '*',
-          'blockDevices': {
-            'deviceName': '*',
-            'volume': '*',
-            'mappingEnabled': 'boolean'
-          },
-          'instanceMonitoring': 'Monitoring',
-          'groupMetrics': '*',
-          'signals': '*',
-          'updatePolicy': '*',
-          'newInstancesProtectedFromScaleIn': 'boolean',
-          'autoScalingGroupName': '*',
-          'terminationPolicies': 'TerminationPolicy',
-          'terminationPolicyCustomLambdaFunctionArn': '*',
-          'capacityRebalance': 'boolean',
-          'ssmSessionPermissions': 'boolean',
-          'azCapacityDistributionStrategy': 'CapacityDistributionStrategy'
-        }
-      ],
-      'addNodegroupCapacity': [
-        '*',
-        {
-          'nodegroupName': '*',
-          'subnets': {
-            'subnetType': 'SubnetType',
-            'availabilityZones': '*',
-            'subnetGroupName': '*',
-            'subnetName': '*',
-            'onePerAz': 'boolean',
-            'subnetFilters': '*',
-            'subnets': {
-              'availabilityZone': '*',
-              'subnetId': '*',
-              'internetConnectivityEstablished': '*',
-              'ipv4CidrBlock': '*',
-              'routeTable': {
-                'routeTableId': '*'
-              },
-              'stack': '*',
-              'node': '*',
-              'env': {
-                'account': '*',
-                'region': '*'
-              }
-            }
-          },
-          'amiType': 'NodegroupAmiType',
-          'diskSize': '*',
-          'desiredSize': '*',
-          'maxSize': '*',
-          'minSize': '*',
-          'forceUpdate': 'boolean',
-          'instanceType': '*',
-          'labels': '*',
-          'taints': {
-            'effect': 'TaintEffect',
-            'key': '*',
-            'value': '*'
-          },
-          'nodeRole': {
-            'roleArn': '*',
-            'roleName': '*',
-            'assumeRoleAction': '*',
-            'policyFragment': '*',
-            'principalAccount': '*',
-            'grantPrincipal': {
-              'assumeRoleAction': '*',
-              'principalAccount': '*'
-            }
-          },
-          'releaseVersion': '*',
-          'remoteAccess': {
-            'sshKeyName': '*',
-            'sourceSecurityGroups': {
-              'securityGroupId': '*',
-              'allowAllOutbound': 'boolean',
-              'canInlineRule': 'boolean',
-              'uniqueId': '*',
-              'connections': '*'
-            }
-          },
-          'tags': '*',
-          'launchTemplateSpec': {
-            'id': '*',
-            'version': '*'
-          },
-          'capacityType': 'CapacityType',
-          'maxUnavailable': '*',
-          'maxUnavailablePercentage': '*',
-          'enableNodeAutoRepair': 'boolean'
-        }
-      ],
-      'addFargateProfile': [
-        '*',
-        {
-          'fargateProfileName': '*',
-          'podExecutionRole': {
-            'roleArn': '*',
-            'roleName': '*',
-            'assumeRoleAction': '*',
-            'policyFragment': '*',
-            'principalAccount': '*',
-            'grantPrincipal': {
-              'assumeRoleAction': '*',
-              'principalAccount': '*'
-            },
-            'stack': '*',
-            'node': '*',
-            'env': {
-              'account': '*',
-              'region': '*'
-            }
-          },
-          'selectors': {
-            'namespace': '*',
-            'labels': '*'
-          },
-          'vpc': {
-            'vpcId': '*',
-            'vpcArn': '*',
-            'vpcCidrBlock': '*',
-            'publicSubnets': {
-              'availabilityZone': '*',
-              'subnetId': '*',
-              'internetConnectivityEstablished': '*',
-              'ipv4CidrBlock': '*',
-              'routeTable': {
-                'routeTableId': '*'
-              }
-            },
-            'availabilityZones': '*',
-            'vpnGatewayId': '*'
-          },
-          'subnetSelection': {
-            'subnetType': 'SubnetType',
-            'availabilityZones': '*',
-            'subnetGroupName': '*',
-            'subnetName': '*',
-            'onePerAz': 'boolean',
-            'subnetFilters': '*'
-          }
-        }
-      ],
-      '_attachFargateProfile': [
-        '*'
-      ],
-      '_dependOnKubectlBarrier': [
-        '*'
-      ]
-    },
-    'ImportedCluster': {
-      'vpc': {
-        'vpcId': '*',
-        'vpcArn': '*',
-        'vpcCidrBlock': '*',
-        'publicSubnets': {
-          'availabilityZone': '*',
-          'subnetId': '*',
-          'internetConnectivityEstablished': '*',
-          'ipv4CidrBlock': '*',
-          'routeTable': {
-            'routeTableId': '*'
-          },
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        },
-        'availabilityZones': '*',
-        'vpnGatewayId': '*'
-      },
-      'clusterName': '*',
-      'clusterEndpoint': '*',
-      'clusterCertificateAuthorityData': '*',
-      'clusterSecurityGroupId': '*',
-      'clusterEncryptionConfigKeyArn': '*',
-      'ipFamily': 'IpFamily',
-      'securityGroupIds': '*',
-      'openIdConnectProvider': {
-        'openIdConnectProviderArn': '*',
-        'openIdConnectProviderIssuer': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
-      'kubectlProvider': {
-        'serviceToken': '*',
-        'role': {
-          'roleArn': '*',
-          'roleName': '*',
-          'assumeRoleAction': '*',
-          'policyFragment': '*',
-          'principalAccount': '*',
-          'grantPrincipal': {
-            'assumeRoleAction': '*',
-            'principalAccount': '*'
-          },
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        }
-      },
-      'kubectlProviderOptions': {
-        'role': {
-          'roleArn': '*',
-          'roleName': '*',
-          'assumeRoleAction': '*',
-          'policyFragment': '*',
-          'principalAccount': '*',
-          'grantPrincipal': {
-            'assumeRoleAction': '*',
-            'principalAccount': '*'
-          },
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        },
-        'awscliLayer': {
-          'layerVersionArn': '*',
-          'compatibleRuntimes': '*'
-        },
-        'environment': '*',
-        'securityGroup': {
-          'securityGroupId': '*',
-          'allowAllOutbound': 'boolean',
-          'canInlineRule': 'boolean',
-          'uniqueId': '*',
-          'connections': '*'
-        },
-        'memory': '*',
-        'privateSubnets': {
-          'availabilityZone': '*',
-          'subnetId': '*',
-          'internetConnectivityEstablished': '*',
-          'ipv4CidrBlock': '*',
-          'routeTable': {
-            'routeTableId': '*'
-          }
-        }
-      },
-      'prune': 'boolean'
-    },
-    'FargateCluster': {
-      'defaultProfile': {
-        'fargateProfileName': '*',
-        'podExecutionRole': {
-          'roleArn': '*',
-          'roleName': '*',
-          'assumeRoleAction': '*',
-          'policyFragment': '*',
-          'principalAccount': '*',
-          'grantPrincipal': {
-            'assumeRoleAction': '*',
-            'principalAccount': '*'
-          },
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        },
-        'selectors': {
-          'namespace': '*',
-          'labels': '*'
-        },
-        'vpc': {
-          'vpcId': '*',
-          'vpcArn': '*',
-          'vpcCidrBlock': '*',
-          'publicSubnets': {
-            'availabilityZone': '*',
-            'subnetId': '*',
-            'internetConnectivityEstablished': '*',
-            'ipv4CidrBlock': '*',
-            'routeTable': {
-              'routeTableId': '*'
-            }
-          },
-          'availabilityZones': '*',
-          'vpnGatewayId': '*'
-        },
-        'subnetSelection': {
-          'subnetType': 'SubnetType',
-          'availabilityZones': '*',
-          'subnetGroupName': '*',
-          'subnetName': '*',
-          'onePerAz': 'boolean',
-          'subnetFilters': '*'
-        }
-      },
-      'vpc': {
-        'vpcId': '*',
-        'vpcArn': '*',
-        'vpcCidrBlock': '*',
-        'publicSubnets': {
-          'availabilityZone': '*',
-          'subnetId': '*',
-          'internetConnectivityEstablished': '*',
-          'ipv4CidrBlock': '*',
-          'routeTable': {
-            'routeTableId': '*'
-          },
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        },
-        'availabilityZones': '*',
-        'vpnGatewayId': '*'
-      },
-      'vpcSubnets': {
-        'subnetType': 'SubnetType',
-        'availabilityZones': '*',
-        'subnetGroupName': '*',
-        'subnetName': '*',
-        'onePerAz': 'boolean',
-        'subnetFilters': '*',
-        'subnets': {
-          'availabilityZone': '*',
-          'subnetId': '*',
-          'internetConnectivityEstablished': '*',
-          'ipv4CidrBlock': '*',
-          'routeTable': {
-            'routeTableId': '*'
-          },
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        }
-      },
-      'role': {
-        'roleArn': '*',
-        'roleName': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
-      'clusterName': '*',
-      'securityGroup': {
-        'securityGroupId': '*',
-        'allowAllOutbound': 'boolean',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'canInlineRule': 'boolean',
-        'uniqueId': '*',
-        'connections': '*'
-      },
-      'version': '*',
-      'mastersRole': {
-        'roleArn': '*',
-        'roleName': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
-      'coreDnsComputeType': 'CoreDnsComputeType',
-      'endpointAccess': '*',
-      'prune': 'boolean',
-      'secretsEncryptionKey': '*',
-      'ipFamily': 'IpFamily',
-      'serviceIpv4Cidr': '*',
-      'albController': {
-        'version': '*',
-        'repository': '*',
-        'policy': '*'
-      },
-      'clusterLogging': 'ClusterLoggingTypes',
-      'tags': '*',
-      'kubectlProviderOptions': {
-        'role': {
-          'roleArn': '*',
-          'roleName': '*',
-          'assumeRoleAction': '*',
-          'policyFragment': '*',
-          'principalAccount': '*',
-          'grantPrincipal': {
-            'assumeRoleAction': '*',
-            'principalAccount': '*'
-          },
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        },
-        'awscliLayer': {
-          'layerVersionArn': '*',
-          'compatibleRuntimes': '*'
-        },
-        'environment': '*',
-        'securityGroup': {
-          'securityGroupId': '*',
-          'allowAllOutbound': 'boolean',
-          'canInlineRule': 'boolean',
-          'uniqueId': '*',
-          'connections': '*'
-        },
-        'memory': '*',
-        'privateSubnets': {
-          'availabilityZone': '*',
-          'subnetId': '*',
-          'internetConnectivityEstablished': '*',
-          'ipv4CidrBlock': '*',
-          'routeTable': {
-            'routeTableId': '*'
-          }
-        }
-      }
-    },
-    'Nodegroup': {
-      'cluster': {
-        'vpc': {
-          'vpcId': '*',
-          'vpcArn': '*',
-          'vpcCidrBlock': '*',
-          'publicSubnets': {
-            'availabilityZone': '*',
-            'subnetId': '*',
-            'internetConnectivityEstablished': '*',
-            'ipv4CidrBlock': '*',
-            'routeTable': {
-              'routeTableId': '*'
-            },
-            'stack': '*',
-            'node': '*',
-            'env': {
-              'account': '*',
-              'region': '*'
-            }
-          },
-          'availabilityZones': '*',
-          'vpnGatewayId': '*'
-        },
-        'clusterName': '*',
-        'clusterArn': '*',
-        'clusterEndpoint': '*',
-        'clusterCertificateAuthorityData': '*',
-        'clusterSecurityGroupId': '*',
-        'clusterSecurityGroup': {
-          'securityGroupId': '*',
-          'allowAllOutbound': 'boolean',
-          'canInlineRule': 'boolean',
-          'uniqueId': '*',
-          'connections': '*'
-        },
-        'clusterEncryptionConfigKeyArn': '*',
-        'openIdConnectProvider': {
-          'openIdConnectProviderArn': '*',
-          'openIdConnectProviderIssuer': '*'
-        },
-        'eksPodIdentityAgent': {
-          'addonName': '*',
-          'addonArn': '*'
-        },
-        'ipFamily': 'IpFamily',
-        'kubectlProviderOptions': {
-          'role': {
-            'roleArn': '*',
-            'roleName': '*',
-            'assumeRoleAction': '*',
-            'policyFragment': '*',
-            'principalAccount': '*',
-            'grantPrincipal': {
-              'assumeRoleAction': '*',
-              'principalAccount': '*'
-            }
-          },
-          'awscliLayer': {
-            'layerVersionArn': '*',
-            'compatibleRuntimes': '*'
-          },
-          'environment': '*',
-          'memory': '*'
-        },
-        'kubectlProvider': {
-          'serviceToken': '*'
-        },
-        'prune': 'boolean'
-      },
-      'nodegroupName': '*',
-      'subnets': {
-        'subnetType': 'SubnetType',
-        'availabilityZones': '*',
-        'subnetGroupName': '*',
-        'subnetName': '*',
-        'onePerAz': 'boolean',
-        'subnetFilters': '*',
-        'subnets': {
-          'availabilityZone': '*',
-          'subnetId': '*',
-          'internetConnectivityEstablished': '*',
-          'ipv4CidrBlock': '*',
-          'routeTable': {
-            'routeTableId': '*'
-          },
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        }
-      },
-      'amiType': 'NodegroupAmiType',
-      'diskSize': '*',
-      'desiredSize': '*',
-      'maxSize': '*',
-      'minSize': '*',
-      'forceUpdate': 'boolean',
-      'instanceType': '*',
-      'instanceTypes': '*',
-      'labels': '*',
-      'taints': {
-        'effect': 'TaintEffect',
-        'key': '*',
-        'value': '*'
-      },
-      'nodeRole': {
-        'roleArn': '*',
-        'roleName': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
-      'releaseVersion': '*',
-      'remoteAccess': {
-        'sshKeyName': '*',
-        'sourceSecurityGroups': {
-          'securityGroupId': '*',
-          'allowAllOutbound': 'boolean',
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'canInlineRule': 'boolean',
-          'uniqueId': '*',
-          'connections': '*'
-        }
-      },
-      'tags': '*',
-      'launchTemplateSpec': {
-        'id': '*',
-        'version': '*'
-      },
-      'capacityType': 'CapacityType',
-      'maxUnavailable': '*',
-      'maxUnavailablePercentage': '*',
-      'enableNodeAutoRepair': 'boolean'
-    },
-    'OpenIdConnectProvider': {
-      'url': '*'
     }
   },
   'aws-cdk-lib.aws-apigateway': {
@@ -6585,6 +5745,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'certificate': '*',
       'endpointType': 'EndpointType',
       'securityPolicy': 'SecurityPolicy',
+      'endpointAccessMode': 'EndpointAccessMode',
       'mtls': {
         'bucket': {
           'bucketArn': '*',
@@ -6855,6 +6016,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'certificate': '*',
           'endpointType': 'EndpointType',
           'securityPolicy': 'SecurityPolicy',
+          'endpointAccessMode': 'EndpointAccessMode',
           'mtls': {
             'bucket': {
               'bucketArn': '*',
@@ -6981,6 +6143,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'certificate': '*',
         'endpointType': 'EndpointType',
         'securityPolicy': 'SecurityPolicy',
+        'endpointAccessMode': 'EndpointAccessMode',
         'mtls': {
           'bucket': {
             'bucketArn': '*',
@@ -7740,6 +6903,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'certificate': '*',
         'endpointType': 'EndpointType',
         'securityPolicy': 'SecurityPolicy',
+        'endpointAccessMode': 'EndpointAccessMode',
         'mtls': {
           'bucket': {
             'bucketArn': '*',
@@ -7882,6 +7046,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'certificate': '*',
         'endpointType': 'EndpointType',
         'securityPolicy': 'SecurityPolicy',
+        'endpointAccessMode': 'EndpointAccessMode',
         'mtls': {
           'bucket': {
             'bucketArn': '*',
@@ -8198,6 +7363,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'certificate': '*',
         'endpointType': 'EndpointType',
         'securityPolicy': 'SecurityPolicy',
+        'endpointAccessMode': 'EndpointAccessMode',
         'mtls': {
           'bucket': {
             'bucketArn': '*',
@@ -9004,6 +8170,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'resolverCountLimit': '*',
       'environmentVariables': '*',
       'ownerContact': '*',
+      'enhancedMetricsConfig': {
+        'dataSourceLevelMetricsBehavior': 'DataSourceLevelMetricsBehavior',
+        'operationLevelMetricsConfig': 'OperationLevelMetricsConfig',
+        'resolverLevelMetricsBehavior': 'ResolverLevelMetricsBehavior'
+      },
       'addSchemaDependency': [
         '*'
       ],
@@ -9276,6 +8447,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'capacityRebalance': 'boolean',
       'ssmSessionPermissions': 'boolean',
       'azCapacityDistributionStrategy': 'CapacityDistributionStrategy',
+      'deletionProtection': 'DeletionProtection',
+      'instanceLifecyclePolicy': {
+        'retentionTriggers': {
+          'terminateHookAbandon': 'TerminateHookAbandonAction'
+        }
+      },
       'addSecurityGroup': [
         {
           'securityGroupId': '*',
@@ -9514,6 +8691,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'retryStrategies': '*',
       'schedulingPriority': '*',
       'timeout': '*',
+      'skipDeregisterOnUpdate': 'boolean',
       'grantSubmitJob': [
         {
           'grantPrincipal': {
@@ -9535,7 +8713,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'retryAttempts': '*',
       'retryStrategies': '*',
       'schedulingPriority': '*',
-      'timeout': '*'
+      'timeout': '*',
+      'skipDeregisterOnUpdate': 'boolean'
     },
     'JobQueue': {},
     'ManagedEc2EcsComputeEnvironment': {
@@ -9564,8 +8743,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'instanceTypes': '*',
-      'instanceClasses': 'InstanceClass',
       'instanceRole': {
         'roleArn': '*',
         'roleName': '*',
@@ -9596,6 +8773,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'minvCpus': '*',
       'placementGroup': '*',
+      'instanceTypes': '*',
+      'instanceClasses': 'InstanceClass',
       'maxvCpus': '*',
       'replaceComputeEnvironment': 'boolean',
       'spot': 'boolean',
@@ -9678,13 +8857,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'enabled': 'boolean',
-      'addInstanceType': [
-        '*'
-      ],
-      'addInstanceClass': [
-        'InstanceClass'
-      ]
+      'enabled': 'boolean'
     },
     'ManagedEc2EksComputeEnvironment': {
       'kubernetesNamespace': '*',
@@ -9765,8 +8938,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'allocationStrategy': 'AllocationStrategy',
       'spotBidPercentage': '*',
-      'instanceTypes': '*',
-      'instanceClasses': 'InstanceClass',
       'instanceRole': {
         'roleArn': '*',
         'roleName': '*',
@@ -9797,6 +8968,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'minvCpus': '*',
       'placementGroup': '*',
+      'instanceTypes': '*',
+      'instanceClasses': 'InstanceClass',
       'maxvCpus': '*',
       'replaceComputeEnvironment': 'boolean',
       'spot': 'boolean',
@@ -9879,13 +9052,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'enabled': 'boolean',
-      'addInstanceType': [
-        '*'
-      ],
-      'addInstanceClass': [
-        'InstanceClass'
-      ]
+      'enabled': 'boolean'
     },
     'FargateComputeEnvironment': {
       'maxvCpus': '*',
@@ -10662,6 +9829,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'originAccessControlName': '*',
       'signing': '*'
     },
+    'MediaPackageV2OriginAccessControl': {
+      'description': '*',
+      'originAccessControlName': '*',
+      'signing': '*'
+    },
     'OriginAccessIdentity': {},
     'OriginRequestPolicy': {
       'originRequestPolicyName': '*',
@@ -11121,6 +10293,15 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'addVariable': [
         '*'
       ]
+    },
+    'PromQLAlarm': {
+      'alarmName': '*',
+      'alarmDescription': '*',
+      'pendingPeriod': '*',
+      'recoveryPeriod': '*',
+      'query': '*',
+      'evaluationInterval': '*',
+      'actionsEnabled': 'boolean'
     }
   },
   'aws-cdk-lib.aws-codebuild': {
@@ -12676,6 +11857,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'resourcePolicy': '*'
       },
+      'globalTableSettingsReplicationMode': 'GlobalTableSettingsReplicationMode',
       'witnessRegion': '*',
       'multiRegionConsistency': 'MultiRegionConsistency',
       'globalSecondaryIndexes': {
@@ -12739,7 +11921,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'value': '*'
       },
       'resourcePolicy': '*',
+      'streamResourcePolicy': '*',
       'addToResourcePolicy': [
+        '*'
+      ],
+      'addToStreamResourcePolicy': [
         '*'
       ],
       'addReplica': [
@@ -12811,6 +11997,68 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       ],
       'replica': [
+        '*'
+      ]
+    },
+    'TableV2MultiAccountReplica': {
+      'replicaSourceTable': {
+        'tableId': '*',
+        'grants': '*',
+        'tableArn': '*',
+        'tableName': '*',
+        'tableStreamArn': '*',
+        'encryptionKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        }
+      },
+      'tableName': '*',
+      'encryption': '*',
+      'removalPolicy': 'RemovalPolicy',
+      'globalTableSettingsReplicationMode': 'GlobalTableSettingsReplicationMode',
+      'grantIndexPermissions': 'boolean',
+      'contributorInsights': 'boolean',
+      'contributorInsightsSpecification': {
+        'enabled': 'boolean',
+        'mode': 'ContributorInsightsMode'
+      },
+      'deletionProtection': 'boolean',
+      'pointInTimeRecovery': 'boolean',
+      'pointInTimeRecoverySpecification': {
+        'pointInTimeRecoveryEnabled': 'boolean',
+        'recoveryPeriodInDays': '*'
+      },
+      'tableClass': 'TableClass',
+      'kinesisStream': {
+        'streamArn': '*',
+        'streamName': '*',
+        'encryptionKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        }
+      },
+      'tags': {
+        'key': '*',
+        'value': '*'
+      },
+      'resourcePolicy': '*',
+      'streamResourcePolicy': '*',
+      'addToResourcePolicy': [
+        '*'
+      ],
+      'addToStreamResourcePolicy': [
         '*'
       ]
     },
@@ -14298,7 +13546,13 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'terminationPolicyCustomLambdaFunctionArn': '*',
         'capacityRebalance': 'boolean',
         'ssmSessionPermissions': 'boolean',
-        'azCapacityDistributionStrategy': 'CapacityDistributionStrategy'
+        'azCapacityDistributionStrategy': 'CapacityDistributionStrategy',
+        'deletionProtection': 'DeletionProtection',
+        'instanceLifecyclePolicy': {
+          'retentionTriggers': {
+            'terminateHookAbandon': 'TerminateHookAbandonAction'
+          }
+        }
       },
       'capacityProviders': '*',
       'enableFargateCapacityProviders': [],
@@ -14467,7 +13721,13 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'terminationPolicyCustomLambdaFunctionArn': '*',
           'capacityRebalance': 'boolean',
           'ssmSessionPermissions': 'boolean',
-          'azCapacityDistributionStrategy': 'CapacityDistributionStrategy'
+          'azCapacityDistributionStrategy': 'CapacityDistributionStrategy',
+          'deletionProtection': 'DeletionProtection',
+          'instanceLifecyclePolicy': {
+            'retentionTriggers': {
+              'terminateHookAbandon': 'TerminateHookAbandonAction'
+            }
+          }
         }
       ],
       'addAsgCapacityProvider': [
@@ -14924,6 +14184,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'policy': '*'
       },
       'principal': '*',
+      'removalPolicy': 'RemovalPolicy',
       'addAccessPolicies': [
         {
           'accessScope': {
@@ -15007,7 +14268,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'authenticationMode': 'AuthenticationMode'
       },
       'preserveOnDelete': 'boolean',
-      'configurationValues': '*'
+      'configurationValues': '*',
+      'removalPolicy': 'RemovalPolicy'
     },
     'Cluster': {
       'defaultCapacity': '*',
@@ -15111,7 +14373,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'additionalHelmChartValues': {
           'enableWafv2': 'boolean',
           'enableWaf': 'boolean'
-        }
+        },
+        'overwriteServiceAccount': 'boolean',
+        'removalPolicy': 'RemovalPolicy'
       },
       'clusterLogging': 'ClusterLoggingTypes',
       'authenticationMode': 'AuthenticationMode',
@@ -15122,6 +14386,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'cidrs': '*'
       },
       'removalPolicy': 'RemovalPolicy',
+      'deletionProtection': 'boolean',
       'vpc': {
         'vpcId': '*',
         'vpcArn': '*',
@@ -15210,6 +14475,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'type': 'AccessScopeType'
           },
           'policy': '*'
+        },
+        {
+          'accessEntryType': 'AccessEntryType'
         }
       ],
       'getServiceLoadBalancerAddress': [
@@ -15319,7 +14587,13 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'terminationPolicyCustomLambdaFunctionArn': '*',
           'capacityRebalance': 'boolean',
           'ssmSessionPermissions': 'boolean',
-          'azCapacityDistributionStrategy': 'CapacityDistributionStrategy'
+          'azCapacityDistributionStrategy': 'CapacityDistributionStrategy',
+          'deletionProtection': 'DeletionProtection',
+          'instanceLifecyclePolicy': {
+            'retentionTriggers': {
+              'terminateHookAbandon': 'TerminateHookAbandonAction'
+            }
+          }
         }
       ],
       'addNodegroupCapacity': [
@@ -15392,7 +14666,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'capacityType': 'CapacityType',
           'maxUnavailable': '*',
           'maxUnavailablePercentage': '*',
-          'enableNodeAutoRepair': 'boolean'
+          'enableNodeAutoRepair': 'boolean',
+          'removalPolicy': 'RemovalPolicy'
         }
       ],
       'addFargateProfile': [
@@ -15443,7 +14718,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'subnetName': '*',
             'onePerAz': 'boolean',
             'subnetFilters': '*'
-          }
+          },
+          'removalPolicy': 'RemovalPolicy'
         }
       ],
       '_attachFargateProfile': [
@@ -15616,7 +14892,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'subnetName': '*',
           'onePerAz': 'boolean',
           'subnetFilters': '*'
-        }
+        },
+        'removalPolicy': 'RemovalPolicy'
       },
       'mastersRole': {
         'roleArn': '*',
@@ -15696,7 +14973,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'additionalHelmChartValues': {
           'enableWafv2': 'boolean',
           'enableWaf': 'boolean'
-        }
+        },
+        'overwriteServiceAccount': 'boolean',
+        'removalPolicy': 'RemovalPolicy'
       },
       'clusterLogging': 'ClusterLoggingTypes',
       'authenticationMode': 'AuthenticationMode',
@@ -15707,6 +14986,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'cidrs': '*'
       },
       'removalPolicy': 'RemovalPolicy',
+      'deletionProtection': 'boolean',
       'vpc': {
         'vpcId': '*',
         'vpcArn': '*',
@@ -15937,10 +15217,1113 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'capacityType': 'CapacityType',
       'maxUnavailable': '*',
       'maxUnavailablePercentage': '*',
-      'enableNodeAutoRepair': 'boolean'
+      'enableNodeAutoRepair': 'boolean',
+      'removalPolicy': 'RemovalPolicy'
     },
     'OpenIdConnectProvider': {
-      'url': '*'
+      'url': '*',
+      'removalPolicy': 'RemovalPolicy'
+    },
+    'OidcProviderNative': {
+      'url': '*',
+      'removalPolicy': 'RemovalPolicy'
+    }
+  },
+  'aws-cdk-lib.aws-eks-v2': {
+    'AccessEntry': {
+      'accessEntryName': '*',
+      'accessEntryType': 'AccessEntryType',
+      'cluster': {
+        'vpc': {
+          'vpcId': '*',
+          'vpcArn': '*',
+          'vpcCidrBlock': '*',
+          'publicSubnets': {
+            'availabilityZone': '*',
+            'subnetId': '*',
+            'internetConnectivityEstablished': '*',
+            'ipv4CidrBlock': '*',
+            'routeTable': {
+              'routeTableId': '*'
+            },
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'availabilityZones': '*',
+          'vpnGatewayId': '*'
+        },
+        'clusterName': '*',
+        'clusterArn': '*',
+        'clusterEndpoint': '*',
+        'clusterCertificateAuthorityData': '*',
+        'clusterSecurityGroupId': '*',
+        'clusterSecurityGroup': {
+          'securityGroupId': '*',
+          'allowAllOutbound': 'boolean',
+          'canInlineRule': 'boolean',
+          'uniqueId': '*',
+          'connections': '*'
+        },
+        'clusterEncryptionConfigKeyArn': '*',
+        'openIdConnectProvider': {
+          'openIdConnectProviderArn': '*',
+          'openIdConnectProviderIssuer': '*'
+        },
+        'eksPodIdentityAgent': {
+          'addonName': '*',
+          'addonArn': '*'
+        },
+        'ipFamily': 'IpFamily',
+        'kubectlProviderOptions': {
+          'role': {
+            'roleArn': '*',
+            'roleName': '*',
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*',
+            'grantPrincipal': {
+              'assumeRoleAction': '*',
+              'principalAccount': '*'
+            }
+          },
+          'awscliLayer': {
+            'layerVersionArn': '*',
+            'compatibleRuntimes': '*'
+          },
+          'environment': '*',
+          'memory': '*',
+          'removalPolicy': 'RemovalPolicy'
+        },
+        'kubectlProvider': {
+          'serviceToken': '*'
+        },
+        'prune': 'boolean'
+      },
+      'accessPolicies': {
+        'accessScope': {
+          'namespaces': '*',
+          'type': 'AccessScopeType'
+        },
+        'policy': '*'
+      },
+      'principal': '*',
+      'removalPolicy': 'RemovalPolicy',
+      'addAccessPolicies': [
+        {
+          'accessScope': {
+            'namespaces': '*',
+            'type': 'AccessScopeType'
+          },
+          'policy': '*'
+        }
+      ]
+    },
+    'Addon': {
+      'addonName': '*',
+      'addonVersion': '*',
+      'cluster': {
+        'vpc': {
+          'vpcId': '*',
+          'vpcArn': '*',
+          'vpcCidrBlock': '*',
+          'publicSubnets': {
+            'availabilityZone': '*',
+            'subnetId': '*',
+            'internetConnectivityEstablished': '*',
+            'ipv4CidrBlock': '*',
+            'routeTable': {
+              'routeTableId': '*'
+            },
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'availabilityZones': '*',
+          'vpnGatewayId': '*'
+        },
+        'clusterName': '*',
+        'clusterArn': '*',
+        'clusterEndpoint': '*',
+        'clusterCertificateAuthorityData': '*',
+        'clusterSecurityGroupId': '*',
+        'clusterSecurityGroup': {
+          'securityGroupId': '*',
+          'allowAllOutbound': 'boolean',
+          'canInlineRule': 'boolean',
+          'uniqueId': '*',
+          'connections': '*'
+        },
+        'clusterEncryptionConfigKeyArn': '*',
+        'openIdConnectProvider': {
+          'openIdConnectProviderArn': '*',
+          'openIdConnectProviderIssuer': '*'
+        },
+        'eksPodIdentityAgent': {
+          'addonName': '*',
+          'addonArn': '*'
+        },
+        'ipFamily': 'IpFamily',
+        'kubectlProviderOptions': {
+          'role': {
+            'roleArn': '*',
+            'roleName': '*',
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*',
+            'grantPrincipal': {
+              'assumeRoleAction': '*',
+              'principalAccount': '*'
+            }
+          },
+          'awscliLayer': {
+            'layerVersionArn': '*',
+            'compatibleRuntimes': '*'
+          },
+          'environment': '*',
+          'memory': '*',
+          'removalPolicy': 'RemovalPolicy'
+        },
+        'kubectlProvider': {
+          'serviceToken': '*'
+        },
+        'prune': 'boolean'
+      },
+      'preserveOnDelete': 'boolean',
+      'configurationValues': '*',
+      'removalPolicy': 'RemovalPolicy'
+    },
+    'Cluster': {
+      'compute': {
+        'nodePools': '*',
+        'nodeRole': {
+          'roleArn': '*',
+          'roleName': '*',
+          'assumeRoleAction': '*',
+          'policyFragment': '*',
+          'principalAccount': '*',
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'principalAccount': '*'
+          },
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        }
+      },
+      'defaultCapacity': '*',
+      'defaultCapacityInstance': '*',
+      'defaultCapacityType': 'DefaultCapacityType',
+      'bootstrapClusterCreatorAdminPermissions': 'boolean',
+      'bootstrapSelfManagedAddons': 'boolean',
+      'outputConfigCommand': 'boolean',
+      'vpc': {
+        'vpcId': '*',
+        'vpcArn': '*',
+        'vpcCidrBlock': '*',
+        'publicSubnets': {
+          'availabilityZone': '*',
+          'subnetId': '*',
+          'internetConnectivityEstablished': '*',
+          'ipv4CidrBlock': '*',
+          'routeTable': {
+            'routeTableId': '*'
+          },
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'availabilityZones': '*',
+        'vpnGatewayId': '*'
+      },
+      'vpcSubnets': {
+        'subnetType': 'SubnetType',
+        'availabilityZones': '*',
+        'subnetGroupName': '*',
+        'subnetName': '*',
+        'onePerAz': 'boolean',
+        'subnetFilters': '*',
+        'subnets': {
+          'availabilityZone': '*',
+          'subnetId': '*',
+          'internetConnectivityEstablished': '*',
+          'ipv4CidrBlock': '*',
+          'routeTable': {
+            'routeTableId': '*'
+          },
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        }
+      },
+      'role': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'clusterName': '*',
+      'securityGroup': {
+        'securityGroupId': '*',
+        'allowAllOutbound': 'boolean',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'canInlineRule': 'boolean',
+        'uniqueId': '*',
+        'connections': '*'
+      },
+      'version': '*',
+      'mastersRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'coreDnsComputeType': 'CoreDnsComputeType',
+      'endpointAccess': '*',
+      'prune': 'boolean',
+      'secretsEncryptionKey': '*',
+      'ipFamily': 'IpFamily',
+      'serviceIpv4Cidr': '*',
+      'albController': {
+        'version': '*',
+        'repository': '*',
+        'policy': '*',
+        'additionalHelmChartValues': '*',
+        'overwriteServiceAccount': 'boolean',
+        'removalPolicy': 'RemovalPolicy'
+      },
+      'clusterLogging': 'ClusterLoggingTypes',
+      'tags': '*',
+      'kubectlProviderOptions': {
+        'role': {
+          'roleArn': '*',
+          'roleName': '*',
+          'assumeRoleAction': '*',
+          'policyFragment': '*',
+          'principalAccount': '*',
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'principalAccount': '*'
+          },
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'awscliLayer': {
+          'layerVersionArn': '*',
+          'compatibleRuntimes': '*'
+        },
+        'environment': '*',
+        'securityGroup': {
+          'securityGroupId': '*',
+          'allowAllOutbound': 'boolean',
+          'canInlineRule': 'boolean',
+          'uniqueId': '*',
+          'connections': '*'
+        },
+        'memory': '*',
+        'privateSubnets': {
+          'availabilityZone': '*',
+          'subnetId': '*',
+          'internetConnectivityEstablished': '*',
+          'ipv4CidrBlock': '*',
+          'routeTable': {
+            'routeTableId': '*'
+          }
+        },
+        'removalPolicy': 'RemovalPolicy'
+      },
+      'remoteNodeNetworks': {
+        'cidrs': '*'
+      },
+      'remotePodNetworks': {
+        'cidrs': '*'
+      },
+      'removalPolicy': 'RemovalPolicy',
+      'grantAccess': [
+        '*',
+        '*',
+        {
+          'accessScope': {
+            'namespaces': '*',
+            'type': 'AccessScopeType'
+          },
+          'policy': '*'
+        },
+        {
+          'accessEntryType': 'AccessEntryType'
+        }
+      ],
+      'grantClusterAdmin': [
+        '*',
+        '*'
+      ],
+      'getServiceLoadBalancerAddress': [
+        '*',
+        {
+          'timeout': '*',
+          'namespace': '*'
+        }
+      ],
+      'getIngressLoadBalancerAddress': [
+        '*',
+        {
+          'timeout': '*',
+          'namespace': '*'
+        }
+      ],
+      'addAutoScalingGroupCapacity': [
+        '*',
+        {
+          'instanceType': '*',
+          'bootstrapEnabled': 'boolean',
+          'bootstrapOptions': {
+            'useMaxPods': 'boolean',
+            'enableDockerBridge': 'boolean',
+            'awsApiRetryAttempts': '*',
+            'dockerConfigJson': '*',
+            'dnsClusterIp': '*',
+            'kubeletExtraArgs': '*',
+            'additionalArgs': '*'
+          },
+          'machineImageType': 'MachineImageType',
+          'minCapacity': '*',
+          'maxCapacity': '*',
+          'desiredCapacity': '*',
+          'keyName': '*',
+          'keyPair': {
+            'keyPairName': '*',
+            'type': 'KeyPairType',
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'vpcSubnets': {
+            'subnetType': 'SubnetType',
+            'availabilityZones': '*',
+            'subnetGroupName': '*',
+            'subnetName': '*',
+            'onePerAz': 'boolean',
+            'subnetFilters': '*',
+            'subnets': {
+              'availabilityZone': '*',
+              'subnetId': '*',
+              'internetConnectivityEstablished': '*',
+              'ipv4CidrBlock': '*',
+              'routeTable': {
+                'routeTableId': '*'
+              }
+            }
+          },
+          'notificationsTopic': {
+            'topicArn': '*',
+            'topicName': '*',
+            'masterKey': {
+              'keyArn': '*',
+              'keyId': '*'
+            },
+            'contentBasedDeduplication': 'boolean',
+            'fifo': 'boolean'
+          },
+          'notifications': {
+            'scalingEvents': '*'
+          },
+          'allowAllOutbound': 'boolean',
+          'updateType': 'UpdateType',
+          'rollingUpdateConfiguration': {
+            'maxBatchSize': '*',
+            'minInstancesInService': '*',
+            'minSuccessfulInstancesPercent': '*',
+            'pauseTime': '*',
+            'waitOnResourceSignals': 'boolean',
+            'suspendProcesses': 'ScalingProcess'
+          },
+          'replacingUpdateMinSuccessfulInstancesPercent': '*',
+          'ignoreUnmodifiedSizeProperties': 'boolean',
+          'resourceSignalCount': '*',
+          'associatePublicIpAddress': 'boolean',
+          'spotPrice': '*',
+          'healthCheck': '*',
+          'healthChecks': '*',
+          'blockDevices': {
+            'deviceName': '*',
+            'volume': '*',
+            'mappingEnabled': 'boolean'
+          },
+          'instanceMonitoring': 'Monitoring',
+          'groupMetrics': '*',
+          'signals': '*',
+          'updatePolicy': '*',
+          'newInstancesProtectedFromScaleIn': 'boolean',
+          'autoScalingGroupName': '*',
+          'terminationPolicies': 'TerminationPolicy',
+          'terminationPolicyCustomLambdaFunctionArn': '*',
+          'capacityRebalance': 'boolean',
+          'ssmSessionPermissions': 'boolean',
+          'azCapacityDistributionStrategy': 'CapacityDistributionStrategy',
+          'deletionProtection': 'DeletionProtection',
+          'instanceLifecyclePolicy': {
+            'retentionTriggers': {
+              'terminateHookAbandon': 'TerminateHookAbandonAction'
+            }
+          }
+        }
+      ],
+      'addNodegroupCapacity': [
+        '*',
+        {
+          'nodegroupName': '*',
+          'subnets': {
+            'subnetType': 'SubnetType',
+            'availabilityZones': '*',
+            'subnetGroupName': '*',
+            'subnetName': '*',
+            'onePerAz': 'boolean',
+            'subnetFilters': '*',
+            'subnets': {
+              'availabilityZone': '*',
+              'subnetId': '*',
+              'internetConnectivityEstablished': '*',
+              'ipv4CidrBlock': '*',
+              'routeTable': {
+                'routeTableId': '*'
+              },
+              'stack': '*',
+              'node': '*',
+              'env': {
+                'account': '*',
+                'region': '*'
+              }
+            }
+          },
+          'amiType': 'NodegroupAmiType',
+          'diskSize': '*',
+          'desiredSize': '*',
+          'maxSize': '*',
+          'minSize': '*',
+          'forceUpdate': 'boolean',
+          'instanceTypes': '*',
+          'labels': '*',
+          'taints': {
+            'effect': 'TaintEffect',
+            'key': '*',
+            'value': '*'
+          },
+          'nodeRole': {
+            'roleArn': '*',
+            'roleName': '*',
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*',
+            'grantPrincipal': {
+              'assumeRoleAction': '*',
+              'principalAccount': '*'
+            }
+          },
+          'releaseVersion': '*',
+          'remoteAccess': {
+            'sshKeyName': '*',
+            'sourceSecurityGroups': {
+              'securityGroupId': '*',
+              'allowAllOutbound': 'boolean',
+              'canInlineRule': 'boolean',
+              'uniqueId': '*',
+              'connections': '*'
+            }
+          },
+          'tags': '*',
+          'launchTemplateSpec': {
+            'id': '*',
+            'version': '*'
+          },
+          'capacityType': 'CapacityType',
+          'maxUnavailable': '*',
+          'maxUnavailablePercentage': '*',
+          'enableNodeAutoRepair': 'boolean',
+          'removalPolicy': 'RemovalPolicy'
+        }
+      ],
+      'addFargateProfile': [
+        '*',
+        {
+          'fargateProfileName': '*',
+          'podExecutionRole': {
+            'roleArn': '*',
+            'roleName': '*',
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*',
+            'grantPrincipal': {
+              'assumeRoleAction': '*',
+              'principalAccount': '*'
+            },
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'selectors': {
+            'namespace': '*',
+            'labels': '*'
+          },
+          'vpc': {
+            'vpcId': '*',
+            'vpcArn': '*',
+            'vpcCidrBlock': '*',
+            'publicSubnets': {
+              'availabilityZone': '*',
+              'subnetId': '*',
+              'internetConnectivityEstablished': '*',
+              'ipv4CidrBlock': '*',
+              'routeTable': {
+                'routeTableId': '*'
+              }
+            },
+            'availabilityZones': '*',
+            'vpnGatewayId': '*'
+          },
+          'subnetSelection': {
+            'subnetType': 'SubnetType',
+            'availabilityZones': '*',
+            'subnetGroupName': '*',
+            'subnetName': '*',
+            'onePerAz': 'boolean',
+            'subnetFilters': '*'
+          },
+          'removalPolicy': 'RemovalPolicy'
+        }
+      ],
+      '_attachFargateProfile': [
+        '*'
+      ],
+      '_dependOnKubectlBarrier': [
+        '*'
+      ]
+    },
+    'ImportedCluster': {
+      'vpc': {
+        'vpcId': '*',
+        'vpcArn': '*',
+        'vpcCidrBlock': '*',
+        'publicSubnets': {
+          'availabilityZone': '*',
+          'subnetId': '*',
+          'internetConnectivityEstablished': '*',
+          'ipv4CidrBlock': '*',
+          'routeTable': {
+            'routeTableId': '*'
+          },
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'availabilityZones': '*',
+        'vpnGatewayId': '*'
+      },
+      'clusterName': '*',
+      'clusterEndpoint': '*',
+      'clusterCertificateAuthorityData': '*',
+      'clusterSecurityGroupId': '*',
+      'clusterEncryptionConfigKeyArn': '*',
+      'ipFamily': 'IpFamily',
+      'securityGroupIds': '*',
+      'openIdConnectProvider': {
+        'openIdConnectProviderArn': '*',
+        'openIdConnectProviderIssuer': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'kubectlProvider': {
+        'serviceToken': '*',
+        'role': {
+          'roleArn': '*',
+          'roleName': '*',
+          'assumeRoleAction': '*',
+          'policyFragment': '*',
+          'principalAccount': '*',
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'principalAccount': '*'
+          },
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        }
+      },
+      'kubectlProviderOptions': {
+        'role': {
+          'roleArn': '*',
+          'roleName': '*',
+          'assumeRoleAction': '*',
+          'policyFragment': '*',
+          'principalAccount': '*',
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'principalAccount': '*'
+          },
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'awscliLayer': {
+          'layerVersionArn': '*',
+          'compatibleRuntimes': '*'
+        },
+        'environment': '*',
+        'securityGroup': {
+          'securityGroupId': '*',
+          'allowAllOutbound': 'boolean',
+          'canInlineRule': 'boolean',
+          'uniqueId': '*',
+          'connections': '*'
+        },
+        'memory': '*',
+        'privateSubnets': {
+          'availabilityZone': '*',
+          'subnetId': '*',
+          'internetConnectivityEstablished': '*',
+          'ipv4CidrBlock': '*',
+          'routeTable': {
+            'routeTableId': '*'
+          }
+        },
+        'removalPolicy': 'RemovalPolicy'
+      },
+      'prune': 'boolean'
+    },
+    'FargateCluster': {
+      'defaultProfile': {
+        'fargateProfileName': '*',
+        'podExecutionRole': {
+          'roleArn': '*',
+          'roleName': '*',
+          'assumeRoleAction': '*',
+          'policyFragment': '*',
+          'principalAccount': '*',
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'principalAccount': '*'
+          },
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'selectors': {
+          'namespace': '*',
+          'labels': '*'
+        },
+        'vpc': {
+          'vpcId': '*',
+          'vpcArn': '*',
+          'vpcCidrBlock': '*',
+          'publicSubnets': {
+            'availabilityZone': '*',
+            'subnetId': '*',
+            'internetConnectivityEstablished': '*',
+            'ipv4CidrBlock': '*',
+            'routeTable': {
+              'routeTableId': '*'
+            }
+          },
+          'availabilityZones': '*',
+          'vpnGatewayId': '*'
+        },
+        'subnetSelection': {
+          'subnetType': 'SubnetType',
+          'availabilityZones': '*',
+          'subnetGroupName': '*',
+          'subnetName': '*',
+          'onePerAz': 'boolean',
+          'subnetFilters': '*'
+        },
+        'removalPolicy': 'RemovalPolicy'
+      },
+      'vpc': {
+        'vpcId': '*',
+        'vpcArn': '*',
+        'vpcCidrBlock': '*',
+        'publicSubnets': {
+          'availabilityZone': '*',
+          'subnetId': '*',
+          'internetConnectivityEstablished': '*',
+          'ipv4CidrBlock': '*',
+          'routeTable': {
+            'routeTableId': '*'
+          },
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'availabilityZones': '*',
+        'vpnGatewayId': '*'
+      },
+      'vpcSubnets': {
+        'subnetType': 'SubnetType',
+        'availabilityZones': '*',
+        'subnetGroupName': '*',
+        'subnetName': '*',
+        'onePerAz': 'boolean',
+        'subnetFilters': '*',
+        'subnets': {
+          'availabilityZone': '*',
+          'subnetId': '*',
+          'internetConnectivityEstablished': '*',
+          'ipv4CidrBlock': '*',
+          'routeTable': {
+            'routeTableId': '*'
+          },
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        }
+      },
+      'role': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'clusterName': '*',
+      'securityGroup': {
+        'securityGroupId': '*',
+        'allowAllOutbound': 'boolean',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'canInlineRule': 'boolean',
+        'uniqueId': '*',
+        'connections': '*'
+      },
+      'version': '*',
+      'mastersRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'coreDnsComputeType': 'CoreDnsComputeType',
+      'endpointAccess': '*',
+      'prune': 'boolean',
+      'secretsEncryptionKey': '*',
+      'ipFamily': 'IpFamily',
+      'serviceIpv4Cidr': '*',
+      'albController': {
+        'version': '*',
+        'repository': '*',
+        'policy': '*',
+        'additionalHelmChartValues': '*',
+        'overwriteServiceAccount': 'boolean',
+        'removalPolicy': 'RemovalPolicy'
+      },
+      'clusterLogging': 'ClusterLoggingTypes',
+      'tags': '*',
+      'kubectlProviderOptions': {
+        'role': {
+          'roleArn': '*',
+          'roleName': '*',
+          'assumeRoleAction': '*',
+          'policyFragment': '*',
+          'principalAccount': '*',
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'principalAccount': '*'
+          },
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'awscliLayer': {
+          'layerVersionArn': '*',
+          'compatibleRuntimes': '*'
+        },
+        'environment': '*',
+        'securityGroup': {
+          'securityGroupId': '*',
+          'allowAllOutbound': 'boolean',
+          'canInlineRule': 'boolean',
+          'uniqueId': '*',
+          'connections': '*'
+        },
+        'memory': '*',
+        'privateSubnets': {
+          'availabilityZone': '*',
+          'subnetId': '*',
+          'internetConnectivityEstablished': '*',
+          'ipv4CidrBlock': '*',
+          'routeTable': {
+            'routeTableId': '*'
+          }
+        },
+        'removalPolicy': 'RemovalPolicy'
+      },
+      'remoteNodeNetworks': {
+        'cidrs': '*'
+      },
+      'remotePodNetworks': {
+        'cidrs': '*'
+      },
+      'removalPolicy': 'RemovalPolicy'
+    },
+    'Nodegroup': {
+      'cluster': {
+        'vpc': {
+          'vpcId': '*',
+          'vpcArn': '*',
+          'vpcCidrBlock': '*',
+          'publicSubnets': {
+            'availabilityZone': '*',
+            'subnetId': '*',
+            'internetConnectivityEstablished': '*',
+            'ipv4CidrBlock': '*',
+            'routeTable': {
+              'routeTableId': '*'
+            },
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'availabilityZones': '*',
+          'vpnGatewayId': '*'
+        },
+        'clusterName': '*',
+        'clusterArn': '*',
+        'clusterEndpoint': '*',
+        'clusterCertificateAuthorityData': '*',
+        'clusterSecurityGroupId': '*',
+        'clusterSecurityGroup': {
+          'securityGroupId': '*',
+          'allowAllOutbound': 'boolean',
+          'canInlineRule': 'boolean',
+          'uniqueId': '*',
+          'connections': '*'
+        },
+        'clusterEncryptionConfigKeyArn': '*',
+        'openIdConnectProvider': {
+          'openIdConnectProviderArn': '*',
+          'openIdConnectProviderIssuer': '*'
+        },
+        'eksPodIdentityAgent': {
+          'addonName': '*',
+          'addonArn': '*'
+        },
+        'ipFamily': 'IpFamily',
+        'kubectlProviderOptions': {
+          'role': {
+            'roleArn': '*',
+            'roleName': '*',
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*',
+            'grantPrincipal': {
+              'assumeRoleAction': '*',
+              'principalAccount': '*'
+            }
+          },
+          'awscliLayer': {
+            'layerVersionArn': '*',
+            'compatibleRuntimes': '*'
+          },
+          'environment': '*',
+          'memory': '*',
+          'removalPolicy': 'RemovalPolicy'
+        },
+        'kubectlProvider': {
+          'serviceToken': '*'
+        },
+        'prune': 'boolean'
+      },
+      'nodegroupName': '*',
+      'subnets': {
+        'subnetType': 'SubnetType',
+        'availabilityZones': '*',
+        'subnetGroupName': '*',
+        'subnetName': '*',
+        'onePerAz': 'boolean',
+        'subnetFilters': '*',
+        'subnets': {
+          'availabilityZone': '*',
+          'subnetId': '*',
+          'internetConnectivityEstablished': '*',
+          'ipv4CidrBlock': '*',
+          'routeTable': {
+            'routeTableId': '*'
+          },
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        }
+      },
+      'amiType': 'NodegroupAmiType',
+      'diskSize': '*',
+      'desiredSize': '*',
+      'maxSize': '*',
+      'minSize': '*',
+      'forceUpdate': 'boolean',
+      'instanceTypes': '*',
+      'labels': '*',
+      'taints': {
+        'effect': 'TaintEffect',
+        'key': '*',
+        'value': '*'
+      },
+      'nodeRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'releaseVersion': '*',
+      'remoteAccess': {
+        'sshKeyName': '*',
+        'sourceSecurityGroups': {
+          'securityGroupId': '*',
+          'allowAllOutbound': 'boolean',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'canInlineRule': 'boolean',
+          'uniqueId': '*',
+          'connections': '*'
+        }
+      },
+      'tags': '*',
+      'launchTemplateSpec': {
+        'id': '*',
+        'version': '*'
+      },
+      'capacityType': 'CapacityType',
+      'maxUnavailable': '*',
+      'maxUnavailablePercentage': '*',
+      'enableNodeAutoRepair': 'boolean',
+      'removalPolicy': 'RemovalPolicy'
+    },
+    'OpenIdConnectProvider': {
+      'url': '*',
+      'removalPolicy': 'RemovalPolicy'
+    },
+    'OidcProviderNative': {
+      'url': '*',
+      'removalPolicy': 'RemovalPolicy'
     }
   },
   'aws-cdk-lib.aws-elasticloadbalancing': {
@@ -16688,12 +17071,14 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'oidcProviderName': '*',
       'url': '*',
       'clientIds': '*',
-      'thumbprints': '*'
+      'thumbprints': '*',
+      'removalPolicy': 'RemovalPolicy'
     },
     'OpenIdConnectProvider': {
       'url': '*',
       'clientIds': '*',
-      'thumbprints': '*'
+      'thumbprints': '*',
+      'removalPolicy': 'RemovalPolicy'
     },
     'Policy': {
       'policyName': '*',
@@ -17086,6 +17471,13 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           }
         }
       ]
+    },
+    'ReferencedKey': {
+      'environmentFromArn': '*',
+      'keyArn': '*',
+      'keyId': '*',
+      'policy': '*',
+      'trustAccountIdentities': 'boolean'
     }
   },
   'aws-cdk-lib.aws-lambda': {
@@ -17433,6 +17825,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'metricsConfig': {
         'metrics': 'MetricType'
       },
+      'logLevel': 'EventSourceMappingLogLevel',
       'schemaRegistryConfig': '*'
     },
     'LatestVersion': {
@@ -18459,7 +18852,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         '*',
         {
           'stackTrace': 'boolean',
-          'traceFromFunction': '*'
+          'traceFromFunction': '*',
+          'stackTraceOverride': '*'
         }
       ],
       'dependOn': [
@@ -18763,6 +19157,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'encryptionKey': '*',
       'logGroupName': '*',
       'dataProtectionPolicy': '*',
+      'deletionProtectionEnabled': 'boolean',
       'fieldIndexPolicies': '*',
       'retention': 'RetentionDays',
       'logGroupClass': 'LogGroupClass',
@@ -18984,6 +19379,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'ipAddressType': 'IpAddressType',
       'suppressLogsResourcePolicy': 'boolean',
       'coldStorageEnabled': 'boolean',
+      's3VectorsEngineEnabled': 'boolean',
       'addAccessPolicies': [
         '*'
       ]
@@ -19110,6 +19506,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     'DatabaseCluster': {
       'credentials': '*',
       'replicationSourceIdentifier': '*',
+      'manageMasterUserPassword': 'boolean',
       'engine': {
         'singleUserRotationApplication': '*',
         'supportedLogTypes': '*',
@@ -19428,6 +19825,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'snapshotIdentifier': '*',
       'credentials': '*',
       'snapshotCredentials': '*',
+      'manageMasterUserPassword': 'boolean',
       'engine': {
         'singleUserRotationApplication': '*',
         'supportedLogTypes': '*',
@@ -19790,6 +20188,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'DatabaseInstance': {
       'credentials': '*',
+      'manageMasterUserPassword': 'boolean',
       'characterSetName': '*',
       'storageEncrypted': 'boolean',
       'storageEncryptionKey': '*',
@@ -21390,6 +21789,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'PublicHostedZone': {
       'caaAmazon': 'boolean',
+      'acceleratedRecoveryEnabled': 'boolean',
       'crossAccountZoneDelegationPrincipal': {
         'assumeRoleAction': '*',
         'policyFragment': '*',
@@ -22059,13 +22459,17 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
+      'blockedEncryptionTypes': '*',
       'enforceSSL': 'boolean',
       'bucketKeyEnabled': 'boolean',
       'bucketName': '*',
+      'bucketNamePrefix': '*',
+      'bucketNamespace': 'BucketNamespace',
       'removalPolicy': 'RemovalPolicy',
       'autoDeleteObjects': 'boolean',
       'versioned': 'boolean',
       'objectLockEnabled': 'boolean',
+      'abacStatus': 'boolean',
       'objectLockDefaultRetention': '*',
       'eventBridgeEnabled': 'boolean',
       'lifecycleRules': {
@@ -22336,6 +22740,49 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'optionalFields': '*'
         }
       ]
+    },
+    'ReferencedBucket': {
+      'account': '*',
+      'region': '*',
+      'bucketArn': '*',
+      'bucketName': '*',
+      'bucketDomainName': '*',
+      'bucketWebsiteUrl': '*',
+      'bucketWebsiteDomainName': '*',
+      'bucketRegionalDomainName': '*',
+      'bucketDualStackDomainName': '*',
+      'encryptionKey': {
+        'keyArn': '*',
+        'keyId': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'isWebsite': 'boolean',
+      'policy': '*',
+      'replicationRoleArn': '*',
+      'autoCreatePolicy': 'boolean',
+      'disallowPublicAccess': 'boolean',
+      'notificationsHandlerRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      }
     }
   },
   'aws-cdk-lib.aws-scheduler': {
@@ -22827,6 +23274,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'sendingEnabled': 'boolean',
       'suppressionReasons': 'SuppressionReasons',
       'disableSuppressionList': 'boolean',
+      'autoValidationThreshold': 'AutoValidationThreshold',
+      'disableAutoValidation': 'boolean',
       'customTrackingRedirectDomain': '*',
       'customTrackingHttpsPolicy': 'HttpsPolicy',
       'vdmOptions': {
@@ -23550,6 +23999,33 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'stackRegion': '*'
         }
       ]
+    },
+    'Group': {
+      'groupName': '*',
+      'canaries': {
+        'canaryId': '*',
+        'canaryName': '*',
+        'canaryArn': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'addCanary': [
+        {
+          'canaryId': '*',
+          'canaryName': '*',
+          'canaryArn': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        }
+      ]
     }
   },
   'aws-cdk-lib.core': {
@@ -23809,6 +24285,45 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     }
   },
   'aws-bedrock-agentcore-alpha.lib': {
+    'Evaluator': {
+      'evaluatorName': '*',
+      'evaluatorConfig': '*',
+      'level': '*',
+      'description': '*',
+      'tags': '*'
+    },
+    'OnlineEvaluationConfig': {
+      'evaluators': '*',
+      'dataSource': '*',
+      'tags': '*',
+      'onlineEvaluationConfigName': '*',
+      'executionRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'description': '*',
+      'samplingPercentage': '*',
+      'filters': {
+        'key': '*',
+        'operator': '*',
+        'value': '*'
+      },
+      'sessionTimeout': '*',
+      'executionStatus': '*'
+    },
     'Gateway': {
       'gatewayName': '*',
       'description': '*',
@@ -23847,6 +24362,33 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       },
       'tags': '*',
+      'interceptorConfigurations': {
+        'interceptionPoint': 'InterceptionPoint'
+      },
+      'policyEngineConfiguration': {
+        'policyEngine': {
+          'policyEngineArn': '*',
+          'policyEngineId': '*',
+          'policyEngineName': '*',
+          'description': '*',
+          'kmsKey': {
+            'keyArn': '*',
+            'keyId': '*',
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
+        },
+        'mode': '*'
+      },
       'addLambdaTarget': [
         '*',
         {
@@ -23925,7 +24467,115 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'credentialProviderType': 'CredentialProviderType'
           }
         }
+      ],
+      'addApiGatewayTarget': [
+        '*',
+        {
+          'gatewayTargetName': '*',
+          'description': '*',
+          'restApi': {
+            'restApiId': '*',
+            'restApiName': '*',
+            'restApiRootResourceId': '*',
+            'latestDeployment': '*',
+            'deploymentStage': '*',
+            'root': {
+              'restApi': '*',
+              'resourceId': '*',
+              'path': '*',
+              'defaultIntegration': '*',
+              'defaultMethodOptions': {
+                'operationName': '*',
+                'authorizationType': 'AuthorizationType',
+                'authorizer': {
+                  'authorizerId': '*',
+                  'authorizationType': 'AuthorizationType'
+                },
+                'apiKeyRequired': 'boolean',
+                'methodResponses': {
+                  'statusCode': '*',
+                  'responseParameters': '*',
+                  'responseModels': '*'
+                },
+                'requestParameters': '*',
+                'requestModels': '*',
+                'requestValidator': {
+                  'requestValidatorId': '*',
+                  'stack': '*',
+                  'node': '*',
+                  'env': {
+                    'account': '*',
+                    'region': '*'
+                  }
+                },
+                'authorizationScopes': '*',
+                'requestValidatorOptions': {
+                  'requestValidatorName': '*',
+                  'validateRequestBody': 'boolean',
+                  'validateRequestParameters': 'boolean'
+                }
+              },
+              'defaultCorsPreflightOptions': {
+                'statusCode': '*',
+                'allowOrigins': '*',
+                'allowHeaders': '*',
+                'allowMethods': '*',
+                'allowCredentials': 'boolean',
+                'maxAge': '*',
+                'disableCache': 'boolean',
+                'exposeHeaders': '*'
+              }
+            }
+          },
+          'stage': '*',
+          'apiGatewayToolConfiguration': {
+            'toolFilters': {
+              'filterPath': '*',
+              'methods': 'ApiGatewayHttpMethod'
+            },
+            'toolOverrides': {
+              'path': '*',
+              'method': 'ApiGatewayHttpMethod',
+              'name': '*',
+              'description': '*'
+            }
+          },
+          'credentialProviderConfigurations': {
+            'credentialProviderType': 'CredentialProviderType'
+          },
+          'metadataConfiguration': {
+            'allowedQueryParameters': '*',
+            'allowedRequestHeaders': '*',
+            'allowedResponseHeaders': '*'
+          }
+        }
+      ],
+      'addInterceptor': [
+        {
+          'interceptionPoint': 'InterceptionPoint'
+        }
       ]
+    },
+    'ApiKeyCredentialProvider': {
+      'apiKeyCredentialProviderName': '*',
+      'apiKey': '*',
+      'tags': '*',
+      'bindForGatewayApiKeyTarget': []
+    },
+    'OAuth2CredentialProvider': {
+      'oAuth2CredentialProviderName': '*',
+      'credentialProviderVendor': '*',
+      'oauth2ProviderConfigInput': '*',
+      'tags': '*',
+      'bindForGatewayOAuthTarget': [
+        '*',
+        '*'
+      ]
+    },
+    'WorkloadIdentity': {
+      'workloadIdentityName': '*',
+      'allowedResourceOauth2ReturnUrls': '*',
+      'tags': '*'
     },
     'Memory': {
       'memoryName': '*',
@@ -23972,6 +24622,59 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       ]
     },
+    'PolicyEngine': {
+      'policyEngineName': '*',
+      'description': '*',
+      'kmsKey': {
+        'keyArn': '*',
+        'keyId': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'tags': '*',
+      'addPolicy': [
+        '*',
+        {
+          'definition': '*',
+          'statement': '*',
+          'policyName': '*',
+          'description': '*',
+          'validationMode': '*'
+        }
+      ]
+    },
+    'Policy': {
+      'policyName': '*',
+      'policyEngine': {
+        'policyEngineArn': '*',
+        'policyEngineId': '*',
+        'policyEngineName': '*',
+        'description': '*',
+        'kmsKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'policyFragment': '*',
+          'principalAccount': '*'
+        }
+      },
+      'definition': '*',
+      'statement': '*',
+      'description': '*',
+      'validationMode': '*'
+    },
     'RuntimeEndpoint': {
       'endpointName': '*',
       'agentRuntimeId': '*',
@@ -24010,6 +24713,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'lifecycleConfiguration': {
         'idleRuntimeSessionTimeout': '*'
+      },
+      'tracingEnabled': 'boolean',
+      'loggingConfigs': {
+        'logType': '*',
+        'destination': '*'
       },
       'addEndpoint': [
         '*',
@@ -24429,6 +25137,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
   },
   'aws-glue-alpha.lib': {
     'PySparkEtlJob': {
+      'notifyDelayAfter': '*',
       'extraPythonFiles': '*',
       'extraFiles': '*',
       'extraJars': '*',
@@ -24725,6 +25434,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     'PythonShellJob': {
       'pythonVersion': 'PythonVersion',
       'maxCapacity': 'MaxCapacity',
+      'extraPythonFiles': '*',
       'jobRunQueuingEnabled': 'boolean',
       'script': '*',
       'role': {
@@ -24863,6 +25573,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'ScalaSparkEtlJob': {
       'className': '*',
+      'notifyDelayAfter': '*',
       'extraFiles': '*',
       'extraJars': '*',
       'extraJarsFirst': 'boolean',
@@ -25453,7 +26164,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'enableSimpleResponses': 'boolean',
       'payloadFormatVersion': 'AuthorizerPayloadVersion',
       'authorizerUri': '*',
-      'resultsCacheTtl': '*'
+      'resultsCacheTtl': '*',
+      'role': '*'
     },
     'HttpIntegration': {
       'httpApi': {
@@ -25797,6 +26509,427 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       ]
     }
   },
+  'aws-bedrockagentcore.lib': {
+    'Evaluator': {
+      'evaluatorName': '*',
+      'evaluatorConfig': '*',
+      'level': '*',
+      'description': '*',
+      'tags': '*'
+    },
+    'OnlineEvaluationConfig': {
+      'evaluators': '*',
+      'dataSource': '*',
+      'tags': '*',
+      'onlineEvaluationConfigName': '*',
+      'executionRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'description': '*',
+      'samplingPercentage': '*',
+      'filters': {
+        'key': '*',
+        'operator': '*',
+        'value': '*'
+      },
+      'sessionTimeout': '*',
+      'executionStatus': '*'
+    },
+    'Gateway': {
+      'gatewayName': '*',
+      'description': '*',
+      'protocolConfiguration': {
+        'protocolType': '*'
+      },
+      'authorizerConfiguration': {
+        'authorizerType': 'GatewayAuthorizerType'
+      },
+      'exceptionLevel': '*',
+      'kmsKey': {
+        'keyArn': '*',
+        'keyId': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'role': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'tags': '*',
+      'interceptorConfigurations': {
+        'interceptionPoint': 'InterceptionPoint'
+      },
+      'addLambdaTarget': [
+        '*',
+        {
+          'gatewayTargetName': '*',
+          'description': '*',
+          'lambdaFunction': {
+            'functionName': '*',
+            'functionArn': '*',
+            'role': {
+              'roleArn': '*',
+              'roleName': '*',
+              'assumeRoleAction': '*',
+              'policyFragment': '*',
+              'principalAccount': '*',
+              'grantPrincipal': {
+                'assumeRoleAction': '*',
+                'principalAccount': '*'
+              },
+              'stack': '*',
+              'node': '*',
+              'env': {
+                'account': '*',
+                'region': '*'
+              }
+            },
+            'isBoundToVpc': 'boolean',
+            'latestVersion': {
+              'version': '*',
+              'edgeArn': '*',
+              'functionName': '*',
+              'functionArn': '*',
+              'isBoundToVpc': 'boolean',
+              'tenancyConfig': '*',
+              'architecture': '*',
+              'resourceArnsForGrantInvoke': '*',
+              'connections': '*'
+            },
+            'resourceArnsForGrantInvoke': '*'
+          },
+          'toolSchema': '*',
+          'credentialProviderConfigurations': {
+            'credentialProviderType': 'CredentialProviderType'
+          }
+        }
+      ],
+      'addOpenApiTarget': [
+        '*',
+        {
+          'gatewayTargetName': '*',
+          'description': '*',
+          'apiSchema': '*',
+          'validateOpenApiSchema': 'boolean',
+          'credentialProviderConfigurations': {
+            'credentialProviderType': 'CredentialProviderType'
+          }
+        }
+      ],
+      'addSmithyTarget': [
+        '*',
+        {
+          'gatewayTargetName': '*',
+          'description': '*',
+          'smithyModel': '*',
+          'credentialProviderConfigurations': {
+            'credentialProviderType': 'CredentialProviderType'
+          }
+        }
+      ],
+      'addMcpServerTarget': [
+        '*',
+        {
+          'gatewayTargetName': '*',
+          'description': '*',
+          'endpoint': '*',
+          'credentialProviderConfigurations': {
+            'credentialProviderType': 'CredentialProviderType'
+          }
+        }
+      ],
+      'addApiGatewayTarget': [
+        '*',
+        {
+          'gatewayTargetName': '*',
+          'description': '*',
+          'restApi': {
+            'restApiId': '*',
+            'restApiName': '*',
+            'restApiRootResourceId': '*',
+            'latestDeployment': '*',
+            'deploymentStage': '*',
+            'root': {
+              'restApi': '*',
+              'resourceId': '*',
+              'path': '*',
+              'defaultIntegration': '*',
+              'defaultMethodOptions': {
+                'operationName': '*',
+                'authorizationType': 'AuthorizationType',
+                'authorizer': {
+                  'authorizerId': '*',
+                  'authorizationType': 'AuthorizationType'
+                },
+                'apiKeyRequired': 'boolean',
+                'methodResponses': {
+                  'statusCode': '*',
+                  'responseParameters': '*',
+                  'responseModels': '*'
+                },
+                'requestParameters': '*',
+                'requestModels': '*',
+                'requestValidator': {
+                  'requestValidatorId': '*',
+                  'stack': '*',
+                  'node': '*',
+                  'env': {
+                    'account': '*',
+                    'region': '*'
+                  }
+                },
+                'authorizationScopes': '*',
+                'requestValidatorOptions': {
+                  'requestValidatorName': '*',
+                  'validateRequestBody': 'boolean',
+                  'validateRequestParameters': 'boolean'
+                }
+              },
+              'defaultCorsPreflightOptions': {
+                'statusCode': '*',
+                'allowOrigins': '*',
+                'allowHeaders': '*',
+                'allowMethods': '*',
+                'allowCredentials': 'boolean',
+                'maxAge': '*',
+                'disableCache': 'boolean',
+                'exposeHeaders': '*'
+              }
+            }
+          },
+          'stage': '*',
+          'apiGatewayToolConfiguration': {
+            'toolFilters': {
+              'filterPath': '*',
+              'methods': '*'
+            },
+            'toolOverrides': {
+              'path': '*',
+              'name': '*',
+              'description': '*'
+            }
+          },
+          'credentialProviderConfigurations': {
+            'credentialProviderType': 'CredentialProviderType'
+          },
+          'metadataConfiguration': {
+            'allowedQueryParameters': '*',
+            'allowedRequestHeaders': '*',
+            'allowedResponseHeaders': '*'
+          }
+        }
+      ],
+      'addInterceptor': [
+        {
+          'interceptionPoint': 'InterceptionPoint'
+        }
+      ]
+    },
+    'ApiKeyCredentialProvider': {
+      'apiKeyCredentialProviderName': '*',
+      'apiKey': '*',
+      'tags': '*',
+      'bindForGatewayApiKeyTarget': []
+    },
+    'OAuth2CredentialProvider': {
+      'oAuth2CredentialProviderName': '*',
+      'credentialProviderVendor': '*',
+      'oauth2ProviderConfigInput': '*',
+      'tags': '*',
+      'bindForGatewayOAuthTarget': [
+        '*',
+        '*'
+      ]
+    },
+    'WorkloadIdentity': {
+      'workloadIdentityName': '*',
+      'allowedResourceOauth2ReturnUrls': '*',
+      'tags': '*'
+    },
+    'Memory': {
+      'memoryName': '*',
+      'expirationDuration': '*',
+      'description': '*',
+      'kmsKey': {
+        'keyArn': '*',
+        'keyId': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'memoryStrategies': {
+        'strategyName': '*',
+        'description': '*',
+        'strategyType': 'MemoryStrategyType'
+      },
+      'executionRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'tags': '*',
+      'addMemoryStrategy': [
+        {
+          'strategyName': '*',
+          'description': '*',
+          'strategyType': 'MemoryStrategyType'
+        }
+      ]
+    },
+    'RuntimeEndpoint': {
+      'endpointName': '*',
+      'agentRuntimeId': '*',
+      'agentRuntimeVersion': '*',
+      'description': '*',
+      'tags': '*'
+    },
+    'Runtime': {
+      'runtimeName': '*',
+      'agentRuntimeArtifact': '*',
+      'executionRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'networkConfiguration': '*',
+      'description': '*',
+      'protocolConfiguration': '*',
+      'environmentVariables': '*',
+      'authorizerConfiguration': '*',
+      'tags': '*',
+      'requestHeaderConfiguration': {
+        'allowlistedHeaders': '*'
+      },
+      'lifecycleConfiguration': {
+        'idleRuntimeSessionTimeout': '*'
+      },
+      'tracingEnabled': 'boolean',
+      'loggingConfigs': {
+        'logType': '*',
+        'destination': '*'
+      },
+      'addEndpoint': [
+        '*',
+        {
+          'description': '*',
+          'version': '*'
+        }
+      ]
+    },
+    'BrowserCustom': {
+      'browserCustomName': '*',
+      'description': '*',
+      'networkConfiguration': '*',
+      'recordingConfig': {
+        'enabled': 'boolean',
+        's3Location': {
+          'bucketName': '*',
+          'objectKey': '*',
+          'objectVersion': '*'
+        }
+      },
+      'executionRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'tags': '*',
+      'browserSigning': 'BrowserSigning'
+    },
+    'CodeInterpreterCustom': {
+      'codeInterpreterCustomName': '*',
+      'description': '*',
+      'executionRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'networkConfiguration': '*',
+      'tags': '*'
+    }
+  },
   'aws-cloudfront.lib': {
     'EdgeFunction': {
       'stackId': '*',
@@ -26112,6 +27245,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'metricsConfig': {
             'metrics': 'MetricType'
           },
+          'logLevel': 'EventSourceMappingLogLevel',
           'schemaRegistryConfig': '*'
         }
       ],
@@ -27463,13 +28597,29 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             }
           }
         },
-        'logDriver': '*'
+        'logDriver': '*',
+        'accessLogConfiguration': {
+          'format': 'ServiceConnectAccessLogFormat',
+          'includeQueryParameters': 'boolean'
+        }
       },
       'taskDefinitionRevision': '*',
       'volumeConfigurations': '*',
       'deploymentStrategy': 'DeploymentStrategy',
       'bakeTime': '*',
       'lifecycleHooks': '*',
+      'linearConfiguration': {
+        'stepPercent': '*',
+        'stepBakeTime': '*'
+      },
+      'canaryConfiguration': {
+        'stepPercent': '*',
+        'stepBakeTime': '*'
+      },
+      'forceNewDeployment': {
+        'enabled': 'boolean',
+        'nonce': '*'
+      },
       'addPlacementStrategies': [
         '*'
       ],
@@ -27712,13 +28862,29 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             }
           }
         },
-        'logDriver': '*'
+        'logDriver': '*',
+        'accessLogConfiguration': {
+          'format': 'ServiceConnectAccessLogFormat',
+          'includeQueryParameters': 'boolean'
+        }
       },
       'taskDefinitionRevision': '*',
       'volumeConfigurations': '*',
       'deploymentStrategy': 'DeploymentStrategy',
       'bakeTime': '*',
       'lifecycleHooks': '*',
+      'linearConfiguration': {
+        'stepPercent': '*',
+        'stepBakeTime': '*'
+      },
+      'canaryConfiguration': {
+        'stepPercent': '*',
+        'stepBakeTime': '*'
+      },
+      'forceNewDeployment': {
+        'enabled': 'boolean',
+        'nonce': '*'
+      },
       'attachToApplicationTargetGroup': [
         {
           'metrics': '*',
@@ -28070,13 +29236,29 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             }
           }
         },
-        'logDriver': '*'
+        'logDriver': '*',
+        'accessLogConfiguration': {
+          'format': 'ServiceConnectAccessLogFormat',
+          'includeQueryParameters': 'boolean'
+        }
       },
       'taskDefinitionRevision': '*',
       'volumeConfigurations': '*',
       'deploymentStrategy': 'DeploymentStrategy',
       'bakeTime': '*',
       'lifecycleHooks': '*',
+      'linearConfiguration': {
+        'stepPercent': '*',
+        'stepBakeTime': '*'
+      },
+      'canaryConfiguration': {
+        'stepPercent': '*',
+        'stepBakeTime': '*'
+      },
+      'forceNewDeployment': {
+        'enabled': 'boolean',
+        'nonce': '*'
+      },
       'attachToClassicLB': [
         '*'
       ]
@@ -29645,7 +30827,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'gateway': {
         'gatewayArn': '*',
         'gatewayId': '*',
-        'name': '*',
+        'gatewayName': '*',
         'role': {
           'roleArn': '*',
           'roleName': '*',
@@ -29670,7 +30852,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'authorizerConfiguration': {
           'authorizerType': 'GatewayAuthorizerType'
         },
-        'exceptionLevel': 'GatewayExceptionLevel',
+        'exceptionLevel': '*',
         'kmsKey': {
           'keyArn': '*',
           'keyId': '*'

@@ -1,4 +1,4 @@
-import { ConstructTree, ConstructTrace } from './construct-tree';
+import type { ConstructTree, ConstructTrace } from './construct-tree';
 
 const STARTER_LINE = '└── ';
 const VERTICAL_LINE = '│';
@@ -15,6 +15,10 @@ export class ReportTrace {
    */
   public formatJson(constructPath: string): ConstructTrace | undefined {
     return this.tree.traceFromPath(constructPath);
+  }
+
+  public creationStackTraceByPath(constructPath: string) {
+    return this.tree.stackTraceByPath(constructPath);
   }
 
   /**

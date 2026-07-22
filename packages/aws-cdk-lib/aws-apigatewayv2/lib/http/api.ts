@@ -1,19 +1,24 @@
-import { Construct } from 'constructs';
-import { IHttpRouteAuthorizer } from './authorizer';
-import { HttpRouteIntegration } from './integration';
-import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
-import { IHttpStage, HttpStage, HttpStageOptions } from './stage';
-import { VpcLink, VpcLinkProps } from './vpc-link';
-import { CfnApi, CfnApiProps, HttpApiHelper } from '.././index';
-import { Metric, MetricOptions } from '../../../aws-cloudwatch';
-import { Duration } from '../../../core';
+import type { Construct } from 'constructs';
+import type { IHttpRouteAuthorizer } from './authorizer';
+import type { HttpRouteIntegration } from './integration';
+import type { BatchHttpRouteOptions } from './route';
+import { HttpMethod, HttpRoute, HttpRouteKey } from './route';
+import type { IHttpStage, HttpStageOptions } from './stage';
+import { HttpStage } from './stage';
+import type { VpcLinkProps } from './vpc-link';
+import { VpcLink } from './vpc-link';
+import type { CfnApiProps } from '.././index';
+import { CfnApi, HttpApiHelper } from '.././index';
+import type { Metric, MetricOptions } from '../../../aws-cloudwatch';
+import type { Duration } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { ApiReference, IApiRef } from '../apigatewayv2.generated';
-import { IApi, IpAddressType } from '../common/api';
+import type { ApiReference, IApiRef } from '../apigatewayv2.generated';
+import type { IApi, IpAddressType } from '../common/api';
 import { ApiBase } from '../common/base';
-import { DomainMappingOptions } from '../common/stage';
+import type { DomainMappingOptions } from '../common/stage';
 
 /**
  * Represents a reference to an HTTP API
@@ -395,7 +400,7 @@ export class HttpApi extends HttpApiBase {
 
       public get apiEndpoint(): string {
         if (!this._apiEndpoint) {
-          throw new ValidationError('apiEndpoint is not configured on the imported HttpApi.', scope);
+          throw new ValidationError(lit`ApiEndpointConfiguredImportedHttp`, 'apiEndpoint is not configured on the imported HttpApi.', scope);
         }
         return this._apiEndpoint;
       }
@@ -450,7 +455,7 @@ export class HttpApi extends HttpApiBase {
     if (props?.corsPreflight) {
       const cors = props.corsPreflight;
       if (cors.allowOrigins && cors.allowOrigins.includes('*') && cors.allowCredentials) {
-        throw new ValidationError("CORS preflight - allowCredentials is not supported when allowOrigin is '*'", scope);
+        throw new ValidationError(lit`PreflightAllowCredentialsSupportedAllow`, "CORS preflight - allowCredentials is not supported when allowOrigin is '*'", scope);
       }
       const {
         allowCredentials,
@@ -511,7 +516,7 @@ export class HttpApi extends HttpApiBase {
     }
 
     if (props?.createDefaultStage === false && props.defaultDomainMapping) {
-      throw new ValidationError('defaultDomainMapping not supported with createDefaultStage disabled', scope);
+      throw new ValidationError(lit`DefaultDomainMappingSupportedCreate`, 'defaultDomainMapping not supported with createDefaultStage disabled', scope);
     }
   }
 
@@ -520,7 +525,7 @@ export class HttpApi extends HttpApiBase {
    */
   public get apiEndpoint(): string {
     if (this.disableExecuteApiEndpoint) {
-      throw new ValidationError('apiEndpoint is not accessible when disableExecuteApiEndpoint is set to true.', this);
+      throw new ValidationError(lit`ApiEndpointAccessibleDisableExecute`, 'apiEndpoint is not accessible when disableExecuteApiEndpoint is set to true.', this);
     }
     return this._apiEndpoint;
   }
@@ -573,5 +578,5 @@ export function toIHttpApi(x: IHttpApiRef): IHttpApi {
   if (!!ret.addVpcLink && 'apiEndpoint' in ret && 'apiId' in ret && !!ret.arnForExecuteApi && !!ret.metricClientError) {
     return ret;
   }
-  throw new UnscopedValidationError(`Input HttpApi ${x.constructor.name} does not implement IHttpApi`);
+  throw new UnscopedValidationError(lit`InputHttpapiDoesImplement`, `Input HttpApi ${x.constructor.name} does not implement IHttpApi`);
 }

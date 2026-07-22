@@ -11,12 +11,14 @@ import * as cloudmap from '../../aws-servicediscovery';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as ecs from '../lib';
+import { acknowledgeTestValidationRules } from './util';
 
 describe('cluster', () => {
   describe('isCluster() returns', () => {
     test('true if given cluster instance', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       // WHEN
       const createdCluster = new ecs.Cluster(stack, 'EcsCluster');
       // THEN
@@ -26,6 +28,7 @@ describe('cluster', () => {
     test('false if given imported cluster instance', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const importedSg = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG1', 'sg-1', { allowAllOutbound: false });
@@ -49,6 +52,7 @@ describe('cluster', () => {
     testDeprecated('with no properties set, it correctly sets default properties', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
       cluster.addCapacity('DefaultAutoScalingGroup', {
@@ -215,6 +219,7 @@ describe('cluster', () => {
     testDeprecated('with only vpc set, it correctly sets default properties', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', {
         vpc,
@@ -384,6 +389,7 @@ describe('cluster', () => {
     testDeprecated('multiple clusters with default capacity', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
       // WHEN
@@ -403,6 +409,7 @@ describe('cluster', () => {
         },
       });
       const stack = new cdk.Stack(app);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', {
         vpc,
@@ -574,6 +581,7 @@ describe('cluster', () => {
         },
       });
       const stack = new cdk.Stack(app);
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', {
         vpc,
@@ -705,6 +713,7 @@ describe('cluster', () => {
     testDeprecated('lifecycle hook with encrypted SNS is added correctly', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', {
         vpc,
@@ -731,6 +740,7 @@ describe('cluster', () => {
     testDeprecated('with capacity and cloudmap namespace properties set', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       new ecs.Cluster(stack, 'EcsCluster', {
         vpc,
@@ -911,6 +921,7 @@ describe('cluster', () => {
   testDeprecated('allows specifying instance type', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -927,6 +938,7 @@ describe('cluster', () => {
   testDeprecated('allows specifying cluster size', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -944,6 +956,7 @@ describe('cluster', () => {
   testDeprecated('configures userdata with powershell if windows machine image is specified', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -999,6 +1012,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -1029,6 +1043,7 @@ describe('cluster', () => {
   testDeprecated('errors if amazon linux given with special HW type', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -1049,6 +1064,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -1073,6 +1089,7 @@ describe('cluster', () => {
   testDeprecated('errors if windows given with special HW type', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -1092,6 +1109,7 @@ describe('cluster', () => {
   testDeprecated('errors if windowsVersion and linux generation are set', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -1111,6 +1129,7 @@ describe('cluster', () => {
   testDeprecated('allows returning the correct image for windows for EcsOptimizedAmi', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const ami = new ecs.EcsOptimizedAmi({
       windowsVersion: ecs.WindowsOptimizedVersion.SERVER_2019,
     });
@@ -1121,6 +1140,7 @@ describe('cluster', () => {
   testDeprecated('allows returning the correct image for linux for EcsOptimizedAmi', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const ami = new ecs.EcsOptimizedAmi({
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX,
     });
@@ -1131,6 +1151,7 @@ describe('cluster', () => {
   testDeprecated('allows returning the correct image for linux 2 for EcsOptimizedAmi', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const ami = new ecs.EcsOptimizedAmi({
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
     });
@@ -1141,6 +1162,7 @@ describe('cluster', () => {
   testDeprecated('allows returning the correct image for linux 2023 for EcsOptimizedAmi', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const ami = new ecs.EcsOptimizedAmi({
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023,
     });
@@ -1208,6 +1230,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
@@ -1227,6 +1250,7 @@ describe('cluster', () => {
   test('allows setting cluster ServiceConnectDefaults.Namespace property when useAsServiceConnectDefault is true', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -1250,6 +1274,7 @@ describe('cluster', () => {
   test('allows setting cluster _defaultCloudMapNamespace for HTTP namespace', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     // WHEN
@@ -1264,6 +1289,7 @@ describe('cluster', () => {
   test('arnForTasks returns a task arn from key pattern', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     const taskIdPattern = '*';
@@ -1302,6 +1328,7 @@ describe('cluster', () => {
   test('grantTaskProtection grants ecs:UpdateTaskProtection permission', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     const role = new iam.Role(stack, 'TestRole', {
@@ -1349,6 +1376,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -1378,6 +1406,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -1407,6 +1436,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -1429,6 +1459,7 @@ describe('cluster', () => {
   testDeprecated('allows specifying spot fleet', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -1446,6 +1477,7 @@ describe('cluster', () => {
   testDeprecated('allows specifying drain time', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -1463,6 +1495,7 @@ describe('cluster', () => {
   testDeprecated('allows specifying automated spot draining', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -1494,6 +1527,7 @@ describe('cluster', () => {
   testDeprecated('allows containers access to instance metadata service', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -1523,6 +1557,7 @@ describe('cluster', () => {
   testDeprecated('allows adding default service discovery namespace', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -1547,6 +1582,7 @@ describe('cluster', () => {
   testDeprecated('allows adding public service discovery namespace', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -1571,6 +1607,7 @@ describe('cluster', () => {
   testDeprecated('throws if default service discovery namespace added more than once', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -1625,6 +1662,7 @@ describe('cluster', () => {
   test('imported cluster with imported security groups honors allowAllOutbound', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
     const importedSg1 = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG1', 'sg-1', { allowAllOutbound: false });
@@ -1650,6 +1688,7 @@ describe('cluster', () => {
   test('Security groups are optonal for imported clusters', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
     const cluster = ecs.Cluster.fromClusterAttributes(stack, 'Cluster', {
@@ -1664,6 +1703,7 @@ describe('cluster', () => {
   test('Can import autoscaling groups', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const autoscalingGroup = new autoscaling.AutoScalingGroup(stack, 'asgal2', {
       vpc,
@@ -1684,6 +1724,7 @@ describe('cluster', () => {
   test('Metric', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -1723,6 +1764,7 @@ describe('cluster', () => {
   testDeprecated('ASG with a public VPC without NAT Gateways', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'MyPublicVpc', {
       natGateways: 0,
       subnetConfiguration: [
@@ -1841,6 +1883,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     new ecs.Cluster(stack, 'EcsCluster', { containerInsights: true });
 
@@ -1859,6 +1902,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     new ecs.Cluster(stack, 'EcsCluster', { containerInsights: false });
 
@@ -1877,6 +1921,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     new ecs.Cluster(stack, 'EcsCluster', { containerInsightsV2: ecs.ContainerInsights.DISABLED });
 
@@ -1895,6 +1940,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     new ecs.Cluster(stack, 'EcsCluster', { containerInsightsV2: ecs.ContainerInsights.ENABLED });
 
@@ -1913,6 +1959,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     new ecs.Cluster(stack, 'EcsCluster', { containerInsightsV2: ecs.ContainerInsights.ENHANCED });
 
@@ -1931,6 +1978,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     // THEN
     expect(() => {
@@ -1946,6 +1994,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     // THEN
     expect(() => {
@@ -1961,6 +2010,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     new ecs.Cluster(stack, 'EcsCluster');
 
@@ -1979,6 +2029,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
     const key = new kms.Key(stack, 'key', { policy: new iam.PolicyDocument() });
     new ecs.Cluster(stack, 'EcsCluster', { managedStorageConfiguration: { fargateEphemeralStorageKmsKey: key } });
 
@@ -2030,6 +2081,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
     const key = new kms.Key(stack, 'key', { policy: new iam.PolicyDocument() });
     new ecs.Cluster(stack, 'EcsCluster', { clusterName: 'cluster-name', managedStorageConfiguration: { fargateEphemeralStorageKmsKey: key } });
 
@@ -2083,6 +2135,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
     const key = new kms.Key(stack, 'key', { policy: new iam.PolicyDocument() });
     new ecs.Cluster(stack, 'EcsCluster', { managedStorageConfiguration: { kmsKey: key } });
 
@@ -2102,6 +2155,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new ecs.BottleRocketImage().getImage(stack);
@@ -2144,6 +2198,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
     cluster.addCapacity('bottlerocket-asg', {
@@ -2225,6 +2280,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
     cluster.addCapacity('bottlerocket-asg', {
@@ -2249,6 +2305,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
     cluster.addCapacity('bottlerocket-asg', {
@@ -2279,6 +2336,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
     cluster.addCapacity('bottlerocket-asg', {
@@ -2301,6 +2359,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
     cluster.addCapacity('bottlerocket-asg', {
@@ -2322,6 +2381,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
     cluster.addCapacity('bottlerocket-asg', {
@@ -2344,6 +2404,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
     cluster.addCapacity('bottlerocket-asg', {
@@ -2366,6 +2427,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
     cluster.addCapacity('bottlerocket-asg', {
@@ -2400,6 +2462,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
@@ -2417,6 +2480,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new ecs.Cluster(stack, 'EcsCluster', { capacityProviders: ['FARGATE_SPOT'] });
@@ -2435,6 +2499,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     new ecs.Cluster(stack, 'EcsCluster', {
@@ -2455,6 +2520,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     // WHEN
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
@@ -2474,6 +2540,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
     // WHEN
@@ -2494,6 +2561,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
     // WHEN
@@ -2514,6 +2582,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
     // THEN
@@ -2527,6 +2596,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
         vpc,
@@ -2558,6 +2628,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const autoScalingGroup = autoscaling.AutoScalingGroup.fromAutoScalingGroupName(stack, 'ASG', 'my-asg');
 
       // THEN
@@ -2572,6 +2643,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const autoScalingGroup = autoscaling.AutoScalingGroup.fromAutoScalingGroupName(stack, 'ASG', 'my-asg');
 
       // WHEN
@@ -2599,6 +2671,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -2663,6 +2736,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -2729,6 +2803,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -2796,6 +2871,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -2864,6 +2940,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -2926,10 +3003,145 @@ describe('cluster', () => {
       });
     });
 
-    test('with capacity option type', () => {
+    test('with capacity option type ON_DEMAND', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceRole = new iam.Role(stack, 'InstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
+        role: instanceRole,
+      });
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
+
+      // WHEN
+      new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+        infrastructureRole,
+        ec2InstanceProfile: instanceProfile,
+        subnets: vpc.privateSubnets,
+        capacityOptionType: ecs.CapacityOptionType.ON_DEMAND,
+        securityGroups: [securityGroup],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+        ManagedInstancesProvider: {
+          InfrastructureRoleArn: {
+            'Fn::GetAtt': [
+              Match.stringLikeRegexp('InfrastructureRole'),
+              'Arn',
+            ],
+          },
+          InstanceLaunchTemplate: {
+            CapacityOptionType: 'ON_DEMAND',
+            Ec2InstanceProfileArn: {
+              'Fn::GetAtt': [
+                Match.stringLikeRegexp('InstanceProfile'),
+                'Arn',
+              ],
+            },
+            NetworkConfiguration: {
+              Subnets: [
+                { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+                { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
+              ],
+            },
+          },
+        },
+      });
+    });
+
+    test('with capacity option type SPOT', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceRole = new iam.Role(stack, 'InstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
+        role: instanceRole,
+      });
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
+
+      // WHEN
+      new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+        infrastructureRole,
+        ec2InstanceProfile: instanceProfile,
+        subnets: vpc.privateSubnets,
+        capacityOptionType: ecs.CapacityOptionType.SPOT,
+        securityGroups: [securityGroup],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+        ManagedInstancesProvider: {
+          InfrastructureRoleArn: {
+            'Fn::GetAtt': [
+              Match.stringLikeRegexp('InfrastructureRole'),
+              'Arn',
+            ],
+          },
+          InstanceLaunchTemplate: {
+            CapacityOptionType: 'SPOT',
+            Ec2InstanceProfileArn: {
+              'Fn::GetAtt': [
+                Match.stringLikeRegexp('InstanceProfile'),
+                'Arn',
+              ],
+            },
+            NetworkConfiguration: {
+              Subnets: [
+                { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+                { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
+              ],
+            },
+          },
+        },
+      });
+    });
+
+    test('without capacity option type does not include property in template', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -2985,6 +3197,7 @@ describe('cluster', () => {
                 { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
               ],
             },
+            CapacityOptionType: Match.absent(),
           },
         },
       });
@@ -2994,6 +3207,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -3076,6 +3290,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -3142,6 +3357,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -3182,6 +3398,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -3217,6 +3434,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -3263,6 +3481,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -3309,6 +3528,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -3370,6 +3590,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -3423,6 +3644,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
@@ -3602,6 +3824,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const instanceRole = new iam.Role(stack, 'CustomInstanceRole', {
@@ -3650,6 +3873,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
@@ -3703,6 +3927,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
@@ -3747,6 +3972,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
@@ -3774,6 +4000,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
@@ -3813,6 +4040,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
@@ -3876,6 +4104,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
@@ -3912,6 +4141,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -3996,6 +4226,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -4080,6 +4311,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
@@ -4213,6 +4445,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
       vpc,
@@ -4245,6 +4478,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
       vpc,
@@ -4277,6 +4511,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
       vpc,
@@ -4309,6 +4544,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
       vpc,
@@ -4341,6 +4577,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
       vpc,
@@ -4361,6 +4598,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
       vpc,
@@ -4382,6 +4620,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
       vpc,
@@ -4404,6 +4643,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
       vpc,
@@ -4427,6 +4667,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
@@ -4468,6 +4709,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
     const importedAsg = autoscaling.AutoScalingGroup.fromAutoScalingGroupName(stack, 'ASG', 'my-asg');
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
@@ -4485,6 +4727,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     // THEN
     expect(() => {
@@ -4499,6 +4742,7 @@ describe('cluster', () => {
   test('should throw an error when capacity providers is length 0 and default capacity provider startegy specified', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     // THEN
     expect(() => {
@@ -4513,6 +4757,7 @@ describe('cluster', () => {
   test('should throw an error when more than 1 default capacity provider have base specified', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     // THEN
     expect(() => {
@@ -4528,6 +4773,7 @@ describe('cluster', () => {
   test('should throw an error when a capacity provider strategy contains a mix of Auto Scaling groups and Fargate providers', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
       vpc,
@@ -4557,6 +4803,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     // THEN
     expect(() => {
@@ -4578,6 +4825,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'EcsCluster', {
       enableFargateCapacityProviders: true,
@@ -4625,6 +4873,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
@@ -4670,6 +4919,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     const kmsKey = new kms.Key(stack, 'KmsKey');
 
@@ -4727,6 +4977,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     // THEN
     expect(() => {
@@ -4742,6 +4993,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     const logGroup = new logs.LogGroup(stack, 'LogGroup');
 
@@ -4762,6 +5014,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     // THEN
     expect(() => {
@@ -4780,6 +5033,7 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    acknowledgeTestValidationRules(stack);
 
     // THEN
     expect(() => {
@@ -4797,6 +5051,7 @@ describe('cluster', () => {
   test('When importing ECS Cluster via Arn', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const clusterName = 'my-cluster';
     const region = 'service-region';
     const account = 'service-account';
@@ -4823,6 +5078,7 @@ test('can add ASG capacity via Capacity Provider by not specifying machineImageT
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'test');
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc');
   const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
@@ -4962,6 +5218,7 @@ test('throws when ASG Capacity Provider with no capacityProviderName but stack n
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'ecscp');
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc');
   const cluster = new ecs.Cluster(stack, 'EcsCluster');
 

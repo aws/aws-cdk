@@ -1,8 +1,11 @@
 import { Aws } from 'aws-cdk-lib';
-import { Grant, IRole } from 'aws-cdk-lib/aws-iam';
-import { IBucket, Location } from 'aws-cdk-lib/aws-s3';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import { Grant } from 'aws-cdk-lib/aws-iam';
+import type { IBucket, Location } from 'aws-cdk-lib/aws-s3';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
-import { Construct } from 'constructs';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { md5hash, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+import type { Construct } from 'constructs';
 import { TargetSchema } from './base-schema';
 
 /******************************************************************************
@@ -12,6 +15,7 @@ import { TargetSchema } from './base-schema';
 /**
  * Abstract interface for tool schema configuration
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface IToolSchemaConfiguration {
   /**
@@ -27,6 +31,7 @@ export interface IToolSchemaConfiguration {
 
 /**
  * Schema definition types
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export enum SchemaDefinitionType {
   /** String type */
@@ -45,6 +50,7 @@ export enum SchemaDefinitionType {
 
 /**
  * Schema definition for tool input/output
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface SchemaDefinition {
   /**
@@ -88,6 +94,7 @@ export interface SchemaDefinition {
 
 /**
  * Tool definition for inline payload
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface ToolDefinition {
   /**
@@ -115,19 +122,14 @@ export interface ToolDefinition {
   readonly outputSchema?: SchemaDefinition;
 }
 
-/**
- * Error thrown when a ToolSchema is not properly initialized.
- */
-class ToolSchemaError extends Error {
-  constructor(message: string, public readonly cause?: string) {
-    super(message);
-    this.name = 'ToolSchemaError';
-  }
-}
-
 /******************************************************************************
  *                       TOOL SCHEMA CLASS
  *****************************************************************************/
+/**
+ * Defines the schema for tools available to a gateway target.
+ *
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export abstract class ToolSchema extends TargetSchema {
   /**
    * Creates a tool Schema from a local file.
@@ -197,6 +199,7 @@ export abstract class ToolSchema extends TargetSchema {
  *
  * The asset is uploaded to an S3 staging bucket, then moved to its final location
  * by CloudFormation during deployment.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class AssetToolSchema extends ToolSchema {
   private asset?: s3_assets.Asset;
@@ -215,7 +218,7 @@ export class AssetToolSchema extends ToolSchema {
   public bind(scope: Construct): void {
     // If the same AssetToolSchema is used multiple times, retain only the first instantiation
     if (!this.asset) {
-      this.asset = new s3_assets.Asset(scope, 'Schema', {
+      this.asset = new s3_assets.Asset(scope, `Schema${md5hash(this.path)}`, {
         path: this.path,
         ...this.options,
       });
@@ -229,9 +232,9 @@ export class AssetToolSchema extends ToolSchema {
    */
   public _render(): any {
     if (!this.asset) {
-      throw new ToolSchemaError(
+      throw new UnscopedValidationError(
+        lit`ToolSchemaNotBound`,
         'ToolSchema must be bound to a scope before rendering. Call bind() first.',
-        'Asset not initialized',
       );
     }
 
@@ -244,9 +247,9 @@ export class AssetToolSchema extends ToolSchema {
 
   public grantPermissionsToRole(role: IRole): void {
     if (!this.asset) {
-      throw new ToolSchemaError(
+      throw new UnscopedValidationError(
+        lit`ToolSchemaNotBound`,
         'ToolSchema must be bound to a scope before rendering. Call bind() first.',
-        'Asset not initialized',
       );
     }
     this.asset.grantRead(role);
@@ -257,6 +260,7 @@ export class AssetToolSchema extends ToolSchema {
 /**
  * Class to define a Tool Schema from an inline string.
  * The schema can be provided directly as a string in either JSON or YAML format.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class InlineToolSchema extends ToolSchema {
   constructor(private readonly schema: ToolDefinition[]) {
@@ -288,6 +292,7 @@ export class InlineToolSchema extends ToolSchema {
 // ------------------------------------------------------
 /**
  * Class to define a Tool Schema from an S3 object.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class S3ToolSchema extends ToolSchema {
   constructor(private readonly location: Location, public readonly bucketOwnerAccountId?: string) {

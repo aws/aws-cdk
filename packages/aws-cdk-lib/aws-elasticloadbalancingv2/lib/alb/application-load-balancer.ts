@@ -1,22 +1,27 @@
-import { Construct } from 'constructs';
-import { ApplicationListener, BaseApplicationListenerProps } from './application-listener';
+import type { Construct } from 'constructs';
+import type { BaseApplicationListenerProps } from './application-listener';
+import { ApplicationListener } from './application-listener';
 import { ListenerAction } from './application-listener-action';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import { PolicyStatement } from '../../../aws-iam/lib/policy-statement';
 import { ServicePrincipal } from '../../../aws-iam/lib/principals';
-import * as s3 from '../../../aws-s3';
+import type * as s3 from '../../../aws-s3';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { CfnResource, Duration, Lazy, Names, Resource, Stack, Token } from '../../../core';
+import type { Duration } from '../../../core';
+import { CfnResource, Lazy, Names, Resource, Stack, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
-import { aws_elasticloadbalancingv2 } from '../../../interfaces';
+import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
-import { ILoadBalancerRef } from '../elasticloadbalancingv2.generated';
-import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
-import { IpAddressType, ApplicationProtocol, DesyncMitigationMode } from '../shared/enums';
+import type { ILoadBalancerRef } from '../elasticloadbalancingv2.generated';
+import type { BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
+import { BaseLoadBalancer } from '../shared/base-load-balancer';
+import type { DesyncMitigationMode } from '../shared/enums';
+import { IpAddressType, ApplicationProtocol } from '../shared/enums';
 import { parseLoadBalancerFullName } from '../shared/util';
 
 /**
@@ -204,13 +209,13 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
       !Token.isUnresolved(minimumCapacityUnit) &&
       (!Number.isInteger(minimumCapacityUnit) || minimumCapacityUnit < 100)
     ) {
-      throw new ValidationError(`'minimumCapacityUnit' must be a positive integer greater than or equal to 100 for Application Load Balancer, got: ${minimumCapacityUnit}.`, this);
+      throw new ValidationError(lit`MinimumCapacityUnitPositiveInteger`, `'minimumCapacityUnit' must be a positive integer greater than or equal to 100 for Application Load Balancer, got: ${minimumCapacityUnit}.`, this);
     }
 
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
 
     if (props.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4 && !props.internetFacing) {
-      throw new ValidationError('dual-stack without public IPv4 address can only be used with internet-facing scheme.', this);
+      throw new ValidationError(lit`DualStackWithoutPublicPv`, 'dual-stack without public IPv4 address can only be used with internet-facing scheme.', this);
     }
 
     const securityGroups = [props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
@@ -224,7 +229,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
 
     if (props.http2Enabled !== undefined) { this.setAttribute('routing.http2.enabled', props.http2Enabled ? 'true' : 'false'); }
     if (props.idleTimeout !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeout.toSeconds().toString()); }
-    if (props.dropInvalidHeaderFields) { this.setAttribute('routing.http.drop_invalid_header_fields.enabled', 'true'); }
+    if (props.dropInvalidHeaderFields !== undefined) { this.setAttribute('routing.http.drop_invalid_header_fields.enabled', props.dropInvalidHeaderFields ? 'true' : 'false'); }
     if (props.desyncMitigationMode !== undefined) { this.setAttribute('routing.http.desync_mitigation_mode', props.desyncMitigationMode); }
     if (props.preserveHostHeader) { this.setAttribute('routing.http.preserve_host_header.enabled', 'true'); }
     if (props.xAmznTlsVersionAndCipherSuiteHeaders) { this.setAttribute('routing.http.x_amzn_tls_version_and_cipher_suite.enabled', 'true'); }
@@ -234,18 +239,18 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     if (props.clientKeepAlive !== undefined) {
       const clientKeepAliveInMillis = props.clientKeepAlive.toMilliseconds();
       if (clientKeepAliveInMillis < 1000) {
-        throw new ValidationError(`\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: ${clientKeepAliveInMillis} milliseconds`, this);
+        throw new ValidationError(lit`MustBeClientkeepaliveBetween604800`, `\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: ${clientKeepAliveInMillis} milliseconds`, this);
       }
 
       const clientKeepAliveInSeconds = props.clientKeepAlive.toSeconds();
       if (clientKeepAliveInSeconds < 60 || clientKeepAliveInSeconds > 604800) {
-        throw new ValidationError(`\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: ${clientKeepAliveInSeconds} seconds`, this);
+        throw new ValidationError(lit`MustBeClientkeepaliveBetween604800`, `\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: ${clientKeepAliveInSeconds} seconds`, this);
       }
       this.setAttribute('client_keep_alive.seconds', clientKeepAliveInSeconds.toString());
     }
 
     if (props.crossZoneEnabled === false) {
-      throw new ValidationError('crossZoneEnabled cannot be false with Application Load Balancers.', this);
+      throw new ValidationError(lit`CrossZoneEnabledCannotFalse`, 'crossZoneEnabled cannot be false with Application Load Balancers.', this);
     }
   }
 
@@ -295,7 +300,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
      */
 
     if (bucket.encryptionKey) {
-      throw new ValidationError('Encryption key detected. Bucket encryption using KMS keys is unsupported', this);
+      throw new ValidationError(lit`EncryptionKeyDetectedBucketEncryption`, 'Encryption key detected. Bucket encryption using KMS keys is unsupported', this);
     }
 
     prefix = prefix || '';
@@ -337,7 +342,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     const lb = this.node.defaultChild;
     const bucketPolicy = bucket.policy?.node.defaultChild;
     if (lb && bucketPolicy && CfnResource.isCfnResource(lb) && CfnResource.isCfnResource(bucketPolicy)) {
-      lb.addDependency(bucketPolicy);
+      lb.addResourceDependency(bucketPolicy);
     }
   }
 
@@ -356,7 +361,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
      * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html#bucket-permissions-troubleshooting-connection
      */
     if (bucket.encryptionKey) {
-      throw new ValidationError('Encryption key detected. Bucket encryption using KMS keys is unsupported', this);
+      throw new ValidationError(lit`EncryptionKeyDetectedBucketEncryption`, 'Encryption key detected. Bucket encryption using KMS keys is unsupported', this);
     }
 
     prefix = prefix || '';
@@ -400,7 +405,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     const lb = this.node.defaultChild;
     const bucketPolicy = bucket.policy?.node.defaultChild;
     if (lb && bucketPolicy && CfnResource.isCfnResource(lb) && CfnResource.isCfnResource(bucketPolicy)) {
-      lb.addDependency(bucketPolicy);
+      lb.addResourceDependency(bucketPolicy);
     }
   }
 
@@ -1287,13 +1292,13 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
   public get loadBalancerCanonicalHostedZoneId(): string {
     if (this.props.loadBalancerCanonicalHostedZoneId) { return this.props.loadBalancerCanonicalHostedZoneId; }
 
-    throw new ValidationError(`'loadBalancerCanonicalHostedZoneId' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`, this);
+    throw new ValidationError(lit`LoadBalancerCanonicalHostedZone`, `'loadBalancerCanonicalHostedZoneId' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`, this);
   }
 
   public get loadBalancerDnsName(): string {
     if (this.props.loadBalancerDnsName) { return this.props.loadBalancerDnsName; }
 
-    throw new ValidationError(`'loadBalancerDnsName' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`, this);
+    throw new ValidationError(lit`LoadBalancerDnsNameProvided`, `'loadBalancerDnsName' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`, this);
   }
 }
 

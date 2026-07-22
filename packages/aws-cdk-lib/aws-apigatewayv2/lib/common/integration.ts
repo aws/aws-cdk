@@ -1,5 +1,5 @@
-import { IResource } from '../../../core';
-import { IIntegrationRef } from '../apigatewayv2.generated';
+import type { IResource } from '../../../core';
+import type { IIntegrationRef } from '../apigatewayv2.generated';
 
 /**
  * Represents an integration to an API Route.

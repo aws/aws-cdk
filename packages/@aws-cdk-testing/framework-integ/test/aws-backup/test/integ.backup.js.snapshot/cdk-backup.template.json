@@ -263,6 +263,64 @@
      "SelectionName": "Selection"
     }
    }
+  },
+  "TokenLockVaultDE8332F2": {
+   "Type": "AWS::Backup::BackupVault",
+   "Properties": {
+    "BackupVaultName": "cdkbackupTokenLockVault2FFC41FE",
+    "LockConfiguration": {
+     "MinRetentionDays": {
+      "Ref": "MinRetentionDays"
+     }
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "TokenPlan40E6C026": {
+   "Type": "AWS::Backup::BackupPlan",
+   "Properties": {
+    "BackupPlan": {
+     "BackupPlanName": "TokenPlan",
+     "BackupPlanRule": [
+      {
+       "CopyActions": [
+        {
+         "DestinationBackupVaultArn": {
+          "Fn::GetAtt": [
+           "SecondaryVault67665B5E",
+           "BackupVaultArn"
+          ]
+         },
+         "Lifecycle": {
+          "DeleteAfterDays": {
+           "Ref": "DeleteAfterDays"
+          },
+          "MoveToColdStorageAfterDays": {
+           "Ref": "MoveToColdStorageDays"
+          }
+         }
+        }
+       ],
+       "Lifecycle": {
+        "DeleteAfterDays": {
+         "Ref": "DeleteAfterDays"
+        },
+        "MoveToColdStorageAfterDays": {
+         "Ref": "MoveToColdStorageDays"
+        }
+       },
+       "RuleName": "TokenPlanRule0",
+       "TargetBackupVault": {
+        "Fn::GetAtt": [
+         "TokenLockVaultDE8332F2",
+         "BackupVaultName"
+        ]
+       }
+      }
+     ]
+    }
+   }
   }
  },
  "Parameters": {
@@ -270,6 +328,18 @@
    "Type": "String",
    "Default": "test",
    "Description": "Env"
+  },
+  "MoveToColdStorageDays": {
+   "Type": "Number",
+   "Default": 30
+  },
+  "DeleteAfterDays": {
+   "Type": "Number",
+   "Default": 120
+  },
+  "MinRetentionDays": {
+   "Type": "Number",
+   "Default": 5
   },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

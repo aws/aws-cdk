@@ -1,10 +1,12 @@
-import * as constructs from 'constructs';
-import { StreamEventSource, StreamEventSourceProps } from './stream';
-import * as iam from '../../aws-iam';
-import * as kinesis from '../../aws-kinesis';
-import * as lambda from '../../aws-lambda';
+import type * as constructs from 'constructs';
+import type { StreamEventSourceProps } from './stream';
+import { StreamEventSource } from './stream';
+import type * as iam from '../../aws-iam';
+import type * as kinesis from '../../aws-kinesis';
+import type * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import { UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 export interface KinesisEventSourceProps extends StreamEventSourceProps {
   /**
@@ -39,7 +41,7 @@ abstract class KinesisEventSourceBase extends StreamEventSource {
 
     this.props.batchSize !== undefined && cdk.withResolved(this.props.batchSize, batchSize => {
       if (batchSize < 1 || batchSize > 10000) {
-        throw new UnscopedValidationError(`Maximum batch size must be between 1 and 10000 inclusive (given ${this.props.batchSize})`);
+        throw new UnscopedValidationError(lit`MustBeMaximumBatchSize`, `Maximum batch size must be between 1 and 10000 inclusive (given ${this.props.batchSize})`);
       }
     });
   }
@@ -64,7 +66,7 @@ abstract class KinesisEventSourceBase extends StreamEventSource {
    */
   public get eventSourceMappingId(): string {
     if (!this._eventSourceMappingId) {
-      throw new UnscopedValidationError(`${this.source.eventSourceName} is not yet bound to an event source mapping`);
+      throw new UnscopedValidationError(lit`BoundEventSourceMapping`, `${this.source.eventSourceName} is not yet bound to an event source mapping`);
     }
     return this._eventSourceMappingId;
   }
@@ -74,7 +76,7 @@ abstract class KinesisEventSourceBase extends StreamEventSource {
    */
   public get eventSourceMappingArn(): string {
     if (!this._eventSourceMappingArn) {
-      throw new UnscopedValidationError(`${this.source.eventSourceName} is not yet bound to an event source mapping`);
+      throw new UnscopedValidationError(lit`BoundEventSourceMapping`, `${this.source.eventSourceName} is not yet bound to an event source mapping`);
     }
     return this._eventSourceMappingArn;
   }

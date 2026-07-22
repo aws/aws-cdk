@@ -9,9 +9,10 @@ jest.mock('@aws-sdk/client-redshift-data', () => ({
   },
 }));
 
-import { Column, ColumnEncoding, TableDistStyle, TableSortStyle } from '../../lib';
+import type { Column } from '../../lib';
+import { ColumnEncoding, TableDistStyle, TableSortStyle } from '../../lib';
 import { handler as manageTable } from '../../lib/private/database-query-provider/table';
-import { TableAndClusterProps } from '../../lib/private/database-query-provider/types';
+import type { TableAndClusterProps } from '../../lib/private/database-query-provider/types';
 
 type ResourcePropertiesType = TableAndClusterProps & { ServiceToken: string };
 
@@ -790,5 +791,106 @@ describe('update', () => {
         Sql: `ALTER TABLE ${tableNamePrefix}${stackIdTruncated} ALTER COLUMN col1 ENCODE RAW, ALTER COLUMN col2 ENCODE RAW`,
       }));
     });
+  });
+});
+
+describe('special-character handling', () => {
+  const createEvent: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+    RequestType: 'Create',
+    ...genericEvent,
+  };
+  const updateEvent: AWSLambda.CloudFormationCustomResourceUpdateEvent = {
+    RequestType: 'Update',
+    OldResourceProperties: resourceProperties,
+    PhysicalResourceId: physicalResourceId,
+    ...genericEvent,
+  };
+
+  test('escapes single quotes in a table comment', async () => {
+    const newResourceProperties: ResourcePropertiesType = {
+      ...resourceProperties,
+      tableComment: "it's a table",
+    };
+
+    await manageTable(newResourceProperties, createEvent);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: expect.stringContaining('IS \'it\'\'s a table\''),
+    }));
+  });
+
+  test('escapes single quotes in a column comment', async () => {
+    const newResourceProperties: ResourcePropertiesType = {
+      ...resourceProperties,
+      tableColumns: [{ name: 'col1', dataType: 'varchar(1)', comment: "o'brien" }],
+    };
+
+    await manageTable(newResourceProperties, createEvent);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `COMMENT ON COLUMN ${tableNamePrefix}${stackIdTruncated}.col1 IS 'o''brien'`,
+    }));
+  });
+
+  test('quotes table and column identifiers and doubles embedded double quotes in CREATE TABLE', async () => {
+    const newResourceProperties: ResourcePropertiesType = {
+      ...resourceProperties,
+      tableName: {
+        prefix: 'my table',
+        generateSuffix: 'true',
+      },
+      tableColumns: [{ name: 'we"ird', dataType: 'varchar(1)' }],
+    };
+
+    await manageTable(newResourceProperties, createEvent);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `CREATE TABLE "my table${stackIdTruncated}" ("we""ird" varchar(1))`,
+    }));
+  });
+
+  test('quotes identifiers and doubles embedded double quotes in RENAME COLUMN', async () => {
+    const newEvent: AWSLambda.CloudFormationCustomResourceEvent = {
+      ...updateEvent,
+      OldResourceProperties: {
+        ...updateEvent.OldResourceProperties,
+        tableColumns: [
+          { id: 'colId', name: 'old"a', dataType: 'varchar(1)' },
+        ],
+      },
+    };
+    const newResourceProperties: ResourcePropertiesType = {
+      ...resourceProperties,
+      tableColumns: [
+        { id: 'colId', name: 'new"b', dataType: 'varchar(1)' },
+      ],
+    };
+
+    await manageTable(newResourceProperties, newEvent);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: expect.stringContaining('RENAME COLUMN "old""a" TO "new""b"'),
+    }));
+  });
+
+  test('quotes the table identifier in DROP TABLE', async () => {
+    const deleteEvent: AWSLambda.CloudFormationCustomResourceDeleteEvent = {
+      RequestType: 'Delete',
+      PhysicalResourceId: physicalResourceId,
+      ...genericEvent,
+    };
+    const newResourceProperties: ResourcePropertiesType = {
+      ...resourceProperties,
+      tableName: {
+        prefix: 'my table',
+        generateSuffix: 'true',
+      },
+    };
+
+    await manageTable(newResourceProperties, deleteEvent);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `DROP TABLE "my table${stackIdTruncated}"`,
+    }));
   });
 });

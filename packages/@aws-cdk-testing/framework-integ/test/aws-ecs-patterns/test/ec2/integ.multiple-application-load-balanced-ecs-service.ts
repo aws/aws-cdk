@@ -1,6 +1,7 @@
 import { InstanceType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Cluster, ContainerImage, Ec2TaskDefinition } from 'aws-cdk-lib/aws-ecs';
-import { App, Stack, CfnResource } from 'aws-cdk-lib';
+import type { CfnResource } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { ApplicationMultipleTargetGroupsEc2Service } from 'aws-cdk-lib/aws-ecs-patterns';
 import { REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS } from 'aws-cdk-lib/cx-api';

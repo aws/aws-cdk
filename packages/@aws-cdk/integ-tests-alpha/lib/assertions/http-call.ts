@@ -1,14 +1,18 @@
 import { AspectPriority, Aspects, CfnOutput, CustomResource, Lazy, Token } from 'aws-cdk-lib';
-import { Construct, IConstruct } from 'constructs';
-import { ApiCallBase, IApiCall } from './api-call-base';
-import { ExpectedResult } from './common';
-import { AssertionsProvider, HttpRequestParameters, HTTP_RESOURCE_TYPE } from './providers';
-import { WaiterStateMachine, WaiterStateMachineOptions } from './waiter-state-machine';
+import type { ApplicationLogLevel } from 'aws-cdk-lib/aws-lambda';
+import type { Construct, IConstruct } from 'constructs';
+import type { IApiCall } from './api-call-base';
+import { ApiCallBase } from './api-call-base';
+import type { ExpectedResult } from './common';
+import type { HttpRequestParameters, ProviderOptions } from './providers';
+import { AssertionsProvider, HTTP_RESOURCE_TYPE } from './providers';
+import type { WaiterStateMachineOptions } from './waiter-state-machine';
+import { WaiterStateMachine } from './waiter-state-machine';
 
 /**
  * Options for creating an HttpApiCall provider
  */
-export interface HttpCallProps extends HttpRequestParameters { }
+export interface HttpCallProps extends HttpRequestParameters, ProviderOptions {}
 /**
  * Construct that creates a custom resource that will perform
  * an HTTP API Call
@@ -16,16 +20,21 @@ export interface HttpCallProps extends HttpRequestParameters { }
 export class HttpApiCall extends ApiCallBase {
   protected readonly apiCallResource: CustomResource;
   public readonly provider: AssertionsProvider;
+  private readonly providerLogLevel?: ApplicationLogLevel;
 
   constructor(scope: Construct, id: string, props: HttpCallProps) {
     super(scope, id);
+
+    this.providerLogLevel = props.providerLogLevel;
 
     let name = '';
     if (!Token.isUnresolved(props.url)) {
       const url = new URL(props.url);
       name = `${url.hostname}${url.pathname}`.replace(/\/|\.|:/g, '');
     }
-    this.provider = new AssertionsProvider(this, 'HttpProvider');
+    this.provider = new AssertionsProvider(this, 'HttpProvider', {
+      providerLogLevel: props.providerLogLevel,
+    });
     this.apiCallResource = new CustomResource(this, 'Default', {
       serviceToken: this.provider.serviceToken,
       properties: {
@@ -61,6 +70,7 @@ export class HttpApiCall extends ApiCallBase {
   public waitForAssertions(options?: WaiterStateMachineOptions | undefined): IApiCall {
     const waiter = new WaiterStateMachine(this, 'WaitFor', {
       ...options,
+      providerLogLevel: this.providerLogLevel,
     });
     this.stateMachineArn = waiter.stateMachineArn;
     this.provider.addPolicyStatementFromSdkCall('states', 'StartExecution');

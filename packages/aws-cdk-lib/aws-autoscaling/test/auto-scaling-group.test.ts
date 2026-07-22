@@ -3,7 +3,8 @@ import { Annotations, Match, Template } from '../../assertions';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import { AmazonLinuxCpuType, AmazonLinuxGeneration, AmazonLinuxImage, InstanceType, LaunchTemplate } from '../../aws-ec2';
-import { ApplicationListener, ApplicationLoadBalancer, ApplicationTargetGroup } from '../../aws-elasticloadbalancingv2';
+import type { ApplicationListener } from '../../aws-elasticloadbalancingv2';
+import { ApplicationLoadBalancer, ApplicationTargetGroup } from '../../aws-elasticloadbalancingv2';
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import * as ssm from '../../aws-ssm';
@@ -172,7 +173,7 @@ describe('auto scaling group', () => {
       keyName: 'key-name',
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       instanceMonitoring: autoscaling.Monitoring.DETAILED,
-      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySG', 'most-secure'),
+      securityGroup: mockSecurityGroup(stack),
       role: iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/MockRole'),
       userData,
       associatePublicIpAddress: true,
@@ -332,7 +333,7 @@ describe('auto scaling group', () => {
     const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
       machineImage: new ec2.AmazonLinuxImage(),
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
-      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySG', 'most-secure'),
+      securityGroup: mockSecurityGroup(stack),
       vpc,
     });
     autoScalingGroup.addSecurityGroup(new ec2.SecurityGroup(stack, 'AddedSG', { vpc }));
@@ -375,6 +376,10 @@ describe('auto scaling group', () => {
 
   test('validation is not performed when using Tokens', () => {
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+    cdk.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::E3706',
+      reason: 'Post-synth validation would otherwise still catch this',
+    });
     const vpc = mockVpc(stack);
 
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
@@ -961,7 +966,7 @@ describe('auto scaling group', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
-    const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySG', 'most-secure');
+    const securityGroup = mockSecurityGroup(stack);
 
     // WHEN
     new autoscaling.AutoScalingGroup(stack, 'MyASG', {
@@ -1317,6 +1322,10 @@ describe('auto scaling group', () => {
   test('warning if iops without volumeType', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::W3671',
+      reason: 'We have our own warning',
+    });
     const vpc = mockVpc(stack);
 
     new autoscaling.AutoScalingGroup(stack, 'MyStack', {
@@ -1340,6 +1349,10 @@ describe('auto scaling group', () => {
   test('warning if iops and volumeType !== IO1', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::W3671',
+      reason: 'We have our own warning',
+    });
     const vpc = mockVpc(stack);
 
     new autoscaling.AutoScalingGroup(stack, 'MyStack', {
@@ -2354,7 +2367,7 @@ describe('auto scaling group', () => {
           cpuType: ec2.AmazonLinuxCpuType.X86_64,
         }),
         userData: ec2.UserData.forLinux(),
-        securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySG2', 'most-secure'),
+        securityGroup: mockSecurityGroup(stack),
         role: iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/HelloDude'),
       }),
       vpc: mockVpc(stack),
@@ -3128,9 +3141,68 @@ test('throws if updatePolicy is set with AutoScalingReplacingUpdate when migrate
 });
 
 function mockSecurityGroup(stack: cdk.Stack) {
+  const existing = stack.node.tryFindChild('MySG');
+  if (existing) {
+    return existing as ec2.ISecurityGroup;
+  }
+  cdk.Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::E1150',
+    reason: 'Using a bogus Security Group Id',
+  });
   return ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySG', 'most-secure');
 }
 
 function getTestStack(): cdk.Stack {
   return new cdk.Stack(undefined, 'TestStack', { env: { account: '1234', region: 'us-east-1' } });
 }
+
+test.each([
+  [autoscaling.TerminateHookAbandonAction.RETAIN, 'retain'],
+  [autoscaling.TerminateHookAbandonAction.TERMINATE, 'terminate'],
+  [undefined, Match.absent()],
+])('can configure instanceLifecyclePolicy with %s', (terminateHookAbandon, expectedValue) => {
+  const stack = new cdk.Stack();
+  const vpc = mockVpc(stack);
+
+  new autoscaling.AutoScalingGroup(stack, `MyASG-${expectedValue}`, {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+    machineImage: new ec2.AmazonLinuxImage(),
+    vpc,
+    instanceLifecyclePolicy: {
+      retentionTriggers: {
+        terminateHookAbandon,
+      },
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+    InstanceLifecyclePolicy: {
+      RetentionTriggers: {
+        TerminateHookAbandon: expectedValue,
+      },
+    },
+  });
+});
+
+test.each([
+  [autoscaling.DeletionProtection.NONE, 'none'],
+  [autoscaling.DeletionProtection.PREVENT_FORCE_DELETION, 'prevent-force-deletion'],
+  [autoscaling.DeletionProtection.PREVENT_ALL_DELETION, 'prevent-all-deletion'],
+])('can configure deletion protection with %s', (deletionProtection, expectedValue) => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = mockVpc(stack);
+
+  // WHEN
+  new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+    machineImage: new ec2.AmazonLinuxImage(),
+    vpc,
+    deletionProtection,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+    DeletionProtection: expectedValue,
+  });
+});

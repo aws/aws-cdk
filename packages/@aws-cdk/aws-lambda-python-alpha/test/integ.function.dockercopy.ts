@@ -3,9 +3,10 @@
 /// !cdk-integ pragma:disable-update-workflow
 import * as path from 'path';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
-import { App, CfnOutput, Stack, StackProps, BundlingFileAccess } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, CfnOutput, Stack, BundlingFileAccess } from 'aws-cdk-lib';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as lambda from '../lib';
 
 /*
@@ -20,7 +21,7 @@ class TestStack extends Stack {
 
     const fn = new lambda.PythonFunction(this, 'my_handler', {
       entry: path.join(__dirname, 'lambda-handler-dockercopy'),
-      runtime: Runtime.PYTHON_3_9,
+      runtime: Runtime.PYTHON_3_10,
       bundling: {
         bundlingFileAccess: BundlingFileAccess.VOLUME_COPY,
       },
