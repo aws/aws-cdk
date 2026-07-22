@@ -158,6 +158,7 @@ export const EKS_DEFAULT_AL2023 = '@aws-cdk/aws-eks:defaultToAL2023';
 export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInValidationReport';
 export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackReferences';
 export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
+export const BACKUP_PLAN_UNIQUE_GENERATED_NAME = '@aws-cdk/aws-backup:generateUniqueBackupPlanName';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1931,6 +1932,24 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [BACKUP_PLAN_UNIQUE_GENERATED_NAME]: {
+    type: FlagType.ApiDefault,
+    summary: 'Generate a unique BackupPlanName when none is provided, instead of using the construct id verbatim',
+    detailsMd: `
+      When enabled, \`BackupPlan\` generates a unique \`BackupPlanName\` derived from the
+      construct path (via \`Names.uniqueResourceName\`) when \`backupPlanName\` is not supplied.
+      This prevents \`AlreadyExistsException\` errors when the same construct id is used to
+      create backup plans in multiple stacks within the same account and region.
+
+      When disabled, \`BackupPlan\` falls back to using the raw construct id as the plan name,
+      which can collide when the same id is reused across stacks.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Pass an explicit \`backupPlanName\` to the \`BackupPlan\` constructor to preserve the existing plan name and avoid a resource replacement.',
   },
 };
 

@@ -1,6 +1,7 @@
 import { Match, Template } from '../../assertions';
 import * as events from '../../aws-events';
 import { App, CfnParameter, Duration, Lazy, Stack, TimeZone } from '../../core';
+import * as cxapi from '../../cx-api';
 import { BackupPlan, BackupPlanRule, BackupVault } from '../lib';
 
 let stack: Stack;
@@ -472,6 +473,87 @@ test('does not throw when copy action durations are tokens, regardless of token 
       moveToColdStorageAfter,
     }],
   })).not.toThrow();
+});
+
+describe('generated backupPlanName', () => {
+  test('uses the construct id verbatim when the feature flag is not set (backwards compat)', () => {
+    // WHEN
+    new BackupPlan(stack, 'MyPlan', {
+      backupPlanRules: [BackupPlanRule.daily()],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupPlan', {
+      BackupPlan: {
+        BackupPlanName: 'MyPlan',
+      },
+    });
+  });
+
+  test('generates a unique name when the feature flag is enabled', () => {
+    // GIVEN
+    const app = new App({
+      context: { [cxapi.BACKUP_PLAN_UNIQUE_GENERATED_NAME]: true },
+    });
+    const flaggedStack = new Stack(app, 'MyStack');
+
+    // WHEN
+    new BackupPlan(flaggedStack, 'MyPlan', {
+      backupPlanRules: [BackupPlanRule.daily()],
+    });
+
+    // THEN
+    const template = Template.fromStack(flaggedStack);
+    const name = template.findResources('AWS::Backup::BackupPlan')[
+      Object.keys(template.findResources('AWS::Backup::BackupPlan'))[0]
+    ].Properties.BackupPlan.BackupPlanName;
+    // Includes the stack + construct id, must be alphanumerics + '-_.'
+    expect(name).not.toBe('MyPlan');
+    expect(name).toMatch(/^[A-Za-z0-9\-_.]{1,50}$/);
+    expect(name).toContain('MyPlan');
+  });
+
+  test('does not collide when the same id is used in two stacks with the feature flag enabled', () => {
+    // GIVEN
+    const app = new App({
+      context: { [cxapi.BACKUP_PLAN_UNIQUE_GENERATED_NAME]: true },
+    });
+    const stackA = new Stack(app, 'StackA');
+    const stackB = new Stack(app, 'StackB');
+
+    // WHEN
+    new BackupPlan(stackA, 'MyPlan', { backupPlanRules: [BackupPlanRule.daily()] });
+    new BackupPlan(stackB, 'MyPlan', { backupPlanRules: [BackupPlanRule.daily()] });
+
+    // THEN
+    const getName = (s: Stack) => {
+      const resources = Template.fromStack(s).findResources('AWS::Backup::BackupPlan');
+      const key = Object.keys(resources)[0];
+      return resources[key].Properties.BackupPlan.BackupPlanName;
+    };
+    expect(getName(stackA)).not.toBe(getName(stackB));
+  });
+
+  test('respects an explicit backupPlanName even when the feature flag is enabled', () => {
+    // GIVEN
+    const app = new App({
+      context: { [cxapi.BACKUP_PLAN_UNIQUE_GENERATED_NAME]: true },
+    });
+    const flaggedStack = new Stack(app, 'MyStack');
+
+    // WHEN
+    new BackupPlan(flaggedStack, 'MyPlan', {
+      backupPlanName: 'my-explicit-name',
+      backupPlanRules: [BackupPlanRule.daily()],
+    });
+
+    // THEN
+    Template.fromStack(flaggedStack).hasResourceProperties('AWS::Backup::BackupPlan', {
+      BackupPlan: {
+        BackupPlanName: 'my-explicit-name',
+      },
+    });
+  });
 });
 
 test('renders a lifecycle that references a CloudFormation parameter', () => {

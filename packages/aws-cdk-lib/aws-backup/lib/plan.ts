@@ -8,13 +8,14 @@ import { BackupSelection } from './selection';
 import type { IBackupVault } from './vault';
 import { BackupVault } from './vault';
 import type { IResource } from '../../core';
-import { ArnFormat, Resource, ValidationError } from '../../core';
+import { ArnFormat, FeatureFlags, Names, Resource, ValidationError } from '../../core';
 import type { IArrayBox } from '../../core/lib/helpers-internal';
 import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import * as cxapi from '../../cx-api';
 import type { BackupPlanReference, IBackupPlanRef, IBackupVaultRef } from '../../interfaces/generated/aws-backup-interfaces.generated';
 
 /**
@@ -174,7 +175,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
     const plan = new CfnBackupPlan(this, 'Resource', {
       backupPlan: {
         advancedBackupSettings: this.advancedBackupSettings(props),
-        backupPlanName: props.backupPlanName || id,
+        backupPlanName: props.backupPlanName || this.generateBackupPlanName(id),
         backupPlanRule: this.rules,
       },
     });
@@ -190,6 +191,16 @@ export class BackupPlan extends Resource implements IBackupPlan {
     }
 
     this.node.addValidation({ validate: () => this.validatePlan() });
+  }
+
+  private generateBackupPlanName(id: string): string {
+    if (!FeatureFlags.of(this).isEnabled(cxapi.BACKUP_PLAN_UNIQUE_GENERATED_NAME)) {
+      return id;
+    }
+    return Names.uniqueResourceName(this, {
+      maxLength: 50,
+      allowedSpecialCharacters: '-_.',
+    });
   }
 
   private advancedBackupSettings(props: BackupPlanProps) {
