@@ -820,10 +820,10 @@ const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
 const capacityProvider = new lambda.CapacityProvider(this, 'MyCapacityProvider', {
   subnets: vpc.privateSubnets,
   securityGroups: [securityGroup],
-  propagateTags: lambda.PropagateTags.explicit([
-    { key: 'CostCenter', value: 'Engineering' },
-    { key: 'Project', value: 'MyProject' },
-  ]),
+  propagateTags: lambda.PropagateTags.explicit({
+    CostCenter: 'Engineering',
+    Project: 'MyProject',
+  }),
 });
 ```
 
