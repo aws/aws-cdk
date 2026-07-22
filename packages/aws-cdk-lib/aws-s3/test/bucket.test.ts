@@ -2742,12 +2742,13 @@ describe('bucket', () => {
 
     test('in different accounts', () => {
       // GIVEN
-      const stackA = new cdk.Stack(undefined, 'StackA', { env: { account: '123456789012' } });
+      const app = new cdk.App({ context: { [cxapi.CROSS_ACCOUNT_GRANTS_VIA_PRINCIPAL_TAG]: true } });
+      const stackA = new cdk.Stack(app, 'StackA', { env: { account: '123456789012' } });
       const bucketFromStackA = new s3.Bucket(stackA, 'MyBucket', {
         bucketName: 'my-bucket-physical-name',
       });
 
-      const stackB = new cdk.Stack(undefined, 'StackB', { env: { account: '234567890123' } });
+      const stackB = new cdk.Stack(app, 'StackB', { env: { account: '234567890123' } });
       const roleFromStackB = new iam.Role(stackB, 'MyRole', {
         assumedBy: new iam.AccountPrincipal('234567890123'),
         roleName: 'MyRolePhysicalName',
@@ -2757,6 +2758,7 @@ describe('bucket', () => {
       bucketFromStackA.grantRead(roleFromStackB);
 
       // THEN
+      const roleTag = `StackB_${roleFromStackB.node.addr}`;
       Template.fromStack(stackA).hasResourceProperties('AWS::S3::BucketPolicy', {
         'PolicyDocument': {
           'Statement': [
@@ -2776,14 +2778,21 @@ describe('bucket', () => {
                       {
                         'Ref': 'AWS::Partition',
                       },
-                      ':iam::234567890123:role/MyRolePhysicalName',
+                      ':iam::234567890123:root',
                     ],
                   ],
                 },
               },
+              'Condition': {
+                StringEquals: { 'aws:PrincipalTag/aws-cdk:id': roleTag },
+              },
             }),
           ],
         },
+      });
+
+      Template.fromStack(stackB).hasResourceProperties('AWS::IAM::Role', {
+        Tags: [{ Key: 'aws-cdk:id', Value: roleTag }],
       });
 
       Template.fromStack(stackB).hasResourceProperties('AWS::IAM::Policy', {
@@ -2830,7 +2839,8 @@ describe('bucket', () => {
 
     test('in different accounts, with a KMS Key', () => {
       // GIVEN
-      const stackA = new cdk.Stack(undefined, 'StackA', { env: { account: '123456789012' } });
+      const app = new cdk.App({ context: { [cxapi.CROSS_ACCOUNT_GRANTS_VIA_PRINCIPAL_TAG]: true } });
+      const stackA = new cdk.Stack(app, 'StackA', { env: { account: '123456789012' } });
       const key = new kms.Key(stackA, 'MyKey');
       const bucketFromStackA = new s3.Bucket(stackA, 'MyBucket', {
         bucketName: 'my-bucket-physical-name',
@@ -2838,7 +2848,7 @@ describe('bucket', () => {
         encryption: s3.BucketEncryption.KMS,
       });
 
-      const stackB = new cdk.Stack(undefined, 'StackB', { env: { account: '234567890123' } });
+      const stackB = new cdk.Stack(app, 'StackB', { env: { account: '234567890123' } });
       const roleFromStackB = new iam.Role(stackB, 'MyRole', {
         assumedBy: new iam.AccountPrincipal('234567890123'),
         roleName: 'MyRolePhysicalName',
@@ -2848,6 +2858,41 @@ describe('bucket', () => {
       bucketFromStackA.grantRead(roleFromStackB);
 
       // THEN
+      // The cross-account role is created in a separate stack with no deploy-ordering guarantee
+      // relative to the key, so the key policy trusts the role's account root scoped down to the
+      // role's `aws-cdk:id` tag rather than referencing the (possibly not-yet-existing) role ARN.
+      const roleTag = `StackB_${roleFromStackB.node.addr}`;
+      Template.fromStack(stackA).hasResourceProperties('AWS::S3::BucketPolicy', {
+        'PolicyDocument': {
+          'Statement': Match.arrayWith([
+            Match.objectLike({
+              Action: [
+                's3:GetObject*',
+                's3:GetBucket*',
+                's3:List*',
+              ],
+              'Effect': 'Allow',
+              'Principal': {
+                'AWS': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        'Ref': 'AWS::Partition',
+                      },
+                      ':iam::234567890123:root',
+                    ],
+                  ],
+                },
+              },
+              'Condition': {
+                StringEquals: { 'aws:PrincipalTag/aws-cdk:id': roleTag },
+              },
+            }),
+          ]),
+        },
+      });
       Template.fromStack(stackA).hasResourceProperties('AWS::KMS::Key', {
         'KeyPolicy': {
           'Statement': Match.arrayWith([
@@ -2866,14 +2911,21 @@ describe('bucket', () => {
                       {
                         'Ref': 'AWS::Partition',
                       },
-                      ':iam::234567890123:role/MyRolePhysicalName',
+                      ':iam::234567890123:root',
                     ],
                   ],
                 },
               },
+              'Condition': {
+                StringEquals: { 'aws:PrincipalTag/aws-cdk:id': roleTag },
+              },
             }),
           ]),
         },
+      });
+
+      Template.fromStack(stackB).hasResourceProperties('AWS::IAM::Role', {
+        Tags: [{ Key: 'aws-cdk:id', Value: roleTag }],
       });
 
       Template.fromStack(stackB).hasResourceProperties('AWS::IAM::Policy', {
@@ -2888,6 +2940,101 @@ describe('bucket', () => {
               'Resource': '*',
             }),
           ]),
+        },
+      });
+    });
+
+    test.each([
+      { setting: 'unset', context: {} },
+      { setting: 'false', context: { [cxapi.CROSS_ACCOUNT_GRANTS_VIA_PRINCIPAL_TAG]: false } },
+    ])('in different accounts, preserves the role ARN when the flag is $setting', ({ context }) => {
+      const app = new cdk.App({ context });
+      const stackA = new cdk.Stack(app, 'StackA', { env: { account: '123456789012' } });
+      const bucket = new s3.Bucket(stackA, 'MyBucket', {
+        bucketName: 'my-bucket-physical-name',
+      });
+      const stackB = new cdk.Stack(app, 'StackB', { env: { account: '234567890123' } });
+      const role = new iam.Role(stackB, 'MyRole', {
+        assumedBy: new iam.AccountPrincipal('234567890123'),
+        roleName: 'MyRolePhysicalName',
+      });
+
+      bucket.grantRead(role);
+
+      Template.fromStack(stackA).hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([Match.objectLike({
+            Principal: {
+              AWS: {
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::234567890123:role/MyRolePhysicalName']],
+              },
+            },
+            Condition: Match.absent(),
+          })]),
+        },
+      });
+      Template.fromStack(stackB).resourcePropertiesCountIs('AWS::IAM::Role', {
+        Tags: [{ Key: 'aws-cdk:id', Value: Match.anyValue() }],
+      }, 0);
+    });
+
+    test('in different accounts, when the bucket stack depends on the principal stack', () => {
+      const app = new cdk.App({ context: { [cxapi.CROSS_ACCOUNT_GRANTS_VIA_PRINCIPAL_TAG]: true } });
+      const stackA = new cdk.Stack(app, 'StackA', { env: { account: '123456789012' } });
+      const bucketFromStackA = new s3.Bucket(stackA, 'MyBucket', {
+        bucketName: 'my-bucket-physical-name',
+      });
+      const stackB = new cdk.Stack(app, 'StackB', { env: { account: '234567890123' } });
+      const roleFromStackB = new iam.Role(stackB, 'MyRole', {
+        assumedBy: new iam.AccountPrincipal('234567890123'),
+        roleName: 'MyRolePhysicalName',
+      });
+      stackA.addDependency(stackB);
+
+      bucketFromStackA.grantRead(roleFromStackB);
+
+      Template.fromStack(stackA).hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([Match.objectLike({
+            Principal: {
+              AWS: {
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::234567890123:role/MyRolePhysicalName']],
+              },
+            },
+            Condition: Match.absent(),
+          })]),
+        },
+      });
+      Template.fromStack(stackB).resourcePropertiesCountIs('AWS::IAM::Role', {
+        Tags: [{ Key: 'aws-cdk:id', Value: Match.anyValue() }],
+      }, 0);
+    });
+
+    test('in different accounts, grant to an imported role', () => {
+      const app = new cdk.App({ context: { [cxapi.CROSS_ACCOUNT_GRANTS_VIA_PRINCIPAL_TAG]: true } });
+      const stack = new cdk.Stack(app, 'StackA', { env: { account: '123456789012' } });
+      const bucket = new s3.Bucket(stack, 'MyBucket', {
+        bucketName: 'my-bucket-physical-name',
+      });
+      const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::234567890123:role/MyImportedRole', {
+        mutable: false,
+      });
+
+      bucket.grantRead(role);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([Match.objectLike({
+            Principal: { AWS: 'arn:aws:iam::234567890123:role/MyImportedRole' },
+            Condition: Match.absent(),
+          })]),
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Statement: Match.not(Match.arrayWith([Match.objectLike({
+            Condition: { StringEquals: { 'aws:PrincipalTag/aws-cdk:id': Match.anyValue() } },
+          })])),
         },
       });
     });

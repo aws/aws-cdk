@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "BucketCrossAccountGrant/DefaultTest": {
+      "stacks": [
+        "BucketResourceStack",
+        "BucketPrincipalStack"
+      ],
+      "assertionStack": "BucketCrossAccountGrant/DefaultTest/DeployAssert",
+      "assertionStackName": "BucketCrossAccountGrantDefaultTestDeployAssert06B8E8EA"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}
