@@ -1,0 +1,80 @@
+{
+  "/MetadataContextTestStack/OrderQueue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:metadata-context",
+      "data": {
+        "context": {
+          "why": "buffer order events async; std queue (throughput > ordering)",
+          "must": [
+            "VisTimeout >= 6x consumer timeout, else dup on retry"
+          ],
+          "mutable": "change-with-constraints",
+          "mutability": {
+            "QueueName": "must-never-change"
+          },
+          "trust": {
+            "source": "authored",
+            "confidence": "high"
+          },
+          "ops": "check ApproxAgeOfOldestMsg before cutting VisTimeout",
+          "failureModes": [
+            "retry 3x w/ exp backoff before DLQ"
+          ]
+        },
+        "options": {
+          "applyToAllResources": false
+        }
+      }
+    }
+  ],
+  "/MetadataContextTestStack/Notifications": [
+    {
+      "type": "aws:cdk:metadata-context",
+      "data": {
+        "context": {
+          "why": "fan-out of alert events to oncall channels",
+          "gaps": [
+            "delivery retry policy never validated under load"
+          ]
+        },
+        "options": {
+          "applyToAllResources": false
+        }
+      }
+    }
+  ],
+  "/MetadataContextTestStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/MetadataContextTestStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/MetadataContextTestStack/OrderQueue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OrderQueue39B99167"
+    }
+  ],
+  "/MetadataContextTestStack/Notifications/AlertsTopic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/MetadataContextTestStack/Notifications/AlertsTopic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NotificationsAlertsTopicDFE3487E"
+    }
+  ]
+}
