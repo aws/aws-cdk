@@ -1,0 +1,64 @@
+{
+ "Description": "integ test stack for MetadataContextMixin; exercises single and bulk application",
+ "Resources": {
+  "AuditQueue": {
+   "Type": "AWS::SQS::Queue",
+   "Metadata": {
+    "Context": {
+     "why": "append-only audit trail buffer",
+     "must": [
+      "never shorten retention below 14d (audit requirement)"
+     ],
+     "mutable": "must-never-change",
+     "deps": [
+      "NetworkStack"
+     ]
+    }
+   }
+  },
+  "EventsTopic": {
+   "Type": "AWS::SNS::Topic",
+   "Metadata": {
+    "Context": {
+     "deps": [
+      "NetworkStack"
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
