@@ -97,7 +97,7 @@ export class TwoStackApp extends Stage {
     this.stack1 = new BucketStack(this, 'Stack1');
 
     if (props?.withDependency ?? true) {
-      this.stack2.addDependency(this.stack1);
+      this.stack2.addStackDependency(this.stack1);
     }
   }
 }
@@ -113,8 +113,8 @@ export class ThreeStackApp extends Stage {
     const stack2 = new BucketStack(this, 'Stack2');
     const stack3 = new BucketStack(this, 'Stack3');
 
-    stack3.addDependency(stack1);
-    stack3.addDependency(stack2);
+    stack3.addStackDependency(stack1);
+    stack3.addStackDependency(stack2);
   }
 }
 

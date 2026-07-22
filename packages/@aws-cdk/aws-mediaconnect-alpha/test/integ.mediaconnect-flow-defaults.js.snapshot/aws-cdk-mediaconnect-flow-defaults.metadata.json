@@ -1,0 +1,74 @@
+{
+  "/aws-cdk-mediaconnect-flow-defaults/RistFlow": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-defaults/MergeFlow": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-defaults/OutputDefault": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-defaults/EntitlementDefault": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-defaults/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-defaults/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-defaults/RistFlow/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RistFlowF5B66698"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-defaults/MergeFlow/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MergeFlow70FCE4A4"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-defaults/OutputDefault/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OutputDefault1A6CCE07"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-defaults/EntitlementDefault/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EntitlementDefault1C8A3CDE"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-defaults/Exports/Output{\"Fn::GetAtt\":[\"RistFlowF5B66698\",\"FlowArn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttRistFlowF5B66698FlowArnB140E86D"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-defaults/Exports/Output{\"Fn::GetAtt\":[\"MergeFlow70FCE4A4\",\"FlowArn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttMergeFlow70FCE4A4FlowArn9D1B246A"
+    }
+  ]
+}

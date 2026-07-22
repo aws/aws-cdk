@@ -475,6 +475,11 @@ describe('tests', () => {
   test('Add certificate to imported listener', () => {
     // GIVEN
     const stack2 = new cdk.Stack();
+    cdk.Validations.of(stack2).acknowledge({
+      id: 'CloudFormation-Validate::E1150',
+      reason: 'Yes that is not a valid SG ID',
+    });
+
     const listener2 = elbv2.ApplicationListener.fromApplicationListenerAttributes(stack2, 'Listener', {
       listenerArn: 'listener-arn',
       defaultPort: 443,

@@ -1,0 +1,434 @@
+{
+ "Resources": {
+  "gatewayB15F83BA": {
+   "Type": "AWS::MediaConnect::Gateway",
+   "Properties": {
+    "EgressCidrBlocks": [
+     "10.0.0.0/23"
+    ],
+    "Name": "awscdkmediacgevpcgateway3507A686",
+    "Networks": [
+     {
+      "CidrBlock": "10.0.0.0/23",
+      "Name": "network-1"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "testvpc5C6845CD": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-mediaconnect-bridge-vpc/testvpc"
+     }
+    ]
+   }
+  },
+  "testvpcRestrictDefaultSecurityGroupCustomResource937ADC3F": {
+   "Type": "Custom::VpcRestrictDefaultSG",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
+      "Arn"
+     ]
+    },
+    "DefaultSecurityGroupId": {
+     "Fn::GetAtt": [
+      "testvpc5C6845CD",
+      "DefaultSecurityGroup"
+     ]
+    },
+    "Account": {
+     "Ref": "AWS::AccountId"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:AuthorizeSecurityGroupEgress",
+          "ec2:RevokeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupEgress"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":ec2:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":security-group/",
+             {
+              "Fn::GetAtt": [
+               "testvpc5C6845CD",
+               "DefaultSecurityGroup"
+              ]
+             }
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "bea78ce725e22a5e0d82378f6b49028c09ba86499286d6945a0506e820854e92.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
+   },
+   "DependsOn": [
+    "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+   ]
+  },
+  "mysubnetSubnet269B0887": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "AWS::Region"
+       },
+       "a"
+      ]
+     ]
+    },
+    "CidrBlock": "10.0.172.0/24",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-mediaconnect-bridge-vpc/mysubnet"
+     }
+    ],
+    "VpcId": {
+     "Ref": "testvpc5C6845CD"
+    }
+   }
+  },
+  "mysubnetRouteTable0F7D5D45": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-mediaconnect-bridge-vpc/mysubnet"
+     }
+    ],
+    "VpcId": {
+     "Ref": "testvpc5C6845CD"
+    }
+   }
+  },
+  "mysubnetRouteTableAssociationC339E1ED": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "mysubnetRouteTable0F7D5D45"
+    },
+    "SubnetId": {
+     "Ref": "mysubnetSubnet269B0887"
+    }
+   }
+  },
+  "BridgeSecurityGroupA70099B0": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Security group for MediaConnect bridge",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "testvpc5C6845CD"
+    }
+   }
+  },
+  "BridgeRole317484EB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "mediaconnect.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": [
+          "ec2:CreateNetworkInterface",
+          "ec2:CreateNetworkInterfacePermission",
+          "ec2:DeleteNetworkInterface",
+          "ec2:DescribeSubnets"
+         ],
+         "Effect": "Allow",
+         "Resource": "*"
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "policy"
+     }
+    ]
+   }
+  },
+  "network39EEAA36": {
+   "Type": "AWS::MediaConnect::RouterNetworkInterface",
+   "Properties": {
+    "Configuration": {
+     "Public": {
+      "AllowRules": [
+       {
+        "Cidr": "10.0.0.0/16"
+       }
+      ]
+     }
+    },
+    "Name": "test-output-network"
+   }
+  },
+  "rtpOutput36AD8ECF": {
+   "Type": "AWS::MediaConnect::RouterOutput",
+   "Properties": {
+    "Configuration": {
+     "Standard": {
+      "NetworkInterfaceArn": {
+       "Fn::GetAtt": [
+        "network39EEAA36",
+        "Arn"
+       ]
+      },
+      "Protocol": "RTP",
+      "ProtocolConfiguration": {
+       "Rtp": {
+        "DestinationAddress": "198.51.100.10",
+        "DestinationPort": 5000,
+        "ForwardErrorCorrection": "ENABLED"
+       }
+      }
+     }
+    },
+    "MaintenanceConfiguration": {
+     "Default": {}
+    },
+    "MaximumBitrate": 10000000,
+    "Name": "test-rtp-output",
+    "RegionName": {
+     "Ref": "AWS::Region"
+    },
+    "RoutingScope": "GLOBAL",
+    "Tier": "OUTPUT_100"
+   }
+  },
+  "SourceFlow80460280": {
+   "Type": "AWS::MediaConnect::Flow",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "AWS::Region"
+       },
+       "a"
+      ]
+     ]
+    },
+    "Name": "bridge-source-flow",
+    "Source": {
+     "Name": "test-rtp-output",
+     "RouterIntegrationState": "ENABLED",
+     "RouterIntegrationTransitDecryption": {
+      "EncryptionKeyConfiguration": {
+       "Automatic": {}
+      },
+      "EncryptionKeyType": "AUTOMATIC"
+     }
+    },
+    "VpcInterfaces": [
+     {
+      "Name": "bridge-vpc-interface",
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "BridgeRole317484EB",
+        "Arn"
+       ]
+      },
+      "SecurityGroupIds": [
+       {
+        "Fn::GetAtt": [
+         "BridgeSecurityGroupA70099B0",
+         "GroupId"
+        ]
+       }
+      ],
+      "SubnetId": {
+       "Ref": "mysubnetSubnet269B0887"
+      }
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "egressBridgeWithVpc472FE3B3": {
+   "Type": "AWS::MediaConnect::Bridge",
+   "Properties": {
+    "EgressGatewayBridge": {
+     "MaxBitrate": 10000000
+    },
+    "Name": "test-egress-bridge-vpc",
+    "Outputs": [
+     {
+      "NetworkOutput": {
+       "IpAddress": "192.168.1.200",
+       "Name": "bridge-vpc-output",
+       "NetworkName": "network-1",
+       "Port": 5001,
+       "Protocol": "udp",
+       "Ttl": 200
+      }
+     }
+    ],
+    "PlacementArn": {
+     "Fn::GetAtt": [
+      "gatewayB15F83BA",
+      "GatewayArn"
+     ]
+    },
+    "Sources": [
+     {
+      "FlowSource": {
+       "FlowArn": {
+        "Fn::GetAtt": [
+         "SourceFlow80460280",
+         "FlowArn"
+        ]
+       },
+       "FlowVpcInterfaceAttachment": {
+        "VpcInterfaceName": "bridge-vpc-interface"
+       },
+       "Name": "egress-flow-source-vpc"
+      }
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

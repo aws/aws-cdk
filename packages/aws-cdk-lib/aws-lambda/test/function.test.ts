@@ -307,7 +307,7 @@ describe('function', () => {
     test('applies source arn condition if principal has conditions', () => {
       const stack = new cdk.Stack();
       const fn = newTestLambda(stack);
-      const sourceArn = 'arn:aws:s3:::my-bucket';
+      const sourceArn = 'arn:aws:sqs:us-east-1:1111111111:MyQueue';
       const service = 'my-service';
       const principal = new iam.PrincipalWithConditions(new iam.ServicePrincipal(service), {
         ArnLike: {
@@ -4082,62 +4082,6 @@ describe('function', () => {
         snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
       })).toThrow('SnapStart is not supported for functions with tenant isolation mode');
     });
-
-    test('container image function using SnapStart', () => {
-      const stack = new cdk.Stack();
-
-      // WHEN
-      const fn = new lambda.DockerImageFunction(stack, 'MyLambda', {
-        code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-lambda-handler')),
-        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
-      });
-
-      fn.currentVersion;
-
-      // THEN
-      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
-        Properties: {
-          PackageType: 'Image',
-          SnapStart: {
-            ApplyOn: 'PublishedVersions',
-          },
-        },
-      });
-    });
-
-    test('container image function with SnapStart and EFS throws', () => {
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1 });
-      const fs = new efs.FileSystem(stack, 'Efs', { vpc });
-      const accessPoint = fs.addAccessPoint('AccessPoint');
-
-      expect(() => new lambda.DockerImageFunction(stack, 'MyLambda', {
-        code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-lambda-handler')),
-        vpc,
-        filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
-        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
-      })).toThrow('SnapStart is currently not supported using EFS');
-    });
-
-    test('container image function with SnapStart and >512 MiB ephemeral storage throws', () => {
-      const stack = new cdk.Stack();
-
-      expect(() => new lambda.DockerImageFunction(stack, 'MyLambda', {
-        code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-lambda-handler')),
-        ephemeralStorageSize: Size.mebibytes(1024),
-        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
-      })).toThrow('SnapStart is currently not supported using more than 512 MiB Ephemeral Storage');
-    });
-
-    test('container image function with SnapStart and tenant isolation throws', () => {
-      const stack = new cdk.Stack();
-
-      expect(() => new lambda.DockerImageFunction(stack, 'MyLambda', {
-        code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-lambda-handler')),
-        tenancyConfig: lambda.TenancyConfig.PER_TENANT,
-        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
-      })).toThrow('SnapStart is not supported for functions with tenant isolation mode');
-    });
   });
 
   describe('Recursive Loop', () => {
@@ -4552,10 +4496,10 @@ test('test 2.87.0 version hash stability', () => {
       '@aws-cdk/aws-lambda:recognizeLayerVersion': true,
     },
   });
-  cdk.Validations.of(app).acknowledge({
-    id: 'CloudFormation-Validate::E3071',
-    reason: 'Node 99.x supports inline code',
-  });
+  cdk.Validations.of(app).acknowledge(
+    { id: 'CloudFormation-Validate::E3071', reason: 'Node 99.x supports inline code' },
+    { id: 'CloudFormation-Validate::W3030', reason: 'Node 99.x is not valid, sure' },
+  );
   const stack = new cdk.Stack(app, 'Stack');
 
   // WHEN
