@@ -4,26 +4,26 @@
   "pluginReports": [
     {
       "pluginName": "CloudFormation Validate",
-      "pluginVersion": "1.1.0",
+      "pluginVersion": "1.2.0",
       "conclusion": "success",
       "violations": [
         {
           "ruleName": "F3002",
-          "description": "BogusProperty: Additional properties are not allowed ('BogusProperty' was unexpected)",
+          "description": "TelemetryConfig: Additional properties are not allowed ('TelemetryConfig' was unexpected)",
           "severity": "warning",
           "ruleMetadata": {
             "category": "Schema"
           },
           "violatingConstructs": [
             {
-              "constructPath": "CloudFormationValidatePluginStack/MyBucket/Resource",
-              "constructFqn": "aws-cdk-lib.aws_s3.CfnBucket",
+              "constructPath": "CapacityProviderAllFieldsStack/CapacityProvider/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnCapacityProvider",
               "libraryVersion": "0.0.0",
               "cloudFormationResource": {
-                "templatePath": "/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/core/test/integ.cloudformation-validate-plugin.js.snapshot/CloudFormationValidatePluginStack.template.json",
-                "logicalId": "MyBucketF68F3FF0",
+                "templatePath": "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-cp-telemetryconfig-support/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-all-fields.js.snapshot/CapacityProviderAllFieldsStack.template.json",
+                "logicalId": "CapacityProvider7AA4F436",
                 "propertyPaths": [
-                  "Properties.BogusProperty"
+                  "Properties.TelemetryConfig"
                 ]
               }
             }
