@@ -117,6 +117,7 @@ Flags come in three types:
 | [@aws-cdk/core:annotationsInValidationReport](#aws-cdkcoreannotationsinvalidationreport) | Include construct annotations (warnings and errors) in the policy validation report | 2.253.0 | config |
 | [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-region stack references are strong, weak, or both | 2.254.0 | config |
 | [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | 2.259.0 | new default |
+| [@aws-cdk/aws-rds:databaseProxyLowercaseDerivedName](#aws-cdkaws-rdsdatabaseproxylowercasederivedname) | Lowercase the auto-derived name of a Database Proxy to match RDS | V2NEXT | fix |
 | [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | V2NEXT | config |
 
 <!-- END table -->
@@ -182,6 +183,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
     "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": true,
     "@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters": true,
+    "@aws-cdk/aws-rds:databaseProxyLowercaseDerivedName": true,
     "@aws-cdk/aws-rds:databaseProxyUniqueResourceName": true,
     "@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials": true,
     "@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId": true,
@@ -2531,6 +2533,30 @@ When disabled, the default AMI types remain AL2 for backward compatibility.
 **Compatibility with old behavior:** Explicitly set `amiType` to the desired AL2 type (e.g., `NodegroupAmiType.AL2_X86_64`) in your nodegroup configuration.
 
 **Warning**: Enabling this flag on existing stacks will cause node group replacement, which terminates running pods. To migrate safely, first pin existing node groups to their current amiType explicitly, then enable the flag for new node groups.
+
+
+### @aws-cdk/aws-rds:databaseProxyLowercaseDerivedName
+
+*Lowercase the auto-derived name of a Database Proxy to match RDS*
+
+Flag type: Backwards incompatible bugfix
+
+When `dbProxyName` is not specified, `DatabaseProxy` derives the proxy name from the
+construct `id` (or, when `@aws-cdk/aws-rds:databaseProxyUniqueResourceName` is enabled,
+from a unique resource name). RDS stores DB proxy names in lowercase, so a derived name that
+contains uppercase characters does not match the actual resource name. As a result, the
+`dbProxyName` attribute (which reflects the submitted name) is inconsistent with the deployed
+resource, breaking downstream references such as CloudWatch dimensions.
+
+If this flag is set, the derived name is lowercased before it is passed to the underlying
+`CfnDBProxy`, so `dbProxyName` matches the real resource. Explicitly provided names and
+unresolved tokens are left unchanged.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 ### @aws-cdk/core:validateAgainstDefaultRules
