@@ -1,13 +1,4 @@
 {
-  "/CapacityProviderPropagateTagsStack": [
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-propagate-tags.js:41:15)",
-        "...node internals..."
-      ]
-    }
-  ],
   "/CapacityProviderPropagateTagsStack/Vpc": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -62,56 +53,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
-        "DefaultStackSynthesizer.synthesize (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
-        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
-        "visit (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
-        "visit (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
-        "synthesizeTree (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
-        "synthesize (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
-        "App.synth (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
-        "App.synth (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
-        "DefaultStackSynthesizer.synthesize (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
-        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
-        "visit (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
-        "visit (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
-        "synthesizeTree (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
-        "synthesize (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
-        "App.synth (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
-        "App.synth (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/Vpc/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Vpc8378EB38"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:811:29)",
-        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-propagate-tags.js:42:13)",
-        "...node internals..."
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/Vpc/PublicSubnet1": [
@@ -246,28 +199,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcIGWD7BA715C"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:866:29)",
-        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-propagate-tags.js:42:13)",
-        "...node internals..."
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/Vpc/VPCGW": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcVPCGWBF912B6E"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:869:29)",
-        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-propagate-tags.js:42:13)",
-        "...node internals..."
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/Vpc/RestrictDefaultSecurityGroupCustomResource": [
@@ -280,50 +217,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResourceProviderBase (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:131:25)",
-        "new RestrictDefaultSgProvider (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:57:9)",
-        "RestrictDefaultSgProvider.getOrCreateProvider (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:54:28)",
-        "WrappedClass.restrictDefaultSecurityGroup (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1113:99)",
-        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:935:22)",
-        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-propagate-tags.js:42:13)",
-        "...node internals..."
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResourceProviderBase (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:153:24)",
-        "new RestrictDefaultSgProvider (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:57:9)",
-        "RestrictDefaultSgProvider.getOrCreateProvider (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:54:28)",
-        "WrappedClass.restrictDefaultSecurityGroup (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1113:99)",
-        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:935:22)",
-        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-propagate-tags.js:42:13)",
-        "...node internals..."
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/SecurityGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "SecurityGroupDD263621"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new SecurityGroup (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:461:34)",
-        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-propagate-tags.js:43:23)",
-        "...node internals..."
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/CpWithExplicitTags/OperatorRole": [
@@ -346,14 +251,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CpWithExplicitTags77AFD84E"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CapacityProvider (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/capacity-provider.js:409:37)",
-        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-propagate-tags.js:44:1)",
-        "...node internals..."
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/CpWithNone/OperatorRole": [
@@ -376,422 +273,156 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CpWithNone5AE4AD32"
-    },
+    }
+  ],
+  "/CapacityProviderPropagateTagsStack/Exports/Output{\"Ref\":\"CpWithExplicitTags77AFD84E\"}": [
     {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CapacityProvider (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/capacity-provider.js:409:37)",
-        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-propagate-tags.js:52:1)",
-        "...node internals..."
-      ]
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefCpWithExplicitTags77AFD84E0801F124"
+    }
+  ],
+  "/CapacityProviderPropagateTagsStack/Exports/Output{\"Ref\":\"CpWithNone5AE4AD32\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefCpWithNone5AE4AD32FFE6E94A"
     }
   ],
   "/CapacityProviderPropagateTagsStack/Vpc/PublicSubnet1/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1Subnet5C2D37C4"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1305:28)",
-        "new PublicSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
-        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/Vpc/PublicSubnet1/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1RouteTable6C95E38E"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1325:27)",
-        "new PublicSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
-        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/Vpc/PublicSubnet1/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1RouteTableAssociation97140677"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1330:32)",
-        "new PublicSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
-        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/Vpc/PublicSubnet1/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addDefaultInternetRoute (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1345:27)",
-        "WrappedClass.<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876:3)",
-        "Array.forEach (:)",
-        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:873:36)",
-        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-propagate-tags.js:42:13)",
-        "...node internals..."
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/Vpc/PublicSubnet1/EIP": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1EIPD7E02669"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addNatGateway (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1597:50)",
-        "WrappedClass.<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureNat (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:196:33)",
-        "WrappedClass.createNatGateways (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
-        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
-        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-propagate-tags.js:42:13)",
-        "...node internals..."
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/Vpc/PublicSubnet1/NATGateway": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1NATGateway4D7517AA"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addNatGateway (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1595:25)",
-        "WrappedClass.<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureNat (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:196:33)",
-        "WrappedClass.createNatGateways (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
-        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
-        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-propagate-tags.js:42:13)",
-        "...node internals..."
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/Vpc/PublicSubnet2/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet2Subnet691E08A3"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1305:28)",
-        "new PublicSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
-        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/Vpc/PublicSubnet2/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet2RouteTable94F7E489"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1325:27)",
-        "new PublicSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
-        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/Vpc/PublicSubnet2/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1330:32)",
-        "new PublicSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
-        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/Vpc/PublicSubnet2/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet2DefaultRoute97F91067"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addDefaultInternetRoute (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1345:27)",
-        "WrappedClass.<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876:3)",
-        "Array.forEach (:)",
-        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:873:36)",
-        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-propagate-tags.js:42:13)",
-        "...node internals..."
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/Vpc/PublicSubnet2/EIP": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet2EIP3C605A87"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addNatGateway (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1597:50)",
-        "WrappedClass.<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureNat (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:196:33)",
-        "WrappedClass.createNatGateways (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
-        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
-        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-propagate-tags.js:42:13)",
-        "...node internals..."
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/Vpc/PublicSubnet2/NATGateway": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet2NATGateway9182C01D"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addNatGateway (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1595:25)",
-        "WrappedClass.<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureNat (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:196:33)",
-        "WrappedClass.createNatGateways (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
-        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
-        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-propagate-tags.js:42:13)",
-        "...node internals..."
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/Vpc/PrivateSubnet1/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet1Subnet536B997A"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1305:28)",
-        "new PrivateSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
-        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/Vpc/PrivateSubnet1/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet1RouteTableB2C5B500"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1325:27)",
-        "new PrivateSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
-        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/Vpc/PrivateSubnet1/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1330:32)",
-        "new PrivateSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
-        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/Vpc/PrivateSubnet1/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addRoute (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1434:27)",
-        "WrappedClass.<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:217:16)",
-        "NatGatewayProvider.configureNat (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:202:18)",
-        "WrappedClass.createNatGateways (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
-        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
-        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-propagate-tags.js:42:13)",
-        "...node internals..."
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/Vpc/PrivateSubnet2/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet2Subnet3788AAA1"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1305:28)",
-        "new PrivateSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
-        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/Vpc/PrivateSubnet2/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet2RouteTableA678073B"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1325:27)",
-        "new PrivateSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
-        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/Vpc/PrivateSubnet2/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1330:32)",
-        "new PrivateSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
-        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/Vpc/PrivateSubnet2/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet2DefaultRoute060D2087"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addRoute (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1434:27)",
-        "WrappedClass.<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureSubnet (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:217:16)",
-        "NatGatewayProvider.configureNat (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:202:18)",
-        "WrappedClass.createNatGateways (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
-        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
-        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-propagate-tags.js:42:13)",
-        "...node internals..."
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "WrappedClass.restrictDefaultSecurityGroup (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1132:13)",
-        "new Vpc (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:935:22)",
-        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-propagate-tags.js:42:13)",
-        "...node internals..."
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/CpWithExplicitTags/OperatorRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CpWithExplicitTagsOperatorRole7F304EDA"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new CapacityProvider (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/capacity-provider.js:392:56)",
-        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-propagate-tags.js:44:1)",
-        "...node internals..."
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsStack/CpWithNone/OperatorRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CpWithNoneOperatorRoleB874ED3F"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new CapacityProvider (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/capacity-provider.js:392:56)",
-        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-propagate-tags.js:52:1)",
-        "...node internals..."
-      ]
     }
   ]
 }

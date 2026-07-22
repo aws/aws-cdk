@@ -664,6 +664,24 @@
    }
   }
  },
+ "Outputs": {
+  "ExportsOutputRefCpWithExplicitTags77AFD84E0801F124": {
+   "Value": {
+    "Ref": "CpWithExplicitTags77AFD84E"
+   },
+   "Export": {
+    "Name": "CapacityProviderPropagateTagsStack:ExportsOutputRefCpWithExplicitTags77AFD84E0801F124"
+   }
+  },
+  "ExportsOutputRefCpWithNone5AE4AD32FFE6E94A": {
+   "Value": {
+    "Ref": "CpWithNone5AE4AD32"
+   },
+   "Export": {
+    "Name": "CapacityProviderPropagateTagsStack:ExportsOutputRefCpWithNone5AE4AD32FFE6E94A"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

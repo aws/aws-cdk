@@ -1,13 +1,20 @@
 {
   "/CapacityProviderPropagateTagsTest/DefaultTest/DeployAssert": [
     {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new DeployAssert (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:39:38)",
-        "new IntegTestCase (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
-        "new IntegTest (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
-        "<anonymous> (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.capacity-provider-propagate-tags.js:57:1)",
-        "...node internals..."
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/local/home/vichym/.meshclaw/workspace/Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/local/home/vichym/.meshclaw/workspace/Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "resolveValue (/local/home/vichym/.meshclaw/workspace/Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:204:54)",
+        "resolveReferences (/local/home/vichym/.meshclaw/workspace/Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/local/home/vichym/.meshclaw/workspace/Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/local/home/vichym/.meshclaw/workspace/Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/local/home/vichym/.meshclaw/workspace/Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/local/home/vichym/.meshclaw/workspace/Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:217:27)",
+        "process.<anonymous> (/local/home/vichym/.meshclaw/workspace/Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:163:51)",
+        "Object.onceWrapper (node:events:634:26)",
+        "process.emit (node:events:519:28)"
       ]
     }
   ],
@@ -15,42 +22,76 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
-        "DefaultStackSynthesizer.synthesize (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
-        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
-        "visit (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
-        "visit (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
-        "visit (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
-        "visit (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
-        "synthesizeTree (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
-        "synthesize (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)"
-      ]
     }
   ],
   "/CapacityProviderPropagateTagsTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/CapacityProviderPropagateTagsTest/DefaultTest/DeployAssert/AwsApiCallLambdagetCapacityProvider11ac297dcf2670244a78f8f086b15156/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
     },
     {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
-        "DefaultStackSynthesizer.synthesize (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
-        "/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
-        "visit (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
-        "visit (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
-        "visit (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
-        "visit (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
-        "synthesizeTree (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
-        "synthesize (/local/home/vichym/.meshclaw/workspace/02-Projects/lmi-capacity-provider-tags-propagation/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)"
-      ]
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/CapacityProviderPropagateTagsTest/DefaultTest/DeployAssert/AwsApiCallLambdagetCapacityProvider11ac297dcf2670244a78f8f086b15156/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallLambdagetCapacityProvider11ac297dcf2670244a78f8f086b15156"
+    }
+  ],
+  "/CapacityProviderPropagateTagsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/CapacityProviderPropagateTagsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/CapacityProviderPropagateTagsTest/DefaultTest/DeployAssert/AwsApiCallLambdagetCapacityProvider9c9ff4444c8ee54273da37e078ee4244/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/CapacityProviderPropagateTagsTest/DefaultTest/DeployAssert/AwsApiCallLambdagetCapacityProvider9c9ff4444c8ee54273da37e078ee4244/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallLambdagetCapacityProvider9c9ff4444c8ee54273da37e078ee4244"
+    }
+  ],
+  "/CapacityProviderPropagateTagsTest/DefaultTest/DeployAssert/AwsApiCallLambdagetCapacityProvider11ac297dcf2670244a78f8f086b15156/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallLambdagetCapacityProvider11ac297dcf2670244a78f8f086b15156"
+    }
+  ],
+  "/CapacityProviderPropagateTagsTest/DefaultTest/DeployAssert/AwsApiCallLambdagetCapacityProvider9c9ff4444c8ee54273da37e078ee4244/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallLambdagetCapacityProvider9c9ff4444c8ee54273da37e078ee4244"
     }
   ]
 }

@@ -9,5 +9,6 @@
       "assertionStackName": "CapacityProviderPropagateTagsTestDefaultTestDeployAssert1B8D7E4D"
     }
   },
-  "minimumCliVersion": "2.1126.0"
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
 }

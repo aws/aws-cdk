@@ -10,7 +10,6 @@ import type * as kms from '../../aws-kms';
 import type * as logs from '../../aws-logs';
 import type { IResource } from '../../core';
 import { Annotations, Arn, ArnFormat, Resource, Stack, Token, ValidationError } from '../../core';
-import type { IResource } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
@@ -113,8 +112,8 @@ export interface CapacityProviderProps {
    * @default - No tag propagation; tags are not propagated to managed resources.
    */
   readonly propagateTags?: PropagateTags;
-  
-    /**
+
+  /**
    * The CloudWatch log group for capacity provider system logs.
    *
    * @default - Service creates a default log group at /aws/lambda/capacity-provider/<name>
