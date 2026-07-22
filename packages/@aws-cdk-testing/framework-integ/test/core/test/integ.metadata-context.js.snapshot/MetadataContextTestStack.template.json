@@ -1,0 +1,91 @@
+{
+ "Description": "integ test stack for MetadataContext; exercises resource + template level context",
+ "Metadata": {
+  "Context": {
+   "arch": "SQS buffer -> consumer; DLQ for poison msgs",
+   "must": [
+    "all queues encrypted w/ SSE"
+   ],
+   "ref": [
+    {
+     "at": "s3://org-iac-ctx/shared/encryption.ctx.yaml",
+     "has": "org CMK + tagging rules",
+     "scope": "shared"
+    }
+   ],
+   "owner": "framework-integ@example.com"
+  }
+ },
+ "Resources": {
+  "OrderQueue39B99167": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "Context": {
+     "why": "buffer order events async; std queue (throughput > ordering)",
+     "must": [
+      "VisTimeout >= 6x consumer timeout, else dup on retry"
+     ],
+     "mutable": "change-with-constraints",
+     "mutability": {
+      "QueueName": "must-never-change"
+     },
+     "trust": {
+      "src": "authored",
+      "conf": "high"
+     },
+     "ops": "check ApproxAgeOfOldestMsg before cutting VisTimeout",
+     "failureModes": [
+      "retry 3x w/ exp backoff before DLQ"
+     ]
+    }
+   }
+  },
+  "NotificationsAlertsTopicDFE3487E": {
+   "Type": "AWS::SNS::Topic",
+   "Metadata": {
+    "Context": {
+     "why": "fan-out of alert events to oncall channels",
+     "gaps": [
+      "delivery retry policy never validated under load"
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
