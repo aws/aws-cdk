@@ -4493,6 +4493,20 @@ test('TableV2MultiAccountReplica does not throw when account/region are tokens',
   }).not.toThrow();
 });
 
+test('TableV2MultiAccountReplica handles partially tokenized ARNs successfully', () => {
+  const app = new App();
+  const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '111111111111', region: 'us-west-2' } });
+
+  const sourceTable = TableBaseV2.fromTableArn(replicaStack, 'SourceTable',
+    `arn:aws:dynamodb:us-east-1:222222222222:table/${Token.asString('MyTable')}`);
+
+  expect(() => {
+    new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+      replicaSourceTable: sourceTable,
+    });
+  }).not.toThrow();
+});
+
 test('can add GSI with compound partition keys', () => {
   const stack = new Stack();
   const table = new TableV2(stack, 'Table', {
