@@ -1,6 +1,8 @@
-import type { ResourceContextProps } from 'aws-cdk-lib/core';
-import { CfnResource, MetadataContext, Mixin } from 'aws-cdk-lib/core';
 import type { IConstruct } from 'constructs';
+import { Mixin } from './mixins';
+import { CfnResource } from '../cfn-resource';
+import type { ResourceContextProps } from '../metadata-context';
+import { MetadataContext } from '../metadata-context';
 
 /**
  * A Mixin that attaches a resource-level `Metadata.Context` block to a
@@ -15,8 +17,6 @@ import type { IConstruct } from 'constructs';
  * fields are unioned).
  *
  * @example
- * declare const cfnResource: CfnResource;
- *
  * cfnResource.with(new MetadataContextMixin({
  *   why: 'buffer order events async; 14d retention = compliance window',
  * }));

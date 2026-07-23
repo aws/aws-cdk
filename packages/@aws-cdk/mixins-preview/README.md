@@ -35,36 +35,6 @@ See the [documentation for CDK Mixins](https://docs.aws.amazon.com/cdk/api/v2/do
 
 ### Built-in Mixins
 
-### Metadata Context
-
-`MetadataContextMixin` attaches a structured, advisory `Metadata.Context`
-block to a CloudFormation resource (see the
-[Metadata Context](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#metadata-context)
-section of `aws-cdk-lib` for the context model). Use it to record the *why*
-behind a resource — rationale, hard invariants, change-safety — imperatively
-on exactly the constructs you target:
-
-```typescript
-declare const cfnResource: CfnResource;
-
-// Single resource via .with()
-cfnResource.with(new MetadataContextMixin({
-  why: 'append-only audit trail buffer',
-  mutable: ContextMutability.MUST_NEVER_CHANGE,
-  must: ['never shorten retention below 14d (audit requirement)'],
-}));
-
-// Bulk application to every CloudFormation resource in a scope
-Mixins.of(stack).apply(new MetadataContextMixin({
-  deps: ['NetworkStack'],
-}));
-```
-
-Unlike `MetadataContext.of(scope).add()` in `aws-cdk-lib` — which cascades
-to all primary resources beneath a scope at synthesis time — the Mixin
-applies only to the constructs it is given, and context it applies takes
-precedence over context cascaded from enclosing scopes.
-
 ### Logs Delivery
 
 Configures vended logs delivery for supported resources to various destinations:
