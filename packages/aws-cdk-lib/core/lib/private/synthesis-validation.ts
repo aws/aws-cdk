@@ -29,6 +29,7 @@ const LEGACY_POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
  */
 export function validateTemplates(root: IConstruct, outdir: string, assembly: private_cxapi.CloudAssembly) {
   if (!App.isApp(root)) return;
+  if (process.env.CDK_VALIDATION === 'false') return;
 
   using _span = profileSpan('validateTemplates', { telemetry: true });
   const assemblies = getAssemblies(root, assembly);
