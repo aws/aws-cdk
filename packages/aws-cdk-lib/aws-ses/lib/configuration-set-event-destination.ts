@@ -59,7 +59,7 @@ export interface ConfigurationSetEventDestinationOptions {
  */
 export abstract class EventDestination {
   /**
-   * Use a SNS topic as event destination
+   * Use an SNS topic as event destination
    */
   public static snsTopic(topic: sns.ITopic): EventDestination {
     return { topic };
@@ -89,7 +89,7 @@ export abstract class EventDestination {
   /**
    * A SNS topic to use as event destination
    *
-   * @default - do not send events to a SNS topic
+   * @default - do not send events to an SNS topic
    */
   public abstract readonly topic?: sns.ITopic;
 

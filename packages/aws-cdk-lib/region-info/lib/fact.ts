@@ -173,7 +173,7 @@ export class FactName {
   public static readonly S3_STATIC_WEBSITE_ZONE_53_HOSTED_ZONE_ID = 's3-static-website:route-53-hosted-zone-id';
 
   /**
-   * The hosted zone ID used by Route 53 to alias a EBS environment endpoint in this region (e.g: Z2O1EMRO9K5GLX)
+   * The hosted zone ID used by Route 53 to alias an EBS environment endpoint in this region (e.g: Z2O1EMRO9K5GLX)
    */
   public static readonly EBS_ENV_ENDPOINT_HOSTED_ZONE_ID = 'ebs-environment:route-53-hosted-zone-id';
 
