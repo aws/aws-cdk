@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "FargateWindowsEphemeralStorage/DefaultTest": {
+      "stacks": [
+        "integ-ecs-fargate-windows-ephemeral-storage"
+      ],
+      "assertionStack": "FargateWindowsEphemeralStorage/DefaultTest/DeployAssert",
+      "assertionStackName": "FargateWindowsEphemeralStorageDefaultTestDeployAssertC44DF70E"
+    }
+  },
+  "minimumCliVersion": "2.1108.0"
+}
