@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.262.1](https://github.com/aws/aws-cdk/compare/v2.262.0...v2.262.1) (2026-07-23)
+
+
+### Bug Fixes
+
+* **core:** bump `@aws/cloudformation-validate` to 1.5.1-beta to fix install on Node != 22.x ([#38382](https://github.com/aws/aws-cdk/issues/38382)) ([d409b96](https://github.com/aws/aws-cdk/commit/d409b96f69adb9423d812c5b761245024e49b8f8)), closes [#38380](https://github.com/aws/aws-cdk/issues/38380)
+* **core:** env CDK_VALIDATION=false does not disable built-in template validation ([#38379](https://github.com/aws/aws-cdk/issues/38379)) ([cc4208c](https://github.com/aws/aws-cdk/commit/cc4208cfe42507c35f1330a8a204f50e083dcb64)), closes [#38378](https://github.com/aws/aws-cdk/issues/38378)
+
 ## [2.262.0](https://github.com/aws/aws-cdk/compare/v2.261.0...v2.262.0) (2026-07-22)
 
 
