@@ -97,9 +97,8 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
     // Multiple Products deploying into the same bucket will use the same 'BucketDeployment' construct.
     const deploymentScope = this.assetBucket;
     const deploymentCid = 'ProductAssetsDeployment';
-    let bucketDeployment = deploymentScope.node.tryFindChild(deploymentCid) as BucketDeployment | undefined;
-    if (!bucketDeployment) {
-      bucketDeployment = new BucketDeployment(deploymentScope, deploymentCid, {
+    const bucketDeployment = deploymentScope.node.tryFindChild(deploymentCid) as BucketDeployment | undefined
+      ?? new BucketDeployment(deploymentScope, deploymentCid, {
         sources: [source],
         destinationBucket: this.assetBucket,
         extract: false,
@@ -110,11 +109,6 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
         memoryLimit: this.memoryLimit,
         outputObjectKeys: false,
       });
-    }
-
-    if (Stack.of(deploymentScope) !== this.parentStack) {
-      bucketDeployment.node.addDependency(this.parentStack);
-    }
     bucketDeployment.addSource(source);
 
     const bucketName = this.physicalNameOfBucket(this.assetBucket);
