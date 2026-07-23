@@ -3,7 +3,7 @@ import { ArnPrincipal, PolicyDocument, PolicyStatement } from '../../aws-iam';
 import * as iam from '../../aws-iam';
 import { Stream } from '../../aws-kinesis';
 import { Key } from '../../aws-kms';
-import { App, CfnDeletionPolicy, Fn, Lazy, RemovalPolicy, Stack, Tags } from '../../core';
+import { App, CfnDeletionPolicy, Fn, Lazy, RemovalPolicy, Stack, Tags, Token } from '../../core';
 import type {
   GlobalSecondaryIndexPropsV2,
   LocalSecondaryIndexProps,
@@ -4267,6 +4267,20 @@ test('TableV2MultiAccountReplica does not throw when account/region are tokens',
   });
 
   // Should not throw when accounts/regions are unresolved tokens
+  expect(() => {
+    new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+      replicaSourceTable: sourceTable,
+    });
+  }).not.toThrow();
+});
+
+test('TableV2MultiAccountReplica handles partially tokenized ARNs successfully', () => {
+  const app = new App();
+  const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '111111111111', region: 'us-west-2' } });
+
+  const sourceTable = TableBaseV2.fromTableArn(replicaStack, 'SourceTable',
+    `arn:aws:dynamodb:us-east-1:222222222222:table/${Token.asString('MyTable')}`);
+
   expect(() => {
     new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
       replicaSourceTable: sourceTable,
