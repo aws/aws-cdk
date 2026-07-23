@@ -1554,6 +1554,14 @@ export interface ManagedInstancesCapacityProviderProps {
   readonly ec2InstanceProfile?: iam.IInstanceProfile;
 
   /**
+   * The VPC in which to create a default security group if `securityGroups` is not provided.
+   * Must be specified when `securityGroups` is omitted.
+   *
+   * @default - required if securityGroups is not specified
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
    * The VPC subnets where EC2 instances will be launched.
    * This array must be non-empty and should contain subnets from the VPC where you want
    * the managed instances to be deployed.
@@ -1563,8 +1571,11 @@ export interface ManagedInstancesCapacityProviderProps {
   /**
    * The security groups to associate with the launched EC2 instances.
    * These security groups control the network traffic allowed to and from the instances.
+   * If not provided, a default security group will be created in the specified `vpc`.
+   *
+   * @default - a new security group is created using the vpc property
    */
-  readonly securityGroups: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
    * The size of the task volume storage attached to each instance.
@@ -1672,8 +1683,19 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
       throw new ValidationError(lit`ShouldBeSubnetsRequiredShould`, 'Subnets are required and should be non-empty.', this);
     }
 
-    if (props.securityGroups.length === 0) {
-      throw new ValidationError(lit`SecurityGroupsCannotEmpty`, 'Security groups cannot be an empty array. Provide at least one security group.', this);
+    if (props.securityGroups !== undefined && props.securityGroups.length === 0) {
+      throw new ValidationError(
+        lit`SecurityGroupsCannotEmpty`,
+        'Security groups cannot be an empty array. Provide at least one security group or omit securityGroups to have one created automatically.',
+        this,
+      );
+    }
+    if (props.securityGroups === undefined && props.vpc === undefined) {
+      throw new ValidationError(
+        lit`SecurityGroupsOrVpcRequired`,
+        'Either securityGroups or vpc must be provided. If securityGroups is omitted, vpc must be specified to create a default security group.',
+        this,
+      );
     }
 
     // Create or use provided infrastructure role
@@ -1703,6 +1725,13 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
       }
     }
 
+    const effectiveSecurityGroups: ec2.ISecurityGroup[] = props.securityGroups ?? [
+      new ec2.SecurityGroup(this, 'SecurityGroup', {
+        vpc: props.vpc!,
+        description: 'Security group for ECS Managed Instances capacity provider',
+      }),
+    ];
+
     // Build the managed instances provider configuration
     const managedInstancesProviderConfig: CfnCapacityProvider.ManagedInstancesProviderProperty = {
       infrastructureRoleArn: this.infrastructureRole.roleArn,
@@ -1711,9 +1740,7 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
         ec2InstanceProfileArn: this.ec2InstanceProfile.instanceProfileArn,
         networkConfiguration: {
           subnets: props.subnets.map((subnet: ec2.ISubnet) => subnet.subnetId),
-          ...(props.securityGroups && {
-            securityGroups: props.securityGroups.map((sg: ec2.ISecurityGroup) => sg.securityGroupId),
-          }),
+          securityGroups: effectiveSecurityGroups.map((sg: ec2.ISecurityGroup) => sg.securityGroupId),
         },
         ...(props.taskVolumeStorage && {
           storageConfiguration: {
@@ -1739,7 +1766,7 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
     this.capacityProviderName = this.capacityProvider.ref;
 
     this.connections = new ec2.Connections({
-      securityGroups: props.securityGroups,
+      securityGroups: effectiveSecurityGroups,
     });
 
     this.node.defaultChild = this.capacityProvider;
