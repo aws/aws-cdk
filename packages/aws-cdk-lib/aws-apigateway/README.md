@@ -1416,7 +1416,7 @@ new apigateway.RestApi(this, 'books', {
 
 You can use the `methodOptions` property to configure
 [default method throttling](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-request-throttling.html#apigateway-api-level-throttling-in-usage-plan)
-for a stage. The following snippet configures the a stage that accepts
+for a stage. The following snippet configures a stage that accepts
 100 requests per minute, allowing burst up to 200 requests per minute.
 
 ```ts
