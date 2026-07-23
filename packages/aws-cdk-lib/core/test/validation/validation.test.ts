@@ -24,6 +24,38 @@ afterEach(() => {
 });
 
 describe('validations', () => {
+  test('validation skipped when CDK_VALIDATION is false', () => {
+    const app = new NonStrictApp({
+      policyValidationBeta1: [
+        new FakePlugin('test-plugin', [{
+          description: 'test recommendation',
+          ruleName: 'test-rule',
+          severity: 'medium',
+          ruleMetadata: {
+            id: 'abcdefg',
+          },
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceLogicalId: 'Fake',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      ],
+    });
+    const stack = new core.Stack(app);
+    new FailResource(stack, 'Fake');
+
+    process.env.CDK_VALIDATION = 'false';
+    try {
+      app.synth();
+      // exit code shouldn't be 1 because validation was skipped
+      expect(process.exitCode).not.toEqual(1);
+    } finally {
+      delete process.env.CDK_VALIDATION;
+      process.exitCode = 0;
+    }
+  });
+
   test('validation failure', () => {
     const app = new NonStrictApp({
       policyValidationBeta1: [
