@@ -340,8 +340,6 @@ export class RouterOutputProtocol {
    *
    * @example
    *
-   *    import { Duration } from 'aws-cdk-lib';
-   *
    *    RouterOutputProtocol.srtListener({
    *      port: 5000,
    *      minimumLatency: Duration.millis(125),
@@ -364,8 +362,6 @@ export class RouterOutputProtocol {
    * Create an SRT Caller protocol configuration
    *
    * @example
-   *
-   *    import { Duration } from 'aws-cdk-lib';
    *
    *    RouterOutputProtocol.srtCaller({
    *      destinationAddress: '10.0.0.1',
