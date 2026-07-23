@@ -7,7 +7,7 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "@aws-cdk/mixins-preview.MetadataContextMixin"
+        "mixin": "aws-cdk-lib.MetadataContextMixin"
       }
     },
     {
@@ -28,7 +28,7 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "@aws-cdk/mixins-preview.MetadataContextMixin"
+        "mixin": "aws-cdk-lib.MetadataContextMixin"
       }
     },
     {
@@ -53,7 +53,7 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "@aws-cdk/mixins-preview.MetadataContextMixin"
+        "mixin": "aws-cdk-lib.MetadataContextMixin"
       }
     },
     {
