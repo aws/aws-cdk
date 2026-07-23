@@ -756,6 +756,7 @@ describe('vpc endpoint', () => {
       ['ecr.api', InterfaceVpcEndpointAwsService.ECR],
       ['ecr.dkr', InterfaceVpcEndpointAwsService.ECR_DOCKER],
       ['eks', InterfaceVpcEndpointAwsService.EKS],
+      ['eks-proxy', InterfaceVpcEndpointAwsService.EKS_PROXY],
       ['elasticache', InterfaceVpcEndpointAwsService.ELASTICACHE],
       ['elasticbeanstalk', InterfaceVpcEndpointAwsService.ELASTIC_BEANSTALK],
       ['elasticfilesystem', InterfaceVpcEndpointAwsService.ELASTIC_FILESYSTEM],
