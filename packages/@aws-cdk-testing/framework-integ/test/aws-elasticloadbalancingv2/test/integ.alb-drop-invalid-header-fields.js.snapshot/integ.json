@@ -1,0 +1,9 @@
+{
+  "version": "v1.33.0",
+  "testCases": {
+    "AlbDropInvalidHeaderFields": {
+      "stackName": "integ-alb-drop-invalid-header-fields",
+      "path": "test/aws-elasticloadbalancingv2/test/integ.alb-drop-invalid-header-fields.ts"
+    }
+  }
+}
