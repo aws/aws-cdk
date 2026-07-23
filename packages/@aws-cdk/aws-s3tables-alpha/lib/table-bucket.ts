@@ -3,7 +3,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3tables from 'aws-cdk-lib/aws-s3tables';
 import type { IResource, ITaggableV2, RemovalPolicy, TagManager } from 'aws-cdk-lib/core';
-import { Resource, UnscopedValidationError, Token } from 'aws-cdk-lib/core';
+import { Annotations, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
 import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
@@ -374,6 +374,43 @@ export interface TableBucketProps {
    * @default - Request metrics are disabled
    */
   readonly requestMetricsStatus?: RequestMetricsStatus;
+
+  /**
+   * Destination table buckets to replicate tables to.
+   *
+   * When specified, CDK will configure S3 Tables replication from this
+   * table bucket to each destination. If `replicationRole` is omitted,
+   * CDK will also create a least-privilege IAM role trusted by the
+   * S3 Tables replication service with appropriate permissions.
+   *
+   * At most 5 destinations are supported. Cross-region and cross-account
+   * destinations are allowed; for cross-account replication you must
+   * additionally grant the replication role access on the destination
+   * table bucket via a resource policy.
+   *
+   * [disable-awslint:prefer-ref-interface]
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables-replication.html
+   * @default - No replication is configured.
+   */
+  readonly replicationDestinations?: ITableBucket[];
+
+  /**
+   * The IAM role the S3 Tables replication service assumes to replicate
+   * tables from this bucket to the destinations.
+   *
+   * Required IAM trust policy principal:
+   *   replication.s3tables.amazonaws.com
+   *
+   * If omitted, CDK will create a role with an appropriate trust policy
+   * and a least-privilege permissions policy scoped to the configured
+   * `replicationDestinations`.
+   *
+   * Only meaningful when `replicationDestinations` is set.
+   *
+   * @default - A new role is created with the necessary permissions.
+   */
+  readonly replicationRole?: iam.IRoleRef;
 }
 
 /**
@@ -619,6 +656,7 @@ export class TableBucket extends TableBucketBase implements ITaggableV2 {
     addConstructMetadata(this, props);
 
     TableBucket.validateTableBucketName(props.tableBucketName);
+    this.validateReplicationProps(props);
     TableBucket.validateUnreferencedFileRemoval(props.unreferencedFileRemoval);
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
     this.encryptionKey = encryptionKey;
@@ -632,6 +670,7 @@ export class TableBucket extends TableBucketBase implements ITaggableV2 {
       },
       encryptionConfiguration: bucketEncryption,
       metricsConfiguration: props.requestMetricsStatus ? { status: props.requestMetricsStatus } : undefined,
+      replicationConfiguration: this.renderReplicationConfiguration(props),
     });
 
     this.cdkTagManager = this.resource.cdkTagManager;
@@ -678,6 +717,7 @@ export class TableBucket extends TableBucketBase implements ITaggableV2 {
       if ( key === undefined ) {
         return { bucketEncryption: undefined, encryptionKey: undefined };
       } else {
+        this.allowTablesMaintenanceAccessToKey(key, props.tableBucketName);
         return {
           bucketEncryption: {
             kmsKeyArn: key.keyArn,
@@ -694,8 +734,8 @@ export class TableBucket extends TableBucketBase implements ITaggableV2 {
           description: `Created by ${this.node.path}`,
           enableKeyRotation: true,
         });
-        this.allowTablesMaintenanceAccessToKey(key, props.tableBucketName);
       }
+      this.allowTablesMaintenanceAccessToKey(key, props.tableBucketName);
       return {
         bucketEncryption: {
           kmsKeyArn: key.keyArn,
@@ -747,6 +787,148 @@ export class TableBucket extends TableBucketBase implements ITaggableV2 {
         },
       },
     }));
+  }
+
+  /**
+   * Validate replication-related properties. Fails fast at synth time for
+   * contradictory inputs so users don't have to wait for a CloudFormation
+   * deploy error.
+   */
+  private validateReplicationProps(props: TableBucketProps): void {
+    const destinations = props.replicationDestinations ?? [];
+
+    if (destinations.length === 0 && props.replicationRole) {
+      throw new ValidationError(
+        lit`ReplicationRoleWithoutDestinations`,
+        'cannot specify replicationRole when replicationDestinations is empty',
+        this,
+      );
+    }
+
+    if (destinations.length > 5) {
+      throw new ValidationError(
+        lit`TooManyReplicationDestinations`,
+        `replicationDestinations may have at most 5 entries, got ${destinations.length}`,
+        this,
+      );
+    }
+  }
+
+  /**
+   * Create a least-privilege IAM role trusted by the S3 Tables replication
+   * service, scoped to the supplied source ARN and destinations.
+   */
+  private createReplicationRole(
+    sourceArn: string,
+    destinations: ITableBucket[],
+    sourceKey?: kms.IKey,
+  ): iam.IRole {
+    const stack = Stack.of(this);
+    const role = new iam.Role(this, 'ReplicationRole', {
+      assumedBy: new iam.ServicePrincipal('replication.s3tables.amazonaws.com', {
+        conditions: {
+          StringEquals: {
+            'aws:SourceAccount': stack.account,
+          },
+          ArnLike: {
+            'aws:SourceArn': sourceArn,
+          },
+        },
+      }),
+    });
+
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: perms.REPLICATION_SOURCE_BUCKET_ACCESS,
+      resources: [sourceArn],
+    }));
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: perms.REPLICATION_SOURCE_TABLE_ACCESS,
+      resources: [`${sourceArn}/table/*`],
+    }));
+
+    const destBucketArns = destinations.map(d => d.tableBucketArn);
+    const destTableArns = destinations.map(d => `${d.tableBucketArn}/table/*`);
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: perms.REPLICATION_DESTINATION_BUCKET_ACCESS,
+      resources: destBucketArns,
+    }));
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: perms.REPLICATION_DESTINATION_TABLE_ACCESS,
+      resources: destTableArns,
+    }));
+
+    if (sourceKey) {
+      sourceKey.grant(role, ...perms.REPLICATION_KEY_SOURCE_ACCESS);
+      sourceKey.addToResourcePolicy(new iam.PolicyStatement({
+        sid: 'AllowS3TablesReplicationRoleSource',
+        effect: iam.Effect.ALLOW,
+        principals: [new iam.ArnPrincipal(role.roleArn)],
+        actions: perms.REPLICATION_KEY_SOURCE_ACCESS,
+        resources: ['*'],
+      }));
+    }
+
+    for (const dest of destinations) {
+      if (dest.encryptionKey) {
+        dest.encryptionKey.grant(role, ...perms.REPLICATION_KEY_DESTINATION_ACCESS);
+        dest.encryptionKey.addToResourcePolicy(new iam.PolicyStatement({
+          sid: 'AllowS3TablesReplicationRoleDestination',
+          effect: iam.Effect.ALLOW,
+          principals: [new iam.ArnPrincipal(role.roleArn)],
+          actions: perms.REPLICATION_KEY_DESTINATION_ACCESS,
+          resources: ['*'],
+        }));
+      }
+    }
+
+    return role;
+  }
+
+  /**
+   * Render the CloudFormation `ReplicationConfiguration` block from the
+   * user-supplied props. Returns `undefined` when no destinations are
+   * specified so that the CFN property is not emitted.
+   */
+  private renderReplicationConfiguration(
+    props: TableBucketProps,
+  ): s3tables.CfnTableBucket.ReplicationConfigurationProperty | undefined {
+    const destinations = props.replicationDestinations ?? [];
+    if (destinations.length === 0) {
+      return undefined;
+    }
+
+    const stack = Stack.of(this);
+    const sourceArn = stack.formatArn({
+      service: 's3tables',
+      resource: 'bucket',
+      resourceName: props.tableBucketName,
+    });
+
+    for (const dest of destinations) {
+      const destAccount = dest.account;
+      if (destAccount && !Token.isUnresolved(destAccount) &&
+          !Token.isUnresolved(stack.account) &&
+          destAccount !== stack.account) {
+        Annotations.of(this).addInfo(
+          'Cross-account S3 Tables replication detected. Ensure the destination ' +
+          `table bucket ${dest.tableBucketArn} has a resource policy allowing ` +
+          'the replication role to create namespaces, create tables, and put ' +
+          'table data.',
+        );
+      }
+    }
+
+    const role = props.replicationRole
+      ?? this.createReplicationRole(sourceArn, destinations, this.encryptionKey);
+
+    return {
+      role: role.roleRef.roleArn,
+      rules: [{
+        destinations: destinations.map(d => ({
+          destinationTableBucketArn: d.tableBucketArn,
+        })),
+      }],
+    };
   }
 }
 
