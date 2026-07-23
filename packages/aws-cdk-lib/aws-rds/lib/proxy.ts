@@ -112,6 +112,15 @@ export class ProxyTarget {
     return new ProxyTarget(undefined, cluster);
   }
 
+  /**
+   * Get the default port of the underlying database instance or cluster.
+   *
+   * @internal
+   */
+  public get _defaultPort(): ec2.Port | undefined {
+    return this.dbInstance?.connections.defaultPort ?? this.dbCluster?.connections.defaultPort;
+  }
+
   private constructor(
     private readonly dbInstance: IDatabaseInstance | undefined,
     private readonly dbCluster: IDatabaseCluster | undefined) {
@@ -527,7 +536,10 @@ export class DatabaseProxy extends DatabaseProxyBase
         vpc: props.vpc,
       }),
     ];
-    this.connections = new ec2.Connections({ securityGroups });
+
+    const defaultPort = props.proxyTarget._defaultPort;
+
+    this.connections = new ec2.Connections({ securityGroups, defaultPort });
 
     const bindResult = props.proxyTarget.bind(this);
 
