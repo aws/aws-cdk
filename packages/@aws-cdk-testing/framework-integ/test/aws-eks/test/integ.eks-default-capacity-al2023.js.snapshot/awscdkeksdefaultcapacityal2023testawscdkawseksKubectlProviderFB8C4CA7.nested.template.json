@@ -69,6 +69,10 @@
   "AwsCliLayerF44AAF94": {
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
+    "CompatibleArchitectures": [
+     "x86_64",
+     "arm64"
+    ],
     "Content": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"

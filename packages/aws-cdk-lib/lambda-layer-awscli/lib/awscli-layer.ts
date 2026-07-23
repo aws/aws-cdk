@@ -19,6 +19,7 @@ export class AwsCliLayer extends lambda.LayerVersion {
         assetHash: FileSystem.fingerprint(LAYER_SOURCE_DIR),
       }),
       description: '/opt/awscli/aws',
+      compatibleArchitectures: [lambda.Architecture.X86_64, lambda.Architecture.ARM_64],
     });
   }
 }
