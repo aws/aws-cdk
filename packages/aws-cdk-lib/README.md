@@ -1727,13 +1727,27 @@ MetadataContext.of(queue).add({
 });
 ```
 
-Context can also be applied as a Mixin. The experimental
-[`@aws-cdk/mixins-preview`](https://www.npmjs.com/package/@aws-cdk/mixins-preview)
-package provides `MetadataContextMixin`, which attaches a context block
-imperatively to exactly the constructs you target — via `.with()` on a
-single L1 resource, or in bulk via `Mixins.of()`. Context applied by the
-Mixin takes precedence over context cascaded from enclosing scopes. See the
-`@aws-cdk/mixins-preview` README for usage.
+Context can also be applied as a Mixin. `MetadataContextMixin` attaches a
+context block imperatively to exactly the constructs you target — via
+`.with()` on a single L1 resource, or in bulk via `Mixins.of()`. Context
+applied by the Mixin takes precedence over context cascaded from enclosing
+scopes (scalar fields win; list fields are unioned):
+
+```typescript
+declare const stack: Stack;
+
+// Single resource via .with()
+cfnResource.with(new MetadataContextMixin({
+  why: 'append-only audit trail buffer',
+  mutable: ContextMutability.MUST_NEVER_CHANGE,
+  must: ['never shorten retention below 14d (audit requirement)'],
+}));
+
+// Bulk application to every CloudFormation resource in a scope
+Mixins.of(stack).apply(new MetadataContextMixin({
+  deps: ['NetworkStack'],
+}));
+```
 
 Template-level context holds cross-cutting facts stated once per stack: the
 architecture overview, template-wide invariants, pointers to external shared
