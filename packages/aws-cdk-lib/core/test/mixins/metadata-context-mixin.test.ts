@@ -1,7 +1,6 @@
-import { Template } from 'aws-cdk-lib/assertions';
-import { App, CfnResource, ContextMutability, MetadataContext, Mixins, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
-import { MetadataContextMixin } from '../../lib/metadata-context-mixin';
+import { App, CfnResource, ContextMutability, MetadataContext, MetadataContextMixin, Mixins, Stack } from '../../lib';
+import { toCloudFormation } from '../util';
 
 describe('MetadataContextMixin', () => {
   let app: App;
@@ -21,14 +20,11 @@ describe('MetadataContextMixin', () => {
       mutable: ContextMutability.CHANGE_WITH_CONSTRAINTS,
     }));
 
-    Template.fromStack(stack).hasResource('AWS::SQS::Queue', {
-      Metadata: {
-        Context: {
-          why: 'buffers webhook events',
-          must: ['VisTimeout >= 6x fn timeout'],
-          mutable: 'change-with-constraints',
-        },
-      },
+    const template = toCloudFormation(stack);
+    expect(template.Resources.Queue.Metadata.Context).toEqual({
+      why: 'buffers webhook events',
+      must: ['VisTimeout >= 6x fn timeout'],
+      mutable: 'change-with-constraints',
     });
   });
 
@@ -40,7 +36,7 @@ describe('MetadataContextMixin', () => {
     expect(() => plain.with(mixin)).not.toThrow();
     // Direct applyTo() calls (e.g. from third-party applicators) must also no-op
     expect(() => mixin.applyTo(plain)).not.toThrow();
-    expect(Object.keys(Template.fromStack(stack).toJSON().Resources ?? {})).toHaveLength(0);
+    expect(Object.keys(toCloudFormation(stack).Resources ?? {})).toHaveLength(0);
   });
 
   test('later mixin application wins scalars, unions lists', () => {
@@ -49,13 +45,10 @@ describe('MetadataContextMixin', () => {
     res.with(new MetadataContextMixin({ why: 'first', must: ['rule 1'] }));
     res.with(new MetadataContextMixin({ why: 'second', must: ['rule 2'] }));
 
-    Template.fromStack(stack).hasResource('AWS::Fake::Thing', {
-      Metadata: {
-        Context: {
-          why: 'second',
-          must: ['rule 1', 'rule 2'],
-        },
-      },
+    const template = toCloudFormation(stack);
+    expect(template.Resources.Res.Metadata.Context).toEqual({
+      why: 'second',
+      must: ['rule 1', 'rule 2'],
     });
   });
 
@@ -66,13 +59,11 @@ describe('MetadataContextMixin', () => {
     MetadataContext.of(scope).add({ why: 'cascaded rationale', must: ['cascaded rule'] });
     res.with(new MetadataContextMixin({ why: 'mixin rationale', must: ['mixin rule'] }));
 
-    Template.fromStack(stack).hasResource('AWS::Fake::Thing', {
-      Metadata: {
-        Context: {
-          why: 'mixin rationale',
-          must: ['cascaded rule', 'mixin rule'],
-        },
-      },
+    const resources = Object.values<any>(toCloudFormation(stack).Resources);
+    expect(resources).toHaveLength(1);
+    expect(resources[0].Metadata.Context).toEqual({
+      why: 'mixin rationale',
+      must: ['cascaded rule', 'mixin rule'],
     });
   });
 
@@ -83,16 +74,14 @@ describe('MetadataContextMixin', () => {
 
     Mixins.of(scope).apply(new MetadataContextMixin({ deps: ['NetworkStack'] }));
 
-    const template = Template.fromStack(stack);
-    template.hasResource('AWS::SQS::Queue', {
-      Metadata: { Context: { deps: ['NetworkStack'] } },
-    });
-    template.hasResource('AWS::SNS::Topic', {
-      Metadata: { Context: { deps: ['NetworkStack'] } },
-    });
+    const resources = Object.values<any>(toCloudFormation(stack).Resources);
+    expect(resources).toHaveLength(2);
+    for (const resource of resources) {
+      expect(resource.Metadata.Context).toEqual({ deps: ['NetworkStack'] });
+    }
   });
 
-  test('empty context is rejected when the mixin is applied', () => {
+  test('fails when the applied context is empty', () => {
     const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
     expect(() => res.with(new MetadataContextMixin({}))).toThrow(/at least one context field/);
   });

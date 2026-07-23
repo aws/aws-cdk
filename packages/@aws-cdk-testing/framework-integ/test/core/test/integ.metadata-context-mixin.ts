@@ -1,6 +1,5 @@
+import { App, CfnResource, ContextMutability, MetadataContextMixin, Mixins, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { App, CfnResource, ContextMutability, Mixins, Stack } from 'aws-cdk-lib';
-import { MetadataContextMixin } from '../../lib/metadata-context-mixin';
 
 const app = new App();
 const stack = new Stack(app, 'MetadataContextMixinTestStack', {
