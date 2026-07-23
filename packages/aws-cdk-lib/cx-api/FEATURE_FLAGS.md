@@ -117,8 +117,8 @@ Flags come in three types:
 | [@aws-cdk/core:annotationsInValidationReport](#aws-cdkcoreannotationsinvalidationreport) | Include construct annotations (warnings and errors) in the policy validation report | 2.253.0 | config |
 | [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-region stack references are strong, weak, or both | 2.254.0 | config |
 | [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | 2.259.0 | new default |
+| [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | 2.262.0 | config |
 | [@aws-cdk/aws-s3:eventBridgeNotificationViaCfnProperty](#aws-cdkaws-s3eventbridgenotificationviacfnproperty) | When enabled, S3 EventBridge notifications are set directly on the bucket resource instead of through the notifications custom resource | V2NEXT | fix |
-| [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | V2NEXT | config |
 
 <!-- END table -->
 
@@ -2535,6 +2535,26 @@ When disabled, the default AMI types remain AL2 for backward compatibility.
 **Warning**: Enabling this flag on existing stacks will cause node group replacement, which terminates running pods. To migrate safely, first pin existing node groups to their current amiType explicitly, then enable the flag for new node groups.
 
 
+### @aws-cdk/core:validateAgainstDefaultRules
+
+*Treat CloudFormation Validate findings as errors*
+
+Flag type: Configuration option
+
+The CDK always validates synthesized templates against a default set of CloudFormation
+rules during synthesis. These rules include schema validation, best-practice linting,
+and common misconfiguration detection.
+
+When this flag is explicitly set to `true`, violations are treated as errors and will
+fail synthesis. When unconfigured, violations are reported as warnings only.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.262.0 | `false` | `true` |
+
+
 ### @aws-cdk/aws-s3:eventBridgeNotificationViaCfnProperty
 
 *When enabled, S3 EventBridge notifications are set directly on the bucket resource instead of through the notifications custom resource*
@@ -2569,26 +2589,6 @@ the custom resource and the bucket resource in a single deployment.
 | V2NEXT | `false` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to keep routing EventBridge notifications through the notifications custom resource.
-
-
-### @aws-cdk/core:validateAgainstDefaultRules
-
-*Treat CloudFormation Validate findings as errors*
-
-Flag type: Configuration option
-
-The CDK always validates synthesized templates against a default set of CloudFormation
-rules during synthesis. These rules include schema validation, best-practice linting,
-and common misconfiguration detection.
-
-When this flag is explicitly set to `true`, violations are treated as errors and will
-fail synthesis. When unconfigured, violations are reported as warnings only.
-
-
-| Since | Unset behaves like | Recommended value |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->

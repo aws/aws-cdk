@@ -1961,7 +1961,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       When this flag is explicitly set to \`true\`, violations are treated as errors and will
       fail synthesis. When unconfigured, violations are reported as warnings only.`,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.262.0' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
   },
