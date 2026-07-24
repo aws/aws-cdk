@@ -1,0 +1,731 @@
+{
+  "/NetworkConnectorDefaultsStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.network-connector-defaults.js:41:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "maxAzs": "*"
+      }
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*"
+      }
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/NetworkConnector": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:294:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:194:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:335:18)",
+        "/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:467: (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:3)",
+        "visit (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:524:9)",
+        "visit (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:521:9)",
+        "synthesizeTree (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:460:5)",
+        "synthesize (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:88:5)",
+        "App.synth (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/stage.js:212:92)",
+        "App.synth (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/app.js:200:27)"
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:194:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:335:18)",
+        "/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:467: (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:3)",
+        "visit (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:524:9)",
+        "visit (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:521:9)",
+        "synthesizeTree (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:460:5)",
+        "synthesize (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/private/synthesis.js:88:5)",
+        "App.synth (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/stage.js:212:92)",
+        "App.synth (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/app.js:200:27)"
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpc8378EB38"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:790:29)",
+        "<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.network-connector-defaults.js:42:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/PublicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/PrivateSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIGWD7BA715C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:29)",
+        "<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.network-connector-defaults.js:42:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcVPCGWBF912B6E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:848:29)",
+        "<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.network-connector-defaults.js:42:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/RestrictDefaultSecurityGroupCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:131:25)",
+        "new RestrictDefaultSgProvider (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:57:9)",
+        "RestrictDefaultSgProvider.getOrCreateProvider (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:54:28)",
+        "WrappedClass.restrictDefaultSecurityGroup (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:97)",
+        "new Vpc (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:914:22)",
+        "<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.network-connector-defaults.js:42:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:153:24)",
+        "new RestrictDefaultSgProvider (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:57:9)",
+        "RestrictDefaultSgProvider.getOrCreateProvider (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:54:28)",
+        "WrappedClass.restrictDefaultSecurityGroup (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:97)",
+        "new Vpc (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:914:22)",
+        "<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.network-connector-defaults.js:42:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SecurityGroupDD263621"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecurityGroup (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:440:34)",
+        "<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.network-connector-defaults.js:43:23)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/NetworkConnector/OperatorRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/NetworkConnector/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NetworkConnector54E6F94D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new NetworkConnector (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-lambda/lib/network-connector.js:211:29)",
+        "<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.network-connector-defaults.js:44:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1Subnet5C2D37C4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1283:28)",
+        "new PublicSubnet (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1551:13)",
+        "/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064: (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTable6C95E38E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1303:27)",
+        "new PublicSubnet (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1551:13)",
+        "/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064: (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1308:32)",
+        "new PublicSubnet (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1551:13)",
+        "/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064: (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1323:27)",
+        "WrappedClass.<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:855: (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:855:3)",
+        "Array.forEach (:)",
+        "new Vpc (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:852:36)",
+        "<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.network-connector-defaults.js:42:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1EIPD7E02669"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:50)",
+        "WrappedClass.<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/nat.js:188:33)",
+        "WrappedClass.createNatGateways (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:948:22)",
+        "new Vpc (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:865:26)",
+        "<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.network-connector-defaults.js:42:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1NATGateway4D7517AA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1572:25)",
+        "WrappedClass.<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/nat.js:188:33)",
+        "WrappedClass.createNatGateways (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:948:22)",
+        "new Vpc (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:865:26)",
+        "<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.network-connector-defaults.js:42:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2Subnet691E08A3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1283:28)",
+        "new PublicSubnet (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1551:13)",
+        "/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064: (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTable94F7E489"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1303:27)",
+        "new PublicSubnet (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1551:13)",
+        "/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064: (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1308:32)",
+        "new PublicSubnet (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1551:13)",
+        "/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064: (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2DefaultRoute97F91067"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1323:27)",
+        "WrappedClass.<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:855: (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:855:3)",
+        "Array.forEach (:)",
+        "new Vpc (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:852:36)",
+        "<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.network-connector-defaults.js:42:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/PublicSubnet2/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2EIP3C605A87"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:50)",
+        "WrappedClass.<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/nat.js:188:33)",
+        "WrappedClass.createNatGateways (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:948:22)",
+        "new Vpc (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:865:26)",
+        "<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.network-connector-defaults.js:42:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/PublicSubnet2/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2NATGateway9182C01D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1572:25)",
+        "WrappedClass.<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/nat.js:188:33)",
+        "WrappedClass.createNatGateways (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:948:22)",
+        "new Vpc (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:865:26)",
+        "<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.network-connector-defaults.js:42:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1Subnet536B997A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1283:28)",
+        "new PrivateSubnet (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1623:13)",
+        "/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071: (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1303:27)",
+        "new PrivateSubnet (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1623:13)",
+        "/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071: (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1308:32)",
+        "new PrivateSubnet (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1623:13)",
+        "/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071: (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1412:27)",
+        "WrappedClass.<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/nat.js:209:16)",
+        "NatGatewayProvider.configureNat (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/nat.js:194:18)",
+        "WrappedClass.createNatGateways (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:948:22)",
+        "new Vpc (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:865:26)",
+        "<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.network-connector-defaults.js:42:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2Subnet3788AAA1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1283:28)",
+        "new PrivateSubnet (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1623:13)",
+        "/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071: (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2RouteTableA678073B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1303:27)",
+        "new PrivateSubnet (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1623:13)",
+        "/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071: (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1308:32)",
+        "new PrivateSubnet (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1623:13)",
+        "/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071: (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1412:27)",
+        "WrappedClass.<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/nat.js:209:16)",
+        "NatGatewayProvider.configureNat (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/nat.js:194:18)",
+        "WrappedClass.createNatGateways (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:948:22)",
+        "new Vpc (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:865:26)",
+        "<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.network-connector-defaults.js:42:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/core/lib/custom-resource.js:128:29)",
+        "WrappedClass.restrictDefaultSecurityGroup (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1111:13)",
+        "new Vpc (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:914:22)",
+        "<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.network-connector-defaults.js:42:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/NetworkConnectorDefaultsStack/NetworkConnector/OperatorRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NetworkConnectorOperatorRoleD4320215"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-iam/lib/role.js:470:34)",
+        "WrappedClass.createOperatorRole (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-lambda/lib/network-connector.js:226:20)",
+        "new NetworkConnector (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/aws-cdk-lib/aws-lambda/lib/network-connector.js:209:61)",
+        "<anonymous> (/Users/licjun/workplace/SourceCode/project-repos/LNC-Code/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.network-connector-defaults.js:44:1)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
