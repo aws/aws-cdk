@@ -3,7 +3,7 @@ import { acknowledgeTestValidationRules } from './util';
 import { Annotations, Match, Template } from '../../assertions';
 import { App, CfnOutput, CfnResource, Fn, Lazy, Stack, Tags } from '../../core';
 import { EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
-import type { PublicSubnet } from '../lib';
+import type { IVpc, PublicSubnet } from '../lib';
 import {
   AclCidr,
   AclTraffic,
@@ -1400,6 +1400,41 @@ describe('vpc', () => {
       Template.fromStack(stack).hasResource('AWS::EC2::Subnet', {
         DependsOn: ['TheVPCipv6cidrF3E84E30'],
       });
+    });
+  });
+
+  describe('vpnGatewayId / IVpc assignability', () => {
+    // Regression coverage for issue #37995: under `exactOptionalPropertyTypes`,
+    // `VpcBase` must stay assignable to the optional `IVpc.vpnGatewayId`. The
+    // `IVpc` annotations below are the type-level guard; the runtime
+    // expectations confirm the refactor preserves the original behavior.
+    test('a concrete Vpc is assignable to IVpc and exposes no gateway by default', () => {
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'Vpc');
+
+      const asInterface: IVpc = vpc;
+      const vpcs: IVpc[] = [vpc];
+
+      expect(asInterface.vpnGatewayId).toBeUndefined();
+      expect(vpcs[0].vpnGatewayId).toBeUndefined();
+    });
+
+    test('vpnGatewayId is populated when a VPN gateway is enabled', () => {
+      const stack = new Stack();
+      const vpc: IVpc = new Vpc(stack, 'Vpc', { vpnGateway: true });
+
+      expect(vpc.vpnGatewayId).toBeDefined();
+    });
+
+    test('vpnGatewayId is carried through fromVpcAttributes', () => {
+      const stack = new Stack();
+      const vpc: IVpc = Vpc.fromVpcAttributes(stack, 'Imported', {
+        vpcId: 'vpc-1234',
+        availabilityZones: ['dummy1a'],
+        vpnGatewayId: 'vgw-1234',
+      });
+
+      expect(vpc.vpnGatewayId).toEqual('vgw-1234');
     });
   });
 
