@@ -18,14 +18,14 @@ import type {
 import { ApplicationLoadBalancer, ApplicationProtocol, ListenerCertificate, ListenerAction } from '../../../aws-elasticloadbalancingv2';
 import type { IRole } from '../../../aws-iam';
 import type { IHostedZone } from '../../../aws-route53';
-import { ARecord, RecordTarget, CnameRecord } from '../../../aws-route53';
+import { ARecord, AaaaRecord, RecordTarget, CnameRecord } from '../../../aws-route53';
 import { LoadBalancerTarget } from '../../../aws-route53-targets';
 import { CfnOutput, Duration, FeatureFlags, Stack, Token, ValidationError } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 import { ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER, ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID } from '../../../cx-api';
 
 /**
- * Describes the type of DNS record the service should create
+ * Describes the type of DNS record the service should create.
  */
 export enum ApplicationLoadBalancedServiceRecordType {
   /**
@@ -40,6 +40,12 @@ export enum ApplicationLoadBalancedServiceRecordType {
    * Do not create any DNS records
    */
   NONE,
+  /**
+   * Create Route 53 A and AAAA alias records.
+   *
+   * This option creates DNS records only. It does not configure the load balancer for IPv6.
+   */
+  ALIAS_IPV4_IPV6,
 }
 
 /**
@@ -235,7 +241,8 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   readonly redirectHTTP?: boolean;
 
   /**
-   * Specifies whether the Route53 record should be a CNAME, an A record using the Alias feature or no record at all.
+   * Specifies whether the Route 53 record should be a CNAME, an A record using the Alias feature,
+   * an A and AAAA record using the Alias feature, or no record at all.
    * This is useful if you need to work with DNS systems that do not support alias records.
    *
    * @default ApplicationLoadBalancedServiceRecordType.ALIAS
@@ -587,6 +594,17 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
           });
           domainName = aliasRecord.domainName;
           break;
+        case ApplicationLoadBalancedServiceRecordType.ALIAS_IPV4_IPV6: {
+          const aliasProps = {
+            zone: props.domainZone,
+            recordName: props.domainName,
+            target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
+          };
+          const dualStackAliasRecord = new ARecord(this, 'DNS', aliasProps);
+          new AaaaRecord(this, 'DNSAAAA', aliasProps);
+          domainName = dualStackAliasRecord.domainName;
+          break;
+        }
         case ApplicationLoadBalancedServiceRecordType.CNAME:
           let cnameRecord = new CnameRecord(this, 'DNS', {
             zone: props.domainZone,

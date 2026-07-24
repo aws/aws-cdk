@@ -623,6 +623,12 @@
   "ClusterEB0386A7": {
    "Type": "AWS::ECS::Cluster"
   },
+  "HostedZoneDB99F866": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "test.public."
+   }
+  },
   "myServiceLB168895E1": {
    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
    "Properties": {
@@ -740,6 +746,70 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   }
+  },
+  "myServiceDNSD76FB53A": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::Join": [
+       "",
+       [
+        "dualstack.",
+        {
+         "Fn::GetAtt": [
+          "myServiceLB168895E1",
+          "DNSName"
+         ]
+        }
+       ]
+      ]
+     },
+     "HostedZoneId": {
+      "Fn::GetAtt": [
+       "myServiceLB168895E1",
+       "CanonicalHostedZoneID"
+      ]
+     }
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "service.test.public.",
+    "Type": "A"
+   }
+  },
+  "myServiceDNSAAAA03689C37": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::Join": [
+       "",
+       [
+        "dualstack.",
+        {
+         "Fn::GetAtt": [
+          "myServiceLB168895E1",
+          "DNSName"
+         ]
+        }
+       ]
+      ]
+     },
+     "HostedZoneId": {
+      "Fn::GetAtt": [
+       "myServiceLB168895E1",
+       "CanonicalHostedZoneID"
+      ]
+     }
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "service.test.public.",
+    "Type": "AAAA"
    }
   },
   "myServiceTaskDefTaskRole1C1DE6CC": {
@@ -972,10 +1042,7 @@
      [
       "http://",
       {
-       "Fn::GetAtt": [
-        "myServiceLB168895E1",
-        "DNSName"
-       ]
+       "Ref": "myServiceDNSD76FB53A"
       }
      ]
     ]
