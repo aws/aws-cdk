@@ -1,0 +1,21 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "b56bf597f3d5c23c43b774d20be4ae0c51538659b2526a15da4a19575881c221": {
+      "displayName": "FunctionStack Template",
+      "source": {
+        "path": "FunctionStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "12345678-us-east-2-69cd3d49": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-us-east-2",
+          "objectKey": "b56bf597f3d5c23c43b774d20be4ae0c51538659b2526a15da4a19575881c221.json",
+          "region": "us-east-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-us-east-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,249 @@
+{
+  "/FunctionStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns-subscriptions/test/integ.sns-lambda-opt-in-region.js:36:23)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FunctionStack/Echo": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "handler": "*",
+        "runtime": "*",
+        "code": "*"
+      }
+    }
+  ],
+  "/FunctionStack/DLQ": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/FunctionStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
+        "App.synth (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/FunctionStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
+        "App.synth (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/FunctionStack/Echo/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/FunctionStack/Echo/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Echo11F3FB29"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
+        "new Function (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns-subscriptions/test/integ.sns-lambda-opt-in-region.js:42:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FunctionStack/Echo/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/FunctionStack/Echo/AllowInvoke:TopicStackMyTopicC43E67AF": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EchoAllowInvokeTopicStackMyTopicC43E67AF32CF6EFA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addPermission (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:170:9)",
+        "LambdaSubscription.bind (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/aws-sns-subscriptions/lib/lambda.js:56:21)",
+        "WrappedClass.addSubscription (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic-base.js:58:54)",
+        "<anonymous> (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns-subscriptions/test/integ.sns-lambda-opt-in-region.js:48:7)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FunctionStack/Echo/AllowInvoke:TopicStackMyTopicC43E67AF:ap-east-1": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EchoAllowInvokeTopicStackMyTopicC43E67AFapeast186C2C895"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addPermission (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:170:9)",
+        "LambdaSubscription.bind (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/aws-sns-subscriptions/lib/lambda.js:56:21)",
+        "WrappedClass.addSubscription (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic-base.js:58:54)",
+        "<anonymous> (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns-subscriptions/test/integ.sns-lambda-opt-in-region.js:48:7)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FunctionStack/Echo/MyTopic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "topic": "*",
+        "endpoint": "*",
+        "protocol": "lambda",
+        "filterPolicy": "*",
+        "filterPolicyWithMessageBody": "*",
+        "region": "*",
+        "deadLetterQueue": "*"
+      }
+    }
+  ],
+  "/FunctionStack/DLQ/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DLQ581697C4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Queue (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue.js:275:27)",
+        "new Queue (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns-subscriptions/test/integ.sns-lambda-opt-in-region.js:47:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FunctionStack/DLQ/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "queues": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/FunctionStack/Echo/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EchoServiceRoleBE28060B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
+        "new Function (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns-subscriptions/test/integ.sns-lambda-opt-in-region.js:42:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FunctionStack/Echo/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EchoLogGroup4CFE6FF3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
+        "new LogGroup (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:775:34)",
+        "new Function (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns-subscriptions/test/integ.sns-lambda-opt-in-region.js:42:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FunctionStack/Echo/MyTopic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EchoMyTopic4CB8819E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subscription (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/subscription.js:140:13)",
+        "new Subscription (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addSubscription (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic-base.js:69:30)",
+        "<anonymous> (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns-subscriptions/test/integ.sns-lambda-opt-in-region.js:48:7)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FunctionStack/DLQ/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DLQPolicyC8FA9269"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new QueuePolicy (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/policy.js:108:13)",
+        "new QueuePolicy (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToResourcePolicy (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue-base.js:72:27)",
+        "WrappedClass.buildDeadLetterQueue (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/subscription.js:230:29)",
+        "new Subscription (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/subscription.js:139:41)",
+        "new Subscription (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addSubscription (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic-base.js:69:30)",
+        "<anonymous> (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns-subscriptions/test/integ.sns-lambda-opt-in-region.js:48:7)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
