@@ -3195,7 +3195,7 @@ test.each([
   });
 });
 
-test('can configure instance refresh update policy with defaults', () => {
+test('can configure instance refresh update policy with only strategy (Rolling)', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const vpc = mockVpc(stack);
@@ -3205,13 +3205,17 @@ test('can configure instance refresh update policy with defaults', () => {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
     machineImage: new ec2.AmazonLinuxImage(),
     vpc,
-    updatePolicy: autoscaling.UpdatePolicy.instanceRefresh(),
+    updatePolicy: autoscaling.UpdatePolicy.instanceRefresh({
+      strategy: autoscaling.InstanceRefreshStrategy.ROLLING,
+    }),
   });
 
   // THEN
   Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
     UpdatePolicy: {
-      AutoScalingInstanceRefresh: {},
+      AutoScalingInstanceRefresh: {
+        Strategy: 'Rolling',
+      },
     },
   });
 });
@@ -3222,6 +3226,9 @@ test('can configure instance refresh update policy with all options', () => {
   const vpc = mockVpc(stack);
 
   // WHEN
+  const metric = new cloudwatch.Metric({ namespace: 'MyService', metricName: 'MyMetric' });
+  const alarm1 = new cloudwatch.Alarm(stack, 'Alarm1', { metric, threshold: 100, evaluationPeriods: 1 });
+  const alarm2 = new cloudwatch.Alarm(stack, 'Alarm2', { metric, threshold: 100, evaluationPeriods: 1 });
   new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
     machineImage: new ec2.AmazonLinuxImage(),
@@ -3235,7 +3242,7 @@ test('can configure instance refresh update policy with all options', () => {
       checkpointPercentages: [20, 50, 100],
       checkpointDelay: cdk.Duration.seconds(3600),
       bakeTime: cdk.Duration.seconds(600),
-      alarmNames: ['my-alarm-1', 'my-alarm-2'],
+      alarms: [alarm1, alarm2],
       scaleInProtectedInstances: autoscaling.ScaleInProtectedInstances.WAIT,
       standbyInstances: autoscaling.StandbyInstances.IGNORE,
     }),
@@ -3255,7 +3262,10 @@ test('can configure instance refresh update policy with all options', () => {
           CheckpointDelay: 3600,
           BakeTime: 600,
           AlarmSpecification: {
-            Alarms: ['my-alarm-1', 'my-alarm-2'],
+            Alarms: [
+              { Ref: 'Alarm1F9009D71' },
+              { Ref: 'Alarm2A7122E13' },
+            ],
           },
           ScaleInProtectedInstances: 'Wait',
           StandbyInstances: 'Ignore',
@@ -3265,7 +3275,7 @@ test('can configure instance refresh update policy with all options', () => {
   });
 });
 
-test('can configure instance refresh with only strategy', () => {
+test('can configure instance refresh with only strategy (ReplaceRootVolume)', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const vpc = mockVpc(stack);
@@ -3290,6 +3300,88 @@ test('can configure instance refresh with only strategy', () => {
   });
 });
 
+test('instance refresh allows minHealthyPercentage on its own', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = mockVpc(stack);
+
+  // WHEN
+  new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+    machineImage: new ec2.AmazonLinuxImage(),
+    vpc,
+    updatePolicy: autoscaling.UpdatePolicy.instanceRefresh({
+      strategy: autoscaling.InstanceRefreshStrategy.ROLLING,
+      minHealthyPercentage: 50,
+    }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
+    UpdatePolicy: {
+      AutoScalingInstanceRefresh: {
+        Strategy: 'Rolling',
+        Preferences: {
+          MinHealthyPercentage: 50,
+        },
+      },
+    },
+  });
+});
+
+test.each([-1, 101])('instance refresh fails when minHealthyPercentage is out of range (%d)', (value) => {
+  expect(() => autoscaling.UpdatePolicy.instanceRefresh({ strategy: autoscaling.InstanceRefreshStrategy.ROLLING, minHealthyPercentage: value }))
+    .toThrow(/minHealthyPercentage must be between 0 and 100/);
+});
+
+test.each([99, 201])('instance refresh fails when maxHealthyPercentage is out of range (%d)', (value) => {
+  expect(() => autoscaling.UpdatePolicy.instanceRefresh({
+    strategy: autoscaling.InstanceRefreshStrategy.ROLLING,
+    minHealthyPercentage: 50,
+    maxHealthyPercentage: value,
+  })).toThrow(/maxHealthyPercentage must be between 100 and 200/);
+});
+
+test('instance refresh fails when maxHealthyPercentage is set without minHealthyPercentage', () => {
+  expect(() => autoscaling.UpdatePolicy.instanceRefresh({ strategy: autoscaling.InstanceRefreshStrategy.ROLLING, maxHealthyPercentage: 150 }))
+    .toThrow(/maxHealthyPercentage requires minHealthyPercentage to be specified/);
+});
+
+test('instance refresh fails when the difference between min and max healthy percentage exceeds 100', () => {
+  expect(() => autoscaling.UpdatePolicy.instanceRefresh({
+    strategy: autoscaling.InstanceRefreshStrategy.ROLLING,
+    minHealthyPercentage: 0,
+    maxHealthyPercentage: 200,
+  })).toThrow(/the difference between minHealthyPercentage and maxHealthyPercentage cannot be greater than 100/);
+});
+
+test('instance refresh omits AlarmSpecification when no alarms are provided', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = mockVpc(stack);
+
+  // WHEN
+  new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+    machineImage: new ec2.AmazonLinuxImage(),
+    vpc,
+    updatePolicy: autoscaling.UpdatePolicy.instanceRefresh({
+      strategy: autoscaling.InstanceRefreshStrategy.ROLLING,
+      alarms: [],
+    }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
+    UpdatePolicy: {
+      AutoScalingInstanceRefresh: {
+        Strategy: 'Rolling',
+        Preferences: Match.absent(),
+      },
+    },
+  });
+});
+
 test('warns when signals are combined with instance refresh update policy', () => {
   // GIVEN
   const stack = new cdk.Stack();
@@ -3301,7 +3393,9 @@ test('warns when signals are combined with instance refresh update policy', () =
     machineImage: new ec2.AmazonLinuxImage(),
     vpc,
     signals: autoscaling.Signals.waitForAll(),
-    updatePolicy: autoscaling.UpdatePolicy.instanceRefresh(),
+    updatePolicy: autoscaling.UpdatePolicy.instanceRefresh({
+      strategy: autoscaling.InstanceRefreshStrategy.ROLLING,
+    }),
   });
 
   // THEN
@@ -3318,7 +3412,9 @@ test('does not warn about signals when instance refresh is used without signals'
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
     machineImage: new ec2.AmazonLinuxImage(),
     vpc,
-    updatePolicy: autoscaling.UpdatePolicy.instanceRefresh(),
+    updatePolicy: autoscaling.UpdatePolicy.instanceRefresh({
+      strategy: autoscaling.InstanceRefreshStrategy.ROLLING,
+    }),
   });
 
   // THEN

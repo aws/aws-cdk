@@ -314,10 +314,8 @@ export interface CfnCodeDeployLambdaAliasUpdate {
 export interface CfnAutoScalingInstanceRefresh {
   /**
    * The strategy to use for the instance refresh.
-   *
-   * @default 'Rolling'
    */
-  readonly strategy?: string;
+  readonly strategy: string;
 
   /**
    * The preferences for the instance refresh.
@@ -349,7 +347,7 @@ export interface CfnAutoScalingInstanceRefreshPreferences {
    * The number of seconds to wait after a new instance enters the InService state before
    * moving on to replacing the next instance.
    *
-   * @default - uses the group's default instance warmup
+   * @default - the group's DefaultInstanceWarmup if defined; otherwise the group's HealthCheckGracePeriod
    */
   readonly instanceWarmup?: number;
 
@@ -374,7 +372,7 @@ export interface CfnAutoScalingInstanceRefreshPreferences {
   /**
    * The number of seconds to wait after a checkpoint is reached before continuing.
    *
-   * @default 3600
+   * @default - 3600 seconds (1 hour), applied only when checkpointPercentages is set
    */
   readonly checkpointDelay?: number;
 

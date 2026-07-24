@@ -17,6 +17,7 @@ new autoscaling.AutoScalingGroup(stack, 'ASG', {
   instanceType: new ec2.InstanceType('t2.micro'),
   machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
   updatePolicy: autoscaling.UpdatePolicy.instanceRefresh({
+    strategy: autoscaling.InstanceRefreshStrategy.ROLLING,
     minHealthyPercentage: 90,
     maxHealthyPercentage: 100,
     instanceWarmup: cdk.Duration.seconds(300),

@@ -533,6 +533,7 @@ To customize the instance refresh, pass options:
 declare const vpc: ec2.Vpc;
 declare const instanceType: ec2.InstanceType;
 declare const machineImage: ec2.IMachineImage;
+declare const alarm: cloudwatch.Alarm;
 
 new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
@@ -540,12 +541,13 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
   machineImage,
 
   updatePolicy: autoscaling.UpdatePolicy.instanceRefresh({
+    strategy: autoscaling.InstanceRefreshStrategy.ROLLING,
     minHealthyPercentage: 90,
     maxHealthyPercentage: 100,
     instanceWarmup: Duration.seconds(300),
     checkpointPercentages: [50, 100],
     checkpointDelay: Duration.minutes(10),
-    alarmNames: ['my-alarm'],
+    alarms: [alarm],
   }),
 });
 ```

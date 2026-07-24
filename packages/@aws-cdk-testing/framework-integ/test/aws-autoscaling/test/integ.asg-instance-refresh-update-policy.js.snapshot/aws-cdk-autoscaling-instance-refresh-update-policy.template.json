@@ -547,6 +547,7 @@
    },
    "UpdatePolicy": {
     "AutoScalingInstanceRefresh": {
+     "Strategy": "Rolling",
      "Preferences": {
       "MinHealthyPercentage": 90,
       "MaxHealthyPercentage": 100,

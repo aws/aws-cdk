@@ -1038,9 +1038,12 @@ export abstract class UpdatePolicy {
    * or MixedInstancesPolicy), CloudFormation starts an instance refresh to replace
    * instances gradually while maintaining availability.
    */
-  public static instanceRefresh(options: InstanceRefreshOptions = {}): UpdatePolicy {
+  public static instanceRefresh(options: InstanceRefreshOptions): UpdatePolicy {
+    validateInstanceRefreshPreferences(options);
+
     return new class extends UpdatePolicy {
       public _renderUpdatePolicy(): CfnUpdatePolicy {
+        const alarmNames = options.alarms?.map(alarm => alarm.alarmRef.alarmName);
         const preferences: CfnAutoScalingInstanceRefreshPreferences = {
           minHealthyPercentage: options.minHealthyPercentage,
           maxHealthyPercentage: options.maxHealthyPercentage,
@@ -1049,7 +1052,7 @@ export abstract class UpdatePolicy {
           checkpointPercentages: options.checkpointPercentages,
           checkpointDelay: options.checkpointDelay?.toSeconds(),
           bakeTime: options.bakeTime?.toSeconds(),
-          alarmSpecification: options.alarmNames ? { alarms: options.alarmNames } : undefined,
+          alarmSpecification: alarmNames && alarmNames.length > 0 ? { alarms: alarmNames } : undefined,
           scaleInProtectedInstances: options.scaleInProtectedInstances,
           standbyInstances: options.standbyInstances,
         };
@@ -1198,10 +1201,8 @@ export enum StandbyInstances {
 export interface InstanceRefreshOptions {
   /**
    * The strategy to use for the instance refresh.
-   *
-   * @default InstanceRefreshStrategy.ROLLING
    */
-  readonly strategy?: InstanceRefreshStrategy;
+  readonly strategy: InstanceRefreshStrategy;
 
   /**
    * The minimum percentage of the group to keep in service, healthy, and ready to use
@@ -1226,7 +1227,7 @@ export interface InstanceRefreshOptions {
    * The amount of time to wait after a new instance enters the InService state before
    * moving on to refresh the next instance.
    *
-   * @default - uses the group's default instance warmup
+   * @default - the group's DefaultInstanceWarmup if defined; otherwise the group's HealthCheckGracePeriod
    */
   readonly instanceWarmup?: Duration;
 
@@ -1248,7 +1249,7 @@ export interface InstanceRefreshOptions {
   /**
    * The amount of time to wait after a checkpoint is reached before continuing.
    *
-   * @default - 3600 seconds
+   * @default - 3600 seconds (1 hour), applied only when checkpointPercentages is set
    */
   readonly checkpointDelay?: Duration;
 
@@ -1261,11 +1262,12 @@ export interface InstanceRefreshOptions {
   readonly bakeTime?: Duration;
 
   /**
-   * The names of CloudWatch alarms to monitor during the instance refresh.
+   * The CloudWatch alarms to monitor during the instance refresh. If any of the alarms goes into
+   * ALARM state, the instance refresh fails. You can specify up to 10 alarms.
    *
    * @default - no alarms
    */
-  readonly alarmNames?: string[];
+  readonly alarms?: cloudwatch.IAlarmRef[];
 
   /**
    * Specifies the behavior of instances that are protected from scale in during an instance refresh.
@@ -2784,6 +2786,32 @@ function renderRollingUpdateConfig(config: RollingUpdateConfiguration = {}): Cfn
 function validatePercentage(x?: number): number | undefined {
   if (x === undefined || (0 <= x && x <= 100)) { return x; }
   throw new UnscopedValidationError(lit`ExpectedPercentage`, `Expected: a percentage 0..100, got: ${x}`);
+}
+
+function validateInstanceRefreshPreferences(options: InstanceRefreshOptions): void {
+  const { minHealthyPercentage, maxHealthyPercentage } = options;
+
+  if (minHealthyPercentage !== undefined && !Token.isUnresolved(minHealthyPercentage) &&
+      (minHealthyPercentage < 0 || minHealthyPercentage > 100)) {
+    throw new UnscopedValidationError(lit`InstanceRefreshMinHealthyPercentage`, `minHealthyPercentage must be between 0 and 100, got ${minHealthyPercentage}`);
+  }
+
+  if (maxHealthyPercentage !== undefined && !Token.isUnresolved(maxHealthyPercentage) &&
+      (maxHealthyPercentage < 100 || maxHealthyPercentage > 200)) {
+    throw new UnscopedValidationError(lit`InstanceRefreshMaxHealthyPercentage`, `maxHealthyPercentage must be between 100 and 200, got ${maxHealthyPercentage}`);
+  }
+
+  // CloudFormation requires minHealthyPercentage whenever maxHealthyPercentage is set. The reverse is
+  // allowed: minHealthyPercentage may be set on its own, and each value falls back independently when omitted.
+  if (maxHealthyPercentage !== undefined && minHealthyPercentage === undefined) {
+    throw new UnscopedValidationError(lit`InstanceRefreshMaxRequiresMin`, 'maxHealthyPercentage requires minHealthyPercentage to be specified');
+  }
+
+  if (minHealthyPercentage !== undefined && maxHealthyPercentage !== undefined &&
+      !Token.isUnresolved(minHealthyPercentage) && !Token.isUnresolved(maxHealthyPercentage) &&
+      maxHealthyPercentage - minHealthyPercentage > 100) {
+    throw new UnscopedValidationError(lit`InstanceRefreshHealthyPercentageDifference`, `the difference between minHealthyPercentage and maxHealthyPercentage cannot be greater than 100, got ${maxHealthyPercentage - minHealthyPercentage}`);
+  }
 }
 
 /**
