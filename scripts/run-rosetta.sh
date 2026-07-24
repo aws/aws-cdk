@@ -65,7 +65,7 @@ if [[ "${jsii_pkgs_file}" = "" ]]; then
 fi
 
 mkdir -p $HOME/.s3buildcache
-batch_size=100
+batch_size=1000
 rosetta_cache_file=$HOME/.s3buildcache/rosetta-cache.tabl.json
 extract_opts=""
 if $infuse; then
