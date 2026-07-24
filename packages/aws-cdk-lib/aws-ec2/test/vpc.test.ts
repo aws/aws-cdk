@@ -26,6 +26,7 @@ import {
   Port,
   PrivateSubnet,
   RouterType,
+  SecurityGroup,
   Subnet,
   SubnetType,
   TrafficDirection,
@@ -2752,6 +2753,58 @@ describe('vpc', () => {
         Ref: Match.stringLikeRegexp('^Vpc.*'),
       },
     });
+  });
+  test('vpcIpv6CidrBlock references the Amazon-provided IPv6 CIDR block', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'DualStackStack');
+
+    // WHEN
+    const vpc = new Vpc(stack, 'Vpc', {
+      ipProtocol: IpProtocol.DUAL_STACK,
+    });
+
+    // THEN
+    const logicalId = stack.getLogicalId(vpc.node.defaultChild as CfnVPC);
+    expect(stack.resolve(vpc.vpcIpv6CidrBlock)).toEqual({
+      'Fn::Select': [0, { 'Fn::GetAtt': [logicalId, 'Ipv6CidrBlocks'] }],
+    });
+  });
+  test('vpcIpv6CidrBlock can be used to reference the VPC IPv6 range in a security group rule', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'DualStackStack');
+
+    // WHEN
+    const vpc = new Vpc(stack, 'Vpc', {
+      ipProtocol: IpProtocol.DUAL_STACK,
+    });
+    const securityGroup = new SecurityGroup(stack, 'SecurityGroup', { vpc });
+    securityGroup.addIngressRule(Peer.ipv6(vpc.vpcIpv6CidrBlock!), Port.tcp(443));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: [
+        Match.objectLike({
+          CidrIpv6: {
+            'Fn::Select': [0, { 'Fn::GetAtt': [Match.stringLikeRegexp('^Vpc.*'), 'Ipv6CidrBlocks'] }],
+          },
+          FromPort: 443,
+          ToPort: 443,
+        }),
+      ],
+    });
+  });
+  test('vpcIpv6CidrBlock is undefined for a VPC without IPv6', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'Ipv4OnlyStack');
+
+    // WHEN
+    const vpc = new Vpc(stack, 'Vpc');
+
+    // THEN
+    expect(vpc.vpcIpv6CidrBlock).toBeUndefined();
   });
   test('EgressOnlyIGW is created if no private subnet configured in dual stack and feature flag EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY is not enabled', () => {
     // GIVEN
