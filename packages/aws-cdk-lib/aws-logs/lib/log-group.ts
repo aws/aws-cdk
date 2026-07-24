@@ -290,8 +290,11 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
    * Adds a statement to the resource policy associated with this log group.
    * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
    *
-   * Any ARN Principals inside of the statement will be converted into AWS Account ID strings
-   * because CloudWatch Logs Resource Policies do not accept ARN principals.
+   * Any ARN Principals inside of the statement will be converted into the
+   * account root ARN (`arn:<partition>:iam::<account>:root`) because CloudWatch
+   * Logs Resource Policies do not accept full IAM ARN principals. This matches
+   * the canonical form CloudFormation stores on the deployed resource, avoiding
+   * a persistent drift-detection false positive.
    *
    * @param statement The policy statement to add
    */
@@ -307,20 +310,38 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
 
   private convertArnPrincipalToAccountId(principal: iam.IPrincipal) {
     if (principal.principalAccount) {
-      // we use ArnPrincipal here because the constructor inserts the argument
-      // into the template without mutating it, which means that there is no
-      // ARN created by this call.
-      return new iam.ArnPrincipal(principal.principalAccount);
+      return new iam.ArnPrincipal(this.accountRootArn(principal.principalAccount));
     }
 
     if (principal instanceof iam.ArnPrincipal && principal.arn !== '*') {
       const parsedArn = Arn.split(principal.arn, ArnFormat.SLASH_RESOURCE_NAME);
       if (parsedArn.account) {
-        return new iam.ArnPrincipal(parsedArn.account);
+        return new iam.ArnPrincipal(this.accountRootArn(parsedArn.account, parsedArn.partition));
       }
     }
 
     return principal;
+  }
+
+  /**
+   * CloudWatch Logs resource policies do not accept full IAM ARN principals, so
+   * cross-account principals are reduced to their account id. CloudFormation
+   * then canonicalizes that bare account id to the account root ARN
+   * (`arn:<partition>:iam::<account>:root`) on the deployed resource. Emitting
+   * that canonical form at synth time keeps the synthesized template in sync
+   * with the deployed value, avoiding a permanent drift-detection false
+   * positive.
+   *
+   * @see https://github.com/aws/aws-cdk/issues/37797
+   */
+  private accountRootArn(account: string, partition?: string): string {
+    return Stack.of(this).formatArn({
+      partition,
+      service: 'iam',
+      region: '',
+      account,
+      resource: 'root',
+    });
   }
 
   /**
