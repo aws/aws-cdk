@@ -13,6 +13,7 @@ import {
   CfnCapacityProvider,
   CfnClusterCapacityProviderAssociations,
 } from './ecs.generated';
+import type { Writeable } from './private/writeable';
 import * as autoscaling from '../../aws-autoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import type { InstanceRequirementsConfig } from '../../aws-ec2';
@@ -141,6 +142,19 @@ export enum MachineImageType {
 }
 
 /**
+ * Assigns the default Cloud Map namespace of a cluster.
+ *
+ * `defaultCloudMapNamespace` is a `readonly` property declared optional (to
+ * match `ICluster`), so it is populated through this helper rather than a
+ * public setter. The namespace may be supplied at construction or added later
+ * via `addDefaultCloudMapNamespace`; the helper is only ever called with a
+ * defined namespace.
+ */
+function setDefaultCloudMapNamespace(cluster: Cluster, namespace: cloudmap.INamespace): void {
+  (cluster as Writeable<Cluster>).defaultCloudMapNamespace = namespace;
+}
+
+/**
  * A regional grouping of one or more container instances on which you can run tasks and services.
  */
 @propertyInjectable
@@ -221,6 +235,28 @@ export class Cluster extends Resource implements ICluster {
   public readonly grants = ClusterGrants.fromCluster(this);
 
   /**
+   * The cluster's default Cloud Map namespace.
+   *
+   * `undefined` if no default namespace is configured, either at construction
+   * or via `addDefaultCloudMapNamespace`.
+   */
+  public readonly defaultCloudMapNamespace?: cloudmap.INamespace;
+
+  /**
+   * The autoscaling group added to the cluster if EC2 capacity was provided at construction.
+   *
+   * `undefined` if no capacity was provided.
+   */
+  public readonly autoscalingGroup?: autoscaling.IAutoScalingGroup;
+
+  /**
+   * The execute command configuration for the cluster.
+   *
+   * `undefined` if no configuration was provided.
+   */
+  public readonly executeCommandConfiguration?: ExecuteCommandConfiguration;
+
+  /**
    * The names of both ASG and Fargate capacity providers associated with the cluster.
    */
   private _capacityProviderNames: string[] = [];
@@ -236,24 +272,9 @@ export class Cluster extends Resource implements ICluster {
   private _defaultCapacityProviderStrategy: CapacityProviderStrategy[] = [];
 
   /**
-   * The AWS Cloud Map namespace to associate with the cluster.
-   */
-  private _defaultCloudMapNamespace?: cloudmap.INamespace;
-
-  /**
    * Specifies whether the cluster has EC2 instance capacity.
    */
   private _hasEc2Capacity: boolean = false;
-
-  /**
-   * The autoscaling group for added Ec2 capacity
-   */
-  private _autoscalingGroup?: autoscaling.IAutoScalingGroup;
-
-  /**
-   * The execute command configuration for the cluster
-   */
-  private _executeCommandConfiguration?: ExecuteCommandConfiguration;
 
   /**
    * The configuration for ECS managed Storage
@@ -322,7 +343,7 @@ export class Cluster extends Resource implements ICluster {
         (props.executeCommandConfiguration.logConfiguration !== undefined)) {
         throw new ValidationError(lit`ExecuteCommandConfigurationOnly`, 'Execute command log configuration must only be specified when logging is OVERRIDE.', this);
       }
-      this._executeCommandConfiguration = props.executeCommandConfiguration;
+      this.executeCommandConfiguration = props.executeCommandConfiguration;
     }
 
     this._managedStorageConfiguration = props.managedStorageConfiguration;
@@ -335,13 +356,13 @@ export class Cluster extends Resource implements ICluster {
 
     this.vpc = props.vpc || new ec2.Vpc(this, 'Vpc', { maxAzs: 2 });
 
-    this._defaultCloudMapNamespace = props.defaultCloudMapNamespace !== undefined
-      ? this.addDefaultCloudMapNamespace(props.defaultCloudMapNamespace)
-      : undefined;
+    if (props.defaultCloudMapNamespace !== undefined) {
+      this.addDefaultCloudMapNamespace(props.defaultCloudMapNamespace);
+    }
 
-    this._autoscalingGroup = props.capacity !== undefined
-      ? this.addCapacity('DefaultAutoScalingGroup', props.capacity)
-      : undefined;
+    if (props.capacity !== undefined) {
+      this.autoscalingGroup = this.addCapacity('DefaultAutoScalingGroup', props.capacity);
+    }
 
     this.updateKeyPolicyForEphemeralStorageConfiguration(props.clusterName);
 
@@ -448,12 +469,12 @@ export class Cluster extends Resource implements ICluster {
   }
 
   private renderClusterConfiguration(): CfnCluster.ClusterConfigurationProperty | undefined {
-    if (!this._executeCommandConfiguration && !this._managedStorageConfiguration) return undefined;
+    if (!this.executeCommandConfiguration && !this._managedStorageConfiguration) return undefined;
     return {
-      executeCommandConfiguration: this._executeCommandConfiguration && {
-        kmsKeyId: this._executeCommandConfiguration.kmsKey?.keyArn,
-        logConfiguration: this._executeCommandConfiguration.logConfiguration && this.renderExecuteCommandLogConfiguration(),
-        logging: this._executeCommandConfiguration.logging,
+      executeCommandConfiguration: this.executeCommandConfiguration && {
+        kmsKeyId: this.executeCommandConfiguration.kmsKey?.keyArn,
+        logConfiguration: this.executeCommandConfiguration.logConfiguration && this.renderExecuteCommandLogConfiguration(),
+        logging: this.executeCommandConfiguration.logging,
       },
       managedStorageConfiguration: this._managedStorageConfiguration && {
         fargateEphemeralStorageKmsKeyId: this._managedStorageConfiguration.fargateEphemeralStorageKmsKey?.keyId,
@@ -463,7 +484,7 @@ export class Cluster extends Resource implements ICluster {
   }
 
   private renderExecuteCommandLogConfiguration(): CfnCluster.ExecuteCommandLogConfigurationProperty {
-    const logConfiguration = this._executeCommandConfiguration?.logConfiguration;
+    const logConfiguration = this.executeCommandConfiguration?.logConfiguration;
     if (logConfiguration?.s3EncryptionEnabled && !logConfiguration?.s3Bucket) {
       throw new ValidationError(lit`SpecifyBucketNameExecute`, 'You must specify an S3 bucket name in the execute command log configuration to enable S3 encryption.', this);
     }
@@ -486,7 +507,7 @@ export class Cluster extends Resource implements ICluster {
    */
   @MethodMetadata()
   public addDefaultCloudMapNamespace(options: CloudMapNamespaceOptions): cloudmap.INamespace {
-    if (this._defaultCloudMapNamespace !== undefined) {
+    if (this.defaultCloudMapNamespace !== undefined) {
       throw new ValidationError(lit`OnlyDefaultNamespaceOnce`, 'Can only add default namespace once.', this);
     }
 
@@ -516,7 +537,7 @@ export class Cluster extends Resource implements ICluster {
         throw new ValidationError(lit`NamespaceTypeSupported`, `Namespace type ${namespaceType} is not supported.`, this);
     }
 
-    this._defaultCloudMapNamespace = sdNamespace;
+    setDefaultCloudMapNamespace(this, sdNamespace);
     if (options.useForServiceConnect) {
       this._cfnCluster.serviceConnectDefaults = {
         namespace: sdNamespace.namespaceArn,
@@ -546,13 +567,6 @@ export class Cluster extends Resource implements ICluster {
    */
   public get clusterScopedCapacityProviderNames() {
     return this._clusterScopedCapacityProviderNames;
-  }
-
-  /**
-   * Getter for namespace added to cluster
-   */
-  public get defaultCloudMapNamespace(): cloudmap.INamespace | undefined {
-    return this._defaultCloudMapNamespace;
   }
 
   /**
@@ -811,24 +825,10 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * Getter for autoscaling group added to cluster
-   */
-  public get autoscalingGroup(): autoscaling.IAutoScalingGroup | undefined {
-    return this._autoscalingGroup;
-  }
-
-  /**
    * Whether the cluster has EC2 capacity associated with it
    */
   public get hasEc2Capacity(): boolean {
     return this._hasEc2Capacity;
-  }
-
-  /**
-   * Getter for execute command configuration associated with the cluster.
-   */
-  public get executeCommandConfiguration(): ExecuteCommandConfiguration | undefined {
-    return this._executeCommandConfiguration;
   }
 
   /**
@@ -1051,12 +1051,12 @@ class ImportedCluster extends Resource implements ICluster {
   /**
    * Cloudmap namespace created in the cluster
    */
-  private _defaultCloudMapNamespace?: cloudmap.INamespace;
+  public readonly defaultCloudMapNamespace?: cloudmap.INamespace;
 
   /**
    * The execute command configuration for the cluster
    */
-  private _executeCommandConfiguration?: ExecuteCommandConfiguration;
+  public readonly executeCommandConfiguration?: ExecuteCommandConfiguration;
 
   /**
    * Constructs a new instance of the ImportedCluster class.
@@ -1068,9 +1068,15 @@ class ImportedCluster extends Resource implements ICluster {
     this.clusterName = props.clusterName;
     this.vpc = props.vpc;
     this.hasEc2Capacity = props.hasEc2Capacity !== false;
-    this._defaultCloudMapNamespace = props.defaultCloudMapNamespace;
-    this._executeCommandConfiguration = props.executeCommandConfiguration;
-    this.autoscalingGroup = props.autoscalingGroup;
+    if (props.defaultCloudMapNamespace !== undefined) {
+      this.defaultCloudMapNamespace = props.defaultCloudMapNamespace;
+    }
+    if (props.executeCommandConfiguration !== undefined) {
+      this.executeCommandConfiguration = props.executeCommandConfiguration;
+    }
+    if (props.autoscalingGroup !== undefined) {
+      this.autoscalingGroup = props.autoscalingGroup;
+    }
 
     this.clusterArn = props.clusterArn ?? Stack.of(this).formatArn({
       service: 'ecs',
@@ -1081,14 +1087,6 @@ class ImportedCluster extends Resource implements ICluster {
     this.connections = new ec2.Connections({
       securityGroups: props.securityGroups,
     });
-  }
-
-  public get defaultCloudMapNamespace(): cloudmap.INamespace | undefined {
-    return this._defaultCloudMapNamespace;
-  }
-
-  public get executeCommandConfiguration(): ExecuteCommandConfiguration | undefined {
-    return this._executeCommandConfiguration;
   }
 }
 

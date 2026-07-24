@@ -1721,6 +1721,44 @@ describe('cluster', () => {
     expect(cluster.autoscalingGroup).toEqual(autoscalingGroup);
   });
 
+  describe('optional ICluster properties', () => {
+    test('defaultCloudMapNamespace, autoscalingGroup and executeCommandConfiguration are undefined by default', () => {
+      // GIVEN / WHEN
+      const stack = new cdk.Stack();
+      const cluster = new ecs.Cluster(stack, 'Cluster');
+
+      // THEN
+      expect(cluster.defaultCloudMapNamespace).toBeUndefined();
+      expect(cluster.autoscalingGroup).toBeUndefined();
+      expect(cluster.executeCommandConfiguration).toBeUndefined();
+    });
+
+    test('defaultCloudMapNamespace reflects a namespace added after construction', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc: new ec2.Vpc(stack, 'Vpc') });
+      expect(cluster.defaultCloudMapNamespace).toBeUndefined();
+
+      // WHEN
+      const namespace = cluster.addDefaultCloudMapNamespace({ name: 'foo' });
+
+      // THEN — the property reflects the namespace created by the method
+      expect(cluster.defaultCloudMapNamespace).toBe(namespace);
+    });
+
+    test('executeCommandConfiguration reflects the value passed at construction', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const executeCommandConfiguration = { logging: ecs.ExecuteCommandLogging.DEFAULT };
+
+      // WHEN
+      const cluster = new ecs.Cluster(stack, 'Cluster', { executeCommandConfiguration });
+
+      // THEN
+      expect(cluster.executeCommandConfiguration).toEqual(executeCommandConfiguration);
+    });
+  });
+
   test('Metric', () => {
     // GIVEN
     const stack = new cdk.Stack();
