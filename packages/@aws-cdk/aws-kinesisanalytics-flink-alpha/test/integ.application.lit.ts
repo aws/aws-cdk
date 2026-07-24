@@ -12,6 +12,7 @@ const flinkRuntimes = [
   flink.Runtime.FLINK_1_18,
   flink.Runtime.FLINK_1_19,
   flink.Runtime.FLINK_1_20,
+  flink.Runtime.FLINK_2_2,
 ];
 
 flinkRuntimes.forEach((runtime) => {
