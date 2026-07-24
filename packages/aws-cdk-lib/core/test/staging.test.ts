@@ -870,6 +870,50 @@ describe('staging', () => {
     expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
   });
 
+  test('bundling forwards sshForwarding through to docker run', () => {
+    // GIVEN
+    sinon.stub(process, 'env').value({ ...process.env, SSH_AUTH_SOCK: '/tmp/ssh-agent.sock' });
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+        sshForwarding: true,
+      },
+      assetHashType: AssetHashType.BUNDLE,
+    });
+
+    // THEN
+    expect(
+      readDockerStubInput()).toEqual(
+      `run --rm ${USER_ARG} -v /input:/asset-input:${delegated} -v /output:/asset-output:${delegated} -v /tmp/ssh-agent.sock:/run/host-services/ssh-auth.sock:${delegated} --env SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+    );
+  });
+
+  test('bundling with sshForwarding throws when SSH_AUTH_SOCK is not set on the host', () => {
+    // GIVEN
+    const { SSH_AUTH_SOCK: _omit, ...envWithoutSshAuthSock } = process.env;
+    sinon.stub(process, 'env').value(envWithoutSshAuthSock);
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN / THEN
+    expect(() => new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+        sshForwarding: true,
+      },
+    })).toThrow(/SSH_AUTH_SOCK environment variable is not set/);
+  });
+
   test('bundling with docker entrypoint', () => {
     // GIVEN
     const app = new App();
