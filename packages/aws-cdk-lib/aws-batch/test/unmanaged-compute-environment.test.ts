@@ -103,3 +103,24 @@ test('respects unmanagedvCpus', () => {
     UnmanagedvCpus: 256,
   });
 });
+
+test('serviceRole and unmanagedvCPUs expose configured values and are undefined otherwise', () => {
+  // GIVEN
+  stack = new Stack();
+  const role = new Role(stack, 'myMagicRole', {
+    assumedBy: new ServicePrincipal('batch.amazonaws.com'),
+  });
+
+  // WHEN
+  const configured = new UnmanagedComputeEnvironment(stack, 'Configured', {
+    serviceRole: role,
+    unmanagedvCpus: 256,
+  });
+  const defaulted = new UnmanagedComputeEnvironment(stack, 'Defaulted');
+
+  // THEN
+  expect(configured.serviceRole).toBe(role);
+  expect(configured.unmanagedvCPUs).toBe(256);
+  expect(defaulted.serviceRole).toBeUndefined();
+  expect(defaulted.unmanagedvCPUs).toBeUndefined();
+});
