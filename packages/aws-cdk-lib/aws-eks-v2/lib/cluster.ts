@@ -1360,7 +1360,7 @@ export class Cluster extends ClusterBase {
         subnetIds,
         endpointPrivateAccess: this.endpointAccess._config.privateAccess,
         endpointPublicAccess: this.endpointAccess._config.publicAccess,
-        publicAccessCidrs: this.endpointAccess._config.publicCidrs,
+        publicAccessCidrs: this.endpointAccess._config.publicAccess ? this.endpointAccess._config.publicCidrs : [],
       },
       ...(props.secretsEncryptionKey ? {
         encryptionConfig: [{
