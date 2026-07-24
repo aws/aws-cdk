@@ -1,3 +1,4 @@
+import type { IKeyRef } from '../../aws-kms';
 import type { Duration } from '../../core';
 
 /**
@@ -24,4 +25,11 @@ export interface DurableConfig {
    * @default Duration.days(14)
    */
   readonly retentionPeriod?: Duration;
+
+  /**
+   * The AWS KMS customer managed key (CMK) used to encrypt durable execution data at rest.
+   *
+   * @default - Durable execution data is encrypted at rest with an AWS owned key.
+   */
+  readonly kmsKey?: IKeyRef;
 }
