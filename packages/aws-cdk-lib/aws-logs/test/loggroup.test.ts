@@ -478,7 +478,7 @@ describe('log group', () => {
     });
   });
 
-  test('when added to log groups, IAM users are converted into account IDs in the resource policy', () => {
+  test('when added to log groups, IAM users are converted into account root ARNs in the resource policy', () => {
     // GIVEN
     const stack = new Stack();
     const lg = new LogGroup(stack, 'LogGroup');
@@ -492,7 +492,16 @@ describe('log group', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
-      PolicyDocument: '{"Statement":[{"Action":"logs:PutLogEvents","Effect":"Allow","Principal":{"AWS":"123456789012"},"Resource":"*"}],"Version":"2012-10-17"}',
+      PolicyDocument: {
+        'Fn::Join': [
+          '',
+          [
+            '{"Statement":[{"Action":"logs:PutLogEvents","Effect":"Allow","Principal":{"AWS":"arn:',
+            { Ref: 'AWS::Partition' },
+            ':iam::123456789012:root"},"Resource":"*"}],"Version":"2012-10-17"}',
+          ],
+        ],
+      },
       PolicyName: 'LogGroupPolicy643B329C',
     });
   });
@@ -523,7 +532,7 @@ describe('log group', () => {
     });
   });
 
-  test('imported values are treated as if they are ARNs and converted to account IDs via CFN pseudo parameters', () => {
+  test('imported values are treated as if they are ARNs and converted to account root ARNs via CFN pseudo parameters', () => {
     // GIVEN
     const stack = new Stack();
     const lg = new LogGroup(stack, 'LogGroup');
@@ -541,14 +550,16 @@ describe('log group', () => {
         'Fn::Join': [
           '',
           [
-            '{\"Statement\":[{\"Action\":\"logs:PutLogEvents\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"',
+            '{\"Statement\":[{\"Action\":\"logs:PutLogEvents\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:',
+            { Ref: 'AWS::Partition' },
+            ':iam::',
             {
               'Fn::Select': [
                 4,
                 { 'Fn::Split': [':', { 'Fn::ImportValue': 'SomeRole' }] },
               ],
             },
-            '\"},\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}',
+            ':root\"},\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}',
           ],
         ],
       },
