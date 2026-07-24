@@ -1811,7 +1811,10 @@ export interface BucketProps {
   /**
    * Physical name of this bucket.
    *
-   * Cannot be used together with `bucketNamePrefix` or `bucketNamespace`.
+   * Cannot be used together with `bucketNamePrefix`.
+   *
+   * When `bucketNamespace` is `ACCOUNT_REGIONAL`,
+   * `bucketName` ( can be used instead of `bucketNamePrefix` ), but must end with `-<accountId>-<region>-an`.
    *
    * @default - Assigned by CloudFormation (recommended).
    */
@@ -1838,7 +1841,7 @@ export interface BucketProps {
    *
    * AWS recommends `ACCOUNT_REGIONAL` for improved security, as bucket names
    * are scoped to your account and cannot be claimed by other accounts.
-   * When set to `ACCOUNT_REGIONAL`, `bucketNamePrefix` is required.
+   * When set to `ACCOUNT_REGIONAL`, either `bucketNamePrefix` or `bucketName` (ending with `-<accountId>-<region>-an`) is required.
    * When set to `GLOBAL`, it can be used standalone to explicitly specify the default namespace.
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/gpbucketnamespaces.html
@@ -2421,24 +2424,37 @@ export class Bucket extends BucketBase {
         scope,
       );
     }
-    if (props.bucketName && props.bucketNamespace && props.bucketNamespace !== BucketNamespace.GLOBAL) {
-      throw new ValidationError(
-        lit`BucketNameConflictsWithNamespace`,
-        '\'bucketName\' cannot be used with \'bucketNamespace\' (except GLOBAL). Use \'bucketNamePrefix\' with \'bucketNamespace\' instead',
-        scope,
-      );
+    if (props.bucketName && props.bucketNamespace === BucketNamespace.ACCOUNT_REGIONAL) {
+      if ( !Token.isUnresolved(props.bucketName) ) { // end-user provided bucketName is a LITERAL — CDK can validate the suffix
+        const stack = Stack.of(scope);
+        const accountIsLiteral = !Token.isUnresolved(stack.account);
+        const regionIsLiteral = !Token.isUnresolved(stack.region);
+
+        if (accountIsLiteral && regionIsLiteral) {
+          const expectedSuffix = `-${stack.account}-${stack.region}-an`;
+          if (!props.bucketName.endsWith(expectedSuffix)) {
+            throw new ValidationError(
+              lit`BucketNameMissingAccountRegionalSuffix`,
+              `When 'bucketNamespace' is ACCOUNT_REGIONAL, 'bucketName' must end with '${expectedSuffix}'`,
+              scope,
+            );
+          }
+        } else {
+          if (!props.bucketName.endsWith('-an')) {
+            throw new ValidationError(
+              lit`BucketNameMissingAccountRegionalSuffix`,
+              'When \'bucketNamespace\' is ACCOUNT_REGIONAL, \'bucketName\' must end with \'-<accountId>-<region>-an\'',
+              scope,
+            );
+          }
+        }
+      }
     }
+
     if (props.bucketNamePrefix && props.bucketNamespace !== BucketNamespace.ACCOUNT_REGIONAL) {
       throw new ValidationError(
         lit`BucketNamePrefixRequiresAccountRegional`,
         '\'bucketNamePrefix\' requires \'bucketNamespace\' to be set to ACCOUNT_REGIONAL',
-        scope,
-      );
-    }
-    if (props.bucketNamespace === BucketNamespace.ACCOUNT_REGIONAL && !props.bucketNamePrefix) {
-      throw new ValidationError(
-        lit`AccountRegionalNamespaceRequiresPrefix`,
-        '\'bucketNamespace\' ACCOUNT_REGIONAL requires \'bucketNamePrefix\' to be specified',
         scope,
       );
     }
