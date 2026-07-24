@@ -747,6 +747,10 @@ export class Memory extends MemoryBase {
     // ------------------------------------------------------
     this.__resource = new CfnMemory(this, 'Memory', cfnProps);
 
+    // Expose the CFN resource as the default child so that operations that rely on it
+    // (e.g. `applyRemovalPolicy()`) work as they do on other L2 constructs.
+    this.node.defaultChild = this.__resource;
+
     this.memoryId = this.__resource.attrMemoryId;
     this.memoryArn = this.__resource.attrMemoryArn;
     this.status = this.__resource.attrStatus;
