@@ -805,6 +805,10 @@ export class BrowserCustom extends BrowserCustomBase {
 
     // L1 instantiation
     this.__resource = new agent_core.CfnBrowserCustom(this, 'Resource', cfnProps);
+    // Explicitly set the default child: the construct also creates a ServiceRole
+    // child, so CDK does not auto-assign the Cfn resource as the default child,
+    // which breaks applyRemovalPolicy().
+    this.node.defaultChild = this.__resource;
 
     // Get attributes directly from the CloudFormation resource
     this.browserId = this.__resource.attrBrowserId;
