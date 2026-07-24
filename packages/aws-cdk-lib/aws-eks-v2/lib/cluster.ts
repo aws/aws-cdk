@@ -1014,6 +1014,8 @@ interface AddAccessEntryOptions {
   readonly principal: string;
   readonly policies: IAccessPolicy[];
   readonly accessEntryType?: AccessEntryType;
+  readonly kubernetesGroups?: string[];
+  readonly username?: string;
 }
 
 /**
@@ -1033,6 +1035,20 @@ export interface GrantAccessOptions {
    * @default AccessEntryType.STANDARD - Standard access entry type that supports access policies
    */
   readonly accessEntryType?: AccessEntryType;
+  /**
+   * The Kubernetes groups to associate with the access entry.
+   *
+   * You cannot specify Kubernetes groups for access entries of type `EC2_LINUX` or `EC2_WINDOWS`.
+   *
+   * @default - No Kubernetes groups are associated with the access entry
+   */
+  readonly kubernetesGroups?: string[];
+  /**
+   * The Kubernetes username to associate with the access entry.
+   *
+   * @default - Amazon EKS automatically generates a username
+   */
+  readonly username?: string;
 }
 
 /**
@@ -1549,6 +1565,8 @@ export class Cluster extends ClusterBase {
       principal,
       policies: accessPolicies,
       accessEntryType: options?.accessEntryType,
+      kubernetesGroups: options?.kubernetesGroups,
+      username: options?.username,
     });
   }
 
@@ -1932,6 +1950,8 @@ export class Cluster extends ClusterBase {
         cluster: this,
         accessPolicies: props.policies,
         accessEntryType: props.accessEntryType,
+        kubernetesGroups: props.kubernetesGroups,
+        username: props.username,
       });
       this.accessEntries.set(props.principal, newEntry);
     }
