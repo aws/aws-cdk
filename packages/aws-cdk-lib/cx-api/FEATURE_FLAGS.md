@@ -117,6 +117,7 @@ Flags come in three types:
 | [@aws-cdk/core:annotationsInValidationReport](#aws-cdkcoreannotationsinvalidationreport) | Include construct annotations (warnings and errors) in the policy validation report | 2.253.0 | config |
 | [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-region stack references are strong, weak, or both | 2.254.0 | config |
 | [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | 2.259.0 | new default |
+| [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | 2.262.0 | config |
 | [@aws-cdk/aws-cloudwatch:compositeAlarmGeneratedName](#aws-cdkaws-cloudwatchcompositealarmgeneratedname) | When enabled, CompositeAlarm lets CloudFormation generate the alarm name instead of using a stack-static name | V2NEXT | fix |
 
 <!-- END table -->
@@ -214,6 +215,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
       "aws",
       "aws-cn"
     ],
+    "@aws-cdk/core:validateAgainstDefaultRules": true,
     "@aws-cdk/core:validateSnapshotRemovalPolicy": true,
     "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false,
     "@aws-cdk/customresources:installLatestAwsSdkDefault": false,
@@ -2505,31 +2507,6 @@ The flag is read from the **consumer** stack's context, not the producer's.
 | 2.254.0 | `"strong"` | `"weak"` |
 
 
-### @aws-cdk/aws-cloudwatch:compositeAlarmGeneratedName
-
-*When enabled, CompositeAlarm lets CloudFormation generate the alarm name instead of using a stack-static name*
-
-Flag type: Backwards incompatible bugfix
-
-When a `compositeAlarmName` is not provided, the `CompositeAlarm` construct currently
-sets the `AlarmName` property to a name derived from the construct path. Because that name
-is static within the synthesized template, deploying the same template more than once into
-the same account and region (for example via AWS Service Catalog) fails with a name conflict.
-
-When this feature flag is enabled and no `compositeAlarmName` is provided, the construct
-omits the `AlarmName` property and lets CloudFormation generate a unique physical name,
-matching the behavior of the `Alarm` construct. Providing `compositeAlarmName` explicitly
-is unaffected.
-
-
-| Since | Unset behaves like | Recommended value |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
-
-**Compatibility with old behavior:** Pass an explicit `compositeAlarmName`, or disable the feature flag, to keep the generated stack-static alarm name.
-
-
 ### @aws-cdk/aws-eks:defaultToAL2023
 
 *Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2*
@@ -2556,6 +2533,51 @@ When disabled, the default AMI types remain AL2 for backward compatibility.
 **Compatibility with old behavior:** Explicitly set `amiType` to the desired AL2 type (e.g., `NodegroupAmiType.AL2_X86_64`) in your nodegroup configuration.
 
 **Warning**: Enabling this flag on existing stacks will cause node group replacement, which terminates running pods. To migrate safely, first pin existing node groups to their current amiType explicitly, then enable the flag for new node groups.
+
+
+### @aws-cdk/core:validateAgainstDefaultRules
+
+*Treat CloudFormation Validate findings as errors*
+
+Flag type: Configuration option
+
+The CDK always validates synthesized templates against a default set of CloudFormation
+rules during synthesis. These rules include schema validation, best-practice linting,
+and common misconfiguration detection.
+
+When this flag is explicitly set to `true`, violations are treated as errors and will
+fail synthesis. When unconfigured, violations are reported as warnings only.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.262.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-cloudwatch:compositeAlarmGeneratedName
+
+*When enabled, CompositeAlarm lets CloudFormation generate the alarm name instead of using a stack-static name*
+
+Flag type: Backwards incompatible bugfix
+
+When a `compositeAlarmName` is not provided, the `CompositeAlarm` construct currently
+sets the `AlarmName` property to a name derived from the construct path. Because that name
+is static within the synthesized template, deploying the same template more than once into
+the same account and region (for example via AWS Service Catalog) fails with a name conflict.
+
+When this feature flag is enabled and no `compositeAlarmName` is provided, the construct
+omits the `AlarmName` property and lets CloudFormation generate a unique physical name,
+matching the behavior of the `Alarm` construct. Providing `compositeAlarmName` explicitly
+is unaffected.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Pass an explicit `compositeAlarmName`, or disable the feature flag, to keep the generated stack-static alarm name.
 
 
 <!-- END details -->
