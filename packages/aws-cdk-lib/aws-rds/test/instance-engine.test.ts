@@ -1,9 +1,9 @@
+import { acknowledgeTestValidationRules } from './util';
 import { Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import * as rds from '../lib';
-import { acknowledgeTestValidationRules } from './util';
 
 describe('instance engine', () => {
   test('default parameterGroupFamily for versionless MariaDB instance engine is not defined', () => {
