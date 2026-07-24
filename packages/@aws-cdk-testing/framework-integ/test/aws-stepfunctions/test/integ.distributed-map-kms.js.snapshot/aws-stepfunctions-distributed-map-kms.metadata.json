@@ -1,0 +1,445 @@
+{
+  "/aws-stepfunctions-distributed-map-kms": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distributed-map-kms.js:49:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-distributed-map-kms/InputKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-stepfunctions-distributed-map-kms/OutputKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-stepfunctions-distributed-map-kms/InputBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryption": "KMS",
+        "encryptionKey": "*",
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-stepfunctions-distributed-map-kms/OutputBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryption": "KMS",
+        "encryptionKey": "*",
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-stepfunctions-distributed-map-kms/StateMachine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "definitionBody": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-stepfunctions-distributed-map-kms/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distributed-map-kms.js:53:5)"
+      ]
+    }
+  ],
+  "/aws-stepfunctions-distributed-map-kms/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distributed-map-kms.js:53:5)"
+      ]
+    }
+  ],
+  "/aws-stepfunctions-distributed-map-kms/InputKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InputKey9131D139"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Key (packages/aws-cdk-lib/aws-kms/lib/key.js:651:30)",
+        "new Key (packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DistributedMapKmsStack (packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distributed-map-kms.js:12:26)",
+        "<anonymous> (packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distributed-map-kms.js:49:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-distributed-map-kms/OutputKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OutputKeyFDFE7A84"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Key (packages/aws-cdk-lib/aws-kms/lib/key.js:651:30)",
+        "new Key (packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DistributedMapKmsStack (packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distributed-map-kms.js:15:27)",
+        "<anonymous> (packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distributed-map-kms.js:49:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-distributed-map-kms/InputBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InputBucket3BF8630A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
+        "new Bucket (packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DistributedMapKmsStack (packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distributed-map-kms.js:18:29)",
+        "<anonymous> (packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distributed-map-kms.js:49:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-distributed-map-kms/OutputBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OutputBucket7114EB27"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
+        "new Bucket (packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DistributedMapKmsStack (packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distributed-map-kms.js:23:30)",
+        "<anonymous> (packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distributed-map-kms.js:49:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-distributed-map-kms/StateMachine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-stepfunctions-distributed-map-kms/StateMachine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachine2E01A3A5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new StateMachine (packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.js:447:30)",
+        "new StateMachine (packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DistributedMapKmsStack (packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distributed-map-kms.js:39:9)",
+        "<anonymous> (packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distributed-map-kms.js:49:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-distributed-map-kms/StateMachine/DistributedMapPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-stepfunctions-distributed-map-kms/StateMachine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRoleB840431D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new StateMachine (packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.js:392:39)",
+        "new StateMachine (packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DistributedMapKmsStack (packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distributed-map-kms.js:39:9)",
+        "<anonymous> (packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distributed-map-kms.js:49:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-distributed-map-kms/StateMachine/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-stepfunctions-distributed-map-kms/StateMachine/DistributedMapPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineDistributedMapPolicy57C9D8C2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "StateGraph.bind (packages/aws-cdk-lib/aws-stepfunctions/lib/state-graph.js:225:38)",
+        "new StateMachine (packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.js:461:23)",
+        "new StateMachine (packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DistributedMapKmsStack (packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distributed-map-kms.js:39:9)",
+        "<anonymous> (packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distributed-map-kms.js:49:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-distributed-map-kms/StateMachine/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRoleDefaultPolicyDF1E6607"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.addToRolePolicy (packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.js:484:23)",
+        "WrappedClass.<anonymous> (packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new StateMachine (packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.js:402:26)",
+        "new StateMachine (packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DistributedMapKmsStack (packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distributed-map-kms.js:39:9)"
+      ]
+    }
+  ]
+}
