@@ -913,8 +913,8 @@ appmesh.Mesh.fromMeshName(this, 'imported-mesh', 'abc');
 
 ## IAM Grants
 
-`VirtualNode` and `VirtualGateway` have a `grants` property that provides a `streamAggregatedResources` 
-methods that grant identities that are running Envoy access to stream generated config from App Mesh.
+`VirtualNode` and `VirtualGateway` (and their corresponding interfaces `IVirtualNode` and `IVirtualGateway`) have a `grants` property that provides a `streamAggregatedResources` 
+method that grants identities running Envoy access to stream generated config from App Mesh.
 
 ```ts
 declare const mesh: appmesh.Mesh;
