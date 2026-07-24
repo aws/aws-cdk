@@ -554,7 +554,9 @@
    },
    "DependsOn": [
     "CertificateActivation"
-   ]
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "ClusterEB0386A7": {
    "Type": "AWS::MSK::Cluster",
