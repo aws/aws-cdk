@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.cx_api"
+    },
+    "ruby": {
+      "module": "AWSCDK::CXAPI"
     }
   }
 }

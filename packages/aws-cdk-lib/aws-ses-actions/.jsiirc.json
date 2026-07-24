@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_ses_actions"
+    },
+    "ruby": {
+      "module": "AWSCDK::SESActions"
     }
   }
 }

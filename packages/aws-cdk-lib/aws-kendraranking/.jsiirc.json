@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_kendraranking"
+    },
+    "ruby": {
+      "module": "AWSCDK::KendraRanking"
     }
   }
 }

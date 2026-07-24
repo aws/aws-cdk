@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_eventschemas"
+    },
+    "ruby": {
+      "module": "AWSCDK::EventSchemas"
     }
   }
 }

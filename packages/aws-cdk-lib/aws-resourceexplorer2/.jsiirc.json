@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_resourceexplorer2"
+    },
+    "ruby": {
+      "module": "AWSCDK::ResourceExplorer2"
     }
   }
 }
