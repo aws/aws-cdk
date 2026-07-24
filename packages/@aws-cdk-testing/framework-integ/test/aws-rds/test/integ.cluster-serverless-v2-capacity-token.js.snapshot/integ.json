@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "integ-test-serverless-v2-capacity-token/DefaultTest": {
+      "stacks": [
+        "integ-aurora-serverlessv2-cluster-capacity-token"
+      ],
+      "assertionStack": "integ-test-serverless-v2-capacity-token/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestserverlessv2capacitytokenDefaultTestDeployAssert39BD04C8"
+    }
+  },
+  "minimumCliVersion": "2.1123.0"
+}
