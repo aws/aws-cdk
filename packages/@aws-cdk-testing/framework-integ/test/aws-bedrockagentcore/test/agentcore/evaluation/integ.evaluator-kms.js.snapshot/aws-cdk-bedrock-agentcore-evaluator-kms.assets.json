@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "03788cffcaf7157dfba382900de902caad2231bf329995d600905151a3a64882": {
+      "displayName": "aws-cdk-bedrock-agentcore-evaluator-kms Template",
+      "source": {
+        "path": "aws-cdk-bedrock-agentcore-evaluator-kms.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-771e5e9d": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "03788cffcaf7157dfba382900de902caad2231bf329995d600905151a3a64882.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
