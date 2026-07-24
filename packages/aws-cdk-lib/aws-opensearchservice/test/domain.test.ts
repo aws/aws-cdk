@@ -11,7 +11,7 @@ import * as route53 from '../../aws-route53';
 import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '../../core';
 import * as cxapi from '../../cx-api';
 import type { DomainProps, NodeOptions } from '../lib';
-import { Domain, EngineVersion, IpAddressType, NodeType, TLSSecurityPolicy } from '../lib';
+import { DeploymentStrategy, Domain, EngineVersion, IpAddressType, NodeType, TLSSecurityPolicy } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -1914,6 +1914,34 @@ each(testedOpenSearchVersions).describe('TLS security policy', (engineVersion) =
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       DomainEndpointOptions: {
         TLSSecurityPolicy: 'Policy-Min-TLS-1-2-PFS-2023-10',
+      },
+    });
+  });
+});
+
+each(testedOpenSearchVersions).describe('deployment strategy', (engineVersion) => {
+  test('DeploymentStrategyOptions is absent when deploymentStrategy is not specified', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      DeploymentStrategyOptions: Match.absent(),
+    });
+  });
+
+  test.each([
+    [DeploymentStrategy.DEFAULT, 'Default'],
+    [DeploymentStrategy.CAPACITY_OPTIMIZED, 'CapacityOptimized'],
+  ])('uses %s when explicitly specified', (strategy, expected) => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      deploymentStrategy: strategy,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      DeploymentStrategyOptions: {
+        DeploymentStrategy: expected,
       },
     });
   });

@@ -457,6 +457,30 @@ export enum IpAddressType {
 }
 
 /**
+ * The deployment strategy for an OpenSearch Service domain.
+ *
+ * Controls how blue/green deployments are performed when sufficient capacity
+ * is not available at update time.
+ *
+ * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-configuration-changes.html#bg-deployment-options
+ */
+export enum DeploymentStrategy {
+  /**
+   * Full swap blue/green. Requires full instance capacity upfront, ensuring
+   * the fastest deployment when capacity is available. Deployment will not
+   * proceed if sufficient capacity cannot be allocated.
+   */
+  DEFAULT = 'Default',
+  /**
+   * Attempts a full blue/green swap first, and if capacity is insufficient,
+   * proceeds with deploying in batches. Ensures deployments can complete even
+   * when capacity is limited. Completion time may increase, as deployment is
+   * done in batches. Recommended for clusters with 30 or more data nodes.
+   */
+  CAPACITY_OPTIMIZED = 'CapacityOptimized',
+}
+
+/**
  * Configuration for a specific node type in OpenSearch domain
  */
 export interface NodeConfig {
@@ -737,6 +761,20 @@ export interface DomainProps {
    * @default - IpAddressType.IPV4
    */
   readonly ipAddressType?: IpAddressType;
+
+  /**
+   * The deployment strategy for the domain.
+   *
+   * Controls how blue/green deployments are performed when sufficient capacity
+   * is not available at update time. Use `CAPACITY_OPTIMIZED` to allow batch
+   * deployment as a fallback. Recommended for clusters with 30 or more data
+   * nodes.
+   *
+   * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-configuration-changes.html#bg-deployment-options
+   *
+   * @default DeploymentStrategy.DEFAULT
+   */
+  readonly deploymentStrategy?: DeploymentStrategy;
 
   /**
    * Specify whether to create a CloudWatch Logs resource policy or not.
@@ -2128,6 +2166,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         autoSoftwareUpdateEnabled: props.enableAutoSoftwareUpdate,
       } : undefined,
       ipAddressType: props.ipAddressType,
+      deploymentStrategyOptions: props.deploymentStrategy !== undefined ? {
+        deploymentStrategy: props.deploymentStrategy,
+      } : undefined,
       aimlOptions: props.s3VectorsEngineEnabled !== undefined ? {
         s3VectorsEngine: {
           enabled: props.s3VectorsEngineEnabled,
