@@ -160,9 +160,11 @@ export class MetricSet<A> {
 
   /**
    * Access all the accumulated timeseries entries
+   *
+   * Metrics are sorted by ascending level, so "Primary" metrics appear first.
    */
   public get entries(): ReadonlyArray<MetricEntry<A>> {
-    return this.metrics;
+    return this.metrics.sort((a, b) => a.level - b.level);
   }
 
   /**
