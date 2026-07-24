@@ -1,0 +1,256 @@
+{
+  "/aws-cdk-glue-iceberg": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/@aws-cdk/aws-glue-alpha/test/integ.iceberg-table.js:8:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-glue-iceberg/WarehouseBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy",
+        "autoDeleteObjects": true
+      }
+    }
+  ],
+  "/aws-cdk-glue-iceberg/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/aws-cdk-glue-iceberg/IcebergDatabase": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-glue-iceberg/OrdersTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-glue-iceberg/EventsTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-glue-iceberg/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/@aws-cdk/aws-glue-alpha/test/integ.iceberg-table.js:87:5)"
+      ]
+    }
+  ],
+  "/aws-cdk-glue-iceberg/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/@aws-cdk/aws-glue-alpha/test/integ.iceberg-table.js:87:5)"
+      ]
+    }
+  ],
+  "/aws-cdk-glue-iceberg/WarehouseBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WarehouseBucket0E783396"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
+        "new Bucket (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/@aws-cdk/aws-glue-alpha/test/integ.iceberg-table.js:9:16)",
+        "...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/aws-cdk-glue-iceberg/WarehouseBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/aws-cdk-glue-iceberg/WarehouseBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-glue-iceberg/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:98:25)",
+        "new AutoDeleteObjectsProvider (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:24:9)",
+        "AutoDeleteObjectsProvider.getOrCreateProvider (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:21:28)",
+        "BucketAutoDeleteObjects.applyTo (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:49:95)",
+        "applyMixin (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "WrappedClass.enableAutoDeleteObjects (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2163:22)",
+        "new Bucket (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
+        "new Bucket (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
+      ]
+    }
+  ],
+  "/aws-cdk-glue-iceberg/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:120:24)",
+        "new AutoDeleteObjectsProvider (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:24:9)",
+        "AutoDeleteObjectsProvider.getOrCreateProvider (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:21:28)",
+        "BucketAutoDeleteObjects.applyTo (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:49:95)",
+        "applyMixin (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "WrappedClass.enableAutoDeleteObjects (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2163:22)",
+        "new Bucket (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
+        "new Bucket (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
+      ]
+    }
+  ],
+  "/aws-cdk-glue-iceberg/IcebergDatabase/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IcebergDatabase3C00FF7B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Database (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/@aws-cdk/aws-glue-alpha/lib/database.js:129:29)",
+        "new Database (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/@aws-cdk/aws-glue-alpha/test/integ.iceberg-table.js:13:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-glue-iceberg/OrdersTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OrdersTable315BB997"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new IcebergTable (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/@aws-cdk/aws-glue-alpha/lib/iceberg-table.js:253:29)",
+        "new IcebergTable (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/@aws-cdk/aws-glue-alpha/test/integ.iceberg-table.js:16:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-glue-iceberg/EventsTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventsTableD24865E5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new IcebergTable (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/@aws-cdk/aws-glue-alpha/lib/iceberg-table.js:253:29)",
+        "new IcebergTable (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/@aws-cdk/aws-glue-alpha/test/integ.iceberg-table.js:66:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-glue-iceberg/WarehouseBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WarehouseBucketPolicy998829DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BucketPolicy (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:177:29)",
+        "new BucketPolicy (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.maybeAutoCreatePolicy (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/aws-s3/lib/bucket.js:288:31)",
+        "WrappedClass.enableAutoDeleteObjects (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2162:18)",
+        "new Bucket (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
+        "new Bucket (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/@aws-cdk/aws-glue-alpha/test/integ.iceberg-table.js:9:16)",
+        "...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/aws-cdk-glue-iceberg/WarehouseBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WarehouseBucketAutoDeleteObjectsCustomResource9FAA6F50"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "BucketAutoDeleteObjects.applyTo (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:69:32)",
+        "applyMixin (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "WrappedClass.enableAutoDeleteObjects (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2163:22)",
+        "new Bucket (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
+        "new Bucket (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
+      ]
+    }
+  ]
+}
