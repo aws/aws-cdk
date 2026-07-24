@@ -839,6 +839,7 @@
       "ANTHROPIC_CLAUDE_OPUS_4_7",
       "ANTHROPIC_CLAUDE_OPUS_4_8",
       "ANTHROPIC_CLAUDE_SONNET_4_6",
+      "ANTHROPIC_CLAUDE_SONNET_5",
       "ANTHROPIC_CLAUDE_INSTANT_V1",
       "ANTHROPIC_CLAUDE_INSTANT_V1_2_100K",
       "COHERE_COMMAND_V14",
@@ -1091,7 +1092,8 @@
       "ALL_VIEWER",
       "ELEMENTAL_MEDIA_TAILOR",
       "ALL_VIEWER_AND_CLOUDFRONT_2022",
-      "ALL_VIEWER_EXCEPT_HOST_HEADER"
+      "ALL_VIEWER_EXCEPT_HOST_HEADER",
+      "HOST_HEADER_ONLY"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/response-headers-policy.ts": {

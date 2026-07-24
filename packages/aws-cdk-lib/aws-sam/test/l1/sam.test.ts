@@ -4,6 +4,10 @@ import * as sam from '../../lib';
 
 test('generation of alts from CfnFunction', () => {
   const app = new cdk.App();
+  cdk.Validations.of(app).acknowledge({
+    id: 'CloudFormation-Validate::E0001',
+    reason: 'Function is incomplete',
+  });
   const stack = new cdk.Stack(app, 'Stack');
   new sam.CfnFunction(stack, 'MyAPI', {
     codeUri: 'build/',
