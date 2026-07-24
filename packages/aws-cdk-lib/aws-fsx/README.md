@@ -178,11 +178,64 @@ fs.connections.allowDefaultPortFrom(inst);
 
 ### Lustre Data Repository Association support
 
-The LustreFilesystem Construct supports one [Data Repository Association](https://docs.aws.amazon.com/fsx/latest/LustreGuide/fsx-data-repositories.html) (DRA) to an S3 bucket.  This allows Lustre hierarchical storage management to S3 buckets, which in turn makes it possible to use S3 as a permanent backing store, and use FSx for Lustre as a temporary high performance cache.
+A [Data Repository Association](https://docs.aws.amazon.com/fsx/latest/LustreGuide/overview-dra-data-repo.html) (DRA)
+links an S3 bucket (or a prefix within one) to a path on the Lustre file system. This enables bidirectional data
+movement: files written to the file system path can be automatically exported to S3, and objects appearing in S3 can
+be automatically imported into the file system.
 
-Note: CloudFormation does not currently support for `PERSISTENT_2` filesystems, and so neither does CDK.
+Data repository associations are supported on FSx for Lustre 2.12 and 2.15 file systems with `SCRATCH_2`,
+`PERSISTENT_1`, or `PERSISTENT_2` deployment types. They are **not** supported on `SCRATCH_1` file systems.
 
-The following example illustrates setting up a DRA to an S3 bucket, including automated metadata import whenever a file is changed, created or deleted in the S3 bucket:
+> **Note:** DRAs and the legacy `importPath`/`exportPath`/`autoImportPolicy` properties on `LustreConfiguration` are
+> mutually exclusive. Use one approach or the other, not both.
+
+#### Using the L2 DataRepositoryAssociation construct (recommended)
+
+```ts
+import { aws_s3 as s3 } from 'aws-cdk-lib';
+
+declare const vpc: ec2.Vpc;
+declare const bucket: s3.Bucket;
+
+const fileSystem = new fsx.LustreFileSystem(this, 'FsxLustreFileSystem', {
+  lustreConfiguration: { deploymentType: fsx.LustreDeploymentType.SCRATCH_2 },
+  storageCapacityGiB: 1200,
+  vpc,
+  vpcSubnet: vpc.privateSubnets[0],
+  fileSystemTypeVersion: fsx.FileSystemTypeVersion.V_2_15,
+});
+
+new fsx.DataRepositoryAssociation(this, 'DataRepositoryAssociation', {
+  fileSystem,
+  fileSystemPath: '/data',
+  bucket,
+  bucketPrefix: 'my-prefix',
+  s3: {
+    autoImportPolicy: {
+      events: [
+        fsx.DataRepositoryEventType.NEW,
+        fsx.DataRepositoryEventType.CHANGED,
+        fsx.DataRepositoryEventType.DELETED,
+      ],
+    },
+    autoExportPolicy: {
+      events: [
+        fsx.DataRepositoryEventType.NEW,
+        fsx.DataRepositoryEventType.CHANGED,
+        fsx.DataRepositoryEventType.DELETED,
+      ],
+    },
+  },
+});
+```
+
+The `DataRepositoryAssociation` construct automatically grants `fsx.amazonaws.com` read/write access to the bucket and
+ensures the bucket policy is created before the association via an explicit CloudFormation dependency.
+
+#### Using legacy importPath/exportPath (SCRATCH_1 and PERSISTENT_1 only)
+
+The older `importPath`/`exportPath` approach on `LustreConfiguration` is still available for `SCRATCH_1` and older
+`PERSISTENT_1` workloads, but Data Repository Associations are preferred for all new file systems:
 
 ```ts
 import { aws_s3 as s3 } from 'aws-cdk-lib';
@@ -197,7 +250,7 @@ const lustreConfiguration = {
   autoImportPolicy: fsx.LustreAutoImportPolicy.NEW_CHANGED_DELETED,
 };
 
-const fs = new fsx.LustreFileSystem(this, "FsxLustreFileSystem", {
+const fs = new fsx.LustreFileSystem(this, 'FsxLustreFileSystem', {
   vpc: vpc,
   vpcSubnet: vpc.privateSubnets[0],
   storageCapacityGiB: 1200,
