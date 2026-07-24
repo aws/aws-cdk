@@ -53,8 +53,8 @@ export class ApiKeyCredentialLocation {
   public static header(config?: ApiKeyAdditionalConfiguration) {
     return new ApiKeyCredentialLocation(
       ApiKeyCredentialLocationType.HEADER,
-      config?.credentialParameterName ?? 'Authorization',
-      config?.credentialPrefix ?? 'Bearer ',
+      config?.credentialParameterName !== undefined ? config.credentialParameterName : 'Authorization',
+      config?.credentialPrefix !== undefined ? config.credentialPrefix : 'Bearer ',
     );
   }
 
@@ -66,7 +66,7 @@ export class ApiKeyCredentialLocation {
   public static queryParameter(config?: ApiKeyAdditionalConfiguration) {
     return new ApiKeyCredentialLocation(
       ApiKeyCredentialLocationType.QUERY_PARAMETER,
-      config?.credentialParameterName ?? 'api_key',
+      config?.credentialParameterName !== undefined ? config.credentialParameterName : 'api_key',
       config?.credentialPrefix,
     );
   }

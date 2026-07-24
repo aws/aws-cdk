@@ -403,6 +403,34 @@ describe('GatewayCredentialProvider from Token Vault constructs', () => {
     expect(viaConstruct._render()).toEqual(viaArn._render());
   });
 
+  test('ApiKeyCredentialLocation.header preserves empty string credentialPrefix and credentialParameterName', () => {
+    // Regression test for https://github.com/aws/aws-cdk/issues/37606.
+    // JSii serializes empty strings as undefined in some language bindings (e.g. Java),
+    // causing the ?? operator to fall back to the default. The fix uses !== undefined
+    // checks so that an explicitly-supplied empty string is passed through unchanged.
+    const locEmptyPrefix = ApiKeyCredentialLocation.header({ credentialPrefix: '' });
+    expect(locEmptyPrefix.credentialPrefix).toBe('');
+
+    const locEmptyName = ApiKeyCredentialLocation.header({ credentialParameterName: '' });
+    expect(locEmptyName.credentialParameterName).toBe('');
+
+    // Omitting the config entirely still uses the defaults
+    const locDefaults = ApiKeyCredentialLocation.header();
+    expect(locDefaults.credentialPrefix).toBe('Bearer ');
+    expect(locDefaults.credentialParameterName).toBe('Authorization');
+
+    // queryParameter: empty prefix and name both preserved
+    const qpEmptyPrefix = ApiKeyCredentialLocation.queryParameter({ credentialPrefix: '' });
+    expect(qpEmptyPrefix.credentialPrefix).toBe('');
+
+    const qpEmptyName = ApiKeyCredentialLocation.queryParameter({ credentialParameterName: '' });
+    expect(qpEmptyName.credentialParameterName).toBe('');
+
+    const qpDefaults = ApiKeyCredentialLocation.queryParameter();
+    expect(qpDefaults.credentialParameterName).toBe('api_key');
+    expect(qpDefaults.credentialPrefix).toBeUndefined();
+  });
+
   test('fromOauthIdentity matches fromOauthIdentityArn for the same binding', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {
