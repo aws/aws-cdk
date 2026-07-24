@@ -237,6 +237,13 @@ export class Runtime {
   });
 
   /**
+   * The Java 8 AL2023 runtime (java8.al2023)
+   */
+  public static readonly JAVA_8_AL2023 = new Runtime('java8.al2023', RuntimeFamily.JAVA, {
+    supportsCodeGuruProfiling: true,
+  });
+
+  /**
    * The Java 11 runtime (java11)
    */
   public static readonly JAVA_11 = new Runtime('java11', RuntimeFamily.JAVA, {
@@ -245,9 +252,25 @@ export class Runtime {
   });
 
   /**
+   * The Java 11 AL2023 runtime (java11.al2023)
+   */
+  public static readonly JAVA_11_AL2023 = new Runtime('java11.al2023', RuntimeFamily.JAVA, {
+    supportsCodeGuruProfiling: true,
+    supportsSnapStart: true,
+  });
+
+  /**
    * The Java 17 runtime (java17)
    */
   public static readonly JAVA_17 = new Runtime('java17', RuntimeFamily.JAVA, {
+    supportsCodeGuruProfiling: true,
+    supportsSnapStart: true,
+  });
+
+  /**
+   * The Java 17 AL2023 runtime (java17.al2023)
+   */
+  public static readonly JAVA_17_AL2023 = new Runtime('java17.al2023', RuntimeFamily.JAVA, {
     supportsCodeGuruProfiling: true,
     supportsSnapStart: true,
   });
