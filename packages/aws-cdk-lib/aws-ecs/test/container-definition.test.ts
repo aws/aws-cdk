@@ -1344,6 +1344,68 @@ describe('container definition', () => {
     });
   });
 
+  test('throws when container has more than 100 environment variables via props', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    const environment: { [key: string]: string } = {};
+    for (let i = 1; i <= 101; i++) {
+      environment[`VAR_${i}`] = `value${i}`;
+    }
+
+    // THEN
+    expect(() => {
+      taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        environment,
+      });
+    }).toThrow(/Container has 101 environment variables, but the limit is 100 per container/);
+  });
+
+  test('throws when addEnvironment exceeds 100 environment variables', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    const environment: { [key: string]: string } = {};
+    for (let i = 1; i <= 100; i++) {
+      environment[`VAR_${i}`] = `value${i}`;
+    }
+
+    const container = taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      environment,
+    });
+
+    // THEN
+    expect(() => {
+      container.addEnvironment('VAR_101', 'value101');
+    }).toThrow(/Container has 101 environment variables, but the limit is 100 per container/);
+  });
+
+  test('does not throw when container has exactly 100 environment variables', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    const environment: { [key: string]: string } = {};
+    for (let i = 1; i <= 100; i++) {
+      environment[`VAR_${i}`] = `value${i}`;
+    }
+
+    // WHEN / THEN
+    expect(() => {
+      taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        environment,
+      });
+    }).not.toThrow();
+  });
+
   test('can add port mappings to the container definition by props', () => {
     // GIVEN
     const stack = new cdk.Stack();
