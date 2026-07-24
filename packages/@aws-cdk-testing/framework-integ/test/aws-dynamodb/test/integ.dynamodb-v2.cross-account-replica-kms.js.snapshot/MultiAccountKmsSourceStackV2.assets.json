@@ -1,0 +1,21 @@
+{
+  "version": "50.0.0",
+  "files": {
+    "2f28ff3cdebecdbf1fc76afab289a9097c8f9b50ac7cc1ec04b3eb5e441e44cf": {
+      "displayName": "MultiAccountKmsSourceStackV2 Template",
+      "source": {
+        "path": "MultiAccountKmsSourceStackV2.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "111111111111-eu-west-1-f36b6746": {
+          "bucketName": "cdk-hnb659fds-assets-111111111111-eu-west-1",
+          "objectKey": "2f28ff3cdebecdbf1fc76afab289a9097c8f9b50ac7cc1ec04b3eb5e441e44cf.json",
+          "region": "eu-west-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::111111111111:role/cdk-hnb659fds-file-publishing-role-111111111111-eu-west-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

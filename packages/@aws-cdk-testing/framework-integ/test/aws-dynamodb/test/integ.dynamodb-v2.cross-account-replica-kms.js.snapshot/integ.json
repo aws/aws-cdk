@@ -1,0 +1,14 @@
+{
+  "version": "50.0.0",
+  "testCases": {
+    "MultiAccountKmsReplicaIntegTestV2/DefaultTest": {
+      "stacks": [
+        "MultiAccountKmsSourceStackV2",
+        "MultiAccountKmsReplicaStackV2"
+      ],
+      "assertionStack": "MultiAccountKmsReplicaIntegTestV2/DefaultTest/DeployAssert",
+      "assertionStackName": "MultiAccountKmsReplicaIntegTestV2DefaultTestDeployAssert93398940"
+    }
+  },
+  "minimumCliVersion": "2.1105.0"
+}
