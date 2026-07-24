@@ -50,41 +50,41 @@ class EksGrantAccessWithType extends Stack {
 
     new eks.AccessEntry(this, 'EC2LinuxAccess', {
       cluster,
-      principal: ec2LinuxRole.roleArn,
+      iamPrincipal: ec2LinuxRole,
       accessPolicies: [],
       accessEntryType: eks.AccessEntryType.EC2_LINUX,
     });
 
-    // Test 2: grantAccess with STANDARD type and access policies
+    // Test 2: AccessEntry with STANDARD type and access policies
     const standardRole = new iam.Role(this, 'StandardRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
 
-    cluster.grantAccess(
-      'StandardAccess',
-      standardRole.roleArn,
-      [
+    new eks.AccessEntry(cluster, 'StandardAccess', {
+      cluster,
+      iamPrincipal: standardRole,
+      accessPolicies: [
         eks.AccessPolicy.fromAccessPolicyName('AmazonEKSViewPolicy', {
           accessScopeType: eks.AccessScopeType.CLUSTER,
         }),
       ],
-      { accessEntryType: eks.AccessEntryType.STANDARD },
-    );
+      accessEntryType: eks.AccessEntryType.STANDARD,
+    });
 
-    // Test 3: grantAccess without type (backward compatibility - defaults to STANDARD)
+    // Test 3: AccessEntry without type (defaults to STANDARD)
     const defaultRole = new iam.Role(this, 'DefaultRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
 
-    cluster.grantAccess(
-      'DefaultAccess',
-      defaultRole.roleArn,
-      [
+    new eks.AccessEntry(cluster, 'DefaultAccess', {
+      cluster,
+      iamPrincipal: defaultRole,
+      accessPolicies: [
         eks.AccessPolicy.fromAccessPolicyName('AmazonEKSViewPolicy', {
           accessScopeType: eks.AccessScopeType.CLUSTER,
         }),
       ],
-    );
+    });
   }
 }
 

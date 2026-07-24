@@ -6,7 +6,13 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as eks from 'aws-cdk-lib/aws-eks-v2';
 
-class EksStandardAccessEntry extends Stack {
+/**
+ * Integration test for AccessEntry using the `iamPrincipal` property.
+ *
+ * Verifies that IAM roles and users can be passed directly to AccessEntry
+ * via `iamPrincipal` instead of providing a raw ARN string via `principal`.
+ */
+class EksAccessEntryIamPrincipal extends Stack {
   constructor(scope: App, id: string) {
     super(scope, id);
 
@@ -15,6 +21,7 @@ class EksStandardAccessEntry extends Stack {
       natGateways: 1,
       restrictDefaultSecurityGroup: false,
     });
+
     const cluster = new eks.Cluster(this, 'Cluster', {
       vpc,
       defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
@@ -25,11 +32,12 @@ class EksStandardAccessEntry extends Stack {
       },
     });
 
+    // Test 1: AccessEntry with iamPrincipal using an IAM Role
     const role = new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
 
-    new eks.AccessEntry(this, 'AccessEntry', {
+    new eks.AccessEntry(this, 'AccessEntryRole', {
       accessPolicies: [
         eks.AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
           accessScopeType: eks.AccessScopeType.CLUSTER,
@@ -39,6 +47,27 @@ class EksStandardAccessEntry extends Stack {
       iamPrincipal: role,
       accessEntryType: eks.AccessEntryType.STANDARD,
     });
+
+    // Test 2: AccessEntry with iamPrincipal using an IAM User
+    const user = new iam.User(this, 'User');
+
+    new eks.AccessEntry(this, 'AccessEntryUser', {
+      accessPolicies: [
+        eks.AccessPolicy.fromAccessPolicyName('AmazonEKSViewPolicy', {
+          accessScopeType: eks.AccessScopeType.CLUSTER,
+        }),
+      ],
+      cluster,
+      iamPrincipal: user,
+      accessEntryType: eks.AccessEntryType.STANDARD,
+    });
+
+    // Test 3: grantClusterAdminAccess using an IAM Role
+    const adminRole = new iam.Role(this, 'AdminRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    cluster.grantClusterAdminAccess('AdminRoleAccess', adminRole);
   }
 }
 
@@ -48,8 +77,9 @@ const app = new App({
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },
 });
-const stack = new EksStandardAccessEntry(app, 'EKSStandardAccessEntry');
-new integ.IntegTest(app, 'aws-cdk-eks-standard-access-entry-integ', {
+
+const stack = new EksAccessEntryIamPrincipal(app, 'EKSAccessEntryIamPrincipal');
+new integ.IntegTest(app, 'aws-cdk-eks-access-entry-iam-principal-integ', {
   testCases: [stack],
   // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
   diffAssets: false,
