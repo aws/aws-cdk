@@ -1320,7 +1320,7 @@ $ yarn test
 ## Changing Cloud Assembly Schema
 
 If you plan on making changes to the `cloud-assembly-schema` package, make sure you familiarize yourself with
-its own [contribution guide](./packages/@aws-cdk/cloud-assembly-schema/CONTRIBUTING.md)
+its own [contribution guide](https://github.com/aws/aws-cdk-cli/blob/main/packages/@aws-cdk/cloud-assembly-schema/CONTRIBUTING.md)
 
 ## Feature Flags
 
@@ -1419,7 +1419,7 @@ aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/aws-api.ts:7:27 - error TS27
 7 import * as metadata from '../../custom-resources/lib/helpers-internal/sdk-v3-metadata.json';
 ```
 
-This is most probably caused by the fact that your CDK app is using `--prefer-ts-exts` option (which is the [default in new CDK TS-based apps]([url](https://github.com/aws/aws-cdk/issues/7475))). To fix this, try one of the following:
+This is most probably caused by the fact that your CDK app is using `--prefer-ts-exts` option (which is the [default in new CDK TS-based apps](https://github.com/aws/aws-cdk/issues/7475)). To fix this, try one of the following:
 - Don't compile aws-cdk-lib. You can do this by removing `--prefer-ts-exts` from your app command in `cdk.json` - this means you will have to run a build in the lib repo every time you make a change (or use `npm run watch / yarn watch`).
 - Update your `tsconfig.json`. In this case it's going to be adding `"resolveJsonModule": true` as suggested by the error to the `"compilerOptions"` section. If you change the test app, different or more errors might come up that will have a similar resolution.
 
