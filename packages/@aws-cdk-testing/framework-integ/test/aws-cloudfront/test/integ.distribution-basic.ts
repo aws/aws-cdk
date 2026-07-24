@@ -11,6 +11,13 @@ const distribution = new cloudfront.Distribution(stack, 'Dist', {
   defaultBehavior: { origin: new TestOrigin('www.example.com') },
 });
 
+new cloudfront.Distribution(stack, 'DistWithCacheTagConfig', {
+  defaultBehavior: { origin: new TestOrigin('www.example.com') },
+  cacheTagConfig: {
+    headerName: 'x-amz-meta-cache-tag',
+  },
+});
+
 const role1 = new iam.Role(stack, 'Role1', {
   assumedBy: new iam.AccountRootPrincipal(),
 });
