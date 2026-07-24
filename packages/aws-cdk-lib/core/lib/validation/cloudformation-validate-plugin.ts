@@ -1,5 +1,6 @@
+import * as fs from 'fs';
 import { RegoEngine, TemplateFile, version } from '@aws/cloudformation-validate';
-import type { Engine, EngineConfig, RuleInfo, Severity } from '@aws/cloudformation-validate';
+import type { DetailedDiagnostic, Engine, EngineConfig, RuleInfo, Severity } from '@aws/cloudformation-validate';
 import type { PolicyValidationPluginReport, PolicyViolatingResource } from './report';
 import type { IPolicyValidationPlugin, IPolicyValidationContext } from './validation';
 
@@ -124,7 +125,17 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
         severityLevel: 'WARN',
       });
 
+      // Parsed lazily (and only once) because it is only needed to filter out
+      // specific engine false positives, which most templates don't trigger.
+      let parsedTemplate: any;
+      const template = () => parsedTemplate ??= JSON.parse(fs.readFileSync(templatePath, 'utf-8'));
+
       for (const diagnostic of report.diagnostics) {
+        // The engine reports a false positive for ICMP security group rules; drop those findings.
+        if (diagnostic.ruleId === 'E9002' && isIcmpPortRangeFalsePositive(diagnostic, template())) {
+          continue;
+        }
+
         const severity = mapSeverity(diagnostic.severity);
 
         const violatingResource: PolicyViolatingResource = {
@@ -175,6 +186,70 @@ function mapSeverity(severity: Severity): string {
     case 'DEBUG': return 'debug';
     default: return 'warning';
   }
+}
+
+const SECURITY_GROUP_RULE_TYPES = new Set([
+  'AWS::EC2::SecurityGroup',
+  'AWS::EC2::SecurityGroupIngress',
+  'AWS::EC2::SecurityGroupEgress',
+]);
+
+/**
+ * Whether an `E9002` ("FromPort is greater than ToPort") finding is a false positive on an ICMP rule.
+ *
+ * For ICMP/ICMPv6 security group rules the `FromPort`/`ToPort` fields encode the ICMP type and code
+ * (where `-1` means "all"), not an ordered port range, so e.g. `Port.icmpPing()` legitimately renders
+ * `FromPort: 8, ToPort: -1`. The engine's generic range check flags these as errors. We correlate the
+ * finding back to the offending rule (by the ports named in the message, since the property path only
+ * points at the rule array) and drop it only when that rule uses an ICMP protocol, leaving genuine
+ * TCP/UDP range errors — including on the same resource — reported.
+ *
+ * Remove once the engine understands ICMP rules: <https://github.com/aws/aws-cdk/issues/38389>.
+ */
+function isIcmpPortRangeFalsePositive(diagnostic: DetailedDiagnostic, template: any): boolean {
+  if (!diagnostic.resourceType || !SECURITY_GROUP_RULE_TYPES.has(diagnostic.resourceType)) {
+    return false;
+  }
+
+  const match = /FromPort (-?\d+) is greater than ToPort (-?\d+)/.exec(diagnostic.message ?? '');
+  if (!match) {
+    return false;
+  }
+  const fromPort = Number(match[1]);
+  const toPort = Number(match[2]);
+
+  const resource = template?.Resources?.[diagnostic.resourceId ?? ''];
+  if (!resource) {
+    return false;
+  }
+
+  const props = resource.Properties ?? {};
+  // A rule can live in a SecurityGroup's inline ingress/egress arrays, or be the standalone
+  // SecurityGroupIngress/Egress resource's own properties.
+  const rules = [
+    ...(Array.isArray(props.SecurityGroupIngress) ? props.SecurityGroupIngress : []),
+    ...(Array.isArray(props.SecurityGroupEgress) ? props.SecurityGroupEgress : []),
+    props,
+  ];
+
+  return rules.some((rule) => rule != null
+    && isIcmpProtocol(rule.IpProtocol)
+    && Number(rule.FromPort) === fromPort
+    && Number(rule.ToPort) === toPort);
+}
+
+/**
+ * Whether an `IpProtocol` value refers to ICMP or ICMPv6, given either as a name or an IANA number.
+ */
+function isIcmpProtocol(protocol: unknown): boolean {
+  if (typeof protocol === 'string') {
+    const normalized = protocol.toLowerCase();
+    return normalized === 'icmp' || normalized === 'icmpv6' || normalized === '1' || normalized === '58';
+  }
+  if (typeof protocol === 'number') {
+    return protocol === 1 || protocol === 58;
+  }
+  return false;
 }
 
 // Rules that the engine will report but we want to ignore because CDK creates

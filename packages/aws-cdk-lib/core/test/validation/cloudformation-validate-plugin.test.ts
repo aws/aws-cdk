@@ -300,6 +300,82 @@ describe('CloudFormationValidatePlugin', () => {
 
     fs.rmSync(tmpDir, { recursive: true });
   });
+
+  describe('ICMP E9002 false positive suppression', () => {
+    function validateTemplate(resources: Record<string, unknown>) {
+      const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-validate-'));
+      const templatePath = path.join(tmpDir, 'template.json');
+      fs.writeFileSync(templatePath, JSON.stringify({ Resources: resources }));
+      try {
+        return new core.CloudFormationValidatePlugin().validate({
+          templatePaths: [templatePath],
+          stackTemplates: [{ stackConstructPath: 'TestStack', templatePath }],
+          appConstruct: new Construct(undefined as any, ''),
+          accountId: undefined,
+          region: undefined,
+        });
+      } finally {
+        fs.rmSync(tmpDir, { recursive: true });
+      }
+    }
+
+    // For ICMP rules, FromPort/ToPort are the ICMP type/code (with -1 meaning "all"), not an ordered
+    // port range, so the engine's generic "FromPort > ToPort" check (E9002) is a false positive.
+    test.each([
+      ['icmp', 8],
+      ['icmpv6', 128],
+      ['1', 8], // IANA protocol number for ICMP
+    ])('does not report E9002 for an ICMP rule (IpProtocol: %s)', (ipProtocol, fromPort) => {
+      const report = validateTemplate({
+        IcmpSg: {
+          Type: 'AWS::EC2::SecurityGroup',
+          Properties: {
+            GroupDescription: 'test',
+            SecurityGroupIngress: [
+              { CidrIp: '0.0.0.0/0', FromPort: fromPort, IpProtocol: ipProtocol, ToPort: -1 },
+            ],
+          },
+        },
+      });
+
+      expect(report.violations.find(v => v.ruleName === 'E9002')).toBeUndefined();
+    });
+
+    test('still reports E9002 for a genuine TCP range error', () => {
+      const report = validateTemplate({
+        BadTcpSg: {
+          Type: 'AWS::EC2::SecurityGroup',
+          Properties: {
+            GroupDescription: 'test',
+            SecurityGroupIngress: [
+              { CidrIp: '0.0.0.0/0', FromPort: 443, IpProtocol: 'tcp', ToPort: 80 },
+            ],
+          },
+        },
+      });
+
+      expect(report.violations.find(v => v.ruleName === 'E9002')).toBeDefined();
+    });
+
+    test('suppresses only the ICMP finding when a resource mixes ICMP and a bad TCP range', () => {
+      const report = validateTemplate({
+        MixedSg: {
+          Type: 'AWS::EC2::SecurityGroup',
+          Properties: {
+            GroupDescription: 'test',
+            SecurityGroupIngress: [
+              { CidrIp: '0.0.0.0/0', FromPort: 8, IpProtocol: 'icmp', ToPort: -1 },
+              { CidrIp: '0.0.0.0/0', FromPort: 443, IpProtocol: 'tcp', ToPort: 80 },
+            ],
+          },
+        },
+      });
+
+      const e9002 = report.violations.filter(v => v.ruleName === 'E9002');
+      expect(e9002).toHaveLength(1);
+      expect(e9002[0].description).toContain('FromPort 443 is greater than ToPort 80');
+    });
+  });
 });
 
 describe('CDK_VALIDATION environment variable', () => {
