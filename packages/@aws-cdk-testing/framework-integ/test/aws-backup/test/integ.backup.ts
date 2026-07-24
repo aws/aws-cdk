@@ -48,8 +48,10 @@ class TestStack extends Stack {
 
     plan.addSelection('Selection', {
       resources: [
-        backup.BackupResource.fromConstruct(this), // All backupable resources in this construct
-        backup.BackupResource.fromTag('stage', 'prod'), // Resources that are tagged stage=prod
+        backup.BackupResource.fromConstruct(this),
+      ],
+      tagConditions: [
+        { key: 'stage', value: 'prod' },
       ],
     });
 
