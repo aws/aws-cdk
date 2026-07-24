@@ -19,6 +19,14 @@ class ZoneDelegationIamStack extends cdk.Stack {
       resourceName: 'ZoneDelegationStack-*',
     });
 
+    const intermediateRole = new iam.Role(this, 'IntermediateRole', {
+      assumedBy: new iam.AccountRootPrincipal().withConditions({
+        ArnLike: {
+          'aws:PrincipalArn': trusteeRoleArns,
+        },
+      }),
+    });
+
     const delegationRole = new iam.Role(this, 'ZoneDelegationRole', {
       roleName: 'ExampleDelegationRole',
       assumedBy: new iam.AccountRootPrincipal().withConditions({
@@ -28,10 +36,17 @@ class ZoneDelegationIamStack extends cdk.Stack {
       }),
     });
 
+    // Give the intermediate role permission to assume the delegation role
+    intermediateRole.addToPolicy(new iam.PolicyStatement({
+      actions: ['sts:AssumeRole'],
+      resources: [delegationRole.roleArn],
+    }));
+
     const delegationGrant = parentZone.grantDelegation(delegationRole, {
       delegatedZoneNames: [
         'sub1.uniqueexample.com',
         'sub2_*$.uniqueexample.com', // should result in octal codes in iam condition
+        'sub3.uniqueexample.com', // for intermediate role test
       ],
     });
 
@@ -53,6 +68,17 @@ class ZoneDelegationIamStack extends cdk.Stack {
       delegatedZone: subZoneWithSpecialChars,
       parentHostedZoneName: parentZone.zoneName,
       delegationRole: delegationRole,
+    }).node.addDependency(delegationGrant);
+
+    const subZoneWithIntermediateRole = new route53.PublicHostedZone(this, 'SubZoneIntermediateRole', {
+      zoneName: 'sub3.uniqueexample.com',
+    });
+
+    new route53.CrossAccountZoneDelegationRecord(subZoneWithIntermediateRole, 'ZoneDelegation', {
+      delegatedZone: subZoneWithIntermediateRole,
+      parentHostedZoneName: parentZone.zoneName,
+      delegationRole: delegationRole,
+      intermediateRole: intermediateRole,
     }).node.addDependency(delegationGrant);
   }
 }
