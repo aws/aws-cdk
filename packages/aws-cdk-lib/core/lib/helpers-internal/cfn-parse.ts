@@ -24,10 +24,11 @@ import { UnscopedValidationError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
 import { Lazy } from '../lazy';
 import { CfnReference, ReferenceRendering } from '../private/cfn-reference';
+import { stackOf } from '../private/core-construct-finders';
 import { lit } from '../private/literal-string';
 import type { IResolvable } from '../resolvable';
 import type { Validator } from '../runtime';
-import { Stack } from '../stack';
+import type { Stack } from '../stack';
 import { isResolvableObject, Token } from '../token';
 import { undefinedIfAllValuesAreEmpty } from '../util';
 
@@ -366,7 +367,7 @@ export class CfnParser {
 
   public handleAttributes(resource: CfnResource, resourceAttributes: any, logicalId: string): void {
     const cfnOptions = resource.cfnOptions;
-    this.stack = Stack.of(resource);
+    this.stack = stackOf(resource);
 
     const creationPolicy = this.parseCreationPolicy(resourceAttributes.CreationPolicy, logicalId);
     const updatePolicy = this.parseUpdatePolicy(resourceAttributes.UpdatePolicy, logicalId);
