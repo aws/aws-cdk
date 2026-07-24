@@ -109,6 +109,24 @@ describe('default properties', () => {
     stack = new Stack();
   });
 
+  test('tableStreamArn is undefined when no stream is configured', () => {
+    const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY });
+
+    expect(table.tableStreamArn).toBeUndefined();
+  });
+
+  test('tableStreamArn is exposed as a (token) string when a stream is configured', () => {
+    const table = new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      stream: StreamViewType.NEW_AND_OLD_IMAGES,
+    });
+
+    expect(typeof table.tableStreamArn).toBe('string');
+    const resolved = stack.resolve(table.tableStreamArn);
+    expect(resolved['Fn::GetAtt'][0]).toMatch(new RegExp(`^${CONSTRUCT_NAME}`));
+    expect(resolved['Fn::GetAtt'][1]).toEqual('StreamArn');
+  });
+
   test('hash key only', () => {
     new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY });
 

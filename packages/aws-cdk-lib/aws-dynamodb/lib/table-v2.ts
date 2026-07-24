@@ -726,6 +726,10 @@ export class TableV2 extends TableBaseV2 {
 
   public readonly encryptionKey?: IKey;
 
+  public readonly tableStreamArn?: string;
+
+  public readonly tableId?: string;
+
   /**
    * @attribute
    */
@@ -785,16 +789,6 @@ export class TableV2 extends TableBaseV2 {
   @memoizedGetter
   public get tableName(): string {
     return this.getResourceNameAttribute(this.resource.ref);
-  }
-
-  @memoizedGetter
-  public get tableStreamArn(): string | undefined {
-    return this.resource.attrStreamArn;
-  }
-
-  @memoizedGetter
-  public get tableId(): string | undefined {
-    return this.resource.attrTableId;
   }
 
   public constructor(scope: Construct, id: string, props: TablePropsV2) {
@@ -869,6 +863,8 @@ export class TableV2 extends TableBaseV2 {
         : undefined,
       warmThroughput: props.warmThroughput ?? undefined,
     });
+    this.tableStreamArn = this.resource.attrStreamArn;
+    this.tableId = this.resource.attrTableId;
     this.resource.applyRemovalPolicy(props.removalPolicy);
 
     props.replicas?.forEach(replica => this.addReplica(replica));
