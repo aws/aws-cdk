@@ -41,6 +41,7 @@ import {
   TagManager,
   TagType,
   Token,
+  Tokenization,
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import type { IArrayBox, IBox, IMapBox } from '../../core/lib/helpers-internal';
@@ -1603,9 +1604,17 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
     let sourceAccount = sourceStack.account;
     let sourceRegion = sourceStack.region;
 
-    // For imported tables, extract account/region from ARN instead of stack
-    if (!Token.isUnresolved(props.replicaSourceTable!.tableArn)) {
-      const arnParts = this.stack.splitArn(props.replicaSourceTable!.tableArn, ArnFormat.SLASH_RESOURCE_NAME);
+    // For imported tables, extract account/region from the ARN instead of the
+    // stack. The ARN may be partially tokenized (for example a tokenized table
+    // name); splitArn preserves the concrete components, and any component
+    // that is itself a token is skipped by the per-field checks below. Only a
+    // fully opaque ARN (a single token with no literal parts) cannot be split,
+    // in which case we keep the stack-based fallback.
+    const tableArn = props.replicaSourceTable!.tableArn;
+    const arnFragments = Tokenization.reverseString(tableArn);
+    const isOpaqueToken = arnFragments.length === 1 && arnFragments.tokens.length === 1;
+    if (!isOpaqueToken) {
+      const arnParts = this.stack.splitArn(tableArn, ArnFormat.SLASH_RESOURCE_NAME);
       if (arnParts.account) sourceAccount = arnParts.account;
       if (arnParts.region) sourceRegion = arnParts.region;
     }
