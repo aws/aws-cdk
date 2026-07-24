@@ -617,6 +617,15 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
 
   private notifications?: BucketNotifications;
 
+  /**
+   * Whether EventBridge notifications have been enabled on this bucket.
+   *
+   * Tracked on the base class so that, regardless of whether EventBridge is
+   * rendered on the bucket resource or through the notifications custom resource,
+   * a custom resource created later for other targets also configures EventBridge.
+   */
+  protected eventBridgeNotificationsEnabled = false;
+
   protected notificationsHandlerRole?: iam.IRole;
 
   protected notificationsSkipDestinationValidation?: boolean;
@@ -1029,6 +1038,12 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
         handlerRole: this.notificationsHandlerRole,
         skipDestinationValidation: this.notificationsSkipDestinationValidation ?? false,
       });
+      // If EventBridge was enabled before any other notification target was added, the
+      // newly created custom resource must also configure it: its PutBucketNotification
+      // call overwrites the bucket's full notification configuration.
+      if (this.eventBridgeNotificationsEnabled) {
+        this.notifications.enableEventBridgeNotification();
+      }
     }
     cb(this.notifications);
   }
@@ -1072,7 +1087,40 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    * - Object Tags Deleted
    */
   public enableEventBridgeNotification() {
-    this.withNotifications(notifications => notifications.enableEventBridgeNotification());
+    this.eventBridgeNotificationsEnabled = true;
+    if (this.eventBridgeNotificationViaCfnProperty()) {
+      // EventBridge is rendered directly on the bucket resource. We do not need the
+      // notifications custom resource for EventBridge alone. If one already exists for
+      // other targets, it must keep EventBridge configured because its
+      // PutBucketNotification call overwrites the bucket's full notification configuration.
+      if (this.notifications) {
+        this.notifications.enableEventBridgeNotification();
+      }
+    } else {
+      this.withNotifications(notifications => notifications.enableEventBridgeNotification());
+    }
+  }
+
+  /**
+   * Whether EventBridge notifications are rendered directly on the bucket resource's
+   * `NotificationConfiguration` property (true) or provisioned through the notifications
+   * custom resource (false).
+   *
+   * Only concrete, in-stack buckets can render the property directly; imported buckets
+   * and the base class fall back to the custom resource.
+   */
+  protected eventBridgeNotificationViaCfnProperty(): boolean {
+    return false;
+  }
+
+  /**
+   * Whether a notifications custom resource has been created for this bucket.
+   *
+   * When one exists it owns the bucket's full notification configuration, so EventBridge
+   * must be rendered through it rather than directly on the bucket resource.
+   */
+  protected get hasNotificationsResource(): boolean {
+    return this.notifications !== undefined;
   }
 
   /**
@@ -2550,6 +2598,9 @@ export class Bucket extends BucketBase {
       objectLockConfiguration: objectLockConfiguration,
       replicationConfiguration,
       abacStatus: props.abacStatus !== undefined ? (props.abacStatus ? 'Enabled' : 'Disabled') : undefined,
+      notificationConfiguration: this.eventBridgeNotificationViaCfnProperty()
+        ? Lazy.any({ produce: () => this.renderEventBridgeNotificationConfiguration() })
+        : undefined,
     });
     this._resource = resource;
     this.reflection = BucketReflection.of(this);
@@ -2619,6 +2670,25 @@ export class Bucket extends BucketBase {
     if (this.eventBridgeEnabled) {
       this.enableEventBridgeNotification();
     }
+  }
+
+  protected eventBridgeNotificationViaCfnProperty(): boolean {
+    return FeatureFlags.of(this).isEnabled(cxapi.S3_EVENTBRIDGE_NOTIFICATION_VIA_CFN_PROPERTY) ?? false;
+  }
+
+  /**
+   * Renders the bucket's `NotificationConfiguration` for EventBridge enablement.
+   *
+   * Only used when the `@aws-cdk/aws-s3:eventBridgeNotificationViaCfnProperty` feature flag
+   * is enabled. EventBridge is rendered here only when no notifications custom resource
+   * exists; when one does (because Lambda/SQS/SNS targets were added), that custom resource
+   * owns the full notification configuration and already includes EventBridge.
+   */
+  private renderEventBridgeNotificationConfiguration(): CfnBucket.NotificationConfigurationProperty | undefined {
+    if (this.eventBridgeNotificationsEnabled && !this.hasNotificationsResource) {
+      return { eventBridgeConfiguration: { eventBridgeEnabled: true } };
+    }
+    return undefined;
   }
 
   /**
