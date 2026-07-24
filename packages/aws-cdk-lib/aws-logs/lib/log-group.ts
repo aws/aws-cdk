@@ -307,16 +307,19 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
 
   private convertArnPrincipalToAccountId(principal: iam.IPrincipal) {
     if (principal.principalAccount) {
-      // we use ArnPrincipal here because the constructor inserts the argument
-      // into the template without mutating it, which means that there is no
-      // ARN created by this call.
-      return new iam.ArnPrincipal(principal.principalAccount);
+      // Emit the canonical root ARN so CloudFormation drift detection does not
+      // flag a false positive. CloudFormation normalizes bare account IDs to the
+      // root ARN form on the deployed resource, causing permanent drift when CDK
+      // emits only the account ID. Both forms are semantically identical to AWS.
+      const partition = Stack.of(this).partition;
+      return new iam.ArnPrincipal(`arn:${partition}:iam::${principal.principalAccount}:root`);
     }
 
     if (principal instanceof iam.ArnPrincipal && principal.arn !== '*') {
       const parsedArn = Arn.split(principal.arn, ArnFormat.SLASH_RESOURCE_NAME);
       if (parsedArn.account) {
-        return new iam.ArnPrincipal(parsedArn.account);
+        const partition = parsedArn.partition ?? Stack.of(this).partition;
+        return new iam.ArnPrincipal(`arn:${partition}:iam::${parsedArn.account}:root`);
       }
     }
 
