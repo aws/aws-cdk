@@ -1,14 +1,32 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import type { Construct } from 'constructs';
-import { Template } from '../../assertions';
+import { Template, Match } from '../../assertions';
 import type { Metric } from '../../aws-cloudwatch';
 import { Alarm } from '../../aws-cloudwatch';
 import { User } from '../../aws-iam';
+import { Code, Function, Runtime, StartingPosition } from '../../aws-lambda';
+import { DynamoEventSource } from '../../aws-lambda-event-sources';
 import { Key } from '../../aws-kms';
 import type { StackProps } from '../../core';
 import { Stack, App } from '../../core';
 import type { ITable, ITableV2 } from '../lib';
-import { TableV2, AttributeType, TableEncryptionV2, Operation } from '../lib';
+import { TableV2, AttributeType, TableEncryptionV2, Operation, StreamViewType } from '../lib';
+
+/** Collect JSII deprecation warnings emitted by compiled grant modules (not visible via ts-jest TS imports). */
+function tableGrantsDeprecationWarningsFromJsModule(run: () => void): string[] {
+  const warnings: string[] = [];
+  const warnSpy = jest.spyOn(console, 'warn').mockImplementation((first, second) => {
+    warnings.push(String(second ?? first));
+  });
+
+  try {
+    run();
+  } finally {
+    warnSpy.mockRestore();
+  }
+
+  return warnings.filter(w => w.includes('TableGrantsProps'));
+}
 
 function testForKey(stack: Stack) {
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
@@ -1506,6 +1524,139 @@ describe('grants', () => {
     expect(() => {
       table.grantStreamRead(user);
     }).toThrow('No stream ARN found on the table Stack/Table');
+  });
+});
+
+describe('TableGrants initialization (#37221)', () => {
+  test('TableGrants warns when deprecated props are explicitly passed (jsii compiled path)', () => {
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2', account: '123456789012' } });
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { TableGrants } = require('../lib/table-grants.js');
+
+    const warnings = tableGrantsDeprecationWarningsFromJsModule(() => {
+      new TableGrants({
+        table,
+        encryptedResource: table,
+        policyResource: table,
+      });
+    });
+
+    expect(warnings.length).toBeGreaterThan(0);
+    expect(warnings.some(w => w.includes('encryptedResource'))).toBe(true);
+    expect(warnings.some(w => w.includes('policyResource'))).toBe(true);
+  });
+
+  test('TableV2 initializes TableGrants without deprecated props on jsii compiled path', () => {
+    const warnings = tableGrantsDeprecationWarningsFromJsModule(() => {
+      jest.isolateModules(() => {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const { App, Stack } = require('../../core');
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const { TableV2 } = require('../lib/table-v2.js');
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const { AttributeType, StreamViewType } = require('../lib/shared.js');
+
+        const app = new App();
+        const stack = new Stack(app, 'Stack', { env: { region: 'us-west-2', account: '123456789012' } });
+
+        new TableV2(stack, 'Table', {
+          partitionKey: { name: 'pk', type: AttributeType.STRING },
+          dynamoStream: StreamViewType.NEW_IMAGE,
+        });
+
+        app.synth();
+      });
+    });
+
+    expect(warnings).toEqual([]);
+  });
+
+  test('DynamoEventSource on TableV2 preserves stream grants (issue reproduction path)', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack', { env: { region: 'us-west-2', account: '123456789012' } });
+
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      dynamoStream: StreamViewType.NEW_IMAGE,
+    });
+    const fn = new Function(stack, 'Fn', {
+      handler: 'index.handler',
+      runtime: Runtime.NODEJS_LATEST,
+      code: Code.fromInline('exports.handler = async () => {}'),
+    });
+
+    fn.addEventSource(new DynamoEventSource(table, {
+      startingPosition: StartingPosition.LATEST,
+    }));
+
+    app.synth();
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      EventSourceArn: {
+        'Fn::GetAtt': [
+          'TableCD117FA1',
+          'StreamArn',
+        ],
+      },
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'dynamodb:ListStreams',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'TableCD117FA1',
+                'StreamArn',
+              ],
+            },
+          },
+          {
+            Action: [
+              'dynamodb:DescribeStream',
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'TableCD117FA1',
+                'StreamArn',
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('grantReadData on CMK-encrypted TableV2 still grants KMS permissions via auto-discovery', () => {
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2', account: '123456789012' } });
+    const user = new User(stack, 'User');
+    const key = new Key(stack, 'Key');
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      encryption: TableEncryptionV2.customerManagedKey(key),
+    });
+
+    table.grantReadData(user);
+
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: Match.arrayWith(['kms:Decrypt', 'kms:DescribeKey']),
+            Effect: 'Allow',
+          }),
+        ]),
+      },
+    });
   });
 });
 
