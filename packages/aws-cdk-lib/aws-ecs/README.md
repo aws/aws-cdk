@@ -1574,7 +1574,7 @@ const existingNamespace = new cloudmap.PrivateDnsNamespace(this, 'Namespace', {
 const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
 
 // Use the existing namespace as the default
-cluster.addDefaultCloudMapNamespace({
+cluster.addExistingDefaultCloudMapNamespace({
   namespace: existingNamespace,
   useForServiceConnect: true,
 });
@@ -1595,7 +1595,7 @@ const importedNamespace = cloudmap.PrivateDnsNamespace.fromPrivateDnsNamespaceAt
 
 const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
 
-cluster.addDefaultCloudMapNamespace({
+cluster.addExistingDefaultCloudMapNamespace({
   namespace: importedNamespace,
 });
 ```

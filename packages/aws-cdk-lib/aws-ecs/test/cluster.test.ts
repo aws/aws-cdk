@@ -1641,7 +1641,7 @@ describe('cluster', () => {
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
     // WHEN
-    const namespace = cluster.addDefaultCloudMapNamespace({
+    const namespace = cluster.addExistingDefaultCloudMapNamespace({
       namespace: existingNamespace,
     });
 
@@ -1665,7 +1665,7 @@ describe('cluster', () => {
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
     // WHEN
-    const namespace = cluster.addDefaultCloudMapNamespace({
+    const namespace = cluster.addExistingDefaultCloudMapNamespace({
       namespace: existingNamespace,
     });
 
@@ -1689,7 +1689,7 @@ describe('cluster', () => {
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
     // WHEN
-    const namespace = cluster.addDefaultCloudMapNamespace({
+    const namespace = cluster.addExistingDefaultCloudMapNamespace({
       namespace: existingNamespace,
     });
 
@@ -1715,7 +1715,7 @@ describe('cluster', () => {
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
     // WHEN
-    const namespace = cluster.addDefaultCloudMapNamespace({
+    const namespace = cluster.addExistingDefaultCloudMapNamespace({
       namespace: importedNamespace,
     });
 
@@ -1740,7 +1740,7 @@ describe('cluster', () => {
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
     // WHEN
-    cluster.addDefaultCloudMapNamespace({
+    cluster.addExistingDefaultCloudMapNamespace({
       namespace: existingNamespace,
       useForServiceConnect: true,
     });
@@ -1755,7 +1755,7 @@ describe('cluster', () => {
     });
   });
 
-  test('throws when both namespace and name are specified', () => {
+  test('fails when addExistingDefaultCloudMapNamespace is called twice', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1766,27 +1766,31 @@ describe('cluster', () => {
     });
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addExistingDefaultCloudMapNamespace({ namespace: existingNamespace });
 
     // THEN
     expect(() => {
-      cluster.addDefaultCloudMapNamespace({
-        namespace: existingNamespace,
-        name: 'foo.com',
-      });
-    }).toThrow(/Cannot specify both "namespace" and "name"/);
+      cluster.addExistingDefaultCloudMapNamespace({ namespace: existingNamespace });
+    }).toThrow(/Can only add default namespace once./);
   });
 
-  test('throws when neither namespace nor name is specified', () => {
+  test('fails when addExistingDefaultCloudMapNamespace is called after addDefaultCloudMapNamespace', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
+    const existingNamespace = new cloudmap.PrivateDnsNamespace(stack, 'ExistingNamespace', {
+      name: 'existing.local',
+      vpc,
+    });
+
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addDefaultCloudMapNamespace({ name: 'created.local' });
 
     // THEN
     expect(() => {
-      cluster.addDefaultCloudMapNamespace({});
-    }).toThrow(/Must specify either "namespace" or "name"/);
+      cluster.addExistingDefaultCloudMapNamespace({ namespace: existingNamespace });
+    }).toThrow(/Can only add default namespace once./);
   });
 
   test('export/import of a cluster with a namespace', () => {

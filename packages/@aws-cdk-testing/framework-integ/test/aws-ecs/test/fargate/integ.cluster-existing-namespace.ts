@@ -26,7 +26,7 @@ class ExistingNamespaceStack extends cdk.Stack {
     // Create cluster and use the existing namespace
     const cluster = new ecs.Cluster(this, 'EcsCluster', { vpc });
 
-    cluster.addDefaultCloudMapNamespace({
+    cluster.addExistingDefaultCloudMapNamespace({
       namespace: existingNamespace,
       useForServiceConnect: true,
     });

@@ -490,45 +490,30 @@ export class Cluster extends Resource implements ICluster {
       throw new ValidationError(lit`OnlyDefaultNamespaceOnce`, 'Can only add default namespace once.', this);
     }
 
-    // Validate mutually exclusive options
-    if (options.namespace && options.name) {
-      throw new ValidationError(lit`CannotSpecifyBoth`, 'Cannot specify both "namespace" and "name". Use "namespace" to use an existing namespace, or "name" to create a new one.', this);
-    }
-    if (!options.namespace && !options.name) {
-      throw new ValidationError(lit`MustSpecifyNamespaceOrName`, 'Must specify either "namespace" or "name".', this);
-    }
+    const namespaceType = options.type !== undefined
+      ? options.type
+      : cloudmap.NamespaceType.DNS_PRIVATE;
 
-    let sdNamespace: cloudmap.INamespace;
-
-    if (options.namespace) {
-      // Use existing namespace
-      sdNamespace = options.namespace;
-    } else {
-      // Create new namespace
-      const namespaceType = options.type !== undefined
-        ? options.type
-        : cloudmap.NamespaceType.DNS_PRIVATE;
-
-      switch (namespaceType) {
-        case cloudmap.NamespaceType.DNS_PRIVATE:
-          sdNamespace = new cloudmap.PrivateDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
-            name: options.name!,
-            vpc: options.vpc ?? this.vpc,
-          });
-          break;
-        case cloudmap.NamespaceType.DNS_PUBLIC:
-          sdNamespace = new cloudmap.PublicDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
-            name: options.name!,
-          });
-          break;
-        case cloudmap.NamespaceType.HTTP:
-          sdNamespace = new cloudmap.HttpNamespace(this, 'DefaultServiceDiscoveryNamespace', {
-            name: options.name!,
-          });
-          break;
-        default:
-          throw new ValidationError(lit`NamespaceTypeSupported`, `Namespace type ${namespaceType} is not supported.`, this);
-      }
+    let sdNamespace;
+    switch (namespaceType) {
+      case cloudmap.NamespaceType.DNS_PRIVATE:
+        sdNamespace = new cloudmap.PrivateDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
+          name: options.name,
+          vpc: this.vpc,
+        });
+        break;
+      case cloudmap.NamespaceType.DNS_PUBLIC:
+        sdNamespace = new cloudmap.PublicDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
+          name: options.name,
+        });
+        break;
+      case cloudmap.NamespaceType.HTTP:
+        sdNamespace = new cloudmap.HttpNamespace(this, 'DefaultServiceDiscoveryNamespace', {
+          name: options.name,
+        });
+        break;
+      default:
+        throw new ValidationError(lit`NamespaceTypeSupported`, `Namespace type ${namespaceType} is not supported.`, this);
     }
 
     this._defaultCloudMapNamespace = sdNamespace;
@@ -539,6 +524,29 @@ export class Cluster extends Resource implements ICluster {
     }
 
     return sdNamespace;
+  }
+
+  /**
+   * Use an existing AWS Cloud Map namespace as the default namespace for this cluster.
+   *
+   * Unlike `addDefaultCloudMapNamespace`, this method does not create a new namespace;
+   * it registers a namespace that already exists (created elsewhere in the app or
+   * imported) as the cluster's default namespace.
+   */
+  @MethodMetadata()
+  public addExistingDefaultCloudMapNamespace(options: ExistingCloudMapNamespaceOptions): cloudmap.INamespace {
+    if (this._defaultCloudMapNamespace !== undefined) {
+      throw new ValidationError(lit`OnlyDefaultNamespaceOnce`, 'Can only add default namespace once.', this);
+    }
+
+    this._defaultCloudMapNamespace = options.namespace;
+    if (options.useForServiceConnect) {
+      this._cfnCluster.serviceConnectDefaults = {
+        namespace: options.namespace.namespaceArn,
+      };
+    }
+
+    return options.namespace;
   }
 
   /**
@@ -1196,25 +1204,25 @@ export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, 
 }
 
 /**
+ * Options shared by all ways of setting the default AWS Cloud Map namespace of a cluster.
+ */
+export interface CloudMapNamespaceOptionsBase {
+  /**
+   * This property specifies whether to set the provided namespace as the service connect default in the cluster properties.
+   *
+   * @default false
+   */
+  readonly useForServiceConnect?: boolean;
+}
+
+/**
  * The options for creating an AWS Cloud Map namespace.
  */
-export interface CloudMapNamespaceOptions {
+export interface CloudMapNamespaceOptions extends CloudMapNamespaceOptionsBase {
   /**
    * The name of the namespace, such as example.com.
-   *
-   * @default - Required if `namespace` is not provided
    */
-  readonly name?: string;
-
-  /**
-   * An existing Cloud Map namespace to use as the default.
-   * When provided, `name`, `type`, and `vpc` are ignored.
-   *
-   * [disable-awslint:prefer-ref-interface]
-   *
-   * @default - A new namespace will be created
-   */
-  readonly namespace?: cloudmap.INamespace;
+  readonly name: string;
 
   /**
    * The type of CloudMap Namespace to create.
@@ -1229,14 +1237,21 @@ export interface CloudMapNamespaceOptions {
    * @default VPC of the cluster for Private DNS Namespace, otherwise none
    */
   readonly vpc?: ec2.IVpc;
+}
 
+/**
+ * The options for using an existing AWS Cloud Map namespace as the default namespace of a cluster.
+ */
+export interface ExistingCloudMapNamespaceOptions extends CloudMapNamespaceOptionsBase {
   /**
-   * This property specifies whether to set the provided namespace as the service connect default in the cluster properties.
+   * The existing Cloud Map namespace to use as the cluster's default namespace.
    *
-   * @default false
+   * The full `INamespace` is required (rather than a ref) because the cluster needs the
+   * namespace name, ARN and type to wire up Service Discovery and Service Connect.
+   *
+   * [disable-awslint:prefer-ref-interface]
    */
-  readonly useForServiceConnect?: boolean;
-
+  readonly namespace: cloudmap.INamespace;
 }
 
 /**
