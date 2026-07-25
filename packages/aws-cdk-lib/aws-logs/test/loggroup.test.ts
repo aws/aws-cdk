@@ -582,6 +582,69 @@ describe('log group', () => {
     });
   });
 
+  test('an account principal is already canonical and is not wrapped twice', () => {
+    // GIVEN
+    const stack = new Stack();
+    const lg = new LogGroup(stack, 'LogGroup');
+
+    // WHEN
+    lg.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['logs:PutLogEvents'],
+      principals: [new iam.AccountPrincipal('123456789012')],
+    }));
+
+    // THEN - a single account root ARN, rendered with the stack partition.
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
+      PolicyDocument: {
+        'Fn::Join': [
+          '',
+          [
+            '{"Statement":[{"Action":"logs:PutLogEvents","Effect":"Allow","Principal":{"AWS":"arn:',
+            { Ref: 'AWS::Partition' },
+            ':iam::123456789012:root"},"Resource":"*"}],"Version":"2012-10-17"}',
+          ],
+        ],
+      },
+    });
+  });
+
+  test('the partition of an ARN principal is preserved rather than rewritten to aws', () => {
+    // GIVEN
+    const stack = new Stack();
+    const lg = new LogGroup(stack, 'LogGroup');
+
+    // WHEN
+    lg.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['logs:PutLogEvents'],
+      principals: [new iam.ArnPrincipal('arn:aws-cn:iam::123456789012:role/SomeRole')],
+    }));
+
+    // THEN - a principal in a non-default partition keeps that partition.
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
+      PolicyDocument: '{"Statement":[{"Action":"logs:PutLogEvents","Effect":"Allow","Principal":{"AWS":"arn:aws-cn:iam::123456789012:root"},"Resource":"*"}],"Version":"2012-10-17"}',
+    });
+  });
+
+  test('an ARN principal without an account is passed through unchanged', () => {
+    // GIVEN
+    const stack = new Stack();
+    const lg = new LogGroup(stack, 'LogGroup');
+
+    // WHEN
+    lg.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['logs:PutLogEvents'],
+      principals: [new iam.ArnPrincipal('arn:aws:s3:::some-bucket')],
+    }));
+
+    // THEN - there is no account to canonicalize, so the ARN is left alone.
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
+      PolicyDocument: '{"Statement":[{"Action":"logs:PutLogEvents","Effect":"Allow","Principal":{"AWS":"arn:aws:s3:::some-bucket"},"Resource":"*"}],"Version":"2012-10-17"}',
+    });
+  });
+
   test('correctly returns physical name of the log group', () => {
     // GIVEN
     const stack = new Stack();

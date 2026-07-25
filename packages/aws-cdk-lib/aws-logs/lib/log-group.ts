@@ -303,45 +303,46 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
       this.policy = new ResourcePolicy(this, 'Policy');
     }
     this.policy.document.addStatements(statement.copy({
-      principals: statement.principals.map(p => this.convertArnPrincipalToAccountId(p)),
+      principals: statement.principals.map(p => this.convertArnPrincipalToAccountRootArn(p)),
     }));
     return { statementAdded: true, policyDependable: this.policy };
   }
 
-  private convertArnPrincipalToAccountId(principal: iam.IPrincipal) {
-    if (principal.principalAccount) {
-      return new iam.ArnPrincipal(this.accountRootArn(principal.principalAccount));
-    }
-
-    if (principal instanceof iam.ArnPrincipal && principal.arn !== '*') {
-      const parsedArn = Arn.split(principal.arn, ArnFormat.SLASH_RESOURCE_NAME);
-      if (parsedArn.account) {
-        return new iam.ArnPrincipal(this.accountRootArn(parsedArn.account, parsedArn.partition));
-      }
-    }
-
-    return principal;
-  }
-
   /**
    * CloudWatch Logs resource policies do not accept full IAM ARN principals, so
-   * cross-account principals are reduced to their account id. CloudFormation
-   * then canonicalizes that bare account id to the account root ARN
-   * (`arn:<partition>:iam::<account>:root`) on the deployed resource. Emitting
-   * that canonical form at synth time keeps the synthesized template in sync
-   * with the deployed value, avoiding a permanent drift-detection false
+   * cross-account principals are reduced to the account they belong to.
+   * CloudFormation canonicalizes a bare account id to the account root ARN
+   * (`arn:<partition>:iam::<account>:root`) on the deployed resource, so
+   * emitting that canonical form at synth time keeps the synthesized template in
+   * sync with the deployed value and avoids a permanent drift-detection false
    * positive.
    *
    * @see https://github.com/aws/aws-cdk/issues/37797
    */
-  private accountRootArn(account: string, partition?: string): string {
-    return Stack.of(this).formatArn({
-      partition,
-      service: 'iam',
-      region: '',
-      account,
-      resource: 'root',
-    });
+  private convertArnPrincipalToAccountRootArn(principal: iam.IPrincipal): iam.IPrincipal {
+    // Principals that already expose their account (roles, users, imported
+    // identities) map directly onto `AccountPrincipal`, which is CDK's canonical
+    // representation of an account root and renders using the stack partition.
+    if (principal.principalAccount) {
+      return new iam.AccountPrincipal(principal.principalAccount);
+    }
+
+    // Raw ARN principals carry their own partition, which is preserved so that
+    // aws-cn and aws-us-gov principals are not rewritten into `aws`.
+    if (principal instanceof iam.ArnPrincipal && principal.arn !== '*') {
+      const { account, partition } = Arn.split(principal.arn, ArnFormat.SLASH_RESOURCE_NAME);
+      if (account) {
+        return new iam.ArnPrincipal(Stack.of(this).formatArn({
+          partition,
+          service: 'iam',
+          region: '',
+          account,
+          resource: 'root',
+        }));
+      }
+    }
+
+    return principal;
   }
 
   /**
