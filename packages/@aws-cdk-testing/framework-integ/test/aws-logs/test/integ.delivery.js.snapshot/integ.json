@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "DeliveryInteg/DefaultTest": {
+      "stacks": [
+        "aws-cdk-logs-delivery-integ"
+      ],
+      "assertionStack": "DeliveryInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "DeliveryIntegDefaultTestDeployAssert66E81D11"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}

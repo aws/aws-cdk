@@ -1978,6 +1978,9 @@
     "attribute-tag:aws-cdk-lib.aws_bedrockagentcore.CodeInterpreterCustom.codeInterpreterCustomName",
     "attribute-tag:aws-cdk-lib.aws_bedrockagentcore.Gateway.gatewayName",
     "attribute-tag:aws-cdk-lib.aws_bedrockagentcore.GatewayTarget.gatewayTargetName",
-    "public-static-props-all-caps:aws-cdk-lib.aws_bedrockagentcore.OAuth2CredentialProviderVendor.X"
+    "public-static-props-all-caps:aws-cdk-lib.aws_bedrockagentcore.OAuth2CredentialProviderVendor.X",
+    "props-no-arn-refs:aws-cdk-lib.aws_logs.DeliverySourceProps.resourceArn",
+    "props-physical-name:aws-cdk-lib.aws_logs.DeliveryProps",
+    "prefer-ref-interface:aws-cdk-lib.aws_logs.DeliveryProps.destination"
   ]
 }

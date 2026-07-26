@@ -1,4 +1,4 @@
-import { Template, Match } from '../../assertions';
+import { Template } from '../../assertions';
 import * as cdk from '../../core';
 import { DeliverySource, LogType } from '../lib';
 

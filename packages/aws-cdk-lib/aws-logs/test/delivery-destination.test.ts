@@ -1,6 +1,6 @@
 import { Template, Match } from '../../assertions';
-import * as firehose from '../../aws-kinesisfirehose';
 import * as iam from '../../aws-iam';
+import * as firehose from '../../aws-kinesisfirehose';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import {
@@ -8,7 +8,6 @@ import {
   DeliveryDestinationTarget,
   DeliverySource,
   LogGroup,
-  LogType,
   OutputFormat,
 } from '../lib';
 

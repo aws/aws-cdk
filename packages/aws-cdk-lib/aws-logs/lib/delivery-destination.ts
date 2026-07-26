@@ -27,7 +27,11 @@ import type {
 export interface DeliveryDestinationTargetConfig {
   /** ARN of the destination resource (S3 bucket, CloudWatch Logs log group, or Firehose stream). */
   readonly destinationResourceArn: string;
-  /** Output format for log records delivered to this destination. */
+  /**
+   * Output format for log records delivered to this destination.
+   *
+   * @default - uses the source service default output format
+   */
   readonly outputFormat?: OutputFormat;
 }
 

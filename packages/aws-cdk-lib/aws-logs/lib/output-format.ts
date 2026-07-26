@@ -56,6 +56,9 @@ export class OutputFormat {
     this.value = value;
   }
 
+  /**
+   * Returns the raw string value sent to CloudFormation.
+   */
   public toString(): string {
     return this.value;
   }

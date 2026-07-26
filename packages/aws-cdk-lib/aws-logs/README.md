@@ -167,6 +167,129 @@ new logs.SubscriptionFilter(this, 'Subscription', {
 });
 ```
 
+## Log Delivery
+
+CloudWatch Logs *vended log delivery* lets certain AWS services (for example, Amazon EKS, Amazon Bedrock, and Amazon
+EventBridge) deliver their logs directly to Amazon S3, CloudWatch Logs, or Kinesis Data Firehose, without requiring
+you to set up your own Lambda function or Kinesis stream in between. This is different from [Subscriptions and
+Destinations](#subscriptions-and-destinations) above, which route log events *out of* an existing log group that you
+already control.
+
+Log delivery is made up of three constructs:
+
+* `DeliverySource` represents the AWS resource that emits logs, identified by its ARN and `LogType`.
+* `DeliveryDestination` represents the target that receives the logs: an S3 bucket, a CloudWatch Logs log group, or a
+  Kinesis Data Firehose delivery stream.
+* `Delivery` connects exactly one `DeliverySource` to one `DeliveryDestination`. When you create a `Delivery`, the
+  resource policy required on the destination is configured automatically — you do not need to set it up yourself.
+
+```ts
+declare const bucket: s3.Bucket;
+
+const source = new logs.DeliverySource(this, 'Source', {
+  resourceArn: 'arn:aws:eks:us-east-1:123456789012:cluster/my-cluster',
+  logType: logs.LogType.EKS_AUTO_MODE_COMPUTE_LOGS,
+});
+
+const destination = new logs.DeliveryDestination(this, 'Destination', {
+  target: logs.DeliveryDestinationTarget.fromBucket(bucket),
+});
+
+new logs.Delivery(this, 'Delivery', {
+  source,
+  destination,
+});
+```
+
+Use `LogType.of()` for source types that don't yet have a static constant, such as V1 Permissions services like API
+Gateway or Network Load Balancer:
+
+```ts
+new logs.DeliverySource(this, 'Source', {
+  resourceArn: 'arn:aws:apigateway:us-east-1::/restapis/abc123',
+  logType: logs.LogType.of('ACCESS_LOGS'),
+});
+```
+
+### Delivery Destinations
+
+`DeliveryDestinationTarget` supports all three destination types. An optional `OutputFormat` can be specified for
+each — the set of valid formats depends on the destination type:
+
+```ts
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
+
+declare const bucket: s3.Bucket;
+declare const logGroup: logs.LogGroup;
+declare const deliveryStream: firehose.IDeliveryStream;
+
+// Amazon S3
+logs.DeliveryDestinationTarget.fromBucket(bucket, logs.OutputFormat.PARQUET);
+
+// CloudWatch Logs
+logs.DeliveryDestinationTarget.fromLogGroup(logGroup, logs.OutputFormat.JSON);
+
+// Kinesis Data Firehose
+logs.DeliveryDestinationTarget.fromDeliveryStream(deliveryStream);
+```
+
+When a `Delivery` is created, it automatically grants the `delivery.logs.amazonaws.com` service permission to write to
+the destination on behalf of the source:
+
+* **Amazon S3**: adds `s3:GetBucketAcl`, `s3:ListBucket`, and `s3:PutObject` to the bucket policy, scoped to the
+  delivery source's ARN.
+* **CloudWatch Logs**: adds `logs:CreateLogStream` and `logs:PutLogEvents` to a log group resource policy, scoped to
+  the delivery source's ARN.
+* **Kinesis Data Firehose**: no-op — AWS automatically creates the `AWSServiceRoleForLogDelivery` service-linked role
+  for you.
+
+### Cross-Account Delivery
+
+To allow a `DeliverySource` in a different account to link to this `DeliveryDestination`, add a statement to the
+delivery destination policy:
+
+```ts
+declare const destination: logs.DeliveryDestination;
+
+destination.addToDeliveryDestinationPolicy(new iam.PolicyStatement({
+  principals: [new iam.AccountPrincipal('123456789012')],
+  actions: ['logs:CreateDelivery'],
+  resources: ['*'],
+}));
+```
+
+### Delivery Options
+
+`Delivery` accepts several optional properties. `s3EnableHiveCompatiblePath` and `s3SuffixPath` only apply when
+delivering to Amazon S3:
+
+```ts
+declare const source: logs.DeliverySource;
+declare const destination: logs.DeliveryDestination;
+
+new logs.Delivery(this, 'Delivery', {
+  source,
+  destination,
+  fieldDelimiter: '\t',
+  recordFields: ['timestamp', 'message', 'severity'],
+  s3EnableHiveCompatiblePath: true,
+  s3SuffixPath: 'year=!{timestamp:yyyy}/month=!{timestamp:MM}',
+});
+```
+
+### Importing Existing Resources
+
+Use the `fromXxx` static methods to reference a `DeliverySource` or `DeliveryDestination` that was created outside of
+this stack. Note that `grantWrite()` is a no-op on imported destinations — you must configure the resource policy on
+the target yourself:
+
+```ts
+const source = logs.DeliverySource.fromDeliverySourceArn(this, 'Source',
+  'arn:aws:logs:us-east-1:123456789012:delivery-source:my-source');
+
+const destination = logs.DeliveryDestination.fromDeliveryDestinationName(this, 'Destination', 'my-dest');
+```
+
 ## Metric Filters
 
 CloudWatch Logs can extract and emit metrics based on a textual log stream.
