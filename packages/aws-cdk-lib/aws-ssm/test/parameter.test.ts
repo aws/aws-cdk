@@ -352,6 +352,54 @@ test('StringParameter.fromStringParameterName', () => {
   });
 });
 
+test('StringParameter.fromStringParameterName still synthesizes correctly when stringValue is first read inside a Lazy callback', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const param = ssm.StringParameter.fromStringParameterName(stack, 'MyParamName', 'MyParamName');
+
+  // WHEN
+  // First read of stringValue happens inside a Lazy producer instead of application code.
+  new cdk.CfnOutput(stack, 'Out', {
+    value: cdk.Lazy.string({ produce: () => param.stringValue }),
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasParameter('MyParamNameParameter', {
+    Type: 'AWS::SSM::Parameter::Value<String>',
+    Default: 'MyParamName',
+  });
+  template.hasOutput('Out', {
+    Value: { Ref: 'MyParamNameParameter' },
+  });
+});
+
+test('StringParameter.fromStringParameterName does not create a Parameter when only the ARN is used', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  // Only parameterArn is used, `stringValue` is never accessed (e.g. ecs.Secret.fromSsmParameter)
+  const param = ssm.StringParameter.fromStringParameterName(stack, 'MyParamName', 'MyParamName');
+  expect(stack.resolve(param.parameterArn)).toBeDefined();
+
+  // THEN
+  Template.fromStack(stack).templateMatches({});
+});
+
+test('StringParameter.fromStringParameterArn does not create a Parameter when only the ARN is used', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const sharingParameterArn = 'arn:aws:ssm:us-east-1:123456789012:parameter/dummyName';
+
+  // WHEN
+  const param = ssm.StringParameter.fromStringParameterArn(stack, 'MyParamName', sharingParameterArn);
+  expect(stack.resolve(param.parameterArn)).toEqual(sharingParameterArn);
+
+  // THEN
+  Template.fromStack(stack).templateMatches({});
+});
+
 test('fromStringParameterArn StringParameter.fromStringParameterArn', () => {
   // GIVEN
   const stack = new cdk.Stack();
@@ -851,6 +899,19 @@ describe('from string list parameter', () => {
     });
   });
 
+  test('fromStringParameterAttributes does not create a Parameter when stringValue is never accessed', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    ssm.StringParameter.fromStringParameterAttributes(stack, 'my-param-name', {
+      parameterName: 'my-param-name',
+    });
+
+    // THEN
+    Template.fromStack(stack).templateMatches({});
+  });
+
   test('valueForTypedListParameter returns correct value', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -892,9 +953,10 @@ describe('from string list parameter', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    ssm.StringListParameter.fromListParameterAttributes(stack, 'my-param-name', {
+    const param = ssm.StringListParameter.fromListParameterAttributes(stack, 'my-param-name', {
       parameterName: 'my-param-name',
     });
+    param.stringListValue;
 
     // THEN
     Template.fromStack(stack).templateMatches({
@@ -905,6 +967,19 @@ describe('from string list parameter', () => {
         },
       },
     });
+  });
+
+  test('fromListParameterAttributes does not create a Parameter when stringListValue is never accessed', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    ssm.StringListParameter.fromListParameterAttributes(stack, 'my-param-name', {
+      parameterName: 'my-param-name',
+    });
+
+    // THEN
+    Template.fromStack(stack).templateMatches({});
   });
 
   testDeprecated('string type returns correct value', () => {

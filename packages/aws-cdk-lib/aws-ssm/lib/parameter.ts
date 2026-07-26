@@ -542,13 +542,23 @@ export class StringParameter extends ParameterBase implements IStringParameter {
 
     const parameterType = ParameterValueType.STRING;
 
-    let stringValue: string;
-    stringValue = new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${parameterType}>`, default: stringParameterArn }).valueAsString;
     class Import extends ParameterBase {
       public readonly parameterName = stringParameterArn.split('/').pop()?.replace(/parameter\/$/, '') ?? '';
       public readonly parameterArn = stringParameterArn;
       public readonly parameterType = parameterType;
-      public readonly stringValue = stringValue;
+      private _stringValue?: string;
+
+      // Lazy — see fromStringParameterAttributes() below for why this is done this way,
+      // including why it's safe if first read happens inside a Lazy producer.
+      public get stringValue(): string {
+        if (this._stringValue === undefined) {
+          this._stringValue = new CfnParameter(scope, `${id}.Parameter`, {
+            type: `AWS::SSM::Parameter::Value<${parameterType}>`,
+            default: stringParameterArn,
+          }).valueAsString;
+        }
+        return this._stringValue;
+      }
     }
 
     return new Import(scope, id);
@@ -568,23 +578,30 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     const type = attrs.type ?? attrs.valueType ?? ParameterValueType.STRING;
     const forceDynamicReference = attrs.forceDynamicReference ?? false;
 
-    let stringValue: string;
-    if (attrs.version) {
-      stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${Tokenization.stringifyNumber(attrs.version)}`).toString();
-    } else if (forceDynamicReference) {
-      stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM, attrs.parameterName).toString();
-    } else if (Token.isUnresolved(attrs.parameterName) && Fn._isFnBase(Tokenization.reverseString(attrs.parameterName).firstToken)) {
-      // the default value of a CfnParameter can only contain strings, so we cannot use it when a parameter name contains tokens.
-      stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM, attrs.parameterName).toString();
-    } else {
-      stringValue = new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${type}>`, default: attrs.parameterName }).valueAsString;
-    }
-
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;
       public readonly parameterArn = arnForParameterName(this, attrs.parameterName, { simpleName: attrs.simpleName });
-      public readonly parameterType = ParameterType.STRING; // this is the type returned by CFN @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssm-parameter.html#aws-resource-ssm-parameter-return-values
-      public readonly stringValue = stringValue;
+      public readonly parameterType = ParameterValueType.STRING; // this is the type returned by CFN @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssm-parameter.html#aws-resource-ssm-parameter-return-values
+      private _stringValue?: string;
+
+      // Created lazily so ARN-only consumers don't leave an unreferenced Parameter behind.
+      // Safe even from a Lazy producer — CDK resolves all CfnElement props, Lazy included,
+      // before rendering the template.
+      public get stringValue(): string {
+        if (this._stringValue === undefined) {
+          if (attrs.version) {
+            this._stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${Tokenization.stringifyNumber(attrs.version)}`).toString();
+          } else if (forceDynamicReference) {
+            this._stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM, attrs.parameterName).toString();
+          } else if (Token.isUnresolved(attrs.parameterName) && Fn._isFnBase(Tokenization.reverseString(attrs.parameterName).firstToken)) {
+            // the default value of a CfnParameter can only contain strings, so we cannot use it when a parameter name contains tokens.
+            this._stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM, attrs.parameterName).toString();
+          } else {
+            this._stringValue = new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${type}>`, default: attrs.parameterName }).valueAsString;
+          }
+        }
+        return this._stringValue;
+      }
     }
 
     return new Import(scope, id);
@@ -786,15 +803,22 @@ export class StringListParameter extends ParameterBase implements IStringListPar
     const type = attrs.elementType ?? ParameterValueType.STRING;
     const valueType = `List<${type}>`;
 
-    const stringValue = attrs.version
-      ? new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${Tokenization.stringifyNumber(attrs.version)}`).toStringList()
-      : new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${valueType}>`, default: attrs.parameterName }).valueAsList;
-
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;
       public readonly parameterArn = arnForParameterName(this, attrs.parameterName, { simpleName: attrs.simpleName });
       public readonly parameterType = valueType; // it doesn't really matter what this is since a CfnParameter can only be `String | StringList`
-      public readonly stringListValue = stringValue;
+      private _stringListValue?: string[];
+
+      // Lazy — see StringParameter.fromStringParameterAttributes() for why this is done this
+      // way, including why it's safe if first read happens inside a Lazy producer.
+      public get stringListValue(): string[] {
+        if (this._stringListValue === undefined) {
+          this._stringListValue = attrs.version
+            ? new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${Tokenization.stringifyNumber(attrs.version)}`).toStringList()
+            : new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${valueType}>`, default: attrs.parameterName }).valueAsList;
+        }
+        return this._stringListValue;
+      }
     }
 
     return new Import(scope, id);
