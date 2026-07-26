@@ -2,6 +2,9 @@
 import './private/default-traits';
 
 export * from './cross-account-destination';
+export * from './delivery';
+export * from './delivery-destination';
+export * from './delivery-source';
 export * from './log-group';
 export * from './log-stream';
 export * from './metric-filter';
@@ -12,6 +15,8 @@ export * from './policy';
 export * from './query-definition';
 export * from './data-protection-policy';
 export * from './field-index-policy';
+export * from './log-type';
+export * from './output-format';
 export * from './transformer';
 
 // AWS::Logs CloudFormation Resources:
