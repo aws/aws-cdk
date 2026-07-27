@@ -85,7 +85,7 @@
         }
       }
     },
-    "a5106badc2f77c4f578ef87e3f02259e62edf1b6cb32b867c4573ba4b96f6f50": {
+    "be21232f2419fc2aa441674a9a4d9533ea43f565e44c02e06a8bf177082622cb": {
       "displayName": "@aws-cdk--aws-eks.ClusterResourceProvider Nested Stack Template",
       "source": {
         "path": "awscdkeksclusterbottlerocketngtestawscdkawseksClusterResourceProvider7EC04E81.nested.template.json",
@@ -94,12 +94,12 @@
       "destinations": {
         "current_account-current_region-f1bd1a47": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "a5106badc2f77c4f578ef87e3f02259e62edf1b6cb32b867c4573ba4b96f6f50.json",
+          "objectKey": "be21232f2419fc2aa441674a9a4d9533ea43f565e44c02e06a8bf177082622cb.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "bb6fc37a8b4ee038dd5dee81dd74feb8ef9ae21c31905301202c4c6d18f13bd6": {
+    "f773b8b9ed9da0770432299f1c3935fc9ec6d825cba0c43119e0be27e6ef0865": {
       "displayName": "@aws-cdk--aws-eks.KubectlProvider Nested Stack Template",
       "source": {
         "path": "awscdkeksclusterbottlerocketngtestawscdkawseksKubectlProviderE02BC096.nested.template.json",
@@ -108,12 +108,12 @@
       "destinations": {
         "current_account-current_region-65e0da7a": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "bb6fc37a8b4ee038dd5dee81dd74feb8ef9ae21c31905301202c4c6d18f13bd6.json",
+          "objectKey": "f773b8b9ed9da0770432299f1c3935fc9ec6d825cba0c43119e0be27e6ef0865.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "17579d6ed165721fc90f763a7008e2f1067a0c91ad2ad2baffa1b56b0b3aa7fe": {
+    "357b7072ccc2c4a7e610d9ff2b342e61765a4278db90d5ccf28217ef083fb098": {
       "displayName": "aws-cdk-eks-cluster-bottlerocket-ng-test Template",
       "source": {
         "path": "aws-cdk-eks-cluster-bottlerocket-ng-test.template.json",
@@ -122,7 +122,7 @@
       "destinations": {
         "current_account-current_region-a90ec2f2": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "17579d6ed165721fc90f763a7008e2f1067a0c91ad2ad2baffa1b56b0b3aa7fe.json",
+          "objectKey": "357b7072ccc2c4a7e610d9ff2b342e61765a4278db90d5ccf28217ef083fb098.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
