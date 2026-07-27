@@ -2627,7 +2627,7 @@ const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
 });
 ```
 
-To specify the EBS Provisioned Rate for Volume Initialization value for ebs volumes, use the `volumeInitializationRate` property on ebs Volumes:
+To specify the EBS Provisioned Rate for Volume Initialization for a snapshot-backed EBS volume in a launch template, use the `volumeInitializationRate` property. The snapshot can be specified explicitly with `BlockDeviceVolume.ebsFromSnapshot(...)` or inherited from the AMI block device mapping when overriding an existing AMI device such as the root volume.
 
 ```ts
 const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
@@ -2637,6 +2637,7 @@ const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
       volume: {
         ebsDevice: {
           volumeSize: 150,
+          snapshotId: 'snap-1234567890abcdef0',
           volumeInitializationRate: 200,
         },
       },

@@ -1,5 +1,5 @@
 import type { Construct } from 'constructs';
-import { Annotations, ValidationError } from '../../../core';
+import { Annotations, Token, ValidationError } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 import type { CfnInstance, CfnLaunchTemplate } from '../ec2.generated';
 import type { BlockDevice } from '../volume';
@@ -14,7 +14,7 @@ export function instanceBlockDeviceMappings(construct: Construct, blockDevices: 
       );
     }
     if (blockDevice.volume.ebsDevice?.volumeInitializationRate !== undefined) {
-      Annotations.of(construct).addWarningV2('@aws-cdk/aws-ec2:volumeInitializationRateNotSuported',
+      Annotations.of(construct).addWarningV2('@aws-cdk/aws-ec2:volumeInitializationRateNotSupported',
         'The volumeInitializationRate is not supported on EC2 instances. Use a Launch Template instead.',
       );
     }
@@ -63,15 +63,16 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
         }
       }
 
-      if (volumeInitializationRate) {
+      if (volumeInitializationRate !== undefined && !Token.isUnresolved(volumeInitializationRate)) {
         if (!Number.isInteger(volumeInitializationRate)) {
-          throw new ValidationError(`'volumeInitializationRate' must be an integer, got: ${volumeInitializationRate}.`, construct);
+          throw new ValidationError(lit `volumeInitializationRate`, `'volumeInitializationRate' must be an integer, got: ${volumeInitializationRate}.`, construct);
         }
 
         if (volumeInitializationRate < 100 || volumeInitializationRate > 300) {
-          throw new ValidationError(`'volumeInitializationRate' must be between 100 and 300, got ${volumeInitializationRate}.`, construct);
+          throw new ValidationError(lit `volumeInitializationRate`, `'volumeInitializationRate' must be between 100 and 300, got ${volumeInitializationRate}.`, construct);
         }
       }
+
       if (!iops) {
         if (volumeType === EbsDeviceVolumeType.IO1 || volumeType === EbsDeviceVolumeType.IO2) {
           throw new ValidationError(lit`IopsPropertyRequiredVolumeType`, 'iops property is required with volumeType: EbsDeviceVolumeType.IO1 and EbsDeviceVolumeType.IO2', construct);
