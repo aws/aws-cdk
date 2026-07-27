@@ -307,16 +307,15 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
 
   private convertArnPrincipalToAccountId(principal: iam.IPrincipal) {
     if (principal.principalAccount) {
-      // we use ArnPrincipal here because the constructor inserts the argument
-      // into the template without mutating it, which means that there is no
-      // ARN created by this call.
-      return new iam.ArnPrincipal(principal.principalAccount);
+      // Return an AccountPrincipal instead of ArnPrincipal so the synthesized template 
+      // uses the canonical ARN format (arn:aws:iam::<ACCOUNT_ID>:root) preventing drift.
+      return new iam.AccountPrincipal(principal.principalAccount);
     }
 
     if (principal instanceof iam.ArnPrincipal && principal.arn !== '*') {
       const parsedArn = Arn.split(principal.arn, ArnFormat.SLASH_RESOURCE_NAME);
       if (parsedArn.account) {
-        return new iam.ArnPrincipal(parsedArn.account);
+        return new iam.AccountPrincipal(parsedArn.account);
       }
     }
 
