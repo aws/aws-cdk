@@ -50,7 +50,8 @@
     "@smithy/types": "3.5.0",
     "@types/minimatch": "^5.1.2",
     "tar": "^7.5.7",
-    "@aws-cdk/service-spec-types": "0.0.260"
+    "@aws-cdk/service-spec-types": "0.0.260",
+    "fast-xml-parser": "^4.5.4"
   },
   "repository": {
     "type": "git",
