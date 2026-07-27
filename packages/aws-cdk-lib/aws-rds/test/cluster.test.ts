@@ -38,7 +38,7 @@ describe('cluster new api', () => {
         new DatabaseCluster(stack, 'Database', {
           engine: DatabaseClusterEngine.AURORA_MYSQL,
           instanceProps: {
-            instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL),
             vpc,
           },
           clusterScalabilityType: ClusterScalabilityType.STANDARD,
@@ -1389,11 +1389,11 @@ describe('cluster new api', () => {
 
     test.each([
       [
-        ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
+        ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.XLARGE24 ),
         undefined,
       ],
       [
-        ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE ),
+        ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.XLARGE ),
         4,
       ],
     ])('serverless reader cannot scale with writer, throw warning', (instanceType: ec2.InstanceType, maxCapacity?: number) => {
@@ -1481,12 +1481,12 @@ describe('cluster new api', () => {
         engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         writer: ClusterInstance.provisioned('writer', {
-          instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.XLARGE24 ),
         }),
         readers: [
           ClusterInstance.provisioned('reader'),
           ClusterInstance.provisioned('reader2', {
-            instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE ),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.XLARGE ),
           }),
         ],
       });
@@ -1496,7 +1496,7 @@ describe('cluster new api', () => {
       template.resourceCountIs('AWS::RDS::DBInstance', 3);
       template.hasResourceProperties('AWS::RDS::DBInstance', {
         DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
-        DBInstanceClass: 'db.m5.24xlarge',
+        DBInstanceClass: 'db.t3.24xlarge',
         PromotionTier: 0,
       });
       template.hasResourceProperties('AWS::RDS::DBInstance', {
@@ -1506,7 +1506,7 @@ describe('cluster new api', () => {
       });
       template.hasResourceProperties('AWS::RDS::DBInstance', {
         DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
-        DBInstanceClass: 'db.m5.xlarge',
+        DBInstanceClass: 'db.t3.xlarge',
         PromotionTier: 2,
       });
 
@@ -1514,8 +1514,8 @@ describe('cluster new api', () => {
         'There are provisioned readers in the highest promotion tier 2 that do not have the same '+
         'InstanceSize as the writer. Any of these instances could be chosen as the new writer in the event '+
         'of a failover.\n'+
-        'Writer InstanceSize: m5.24xlarge\n'+
-        'Reader InstanceSizes: t3.medium, m5.xlarge [ack: @aws-cdk/aws-rds:provisionedReadersDontMatchWriter]',
+        'Writer InstanceSize: t3.24xlarge\n'+
+        'Reader InstanceSizes: t3.medium, t3.xlarge [ack: @aws-cdk/aws-rds:provisionedReadersDontMatchWriter]',
       );
     });
 
@@ -1529,13 +1529,13 @@ describe('cluster new api', () => {
         engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         writer: ClusterInstance.provisioned('writer', {
-          instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.XLARGE24 ),
         }),
         readers: [
           ClusterInstance.provisioned('reader'),
           ClusterInstance.provisioned('reader2', {
             promotionTier: 1,
-            instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.XLARGE24 ),
           }),
         ],
       });
@@ -1545,7 +1545,7 @@ describe('cluster new api', () => {
       template.resourceCountIs('AWS::RDS::DBInstance', 3);
       template.hasResourceProperties('AWS::RDS::DBInstance', {
         DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
-        DBInstanceClass: 'db.m5.24xlarge',
+        DBInstanceClass: 'db.t3.24xlarge',
         PromotionTier: 0,
       });
       template.hasResourceProperties('AWS::RDS::DBInstance', {
@@ -1555,7 +1555,7 @@ describe('cluster new api', () => {
       });
       template.hasResourceProperties('AWS::RDS::DBInstance', {
         DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
-        DBInstanceClass: 'db.m5.24xlarge',
+        DBInstanceClass: 'db.t3.24xlarge',
         PromotionTier: 1,
       });
 
@@ -1614,13 +1614,13 @@ describe('cluster new api', () => {
         engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         writer: ClusterInstance.provisioned('writer', {
-          instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.XLARGE24 ),
         }),
         readers: [
           ClusterInstance.serverlessV2('reader'),
           ClusterInstance.provisioned('reader2', {
             promotionTier: 1,
-            instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.XLARGE24 ),
           }),
         ],
       });
@@ -1630,7 +1630,7 @@ describe('cluster new api', () => {
       template.resourceCountIs('AWS::RDS::DBInstance', 3);
       template.hasResourceProperties('AWS::RDS::DBInstance', {
         DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
-        DBInstanceClass: 'db.m5.24xlarge',
+        DBInstanceClass: 'db.t3.24xlarge',
         PromotionTier: 0,
       });
       template.hasResourceProperties('AWS::RDS::DBInstance', {
@@ -1640,7 +1640,7 @@ describe('cluster new api', () => {
       });
       template.hasResourceProperties('AWS::RDS::DBInstance', {
         DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
-        DBInstanceClass: 'db.m5.24xlarge',
+        DBInstanceClass: 'db.t3.24xlarge',
         PromotionTier: 1,
       });
 
@@ -1657,12 +1657,12 @@ describe('cluster new api', () => {
         engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         writer: ClusterInstance.provisioned('writer', {
-          instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.XLARGE24 ),
         }),
         readers: [
           ClusterInstance.serverlessV2('reader'),
           ClusterInstance.provisioned('reader2', {
-            instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE ),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.XLARGE ),
           }),
         ],
       });
@@ -1672,7 +1672,7 @@ describe('cluster new api', () => {
       template.resourceCountIs('AWS::RDS::DBInstance', 3);
       template.hasResourceProperties('AWS::RDS::DBInstance', {
         DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
-        DBInstanceClass: 'db.m5.24xlarge',
+        DBInstanceClass: 'db.t3.24xlarge',
         PromotionTier: 0,
       });
       template.hasResourceProperties('AWS::RDS::DBInstance', {
@@ -1682,7 +1682,7 @@ describe('cluster new api', () => {
       });
       template.hasResourceProperties('AWS::RDS::DBInstance', {
         DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
-        DBInstanceClass: 'db.m5.xlarge',
+        DBInstanceClass: 'db.t3.xlarge',
         PromotionTier: 2,
       });
 
@@ -1696,8 +1696,8 @@ describe('cluster new api', () => {
         'There are provisioned readers in the highest promotion tier 2 that do not have the same '+
         'InstanceSize as the writer. Any of these instances could be chosen as the new writer in the event '+
         'of a failover.\n'+
-        'Writer InstanceSize: m5.24xlarge\n'+
-        'Reader InstanceSizes: m5.xlarge [ack: @aws-cdk/aws-rds:provisionedReadersDontMatchWriter]',
+        'Writer InstanceSize: t3.24xlarge\n'+
+        'Reader InstanceSizes: t3.xlarge [ack: @aws-cdk/aws-rds:provisionedReadersDontMatchWriter]',
       );
     });
 
@@ -1711,7 +1711,7 @@ describe('cluster new api', () => {
         engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         writer: ClusterInstance.provisioned('writer', {
-          instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.XLARGE24 ),
           caCertificate: CaCertificate.RDS_CA_RSA4096_G1,
         }),
         readers: [
@@ -1720,7 +1720,7 @@ describe('cluster new api', () => {
           }),
           ClusterInstance.provisioned('reader2', {
             promotionTier: 1,
-            instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.XLARGE24 ),
             caCertificate: CaCertificate.of('custom-ca-id'),
           }),
         ],
@@ -1731,7 +1731,7 @@ describe('cluster new api', () => {
       template.resourceCountIs('AWS::RDS::DBInstance', 3);
       template.hasResourceProperties('AWS::RDS::DBInstance', {
         DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
-        DBInstanceClass: 'db.m5.24xlarge',
+        DBInstanceClass: 'db.t3.24xlarge',
         PromotionTier: 0,
         CACertificateIdentifier: 'rds-ca-rsa4096-g1',
       });
@@ -1743,7 +1743,7 @@ describe('cluster new api', () => {
       });
       template.hasResourceProperties('AWS::RDS::DBInstance', {
         DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
-        DBInstanceClass: 'db.m5.24xlarge',
+        DBInstanceClass: 'db.t3.24xlarge',
         PromotionTier: 1,
         CACertificateIdentifier: 'custom-ca-id',
       });
@@ -1759,7 +1759,7 @@ describe('cluster new api', () => {
         engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         writer: ClusterInstance.provisioned('writer', {
-          instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.XLARGE24 ),
           applyImmediately,
         }),
         readers: [
@@ -1768,7 +1768,7 @@ describe('cluster new api', () => {
           }),
           ClusterInstance.provisioned('reader2', {
             promotionTier: 1,
-            instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.XLARGE24 ),
             applyImmediately,
           }),
         ],
@@ -1779,7 +1779,7 @@ describe('cluster new api', () => {
       template.resourceCountIs('AWS::RDS::DBInstance', 3);
       template.hasResourceProperties('AWS::RDS::DBInstance', {
         DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
-        DBInstanceClass: 'db.m5.24xlarge',
+        DBInstanceClass: 'db.t3.24xlarge',
         PromotionTier: 0,
         ApplyImmediately: applyImmediately,
       });
@@ -1791,7 +1791,7 @@ describe('cluster new api', () => {
       });
       template.hasResourceProperties('AWS::RDS::DBInstance', {
         DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
-        DBInstanceClass: 'db.m5.24xlarge',
+        DBInstanceClass: 'db.t3.24xlarge',
         PromotionTier: 1,
         ApplyImmediately: applyImmediately,
       });
@@ -2586,7 +2586,7 @@ describe('cluster', () => {
       credentials: { username: 'admin' },
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.LARGE),
         vpc,
       },
       removalPolicy: cdk.RemovalPolicy.RETAIN,
@@ -6421,7 +6421,7 @@ test.each([
     credentials: { username: 'admin' },
     engine: DatabaseClusterEngine.AURORA_MYSQL,
     instanceProps: {
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.LARGE),
       vpc: new ec2.Vpc(stack, 'Vpc'),
     },
     removalPolicy: clusterRemovalPolicy,
@@ -6455,7 +6455,7 @@ test.each([
     credentials: { username: 'admin' },
     engine: DatabaseClusterEngine.AURORA_MYSQL,
     instanceProps: {
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.LARGE),
       vpc: new ec2.Vpc(stack, 'Vpc'),
     },
     removalPolicy: clusterRemovalPolicy,
