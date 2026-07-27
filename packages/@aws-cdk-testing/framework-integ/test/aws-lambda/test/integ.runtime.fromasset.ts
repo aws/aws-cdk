@@ -22,6 +22,24 @@ const lambdaFunctionJava25 = new Function(stack, 'MyFunctionJava25', {
   code: Code.fromAsset(path.join(__dirname, 'my-app-1.0-SNAPSHOT.zip')),
 });
 
+const lambdaFunctionJava8AL2023 = new Function(stack, 'MyFunctionJava8AL2023', {
+  runtime: Runtime.JAVA_8_AL2023,
+  handler: 'com.mycompany.app.LambdaMethodHandler::handleRequest',
+  code: Code.fromAsset(path.join(__dirname, 'my-app-1.0-SNAPSHOT.zip')),
+});
+
+const lambdaFunctionJava11AL2023 = new Function(stack, 'MyFunctionJava11AL2023', {
+  runtime: Runtime.JAVA_11_AL2023,
+  handler: 'com.mycompany.app.LambdaMethodHandler::handleRequest',
+  code: Code.fromAsset(path.join(__dirname, 'my-app-1.0-SNAPSHOT.zip')),
+});
+
+const lambdaFunctionJava17AL2023 = new Function(stack, 'MyFunctionJava17AL2023', {
+  runtime: Runtime.JAVA_17_AL2023,
+  handler: 'com.mycompany.app.LambdaMethodHandler::handleRequest',
+  code: Code.fromAsset(path.join(__dirname, 'my-app-1.0-SNAPSHOT.zip')),
+});
+
 const integTest = new integ.IntegTest(app, 'Integ', { testCases: [stack] });
 
 const invokeJava21 = integTest.assertions.invokeFunction({
@@ -39,6 +57,33 @@ const invokeJava25 = integTest.assertions.invokeFunction({
 });
 
 invokeJava25.expect(integ.ExpectedResult.objectLike({
+  Payload: '"123"',
+}));
+
+const invokeJava8AL2023 = integTest.assertions.invokeFunction({
+  functionName: lambdaFunctionJava8AL2023.functionName,
+  payload: '123',
+});
+
+invokeJava8AL2023.expect(integ.ExpectedResult.objectLike({
+  Payload: '"123"',
+}));
+
+const invokeJava11AL2023 = integTest.assertions.invokeFunction({
+  functionName: lambdaFunctionJava11AL2023.functionName,
+  payload: '123',
+});
+
+invokeJava11AL2023.expect(integ.ExpectedResult.objectLike({
+  Payload: '"123"',
+}));
+
+const invokeJava17AL2023 = integTest.assertions.invokeFunction({
+  functionName: lambdaFunctionJava17AL2023.functionName,
+  payload: '123',
+});
+
+invokeJava17AL2023.expect(integ.ExpectedResult.objectLike({
   Payload: '"123"',
 }));
 
