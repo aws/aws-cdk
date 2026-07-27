@@ -41,12 +41,18 @@ export interface DeliveryDestinationTargetConfig {
  * Use the static factory methods to specify the destination type.
  *
  * @example
+ * import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
+ *
+ * declare const myBucket: s3.IBucket;
+ * declare const myLogGroup: logs.ILogGroup;
+ * declare const stream: firehose.IDeliveryStream;
+ *
  * // S3 bucket
- * logs.DeliveryDestinationTarget.fromBucket(myBucket, logs.OutputFormat.JSON)
+ * logs.DeliveryDestinationTarget.fromBucket(myBucket, logs.OutputFormat.JSON);
  * // CloudWatch Logs log group
- * logs.DeliveryDestinationTarget.fromLogGroup(myLogGroup)
+ * logs.DeliveryDestinationTarget.fromLogGroup(myLogGroup);
  * // Kinesis Data Firehose delivery stream
- * logs.DeliveryDestinationTarget.fromDeliveryStream(stream)
+ * logs.DeliveryDestinationTarget.fromDeliveryStream(stream);
  */
 export abstract class DeliveryDestinationTarget {
   /**
