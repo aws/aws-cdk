@@ -3,9 +3,9 @@ import type { IPolicyValidationPlugin } from './validation';
 import { Annotations } from '../annotations';
 import { UnscopedValidationError } from '../errors';
 import { AnnotationPlugin } from '../private/annotation-plugin';
+import { STAGE_TYPE, stageOf } from '../private/core-construct-finders';
 import { lit } from '../private/literal-string';
 import { enhancedStackTrace } from '../private/stack-trace';
-import { Stage } from '../stage';
 
 /**
  * An acknowledgment of a validation rule, used to suppress it from output.
@@ -61,7 +61,7 @@ export class Validations {
    * @param plugins the validation plugins to add
    */
   public addPlugins(...plugins: IPolicyValidationPlugin[]): void {
-    const stage = Stage.isStage(this.scope) ? this.scope : Stage.of(this.scope);
+    const stage = STAGE_TYPE.isMarked(this.scope) ? this.scope : stageOf(this.scope);
     if (!stage) {
       throw new UnscopedValidationError(lit`NoStageForValidationPlugins`, 'Cannot add validation plugins on a construct without an enclosing Stage');
     }
