@@ -41,20 +41,20 @@ describe('sql server instance engine', () => {
     test("has ParameterGroup family ending in '17.0' for major version 17", () => {
       const stack = new core.Stack();
       new rds.ParameterGroup(stack, 'ParameterGroup', {
-        engine: rds.DatabaseInstanceEngine.sqlServerWeb({
+        engine: rds.DatabaseInstanceEngine.sqlServerEe({
           version: rds.SqlServerEngineVersion.VER_17,
         }),
       }).bindToInstance({});
 
       Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBParameterGroup', {
-        Family: 'sqlserver-web-17.0',
+        Family: 'sqlserver-ee-17.0',
       });
     });
 
     test("has MajorEngineVersion ending in '17.00' for major version 17", () => {
       const stack = new core.Stack();
       new rds.OptionGroup(stack, 'OptionGroup', {
-        engine: rds.DatabaseInstanceEngine.sqlServerWeb({
+        engine: rds.DatabaseInstanceEngine.sqlServerEe({
           version: rds.SqlServerEngineVersion.VER_17,
         }),
         configurations: [
