@@ -302,6 +302,66 @@ describe('CloudFormationValidatePlugin', () => {
   });
 });
 
+describe('CDK_VALIDATION environment variable', () => {
+  const originalCdkValidation = process.env.CDK_VALIDATION;
+
+  afterEach(() => {
+    if (originalCdkValidation === undefined) {
+      delete process.env.CDK_VALIDATION;
+    } else {
+      process.env.CDK_VALIDATION = originalCdkValidation;
+    }
+  });
+
+  function appWithInvalidResource() {
+    const app = new core.App({
+      context: {
+        [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: true,
+        [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
+      },
+    });
+    const stack = new core.Stack(app, 'TestStack');
+    new core.CfnResource(stack, 'MyBucket', {
+      type: 'AWS::S3::Bucket',
+      properties: {
+        BogusProperty: 'invalid-value',
+      },
+    });
+    return app;
+  }
+
+  test('CDK_VALIDATION=false disables the auto-registered validation engine', () => {
+    process.env.CDK_VALIDATION = 'false';
+    const app = appWithInvalidResource();
+
+    // Would throw on BogusProperty if the default engine ran
+    expect(() => app.synth()).not.toThrow();
+    expect(process.exitCode).toBeUndefined();
+  });
+
+  test('CDK_VALIDATION=false does not disable explicitly registered plugins', () => {
+    process.env.CDK_VALIDATION = 'false';
+    const app = appWithInvalidResource();
+    core.Validations.of(app).addPlugins(new core.CloudFormationValidatePlugin());
+
+    expect(() => app.synth()).toThrow(/BogusProperty/);
+  });
+
+  test('CDK_VALIDATION=true keeps the default validation engine enabled', () => {
+    process.env.CDK_VALIDATION = 'true';
+    const app = appWithInvalidResource();
+
+    expect(() => app.synth()).toThrow(/BogusProperty/);
+  });
+
+  test('unset CDK_VALIDATION keeps the default validation engine enabled', () => {
+    delete process.env.CDK_VALIDATION;
+    const app = appWithInvalidResource();
+
+    expect(() => app.synth()).toThrow(/BogusProperty/);
+  });
+});
+
 function loadValidationReport(asm: cxapi.CloudAssembly) {
   const p = path.join(asm.directory, 'validation-report.json');
   return JSON.parse(fs.readFileSync(p, { encoding: 'utf-8' })) as PolicyValidationReportJson;
