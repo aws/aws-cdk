@@ -539,10 +539,42 @@ export class Cluster extends Resource implements ICluster {
       throw new ValidationError(lit`OnlyDefaultNamespaceOnce`, 'Can only add default namespace once.', this);
     }
 
+    // Cross-region validation (catches when namespace is defined in a different CDK stack)
+    const clusterStack = Stack.of(this);
+    const nsStack = Stack.of(options.namespace);
+    if (!Token.isUnresolved(clusterStack.region) && !Token.isUnresolved(nsStack.region)
+        && clusterStack.region !== nsStack.region) {
+      throw new ValidationError(lit`CrossRegionNamespace`,
+        `Cloud Map namespace must be in the same region as the ECS cluster, got cluster region ${JSON.stringify(clusterStack.region)} and namespace region ${JSON.stringify(nsStack.region)}`, this);
+    }
+
+    // Cross-account warning — valid but requires AWS RAM sharing
+    if (!Token.isUnresolved(clusterStack.account) && !Token.isUnresolved(nsStack.account)
+        && clusterStack.account !== nsStack.account) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:crossAccountNamespace',
+        'The provided Cloud Map namespace belongs to a different account. ' +
+        'Ensure AWS Resource Access Manager (RAM) sharing is configured. ' +
+        'See https://docs.aws.amazon.com/cloud-map/latest/dg/sharing.html');
+    }
+
+    // Private DNS namespaces are VPC-bound — warn about potential VPC mismatch
+    if (options.namespace.type === cloudmap.NamespaceType.DNS_PRIVATE) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:privateDnsNamespaceVpc',
+        'When using an existing PrivateDnsNamespace, ensure it is associated with the ' +
+        'same VPC as this ECS cluster for service discovery to function correctly.');
+    }
+
     this._defaultCloudMapNamespace = options.namespace;
     if (options.useForServiceConnect) {
+      // Validate ARN is well-formed for imported namespaces
+      const nsArn = options.namespace.namespaceArn;
+      if (!Token.isUnresolved(nsArn) && !nsArn.startsWith('arn:')) {
+        throw new ValidationError(lit`InvalidNamespaceArn`,
+          `The imported namespace does not have a valid ARN, got ${JSON.stringify(nsArn)}. ` +
+          'Ensure it is imported with a full ARN when used for Service Connect', this);
+      }
       this._cfnCluster.serviceConnectDefaults = {
-        namespace: options.namespace.namespaceArn,
+        namespace: nsArn,
       };
     }
 
