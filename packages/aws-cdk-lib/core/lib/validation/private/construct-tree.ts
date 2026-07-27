@@ -3,9 +3,8 @@ import type { Construct, IConstruct } from 'constructs';
 import { App } from '../../app';
 import { CfnResource } from '../../cfn-resource';
 import { iterateDfsPreorder } from '../../private/construct-iteration';
-import { stackOf } from '../../private/core-construct-finders';
 import { constructInfoFromConstruct } from '../../private/runtime-info';
-import type { Stack } from '../../stack';
+import { Stack } from '../../stack';
 
 /**
  * A construct centric view of a stack trace
@@ -84,7 +83,7 @@ export class ConstructTree {
       this._constructByPath.set(child.node.path, child);
       const defaultChild = child.node.defaultChild;
       if (defaultChild && CfnResource.isCfnResource(defaultChild)) {
-        const stack = stackOf(defaultChild);
+        const stack = Stack.of(defaultChild);
         const logicalId = stack.resolve(defaultChild.logicalId);
         this.setLogicalId(stack, logicalId, child);
       }
@@ -93,8 +92,8 @@ export class ConstructTree {
     // Another pass to include all the L1s that haven't been added yet
     for (const child of iterateDfsPreorder(this.root)) {
       if (CfnResource.isCfnResource(child)) {
-        const stack = stackOf(child);
-        const logicalId = stackOf(child).resolve(child.logicalId);
+        const stack = Stack.of(child);
+        const logicalId = Stack.of(child).resolve(child.logicalId);
         this.setLogicalId(stack, logicalId, child);
       }
     }

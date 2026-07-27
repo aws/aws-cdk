@@ -443,7 +443,7 @@ export class Rule extends Resource implements IRule {
         });
       }
       // deploy the event bus permissions before the source stack
-      Stack.of(this).addStackDependency(eventBusPolicyStack);
+      Stack.of(this).addDependency(eventBusPolicyStack);
     }
   }
 

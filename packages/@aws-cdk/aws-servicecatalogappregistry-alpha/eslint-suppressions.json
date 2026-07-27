@@ -4,6 +4,11 @@
       "count": 1
     }
   },
+  "lib/application.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  },
   "lib/attribute-group.ts": {
     "@cdklabs/no-throw-default-error": {
       "count": 1

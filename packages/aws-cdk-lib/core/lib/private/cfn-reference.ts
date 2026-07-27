@@ -123,7 +123,7 @@ export class CfnReference extends Reference {
     super(value, target, displayName, typeHint);
 
     this.replacementTokens = new Map<Stack, IResolvable>();
-    this.targetStack = stackOf(target);
+    this.targetStack = Stack.of(target);
 
     Object.defineProperty(this, CFN_REFERENCE_SYMBOL, { value: true });
   }
@@ -131,7 +131,7 @@ export class CfnReference extends Reference {
   public resolve(context: IResolveContext): any {
     // If we have a special token for this consuming stack, resolve that. Otherwise resolve as if
     // we are in the same stack.
-    const consumingStack = stackOf(context.scope);
+    const consumingStack = Stack.of(context.scope);
     const token = this.replacementTokens.get(consumingStack);
 
     // if (!token && this.isCrossStackReference(consumingStack) && !context.preparing) {
@@ -178,9 +178,8 @@ export class CfnReference extends Reference {
 import type { Construct, IConstruct } from 'constructs';
 import type { CfnElement } from '../cfn-element';
 import type { IResolvable, IResolveContext } from '../resolvable';
-import type { Stack } from '../stack';
+import { Stack } from '../stack';
 import { Token } from '../token';
 import type { ResolutionTypeHint } from '../type-hints';import { UnscopedValidationError } from '../errors';
 import { lit } from './literal-string';
-import { stackOf } from './core-construct-finders';
 

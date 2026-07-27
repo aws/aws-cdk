@@ -1,10 +1,9 @@
 import * as private_cxapi from '@aws-cdk/cloud-assembly-api';
-import { type IConstruct, Construct } from 'constructs';
+import { type IConstruct, Construct, Node } from 'constructs';
 import type { Environment } from './environment';
 import { ValidationError } from './errors';
 import { FeatureFlags } from './feature-flags';
 import type { PermissionsBoundary } from './permissions-boundary';
-import { STAGE_TYPE, stageOf } from './private/core-construct-finders';
 import { synthesize } from './private/synthesis';
 import { type IPropertyInjector, PropertyInjectors } from './prop-injectors';
 import type { IPolicyValidationPlugin, IPolicyValidationPluginBeta1 } from './validation';
@@ -12,6 +11,8 @@ import { _toBeta1Plugin } from './validation';
 import * as public_cxapi from '../../cx-api';
 import { _convertCloudAssembly, _convertCloudAssemblyBuilder } from '../../cx-api';
 import { lit } from './private/literal-string';
+
+const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');
 
 /**
  * Initialization props for a stage.
@@ -125,7 +126,7 @@ export class Stage extends Construct {
    *
    */
   public static of(construct: IConstruct): Stage | undefined {
-    return stageOf(construct);
+    return Node.of(construct).scopes.reverse().slice(1).find(Stage.isStage);
   }
 
   /**
@@ -133,7 +134,7 @@ export class Stage extends Construct {
    *
    */
   public static isStage(this: void, x: any): x is Stage {
-    return STAGE_TYPE.isMarked(x);
+    return x !== null && typeof(x) === 'object' && STAGE_SYMBOL in x;
   }
 
   /**
@@ -203,7 +204,7 @@ export class Stage extends Construct {
       injectors.add(...props.propertyInjectors);
     }
 
-    STAGE_TYPE.mark(this);
+    Object.defineProperty(this, STAGE_SYMBOL, { value: true });
 
     this.constructPathsCache = new Set<string>();
     this.parentStage = Stage.of(this);
@@ -308,7 +309,7 @@ export class Stage extends Construct {
     function recurse(root: IConstruct) {
       paths.add(root.node.path);
       for (const child of root.node.children) {
-        if (!STAGE_TYPE.isMarked(child)) {
+        if (!Stage.isStage(child)) {
           recurse(child);
         }
       }

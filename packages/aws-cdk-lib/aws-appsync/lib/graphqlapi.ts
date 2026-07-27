@@ -777,7 +777,7 @@ export class GraphqlApi extends GraphqlApiBase {
         apiId: this.apiId,
       });
 
-      domainNameAssociation.addResourceDependency(this.domainNameResource);
+      domainNameAssociation.addDependency(this.domainNameResource);
     }
 
     if (modes.some((mode) => mode.authorizationType === AuthorizationType.API_KEY)) {
@@ -786,7 +786,7 @@ export class GraphqlApi extends GraphqlApiBase {
       })?.apiKeyConfig;
       this.apiKeyResource = this.createAPIKey(config);
       if (this.schemaResource) {
-        this.apiKeyResource.addResourceDependency(this.schemaResource);
+        this.apiKeyResource.addDependency(this.schemaResource);
       }
       this.apiKey = this.apiKeyResource.attrApiKey;
     }
@@ -900,7 +900,7 @@ export class GraphqlApi extends GraphqlApiBase {
   @MethodMetadata()
   public addSchemaDependency(construct: CfnResource): boolean {
     if (this.schemaResource) {
-      construct.addResourceDependency(this.schemaResource);
+      construct.addDependency(this.schemaResource);
     }
     return true;
   }

@@ -76,7 +76,7 @@ const updateStack = new RedshiftDistKeyStack(stack, 'aws-cdk-redshift-distkey-up
   hasDistKey: true,
 });
 
-updateStack.addStackDependency(createStack);
+updateStack.addDependency(createStack);
 const stacks = [createStack, updateStack];
 stacks.forEach(s => {
   cdk.Aspects.of(s).add({

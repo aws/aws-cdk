@@ -3006,11 +3006,11 @@ export class OriginEndpoint extends OriginEndpointBase implements IOriginEndpoin
     if (encryptionCert) origin.node.addDependency(encryptionCert);
     const channelCfn = props.channel.node.defaultChild as CfnResource | undefined;
     if (channelCfn && CfnResource.isCfnResource(channelCfn)) {
-      origin.addResourceDependency(channelCfn);
+      origin.addDependency(channelCfn);
     }
     const groupCfn = props.channel.channelGroup?.node.defaultChild as CfnResource | undefined;
     if (groupCfn && CfnResource.isCfnResource(groupCfn)) {
-      origin.addResourceDependency(groupCfn);
+      origin.addDependency(groupCfn);
     }
 
     this.lowLatencyHlsManifestUrls = this.llHlsManifests.map((_, i) => Fn.select(i, origin.attrLowLatencyHlsManifestUrls));

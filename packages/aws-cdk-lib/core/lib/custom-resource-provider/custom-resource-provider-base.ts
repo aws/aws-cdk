@@ -12,10 +12,9 @@ import { ValidationError } from '../errors';
 import { FileSystem } from '../fs';
 import type { IArrayBox } from '../helpers-internal';
 import { Box, PolicySynthesizer, getPrecreatedRoleConfig } from '../helpers-internal';
-import { stackOf } from '../private/core-construct-finders';
 import { lit } from '../private/literal-string';
 import { Size } from '../size';
-import type { Stack } from '../stack';
+import { Stack } from '../stack';
 import { Token } from '../token';
 
 const ENTRYPOINT_FILENAME = '__entrypoint__';
@@ -70,7 +69,7 @@ export abstract class CustomResourceProviderBase extends Construct {
   protected constructor(scope: Construct, id: string, props: CustomResourceProviderBaseProps) {
     super(scope, id);
 
-    const stack = stackOf(scope);
+    const stack = Stack.of(scope);
 
     // verify we have an index file there
     if (!fs.existsSync(path.join(props.codeDirectory, 'index.js'))) {
@@ -103,7 +102,7 @@ export abstract class CustomResourceProviderBase extends Construct {
           return [];
         },
       });
-      this._roleArn = stackOf(this).formatArn({
+      this._roleArn = Stack.of(this).formatArn({
         region: '',
         service: 'iam',
         resource: 'role',
@@ -150,7 +149,7 @@ export abstract class CustomResourceProviderBase extends Construct {
     });
 
     if (this.role) {
-      this.handler.addResourceDependency(this.role);
+      this.handler.addDependency(this.role);
     }
 
     if (metadata) {

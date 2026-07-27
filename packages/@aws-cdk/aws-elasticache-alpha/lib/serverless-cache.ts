@@ -456,7 +456,7 @@ export class ServerlessCache extends ServerlessCacheBase {
 
     if (props.userGroup) {
       const userGroupResource = props.userGroup.node.findChild('Resource') as CfnUserGroup;
-      resource.addResourceDependency(userGroupResource);
+      resource.addDependency(userGroupResource);
     }
 
     this.backupArnsToRestore = resource.snapshotArnsToRestore;

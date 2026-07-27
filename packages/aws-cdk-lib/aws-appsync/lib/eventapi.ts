@@ -723,7 +723,7 @@ export class EventApi extends EventApiBase {
         apiId: this.apiId,
       });
 
-      domainNameAssociation.addResourceDependency(this.domainNameResource);
+      domainNameAssociation.addDependency(this.domainNameResource);
     }
 
     const logGroupName = `/aws/appsync/apis/${this.apiId}`;

@@ -1,10 +1,9 @@
 import type { IConstruct } from 'constructs';
 import { Node } from 'constructs';
-import { STACK_TYPE } from './private/core-construct-finders';
 import { unresolved } from './private/encoding';
 import { makeUniqueResourceName } from './private/unique-resource-name';
 import { makeUniqueId } from './private/uniqueid';
-import type { Stack } from './stack';
+import { Stack } from './stack';
 
 /**
  * Options for creating a unique resource name.
@@ -113,7 +112,7 @@ export class Names {
 }
 
 function isTopLevelStack(x: IConstruct): x is Stack {
-  return STACK_TYPE.isMarked(x) && !unresolved(x.stackName);
+  return Stack.isStack(x) && !unresolved(x.stackName);
 }
 
 function findLastIndex<A>(xs: A[], pred: (x: A) => boolean): number {
