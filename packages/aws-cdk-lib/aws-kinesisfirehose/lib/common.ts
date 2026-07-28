@@ -82,7 +82,7 @@ export interface CommonDestinationS3Props {
    * The length of time that Firehose buffers incoming data before delivering
    * it to the S3 bucket.
    *
-   * Minimum: Duration.seconds(0)
+   * Minimum: Duration.seconds(0) when dynamic partitioning is disabled, Duration.seconds(60) when it is enabled
    * Maximum: Duration.seconds(900)
    *
    * @default Duration.seconds(300)
@@ -93,10 +93,10 @@ export interface CommonDestinationS3Props {
    * The size of the buffer that Amazon Data Firehose uses for incoming data before
    * delivering it to the S3 bucket.
    *
-   * Minimum: Size.mebibytes(1) when record data format conversion is disabled, Size.mebibytes(64) when it is enabled
+   * Minimum: Size.mebibytes(1) when record data format conversion or dynamic partitioning is disabled, Size.mebibytes(64) when it is enabled
    * Maximum: Size.mebibytes(128)
    *
-   * @default Size.mebibytes(5) when record data format conversion is disabled, Size.mebibytes(128) when it is enabled
+   * @default Size.mebibytes(5) when record data format conversion or dynamic partitioning is disabled, Size.mebibytes(128) when it is enabled
    */
   readonly bufferingSize?: cdk.Size;
 
@@ -123,9 +123,9 @@ export interface CommonDestinationS3Props {
    * A prefix that Amazon Data Firehose evaluates and adds to failed records before writing them to S3.
    *
    * This prefix appears immediately following the bucket name.
-   * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html
+   * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html#prefix-rules
    *
-   * @default "YYYY/MM/DD/HH"
+   * @default - See the documentation above
    */
   readonly errorOutputPrefix?: string;
 
@@ -135,7 +135,7 @@ export interface CommonDestinationS3Props {
    * This prefix appears immediately following the bucket name.
    * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html
    *
-   * @default "YYYY/MM/DD/HH"
+   * @default - "YYYY/MM/DD/HH/"
    */
   readonly dataOutputPrefix?: string;
 }

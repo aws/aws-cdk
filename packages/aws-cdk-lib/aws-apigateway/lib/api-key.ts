@@ -12,6 +12,7 @@ import type { IResource as IResourceBase } from '../../core';
 import { ArnFormat, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -37,7 +38,7 @@ export interface IApiKey extends IResourceBase, IApiKeyRef {
 export interface ApiKeyOptions extends ResourceOptions {
   /**
    * A name for the API key. If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the API key name.
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-name
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-name
    * @default automically generated name
    */
   readonly apiKeyName?: string;
@@ -51,7 +52,7 @@ export interface ApiKeyOptions extends ResourceOptions {
 
   /**
    * A description of the purpose of the API key.
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-description
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-description
    * @default none
    */
   readonly description?: string;
@@ -77,21 +78,21 @@ export interface ApiKeyProps extends ApiKeyOptions {
 
   /**
    * An AWS Marketplace customer identifier to use when integrating with the AWS SaaS Marketplace.
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-customerid
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-customerid
    * @default none
    */
   readonly customerId?: string;
 
   /**
    * Indicates whether the API key can be used by clients.
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-enabled
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-enabled
    * @default true
    */
   readonly enabled?: boolean;
 
   /**
    * Specifies whether the key identifier is distinct from the created API key value.
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-generatedistinctid
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-generatedistinctid
    * @default false
    */
   readonly generateDistinctId?: boolean;
@@ -111,6 +112,9 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
 
   /**
    * Permits the IAM principal all read operations through this key
+   *
+   * The use of this method is discouraged. Please use `grants.read()` instead.
+   *
    * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
@@ -121,6 +125,9 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
 
   /**
    * Permits the IAM principal all write operations through this key
+   *
+   * The use of this method is discouraged. Please use `grants.write()` instead.
+   *
    * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
@@ -131,6 +138,9 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
 
   /**
    * Permits the IAM principal all read and write operations through this key
+   *
+   * The use of this method is discouraged. Please use `grants.readWrite()` instead.
+   *
    * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
@@ -213,14 +223,14 @@ export class ApiKey extends ApiKeyBase {
     }
 
     if (resources && stages) {
-      throw new ValidationError('Only one of "resources" or "stages" should be provided', this);
+      throw new ValidationError(lit`ShouldBeOnlyResourcesStages`, 'Only one of "resources" or "stages" should be provided', this);
     }
 
     return resources
       ? resources.map((resource: IRestApi) => {
         const restApi = resource;
         if (!restApi.deploymentStage) {
-          throw new ValidationError('Cannot add an ApiKey to a RestApi that does not contain a "deploymentStage".\n'+
+          throw new ValidationError(lit`CannotAddApiKeyRest`, 'Cannot add an ApiKey to a RestApi that does not contain a "deploymentStage".\n'+
           'Either set the RestApi.deploymentStage or create an ApiKey from a Stage', this);
         }
         const restApiId = restApi.restApiId;

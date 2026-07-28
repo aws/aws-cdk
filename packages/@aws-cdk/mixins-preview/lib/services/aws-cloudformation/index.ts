@@ -1,1 +1,1 @@
-export * as mixins from './mixins';
+export * as events from './events';

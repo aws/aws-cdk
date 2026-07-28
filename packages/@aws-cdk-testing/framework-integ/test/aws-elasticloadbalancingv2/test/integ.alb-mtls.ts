@@ -1,3 +1,9 @@
+/**
+ * This test requires manual setup and will fail without it:
+ * - A Route53 public hosted zone you own (env vars: HOSTED_ZONE_ID, HOSTED_ZONE_NAME, DOMAIN_NAME)
+ * - Pre-generated mTLS certificates (rootCA_cert.pem, crl.pem) in the mtls/ directory
+ * - See the detailed OpenSSL instructions in the MutualTls class comments below
+ */
 import * as path from 'path';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import type { StackProps } from 'aws-cdk-lib';

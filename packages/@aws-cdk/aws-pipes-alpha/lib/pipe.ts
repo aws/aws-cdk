@@ -4,6 +4,7 @@ import type { IRole } from 'aws-cdk-lib/aws-iam';
 import { ArnPrincipal, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import type * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -97,7 +98,7 @@ export interface PipeProps {
   /**
    * Name of the pipe in the AWS console
    *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#cfn-pipes-pipe-name
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#cfn-pipes-pipe-name
    *
    * @default - automatically generated name
    */
@@ -138,7 +139,7 @@ export interface PipeProps {
    *
    * For more information, see [Including execution data in logs](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-logs.html#eb-pipes-logs-execution-data) and the [message schema](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-logs-schema.html) in the *Amazon EventBridge User Guide* .
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipelogconfiguration.html#cfn-pipes-pipe-pipelogconfiguration-includeexecutiondata
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipelogconfiguration.html#cfn-pipes-pipe-pipelogconfiguration-includeexecutiondata
    * @default - none
    */
   readonly logIncludeExecutionData?: IncludeExecutionData[];
@@ -146,7 +147,7 @@ export interface PipeProps {
   /**
    * A description of the pipe displayed in the AWS console
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#cfn-pipes-pipe-description
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#cfn-pipes-pipe-description
    *
    * @default - no description
    */
@@ -164,7 +165,7 @@ export interface PipeProps {
   /**
    * The list of key-value pairs to associate with the pipe.
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#cfn-pipes-pipe-tags
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#cfn-pipes-pipe-tags
    *
    * @default - no tags
    */
@@ -301,7 +302,7 @@ export class Pipe extends PipeBase {
 
     if (props.kmsKey) {
       if (!props.pipeName) {
-        throw new ValidationError('`pipeName` is required when specifying a `kmsKey` prop.', this);
+        throw new ValidationError(lit`PipeNameRequiredWithKmsKey`, '`pipeName` is required when specifying a `kmsKey` prop.', this);
       }
       // Add permissions to the KMS key
       // see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-pipes-cmkey.html#eb-encryption-key-policy-pipe
@@ -349,5 +350,13 @@ export class Pipe extends PipeBase {
 
     this.pipeName = resource.ref;
     this.pipeArn = resource.attrArn;
+
+    // When CDK creates the role, the DefaultPolicy is a separate CFN resource.
+    // The CfnPipe only has an implicit dependency on the Role (via roleArn),
+    // not on the DefaultPolicy, so the Pipe can be created before permissions
+    // are in place. Add an explicit dependency for auto-created roles only.
+    if (!props.role) {
+      resource.node.addDependency(this.pipeRole);
+    }
   }
 }

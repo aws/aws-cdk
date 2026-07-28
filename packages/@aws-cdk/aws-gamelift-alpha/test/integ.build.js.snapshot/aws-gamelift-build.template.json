@@ -60,6 +60,7 @@
    "Type": "AWS::GameLift::Build",
    "Properties": {
     "OperatingSystem": "AMAZON_LINUX_2",
+    "ServerSdkVersion": "5.0.0",
     "StorageLocation": {
      "Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
@@ -72,8 +73,7 @@
       ]
      }
     },
-    "Version": "1.0",
-    "ServerSdkVersion": "5.0.0"
+    "Version": "1.0"
    },
    "DependsOn": [
     "BuildServiceRoleDefaultPolicyCB7101C6",

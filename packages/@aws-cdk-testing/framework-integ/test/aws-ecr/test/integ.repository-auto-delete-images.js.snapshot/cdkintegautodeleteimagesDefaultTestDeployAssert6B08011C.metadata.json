@@ -1,0 +1,14 @@
+{
+  "/cdk-integ-auto-delete-images/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cdk-integ-auto-delete-images/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

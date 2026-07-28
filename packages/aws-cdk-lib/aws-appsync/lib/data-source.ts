@@ -16,9 +16,24 @@ import type { IDomain as IOpenSearchDomain } from '../../aws-opensearchservice';
 import type { IServerlessCluster, IDatabaseCluster } from '../../aws-rds';
 import type { ISecret } from '../../aws-secretsmanager';
 import type { IResolvable } from '../../core';
-import { Lazy, Stack, Token } from '../../core';
+import { Lazy, Stack, Token, Validations } from '../../core';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IGraphQLApiRef } from '../../interfaces/generated/aws-appsync-interfaces.generated';
+
+/**
+ * Enum for enhanced data source metrics for specified data sources
+ */
+export enum DataSourceMetricsConfig {
+  /**
+   * Enables enhanced data source metrics for specified data sources
+   */
+  ENABLED = 'ENABLED',
+
+  /**
+   * Disables enhanced data source metrics for specified data sources
+   */
+  DISABLED = 'DISABLED',
+}
 
 /**
  * Base properties for an AppSync datasource
@@ -40,6 +55,14 @@ export interface BaseDataSourceProps {
    * @default - None
    */
   readonly description?: string;
+
+  /**
+   * Whether to enable enhanced metrics of the data source
+   * Value will be ignored, if `enhancedMetricsConfig.dataSourceLevelMetricsBehavior` on AppSync GraphqlApi construct is set to `FULL_REQUEST_DATA_SOURCE_METRICS`
+   *
+   * @default - no metrics configuration
+   */
+  readonly metricsConfig?: DataSourceMetricsConfig;
 }
 
 /**
@@ -140,6 +163,7 @@ export abstract class BaseDataSource extends Construct {
       name: supportedName,
       description: props.description,
       serviceRoleArn: this.serviceRole?.roleArn,
+      metricsConfig: props.metricsConfig,
       ...extended,
     });
     this.name = supportedName;
@@ -505,6 +529,10 @@ export class ElasticsearchDataSource extends BackedDataSource {
         awsRegion: props.domain.env.region,
         endpoint: `https://${props.domain.domainEndpoint}`,
       },
+    });
+    Validations.of(this).acknowledge({
+      id: 'CloudFormation-Validate::W9009',
+      reason: 'elasticSearchConfig is deprecated, but still in use for historical reasons',
     });
 
     props.domain.grantReadWrite(this);
