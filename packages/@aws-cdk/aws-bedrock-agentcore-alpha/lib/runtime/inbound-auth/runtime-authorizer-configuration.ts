@@ -21,6 +21,7 @@ import type { RuntimeCustomClaim } from './custom-claim';
 /**
  * Abstract base class for runtime authorizer configurations.
  * Provides static factory methods to create different authentication types.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export abstract class RuntimeAuthorizerConfiguration {
   /**

@@ -1,5 +1,4 @@
 import type { IConstruct } from 'constructs';
-import { Stack } from '../stack';
 import type { ConstructInfo } from './runtime-info';
 import { constructInfoFromConstruct } from './runtime-info';
 import { App } from '../app';
@@ -9,6 +8,7 @@ import type { Resource } from '../resource';
 import { Stage } from '../stage';
 import type { IPolicyValidationPlugin } from '../validation';
 import { ALLOWED_FQN_PREFIXES } from './constants';
+import { STACK_TYPE, STAGE_TYPE } from './core-construct-finders';
 
 // These metadata types are always included
 const ALLOWED_METADATA_TYPES: ReadonlySet<MetadataType> = new Set([
@@ -110,7 +110,7 @@ function injectAnalytics(construct: IConstruct, info: ConstructInfo): ConstructA
 function constructsInScope(construct: IConstruct): IConstruct[] {
   const constructs = [construct];
   construct.node.children
-    .filter(child => !Stage.isStage(child) && !Stack.isStack(child))
+    .filter(child => !STAGE_TYPE.isMarked(child) && !STACK_TYPE.isMarked(child))
     .forEach(child => constructs.push(...constructsInScope(child)));
   return constructs;
 }
