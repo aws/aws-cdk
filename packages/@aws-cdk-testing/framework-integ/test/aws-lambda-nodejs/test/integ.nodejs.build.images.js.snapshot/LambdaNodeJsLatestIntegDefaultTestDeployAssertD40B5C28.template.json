@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1777044778713"
+    "salt": "1779980577906"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -146,7 +146,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "cdk-integ-lambda-nodejs-latest:ExportsOutputReffuncnodejs22xAA4F54D576AB7928"
+              "Fn::ImportValue": "cdk-integ-lambda-nodejs-latest:ExportsOutputReffuncnodejs24x281DC0AE436CAE1D"
              }
             ]
            ]
@@ -186,7 +186,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "cdk-integ-lambda-nodejs-latest:ExportsOutputReffuncnodejs24x281DC0AE436CAE1D"
+              "Fn::ImportValue": "cdk-integ-lambda-nodejs-latest:ExportsOutputReffuncnodejs22xAA4F54D576AB7928"
              }
             ]
            ]
@@ -202,63 +202,16 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
+     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
     "Role": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
-      "Arn"
-     ]
-    }
-   }
-  },
-  "LambdaInvoke7f65e5f1728f1ebc1dc4358d2a6d1dec": {
-   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "Lambda",
-    "api": "invoke",
-    "expected": "{\"$ObjectLike\":{\"StatusCode\":200,\"ExecutedVersion\":\"$LATEST\"}}",
-    "parameters": {
-     "FunctionName": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "cdk-integ-lambda-nodejs-latest:ExportsOutputReffuncnodejs22xAA4F54D576AB7928"
-        },
-        "\""
-       ]
-      ]
-     }
-    },
-    "flattenResponse": "false",
-    "salt": "1777044778715"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "LambdaInvoke7f65e5f1728f1ebc1dc4358d2a6d1decInvokeE046A313": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::ImportValue": "cdk-integ-lambda-nodejs-latest:ExportsOutputReffuncnodejs22xAA4F54D576AB7928"
-    },
-    "Principal": {
      "Fn::GetAtt": [
       "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
       "Arn"
@@ -293,7 +246,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1777044778716"
+    "salt": "1779980577912"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -304,6 +257,53 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::ImportValue": "cdk-integ-lambda-nodejs-latest:ExportsOutputReffuncnodejs24x281DC0AE436CAE1D"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvoke7f65e5f1728f1ebc1dc4358d2a6d1dec": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"StatusCode\":200,\"ExecutedVersion\":\"$LATEST\"}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "cdk-integ-lambda-nodejs-latest:ExportsOutputReffuncnodejs22xAA4F54D576AB7928"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1779980577914"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke7f65e5f1728f1ebc1dc4358d2a6d1decInvokeE046A313": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "cdk-integ-lambda-nodejs-latest:ExportsOutputReffuncnodejs22xAA4F54D576AB7928"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -323,18 +323,18 @@
     ]
    }
   },
-  "AssertionResultsLambdaInvoke7f65e5f1728f1ebc1dc4358d2a6d1dec": {
-   "Value": {
-    "Fn::GetAtt": [
-     "LambdaInvoke7f65e5f1728f1ebc1dc4358d2a6d1dec",
-     "assertion"
-    ]
-   }
-  },
   "AssertionResultsLambdaInvokeea945068f36208b096eb8fbbe995c563": {
    "Value": {
     "Fn::GetAtt": [
      "LambdaInvokeea945068f36208b096eb8fbbe995c563",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvoke7f65e5f1728f1ebc1dc4358d2a6d1dec": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvoke7f65e5f1728f1ebc1dc4358d2a6d1dec",
      "assertion"
     ]
    }

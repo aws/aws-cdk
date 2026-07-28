@@ -563,7 +563,7 @@ describe('S3 destination', () => {
 
     it('allows custom compression types', () => {
       const destination = new firehose.S3Bucket(bucket, {
-        compression: firehose.Compression.of('SNAZZY'),
+        compression: firehose.Compression.of('HADOOP_SNAPPY'),
       });
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
         destination: destination,
@@ -571,7 +571,7 @@ describe('S3 destination', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         ExtendedS3DestinationConfiguration: {
-          CompressionFormat: 'SNAZZY',
+          CompressionFormat: 'HADOOP_SNAPPY',
         },
       });
     });
