@@ -1,5 +1,5 @@
 {
-  "/aws-cdk-lambda-runtime-fromasset/MyFunctionJava21": [
+  "/aws-cdk-lambda-runtime-fromasset/MyFunction-java21": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -9,7 +9,7 @@
       }
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/MyFunctionJava25": [
+  "/aws-cdk-lambda-runtime-fromasset/MyFunction-java25": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -19,7 +19,7 @@
       }
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/MyFunctionJava8AL2023": [
+  "/aws-cdk-lambda-runtime-fromasset/MyFunction-java8.al2023": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -29,7 +29,7 @@
       }
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/MyFunctionJava11AL2023": [
+  "/aws-cdk-lambda-runtime-fromasset/MyFunction-java11.al2023": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -39,7 +39,7 @@
       }
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/MyFunctionJava17AL2023": [
+  "/aws-cdk-lambda-runtime-fromasset/MyFunction-java17.al2023": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -61,7 +61,7 @@
       "data": "CheckBootstrapVersion"
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/MyFunctionJava21/ServiceRole": [
+  "/aws-cdk-lambda-runtime-fromasset/MyFunction-java21/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -77,13 +77,13 @@
       }
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/MyFunctionJava21/Resource": [
+  "/aws-cdk-lambda-runtime-fromasset/MyFunction-java21/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "MyFunctionJava216AE56E90"
+      "data": "MyFunctionjava219D7C6882"
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/MyFunctionJava25/ServiceRole": [
+  "/aws-cdk-lambda-runtime-fromasset/MyFunction-java25/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -99,13 +99,13 @@
       }
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/MyFunctionJava25/Resource": [
+  "/aws-cdk-lambda-runtime-fromasset/MyFunction-java25/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "MyFunctionJava25D0EF0C44"
+      "data": "MyFunctionjava251668460C"
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/MyFunctionJava8AL2023/ServiceRole": [
+  "/aws-cdk-lambda-runtime-fromasset/MyFunction-java8.al2023/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -121,13 +121,13 @@
       }
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/MyFunctionJava8AL2023/Resource": [
+  "/aws-cdk-lambda-runtime-fromasset/MyFunction-java8.al2023/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "MyFunctionJava8AL2023B6234D4A"
+      "data": "MyFunctionjava8al2023D439527D"
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/MyFunctionJava11AL2023/ServiceRole": [
+  "/aws-cdk-lambda-runtime-fromasset/MyFunction-java11.al2023/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -143,13 +143,13 @@
       }
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/MyFunctionJava11AL2023/Resource": [
+  "/aws-cdk-lambda-runtime-fromasset/MyFunction-java11.al2023/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "MyFunctionJava11AL2023FF3451AA"
+      "data": "MyFunctionjava11al2023389432C9"
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/MyFunctionJava17AL2023/ServiceRole": [
+  "/aws-cdk-lambda-runtime-fromasset/MyFunction-java17.al2023/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -165,97 +165,97 @@
       }
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/MyFunctionJava17AL2023/Resource": [
+  "/aws-cdk-lambda-runtime-fromasset/MyFunction-java17.al2023/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "MyFunctionJava17AL2023EE2F7E00"
+      "data": "MyFunctionjava17al202362B14D9A"
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/Exports/Output{\"Ref\":\"MyFunctionJava216AE56E90\"}": [
+  "/aws-cdk-lambda-runtime-fromasset/Exports/Output{\"Ref\":\"MyFunctionjava219D7C6882\"}": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "ExportsOutputRefMyFunctionJava216AE56E906B018223"
+      "data": "ExportsOutputRefMyFunctionjava219D7C688202DE2695"
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/Exports/Output{\"Ref\":\"MyFunctionJava25D0EF0C44\"}": [
+  "/aws-cdk-lambda-runtime-fromasset/Exports/Output{\"Ref\":\"MyFunctionjava251668460C\"}": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "ExportsOutputRefMyFunctionJava25D0EF0C44D46CC469"
+      "data": "ExportsOutputRefMyFunctionjava251668460C94EC0E85"
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/Exports/Output{\"Ref\":\"MyFunctionJava8AL2023B6234D4A\"}": [
+  "/aws-cdk-lambda-runtime-fromasset/Exports/Output{\"Ref\":\"MyFunctionjava8al2023D439527D\"}": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "ExportsOutputRefMyFunctionJava8AL2023B6234D4A90460A9A"
+      "data": "ExportsOutputRefMyFunctionjava8al2023D439527D183066BD"
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/Exports/Output{\"Ref\":\"MyFunctionJava11AL2023FF3451AA\"}": [
+  "/aws-cdk-lambda-runtime-fromasset/Exports/Output{\"Ref\":\"MyFunctionjava11al2023389432C9\"}": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "ExportsOutputRefMyFunctionJava11AL2023FF3451AA38C09BD3"
+      "data": "ExportsOutputRefMyFunctionjava11al2023389432C9E971D17F"
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/Exports/Output{\"Ref\":\"MyFunctionJava17AL2023EE2F7E00\"}": [
+  "/aws-cdk-lambda-runtime-fromasset/Exports/Output{\"Ref\":\"MyFunctionjava17al202362B14D9A\"}": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "ExportsOutputRefMyFunctionJava17AL2023EE2F7E007CCE1499"
+      "data": "ExportsOutputRefMyFunctionjava17al202362B14D9A6D9D7F9C"
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/MyFunctionJava21/ServiceRole/Resource": [
+  "/aws-cdk-lambda-runtime-fromasset/MyFunction-java21/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "MyFunctionJava21ServiceRole0645B770"
+      "data": "MyFunctionjava21ServiceRole8169D0D8"
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/MyFunctionJava21/Code/AssetBucket": [
+  "/aws-cdk-lambda-runtime-fromasset/MyFunction-java21/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/MyFunctionJava25/ServiceRole/Resource": [
+  "/aws-cdk-lambda-runtime-fromasset/MyFunction-java25/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "MyFunctionJava25ServiceRole7485EA0E"
+      "data": "MyFunctionjava25ServiceRole2542F382"
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/MyFunctionJava25/Code/AssetBucket": [
+  "/aws-cdk-lambda-runtime-fromasset/MyFunction-java25/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/MyFunctionJava8AL2023/ServiceRole/Resource": [
+  "/aws-cdk-lambda-runtime-fromasset/MyFunction-java8.al2023/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "MyFunctionJava8AL2023ServiceRole5952BC6D"
+      "data": "MyFunctionjava8al2023ServiceRole5ECF6711"
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/MyFunctionJava8AL2023/Code/AssetBucket": [
+  "/aws-cdk-lambda-runtime-fromasset/MyFunction-java8.al2023/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/MyFunctionJava11AL2023/ServiceRole/Resource": [
+  "/aws-cdk-lambda-runtime-fromasset/MyFunction-java11.al2023/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "MyFunctionJava11AL2023ServiceRole9CD9CA41"
+      "data": "MyFunctionjava11al2023ServiceRoleB58B1837"
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/MyFunctionJava11AL2023/Code/AssetBucket": [
+  "/aws-cdk-lambda-runtime-fromasset/MyFunction-java11.al2023/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/MyFunctionJava17AL2023/ServiceRole/Resource": [
+  "/aws-cdk-lambda-runtime-fromasset/MyFunction-java17.al2023/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "MyFunctionJava17AL2023ServiceRoleBE0F5F2D"
+      "data": "MyFunctionjava17al2023ServiceRole24581F1F"
     }
   ],
-  "/aws-cdk-lambda-runtime-fromasset/MyFunctionJava17AL2023/Code/AssetBucket": [
+  "/aws-cdk-lambda-runtime-fromasset/MyFunction-java17.al2023/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
