@@ -984,7 +984,7 @@ describe('AccessDenied retry behavior', () => {
 
     s3MockClient.on(S3.ListObjectsCommand)
       .rejectsOnce(accessDeniedError)
-      .resolves({ Contents: [] } as S3.ListObjectsCommandOutput);
+      .resolves({ Contents: [] } as unknown as S3.ListObjectsCommandOutput);
 
     const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
       ...eventCommon,
