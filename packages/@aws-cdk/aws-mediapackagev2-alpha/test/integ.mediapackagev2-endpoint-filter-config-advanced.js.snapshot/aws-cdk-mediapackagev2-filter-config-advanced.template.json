@@ -1,0 +1,83 @@
+{
+ "Resources": {
+  "ChannelGroupD4C484BD": {
+   "Type": "AWS::MediaPackageV2::ChannelGroup",
+   "Properties": {
+    "ChannelGroupName": "advanced-filter-group"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Channel4048F119": {
+   "Type": "AWS::MediaPackageV2::Channel",
+   "Properties": {
+    "ChannelGroupName": "advanced-filter-group",
+    "ChannelName": "advanced-channel",
+    "InputType": "CMAF"
+   },
+   "DependsOn": [
+    "ChannelGroupD4C484BD"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "EndpointEEF1FD8F": {
+   "Type": "AWS::MediaPackageV2::OriginEndpoint",
+   "Properties": {
+    "ChannelGroupName": "advanced-filter-group",
+    "ChannelName": "advanced-channel",
+    "ContainerType": "CMAF",
+    "HlsManifests": [
+     {
+      "FilterConfiguration": {
+       "ManifestFilter": "video_height:240-360,720-1080,1440;video_bitrate:1000000-3000000,5000000;video_codec:H264,H265"
+      },
+      "ManifestName": "index"
+     }
+    ],
+    "OriginEndpointName": "advanced-endpoint",
+    "Segment": {}
+   },
+   "DependsOn": [
+    "Channel4048F119",
+    "ChannelGroupD4C484BD"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

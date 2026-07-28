@@ -6,7 +6,7 @@ import * as lambda from '../../aws-lambda';
 import { LogGroup, RetentionDays } from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
-import { Stack } from '../../core';
+import { Stack, Validations } from '../../core';
 import { ManagementEventSources, ReadWriteType, Trail, InsightType } from '../lib';
 
 const ExpectedBucketPolicyProperties = {
@@ -1132,6 +1132,7 @@ describe('cloudtrail', () => {
     });
     test('duplicate properties', () => {
       const stack = getTestStack();
+      Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::F3037', reason: 'Testing duplicate properties' });
       new Trail(stack, 'MyAmazingCloudTrail', {
         insightTypes: [
           InsightType.API_CALL_RATE,

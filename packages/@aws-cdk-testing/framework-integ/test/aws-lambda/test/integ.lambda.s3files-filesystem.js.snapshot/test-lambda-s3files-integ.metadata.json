@@ -1,0 +1,247 @@
+{
+  "/test-lambda-s3files-integ/S3FilesFs": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3FilesFs"
+    }
+  ],
+  "/test-lambda-s3files-integ/MountTarget0": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MountTarget0"
+    }
+  ],
+  "/test-lambda-s3files-integ/MountTarget1": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MountTarget1"
+    }
+  ],
+  "/test-lambda-s3files-integ/AccessPoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AccessPoint"
+    }
+  ],
+  "/test-lambda-s3files-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/test-lambda-s3files-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/test-lambda-s3files-integ/Vpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpc8378EB38"
+    }
+  ],
+  "/test-lambda-s3files-integ/Vpc/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIGWD7BA715C"
+    }
+  ],
+  "/test-lambda-s3files-integ/Vpc/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcVPCGWBF912B6E"
+    }
+  ],
+  "/test-lambda-s3files-integ/Bucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Bucket83908E77"
+    }
+  ],
+  "/test-lambda-s3files-integ/S3FilesRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3FilesRole37B20925"
+    }
+  ],
+  "/test-lambda-s3files-integ/MountTargetSG/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MountTargetSG60468CEC"
+    }
+  ],
+  "/test-lambda-s3files-integ/MyLambda/SecurityGroup": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]",
+      "trace": [
+        "Annotations.addMessage (/local/home/caradoni/workspaces/aws-cdk-private/packages/aws-cdk-lib/core/lib/annotations.js:199:29)",
+        "Annotations.addWarningV2 (/local/home/caradoni/workspaces/aws-cdk-private/packages/aws-cdk-lib/core/lib/annotations.js:69:18)",
+        "WrappedClass.addEgressRule (/local/home/caradoni/workspaces/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:469:51)",
+        "WrappedClass.<anonymous> (/local/home/caradoni/workspaces/aws-cdk-private/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/local/home/caradoni/workspaces/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/connections.js:105:31",
+        "ReactiveList.forEachAndForever (/local/home/caradoni/workspaces/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/connections.js:292:13)",
+        "/local/home/caradoni/workspaces/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/connections.js:104:51",
+        "ReactiveList.forEachAndForever (/local/home/caradoni/workspaces/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/connections.js:292:13)",
+        "Connections.allowTo (/local/home/caradoni/workspaces/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/connections.js:103:30)",
+        "WrappedClass.configureVpc (/local/home/caradoni/workspaces/aws-cdk-private/packages/aws-cdk-lib/aws-lambda/lib/function.js:1208:38)",
+        "new Function (/local/home/caradoni/workspaces/aws-cdk-private/packages/aws-cdk-lib/aws-lambda/lib/function.js:716:33)",
+        "new Function (/local/home/caradoni/workspaces/aws-cdk-private/packages/aws-cdk-lib/core/lib/prop-injectable.js:31:13)",
+        "Object.<anonymous> (/local/home/caradoni/workspaces/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda.s3files-filesystem.js:66:1)",
+        "Module._compile (node:internal/modules/cjs/loader:1760:14)",
+        "Object..js (node:internal/modules/cjs/loader:1892:10)",
+        "Module.load (node:internal/modules/cjs/loader:1480:32)",
+        "Module._load (node:internal/modules/cjs/loader:1299:12)",
+        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:245:24)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    }
+  ],
+  "/test-lambda-s3files-integ/MyLambda/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyLambdaCCE802FB"
+    }
+  ],
+  "/test-lambda-s3files-integ/Vpc/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1Subnet5C2D37C4"
+    }
+  ],
+  "/test-lambda-s3files-integ/Vpc/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTable6C95E38E"
+    }
+  ],
+  "/test-lambda-s3files-integ/Vpc/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+    }
+  ],
+  "/test-lambda-s3files-integ/Vpc/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+    }
+  ],
+  "/test-lambda-s3files-integ/Vpc/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1EIPD7E02669"
+    }
+  ],
+  "/test-lambda-s3files-integ/Vpc/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1NATGateway4D7517AA"
+    }
+  ],
+  "/test-lambda-s3files-integ/Vpc/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2Subnet691E08A3"
+    }
+  ],
+  "/test-lambda-s3files-integ/Vpc/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTable94F7E489"
+    }
+  ],
+  "/test-lambda-s3files-integ/Vpc/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+    }
+  ],
+  "/test-lambda-s3files-integ/Vpc/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2DefaultRoute97F91067"
+    }
+  ],
+  "/test-lambda-s3files-integ/Vpc/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1Subnet536B997A"
+    }
+  ],
+  "/test-lambda-s3files-integ/Vpc/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+    }
+  ],
+  "/test-lambda-s3files-integ/Vpc/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+    }
+  ],
+  "/test-lambda-s3files-integ/Vpc/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+    }
+  ],
+  "/test-lambda-s3files-integ/Vpc/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2Subnet3788AAA1"
+    }
+  ],
+  "/test-lambda-s3files-integ/Vpc/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2RouteTableA678073B"
+    }
+  ],
+  "/test-lambda-s3files-integ/Vpc/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+    }
+  ],
+  "/test-lambda-s3files-integ/Vpc/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+    }
+  ],
+  "/test-lambda-s3files-integ/S3FilesRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3FilesRoleDefaultPolicyD9591E55"
+    }
+  ],
+  "/test-lambda-s3files-integ/AccessPoint/MountTargetSG0/from testlambdas3filesintegMyLambdaSecurityGroupEC3C0AE6:2049": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AccessPointMountTargetSG0fromtestlambdas3filesintegMyLambdaSecurityGroupEC3C0AE620491A838387"
+    }
+  ],
+  "/test-lambda-s3files-integ/MyLambda/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyLambdaServiceRole4539ECB6"
+    }
+  ],
+  "/test-lambda-s3files-integ/MyLambda/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyLambdaSecurityGroup1E71A818"
+    }
+  ],
+  "/test-lambda-s3files-integ/MyLambda/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
+    }
+  ]
+}

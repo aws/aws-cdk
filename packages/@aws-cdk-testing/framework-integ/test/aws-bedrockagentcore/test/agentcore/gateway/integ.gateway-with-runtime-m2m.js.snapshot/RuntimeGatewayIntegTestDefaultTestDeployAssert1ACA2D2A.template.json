@@ -1,0 +1,143 @@
+{
+ "Resources": {
+  "AwsApiCallbedrockagentcoreinvokeAgentRuntime973d9f236eb992af86cb0eb70b10bfc9": {
+   "Type": "Custom::DeployAssert@SdkCallbedrock-agentcoreinvokeAgentRunt",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "bedrock-agentcore",
+    "api": "invokeAgentRuntime",
+    "expected": "{\"$ObjectLike\":{\"statusCode\":200}}",
+    "parameters": {
+     "agentRuntimeArn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "BedrockAgentCoreRuntimeGatewayM2MIntegTest:ExportsOutputFnGetAttTestRuntime65042BB5AgentRuntimeArnE8B3C8DA"
+        },
+        "\""
+       ]
+      ]
+     },
+     "runtimeSessionId": "\"4fe98aa7-b20e-4555-b4e6-82d6230bb2c1\"",
+     "payload": "\"{\\\"input\\\":{\\\"prompt\\\":\\\"Test Gateway M2M authentication\\\"}}\""
+    },
+    "flattenResponse": "false",
+    "salt": "1779973606334"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "bedrock-agentcore:InvokeAgentRuntime"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallbedrockagentcoreinvokeAgentRuntime973d9f236eb992af86cb0eb70b10bfc9": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallbedrockagentcoreinvokeAgentRuntime973d9f236eb992af86cb0eb70b10bfc9",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

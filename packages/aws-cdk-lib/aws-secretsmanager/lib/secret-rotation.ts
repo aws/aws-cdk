@@ -5,17 +5,26 @@ import * as lambda from '../../aws-lambda';
 import * as serverless from '../../aws-sam';
 import type { Duration } from '../../core';
 import { Names, Stack, CfnMapping, Aws, RemovalPolicy, ValidationError, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Options for a SecretRotationApplication
  */
 export interface SecretRotationApplicationOptions {
   /**
-   * Whether the rotation application uses the mutli user scheme
+   * Whether the rotation application uses the multi user scheme
    *
    * @default false
    */
   readonly isMultiUser?: boolean;
+
+  /**
+   * Semantic versions for partitions other than 'aws'.
+   * If not specified, it is assumed that non aws partitions (eg aws-cn, aws-us-gov) are not supported.
+   *
+   * @default - no additional partition versions (only 'aws' partition is supported)
+   */
+  readonly additionalSemanticVersions?: { [partition: string]: string };
 }
 
 /**
@@ -25,85 +34,161 @@ export class SecretRotationApplication {
   /**
    * Conducts an AWS SecretsManager secret rotation for RDS MariaDB using the single user rotation scheme
    */
-  public static readonly MARIADB_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSMariaDBRotationSingleUser', '1.1.618');
+  public static readonly MARIADB_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSMariaDBRotationSingleUser', '1.1.670', {
+    additionalSemanticVersions: {
+      'aws-cn': '1.1.442',
+      'aws-us-gov': '1.1.399',
+    },
+  });
 
   /**
    * Conducts an AWS SecretsManager secret rotation for RDS MariaDB using the multi user rotation scheme
    */
-  public static readonly MARIADB_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSMariaDBRotationMultiUser', '1.1.618', {
-    isMultiUser: true,
+  public static readonly MARIADB_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSMariaDBRotationMultiUser', '1.1.670', {
+    additionalSemanticVersions: {
+      'aws-cn': '1.1.441',
+      'aws-us-gov': '1.1.398',
+    },
   });
 
   /**
    * Conducts an AWS SecretsManager secret rotation for RDS MySQL using the single user rotation scheme
    */
-  public static readonly MYSQL_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSMySQLRotationSingleUser', '1.1.618');
+  public static readonly MYSQL_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSMySQLRotationSingleUser', '1.1.671', {
+    additionalSemanticVersions: {
+      'aws-cn': '1.1.440',
+      'aws-us-gov': '1.1.397',
+    },
+  });
 
   /**
    * Conducts an AWS SecretsManager secret rotation for RDS MySQL using the multi user rotation scheme
    */
-  public static readonly MYSQL_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSMySQLRotationMultiUser', '1.1.618', {
-    isMultiUser: true,
+  public static readonly MYSQL_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSMySQLRotationMultiUser', '1.1.671', {
+    additionalSemanticVersions: {
+      'aws-cn': '1.1.440',
+      'aws-us-gov': '1.1.397',
+    },
   });
 
   /**
    * Conducts an AWS SecretsManager secret rotation for RDS Oracle using the single user rotation scheme
    */
-  public static readonly ORACLE_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSOracleRotationSingleUser', '1.1.618');
+  public static readonly ORACLE_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSOracleRotationSingleUser', '1.1.671', {
+    additionalSemanticVersions: {
+      'aws-cn': '1.1.441',
+      'aws-us-gov': '1.1.398',
+    },
+  });
 
   /**
    * Conducts an AWS SecretsManager secret rotation for RDS Oracle using the multi user rotation scheme
    */
-  public static readonly ORACLE_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSOracleRotationMultiUser', '1.1.618', {
-    isMultiUser: true,
+  public static readonly ORACLE_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSOracleRotationMultiUser', '1.1.671', {
+    additionalSemanticVersions: {
+      'aws-cn': '1.1.441',
+      'aws-us-gov': '1.1.398',
+    },
   });
 
   /**
    * Conducts an AWS SecretsManager secret rotation for RDS PostgreSQL using the single user rotation scheme
    */
-  public static readonly POSTGRES_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSPostgreSQLRotationSingleUser', '1.1.618');
+  public static readonly POSTGRES_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSPostgreSQLRotationSingleUser', '1.1.671', {
+    additionalSemanticVersions: {
+      'aws-cn': '1.1.440',
+      'aws-us-gov': '1.1.397',
+    },
+  });
 
   /**
    * Conducts an AWS SecretsManager secret rotation for RDS PostgreSQL using the multi user rotation scheme
    */
-  public static readonly POSTGRES_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSPostgreSQLRotationMultiUser', '1.1.618', {
-    isMultiUser: true,
+  public static readonly POSTGRES_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSPostgreSQLRotationMultiUser', '1.1.671', {
+    additionalSemanticVersions: {
+      'aws-cn': '1.1.440',
+      'aws-us-gov': '1.1.397',
+    },
   });
 
   /**
    * Conducts an AWS SecretsManager secret rotation for RDS SQL Server using the single user rotation scheme
    */
-  public static readonly SQLSERVER_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSSQLServerRotationSingleUser', '1.1.618');
+  public static readonly SQLSERVER_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSSQLServerRotationSingleUser', '1.1.670', {
+    additionalSemanticVersions: {
+      'aws-cn': '1.1.441',
+      'aws-us-gov': '1.1.398',
+    },
+  });
 
   /**
    * Conducts an AWS SecretsManager secret rotation for RDS SQL Server using the multi user rotation scheme
    */
-  public static readonly SQLSERVER_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSSQLServerRotationMultiUser', '1.1.618', {
-    isMultiUser: true,
+  public static readonly SQLSERVER_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSSQLServerRotationMultiUser', '1.1.671', {
+    additionalSemanticVersions: {
+      'aws-cn': '1.1.441',
+      'aws-us-gov': '1.1.398',
+    },
   });
 
   /**
    * Conducts an AWS SecretsManager secret rotation for Amazon Redshift using the single user rotation scheme
    */
-  public static readonly REDSHIFT_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRedshiftRotationSingleUser', '1.1.618');
+  public static readonly REDSHIFT_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRedshiftRotationSingleUser', '1.1.671', {
+    additionalSemanticVersions: {
+      'aws-cn': '1.1.441',
+      'aws-us-gov': '1.1.398',
+    },
+  });
 
   /**
    * Conducts an AWS SecretsManager secret rotation for Amazon Redshift using the multi user rotation scheme
    */
-  public static readonly REDSHIFT_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRedshiftRotationMultiUser', '1.1.618', {
-    isMultiUser: true,
+  public static readonly REDSHIFT_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRedshiftRotationMultiUser', '1.1.671', {
+    additionalSemanticVersions: {
+      'aws-cn': '1.1.440',
+      'aws-us-gov': '1.1.397',
+    },
   });
 
   /**
    * Conducts an AWS SecretsManager secret rotation for MongoDB using the single user rotation scheme
    */
-  public static readonly MONGODB_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerMongoDBRotationSingleUser', '1.1.618');
+  public static readonly MONGODB_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerMongoDBRotationSingleUser', '1.1.671', {
+    additionalSemanticVersions: {
+      'aws-cn': '1.1.440',
+      'aws-us-gov': '1.1.397',
+    },
+  });
 
   /**
    * Conducts an AWS SecretsManager secret rotation for MongoDB using the multi user rotation scheme
    */
-  public static readonly MONGODB_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerMongoDBRotationMultiUser', '1.1.618', {
-    isMultiUser: true,
+  public static readonly MONGODB_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerMongoDBRotationMultiUser', '1.1.671', {
+    additionalSemanticVersions: {
+      'aws-cn': '1.1.441',
+      'aws-us-gov': '1.1.398',
+    },
+  });
+
+  /**
+   * Conducts an AWS SecretsManager secret rotation for RDS Db2 using the single user rotation scheme
+   */
+  public static readonly DB2_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSDb2RotationSingleUser', '1.1.271', {
+    additionalSemanticVersions: {
+      'aws-cn': '1.1.242',
+      'aws-us-gov': '1.1.199',
+    },
+  });
+
+  /**
+   * Conducts an AWS SecretsManager secret rotation for RDS Db2 using the multi user rotation scheme
+   */
+  public static readonly DB2_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSDb2RotationMultiUser', '1.1.272', {
+    additionalSemanticVersions: {
+      'aws-cn': '1.1.240',
+      'aws-us-gov': '1.1.197',
+    },
   });
 
   /**
@@ -121,7 +206,7 @@ export class SecretRotationApplication {
   public readonly semanticVersion: string;
 
   /**
-   * Whether the rotation application uses the mutli user scheme
+   * Whether the rotation application uses the multi user scheme
    */
   public readonly isMultiUser?: boolean;
 
@@ -130,13 +215,28 @@ export class SecretRotationApplication {
    */
   private readonly applicationName: string;
 
-  constructor(applicationId: string, semanticVersion: string, options?: SecretRotationApplicationOptions) {
-    // partitions are handled explicitly via applicationArnForPartition()
-    // eslint-disable-next-line @cdklabs/no-literal-partition
-    this.applicationId = `arn:aws:serverlessrepo:us-east-1:297356227824:applications/${applicationId}`;
-    this.semanticVersion = semanticVersion;
-    this.applicationName = applicationId;
-    this.isMultiUser = options && options.isMultiUser;
+  /**
+   * The semantic versions for the rotation application in each partition where the application is present
+   */
+  private readonly partitionalSemanticVersions: { [partition: string]: string };
+
+  /**
+   * @param applicationName - The name of the rotation application
+   * @param awsSemanticVersion - AWS partition semantic version for the application.
+   * @param options - Additional options for the rotation application.
+   */
+  constructor(applicationName: string, awsSemanticVersion: string, options?: SecretRotationApplicationOptions) {
+    this.applicationName = applicationName;
+    this.isMultiUser = options?.isMultiUser ?? applicationName.endsWith('MultiUser');
+
+    this.partitionalSemanticVersions = {
+      aws: awsSemanticVersion,
+      ...(options?.additionalSemanticVersions ?? {}),
+    };
+
+    // Constants that are stored for backwards compatibility
+    this.semanticVersion = this.semanticVersionForPartition('aws');
+    this.applicationId = this.applicationArnForPartition('aws');
   }
 
   /**
@@ -145,13 +245,14 @@ export class SecretRotationApplication {
    */
   public applicationArnForPartition(partition: string) {
     if (partition === 'aws') {
-      return this.applicationId;
+      // eslint-disable-next-line @cdklabs/no-literal-partition
+      return `arn:aws:serverlessrepo:us-east-1:297356227824:applications/${this.applicationName}`;
     } else if (partition === 'aws-cn') {
       return `arn:aws-cn:serverlessrepo:cn-north-1:193023089310:applications/${this.applicationName}`;
     } else if (partition === 'aws-us-gov') {
       return `arn:aws-us-gov:serverlessrepo:us-gov-west-1:023102451235:applications/${this.applicationName}`;
     } else {
-      throw new UnscopedValidationError(`unsupported partition: ${partition}`);
+      throw new UnscopedValidationError(lit`UnsupportedPartition`, `unsupported partition: ${partition}`);
     }
   }
 
@@ -160,14 +261,10 @@ export class SecretRotationApplication {
    * Can be used in combination with a `CfnMapping` to automatically select the correct version based on the current partition.
    */
   public semanticVersionForPartition(partition: string) {
-    if (partition === 'aws') {
-      return this.semanticVersion;
-    } else if (partition === 'aws-cn') {
-      return '1.1.237';
-    } else if (partition === 'aws-us-gov') {
-      return '1.1.213';
+    if (this.partitionalSemanticVersions.hasOwnProperty(partition)) {
+      return this.partitionalSemanticVersions[partition];
     } else {
-      throw new UnscopedValidationError(`unsupported partition: ${partition}`);
+      throw new UnscopedValidationError(lit`UnsupportedPartition`, `unsupported partition: ${partition}`);
     }
   }
 }
@@ -278,11 +375,11 @@ export class SecretRotation extends Construct {
     super(scope, id);
 
     if (!props.target.connections.defaultPort) {
-      throw new ValidationError('The `target` connections must have a default port range.', this);
+      throw new ValidationError(lit`ConnectionsDefaultPortRange`, 'The `target` connections must have a default port range.', this);
     }
 
     if (props.application.isMultiUser && !props.masterSecret) {
-      throw new ValidationError('The `masterSecret` must be specified for application using the multi user scheme.', this);
+      throw new ValidationError(lit`MustBeSpecifiedApplicationUsing`, 'The `masterSecret` must be specified for application using the multi user scheme.', this);
     }
 
     // Max length of 64 chars, get the last 64 chars

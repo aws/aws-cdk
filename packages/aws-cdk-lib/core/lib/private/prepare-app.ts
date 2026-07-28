@@ -2,9 +2,25 @@ import type { IConstruct } from 'constructs';
 import { Dependable } from 'constructs';
 import { resolveReferences } from './refs';
 import { CfnResource } from '../cfn-resource';
-import { Stack } from '../stack';
-import { Stage } from '../stage';
+import type { Stack } from '../stack';
 import { iterateDfsPostorder, iterateDfsPreorder } from './construct-iteration';
+import { writePropertyAssignmentMetadataForConstruct } from './resolve';
+import { debugModeEnabled } from '../debug';
+import { STACK_TYPE, stageOf } from './core-construct-finders';
+
+function writePropertyAssignmentMetadata(root: IConstruct) {
+  if (!debugModeEnabled()) return;
+
+  const lookupTableFor = (c: CfnResource) => ({
+    cfnPropertyName: (cdkPropertyName: string) => c.cfnPropertyName(cdkPropertyName),
+  });
+
+  for (const consumer of iterateDfsPreorder(root)) {
+    if (CfnResource.isCfnResource(consumer)) {
+      writePropertyAssignmentMetadataForConstruct(consumer, () => consumer._toCloudFormation(), lookupTableFor(consumer));
+    }
+  }
+}
 
 /**
  * Prepares the app for synthesis. This function is called by the root `prepare`
@@ -26,12 +42,13 @@ export function prepareApp(root: IConstruct) {
 
     for (const target of targetCfnResources) {
       for (const source of sourceCfnResources) {
-        source.addDependency(target);
+        source.addResourceDependency(target);
       }
     }
   }
 
   resolveReferences(root);
+  writePropertyAssignmentMetadata(root);
 
   // depth-first (children first) queue of nested stacks. We will pop a stack
   // from the head of this queue to prepare its template asset.
@@ -76,13 +93,13 @@ function findAllNestedStacks(root: IConstruct) {
   const result = new Array<Stack>();
 
   const includeStack = (stack: IConstruct): stack is Stack => {
-    if (!Stack.isStack(stack)) { return false; }
+    if (!STACK_TYPE.isMarked(stack)) { return false; }
     if (!stack.nested) { return false; }
 
     // test: if we are not within a stage, then include it.
-    if (!Stage.of(stack)) { return true; }
+    if (!stageOf(stack)) { return true; }
 
-    return Stage.of(stack) === root;
+    return stageOf(stack) === root;
   };
 
   // create a list of all nested stacks in depth-first post order this means

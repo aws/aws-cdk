@@ -176,7 +176,7 @@ describe('stage', () => {
 
     // WHEN
     expect(() => {
-      stack2.addDependency(stack1);
+      stack2.addStackDependency(stack1);
     }).toThrow(/dependency cannot cross stage boundaries/);
   });
 
