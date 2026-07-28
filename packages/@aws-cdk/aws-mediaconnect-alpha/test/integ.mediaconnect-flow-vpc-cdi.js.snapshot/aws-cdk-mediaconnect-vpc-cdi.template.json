@@ -1,0 +1,450 @@
+{
+ "Resources": {
+  "testvpc5C6845CD": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-mediaconnect-vpc-cdi/testvpc"
+     }
+    ]
+   }
+  },
+  "testvpcsubnet1Subnet1Subnet03E4EA12": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "subnet1"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-mediaconnect-vpc-cdi/testvpc/subnet1Subnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "testvpc5C6845CD"
+    }
+   }
+  },
+  "testvpcsubnet1Subnet1RouteTableEBA4A3E2": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-mediaconnect-vpc-cdi/testvpc/subnet1Subnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "testvpc5C6845CD"
+    }
+   }
+  },
+  "testvpcsubnet1Subnet1RouteTableAssociation10E9C707": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "testvpcsubnet1Subnet1RouteTableEBA4A3E2"
+    },
+    "SubnetId": {
+     "Ref": "testvpcsubnet1Subnet1Subnet03E4EA12"
+    }
+   }
+  },
+  "testvpcsubnet1Subnet2Subnet9B683CC7": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.1.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "subnet1"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-mediaconnect-vpc-cdi/testvpc/subnet1Subnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "testvpc5C6845CD"
+    }
+   }
+  },
+  "testvpcsubnet1Subnet2RouteTableECD4BB74": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-mediaconnect-vpc-cdi/testvpc/subnet1Subnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "testvpc5C6845CD"
+    }
+   }
+  },
+  "testvpcsubnet1Subnet2RouteTableAssociation43B7036D": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "testvpcsubnet1Subnet2RouteTableECD4BB74"
+    },
+    "SubnetId": {
+     "Ref": "testvpcsubnet1Subnet2Subnet9B683CC7"
+    }
+   }
+  },
+  "testvpcRestrictDefaultSecurityGroupCustomResource937ADC3F": {
+   "Type": "Custom::VpcRestrictDefaultSG",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
+      "Arn"
+     ]
+    },
+    "DefaultSecurityGroupId": {
+     "Fn::GetAtt": [
+      "testvpc5C6845CD",
+      "DefaultSecurityGroup"
+     ]
+    },
+    "Account": {
+     "Ref": "AWS::AccountId"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:AuthorizeSecurityGroupEgress",
+          "ec2:RevokeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupEgress"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":ec2:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":security-group/",
+             {
+              "Fn::GetAtt": [
+               "testvpc5C6845CD",
+               "DefaultSecurityGroup"
+              ]
+             }
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "bea78ce725e22a5e0d82378f6b49028c09ba86499286d6945a0506e820854e92.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
+   },
+   "DependsOn": [
+    "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+   ]
+  },
+  "mysubnetSubnet269B0887": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "AWS::Region"
+       },
+       "a"
+      ]
+     ]
+    },
+    "CidrBlock": "10.0.172.0/24",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-mediaconnect-vpc-cdi/mysubnet"
+     }
+    ],
+    "VpcId": {
+     "Ref": "testvpc5C6845CD"
+    }
+   }
+  },
+  "mysubnetRouteTable0F7D5D45": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-mediaconnect-vpc-cdi/mysubnet"
+     }
+    ],
+    "VpcId": {
+     "Ref": "testvpc5C6845CD"
+    }
+   }
+  },
+  "mysubnetRouteTableAssociationC339E1ED": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "mysubnetRouteTable0F7D5D45"
+    },
+    "SubnetId": {
+     "Ref": "mysubnetSubnet269B0887"
+    }
+   }
+  },
+  "myrole08546DD7": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "mediaconnect.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": [
+          "ec2:CreateNetworkInterface",
+          "ec2:CreateNetworkInterfacePermission",
+          "ec2:DeleteNetworkInterface",
+          "ec2:DescribeSubnets"
+         ],
+         "Effect": "Allow",
+         "Resource": "*"
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "default"
+     }
+    ]
+   }
+  },
+  "sg29196201": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-cdk-mediaconnect-vpc-cdi/sg",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "testvpc5C6845CD"
+    }
+   }
+  },
+  "flowAF0E31A5": {
+   "Type": "AWS::MediaConnect::Flow",
+   "Properties": {
+    "FlowSize": "LARGE_4X",
+    "MediaStreams": [
+     {
+      "Attributes": {
+       "Fmtp": {
+        "Colorimetry": "BT709",
+        "ExactFramerate": "60000/1001",
+        "Par": "1:1",
+        "Range": "NARROW",
+        "ScanMode": "progressive",
+        "Tcs": "SDR"
+       }
+      },
+      "MediaStreamId": 1,
+      "MediaStreamName": "mystream",
+      "MediaStreamType": "video",
+      "VideoFormat": "1080p"
+     }
+    ],
+    "Name": "awscdkmediaconnectvpccdiflow80C18777",
+    "Source": {
+     "IngestPort": 5000,
+     "MaxSyncBuffer": 10,
+     "MediaStreamSourceConfigurations": [
+      {
+       "EncodingName": "raw",
+       "MediaStreamName": "mystream"
+      }
+     ],
+     "Name": "my-flow",
+     "Protocol": "cdi",
+     "VpcInterfaceName": "myvpcinterface"
+    },
+    "VpcInterfaces": [
+     {
+      "Name": "myvpcinterface",
+      "NetworkInterfaceType": "efa",
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "myrole08546DD7",
+        "Arn"
+       ]
+      },
+      "SecurityGroupIds": [
+       {
+        "Fn::GetAtt": [
+         "sg29196201",
+         "GroupId"
+        ]
+       }
+      ],
+      "SubnetId": {
+       "Ref": "mysubnetSubnet269B0887"
+      }
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

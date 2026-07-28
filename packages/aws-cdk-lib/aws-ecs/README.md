@@ -307,7 +307,7 @@ cluster.addCapacity('graviton-cluster', {
 });
 ```
 
-### Amazon Linux 2 (Neuron) Instances
+### Neuron Instances
 
 To launch Amazon EC2 Inf1, Trn1 or Inf2 instances, you can use the Amazon ECS optimized Amazon Linux 2 (Neuron) AMI. It comes pre-configured with AWS Inferentia and AWS Trainium drivers and the AWS Neuron runtime for Docker which makes running machine learning inference workloads easier on Amazon ECS.
 
@@ -2523,6 +2523,28 @@ service.forceNewDeployment();
 // Or provide your own nonce to control when deployments are triggered
 service.forceNewDeployment('my-custom-nonce-v2');
 ```
+
+Alternatively, you can configure `forceNewDeployment` declaratively as a constructor option.
+This approach also allows you to explicitly disable the feature with `enabled: false`.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+// Force a new deployment on every `cdk deploy` by using a time-based nonce
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  forceNewDeployment: {
+    enabled: true,
+    nonce: Date.now().toString(),
+  },
+});
+```
+
+Calling the `forceNewDeployment()` method takes precedence over the constructor option. The nonce passed
+to the method (or the auto-generated one when none is provided) overrides any value configured through the
+`forceNewDeployment` property.
 
 ## Mixins
 

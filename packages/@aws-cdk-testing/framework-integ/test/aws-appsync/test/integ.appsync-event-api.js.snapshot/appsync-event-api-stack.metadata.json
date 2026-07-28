@@ -1,0 +1,943 @@
+{
+  "/appsync-event-api-stack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:199:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/Certificate": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "domainName": "*",
+        "validation": "*"
+      }
+    }
+  ],
+  "/appsync-event-api-stack/Pool": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "userPoolName": "*",
+        "selfSignUpEnabled": true,
+        "autoVerify": {
+          "email": true
+        },
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/appsync-event-api-stack/AuthorizerFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    }
+  ],
+  "/appsync-event-api-stack/EventApi": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "apiName": "*",
+        "ownerContact": "*",
+        "authorizationConfig": {
+          "authProviders": [
+            {
+              "authorizationType": "AMAZON_COGNITO_USER_POOLS",
+              "cognitoConfig": {
+                "userPool": "*"
+              }
+            },
+            {
+              "authorizationType": "AWS_LAMBDA",
+              "lambdaAuthorizerConfig": {
+                "handler": "*"
+              }
+            },
+            {
+              "authorizationType": "API_KEY"
+            },
+            {
+              "authorizationType": "AWS_IAM"
+            }
+          ],
+          "connectionAuthModeTypes": [
+            "API_KEY",
+            "AWS_IAM"
+          ],
+          "defaultPublishAuthModeTypes": [
+            "AMAZON_COGNITO_USER_POOLS"
+          ],
+          "defaultSubscribeAuthModeTypes": [
+            "AWS_IAM"
+          ]
+        },
+        "logConfig": {
+          "fieldLogLevel": "ERROR"
+        },
+        "domainName": {
+          "certificate": "*",
+          "domainName": "*"
+        }
+      }
+    }
+  ],
+  "/appsync-event-api-stack/AppSyncCnameRecord": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "recordName": "*",
+        "zone": "*",
+        "domainName": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "recordName": "*",
+        "zone": "*",
+        "domainName": "*"
+      }
+    }
+  ],
+  "/appsync-event-api-stack/ChannelNamespace": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "api": "*",
+        "authorizationConfig": {
+          "publishAuthModeTypes": [
+            "API_KEY"
+          ],
+          "subscribeAuthModeTypes": [
+            "API_KEY"
+          ]
+        },
+        "code": "*"
+      }
+    }
+  ],
+  "/appsync-event-api-stack/ApiKeyConfigTestFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "environment": "*",
+        "bundling": {
+          "bundleAwsSDK": true
+        },
+        "entry": "*",
+        "handler": "*",
+        "timeout": "*",
+        "code": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "environment": "*",
+        "bundling": {
+          "bundleAwsSDK": true
+        },
+        "entry": "*",
+        "handler": "*",
+        "timeout": "*"
+      }
+    }
+  ],
+  "/appsync-event-api-stack/WebAcl": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebAcl"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EventApiStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:164:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:199:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/WafAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WafAssociation"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EventApiStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:175:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:199:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/AWS AppSync Events HTTP endpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AWSAppSyncEventsHTTPendpoint"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:266:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/AWS AppSync Events Realtime endpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AWSAppSyncEventsRealtimeendpoint"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:267:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/Certificate/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Certificate4E7ABB08"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Certificate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-certificatemanager/lib/certificate.js:261:26)",
+        "new Certificate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EventApiStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:23:29)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:199:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/Pool/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PoolD3F588B8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new UserPool (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool.js:535:30)",
+        "new UserPool (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new UserPool (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EventApiStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:27:26)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:199:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/Pool/lambda-app-client": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "userPool": "*",
+        "preventUserExistenceErrors": true,
+        "authFlows": {
+          "adminUserPassword": true
+        }
+      }
+    }
+  ],
+  "/appsync-event-api-stack/AuthorizerFunction/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/appsync-event-api-stack/AuthorizerFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuthorizerFunctionB4DBAA43"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EventApiStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:39:28)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:199:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/AuthorizerFunction/EventApi-appsync": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuthorizerFunctionEventApiappsyncE4B8E11D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addPermission (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:170:9)",
+        "new EventApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/eventapi.js:559:33)",
+        "new EventApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EventApiStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:80:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:199:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/EventApi/ApiLogsRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/appsync-event-api-stack/EventApi/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventApiE141E6C0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EventApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/eventapi.js:542:24)",
+        "new EventApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EventApiStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:80:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:199:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/EventApi/DefaultApiKey": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventApiDefaultApiKeyB9AB1E44"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "createAPIKey (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/auth-config.js:41:12)",
+        "new EventApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/eventapi.js:553:103)",
+        "new EventApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EventApiStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:80:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:199:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/EventApi/DomainName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventApiDomainName1C1CA3FD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EventApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/eventapi.js:566:43)",
+        "new EventApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EventApiStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:80:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:199:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/EventApi/DomainAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventApiDomainAssociationECB84F09"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EventApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/eventapi.js:571:47)",
+        "new EventApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EventApiStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:80:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:199:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/EventApi/default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "api": "*",
+        "channelNamespaceName": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "grantPublishAndSubscribe": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/appsync-event-api-stack/EventApi/AnotherChannelNamespace": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "api": "*",
+        "channelNamespaceName": "*",
+        "code": "*"
+      }
+    }
+  ],
+  "/appsync-event-api-stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/appsync-event-api-stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetentionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:180:26)",
+        "WrappedClass.ensureSingletonLogRetentionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:145:20)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:103:35)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EventApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/eventapi.js:579:38)",
+        "new EventApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EventApiStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:80:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:199:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/AppSyncCnameRecord/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppSyncCnameRecord408D9525"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:350:31)",
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CnameRecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:633:13)",
+        "new CnameRecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EventApiStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:110:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:199:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/ChannelNamespace/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ChannelNamespace5873C25D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ChannelNamespace (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/channel-namespace.js:180:37)",
+        "new ChannelNamespace (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EventApiStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:116:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:199:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/ApiKeyConfigTestFunction/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/appsync-event-api-stack/ApiKeyConfigTestFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiKeyConfigTestFunctionDD5876FC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new EventApiStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:160:29)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:199:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/Exports/Output{\"Ref\":\"ApiKeyConfigTestFunctionDD5876FC\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefApiKeyConfigTestFunctionDD5876FC25B0F694"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "EventApiStack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1113:17)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:116:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/Pool/lambda-app-client/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Poollambdaappclient42C69D5A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new UserPoolClient (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool-client.js:277:30)",
+        "new UserPoolClient (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addClient (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool.js:316:16)",
+        "new EventApiStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:33:33)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:199:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/AuthorizerFunction/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuthorizerFunctionServiceRole5B2A061B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EventApiStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:39:28)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:199:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/EventApi/ApiLogsRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventApiApiLogsRoleED9A8150"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.setupLogConfig (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/eventapi.js:617:17)",
+        "new EventApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/eventapi.js:540:33)",
+        "new EventApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EventApiStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:80:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:199:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/EventApi/LogRetention/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventApiLogRetention68604E65"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EventApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/eventapi.js:579:38)",
+        "new EventApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EventApiStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:80:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:199:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/EventApi/default/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventApidefault24CEF6C6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ChannelNamespace (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/channel-namespace.js:180:37)",
+        "new ChannelNamespace (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addChannelNamespace (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/eventapi.js:130:16)",
+        "new EventApiStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:115:46)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:199:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/EventApi/AnotherChannelNamespace/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventApiAnotherChannelNamespace5BC7F3A5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ChannelNamespace (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/channel-namespace.js:180:37)",
+        "new ChannelNamespace (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addChannelNamespace (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/eventapi.js:130:16)",
+        "new EventApiStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:128:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:199:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/appsync-event-api-stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:166:36)",
+        "WrappedClass.ensureSingletonLogRetentionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:145:20)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:103:35)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EventApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/eventapi.js:579:38)",
+        "new EventApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EventApiStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:80:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:199:15)"
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/appsync-event-api-stack/ChannelNamespace/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/appsync-event-api-stack/ApiKeyConfigTestFunction/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiKeyConfigTestFunctionServiceRole752D4D67"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new EventApiStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:160:29)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:199:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/ApiKeyConfigTestFunction/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/appsync-event-api-stack/ApiKeyConfigTestFunction/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/appsync-event-api-stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new LogRetentionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:171:14)",
+        "WrappedClass.ensureSingletonLogRetentionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:145:20)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:103:35)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EventApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/eventapi.js:579:38)"
+      ]
+    }
+  ],
+  "/appsync-event-api-stack/ApiKeyConfigTestFunction/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiKeyConfigTestFunctionServiceRoleDefaultPolicy411A98AC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "WrappedClass.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/eventapi.js:311:34)",
+        "WrappedClass.grantConnect (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/eventapi.js:390:21)",
+        "new EventApiStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:161:23)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-event-api.js:199:15)"
+      ]
+    }
+  ]
+}

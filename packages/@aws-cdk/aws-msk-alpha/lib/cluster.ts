@@ -778,7 +778,7 @@ export class Cluster extends ClusterBase {
    *
    * Uses a Custom Resource to make an API call to `describeCluster` using the Javascript SDK
    *
-   * @param responseField Field to return from API call. eg. ZookeeperConnectString, ZookeeperConnectStringTls
+   * @param responseField Field to return from API call. e.g. ZookeeperConnectString, ZookeeperConnectStringTls
    * @returns - The connection string to use to connect to the Apache ZooKeeper cluster.
    */
   private _zookeeperConnectionString(responseField: string): string {
@@ -835,7 +835,7 @@ export class Cluster extends ClusterBase {
    *
    * Uses a Custom Resource to make an API call to `getBootstrapBrokers` using the Javascript SDK
    *
-   * @param responseField Field to return from API call. eg. BootstrapBrokerStringSaslScram, BootstrapBrokerString
+   * @param responseField Field to return from API call. e.g. BootstrapBrokerStringSaslScram, BootstrapBrokerString
    * @returns - A string containing one or more hostname:port pairs.
    */
   private _bootstrapBrokers(responseField: string): string {

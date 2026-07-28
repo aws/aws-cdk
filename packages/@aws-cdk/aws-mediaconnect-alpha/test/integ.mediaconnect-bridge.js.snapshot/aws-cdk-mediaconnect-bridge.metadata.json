@@ -1,0 +1,62 @@
+{
+  "/aws-cdk-mediaconnect-bridge/gateway": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-bridge/bridge": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-bridge/test-flow": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-bridge/bridgeWithOutput": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-bridge/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-bridge/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-bridge/gateway/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "gatewayB15F83BA"
+    }
+  ],
+  "/aws-cdk-mediaconnect-bridge/bridge/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "bridge6E10D0E7"
+    }
+  ],
+  "/aws-cdk-mediaconnect-bridge/test-flow/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testflowB44BC918"
+    }
+  ],
+  "/aws-cdk-mediaconnect-bridge/bridgeWithOutput/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "bridgeWithOutputCB448FD8"
+    }
+  ]
+}

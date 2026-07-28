@@ -1,5 +1,6 @@
 import * as path from 'path';
 import type * as constructs from 'constructs';
+import { acknowledgeTestWarnings } from './test-warnings';
 import { Template } from '../../assertions';
 import type * as cloudwatch from '../../aws-cloudwatch';
 import * as core from '../../core';
@@ -14,6 +15,7 @@ describe('CDK Include', () => {
 
   beforeEach(() => {
     stack = new core.Stack();
+    acknowledgeTestWarnings(stack);
   });
 
   test('can ingest a template with all long-form CloudFormation functions and output it unchanged', () => {

@@ -1,5 +1,5 @@
 {
-  "version": "50.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "aws-cdk-bedrock-orchestration-1.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/18493824fc111a5c1c56cb84e24338e7fdb29974489554cf1cad88aaad0d61ce.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fd091e0d546caed5534986a59d5426aea3351c505d165eaeee45d4b62c7ec573.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,192 +33,7 @@
       "dependencies": [
         "aws-cdk-bedrock-orchestration-1.assets"
       ],
-      "metadata": {
-        "/aws-cdk-bedrock-orchestration-1/OrchestrationFunction": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "handler": "*",
-              "code": "*"
-            }
-          }
-        ],
-        "/aws-cdk-bedrock-orchestration-1/OrchestrationFunction/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-bedrock-orchestration-1/OrchestrationFunction/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OrchestrationFunctionServiceRole12D0673A"
-          }
-        ],
-        "/aws-cdk-bedrock-orchestration-1/OrchestrationFunction/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OrchestrationFunction2F3851C6"
-          }
-        ],
-        "/aws-cdk-bedrock-orchestration-1/OrchestrationFunction/LogGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "logGroupName": "*"
-            }
-          }
-        ],
-        "/aws-cdk-bedrock-orchestration-1/OrchestrationFunction/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OrchestrationFunctionLogGroup07F3FD44"
-          }
-        ],
-        "/aws-cdk-bedrock-orchestration-1/OrchestrationFunction/OrchestrationLambdaInvocationPolicy-c8f49862985034a7": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OrchestrationFunctionOrchestrationLambdaInvocationPolicyc8f49862985034a7EC14F6D5"
-          }
-        ],
-        "/aws-cdk-bedrock-orchestration-1/CustomOrchestrationAgent": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-bedrock-orchestration-1/CustomOrchestrationAgent/Role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "roleName": "*",
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-bedrock-orchestration-1/CustomOrchestrationAgent/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomOrchestrationAgentRole85710213"
-          }
-        ],
-        "/aws-cdk-bedrock-orchestration-1/CustomOrchestrationAgent/Role/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-bedrock-orchestration-1/CustomOrchestrationAgent/Role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomOrchestrationAgentRoleDefaultPolicy33EDF7E6"
-          }
-        ],
-        "/aws-cdk-bedrock-orchestration-1/CustomOrchestrationAgent/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomOrchestrationAgentDC6CC131"
-          }
-        ],
-        "/aws-cdk-bedrock-orchestration-1/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/aws-cdk-bedrock-orchestration-1/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "aws-cdk-bedrock-orchestration-1.metadata.json",
       "displayName": "aws-cdk-bedrock-orchestration-1"
     },
     "BedrockOrchestrationDefaultTestDeployAssertACFAFF30.assets": {
@@ -253,20 +68,7 @@
       "dependencies": [
         "BedrockOrchestrationDefaultTestDeployAssertACFAFF30.assets"
       ],
-      "metadata": {
-        "/BedrockOrchestration/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/BedrockOrchestration/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "BedrockOrchestrationDefaultTestDeployAssertACFAFF30.metadata.json",
       "displayName": "BedrockOrchestration/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -567,6 +369,7 @@
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
           "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
           },
@@ -767,10 +570,40 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1105.0"
+  "minimumCliVersion": "2.1108.0"
 }
