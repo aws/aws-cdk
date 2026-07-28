@@ -1,15 +1,13 @@
-import { Template, Match } from '../../../../assertions';
+import { Match, Template } from '../../../../assertions';
 import { FoundationModel, FoundationModelIdentifier } from '../../../../aws-bedrock';
 import * as cloudwatch from '../../../../aws-cloudwatch';
 import * as iam from '../../../../aws-iam';
 import * as kms from '../../../../aws-kms';
 import * as s3 from '../../../../aws-s3';
 import * as sns from '../../../../aws-sns';
-import { Duration } from '../../../../core';
 import * as cdk from '../../../../core';
-import {
-  Memory,
-} from '../../../lib/memory/memory';
+import { Duration } from '../../../../core';
+import { Memory } from '../../../lib/memory/memory';
 import { MemoryStrategy } from '../../../lib/memory/memory-strategy';
 
 // Create a test model using the stable FoundationModel
@@ -189,10 +187,10 @@ describe('Memory with built-in strategies tests', () => {
       Description: 'A test memory with built-in strategies',
       EventExpiryDuration: 60,
       MemoryStrategies: Match.arrayWith([
-        Match.objectLike({ SummaryMemoryStrategy: Match.objectLike({ Type: 'SUMMARIZATION' }) }),
-        Match.objectLike({ SemanticMemoryStrategy: Match.objectLike({ Type: 'SEMANTIC' }) }),
-        Match.objectLike({ UserPreferenceMemoryStrategy: Match.objectLike({ Type: 'USER_PREFERENCE' }) }),
-        Match.objectLike({ EpisodicMemoryStrategy: Match.objectLike({ Type: 'EPISODIC' }) }),
+        Match.objectLike({ SummaryMemoryStrategy: Match.objectLike({ Name: 'summary_builtin_cdkGen0001' }) }),
+        Match.objectLike({ SemanticMemoryStrategy: Match.objectLike({ Name: 'semantic_builtin_cdkGen0001' }) }),
+        Match.objectLike({ UserPreferenceMemoryStrategy: Match.objectLike({ Name: 'preference_builtin_cdkGen0001' }) }),
+        Match.objectLike({ EpisodicMemoryStrategy: Match.objectLike({ Name: 'episodic_builtin_cdkGen0001' }) }),
       ]),
     });
 
@@ -573,7 +571,6 @@ describe('Memory with custom strategies tests', () => {
             Name: 'custom_semantic_strategy',
             Description: 'Custom semantic memory strategy with overrides',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/custom'],
-            Type: 'SEMANTIC',
             Configuration: {
               SemanticOverride: {
                 Consolidation: {
@@ -600,7 +597,6 @@ describe('Memory with custom strategies tests', () => {
             Name: 'custom_user_preference_strategy',
             Description: 'Custom user preference strategy with overrides',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/preferences'],
-            Type: 'USER_PREFERENCE',
             Configuration: {
               UserPreferenceOverride: {
                 Consolidation: {
@@ -627,7 +623,6 @@ describe('Memory with custom strategies tests', () => {
             Name: 'custom_summary_strategy',
             Description: 'Custom summary strategy with override',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}/custom'],
-            Type: 'SUMMARIZATION',
             Configuration: {
               SummaryOverride: {
                 Consolidation: {
@@ -715,7 +710,6 @@ describe('Memory with mixed built-in and custom strategies tests', () => {
             Name: Match.stringLikeRegexp('summary_builtin_.*'),
             Description: 'Summarize interactions to preserve critical context and key insights',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}'],
-            Type: 'SUMMARIZATION',
           },
         },
         // Built-in semantic
@@ -724,7 +718,6 @@ describe('Memory with mixed built-in and custom strategies tests', () => {
             Name: Match.stringLikeRegexp('semantic_builtin_.*'),
             Description: 'Extract general factual knowledge, concepts and meanings from raw conversations in a context-independent format.',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
-            Type: 'SEMANTIC',
           },
         },
         // Custom semantic
@@ -733,7 +726,6 @@ describe('Memory with mixed built-in and custom strategies tests', () => {
             Name: 'hybrid_semantic_strategy',
             Description: 'Hybrid semantic strategy combining built-in and custom',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/hybrid'],
-            Type: 'SEMANTIC',
             Configuration: {
               SemanticOverride: {
                 Consolidation: {
@@ -756,8 +748,8 @@ describe('Memory with mixed built-in and custom strategies tests', () => {
     template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
       Name: 'test_memory_mixed_strategies',
       MemoryStrategies: Match.arrayWith([
-        Match.objectLike({ SummaryMemoryStrategy: Match.objectLike({ Type: 'SUMMARIZATION' }) }),
-        Match.objectLike({ SemanticMemoryStrategy: Match.objectLike({ Type: 'SEMANTIC' }) }),
+        Match.objectLike({ SummaryMemoryStrategy: Match.objectLike({ Name: 'summary_builtin_cdkGen0001' }) }),
+        Match.objectLike({ SemanticMemoryStrategy: Match.objectLike({ Name: 'semantic_builtin_cdkGen0001' }) }),
         Match.objectLike({ CustomMemoryStrategy: Match.objectLike({ Name: 'hybrid_semantic_strategy' }) }),
       ]),
     });
@@ -826,7 +818,6 @@ describe('Memory with addMemoryStrategy method tests', () => {
             Name: Match.stringLikeRegexp('summary_builtin_.*'),
             Description: 'Summarize interactions to preserve critical context and key insights',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}'],
-            Type: 'SUMMARIZATION',
           },
         },
         {
@@ -834,7 +825,6 @@ describe('Memory with addMemoryStrategy method tests', () => {
             Name: Match.stringLikeRegexp('semantic_builtin_.*'),
             Description: 'Extract general factual knowledge, concepts and meanings from raw conversations in a context-independent format.',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
-            Type: 'SEMANTIC',
           },
         },
         {
@@ -842,7 +832,6 @@ describe('Memory with addMemoryStrategy method tests', () => {
             Name: 'added_custom_strategy',
             Description: 'Custom strategy added via addMemoryStrategy method',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/added'],
-            Type: 'SEMANTIC',
             Configuration: {
               SemanticOverride: {
                 Consolidation: {
@@ -944,7 +933,6 @@ describe('Memory with dynamic strategy addition tests', () => {
             Name: Match.stringLikeRegexp('preference_builtin_.*'),
             Description: 'Capture individual preferences, interaction patterns, and personalized settings to enhance future experiences.',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
-            Type: 'USER_PREFERENCE',
           },
         },
         // Dynamically added strategies
@@ -953,7 +941,6 @@ describe('Memory with dynamic strategy addition tests', () => {
             Name: Match.stringLikeRegexp('summary_builtin_.*'),
             Description: 'Summarize interactions to preserve critical context and key insights',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}'],
-            Type: 'SUMMARIZATION',
           },
         },
         {
@@ -961,7 +948,6 @@ describe('Memory with dynamic strategy addition tests', () => {
             Name: 'dynamic_summary_strategy',
             Description: 'Dynamic summary strategy',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/dynamic'],
-            Type: 'SUMMARIZATION',
             Configuration: {
               SummaryOverride: {
                 Consolidation: {
@@ -980,8 +966,8 @@ describe('Memory with dynamic strategy addition tests', () => {
     template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
       Name: 'test_memory_dynamic',
       MemoryStrategies: Match.arrayWith([
-        Match.objectLike({ UserPreferenceMemoryStrategy: Match.objectLike({ Type: 'USER_PREFERENCE' }) }),
-        Match.objectLike({ SummaryMemoryStrategy: Match.objectLike({ Type: 'SUMMARIZATION' }) }),
+        Match.objectLike({ UserPreferenceMemoryStrategy: Match.objectLike({ Name: 'preference_builtin_cdkGen0001' }) }),
+        Match.objectLike({ SummaryMemoryStrategy: Match.objectLike({ Name: 'summary_builtin_cdkGen0001' }) }),
         Match.objectLike({ CustomMemoryStrategy: Match.objectLike({ Name: 'dynamic_summary_strategy' }) }),
       ]),
     });
@@ -1252,7 +1238,9 @@ describe('Memory.addMemoryStrategy behavior tests', () => {
       MemoryStrategies: Match.arrayWith([
         Match.objectLike({
           SemanticMemoryStrategy: Match.objectLike({
-            Type: 'SEMANTIC',
+            Namespaces: [
+              '/strategies/{memoryStrategyId}/actors/{actorId}',
+            ],
           }),
         }),
       ]),
@@ -1307,9 +1295,9 @@ describe('Memory.addMemoryStrategy behavior tests', () => {
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
       MemoryStrategies: Match.arrayWith([
-        Match.objectLike({ SummaryMemoryStrategy: Match.objectLike({ Type: 'SUMMARIZATION' }) }),
-        Match.objectLike({ SemanticMemoryStrategy: Match.objectLike({ Type: 'SEMANTIC' }) }),
-        Match.objectLike({ UserPreferenceMemoryStrategy: Match.objectLike({ Type: 'USER_PREFERENCE' }) }),
+        Match.objectLike({ SummaryMemoryStrategy: Match.objectLike({ Name: 'summary_builtin_cdkGen0001' }) }),
+        Match.objectLike({ SemanticMemoryStrategy: Match.objectLike({ Name: 'semantic_builtin_cdkGen0001' }) }),
+        Match.objectLike({ UserPreferenceMemoryStrategy: Match.objectLike({ Name: 'preference_builtin_cdkGen0001' }) }),
       ]),
     });
   });
@@ -1430,7 +1418,6 @@ describe('BuiltInMemoryStrategy unit tests', () => {
       name: expect.stringMatching('summary_builtin_cdkGen0001'),
       description: 'Summarize interactions to preserve critical context and key insights',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}'],
-      type: 'SUMMARIZATION',
     });
   });
 
@@ -1443,7 +1430,6 @@ describe('BuiltInMemoryStrategy unit tests', () => {
       name: expect.stringMatching('semantic_builtin_cdkGen0001'),
       description: 'Extract general factual knowledge, concepts and meanings from raw conversations in a context-independent format.',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
-      type: 'SEMANTIC',
     });
   });
 
@@ -1456,7 +1442,6 @@ describe('BuiltInMemoryStrategy unit tests', () => {
       name: expect.stringMatching('preference_builtin_cdkGen0001'),
       description: 'Capture individual preferences, interaction patterns, and personalized settings to enhance future experiences.',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
-      type: 'USER_PREFERENCE',
     });
   });
 
@@ -2100,30 +2085,27 @@ describe('Memory with custom execution role and strategies tests', () => {
     template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
       MemoryStrategies: Match.arrayWith([
         // Built-in summarization
-        {
+        Match.objectLike({
           SummaryMemoryStrategy: {
             Name: Match.stringLikeRegexp('summary_builtin_.*'),
             Description: 'Summarize interactions to preserve critical context and key insights',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}'],
-            Type: 'SUMMARIZATION',
           },
-        },
+        }),
         // Built-in semantic
-        {
+        Match.objectLike( {
           SemanticMemoryStrategy: {
             Name: Match.stringLikeRegexp('semantic_builtin_.*'),
             Description: 'Extract general factual knowledge, concepts and meanings from raw conversations in a context-independent format.',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
-            Type: 'SEMANTIC',
           },
-        },
+        }),
         // Custom semantic strategy
-        {
+        Match.objectLike({
           CustomMemoryStrategy: {
             Name: 'custom_semantic_strategy',
             Description: 'Custom semantic strategy with custom role',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/custom'],
-            Type: 'SEMANTIC',
             Configuration: {
               SemanticOverride: {
                 Consolidation: {
@@ -2137,13 +2119,12 @@ describe('Memory with custom execution role and strategies tests', () => {
               },
             },
           },
-        },
+        }),
         // Self-managed strategy
-        {
+        Match.objectLike({
           CustomMemoryStrategy: {
             Name: 'self_managed_strategy',
             Description: 'Self-managed strategy with custom role',
-            Type: 'CUSTOM',
             Configuration: {
               SelfManagedConfiguration: {
                 HistoricalContextWindowSize: 4,
@@ -2175,7 +2156,7 @@ describe('Memory with custom execution role and strategies tests', () => {
               },
             },
           },
-        },
+        }),
       ]),
     });
   });
@@ -2189,7 +2170,6 @@ describe('Memory with custom execution role and strategies tests', () => {
             Name: Match.stringLikeRegexp('preference_builtin_.*'),
             Description: 'Capture individual preferences, interaction patterns, and personalized settings to enhance future experiences.',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
-            Type: 'USER_PREFERENCE',
           },
         },
         // Custom user preference added via addMemoryStrategy
@@ -2198,7 +2178,6 @@ describe('Memory with custom execution role and strategies tests', () => {
             Name: 'added_user_preference_strategy',
             Description: 'User preference strategy added via addMemoryStrategy',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/preferences'],
-            Type: 'USER_PREFERENCE',
             Configuration: {
               UserPreferenceOverride: {
                 Consolidation: {
@@ -2217,11 +2196,11 @@ describe('Memory with custom execution role and strategies tests', () => {
     template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
       Name: 'test_memory_custom_role_strategies',
       MemoryStrategies: Match.arrayWith([
-        Match.objectLike({ SummaryMemoryStrategy: Match.objectLike({ Type: 'SUMMARIZATION' }) }),
-        Match.objectLike({ SemanticMemoryStrategy: Match.objectLike({ Type: 'SEMANTIC' }) }),
+        Match.objectLike({ SummaryMemoryStrategy: Match.objectLike({ Name: 'summary_builtin_cdkGen0001' }) }),
+        Match.objectLike({ SemanticMemoryStrategy: Match.objectLike({ Name: 'semantic_builtin_cdkGen0001' }) }),
         Match.objectLike({ CustomMemoryStrategy: Match.objectLike({ Name: 'custom_semantic_strategy' }) }),
         Match.objectLike({ CustomMemoryStrategy: Match.objectLike({ Name: 'self_managed_strategy' }) }),
-        Match.objectLike({ UserPreferenceMemoryStrategy: Match.objectLike({ Type: 'USER_PREFERENCE' }) }),
+        Match.objectLike({ UserPreferenceMemoryStrategy: Match.objectLike({ Name: 'preference_builtin_cdkGen0001' }) }),
         Match.objectLike({ CustomMemoryStrategy: Match.objectLike({ Name: 'added_user_preference_strategy' }) }),
       ]),
     });
@@ -2336,7 +2315,6 @@ describe('Episodic Memory Strategy unit tests', () => {
     expect((rendered as any).episodicMemoryStrategy).toMatchObject({
       name: expect.stringMatching('episodic_builtin_cdkGen0001'),
       namespaces: ['/strategy/{memoryStrategyId}/actor/{actorId}/session/{sessionId}'],
-      type: 'EPISODIC',
       reflectionConfiguration: {
         namespaces: ['/strategy/{memoryStrategyId}/actor/{actorId}'],
       },

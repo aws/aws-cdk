@@ -36,6 +36,7 @@ import {
   Stack,
   Token,
   ValidationError,
+  Validations,
 } from '../../core';
 import type { IArrayBox, IBox, IReadableBox } from '../../core/lib/helpers-internal';
 import { Box } from '../../core/lib/helpers-internal';
@@ -446,6 +447,10 @@ export class Distribution extends Resource implements IDistribution {
         // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
         webAclId: Token.asString(this._webAclId),
       },
+    });
+    Validations.of(distribution).acknowledge({
+      id: 'CloudFormation-Validate::W9009',
+      reason: 'distributionConfig is deprecated, but still in use for historical reasons',
     });
 
     this.distributionRef = distribution.distributionRef;
