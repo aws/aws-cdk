@@ -956,6 +956,10 @@ describe('domains', () => {
   test('base path mapping configures stage for SpecRestApi creation', () => {
     // GIVEN
     const stack = new Stack();
+    Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::W3660',
+      reason: 'We mix resources and Flutter definitions on purpose',
+    });
 
     const definition = {
       key1: 'val1',
