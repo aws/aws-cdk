@@ -1,4 +1,5 @@
 {
+ "Metadata": { "Test": "test" },
  "Resources": {
   "LogGroupLambdaAuditF8F47F46": {
    "Type": "AWS::Logs::LogGroup",
