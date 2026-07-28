@@ -1,12 +1,13 @@
-import { Construct } from 'constructs';
-import * as ec2 from '../../../aws-ec2';
-import * as ecr from '../../../aws-ecr';
-import { DockerImageAsset, DockerImageAssetProps } from '../../../aws-ecr-assets';
+import type { Construct } from 'constructs';
+import type * as ec2 from '../../../aws-ec2';
+import type * as ecr from '../../../aws-ecr';
+import type { DockerImageAssetProps } from '../../../aws-ecr-assets';
+import { DockerImageAsset } from '../../../aws-ecr-assets';
 import * as iam from '../../../aws-iam';
-import * as kms from '../../../aws-kms';
-import * as s3 from '../../../aws-s3';
+import type * as kms from '../../../aws-kms';
+import type * as s3 from '../../../aws-s3';
 import * as sfn from '../../../aws-stepfunctions';
-import { Duration, Size } from '../../../core';
+import type { Duration, Size } from '../../../core';
 
 /**
  * Task to train a machine learning model using Amazon SageMaker
@@ -604,7 +605,7 @@ export interface TransformOutput {
    *
    * @default - default KMS key for Amazon S3 for your role's account.
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKeyRef;
 
   /**
    * S3 path where you want Amazon SageMaker to store the results of the transform job.
@@ -633,7 +634,7 @@ export interface TransformResources {
    *
    * @default - None
    */
-  readonly volumeEncryptionKey?: kms.IKey;
+  readonly volumeEncryptionKey?: kms.IKeyRef;
 }
 
 /**

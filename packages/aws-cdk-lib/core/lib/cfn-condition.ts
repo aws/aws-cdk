@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnElement } from './cfn-element';
-import { IResolvable, IResolveContext } from './resolvable';
+import type { IResolvable, IResolveContext } from './resolvable';
 
 export interface CfnConditionProps {
   /**

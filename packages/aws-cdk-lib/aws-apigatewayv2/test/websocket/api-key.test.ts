@@ -251,7 +251,7 @@ describe('api key', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const api = new WebSocketApi(stack, 'test-api');
-      const stage = WebSocketStage.fromWebSocketStageAttributes(stack, 'Stage', {
+      WebSocketStage.fromWebSocketStageAttributes(stack, 'Stage', {
         api: api,
         stageName: 'MyStage',
       });

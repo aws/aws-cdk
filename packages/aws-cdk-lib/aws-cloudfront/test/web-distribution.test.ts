@@ -22,7 +22,7 @@ import {
   ViewerProtocolPolicy,
 } from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 const publicKey = `-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAudf8/iNkQgdvjEdm6xYS
@@ -1371,7 +1371,7 @@ added the ellipsis so a user would know there was more to r...`,
             s3OriginSource: { s3BucketSource: sourceBucket },
             behaviors: [{ isDefaultBehavior: true }],
           }],
-          geoRestriction: GeoRestriction.allowlist('US', 'UK'),
+          geoRestriction: GeoRestriction.allowlist('US', 'GB'),
         });
 
         Template.fromStack(stack).templateMatches({
@@ -1426,7 +1426,7 @@ added the ellipsis so a user would know there was more to r...`,
                   'HttpVersion': 'http2',
                   'Restrictions': {
                     'GeoRestriction': {
-                      'Locations': ['US', 'UK'],
+                      'Locations': ['US', 'GB'],
                       'RestrictionType': 'whitelist',
                     },
                   },

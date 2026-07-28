@@ -1,8 +1,9 @@
+/* eslint-disable @cdklabs/no-throw-default-error */
 /* eslint-disable no-console */
-// eslint-disable-next-line import/no-extraneous-dependencies
+
 import { Match, Matcher } from 'aws-cdk-lib/assertions/lib/helpers-internal';
 import { CustomResourceHandler } from './base';
-import { AssertionResult, AssertionRequest } from './types';
+import type { AssertionResult, AssertionRequest } from './types';
 
 export class AssertionHandler extends CustomResourceHandler<AssertionRequest, AssertionResult> {
   protected async processEvent(request: AssertionRequest): Promise<AssertionResult | undefined> {

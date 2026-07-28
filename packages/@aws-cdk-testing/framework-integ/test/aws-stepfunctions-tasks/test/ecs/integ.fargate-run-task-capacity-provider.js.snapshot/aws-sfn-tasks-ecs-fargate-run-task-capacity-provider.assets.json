@@ -1,0 +1,48 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f": {
+      "displayName": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
+      "source": {
+        "path": "asset.55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-65a3ca72": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "f36ebf821ebb8da2ec2f6579dcf3e31f6a81cc21a0a783224d1647832cc26fad": {
+      "displayName": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider Template",
+      "source": {
+        "path": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-441e828c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f36ebf821ebb8da2ec2f6579dcf3e31f6a81cc21a0a783224d1647832cc26fad.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {
+    "cb8db1ca45b29cf8a7db558e2cb31ac823252251ae003dc87318f485c6415d2b": {
+      "displayName": "TaskDef/TheContainer/AssetImage",
+      "source": {
+        "directory": "asset.cb8db1ca45b29cf8a7db558e2cb31ac823252251ae003dc87318f485c6415d2b"
+      },
+      "destinations": {
+        "current_account-current_region-ac25353e": {
+          "repositoryName": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}",
+          "imageTag": "cb8db1ca45b29cf8a7db558e2cb31ac823252251ae003dc87318f485c6415d2b",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  }
+}

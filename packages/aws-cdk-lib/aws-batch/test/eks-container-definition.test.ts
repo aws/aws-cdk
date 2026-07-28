@@ -1,8 +1,9 @@
 import { capitalizePropertyNames } from './utils';
-import { Size, Stack } from '../..';
 import { Template } from '../../assertions';
 import * as ecs from '../../aws-ecs';
-import { CfnJobDefinitionProps, EksContainerDefinitionProps, EksContainerDefinition, EksJobDefinition, ImagePullPolicy, EksVolume, EmptyDirMediumType } from '../lib';
+import { Size, Stack } from '../../core';
+import type { CfnJobDefinitionProps, EksContainerDefinitionProps } from '../lib';
+import { EksContainerDefinition, EksJobDefinition, ImagePullPolicy, EksVolume, EmptyDirMediumType } from '../lib';
 
 // GIVEN
 const defaultContainerProps: EksContainerDefinitionProps = {

@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "DistributionConfigurationTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-imagebuilder-distribution-configuration-default-parameters"
+      ],
+      "assertionStack": "DistributionConfigurationTest/DefaultTest/DeployAssert",
+      "assertionStackName": "DistributionConfigurationTestDefaultTestDeployAssertF6EA9373"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

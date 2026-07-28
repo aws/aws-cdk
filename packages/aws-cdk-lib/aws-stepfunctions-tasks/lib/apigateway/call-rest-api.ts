@@ -1,8 +1,8 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CallApiGatewayEndpointBase } from './base';
-import { CallApiGatewayEndpointBaseProps, CallApiGatewayEndpointJsonataBaseProps, CallApiGatewayEndpointJsonPathBaseProps } from './base-types';
-import * as apigateway from '../../../aws-apigateway';
-import * as iam from '../../../aws-iam';
+import type { CallApiGatewayEndpointBaseProps, CallApiGatewayEndpointJsonataBaseProps, CallApiGatewayEndpointJsonPathBaseProps } from './base-types';
+import type * as apigateway from '../../../aws-apigateway';
+import type * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';

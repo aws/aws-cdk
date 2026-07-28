@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+
 // @ts-ignore
 import { DynamoDBClient, DescribeTableCommand } from '@aws-sdk/client-dynamodb'; // eslint-disable-line import/no-extraneous-dependencies
 

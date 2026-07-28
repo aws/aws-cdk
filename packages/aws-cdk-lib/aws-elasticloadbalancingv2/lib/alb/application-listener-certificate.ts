@@ -1,8 +1,9 @@
 import { Construct } from 'constructs';
-import { IApplicationListener } from './application-listener';
 import { ValidationError } from '../../../core/lib/errors';
+import { lit } from '../../../core/lib/private/literal-string';
+import type { aws_elasticloadbalancingv2 as elbv2 } from '../../../interfaces';
 import { CfnListenerCertificate } from '../elasticloadbalancingv2.generated';
-import { IListenerCertificate } from '../shared/listener-certificate';
+import type { IListenerCertificate } from '../shared/listener-certificate';
 
 /**
  * Properties for adding a set of certificates to a listener
@@ -11,7 +12,7 @@ export interface ApplicationListenerCertificateProps {
   /**
    * The listener to attach the rule to
    */
-  readonly listener: IApplicationListener;
+  readonly listener: elbv2.IListenerRef;
 
   /**
    * ARNs of certificates to attach
@@ -41,7 +42,7 @@ export class ApplicationListenerCertificate extends Construct {
     super(scope, id);
 
     if (!props.certificateArns && !props.certificates) {
-      throw new ValidationError('At least one of \'certificateArns\' or \'certificates\' is required', this);
+      throw new ValidationError(lit`IsRequiredLeastCertificatearnsCertificates`, 'At least one of \'certificateArns\' or \'certificates\' is required', this);
     }
 
     const certificates = [
@@ -50,7 +51,7 @@ export class ApplicationListenerCertificate extends Construct {
     ];
 
     new CfnListenerCertificate(this, 'Resource', {
-      listenerArn: props.listener.listenerArn,
+      listenerArn: props.listener.listenerRef.listenerArn,
       certificates,
     });
   }

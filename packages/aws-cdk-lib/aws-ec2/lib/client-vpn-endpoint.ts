@@ -1,17 +1,32 @@
-import { Construct, DependencyGroup, IDependable } from 'constructs';
-import { ClientVpnAuthorizationRule, ClientVpnAuthorizationRuleOptions } from './client-vpn-authorization-rule';
-import { IClientVpnConnectionHandler, IClientVpnEndpoint, TransportProtocol, VpnPort } from './client-vpn-endpoint-types';
-import { ClientVpnRoute, ClientVpnRouteOptions } from './client-vpn-route';
+import type { Construct, IDependable } from 'constructs';
+import { DependencyGroup } from 'constructs';
+import type { ClientVpnAuthorizationRuleOptions } from './client-vpn-authorization-rule';
+import { ClientVpnAuthorizationRule } from './client-vpn-authorization-rule';
+import type {
+  IClientVpnConnectionHandler,
+  IClientVpnEndpoint,
+  TransportProtocol,
+  VpnPort,
+} from './client-vpn-endpoint-types';
+import type { ClientVpnRouteOptions } from './client-vpn-route';
+import { ClientVpnRoute } from './client-vpn-route';
 import { Connections } from './connections';
-import { CfnClientVpnEndpoint, CfnClientVpnTargetNetworkAssociation } from './ec2.generated';
+import type { ClientVpnEndpointReference } from './ec2.generated';
+import {
+  CfnClientVpnEndpoint,
+  CfnClientVpnTargetNetworkAssociation,
+} from './ec2.generated';
 import { CidrBlock } from './network-util';
-import { ISecurityGroup, SecurityGroup } from './security-group';
-import { IVpc, SubnetSelection } from './vpc';
-import { ISamlProvider } from '../../aws-iam';
+import type { ISecurityGroup } from './security-group';
+import { SecurityGroup } from './security-group';
+import type { IVpc, SubnetSelection } from './vpc';
+import type { ISAMLProviderRef } from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import { CfnOutput, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { ILogStreamRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
  * Options for Client Route Enforcement
@@ -70,14 +85,14 @@ export interface ClientVpnEndpointOptions {
    *
    * @default - a new group is created
    */
-  readonly logGroup?: logs.ILogGroup;
+  readonly logGroup?: logs.ILogGroupRef;
 
   /**
    * A CloudWatch Logs log stream for connection logging
    *
    * @default - a new stream is created
    */
-  readonly logStream?: logs.ILogStream;
+  readonly logStream?: ILogStreamRef;
 
   /**
    * The AWS Lambda function used for connection authorization
@@ -172,6 +187,17 @@ export interface ClientVpnEndpointOptions {
   readonly sessionTimeout?: ClientVpnSessionTimeout;
 
   /**
+   * Indicates whether the client VPN session is disconnected after the maximum `sessionTimeout` is reached.
+   *
+   * If `true`, users are prompted to reconnect client VPN.
+   * If `false`, client VPN attempts to reconnect automatically.
+   *
+   * @default undefined - AWS Client VPN default is true
+   * @see https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-max-duration.html
+   */
+  readonly disconnectOnSessionTimeout?: boolean;
+
+  /**
    * Customizable text that will be displayed in a banner on AWS provided clients
    * when a VPN session is established.
    *
@@ -220,7 +246,7 @@ export abstract class ClientVpnUserBasedAuthentication {
   }
 
   /** Federated authentication */
-  public static federated(samlProvider: ISamlProvider, selfServiceSamlProvider?: ISamlProvider): ClientVpnUserBasedAuthentication {
+  public static federated(samlProvider: ISAMLProviderRef, selfServiceSamlProvider?: ISAMLProviderRef): ClientVpnUserBasedAuthentication {
     return new FederatedAuthentication(samlProvider, selfServiceSamlProvider);
   }
 
@@ -248,7 +274,7 @@ class ActiveDirectoryAuthentication extends ClientVpnUserBasedAuthentication {
  * Federated authentication
  */
 class FederatedAuthentication extends ClientVpnUserBasedAuthentication {
-  constructor(private readonly samlProvider: ISamlProvider, private readonly selfServiceSamlProvider?: ISamlProvider) {
+  constructor(private readonly samlProvider: ISAMLProviderRef, private readonly selfServiceSamlProvider?: ISAMLProviderRef) {
     super();
   }
 
@@ -256,8 +282,8 @@ class FederatedAuthentication extends ClientVpnUserBasedAuthentication {
     return {
       type: 'federated-authentication',
       federatedAuthentication: {
-        samlProviderArn: this.samlProvider.samlProviderArn,
-        selfServiceSamlProviderArn: this.selfServiceSamlProvider?.samlProviderArn,
+        samlProviderArn: this.samlProvider.samlProviderRef.samlProviderArn,
+        selfServiceSamlProviderArn: this.selfServiceSamlProvider?.samlProviderRef.samlProviderArn,
       },
     };
   }
@@ -306,6 +332,12 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
       public readonly endpointId = attrs.endpointId;
       public readonly connections = new Connections({ securityGroups: attrs.securityGroups });
       public readonly targetNetworksAssociated: IDependable = new DependencyGroup();
+
+      public get clientVpnEndpointRef(): ClientVpnEndpointReference {
+        return {
+          clientVpnEndpointId: this.endpointId,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -330,32 +362,33 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
       const clientCidr = new CidrBlock(props.cidr);
       const vpcCidr = new CidrBlock(props.vpc.vpcCidrBlock);
       if (vpcCidr.containsCidr(clientCidr)) {
-        throw new ValidationError('The client CIDR cannot overlap with the local CIDR of the VPC', this);
+        throw new ValidationError(lit`ClientCidrCannotOverlap`, 'The client CIDR cannot overlap with the local CIDR of the VPC', this);
       }
     }
 
     if (props.dnsServers && props.dnsServers.length > 2) {
-      throw new ValidationError('A client VPN endpoint can have up to two DNS servers', this);
+      throw new ValidationError(lit`ClientEndpointMaxTwoDnsServers`, 'A client VPN endpoint can have up to two DNS servers', this);
     }
 
     if (props.logging == false && (props.logGroup || props.logStream)) {
-      throw new ValidationError('Cannot specify `logGroup` or `logStream` when logging is disabled', this);
+      throw new ValidationError(lit`CannotSpecifyLoggingWhenDisabled`, 'Cannot specify `logGroup` or `logStream` when logging is disabled', this);
     }
 
     if (props.clientConnectionHandler
       && !Token.isUnresolved(props.clientConnectionHandler.functionName)
       && !props.clientConnectionHandler.functionName.startsWith('AWSClientVPN-')) {
-      throw new ValidationError('The name of the Lambda function must begin with the `AWSClientVPN-` prefix', this);
+      throw new ValidationError(lit`LambdaFunctionMustBeNamedWithPrefix`, 'The name of the Lambda function must begin with the `AWSClientVPN-` prefix', this);
     }
 
     if (props.clientLoginBanner
       && !Token.isUnresolved(props.clientLoginBanner)
       && props.clientLoginBanner.length > 1400) {
-      throw new ValidationError(`The maximum length for the client login banner is 1400, got ${props.clientLoginBanner.length}`, this);
+      throw new ValidationError(lit`ClientLoginBannerMaxLength`, `The maximum length for the client login banner is 1400, got ${props.clientLoginBanner.length}`, this);
     }
 
     if (props.clientRouteEnforcementOptions?.enforced && props.splitTunnel) {
       throw new ValidationError(
+        lit`ClientRouteEnforcementIncompatibleWithSplitTunnel`,
         'Client Route Enforcement cannot be enabled when splitTunnel is true.',
         this,
       );
@@ -382,8 +415,8 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
         : undefined,
       connectionLogOptions: {
         enabled: logging,
-        cloudwatchLogGroup: logGroup?.logGroupName,
-        cloudwatchLogStream: props.logStream?.logStreamName,
+        cloudwatchLogGroup: logGroup?.logGroupRef.logGroupName,
+        cloudwatchLogStream: props.logStream?.logStreamRef.logStreamName,
       },
       description: props.description,
       dnsServers: props.dnsServers,
@@ -396,6 +429,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
       vpcId: props.vpc.vpcId,
       vpnPort: props.port,
       sessionTimeoutHours: props.sessionTimeout,
+      disconnectOnSessionTimeout: props.disconnectOnSessionTimeout,
       clientLoginBannerOptions: props.clientLoginBanner
         ? {
           enabled: true,
@@ -417,7 +451,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
     const subnetIds = props.vpc.selectSubnets(props.vpcSubnets).subnetIds;
 
     if (Token.isUnresolved(subnetIds)) {
-      throw new ValidationError('Cannot associate subnets when VPC are imported from parameters or exports containing lists of subnet IDs.', this);
+      throw new ValidationError(lit`CannotAssociateSubnetsFromImportedVpc`, 'Cannot associate subnets when VPC are imported from parameters or exports containing lists of subnet IDs.', this);
     }
 
     for (const [idx, subnetId] of Object.entries(subnetIds)) {
@@ -433,6 +467,12 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
         cidr: props.vpc.vpcCidrBlock,
       });
     }
+  }
+
+  public get clientVpnEndpointRef(): ClientVpnEndpointReference {
+    return {
+      clientVpnEndpointId: this.endpointId,
+    };
   }
 
   /**
@@ -477,7 +517,7 @@ function renderAuthenticationOptions(
   }
 
   if (authenticationOptions.length === 0) {
-    throw new UnscopedValidationError('A client VPN endpoint must use at least one authentication option');
+    throw new UnscopedValidationError(lit`ClientEndpointRequiresAuthentication`, 'A client VPN endpoint must use at least one authentication option');
   }
   return authenticationOptions;
 }

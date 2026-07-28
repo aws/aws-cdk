@@ -1,0 +1,64 @@
+{
+ "Resources": {
+  "ImageRecipe8C789631": {
+   "Type": "AWS::ImageBuilder::ImageRecipe",
+   "Properties": {
+    "Name": "aws-cdk-imagebuilder-image-recipe-marketplace-base-image-imagerecipe-b40d66c5",
+    "ParentImage": "abcfcbaf-134e-4639-a7b4-fd285b9fcf0a",
+    "Version": "1.0.x"
+   }
+  }
+ },
+ "Outputs": {
+  "ImageRecipeVersion": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ImageRecipe8C789631",
+     "Version"
+    ]
+   }
+  },
+  "ImageRecipeArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ImageRecipe8C789631",
+     "Arn"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

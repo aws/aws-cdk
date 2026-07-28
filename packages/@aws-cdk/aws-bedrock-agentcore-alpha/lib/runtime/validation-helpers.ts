@@ -1,0 +1,109 @@
+import { Token } from 'aws-cdk-lib';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+
+interface IntervalValidation {
+  fieldName: string;
+  minLength: number;
+  maxLength: number;
+}
+
+interface StringLengthValidation extends IntervalValidation {
+  value: string;
+}
+
+/**
+ * Validates the length of a string field against minimum and maximum constraints.
+ * @param value - The string value to validate
+ * @param fieldName - Name of the field being validated (for error messages)
+ * @param minLength - Minimum allowed length (defaults to 0)
+ * @param maxLength - Maximum allowed length
+ * @returns true if validation passes
+ * @throws Error if validation fails with current length information
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
+export function validateStringField(params: StringLengthValidation): string[] {
+  const errors: string[] = [];
+
+  // Handle null/undefined values
+  if (params.value == null) {
+    return errors; // Skip validation for null/undefined values
+  }
+
+  const currentLength = params.value.length;
+
+  // Evaluate only if it is not an unresolved Token
+  if (!Token.isUnresolved(params.fieldName)) {
+    if (params.value.length > params.maxLength) {
+      errors.push(
+        `The field ${params.fieldName} is ${currentLength} characters long but must be less than or equal to ${params.maxLength} characters`,
+      );
+    }
+
+    if (params.value.length < params.minLength) {
+      errors.push(
+        `The field ${params.fieldName} is ${currentLength} characters long but must be at least ${params.minLength} characters`,
+      );
+    }
+  }
+
+  return errors;
+}
+
+/**
+ * Validates a string field against a regex pattern.
+ * @param value - The string value to validate
+ * @param fieldName - Name of the field being validated (for error messages)
+ * @param pattern - Regular expression pattern to test against
+ * @param customMessage - Optional custom error message
+ * @returns true if validation passes
+ * @throws Error if validation fails with detailed message
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
+export function validateFieldPattern(
+  value: string,
+  fieldName: string,
+  pattern: RegExp,
+  customMessage?: string,
+): string[] {
+  const errors: string[] = [];
+
+  // Handle null/undefined values
+  if (value == null) {
+    return errors; // Skip validation for null/undefined values
+  }
+
+  // Evaluate only if it is not an unresolved Token
+  if (!Token.isUnresolved(value)) {
+    // Verify type
+    if (typeof value !== 'string') {
+      errors.push(`Expected string for ${fieldName}, got ${typeof value}`);
+    }
+    // Validate specified regex
+    if (!(pattern instanceof RegExp)) {
+      errors.push('Pattern must be a valid regular expression');
+    }
+
+    // Pattern validation
+    if (!pattern.test(value)) {
+      const defaultMessage = `The field ${fieldName} with value "${value}" does not match the required pattern ${pattern}`;
+      errors.push(customMessage || defaultMessage);
+    }
+  }
+
+  return errors;
+}
+
+export type ValidationFn<T> = (param: T) => string[];
+
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
+export function throwIfInvalid<T>(validationFn: ValidationFn<T>, param: T): T {
+  const errors = validationFn(param);
+  if (errors.length > 0) {
+    throw new UnscopedValidationError(lit`ValidationFailed`, errors.join('\n'));
+  }
+  return param;
+}

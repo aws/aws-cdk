@@ -1,11 +1,13 @@
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { capitalizePropertyNames } from './utils';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as eks from '../../aws-eks';
 import { ArnPrincipal, Role, ServicePrincipal } from '../../aws-iam';
-import { Stack, Duration, Tags, CfnParameter } from '../../core';
-import { AllocationStrategy, CfnComputeEnvironmentProps, ManagedEc2EcsComputeEnvironment, ManagedEc2EcsComputeEnvironmentProps, ManagedEc2EksComputeEnvironment, ManagedEc2EksComputeEnvironmentProps, FargateComputeEnvironment, EcsMachineImageType, EksMachineImageType } from '../lib';
+import { Stack, Duration, Tags, CfnParameter, App, Validations } from '../../core';
+import * as cxapi from '../../cx-api';
+import type { CfnComputeEnvironmentProps, ManagedEc2EcsComputeEnvironmentProps, ManagedEc2EksComputeEnvironmentProps } from '../lib';
+import { AllocationStrategy, ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment, FargateComputeEnvironment, EcsMachineImageType, EksMachineImageType, DefaultInstanceClass } from '../lib';
 
 const defaultExpectedEcsProps: CfnComputeEnvironmentProps = {
   type: 'managed',
@@ -66,6 +68,10 @@ let defaultProps: any;
 describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment])('%p type ComputeEnvironment', (ComputeEnvironment) => {
   beforeEach(() => {
     stack = new Stack();
+    Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::E3060',
+      reason: 'CIDRs dont make sense',
+    });
     vpc = new ec2.Vpc(stack, 'vpc');
 
     pascalCaseExpectedEcsProps = capitalizePropertyNames(stack, defaultExpectedEcsProps);
@@ -710,7 +716,7 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
 
     expect(() => {
       Template.fromStack(stack);
-    }).toThrow(/Specifies 'useOptimalInstanceClasses: false' without specifying any instance types or classes/);
+    }).toThrow(/'defaultInstanceClasses' undefined without specifying any instance types or classes/);
   });
 
   test('throws error when AllocationStrategy.SPOT_CAPACITY_OPTIMIZED is used without specfiying spot', () => {
@@ -924,6 +930,43 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
     });
   });
 
+  test('ECS_AL2023_NVIDIA image type is correctly rendered', () => {
+    new ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
+      ...defaultEcsProps,
+      vpc,
+      images: [
+        {
+          imageType: EcsMachineImageType.ECS_AL2023_NVIDIA,
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ...pascalCaseExpectedEcsProps,
+      ComputeResources: {
+        ...defaultComputeResources,
+        Ec2Configuration: [
+          {
+            ImageType: 'ECS_AL2023_NVIDIA',
+          },
+        ],
+      },
+    });
+  });
+
+  test('Amazon Linux 2023 NVIDIA does not support A1 instances.', () => {
+    expect(() => new ManagedEc2EcsComputeEnvironment(stack, 'Al2023NvidiaA1InstanceClass', {
+      ...defaultEcsProps,
+      instanceClasses: [ec2.InstanceClass.A1],
+      vpc,
+      images: [
+        {
+          imageType: EcsMachineImageType.ECS_AL2023_NVIDIA,
+        },
+      ],
+    })).toThrow(/Amazon Linux 2023 does not support A1 instances/);
+  });
+
   test('Amazon Linux 2023 does not support A1 instances.', () => {
     expect(() => new ManagedEc2EcsComputeEnvironment(stack, 'Al2023A1InstanceClass', {
       ...defaultEcsProps,
@@ -934,7 +977,7 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
           imageType: EcsMachineImageType.ECS_AL2023,
         },
       ],
-    })).toThrow('Amazon Linux 2023 does not support A1 instances.');
+    })).toThrow(/Amazon Linux 2023 does not support A1 instances/);
 
     expect(() => new ManagedEc2EcsComputeEnvironment(stack, 'Al2023A1XlargeInstance', {
       ...defaultEcsProps,
@@ -945,7 +988,7 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
           imageType: EcsMachineImageType.ECS_AL2023,
         },
       ],
-    })).toThrow('Amazon Linux 2023 does not support A1 instances.');
+    })).toThrow(/Amazon Linux 2023 does not support A1 instances/);
 
     new ManagedEc2EcsComputeEnvironment(stack, 'Al2A1InstanceClass', {
       ...defaultEcsProps,
@@ -967,6 +1010,68 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
           imageType: EcsMachineImageType.ECS_AL2,
         },
       ],
+    });
+  });
+
+  test('A1 validation catches undefined images when feature flag defaults to AL2023', () => {
+    const app = new App({
+      context: { [cxapi.BATCH_DEFAULT_AL2023]: true },
+    });
+    const flagStack = new Stack(app, 'FlagStack');
+    const flagVpc = new ec2.Vpc(flagStack, 'vpc');
+
+    expect(() => new ManagedEc2EcsComputeEnvironment(flagStack, 'MyCE', {
+      instanceClasses: [ec2.InstanceClass.A1],
+      vpc: flagVpc,
+    })).toThrow(/Amazon Linux 2023 does not support A1 instances/);
+  });
+
+  test('default imageType is ECS_AL2 when feature flag is not set', () => {
+    new ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
+      ...defaultEcsProps,
+      vpc,
+      images: [
+        {
+          image: ec2.MachineImage.latestAmazonLinux2(),
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ComputeResources: {
+        Ec2Configuration: [
+          {
+            ImageType: EcsMachineImageType.ECS_AL2,
+          },
+        ],
+      },
+    });
+  });
+
+  test('default imageType is ECS_AL2023 when feature flag is set', () => {
+    const app = new App({
+      context: { [cxapi.BATCH_DEFAULT_AL2023]: true },
+    });
+    const flagStack = new Stack(app, 'FlagStack');
+    const flagVpc = new ec2.Vpc(flagStack, 'vpc');
+
+    new ManagedEc2EcsComputeEnvironment(flagStack, 'MyCE', {
+      vpc: flagVpc,
+      images: [
+        {
+          image: ec2.MachineImage.latestAmazonLinux2(),
+        },
+      ],
+    });
+
+    Template.fromStack(flagStack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ComputeResources: {
+        Ec2Configuration: [
+          {
+            ImageType: EcsMachineImageType.ECS_AL2023,
+          },
+        ],
+      },
     });
   });
 
@@ -1007,6 +1112,35 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
         SpotIamFleetRole: { 'Fn::GetAtt': ['MyCESpotFleetRole70BE30A0', 'Arn'] },
       },
     });
+  });
+
+  test('can use default instance classes', () => {
+    // WHEN
+    new ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
+      ...defaultProps,
+      vpc,
+      defaultInstanceClasses: [DefaultInstanceClass.ARM64],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ...pascalCaseExpectedEcsProps,
+      ComputeResources: {
+        ...defaultComputeResources,
+        InstanceTypes: ['default_arm64'],
+      },
+    });
+  });
+
+  test('throws when using defaultInstanceClasses and useOptimalInstanceClasses', () => {
+    // WHEN
+    expect(() => {
+      new ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
+        ...defaultEcsProps,
+        defaultInstanceClasses: [DefaultInstanceClass.ARM64],
+        useOptimalInstanceClasses: true,
+      });
+    }).toThrow(/cannot use `defaultInstanceClasses` with `useOptimalInstanceClasses`/);
   });
 
   test('throws when spotFleetRole is specified without spot', () => {
@@ -1090,6 +1224,214 @@ describe('ManagedEc2EksComputeEnvironment', () => {
         Ec2Configuration: [
           {
             ImageType: 'EKS_AL2_NVIDIA',
+          },
+        ],
+      },
+    });
+  });
+  test('EKS_AL2023 image type is correctly rendered', () => {
+    new ManagedEc2EksComputeEnvironment(stack, 'MyCE', {
+      ...defaultEksProps,
+      vpc,
+      images: [
+        {
+          imageType: EksMachineImageType.EKS_AL2023,
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ...pascalCaseExpectedEksProps,
+      ComputeResources: {
+        ...defaultComputeResources,
+        Ec2Configuration: [
+          {
+            ImageType: 'EKS_AL2023',
+          },
+        ],
+      },
+    });
+  });
+
+  test('EKS_AL2023_NVIDIA image type is correctly rendered', () => {
+    new ManagedEc2EksComputeEnvironment(stack, 'MyCE', {
+      ...defaultEksProps,
+      vpc,
+      images: [
+        {
+          imageType: EksMachineImageType.EKS_AL2023_NVIDIA,
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ...pascalCaseExpectedEksProps,
+      ComputeResources: {
+        ...defaultComputeResources,
+        Ec2Configuration: [
+          {
+            ImageType: 'EKS_AL2023_NVIDIA',
+          },
+        ],
+      },
+    });
+  });
+
+  test('default imageType is EKS_AL2 when feature flag is not set', () => {
+    new ManagedEc2EksComputeEnvironment(stack, 'MyCE', {
+      ...defaultEksProps,
+      vpc,
+      images: [
+        {
+          image: ec2.MachineImage.latestAmazonLinux2(),
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ComputeResources: {
+        Ec2Configuration: [
+          {
+            ImageType: EksMachineImageType.EKS_AL2,
+          },
+        ],
+      },
+    });
+  });
+
+  test('default imageType is EKS_AL2023 when feature flag is set', () => {
+    const app = new App({
+      context: { [cxapi.BATCH_DEFAULT_AL2023]: true },
+    });
+    const flagStack = new Stack(app, 'FlagStack');
+    const flagVpc = new ec2.Vpc(flagStack, 'vpc');
+
+    new ManagedEc2EksComputeEnvironment(flagStack, 'MyCE', {
+      eksCluster: new eks.Cluster(flagStack, 'eksCluster', { version: eks.KubernetesVersion.V1_31, kubectlLayer: new KubectlV31Layer(flagStack, 'kubectlLayer') }),
+      kubernetesNamespace: 'cdk-test',
+      vpc: flagVpc,
+      images: [
+        {
+          image: ec2.MachineImage.latestAmazonLinux2(),
+        },
+      ],
+    });
+
+    Template.fromStack(flagStack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ComputeResources: {
+        Ec2Configuration: [
+          {
+            ImageType: EksMachineImageType.EKS_AL2023,
+          },
+        ],
+      },
+    });
+  });
+
+  test('sets userdataType to EKS_NODEADM when launch template is used with EKS_AL2023', () => {
+    new ManagedEc2EksComputeEnvironment(stack, 'MyCE', {
+      ...defaultEksProps,
+      vpc,
+      launchTemplate: new ec2.LaunchTemplate(stack, 'lt'),
+      images: [
+        {
+          imageType: EksMachineImageType.EKS_AL2023,
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ...pascalCaseExpectedEksProps,
+      ComputeResources: {
+        ...defaultComputeResources,
+        LaunchTemplate: {
+          UserdataType: 'EKS_NODEADM',
+        },
+        Ec2Configuration: [
+          {
+            ImageType: 'EKS_AL2023',
+          },
+        ],
+      },
+    });
+  });
+
+  test('does not set userdataType when launch template is used with EKS_AL2', () => {
+    new ManagedEc2EksComputeEnvironment(stack, 'MyCE', {
+      ...defaultEksProps,
+      vpc,
+      launchTemplate: new ec2.LaunchTemplate(stack, 'lt'),
+      images: [
+        {
+          imageType: EksMachineImageType.EKS_AL2,
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ComputeResources: {
+        LaunchTemplate: {
+          UserdataType: Match.absent(),
+        },
+      },
+    });
+  });
+
+  test('sets userdataType to EKS_NODEADM when launch template is used with EKS_AL2023_NVIDIA', () => {
+    new ManagedEc2EksComputeEnvironment(stack, 'MyCE', {
+      ...defaultEksProps,
+      vpc,
+      launchTemplate: new ec2.LaunchTemplate(stack, 'lt'),
+      images: [
+        {
+          imageType: EksMachineImageType.EKS_AL2023_NVIDIA,
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ...pascalCaseExpectedEksProps,
+      ComputeResources: {
+        ...defaultComputeResources,
+        LaunchTemplate: {
+          UserdataType: 'EKS_NODEADM',
+        },
+        Ec2Configuration: [
+          {
+            ImageType: 'EKS_AL2023_NVIDIA',
+          },
+        ],
+      },
+    });
+  });
+
+  test('sets userdataType to EKS_NODEADM when feature flag defaults to AL2023 with launch template', () => {
+    const app = new App({
+      context: { [cxapi.BATCH_DEFAULT_AL2023]: true },
+    });
+    const flagStack = new Stack(app, 'FlagStack');
+    const flagVpc = new ec2.Vpc(flagStack, 'vpc');
+
+    new ManagedEc2EksComputeEnvironment(flagStack, 'MyCE', {
+      eksCluster: new eks.Cluster(flagStack, 'eksCluster', { version: eks.KubernetesVersion.V1_31, kubectlLayer: new KubectlV31Layer(flagStack, 'kubectlLayer') }),
+      kubernetesNamespace: 'cdk-test',
+      vpc: flagVpc,
+      launchTemplate: new ec2.LaunchTemplate(flagStack, 'lt'),
+      images: [
+        {
+          image: ec2.MachineImage.latestAmazonLinux2(),
+        },
+      ],
+    });
+
+    Template.fromStack(flagStack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ComputeResources: {
+        LaunchTemplate: {
+          UserdataType: 'EKS_NODEADM',
+        },
+        Ec2Configuration: [
+          {
+            ImageType: EksMachineImageType.EKS_AL2023,
           },
         ],
       },

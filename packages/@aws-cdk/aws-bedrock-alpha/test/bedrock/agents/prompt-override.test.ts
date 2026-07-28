@@ -1,14 +1,16 @@
 import { Stack } from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import {
-  AgentStepType,
-  PromptOverrideConfiguration,
+import type {
   PromptRoutingClassifierConfigCustomParser,
   PromptPreProcessingConfigCustomParser,
   PromptOrchestrationConfigCustomParser,
   PromptPostProcessingConfigCustomParser,
 } from '../../../bedrock/agents/prompt-override';
-import { IBedrockInvokable } from '../../../bedrock/models';
+import {
+  AgentStepType,
+  PromptOverrideConfiguration,
+} from '../../../bedrock/agents/prompt-override';
+import type { IBedrockInvokable } from '../../../bedrock/models';
 
 describe('PromptOverrideConfiguration', () => {
   let stack: Stack;
@@ -146,7 +148,7 @@ describe('PromptOverrideConfiguration', () => {
     test('creates with valid parser and steps', () => {
       // GIVEN
       const parser = new lambda.Function(stack, 'TestParser', {
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         handler: 'index.handler',
         code: lambda.Code.fromInline('exports.handler = () => {}'),
       });
@@ -170,7 +172,7 @@ describe('PromptOverrideConfiguration', () => {
     test('throws error when no step uses custom parser', () => {
       // GIVEN
       const parser = new lambda.Function(stack, 'TestParser', {
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         handler: 'index.handler',
         code: lambda.Code.fromInline('exports.handler = () => {}'),
       });
@@ -376,7 +378,7 @@ describe('PromptOverrideConfiguration', () => {
       // WHEN
       const config = PromptOverrideConfiguration.withCustomParser({
         parser: new lambda.Function(stack, 'TestParser', {
-          runtime: lambda.Runtime.NODEJS_18_X,
+          runtime: lambda.Runtime.NODEJS_20_X,
           handler: 'index.handler',
           code: lambda.Code.fromInline('exports.handler = () => {}'),
         }),

@@ -1,7 +1,9 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { StateType } from './private/state-type';
-import { JsonataCommonOptions, JsonPathCommonOptions, State, StateBaseProps } from './state';
-import { INextable, QueryLanguage } from '../types';
+import type { JsonataCommonOptions, JsonPathCommonOptions, StateBaseProps } from './state';
+import { State } from './state';
+import type { INextable } from '../types';
+import { QueryLanguage } from '../types';
 
 /**
  * Properties for defining a Succeed state that using JSONPath

@@ -1,5 +1,5 @@
-import { REPOSITORY, REPOSITORY_OWNER } from './config';
 import { backOff } from 'exponential-backoff';
+import { REPOSITORY, REPOSITORY_OWNER } from './config';
 
 const issueQuery = `
   createdAt
@@ -216,7 +216,7 @@ export class Github {
       query {
         repository(owner: "${REPOSITORY_OWNER}", name: "${REPOSITORY}") {
           projectV2(number: ${project}) {
-            items(first: 100 ${cursor ? `, after: "${cursor}"` : ''}) {
+            items(first: 50 ${cursor ? `, after: "${cursor}"` : ''}) {
               pageInfo {
                   hasNextPage
                   endCursor

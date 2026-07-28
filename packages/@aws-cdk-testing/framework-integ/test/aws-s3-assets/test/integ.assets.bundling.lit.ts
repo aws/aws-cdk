@@ -1,7 +1,8 @@
 import * as path from 'path';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { App, DockerImage, Stack, StackProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, DockerImage, Stack } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 import * as assets from 'aws-cdk-lib/aws-s3-assets';
 
 class TestStack extends Stack {

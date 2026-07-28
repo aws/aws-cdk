@@ -1,9 +1,9 @@
 import * as path from 'path';
-import { Template } from 'aws-cdk-lib/assertions';
-import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { SecretValue, Stack } from 'aws-cdk-lib';
-import * as amplify from '../lib';
+import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+import * as amplify from '../lib';
 
 let stack: Stack;
 let app: amplify.App;

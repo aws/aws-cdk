@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "c769c1bf9d400fe854cacce6b999acbda0f494f4b37cf05cda8de399652284df": {
+      "displayName": "LambdaPermissionConsolidationStack Template",
+      "source": {
+        "path": "LambdaPermissionConsolidationStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-44d2a6a2": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c769c1bf9d400fe854cacce6b999acbda0f494f4b37cf05cda8de399652284df.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

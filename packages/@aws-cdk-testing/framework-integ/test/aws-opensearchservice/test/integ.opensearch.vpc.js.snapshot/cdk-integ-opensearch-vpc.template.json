@@ -1,12 +1,5 @@
 {
  "Resources": {
-  "ServiceLinkedRole": {
-   "Type": "AWS::IAM::ServiceLinkedRole",
-   "Properties": {
-    "AWSServiceName": "opensearchservice.amazonaws.com",
-    "Description": "Role for OpenSearch VPC Test"
-   }
-  },
   "Vpc8378EB38": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
@@ -412,10 +405,7 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   },
-   "DependsOn": [
-    "ServiceLinkedRole"
-   ]
+   }
   },
   "Domain66AC69E0": {
    "Type": "AWS::OpenSearchService::Domain",
@@ -466,9 +456,6 @@
      ]
     }
    },
-   "DependsOn": [
-    "ServiceLinkedRole"
-   ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }

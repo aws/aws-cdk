@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/unbound-method */
+
 import * as path from 'path';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Stack, Validations } from 'aws-cdk-lib';
+import { Annotations, Template } from 'aws-cdk-lib/assertions';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
-import { Stack } from 'aws-cdk-lib';
 import { GoFunction } from '../lib';
 import { Bundling } from '../lib/bundling';
 
@@ -22,6 +22,10 @@ jest.mock('../lib/bundling', () => {
 let stack: Stack;
 beforeEach(() => {
   stack = new Stack();
+  Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::E2531',
+    reason: 'Deprecated runtimes',
+  });
   jest.clearAllMocks();
 });
 
@@ -145,4 +149,32 @@ test('custom moduleDir with file path can be used', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'bootstrap',
   });
+});
+
+test('adds security warning for goBuildFlags', () => {
+  new GoFunction(stack, 'handler', {
+    entry: path.join(__dirname, 'lambda-handler-vendor', 'cmd', 'api'),
+    bundling: {
+      goBuildFlags: ['-ldflags "-s -w"'],
+    },
+  });
+
+  const annotations = Annotations.fromStack(stack);
+  annotations.hasWarning('/Default', 'goBuildFlags can execute arbitrary commands during bundling. Ensure all flags come from trusted sources. See: https://docs.aws.amazon.com/cdk/latest/guide/security.html [ack: @aws-cdk/aws-lambda-go-alpha:goBuildFlagsSecurityWarning]');
+});
+
+test('adds security warning for commandHooks', () => {
+  const newStack = new Stack();
+  new GoFunction(newStack, 'handler', {
+    entry: path.join(__dirname, 'lambda-handler-vendor', 'cmd', 'api'),
+    bundling: {
+      commandHooks: {
+        beforeBundling: () => ['echo hello'],
+        afterBundling: () => [],
+      },
+    },
+  });
+
+  const annotations = Annotations.fromStack(newStack);
+  annotations.hasWarning('/Default', 'commandHooks can execute arbitrary commands during bundling. Ensure all commands come from trusted sources. See: https://docs.aws.amazon.com/cdk/latest/guide/security.html [ack: @aws-cdk/aws-lambda-go-alpha:commandHooksSecurityWarning]');
 });

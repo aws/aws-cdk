@@ -1,10 +1,11 @@
 import { HttpLambdaAuthorizer, HttpLambdaResponseType } from './../../lib/http/lambda';
 import { DummyRouteIntegration } from './integration';
-import { Duration, Stack } from '../../..';
 import { Match, Template } from '../../../assertions';
 import { HttpApi } from '../../../aws-apigatewayv2';
+import { Role, ServicePrincipal } from '../../../aws-iam';
 import { Code, Function } from '../../../aws-lambda';
 import * as lambda from '../../../aws-lambda';
+import { Duration, Stack } from '../../../core';
 
 describe('HttpLambdaAuthorizer', () => {
   test('default', () => {
@@ -36,6 +37,7 @@ describe('HttpLambdaAuthorizer', () => {
       IdentitySource: [
         '$request.header.Authorization',
       ],
+      AuthorizerCredentialsArn: Match.absent(),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
@@ -194,10 +196,48 @@ describe('HttpLambdaAuthorizer', () => {
 
     const t = () => {
       const authorizer = new HttpLambdaAuthorizer('BooksAuthorizer', handler);
-      const authorizerId = authorizer.authorizerId;
+      void(authorizer.authorizerId);
     };
 
     // THEN
     expect(t).toThrow(Error);
+  });
+
+  test('should use role when role is provided', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'HttpApi');
+    const role = new Role(stack, 'Role', { assumedBy: new ServicePrincipal('apigateway.amazonaws.com') });
+
+    const handler = new Function(stack, 'auth-function', {
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      code: Code.fromInline('exports.handler = () => {return true}'),
+      handler: 'index.handler',
+    });
+
+    const authorizer = new HttpLambdaAuthorizer('BooksAuthorizer', handler, {
+      responseTypes: [HttpLambdaResponseType.SIMPLE],
+      role,
+    });
+
+    // WHEN
+    api.addRoutes({
+      integration: new DummyRouteIntegration(),
+      path: '/books',
+      authorizer,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Authorizer', {
+      AuthorizerPayloadFormatVersion: '2.0',
+      EnableSimpleResponses: true,
+      AuthorizerCredentialsArn: {
+        'Fn::GetAtt': [
+          'Role1ABCC5F0',
+          'Arn',
+        ],
+      },
+    });
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 0);
   });
 });

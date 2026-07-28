@@ -1,4 +1,4 @@
-import { IPipe, ISource, SourceConfig, SourceParameters } from '@aws-cdk/aws-pipes-alpha';
+import type { IPipe, ISource, SourceConfig, SourceParameters } from '@aws-cdk/aws-pipes-alpha';
 
 export class TestSource implements ISource {
   readonly sourceArn = 'source-arn';

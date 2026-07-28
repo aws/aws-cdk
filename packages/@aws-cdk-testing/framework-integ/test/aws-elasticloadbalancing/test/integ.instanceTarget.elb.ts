@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-// eslint-disable-next-line import/no-extraneous-dependencies
+
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
@@ -20,9 +20,7 @@ const instance = new ec2.Instance(stack, 'targetInstance', {
     ec2.InstanceClass.T3,
     ec2.InstanceSize.MICRO,
   ),
-  machineImage: ec2.MachineImage.latestAmazonLinux({
-    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-  }),
+  machineImage: ec2.MachineImage.latestAmazonLinux2(),
   initOptions: {
     timeout: cdk.Duration.minutes(30),
   },

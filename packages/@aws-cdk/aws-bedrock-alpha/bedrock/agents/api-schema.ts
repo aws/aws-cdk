@@ -1,18 +1,10 @@
-import { Construct } from 'constructs';
+import type { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
+import type { IBucketRef, Location } from 'aws-cdk-lib/aws-s3';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
-import { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
-import { IBucket, Location } from 'aws-cdk-lib/aws-s3';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+import type { Construct } from 'constructs';
 import { ActionGroupSchema } from './schema-base';
-
-/**
- * Error thrown when an ApiSchema is not properly initialized.
- */
-class ApiSchemaError extends Error {
-  constructor(message: string, public readonly cause?: string) {
-    super(message);
-    this.name = 'ApiSchemaError';
-  }
-}
 
 /******************************************************************************
  *                       API SCHEMA CLASS
@@ -42,9 +34,9 @@ export abstract class ApiSchema extends ActionGroupSchema {
    * @param bucket - the bucket containing the local file containing the OpenAPI schema for the action group
    * @param objectKey - object key in the bucket
    */
-  public static fromS3File(bucket: IBucket, objectKey: string): S3ApiSchema {
+  public static fromS3File(bucket: IBucketRef, objectKey: string): S3ApiSchema {
     return new S3ApiSchema({
-      bucketName: bucket.bucketName,
+      bucketName: bucket.bucketRef.bucketName,
       objectKey: objectKey,
     });
   }
@@ -112,7 +104,7 @@ export class AssetApiSchema extends ApiSchema {
    */
   public _render(): CfnAgent.APISchemaProperty {
     if (!this.asset) {
-      throw new ApiSchemaError('ApiSchema must be bound to a scope before rendering. Call bind() first.', 'Asset not initialized');
+      throw new UnscopedValidationError(lit`SchemaNotBound`, 'ApiSchema must be bound to a scope before rendering. Call bind() first.');
     }
 
     return {

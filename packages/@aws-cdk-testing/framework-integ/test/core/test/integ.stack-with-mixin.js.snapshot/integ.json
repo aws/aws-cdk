@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "StackWithMixinIntegTest/DefaultTest": {
+      "stacks": [
+        "StackWithMixinTest"
+      ],
+      "assertionStack": "StackWithMixinIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "StackWithMixinIntegTestDefaultTestDeployAssert7B8A43D8"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

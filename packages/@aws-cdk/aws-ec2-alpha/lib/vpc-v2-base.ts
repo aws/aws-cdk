@@ -1,11 +1,52 @@
-import { Aws, Resource, Annotations, ValidationError } from 'aws-cdk-lib';
-import { IVpc, ISubnet, SubnetSelection, SelectedSubnets, EnableVpnGatewayOptions, VpnGateway, VpnConnectionType, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation, VpnConnectionOptions, VpnConnection, ClientVpnEndpointOptions, ClientVpnEndpoint, InterfaceVpcEndpointOptions, InterfaceVpcEndpoint, GatewayVpcEndpointOptions, GatewayVpcEndpoint, FlowLogOptions, FlowLog, FlowLogResourceType, SubnetType, SubnetFilter } from 'aws-cdk-lib/aws-ec2';
-import { allRouteTableIds, flatten, subnetGroupNameFromConstructId } from './util';
-import { IDependable, Dependable, IConstruct, DependencyGroup } from 'constructs';
-import { EgressOnlyInternetGateway, InternetGateway, NatConnectivityType, NatGateway, NatGatewayOptions, Route, VPCPeeringConnection, VPCPeeringConnectionOptions, VPNGatewayV2 } from './route';
-import { ISubnetV2 } from './subnet-v2';
+import { Annotations, Aws, Resource, ValidationError } from 'aws-cdk-lib';
+import type {
+  ClientVpnEndpointOptions,
+  EnableVpnGatewayOptions,
+  FlowLogOptions,
+  GatewayVpcEndpointOptions,
+  InterfaceVpcEndpointOptions,
+  ISubnet,
+  IVpc,
+  SelectedSubnets,
+  SubnetSelection,
+  VpnConnectionOptions,
+} from 'aws-cdk-lib/aws-ec2';
+import {
+  CfnVPCGatewayAttachment,
+  CfnVPNGatewayRoutePropagation,
+  ClientVpnEndpoint,
+  FlowLog,
+  FlowLogResourceType,
+  GatewayVpcEndpoint,
+  InterfaceVpcEndpoint,
+  SubnetFilter,
+  SubnetType,
+  VpnConnection,
+  VpnConnectionType,
+  VpnGateway,
+} from 'aws-cdk-lib/aws-ec2';
+type VPCReference = aws_ec2.VPCReference;
 import { AccountPrincipal, Effect, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
-import { IVPCCidrBlock } from './vpc-v2';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+import type { aws_ec2 } from 'aws-cdk-lib/interfaces';
+import type { IConstruct, IDependable } from 'constructs';
+import { Dependable, DependencyGroup } from 'constructs';
+import type {
+  NatGatewayOptions,
+  VPCPeeringConnectionOptions,
+} from './route';
+import {
+  EgressOnlyInternetGateway,
+  InternetGateway,
+  NatConnectivityType,
+  NatGateway,
+  Route,
+  VPCPeeringConnection,
+  VPNGatewayV2,
+} from './route';
+import type { ISubnetV2 } from './subnet-v2';
+import { allRouteTableIds, flatten, subnetGroupNameFromConstructId } from './util';
+import type { IVPCCidrBlock } from './vpc-v2';
 
 /**
  * Options to define EgressOnlyInternetGateway for VPC
@@ -75,7 +116,7 @@ export interface InternetGatewayOptions{
 export interface VPNGatewayV2Options {
   /**
    * The type of VPN connection the virtual private gateway supports.
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngateway.html#cfn-ec2-vpngateway-type
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngateway.html#cfn-ec2-vpngateway-type
    */
   readonly type: VpnConnectionType;
 
@@ -96,7 +137,7 @@ export interface VPNGatewayV2Options {
   /**
    * Subnets where the route propagation should be added.
    *
-   * @default - no propogation for routes
+   * @default - no propagation for routes
    */
   readonly vpnRoutePropagation?: SubnetSelection[];
 }
@@ -164,10 +205,10 @@ export interface IVpcV2 extends IVpc {
   addInternetGateway(options?: InternetGatewayOptions): InternetGateway;
 
   /**
-   * Adds VPN Gateway to VPC and set route propogation.
+   * Adds VPN Gateway to VPC and set route propagation.
    * For more information, see the {@link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngateway.html}.
    *
-   * @default - no route propogation
+   * @default - no route propagation
    */
   enableVpnGatewayV2(options: VPNGatewayV2Options): VPNGatewayV2;
 
@@ -327,6 +368,12 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
     };
   }
 
+  public get vpcRef(): VPCReference {
+    return {
+      vpcId: this.vpcId,
+    };
+  }
+
   /**
    * Adds a VPN Gateway to this VPC
    * @deprecated use enableVpnGatewayV2 for compatibility with VPCV2.Route
@@ -353,7 +400,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
     const routeTableIds = allRouteTableIds(flatten(vpnRoutePropagation.map(s => this.selectSubnets(s).subnets)));
 
     if (routeTableIds.length === 0) {
-      Annotations.of(this).addError(`enableVpnGateway: no subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
+      Annotations.of(this)._addTrackableError(lit`VpnGatewayNoMatchingSubnets`, `enableVpnGateway: no subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
     }
 
     const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
@@ -559,7 +606,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
    */
   public addNatGateway(options: NatGatewayOptions): NatGateway {
     if (options.connectivityType === NatConnectivityType.PUBLIC && !this._internetGatewayId) {
-      throw new ValidationError('Cannot add a Public NAT Gateway without an Internet Gateway enabled on VPC', this);
+      throw new ValidationError(lit`PublicNatGatewayRequiresInternetGateway`, 'Cannot add a Public NAT Gateway without an Internet Gateway enabled on VPC', this);
     }
     return new NatGateway(this, `NATGateway-${options.subnet.node.id}`, {
       vpc: this,

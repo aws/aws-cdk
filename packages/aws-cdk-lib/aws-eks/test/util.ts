@@ -1,7 +1,7 @@
-import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import * as ec2 from '../../aws-ec2';
 import { App, Stack } from '../../core';
-import { Cluster, FargateCluster, ClusterProps, KubernetesVersion } from '../lib';
+import type { ClusterProps } from '../lib';
+import { Cluster, FargateCluster, KubernetesVersion } from '../lib';
 
 const CLUSTER_VERSION = KubernetesVersion.V1_25;
 const DEFAULT_REGION = 'us-east-1';
@@ -35,7 +35,7 @@ export interface testFixtureClusterOptions {
  * @param options - Additional options for the test fixture cluster.
  * @returns An object containing the stack, app, and the created cluster.
  */
-export function testFixtureCluster(props: Omit<ClusterProps, 'version'> = {}, region: string = DEFAULT_REGION, options?: testFixtureClusterOptions) {
+export function testFixtureCluster(props: Omit<ClusterProps, 'version'>, region: string = DEFAULT_REGION, options?: testFixtureClusterOptions) {
   const { stack, app } = testFixtureNoVpc(region);
   const clusterProps = {
     version: CLUSTER_VERSION,

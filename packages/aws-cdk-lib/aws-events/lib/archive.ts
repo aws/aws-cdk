@@ -1,11 +1,12 @@
-import { Construct } from 'constructs';
-import { IEventBus } from './event-bus';
-import { EventPattern } from './event-pattern';
+import type { Construct } from 'constructs';
+import type { EventPattern } from './event-pattern';
+import type { IEventBusRef } from './events.generated';
 import { CfnArchive } from './events.generated';
 import { renderEventPattern } from './util';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { Duration, Resource } from '../../core';
+import type * as kms from '../../aws-kms';
+import type { Duration } from '../../core';
+import { Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -50,7 +51,7 @@ export interface ArchiveProps extends BaseArchiveProps {
   /**
    * The event source associated with the archive.
    */
-  readonly sourceEventBus: IEventBus;
+  readonly sourceEventBus: IEventBusRef;
 }
 
 /**
@@ -91,7 +92,7 @@ export class Archive extends Resource {
         effect: iam.Effect.ALLOW,
         conditions: {
           StringEquals: {
-            'kms:EncryptionContext:aws:events:event-bus:arn': props.sourceEventBus.eventBusArn,
+            'kms:EncryptionContext:aws:events:event-bus:arn': props.sourceEventBus.eventBusRef.eventBusArn,
           },
         },
       }));
@@ -110,7 +111,7 @@ export class Archive extends Resource {
     // When an empty string is supplied to the L1 template, it means to use an AWS managed key
     // This empty string is necessary as the definitions in the L1 requires an empty string to enforce an update that removes any previously used CMK
     let archive = new CfnArchive(this, 'Archive', {
-      sourceArn: props.sourceEventBus.eventBusArn,
+      sourceArn: props.sourceEventBus.eventBusRef.eventBusArn,
       description: props.description,
       eventPattern: renderEventPattern(props.eventPattern),
       retentionDays: props.retention?.toDays({ integral: true }) || 0,

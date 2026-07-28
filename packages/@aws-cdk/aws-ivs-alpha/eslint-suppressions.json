@@ -1,0 +1,22 @@
+{
+  "lib/channel.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 5
+    }
+  },
+  "lib/playback-key-pair.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  },
+  "lib/recording-configuration.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 5
+    }
+  },
+  "lib/thumbnail-configuration.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 2
+    }
+  }
+}

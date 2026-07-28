@@ -1,3 +1,4 @@
+
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import {
@@ -35,7 +36,7 @@ export async function main(): Promise<void> {
   const lines = [
     "import { Fact, FactName } from './fact';",
     '',
-    '/* eslint-disable quote-props */',
+    '/* eslint-disable @stylistic/quote-props */',
     '/* eslint-disable max-len */',
     '',
     '/**',
@@ -188,7 +189,6 @@ function before(region: string, ruleOrRegion: string | symbol) {
 }
 
 main().catch(e => {
-  // eslint-disable-next-line no-console
   console.error(e);
   process.exit(-1);
 });

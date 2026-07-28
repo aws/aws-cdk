@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "testCases": {
     "ApplicationSignalsECSSidecarTest/DefaultTest": {
       "stacks": [
@@ -12,5 +12,6 @@
       "assertionStack": "ApplicationSignalsECSSidecarTest/DefaultTest/DeployAssert",
       "assertionStackName": "ApplicationSignalsECSSidecarTestDefaultTestDeployAssert82C486F2"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

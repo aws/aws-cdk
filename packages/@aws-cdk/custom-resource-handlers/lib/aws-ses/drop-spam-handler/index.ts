@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 
 // Adapted from https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-lambda-example-functions.html
 export async function handler(event: AWSLambda.SESEvent): Promise<{ disposition: string } | null> {

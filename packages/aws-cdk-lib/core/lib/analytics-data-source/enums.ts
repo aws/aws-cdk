@@ -1,5 +1,5 @@
 /* eslint-disable quotes */
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 /* eslint-disable @stylistic/comma-dangle */
 /* eslint-disable @cdklabs/no-literal-partition */
 /*
@@ -10,15 +10,53 @@
  */
 
 export const AWS_CDK_ENUMS: { [key: string]: any } = {
+  "AcceleratorManufacturer": [
+    "amazon-web-services",
+    "amd",
+    "nvidia",
+    "xilinx",
+    "habana"
+  ],
+  "AcceleratorName": [
+    "a100",
+    "k80",
+    "m60",
+    "radeon-pro-v520",
+    "t4",
+    "v100",
+    "vu9p",
+    "a10g",
+    "h100",
+    "inferentia",
+    "k520",
+    "t4g",
+    "l40s",
+    "l4",
+    "gaudi-hl-205",
+    "inferentia2",
+    "trainium",
+    "trainium2",
+    "u30"
+  ],
+  "AcceleratorType": [
+    "gpu",
+    "fpga",
+    "inference",
+    "media"
+  ],
   "AccessEntryType": [
     "STANDARD",
     "FARGATE_LINUX",
     "EC2_LINUX",
-    "EC2_WINDOWS"
+    "EC2_WINDOWS",
+    "EC2",
+    "HYBRID_LINUX",
+    "HYPERPOD_LINUX"
   ],
   "AccessKeyStatus": [
     "Active",
-    "Inactive"
+    "Inactive",
+    "Expired"
   ],
   "AccessLevel": [
     "READ",
@@ -71,6 +109,18 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ON_DEPLOYMENT_ROLLED_BACK",
     "AT_DEPLOYMENT_TICK"
   ],
+  "ActionScope": [
+    "all",
+    "specific"
+  ],
+  "AdMarkerDash": [
+    "BINARY",
+    "XML"
+  ],
+  "AdMarkerHls": [
+    "DATERANGE",
+    "SCTE35_ENHANCED"
+  ],
   "AdditionalHealthCheckType": [
     "ELB",
     "EBS",
@@ -108,6 +158,14 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "SUPERVISOR",
     "DISABLED",
     "SUPERVISOR_ROUTER"
+  ],
+  "AgentCoreRuntime": [
+    "PYTHON_3_10",
+    "PYTHON_3_11",
+    "PYTHON_3_12",
+    "PYTHON_3_13",
+    "PYTHON_3_14",
+    "NODE_22"
   ],
   "AgentStepType": [
     "PRE_PROCESSING",
@@ -203,6 +261,19 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "GPU",
     "ARM64",
     "Neuron"
+  ],
+  "ApiGatewayHttpMethod": [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE",
+    "PATCH",
+    "HEAD",
+    "OPTIONS"
+  ],
+  "ApiKeyCredentialLocationType": [
+    "HEADER",
+    "QUERY_PARAMETER"
   ],
   "ApiKeySourceType": [
     "HEADER",
@@ -302,6 +373,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "N",
     "S"
   ],
+  "AudioCodec": [
+    "AACL",
+    "AACH",
+    "AC-3",
+    "EC-3"
+  ],
   "AuditCheck": [
     "AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK",
     "CA_CERTIFICATE_EXPIRING_CHECK",
@@ -361,6 +438,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "DEPLOYMENT_STOP_ON_ALARM",
     "DEPLOYMENT_STOP_ON_REQUEST"
   ],
+  "AutoValidationThreshold": [
+    "MEDIUM",
+    "HIGH",
+    "MANAGED"
+  ],
   "AvailabilityZoneRebalancing": [
     "ENABLED",
     "DISABLED"
@@ -406,6 +488,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "SPOT_PREFERRED",
     "ON_DEMAND_ONLY"
   ],
+  "BareMetal": [
+    "included",
+    "required",
+    "excluded"
+  ],
   "BatchStrategy": [
     "MultiRecord",
     "SingleRecord"
@@ -418,11 +505,27 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "CPU",
     "MEMORY"
   ],
+  "BitrateFilterKey": [
+    "audio_bitrate",
+    "video_bitrate"
+  ],
   "BottlerocketEcsVariant": [
     "aws-ecs-1",
     "aws-ecs-1-nvidia",
     "aws-ecs-2",
     "aws-ecs-2-nvidia"
+  ],
+  "BrokerType": [
+    "STANDARD",
+    "EXPRESS"
+  ],
+  "BrowserSigning": [
+    "ENABLED",
+    "DISABLED"
+  ],
+  "BrowserType": [
+    "CHROME",
+    "FIREFOX"
   ],
   "BucketAccessControl": [
     "Private",
@@ -442,10 +545,19 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "DSSE_MANAGED",
     "DSSE"
   ],
+  "BucketNamespace": [
+    "global",
+    "account-regional"
+  ],
   "BucketNotificationDestinationType": [
     0,
     1,
     2
+  ],
+  "BuildComputeType": [
+    "STANDARD_8GB",
+    "LARGE_16GB",
+    "XLARGE_72GB"
   ],
   "BuildEnvironmentVariableType": [
     "PLAINTEXT",
@@ -461,6 +573,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "not-archived",
     "auto-discover",
     "single-file"
+  ],
+  "BurstablePerformance": [
+    "included",
+    "required",
+    "excluded"
   ],
   "CaaTag": [
     "issue",
@@ -518,6 +635,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "CapacityMode": [
     "FIXED",
     "AUTOSCALED"
+  ],
+  "CapacityOptionType": [
+    "ON_DEMAND",
+    "SPOT"
   ],
   "CapacityType": [
     "SPOT",
@@ -590,7 +711,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "MYSQL_NATIVE_PASSWORD",
     "POSTGRES_SCRAM_SHA_256",
     "POSTGRES_MD5",
-    "SQL_SERVER_AUTHENTICATION"
+    "SQL_SERVER_AUTHENTICATION",
+    "MYSQL_CACHING_SHA2_PASSWORD"
   ],
   "ClientRoutingPolicy": [
     "availability_zone_affinity",
@@ -650,6 +772,16 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "ClusterType": [
     "single-node",
     "multi-node"
+  ],
+  "CmafDrmSystem": [
+    "FAIRPLAY",
+    "PLAYREADY",
+    "WIDEVINE",
+    "IRDETO"
+  ],
+  "CmafEncryptionMethod": [
+    "CENC",
+    "CBCS"
   ],
   "CodeBuildActionType": [
     0,
@@ -733,7 +865,60 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     0,
     1,
     2,
-    3
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "ComponentAction": [
+    "AppendFile",
+    "Assert",
+    "CopyFile",
+    "CopyFolder",
+    "CreateFile",
+    "CreateFolder",
+    "CreateSymlink",
+    "DeleteFile",
+    "DeleteFolder",
+    "ExecuteBash",
+    "ExecuteBinary",
+    "ExecuteDocument",
+    "ExecutePowerShell",
+    "InstallMSI",
+    "ListFiles",
+    "MoveFile",
+    "MoveFolder",
+    "ReadFile",
+    "Reboot",
+    "SetFileEncoding",
+    "SetFileOwner",
+    "SetFolderOwner",
+    "SetFilePermissions",
+    "SetFolderPermissions",
+    "SetRegistry",
+    "S3Download",
+    "S3Upload",
+    "UninstallMSI",
+    "UpdateOS",
+    "WebDownload"
+  ],
+  "ComponentOnFailure": [
+    "Abort",
+    "Continue",
+    "Ignore"
+  ],
+  "ComponentParameterType": [
+    "string"
+  ],
+  "ComponentPhaseName": [
+    "build",
+    "container-host-test",
+    "test",
+    "validate"
+  ],
+  "ComponentSchemaVersion": [
+    "1.0"
   ],
   "ComponentType": [
     "Function",
@@ -764,7 +949,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "BUILD_LAMBDA_4GB",
     "BUILD_LAMBDA_8GB",
     "BUILD_LAMBDA_10GB",
-    "ATTRIBUTE_BASED_COMPUTE"
+    "ATTRIBUTE_BASED_COMPUTE",
+    "CUSTOM_INSTANCE_TYPE"
   ],
   "ConditionLogicalOperator": [
     "EQUALS"
@@ -810,6 +996,25 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "ContainerProviderTypes": [
     "EKS"
   ],
+  "ContainerType": [
+    "TS",
+    "CMAF",
+    "ISM"
+  ],
+  "ContentFilterStrength": [
+    "NONE",
+    "LOW",
+    "MEDIUM",
+    "HIGH"
+  ],
+  "ContentFilterType": [
+    "SEXUAL",
+    "VIOLENCE",
+    "HATE",
+    "INSULTS",
+    "MISCONDUCT",
+    "PROMPT_ATTACK"
+  ],
   "ContentHandling": [
     "CONVERT_TO_BINARY",
     "CONVERT_TO_TEXT"
@@ -821,6 +1026,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "application/javascript",
     "application/json"
   ],
+  "ContextualGroundingFilterType": [
+    "GROUNDING",
+    "RELEVANCE"
+  ],
   "Continent": [
     "AF",
     "AN",
@@ -829,6 +1038,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "OC",
     "NA",
     "SA"
+  ],
+  "ContributorInsightsMode": [
+    "ACCESSED_AND_THROTTLED_KEYS",
+    "THROTTLED_KEYS"
   ],
   "CoreDnsComputeType": [
     "ec2",
@@ -856,6 +1069,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "standard",
     "unlimited"
   ],
+  "CpuManufacturer": [
+    "intel",
+    "amd",
+    "amazon-web-services",
+    "apple"
+  ],
   "CrawlerState": [
     "RUNNING",
     "CANCELLING",
@@ -864,10 +1083,19 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "FAILED",
     "ERROR"
   ],
+  "CredentialProviderType": [
+    "API_KEY",
+    "OAUTH",
+    "GATEWAY_IAM_ROLE"
+  ],
   "CrossRegionInferenceProfileRegion": [
+    "global",
     "eu",
     "us",
-    "apac"
+    "us-gov",
+    "apac",
+    "jp",
+    "au"
   ],
   "CsvDelimiter": [
     "COMMA",
@@ -879,6 +1107,15 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "CsvHeaderLocation": [
     "FIRST_ROW",
     "GIVEN"
+  ],
+  "CustomClaimOperator": [
+    "EQUALS",
+    "CONTAINS",
+    "CONTAINS_ANY"
+  ],
+  "CustomClaimValueType": [
+    "STRING",
+    "STRING_ARRAY"
   ],
   "CustomControl": [
     "RETURN_CONTROL"
@@ -897,7 +1134,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "nodejs16.x",
     "nodejs18.x",
     "nodejs20.x",
-    "nodejs22.x"
+    "nodejs22.x",
+    "nodejs24.x"
   ],
   "CustomThreatProtectionMode": [
     "ENFORCED",
@@ -912,6 +1150,23 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "aurora",
     "aurora-iopt1"
   ],
+  "DashManifestCompactness": [
+    "STANDARD",
+    "NONE"
+  ],
+  "DashPeriodTriggers": [
+    "AVAILS",
+    "DRM_KEY_ROTATION",
+    "SOURCE_CHANGES",
+    "SOURCE_DISRUPTIONS",
+    "NONE"
+  ],
+  "DashUtcTimingMode": [
+    "HTTP_HEAD",
+    "HTTP_ISO",
+    "HTTP_XSDATE",
+    "UTC_DIRECT"
+  ],
   "DataConverterType": [
     0,
     1
@@ -925,9 +1180,29 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "Grab",
     "Here"
   ],
+  "DataSourceLevelMetricsBehavior": [
+    "FULL_REQUEST_DATA_SOURCE_METRICS",
+    "PER_DATA_SOURCE_METRICS"
+  ],
+  "DataSourceMetricsConfig": [
+    "ENABLED",
+    "DISABLED"
+  ],
+  "DataStorageUnit": [
+    "GB"
+  ],
   "DatabaseInsightsMode": [
     "standard",
     "advanced"
+  ],
+  "DateIntervalUnit": [
+    "YEARS",
+    "MONTHS",
+    "WEEKS",
+    "DAYS",
+    "HOURS",
+    "MINUTES",
+    "SECONDS"
   ],
   "DateTimeFormat": [
     "yyyy-MM-dd'T'HH:mm:ss'Z'",
@@ -948,9 +1223,18 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "messageGroup",
     "queue"
   ],
+  "DefaultAuthScheme": [
+    "IAM_AUTH",
+    "NONE"
+  ],
   "DefaultCapacityType": [
     0,
-    1
+    1,
+    2
+  ],
+  "DefaultInstanceClass": [
+    "default_x86_64",
+    "default_arm64"
   ],
   "DefaultInstanceTenancy": [
     "default",
@@ -965,6 +1249,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "SAFE_DELETE",
     "FORCE_DELETE",
     "RETAIN"
+  ],
+  "DeletionProtection": [
+    "none",
+    "prevent-force-deletion",
+    "prevent-all-deletion"
   ],
   "DeletionProtectionCheck": [
     "ACCOUNT_DEFAULT",
@@ -1005,7 +1294,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "DeploymentStrategy": [
     "ROLLING",
-    "BLUE_GREEN"
+    "BLUE_GREEN",
+    "LINEAR",
+    "CANARY"
   ],
   "DesiredState": [
     "RUNNING",
@@ -1058,6 +1349,20 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "SELF_UPDATE",
     "ASSET_PUBLISHING"
   ],
+  "DockerServerComputeType": [
+    "BUILD_GENERAL1_SMALL",
+    "BUILD_GENERAL1_MEDIUM",
+    "BUILD_GENERAL1_LARGE",
+    "BUILD_GENERAL1_XLARGE",
+    "BUILD_GENERAL1_2XLARGE",
+    "ATTRIBUTE_BASED_COMPUTE",
+    "BUILD_LAMBDA_10GB",
+    "BUILD_LAMBDA_1GB",
+    "BUILD_LAMBDA_2GB",
+    "BUILD_LAMBDA_4GB",
+    "BUILD_LAMBDA_8GB",
+    "CUSTOM_INSTANCE_TYPE"
+  ],
   "DockerVolumeConsistency": [
     "consistent",
     "delegated",
@@ -1066,6 +1371,13 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "DriveCacheType": [
     "NONE",
     "READ"
+  ],
+  "DrmSettingsKey": [
+    "exclude_session_keys"
+  ],
+  "DrmSignalling": [
+    "INDIVIDUAL",
+    "REFERENCED"
   ],
   "DynamoConsumedCapacity": [
     "INDEXES",
@@ -1130,7 +1442,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "EcsMachineImageType": [
     "ECS_AL2",
     "ECS_AL2023",
-    "ECS_AL2_NVIDIA"
+    "ECS_AL2_NVIDIA",
+    "ECS_AL2023_NVIDIA"
   ],
   "Effect": [
     "Allow",
@@ -1138,7 +1451,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "EksMachineImageType": [
     "EKS_AL2",
-    "EKS_AL2_NVIDIA"
+    "EKS_AL2_NVIDIA",
+    "EKS_AL2023",
+    "EKS_AL2023_NVIDIA"
   ],
   "EmailEncoding": [
     "Base64",
@@ -1164,6 +1479,16 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "SSE_S3",
     "SSE_KMS",
     "CSE_KMS"
+  ],
+  "EndpointAccessMode": [
+    "STRICT",
+    "BASIC"
+  ],
+  "EndpointErrorConfiguration": [
+    "STALE_MANIFEST",
+    "INCOMPLETE_MANIFEST",
+    "MISSING_DRM_KEY",
+    "SLATE_INPUT"
   ],
   "EndpointType": [
     "EDGE",
@@ -1204,6 +1529,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "EventSource": [
     "aws.config"
+  ],
+  "EventSourceMappingLogLevel": [
+    "INFO",
+    "DEBUG",
+    "WARN"
   ],
   "EventType": [
     "s3:ObjectCreated:*",
@@ -1247,6 +1577,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "QUEUED",
     "SUPERSEDED",
     "PARALLEL"
+  ],
+  "Failover": [
+    "PRIMARY",
+    "SECONDARY"
   ],
   "FailoverStatusCode": [
     403,
@@ -1329,7 +1663,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "BUILD_GENERAL1_LARGE",
     "BUILD_GENERAL1_XLARGE",
     "BUILD_GENERAL1_2XLARGE",
-    "ATTRIBUTE_BASED_COMPUTE"
+    "ATTRIBUTE_BASED_COMPUTE",
+    "CUSTOM_INSTANCE_TYPE"
+  ],
+  "FleetOverflowBehavior": [
+    "QUEUE",
+    "ON_DEMAND"
   ],
   "FlowLogDestinationType": [
     "cloud-watch-logs",
@@ -1372,6 +1711,20 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "AWS_IAM",
     "NONE"
   ],
+  "GatewayAuthorizerType": [
+    "CUSTOM_JWT",
+    "AWS_IAM",
+    "NONE"
+  ],
+  "GatewayExceptionLevel": [
+    "DEBUG"
+  ],
+  "GatewayProtocolType": [
+    "MCP"
+  ],
+  "GatewayTargetProtocolType": [
+    "MCP"
+  ],
   "GelfCompressionType": [
     "gzip",
     "zlib",
@@ -1387,13 +1740,17 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "UPDATED",
     "CLOSED"
   ],
+  "GlobalTableSettingsReplicationMode": [
+    "ENABLED"
+  ],
   "GlueVersion": [
     "0.9",
     "1.0",
     "2.0",
     "3.0",
     "4.0",
-    "5.0"
+    "5.0",
+    "5.1"
   ],
   "GraphWidgetView": [
     "timeSeries",
@@ -1410,6 +1767,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "internal",
     "resource-exhausted",
     "unavailable"
+  ],
+  "GuardrailAction": [
+    "BLOCK",
+    "ANONYMIZE",
+    "NONE"
   ],
   "HandlerBehavior": [
     "CODE",
@@ -1536,6 +1898,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "http",
     "https"
   ],
+  "HttpTokens": [
+    "optional",
+    "required"
+  ],
   "HttpVersion": [
     "http1.1",
     "http2",
@@ -1567,11 +1933,19 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "git",
     "docker"
   ],
+  "ImageArchitecture": [
+    "arm64",
+    "x86_64"
+  ],
   "ImageId": [
     "amazonlinux-2-x86_64",
     "amazonlinux-2023-x86_64",
     "ubuntu-18.04-x86_64",
     "ubuntu-22.04-x86_64"
+  ],
+  "ImagePipelineStatus": [
+    "ENABLED",
+    "DISABLED"
   ],
   "ImagePullPolicy": [
     "Always",
@@ -1586,12 +1960,24 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ECR_PUBLIC",
     "ECR"
   ],
+  "ImageType": [
+    "AMI",
+    "DOCKER"
+  ],
+  "IncludeDetail": [
+    "FULL",
+    "NONE"
+  ],
   "IncludeExecutionData": [
     "ALL"
   ],
   "InferenceProfileType": [
     "SYSTEM_DEFINED",
     "APPLICATION"
+  ],
+  "IngestEndpoint": [
+    1,
+    2
   ],
   "InitElementType": [
     "PACKAGE",
@@ -1709,12 +2095,22 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "r7i",
     "memory7-intel",
     "r7iz",
+    "memory8-intel-base",
+    "r8i",
+    "memory8-intel-flex",
+    "r8i-flex",
     "memory7-amd",
     "r7a",
+    "memory8-amd",
+    "r8a",
     "memory8-graviton",
     "r8g",
     "memory8-graviton4-nvme-drive",
     "r8gd",
+    "memory8-graviton4-high-network-bandwidth",
+    "r8gn",
+    "memory8-graviton4-ebs-optimized",
+    "r8gb",
     "compute3",
     "c3",
     "compute4",
@@ -1759,8 +2155,14 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "c7i",
     "compute7-intel-flex",
     "c7i-flex",
+    "compute8-intel",
+    "c8i",
+    "compute8-intel-flex",
+    "c8i-flex",
     "compute7-amd",
     "c7a",
+    "compute8-amd",
+    "c8a",
     "storage2",
     "d2",
     "storage3",
@@ -1795,6 +2197,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "i7i",
     "storage8-graviton",
     "i8g",
+    "storage8-graviton-storage-optimized",
+    "i8ge",
     "burstable2",
     "t2",
     "burstable3",
@@ -1839,6 +2243,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "g6",
     "graphics6-efficient",
     "g6e",
+    "graphics7-efficient",
+    "g7e",
     "graphics-ram-6",
     "gr6",
     "parallel2",
@@ -1881,12 +2287,20 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "m7gd",
     "standard8-graviton4-nvme-drive",
     "m8gd",
+    "standard8-intel",
+    "m8i",
+    "standard8-intel-flex",
+    "m8i-flex",
     "standard7-intel",
     "m7i",
     "standard7-intel-flex",
     "m7i-flex",
     "standard7-amd",
     "m7a",
+    "standard8-amd",
+    "m8a",
+    "standard9-graviton",
+    "m9g",
     "high-compute-memory1",
     "z1d",
     "inference1",
@@ -1918,9 +2332,17 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "deep-learning2-qualcomm",
     "dl2q"
   ],
+  "InstanceGeneration": [
+    "current",
+    "previous"
+  ],
   "InstanceInitiatedShutdownBehavior": [
     "stop",
     "terminate"
+  ],
+  "InstanceMonitoring": [
+    "BASIC",
+    "DETAILED"
   ],
   "InstanceSize": [
     "nano",
@@ -1981,6 +2403,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "IntendedUse": [
     "SingleUse",
     "Storage"
+  ],
+  "InterceptionPoint": [
+    "REQUEST",
+    "RESPONSE"
   ],
   "IntrospectionConfig": [
     "ENABLED",
@@ -2051,6 +2477,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "host",
     "task"
   ],
+  "IsmDrmSystem": [
+    "PLAYREADY"
+  ],
   "JenkinsActionType": [
     0,
     1
@@ -2076,7 +2505,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "STOPPED"
   ],
   "JobStateTimeLimitActionsAction": [
-    "CANCEL"
+    "CANCEL",
+    "TERMINATE"
   ],
   "JobStateTimeLimitActionsReason": [
     "CAPACITY:INSUFFICIENT_INSTANCE_CAPACITY",
@@ -2141,7 +2571,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "SM2",
     "ML_DSA_44",
     "ML_DSA_65",
-    "ML_DSA_87"
+    "ML_DSA_87",
+    "ECC_NIST_EDWARDS25519"
   ],
   "KeyUsage": [
     "ENCRYPT_DECRYPT",
@@ -2206,6 +2637,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "right",
     "hidden"
   ],
+  "Level": [
+    "INFO",
+    "ERROR",
+    "TRACE",
+    "OFF"
+  ],
   "LicenseModel": [
     "license-included",
     "bring-your-own-license",
@@ -2225,6 +2662,19 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "AFTER_180_DAYS",
     "AFTER_270_DAYS",
     "AFTER_365_DAYS"
+  ],
+  "LifecyclePolicyActionType": [
+    "DELETE",
+    "DEPRECATE",
+    "DISABLE"
+  ],
+  "LifecyclePolicyResourceType": [
+    "AMI_IMAGE",
+    "CONTAINER_IMAGE"
+  ],
+  "LifecyclePolicyStatus": [
+    "ENABLED",
+    "DISABLED"
   ],
   "LifecycleTransition": [
     "autoscaling:EC2_INSTANCE_LAUNCHING",
@@ -2250,10 +2700,20 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "LOCAL_DOCKER_LAYER_CACHE",
     "LOCAL_CUSTOM_CACHE"
   ],
+  "LocalStorage": [
+    "included",
+    "required",
+    "excluded"
+  ],
+  "LocalStorageType": [
+    "hdd",
+    "ssd"
+  ],
   "LockFile": [
     "package-lock.json",
     "yarn.lock",
     "bun.lockb",
+    "bun.lock",
     "pnpm-lock.yaml"
   ],
   "LogFormat": [
@@ -2318,6 +2778,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "PERSISTENT_1",
     "PERSISTENT_2"
   ],
+  "MCPProtocolVersion": [
+    "2025-06-18",
+    "2025-03-26"
+  ],
   "MachineImageType": [
     0,
     1
@@ -2338,6 +2802,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     1,
     2
   ],
+  "ManagedWordFilterType": [
+    "PROFANITY"
+  ],
   "ManagementEventSources": [
     "kms.amazonaws.com",
     "rdsdata.amazonaws.com"
@@ -2357,6 +2824,23 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "FULL_HD",
     "HD",
     "SD"
+  ],
+  "McpGatewaySearchType": [
+    "SEMANTIC"
+  ],
+  "McpTargetType": [
+    "OPENAPI_SCHEMA",
+    "SMITHY_MODEL",
+    "LAMBDA",
+    "MCP_SERVER",
+    "API_GATEWAY"
+  ],
+  "MemoryStrategyType": [
+    "SUMMARIZATION",
+    "SEMANTIC",
+    "USER_PREFERENCE",
+    "EPISODIC",
+    "CUSTOM"
   ],
   "MemoryType": [
     "SESSION_SUMMARY"
@@ -2389,7 +2873,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "MetadataType": [
     "aws:cdk:analytics:construct",
     "aws:cdk:analytics:method",
-    "aws:cdk:analytics:featureflag"
+    "aws:cdk:analytics:featureflag",
+    "aws:cdk:analytics:mixin"
   ],
   "MethodLoggingLevel": [
     "OFF",
@@ -2402,7 +2887,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "Maximum"
   ],
   "MetricType": [
-    "EventCount"
+    "EventCount",
+    "ErrorCount",
+    "KafkaMetrics"
   ],
   "MetricsLevel": [
     "APPLICATION",
@@ -2414,6 +2901,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "OFF",
     "OPTIONAL",
     "ON"
+  ],
+  "ModalityType": [
+    "TEXT",
+    "IMAGE"
   ],
   "Mode": [
     "SingleModel",
@@ -2430,6 +2921,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "MqttQualityOfService": [
     0,
     1
+  ],
+  "MssManifestLayout": [
+    "FULL",
+    "COMPACT"
   ],
   "MultiRegionConsistency": [
     "EVENTUAL",
@@ -2468,7 +2963,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "NetworkType": [
     "IPV4",
-    "DUAL"
+    "DUAL",
+    "IPV6"
   ],
   "NodeType": [
     "coordinator"
@@ -2490,13 +2986,52 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "AL2023_x86_64_STANDARD",
     "AL2023_x86_64_NEURON",
     "AL2023_x86_64_NVIDIA",
+    "AL2023_ARM_64_NVIDIA",
     "AL2023_ARM_64_STANDARD"
+  ],
+  "NullOrder": [
+    "nulls-first",
+    "nulls-last"
+  ],
+  "NumericFilterKey": [
+    "audio_channels",
+    "audio_sample_rate",
+    "trickplay_height",
+    "video_framerate",
+    "video_height"
   ],
   "NumericOverflowHandlingAction": [
     "DISABLED",
     "FAIL",
     "SET_TO_NULL",
     "DROP_ROW"
+  ],
+  "OAuth2CredentialProviderVendor": [
+    "GoogleOauth2",
+    "GithubOauth2",
+    "SlackOauth2",
+    "SalesforceOauth2",
+    "MicrosoftOauth2",
+    "CustomOauth2",
+    "AtlassianOauth2",
+    "LinkedinOauth2",
+    "XOauth2",
+    "OktaOauth2",
+    "OneLoginOauth2",
+    "PingOneOauth2",
+    "FacebookOauth2",
+    "YandexOauth2",
+    "RedditOauth2",
+    "ZoomOauth2",
+    "TwitchOauth2",
+    "SpotifyOauth2",
+    "DropboxOauth2",
+    "NotionOauth2",
+    "HubspotOauth2",
+    "CyberArkOauth2",
+    "FusionAuthOauth2",
+    "Auth0Oauth2",
+    "CognitoOauth2"
   ],
   "OCSFSourceType": [
     "CloudTrail",
@@ -2559,6 +3094,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "BatchExecuteStatement",
     "ExecuteStatement"
   ],
+  "OperationLevelMetricsConfig": [
+    "ENABLED",
+    "DISABLED"
+  ],
   "Operator": [
     "AND",
     "OR",
@@ -2581,6 +3120,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "name",
     "position"
   ],
+  "OrcFormatVersion": [
+    "V0_11",
+    "V0_12"
+  ],
   "OrchestrationType": [
     "DEFAULT",
     "CUSTOM_ORCHESTRATION"
@@ -2590,6 +3133,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "lambda",
     "mediastore",
     "mediapackagev2"
+  ],
+  "OriginIpAddressType": [
+    "ipv4",
+    "ipv6",
+    "dualstack"
   ],
   "OriginProtocolPolicy": [
     "http-only",
@@ -2657,6 +3205,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "ParamsAndSecretsVersions": [
     "1.0.103"
   ],
+  "ParquetWriterVersion": [
+    "V1",
+    "V2"
+  ],
   "ParserProcessorType": [
     0,
     1,
@@ -2677,6 +3229,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "PartitionDateSource": [
     "EventTime",
     "DeliveryTime"
+  ],
+  "PartitionProjectionType": [
+    "integer",
+    "date",
+    "enum",
+    "injected"
   ],
   "PasskeyUserVerification": [
     "preferred",
@@ -2787,6 +3345,14 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ALLOW",
     "REQUIRE"
   ],
+  "PolicyEffect": [
+    "permit",
+    "forbid"
+  ],
+  "PolicyValidationReportStatus": [
+    "success",
+    "failure"
+  ],
   "PolicyValidationReportStatusBeta1": [
     "success",
     "failure"
@@ -2818,10 +3384,33 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "CONSTRAINED_BANDWIDTH_DELIVERY",
     "HIGHER_BANDWIDTH_DELIVERY"
   ],
+  "PresetSpeke20Audio": [
+    "PRESET_AUDIO_1",
+    "PRESET_AUDIO_2",
+    "PRESET_AUDIO_3",
+    "SHARED",
+    "UNENCRYPTED"
+  ],
+  "PresetSpeke20Video": [
+    "PRESET_VIDEO_1",
+    "PRESET_VIDEO_2",
+    "PRESET_VIDEO_3",
+    "PRESET_VIDEO_4",
+    "PRESET_VIDEO_5",
+    "PRESET_VIDEO_6",
+    "PRESET_VIDEO_7",
+    "PRESET_VIDEO_8",
+    "SHARED",
+    "UNENCRYPTED"
+  ],
   "PriceClass": [
     "PriceClass_100",
     "PriceClass_200",
     "PriceClass_All"
+  ],
+  "PrincipalScope": [
+    "all",
+    "specific"
   ],
   "PriorityType": [
     "LATENCY",
@@ -2858,6 +3447,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "TEXT",
     "CHAT"
   ],
+  "PropagateManagedInstancesTags": [
+    "CAPACITY_PROVIDER",
+    "NONE"
+  ],
   "PropagatedTagSource": [
     "SERVICE",
     "TASK_DEFINITION",
@@ -2871,8 +3464,18 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "UDP",
     "TCP_UDP"
   ],
+  "ProtocolType": [
+    "MCP",
+    "HTTP",
+    "A2A",
+    "AGUI"
+  ],
   "ProviderType": [
     "CodeStarSourceConnection"
+  ],
+  "ProxyEndpointTargetRole": [
+    "READ_WRITE",
+    "READ_ONLY"
   ],
   "PythonVersion": [
     "2",
@@ -2954,6 +3557,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     0,
     1
   ],
+  "ReferenceStrength": [
+    "strong",
+    "weak",
+    "both"
+  ],
   "RegistryType": [
     "private",
     "public"
@@ -3000,9 +3608,16 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "codecommit-repository-branches-and-tags-deleted",
     "codecommit-repository-branches-and-tags-updated"
   ],
+  "RepositoryService": [
+    "ECR"
+  ],
   "RepositoryVisibility": [
     0,
     1
+  ],
+  "RequestMetricsStatus": [
+    "Enabled",
+    "Disabled"
   ],
   "RequireConfirmation": [
     "ENABLED",
@@ -3019,13 +3634,30 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "number",
     "string-list"
   ],
+  "ResolverLevelMetricsBehavior": [
+    "FULL_REQUEST_RESOLVER_METRICS",
+    "PER_RESOLVER_METRICS"
+  ],
+  "ResolverMetricsConfig": [
+    "ENABLED",
+    "DISABLED"
+  ],
   "ResourceAction": [
     "pause-cluster",
     "resume-cluster",
     "failover-primary-compute"
   ],
+  "ResourceScope": [
+    "all",
+    "type",
+    "specific"
+  ],
   "ResourceToReplicateTags": [
     "lambda-function"
+  ],
+  "ResponseTransferMode": [
+    "BUFFERED",
+    "STREAM"
   ],
   "RestApiMode": [
     "overwrite",
@@ -3091,17 +3723,20 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "NetworkInterface",
     "TransitGateway",
     "VpcPeeringConnection",
-    "VpcEndpoint"
+    "VpcEndpoint",
+    "CoreNetwork"
   ],
   "RoutingPolicy": [
     "WEIGHTED",
     "MULTIVALUE"
   ],
   "Runtime": [
-    "nodejs18.x",
+    "nodejs20.x",
     "python3.9",
     "python3.10",
-    "python3.11"
+    "python3.11",
+    "python3.13",
+    "python3.13"
   ],
   "RuntimeFamily": [
     0,
@@ -3120,6 +3755,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "S3EncryptionMode": [
     "SSE-S3",
     "SSE-KMS"
+  ],
+  "S3LogsDeliveryPermissionsVersion": [
+    "V1",
+    "V2"
   ],
   "S3OutputFormat": [
     "plain",
@@ -3158,9 +3797,36 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "AddToLoadBalancer",
     "InstanceRefresh"
   ],
+  "ScheduleStartCondition": [
+    "EXPRESSION_MATCH_ONLY",
+    "EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE"
+  ],
+  "SchemaDefinitionType": [
+    "string",
+    "number",
+    "object",
+    "array",
+    "boolean",
+    "integer"
+  ],
   "Scope": [
     "task",
     "shared"
+  ],
+  "ScteInSegments": [
+    "NONE",
+    "ALL"
+  ],
+  "ScteMessageType": [
+    "SPLICE_INSERT",
+    "BREAK",
+    "PROVIDER_ADVERTISEMENT",
+    "DISTRIBUTOR_ADVERTISEMENT",
+    "PROVIDER_PLACEMENT_OPPORTUNITY",
+    "DISTRIBUTOR_PLACEMENT_OPPORTUNITY",
+    "PROVIDER_OVERLAY_PLACEMENT_OPPORTUNITY",
+    "DISTRIBUTOR_OVERLAY_PLACEMENT_OPPORTUNITY",
+    "PROGRAM"
   ],
   "SecurityPolicy": [
     "TLS_1_0",
@@ -3173,12 +3839,21 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "TLSv1.1_2016",
     "TLSv1.2_2018",
     "TLSv1.2_2019",
-    "TLSv1.2_2021"
+    "TLSv1.2_2021",
+    "TLSv1.2_2025",
+    "TLSv1.3_2025"
+  ],
+  "SegmentTemplateFormat": [
+    "NUMBER_WITH_TIMELINE"
   ],
   "ServerSideEncryption": [
     "AES256",
     "aws:kms",
     "aws:kms:dsse"
+  ],
+  "ServiceConnectAccessLogFormat": [
+    "TEXT",
+    "JSON"
   ],
   "ServiceIntegrationPattern": [
     "FIRE_AND_FORGET",
@@ -3212,6 +3887,16 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "above",
     "below"
   ],
+  "ShardLevelMetrics": [
+    "IncomingBytes",
+    "IncomingRecords",
+    "IteratorAgeMilliseconds",
+    "OutgoingBytes",
+    "OutgoingRecords",
+    "ReadProvisionedThroughputExceeded",
+    "WriteProvisionedThroughputExceeded",
+    "ALL"
+  ],
   "SharePermission": [
     0,
     1
@@ -3235,6 +3920,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "SnsActionMessageFormat": [
     "RAW",
     "JSON"
+  ],
+  "SortDirection": [
+    "asc",
+    "desc"
   ],
   "SourceMapMode": [
     "default",
@@ -3276,6 +3965,7 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "SslPolicy": [
     "ELBSecurityPolicy-TLS13-1-2-2021-06",
+    "ELBSecurityPolicy-TLS13-1-2-PQ-2025-09",
     "ELBSecurityPolicy-2016-08",
     "ELBSecurityPolicy-TLS13-1-2-Res-2021-06",
     "ELBSecurityPolicy-TLS13-1-2-Ext1-2021-06",
@@ -3283,6 +3973,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ELBSecurityPolicy-TLS13-1-0-2021-06",
     "ELBSecurityPolicy-TLS13-1-1-2021-06",
     "ELBSecurityPolicy-TLS13-1-3-2021-06",
+    "ELBSecurityPolicy-TLS13-1-3-PQ-2025-09",
+    "ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09",
+    "ELBSecurityPolicy-TLS13-1-2-Ext1-PQ-2025-09",
+    "ELBSecurityPolicy-TLS13-1-2-Ext2-PQ-2025-09",
+    "ELBSecurityPolicy-TLS13-1-0-PQ-2025-09",
     "ELBSecurityPolicy-TLS13-1-3-FIPS-2023-04",
     "ELBSecurityPolicy-TLS13-1-2-Res-FIPS-2023-04",
     "ELBSecurityPolicy-TLS13-1-2-FIPS-2023-04",
@@ -3291,6 +3986,13 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ELBSecurityPolicy-TLS13-1-2-Ext2-FIPS-2023-04",
     "ELBSecurityPolicy-TLS13-1-1-FIPS-2023-04",
     "ELBSecurityPolicy-TLS13-1-0-FIPS-2023-04",
+    "ELBSecurityPolicy-TLS13-1-3-FIPS-PQ-2025-09",
+    "ELBSecurityPolicy-TLS13-1-2-FIPS-PQ-2025-09",
+    "ELBSecurityPolicy-TLS13-1-2-Res-FIPS-PQ-2025-09",
+    "ELBSecurityPolicy-TLS13-1-2-Ext0-FIPS-PQ-2025-09",
+    "ELBSecurityPolicy-TLS13-1-2-Ext1-FIPS-PQ-2025-09",
+    "ELBSecurityPolicy-TLS13-1-2-Ext2-FIPS-PQ-2025-09",
+    "ELBSecurityPolicy-TLS13-1-0-FIPS-PQ-2025-09",
     "ELBSecurityPolicy-FS-1-2-Res-2020-10",
     "ELBSecurityPolicy-FS-1-2-Res-2019-08",
     "ELBSecurityPolicy-FS-1-2-2019-08",
@@ -3432,6 +4134,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "VectorOpenDataVisualizationLight",
     "VectorOpenDataVisualizationDark"
   ],
+  "SubRecordType": [
+    "JSON",
+    "DELIMITED"
+  ],
   "SubnetType": [
     "Isolated",
     "Deprecated_Isolated",
@@ -3536,7 +4242,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "TagMutability": [
     "MUTABLE",
-    "IMMUTABLE"
+    "IMMUTABLE",
+    "IMMUTABLE_WITH_EXCLUSION",
+    "MUTABLE_WITH_EXCLUSION"
   ],
   "TagOperation": [
     "STRINGEQUALS",
@@ -3581,6 +4289,15 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "Text",
     "Object"
   ],
+  "Tenancy": [
+    "default",
+    "dedicated",
+    "host"
+  ],
+  "TerminateHookAbandonAction": [
+    "retain",
+    "terminate"
+  ],
   "TerminationPolicy": [
     "AllocationStrategy",
     "ClosestToNextInstanceHour",
@@ -3591,6 +4308,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "OldestLaunchTemplate",
     "CustomLambdaFunction"
   ],
+  "TextFilterKey": [
+    "audio_language",
+    "subtitle_language"
+  ],
   "TextWidgetBackground": [
     "solid",
     "transparent"
@@ -3599,6 +4320,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "bursting",
     "provisioned",
     "elastic"
+  ],
+  "TierConfig": [
+    "CLASSIC",
+    "STANDARD"
   ],
   "TimeoutAction": [
     "ForceApplyCapacityChange",
@@ -3693,8 +4418,25 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ignore",
     "missing"
   ],
+  "TrickplayType": [
+    "iframe",
+    "image",
+    "none"
+  ],
   "TriggerInvalidation": [
     "WHEN_FUNCTION_CHANGES"
+  ],
+  "TsDrmSystem": [
+    "FAIRPLAY",
+    "CLEAR_KEY_AES_128"
+  ],
+  "TsEncryptionMethod": [
+    "AES_128",
+    "SAMPLE_AES"
+  ],
+  "TtmlProfile": [
+    "IMSC_1",
+    "EBU_TT_D_101"
   ],
   "TypeConverterType": [
     "boolean",
@@ -3825,6 +4567,17 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "none",
     "before",
     "after"
+  ],
+  "VideoCodec": [
+    "H264",
+    "H265",
+    "AV1"
+  ],
+  "VideoDynamicRange": [
+    "dv",
+    "hdr10",
+    "hlg",
+    "sdr"
   ],
   "ViewerProtocolPolicy": [
     "https-only",
@@ -4306,6 +5059,43 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "G.4X",
     "G.8X",
     "Z.2X"
+  ],
+  "WorkflowAction": [
+    "ApplyImageConfigurations",
+    "BootstrapInstanceForContainer",
+    "CollectImageMetadata",
+    "CollectImageScanFindings",
+    "CreateImage",
+    "DistributeImage",
+    "ExecuteComponents",
+    "ExecuteStateMachine",
+    "LaunchInstance",
+    "ModifyImageAttributes",
+    "RunCommand",
+    "RegisterImage",
+    "RunSysPrep",
+    "SanitizeInstance",
+    "TerminateInstance",
+    "WaitForAction",
+    "WaitForSSMAgent"
+  ],
+  "WorkflowOnFailure": [
+    "Abort",
+    "Continue"
+  ],
+  "WorkflowParameterType": [
+    "boolean",
+    "integer",
+    "string",
+    "stringList"
+  ],
+  "WorkflowSchemaVersion": [
+    "1.0"
+  ],
+  "WorkflowType": [
+    "BUILD",
+    "TEST",
+    "DISTRIBUTION"
   ],
   "WriteParallel": [
     "on",

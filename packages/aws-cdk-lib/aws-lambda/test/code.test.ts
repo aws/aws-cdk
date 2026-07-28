@@ -1,5 +1,5 @@
-import * as child_process from 'child_process';
-import * as path from 'path';
+import child_process from 'child_process';
+import path from 'path';
 import { Annotations, Match, Template } from '../../assertions';
 import * as ecr from '../../aws-ecr';
 import * as s3 from '../../aws-s3';
@@ -35,7 +35,7 @@ describe('code', () => {
 
     test('fails if command is empty', () => {
       // GIVEN
-      const command = [];
+      const command = new Array<string>();
 
       // THEN
       expect(() => lambda.Code.fromCustomCommand('', command)).toThrow('command must contain at least one argument. For example, ["node", "buildFile.js"].');

@@ -1,7 +1,8 @@
-import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import { App, Stack } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 import { CustomLayer, Map, PoliticalView, Style } from '../lib';
+import { LOCATION_SUPPORTED_REGIONS } from './integ-tests-regions';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
@@ -21,4 +22,5 @@ const app = new App();
 
 new integ.IntegTest(app, 'MapTest', {
   testCases: [new TestStack(app, 'cdk-integ-location-map')],
+  regions: LOCATION_SUPPORTED_REGIONS,
 });

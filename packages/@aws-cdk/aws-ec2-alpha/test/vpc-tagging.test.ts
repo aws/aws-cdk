@@ -1,10 +1,10 @@
-import { Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
-import * as vpc from '../lib/vpc-v2';
-import { IpCidr, SubnetV2 } from '../lib/subnet-v2';
-import { InternetGateway, NatGateway, RouteTable, VPCPeeringConnection, VPNGatewayV2 } from '../lib/route';
+import { Template } from 'aws-cdk-lib/assertions';
 import { SubnetType, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
 import { AddressFamily, Ipam } from '../lib';
+import { InternetGateway, NatGateway, RouteTable, VPCPeeringConnection, VPNGatewayV2 } from '../lib/route';
+import { IpCidr, SubnetV2 } from '../lib/subnet-v2';
+import * as vpc from '../lib/vpc-v2';
 
 describe('Vpc V2 with full control', () => {
   let stack: cdk.Stack;

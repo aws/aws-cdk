@@ -1,14 +1,13 @@
 {
-  "version": "20.0.0",
+  "version": "48.0.0",
   "testCases": {
-    "integ.cloudfront-alias-target": {
+    "aws-cdk-route53-cloudfront-alias-integ-test/DefaultTest": {
       "stacks": [
         "aws-cdk-cloudfront"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "aws-cdk-route53-cloudfront-alias-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkroute53cloudfrontaliasintegtestDefaultTestDeployAssertFC81AA74"
     }
   },
-  "synthContext": {},
-  "enableLookups": false
+  "minimumCliVersion": "2.1023.0"
 }

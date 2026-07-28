@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "EvaluateExpressionMixedArchTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-sfn-evaluate-expression-mixed-arch-integ"
+      ],
+      "assertionStack": "EvaluateExpressionMixedArchTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EvaluateExpressionMixedArchTestDefaultTestDeployAssertFF015055"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

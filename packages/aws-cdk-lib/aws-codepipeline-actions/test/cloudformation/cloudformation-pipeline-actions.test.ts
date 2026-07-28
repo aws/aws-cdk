@@ -7,7 +7,7 @@ import { PolicyStatement, Role, ServicePrincipal } from '../../../aws-iam';
 import * as cdk from '../../../core';
 import * as cpactions from '../../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('CloudFormation Pipeline Actions', () => {
   test('CreateChangeSetAction can be used to make a change set from a CodePipeline', () => {

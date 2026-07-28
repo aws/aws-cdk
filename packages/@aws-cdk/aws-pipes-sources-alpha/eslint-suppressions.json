@@ -1,0 +1,17 @@
+{
+  "lib/dynamodb.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  },
+  "lib/kinesis.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  },
+  "lib/streamSource.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 5
+    }
+  }
+}

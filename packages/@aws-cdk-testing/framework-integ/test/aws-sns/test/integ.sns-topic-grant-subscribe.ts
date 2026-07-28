@@ -1,5 +1,6 @@
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { App, Stack, StackProps, RemovalPolicy, Duration } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack, RemovalPolicy, Duration } from 'aws-cdk-lib';
 import { Topic } from 'aws-cdk-lib/aws-sns';
 import { User } from 'aws-cdk-lib/aws-iam';
 

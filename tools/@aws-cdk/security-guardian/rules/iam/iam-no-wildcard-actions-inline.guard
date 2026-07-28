@@ -1,0 +1,60 @@
+#
+#####################################
+##          IAM GUARD RULES        ##
+#####################################
+# Rule: IAM_NO_WILDCARD_ACTIONS_INLINE
+# Service: AWS Identity and Access Management (IAM)
+# Coverage: Inline Policies Action Wildcards
+
+let iam_roles = Resources.*[
+  Type == 'AWS::IAM::Role'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "IAM_NO_WILDCARD_ACTIONS_INLINE"
+]
+
+#Check inline policies in roles for wildcards
+rule IAM_NO_WILDCARD_ACTIONS_INLINE when %iam_roles !empty {
+    %iam_roles {
+        when Properties.Policies[*].PolicyDocument.Statement[*] exists {
+            Properties.Policies[*].PolicyDocument.Statement[*] {
+                when Effect == "Allow" {
+                    when Action exists {
+                        when Action is_string {
+                            Action != "*"
+                                <<##ERROR:IAM role inline policy must not use wildcard actions. Replace '*' in Action with specific actions needed.##>>
+                            Action != /\w+:\*$/
+                                <<##ERROR:IAM role inline policy must not use wildcard actions. Replace 'service:*' in Action with specific actions needed.##>>
+                        }
+                        when Action is_list {
+                            Action[*] != "*"
+                                <<##ERROR:IAM role inline policy must not use wildcard actions. Replace '*' in Action with specific actions needed.##>>
+                            Action[*] != /\w+:\*$/
+                                <<##ERROR:IAM role inline policy must not use wildcard actions. Replace 'service:*' in Action with specific actions needed.##>>
+                        }
+                    }
+                }
+            }
+        }
+
+        when Properties.AssumeRolePolicyDocument.Statement[*] exists {
+            Properties.AssumeRolePolicyDocument.Statement[*] {
+                when Effect == "Allow" {
+                    when Action exists {
+                        when Action is_string {
+                            Action != "*"
+                                <<##ERROR:IAM role inline policy must not use wildcard actions. Replace '*' in Action with specific actions needed.##>>
+                            Action != /\w+:\*$/
+                                <<##ERROR:IAM role inline policy must not use wildcard actions. Replace 'service:*' in Action with specific actions needed.##>>
+                        }
+                        when Action is_list {
+                            Action[*] != "*"
+                                <<##ERROR:IAM role inline policy must not use wildcard actions. Replace '*' in Action with specific actions needed.##>>
+                            Action[*] != /\w+:\*$/
+                                <<##ERROR:IAM role inline policy must not use wildcard actions. Replace 'service:*' in Action with specific actions needed.##>>
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

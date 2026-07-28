@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.mpa"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.MPA"
+      "namespace": "Amazon.CDK.AWS.MPA"
     },
     "python": {
       "module": "aws_cdk.aws_mpa"

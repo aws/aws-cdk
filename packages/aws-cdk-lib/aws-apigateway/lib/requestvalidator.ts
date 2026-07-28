@@ -1,11 +1,14 @@
-import { Construct } from 'constructs';
-import { CfnRequestValidator, CfnRequestValidatorProps } from './apigateway.generated';
-import { IRestApi, RestApi } from './restapi';
-import { IResource, Resource } from '../../core';
+import type { Construct } from 'constructs';
+import type { CfnRequestValidatorProps, IRequestValidatorRef, RequestValidatorReference } from './apigateway.generated';
+import { CfnRequestValidator } from './apigateway.generated';
+import type { IRestApi } from './restapi';
+import { RestApi } from './restapi';
+import type { IResource } from '../../core';
+import { Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
-export interface IRequestValidator extends IResource {
+export interface IRequestValidator extends IResource, IRequestValidatorRef {
   /**
    * ID of the request validator, such as abc123
    *
@@ -43,7 +46,7 @@ export interface RequestValidatorProps extends RequestValidatorOptions {
    * The rest API that this model is part of.
    *
    * The reason we need the RestApi object itself and not just the ID is because the model
-   * is being tracked by the top-level RestApi object for the purpose of calculating it's
+   * is being tracked by the top-level RestApi object for the purpose of calculating its
    * hash to determine the ID of the deployment. This allows us to automatically update
    * the deployment when the model of the REST API changes.
    */
@@ -57,6 +60,7 @@ export class RequestValidator extends Resource implements IRequestValidator {
 
   public static fromRequestValidatorId(scope: Construct, id: string, requestValidatorId: string): IRequestValidator {
     class Import extends Resource implements IRequestValidator {
+      public readonly requestValidatorRef = { requestValidatorId };
       public readonly requestValidatorId = requestValidatorId;
     }
 
@@ -93,5 +97,9 @@ export class RequestValidator extends Resource implements IRequestValidator {
       deployment.node.addDependency(resource);
       deployment.addToLogicalId({ validator: validatorProps });
     }
+  }
+
+  public get requestValidatorRef(): RequestValidatorReference {
+    return { requestValidatorId: this.requestValidatorId };
   }
 }

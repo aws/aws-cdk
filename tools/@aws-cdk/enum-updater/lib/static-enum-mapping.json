@@ -11,6 +11,12 @@
       "sdk_service": "amplify",
       "sdk_enum_name": "Type",
       "match_percentage": 1
+    },
+    "BuildComputeType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-amplify-alpha/lib/app.ts",
+      "sdk_service": "amplify",
+      "sdk_enum_name": "BuildComputeType",
+      "match_percentage": 1
     }
   },
   "apprunner": {
@@ -80,6 +86,66 @@
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/util.ts",
       "sdk_service": "ec2",
       "sdk_enum_name": "PersistRoutes",
+      "match_percentage": 1
+    },
+    "AcceleratorType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-requirements.ts",
+      "sdk_service": "ec2",
+      "sdk_enum_name": "AcceleratorTypes",
+      "match_percentage": 1
+    },
+    "AcceleratorManufacturer": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-requirements.ts",
+      "sdk_service": "ec2",
+      "sdk_enum_name": "AcceleratorManufacturers",
+      "match_percentage": 1
+    },
+    "AcceleratorName": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-requirements.ts",
+      "sdk_service": "ec2",
+      "sdk_enum_name": "AcceleratorNames",
+      "match_percentage": 1
+    },
+    "BareMetal": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-requirements.ts",
+      "sdk_service": "ec2",
+      "sdk_enum_name": "BareMetal",
+      "match_percentage": 1
+    },
+    "BurstablePerformance": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-requirements.ts",
+      "sdk_service": "ec2",
+      "sdk_enum_name": "BurstablePerformance",
+      "match_percentage": 1
+    },
+    "CpuManufacturer": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-requirements.ts",
+      "sdk_service": "ec2",
+      "sdk_enum_name": "CpuManufacturers",
+      "match_percentage": 1
+    },
+    "InstanceGeneration": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-requirements.ts",
+      "sdk_service": "ec2",
+      "sdk_enum_name": "InstanceGenerations",
+      "match_percentage": 1
+    },
+    "LocalStorage": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-requirements.ts",
+      "sdk_service": "ec2",
+      "sdk_enum_name": "LocalStorage",
+      "match_percentage": 1
+    },
+    "LocalStorageType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-requirements.ts",
+      "sdk_service": "ec2",
+      "sdk_enum_name": "LocalStorageTypes",
+      "match_percentage": 1
+    },
+    "HttpTokens": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance.ts",
+      "sdk_service": "ec2",
+      "sdk_enum_name": "HttpTokens",
       "match_percentage": 1
     },
     "KeyPairFormat": {
@@ -413,6 +479,12 @@
     }
   },
   "apigateway": {
+    "ResponseTransferMode": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/integration.ts",
+      "sdk_service": "apigateway",
+      "sdk_enum_name": "ResponseTransferMode",
+      "match_percentage": 1
+    },
     "ContentHandling": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/integration.ts",
       "sdk_service": "apigateway",
@@ -701,6 +773,12 @@
       "sdk_enum_name": "OriginGroupSelectionCriteria",
       "match_percentage": 1
     },
+    "OriginIpAddressType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/origin.ts",
+      "sdk_service": "cloudfront",
+      "sdk_enum_name": "IpAddressType",
+      "match_percentage": 1
+    },
     "FailoverStatusCode": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/web-distribution.ts",
       "sdk_service": "cloudfront",
@@ -755,6 +833,12 @@
       "sdk_enum_name": "ComputeType",
       "match_percentage": 1
     },
+    "DockerServerComputeType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/compute-type.ts",
+      "sdk_service": "codebuild",
+      "sdk_enum_name": "ComputeType",
+      "match_percentage": 1
+    },
     "EnvironmentType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/environment-type.ts",
       "sdk_service": "codebuild",
@@ -773,8 +857,14 @@
       "sdk_enum_name": "ComputeType",
       "match_percentage": 1
     },
+    "FleetOverflowBehavior": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/fleet.ts",
+      "sdk_service": "codebuild",
+      "sdk_enum_name": "OverflowBehavior",
+      "match_percentage": 1
+    },
     "ImagePullPrincipalType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/project.ts",
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/image-pull-principal-type.ts",
       "sdk_service": "codebuild",
       "sdk_enum_name": "ImagePullCredentialsType",
       "match_percentage": 1
@@ -849,6 +939,18 @@
       "sdk_enum_name": "AttributeType",
       "match_percentage": 1
     },
+    "ContributorInsightsMode": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/shared.ts",
+      "sdk_service": "dynamodb",
+      "sdk_enum_name": "Mode",
+      "match_percentage": 1
+    },
+    "MultiRegionConsistency": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/shared.ts",
+      "sdk_service": "dynamodb",
+      "sdk_enum_name": "MultiRegionConsistency",
+      "match_percentage": 1
+    },
     "ApproximateCreationDateTimePrecision": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.ts",
       "sdk_service": "dynamodb",
@@ -881,6 +983,12 @@
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.ts",
       "sdk_service": "ecs",
       "sdk_enum_name": "RequiresCompatibilities",
+      "match_percentage": 1
+    },
+    "DeploymentStrategy": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.ts",
+      "sdk_service": "ecs",
+      "sdk_enum_name": "Strategy",
       "match_percentage": 1
     },
     "FileSystemType": {
@@ -919,6 +1027,12 @@
       "sdk_enum_name": "Logging",
       "match_percentage": 1
     },
+    "InstanceMonitoring": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.ts",
+      "sdk_service": "ecs",
+      "sdk_enum_name": "ManagedInstancesMonitoringOptions",
+      "match_percentage": 1
+    },
     "UlimitName": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/container-definition.ts",
       "sdk_service": "ecs",
@@ -941,6 +1055,12 @@
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/container-definition.ts",
       "sdk_service": "ecs",
       "sdk_enum_name": "VersionConsistency",
+      "match_percentage": 1
+    },
+    "DeploymentLifecycleStage": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/deployment-lifecycle-hook-target.ts",
+      "sdk_service": "ecs",
+      "sdk_enum_name": "LifecycleStages",
       "match_percentage": 1
     },
     "DevicePermission": {
@@ -1099,6 +1219,12 @@
     }
   },
   "kinesis": {
+    "ShardLevelMetrics": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-kinesis/lib/stream.ts",
+      "sdk_service": "kinesis",
+      "sdk_enum_name": "EnhancedMetric",
+      "match_percentage": 1
+    },
     "StreamMode": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-kinesis/lib/stream.ts",
       "sdk_service": "kinesis",
@@ -1218,6 +1344,12 @@
       "sdk_service": "lambda",
       "sdk_enum_name": "Attribute",
       "match_percentage": 1
+    },
+    "TenancyConfig": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/tenancy-config.ts",
+      "sdk_service": "lambda",
+      "sdk_enum_name": "TenantIsolationMode",
+      "match_percentage": 1
     }
   },
   "rds": {
@@ -1239,10 +1371,22 @@
       "sdk_enum_name": "DatabaseInsightsMode",
       "match_percentage": 1
     },
+    "NetworkType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.ts",
+      "sdk_service": "rds",
+      "sdk_enum_name": "EndpointNetworkType",
+      "match_percentage": 1
+    },
     "PerformanceInsightRetention": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/props.ts",
       "sdk_service": "rds",
       "sdk_enum_name": "PerformanceInsightsRetentionPeriod",
+      "match_percentage": 1
+    },
+    "ProxyEndpointTargetRole": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy-endpoint.ts",
+      "sdk_service": "rds",
+      "sdk_enum_name": "TargetRole",
       "match_percentage": 1
     },
     "ClientPasswordAuthType": {
@@ -1409,6 +1553,12 @@
     }
   },
   "synthetics": {
+    "BrowserType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-synthetics/lib/canary.ts",
+      "sdk_service": "synthetics",
+      "sdk_enum_name": "BrowserType",
+      "match_percentage": 1
+    },
     "ResourceToReplicateTags": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-synthetics/lib/canary.ts",
       "sdk_service": "synthetics",

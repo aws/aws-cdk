@@ -1,7 +1,9 @@
 import * as path from 'path';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
+import { acknowledgeTestWarnings } from './test-warnings';
 import { Template } from '../../assertions';
 import * as core from '../../core';
+import { Validations } from '../../core';
 import * as cxapi from '../../cx-api';
 import * as inc from '../lib';
 
@@ -11,6 +13,7 @@ describe('CDK Include', () => {
 
   beforeEach(() => {
     app = new core.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    acknowledgeTestWarnings(app);
     stack = new core.Stack(app);
   });
 
@@ -374,7 +377,7 @@ describe('CDK Include', () => {
     }));
   });
 
-  test('synth-time validation does not run on dehydrated resources', () => {
+  test('synth-time validation does not run on dehydrated resources 1', () => {
     // synth-time validation fails if resource is hydrated
     expect(() => {
       includeTestTemplate(stack, 'intrinsics-tags-resource-validation.json');
@@ -382,9 +385,13 @@ describe('CDK Include', () => {
     }).toThrow(`Resolution error: Supplied properties not correct for \"CfnLoadBalancerProps\"
   tags: element 1: {} should have a 'key' and a 'value' property.`);
 
-    app = new core.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
-    stack = new core.Stack(app);
+    Validations.of(app).acknowledge(
+      { id: 'CloudFormation-Validate::F3002', reason: 'This test is purposely creating invalid templates' },
+      { id: 'CloudFormation-Validate::F3003', reason: 'This test is purposely creating invalid templates' },
+    );
+  });
 
+  test('synth-time validation does not run on dehydrated resources 2', () => {
     // synth-time validation not run if resource is dehydrated
     includeTestTemplate(stack, 'intrinsics-tags-resource-validation.json', {
       dehydratedResources: ['MyLoadBalancer'],

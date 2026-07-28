@@ -11,6 +11,7 @@ describe('lambda version', () => {
   test('can import a Lambda version by ARN', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
 
     // WHEN
     const version = lambda.Version.fromVersionArn(stack, 'Version', 'arn:aws:lambda:region:account-id:function:function-name:version');
@@ -38,6 +39,7 @@ describe('lambda version', () => {
   test('can import an imported Lambda version by ARN', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
 
     // WHEN
     const func = new lambda.Function(stack, 'Fn', {
@@ -57,6 +59,10 @@ describe('lambda version', () => {
   test('create a version with event invoke config', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge(
+      { id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' },
+      { id: 'CloudFormation-Validate::W3030', reason: 'Tests intentionally use a bogus runtime' },
+    );
     const fn = new lambda.Function(stack, 'Fn', {
       runtime: THE_RUNTIME,
       handler: 'index.handler',
@@ -89,6 +95,7 @@ describe('lambda version', () => {
   test('throws when calling configureAsyncInvoke on already configured version', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
     const fn = new lambda.Function(stack, 'Fn', {
       runtime: THE_RUNTIME,
       handler: 'index.handler',
@@ -107,6 +114,7 @@ describe('lambda version', () => {
   test('event invoke config on imported versions', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
     const version1 = lambda.Version.fromVersionArn(stack, 'Version1', 'arn:aws:lambda:region:account-id:function:function-name:version1');
     const version2 = lambda.Version.fromVersionArn(stack, 'Version2', 'arn:aws:lambda:region:account-id:function:function-name:version2');
 
@@ -134,6 +142,10 @@ describe('lambda version', () => {
   testDeprecated('addAlias can be used to add an alias that points to a version', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge(
+      { id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' },
+      { id: 'CloudFormation-Validate::W3030', reason: 'Tests intentionally use a bogus runtime' },
+    );
     const fn = new lambda.Function(stack, 'Fn', {
       runtime: THE_RUNTIME,
       handler: 'index.handler',
@@ -162,6 +174,7 @@ describe('lambda version', () => {
   test('edgeArn', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
     const fn = new lambda.Function(stack, 'Fn', {
       runtime: THE_RUNTIME,
       handler: 'index.handler',
@@ -176,6 +189,7 @@ describe('lambda version', () => {
   test('edgeArn throws with $LATEST', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
     const version = lambda.Version.fromVersionArn(stack, 'Version', 'arn:aws:lambda:region:account-id:function:function-name:$LATEST');
 
     // THEN
@@ -186,6 +200,7 @@ describe('lambda version', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
     const fn = new lambda.Function(stack, 'Fn', {
       runtime: THE_RUNTIME,
       handler: 'index.handler',
@@ -213,6 +228,7 @@ describe('lambda version', () => {
   test('throws when adding FunctionUrl to a Version', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
@@ -228,5 +244,212 @@ describe('lambda version', () => {
     expect(() => {
       version.addFunctionUrl();
     }).toThrow(/FunctionUrl cannot be used with a Version/);
+  });
+
+  test('version\'s implementation of IFunctionRef should point to the version', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+    });
+
+    // WHEN
+    const ver = new lambda.Version(stack, 'Version', {
+      lambda: fn,
+    });
+
+    // THEN
+    expect(ver.functionRef.functionArn).toEqual(ver.functionArn);
+  });
+
+  test('should throw error when version has provisioned concurrency and function has tenancy config', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      tenancyConfig: lambda.TenancyConfig.PER_TENANT,
+    });
+
+    // WHEN & THEN
+    expect(() => new lambda.Version(stack, 'Version', {
+      lambda: fn,
+      provisionedConcurrentExecutions: 10,
+    })).toThrow('Provisioned Concurrency is not supported for functions with tenant isolation mode');
+  });
+
+  test('provisionedConcurrentExecutions can be a token', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+    });
+    const pce = new cdk.CfnParameter(stack, 'ProvisionedConcurrentExecutions', { type: 'Number' });
+
+    // WHEN
+    new lambda.Version(stack, 'Version', {
+      lambda: fn,
+      provisionedConcurrentExecutions: pce.valueAsNumber,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Version', {
+      ProvisionedConcurrencyConfig: {
+        ProvisionedConcurrentExecutions: { Ref: 'ProvisionedConcurrentExecutions' },
+      },
+    });
+  });
+
+  describe('version scaling configuration', () => {
+    test('version with min and max execution environments', () => {
+      const stack = new cdk.Stack();
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
+      const fn = new lambda.Function(stack, 'Fn', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      new lambda.Version(stack, 'Version', {
+        lambda: fn,
+        minExecutionEnvironments: 1,
+        maxExecutionEnvironments: 10,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Version', {
+        FunctionScalingConfig: {
+          MinExecutionEnvironments: 1,
+          MaxExecutionEnvironments: 10,
+        },
+      });
+    });
+
+    test('version with only min execution environments', () => {
+      const stack = new cdk.Stack();
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
+      const fn = new lambda.Function(stack, 'Fn', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      new lambda.Version(stack, 'Version', {
+        lambda: fn,
+        minExecutionEnvironments: 2,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Version', {
+        FunctionScalingConfig: {
+          MinExecutionEnvironments: 2,
+        },
+      });
+    });
+
+    test('version with only max execution environments', () => {
+      const stack = new cdk.Stack();
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
+      const fn = new lambda.Function(stack, 'Fn', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      new lambda.Version(stack, 'Version', {
+        lambda: fn,
+        maxExecutionEnvironments: 5,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Version', {
+        FunctionScalingConfig: {
+          MaxExecutionEnvironments: 5,
+        },
+      });
+    });
+
+    test('throws when minExecutionEnvironments is negative', () => {
+      const stack = new cdk.Stack();
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
+      const fn = new lambda.Function(stack, 'Fn', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      expect(() => {
+        new lambda.Version(stack, 'Version', {
+          lambda: fn,
+          minExecutionEnvironments: -1,
+        });
+      }).toThrow(/minExecutionEnvironments must be a non-negative integer/);
+    });
+
+    test('throws when maxExecutionEnvironments is negative', () => {
+      const stack = new cdk.Stack();
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
+      const fn = new lambda.Function(stack, 'Fn', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      expect(() => {
+        new lambda.Version(stack, 'Version', {
+          lambda: fn,
+          maxExecutionEnvironments: -1,
+        });
+      }).toThrow(/maxExecutionEnvironments must be a non-negative integer/);
+    });
+
+    test('throws when minExecutionEnvironments is greater than capacityProviderMaxExecutionEnvironments', () => {
+      const stack = new cdk.Stack();
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
+      const fn = new lambda.Function(stack, 'Fn', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      expect(() => {
+        new lambda.Version(stack, 'Version', {
+          lambda: fn,
+          minExecutionEnvironments: 10,
+          maxExecutionEnvironments: 5,
+        });
+      }).toThrow(/minExecutionEnvironments must be less than or equal to maxExecutionEnvironments/);
+    });
+
+    test('accepts tokens for execution environment scaling config', () => {
+      const stack = new cdk.Stack();
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::E3071', reason: 'Tests intentionally use a bogus runtime' });
+      const fn = new lambda.Function(stack, 'Fn', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+      const tokenMin = cdk.Token.asNumber(cdk.Fn.ref('MinEnvParam'));
+      const tokenMax = cdk.Token.asNumber(cdk.Fn.ref('MaxEnvParam'));
+
+      // WHEN - should not throw
+      new lambda.Version(stack, 'Version', {
+        lambda: fn,
+        minExecutionEnvironments: tokenMin,
+        maxExecutionEnvironments: tokenMax,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Version', {
+        FunctionScalingConfig: {
+          MinExecutionEnvironments: { Ref: 'MinEnvParam' },
+          MaxExecutionEnvironments: { Ref: 'MaxEnvParam' },
+        },
+      });
+    });
   });
 });

@@ -1,11 +1,10 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Construct, ConstructOrder, IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
+import { Construct, ConstructOrder } from 'constructs';
 import { reEnableStackTraceCollection, restoreStackTraceColection } from './util';
 import * as cxschema from '../../cloud-assembly-schema';
 import { App, Names } from '../lib';
 import { Annotations } from '../lib/annotations';
-
-/* eslint-disable @typescript-eslint/naming-convention */
 
 describe('construct', () => {
   test('the "Root" construct is a special construct which can be used as the root of the tree', () => {
@@ -135,7 +134,6 @@ describe('construct', () => {
     expect(t.child1_1_1.node.tryGetContext('ctx2')).toEqual('hello');
   });
 
-  // eslint-disable-next-line max-len
   test('construct.setContext(k,v) sets context at some level and construct.getContext(key) will return the lowermost value defined in the stack', () => {
     const root = new Root();
     const highChild = new Construct(root, 'highChild');
@@ -291,7 +289,6 @@ describe('construct', () => {
     expect(root.node.children.length).toBeGreaterThanOrEqual(4);
   });
 
-  // eslint-disable-next-line max-len
   test('construct.validate() can be implemented to perform validation, ConstructNode.validate(construct.node) will return all errors from the subtree (DFS)', () => {
     class MyConstruct extends Construct {
       constructor(scope: Construct, id: string) {

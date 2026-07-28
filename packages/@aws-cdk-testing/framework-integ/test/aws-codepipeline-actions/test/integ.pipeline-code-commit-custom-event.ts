@@ -24,16 +24,16 @@ const repo = new codecommit.Repository(stack, 'MyRepo', {
 });
 
 const eventPattern
-      = {
-        'detail-type': ['CodeCommit Repository State Change'],
-        'resources': [repo.repositoryArn],
-        'source': ['aws.codecommit'],
-        'detail': {
-          referenceType: ['branch'],
-          event: ['referenceCreated', 'referenceUpdated'],
-          referenceName: [branch],
-        },
-      };
+  = {
+    'detail-type': ['CodeCommit Repository State Change'],
+    'resources': [repo.repositoryArn],
+    'source': ['aws.codecommit'],
+    'detail': {
+      referenceType: ['branch'],
+      event: ['referenceCreated', 'referenceUpdated'],
+      referenceName: [branch],
+    },
+  };
 
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
   pipelineName: 'IntegCustomEventPipeline',

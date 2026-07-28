@@ -1,5 +1,7 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { ValidationError } from './errors';
+import { lit } from './private/literal-string';
+import { withResolved } from './token';
 
 // ----------------------------------------------------------------------
 // PROPERTY MAPPERS
@@ -21,6 +23,26 @@ export const objectToCloudFormation: Mapper = identity;
 export const numberToCloudFormation: Mapper = identity;
 
 /**
+ * Convert an L2 event pattern to CloudFormation
+ *
+ * This is for usability: the types are mostly the same except for `detail-type`
+ * (which is rendered in the L2 as `detailType`).
+ *
+ * By doing that conversion here, we can make the L2 EventPattern type work at
+ * the L1 level automatically.
+ */
+export function eventPatternToCloudFormation(x: any) {
+  if (x && typeof x === 'object' && 'detailType' in x) {
+    const ret = { ...x };
+    ret['detail-type'] = ret.detailType;
+    delete ret.detailType;
+    return ret;
+  }
+
+  return x;
+}
+
+/**
  * The date needs to be formatted as an ISO date in UTC
  *
  * Some usage sites require a date, some require a timestamp. We'll
@@ -32,7 +54,6 @@ export function dateToCloudFormation(x?: Date): any {
     return undefined;
   }
 
-  // eslint-disable-next-line max-len
   return `${x.getUTCFullYear()}-${pad(x.getUTCMonth() + 1)}-${pad(x.getUTCDate())}T${pad(x.getUTCHours())}:${pad(x.getUTCMinutes())}:${pad(x.getUTCSeconds())}Z`;
 }
 
@@ -337,7 +358,7 @@ export function requiredValidator(x: any) {
 export function requireProperty(props: { [name: string]: any }, name: string, context: Construct): any {
   const value = props[name];
   if (value == null) {
-    throw new ValidationError(`${context.toString()} is missing required property: ${name}`, context);
+    throw new ValidationError(lit`MissingRequiredProperty`, `${context.toString()} is missing required property: ${name}`, context);
   }
   // Possibly add type-checking here...
   return value;
@@ -399,4 +420,56 @@ function isCloudFormationDynamicReference(x: any) {
 // Cannot be public because JSII gets confused about es5.d.ts
 class CfnSynthesisError extends Error {
   public readonly type = 'CfnSynthesisError';
+}
+
+/**
+ * Ensures that a property is either undefined or a string.
+ * Used in spec2cdk to have better error messages in other languages.
+ */
+export function ensureStringOrUndefined(value: {}, propName: string, possibleType: string): string;
+export function ensureStringOrUndefined(value: {} | undefined, propName: string, possibleType: string): string | undefined;
+export function ensureStringOrUndefined(value: {} | undefined, propName: string, possibleType: string): string | undefined {
+  if (value !== undefined && typeof value !== 'string') {
+    throw new TypeError(`Property ${propName} should be one of ${possibleType}`);
+  }
+  return value;
+}
+
+/**
+ * Map the elements of an array in place, preserving the original array reference.
+ *
+ * If `arr` is defined and resolved, each element is replaced with the result of `mapper`
+ * and the same array is returned, typed as `U[]`.
+ * If `arr` is undefined, returns undefined.
+ *
+ */
+export function mapArrayInPlace<T, U extends T>(arr: T[], mapper: (item: T) => U): U[];
+export function mapArrayInPlace<T, U extends T>(arr: T[] | undefined, mapper: (item: T) => U): U[] | undefined;
+export function mapArrayInPlace<T, U extends T>(arr: T[] | undefined, mapper: (item: T) => U): U[] | undefined {
+  if (!arr) return undefined;
+  withResolved(arr, () => {
+    for (let i = 0; i < arr.length; i++) {
+      arr[i] = mapper(arr[i]);
+    }
+  });
+  return arr as unknown as U[];
+}
+
+/**
+ * Extracts a property from a ref object, throwing if the reference exists but the property is undefined.
+ *
+ * @param ref - The ref object to extract from, or undefined.
+ * @param valueKey - The property key to extract from the ref.
+ * @returns The value of the property, or undefined if ref is null.
+ */
+export function getRefProperty<T, K extends keyof T>(
+  ref: T | undefined,
+  valueKey: K,
+): T[K] | undefined {
+  if (ref == null) return undefined;
+  const value = ref[valueKey];
+  if (value === undefined) {
+    throw new TypeError(`Expected '${String(valueKey)}' to be defined in reference interface`);
+  }
+  return value;
 }

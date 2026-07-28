@@ -1,8 +1,9 @@
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as efs from 'aws-cdk-lib/aws-efs';
 import * as events from 'aws-cdk-lib/aws-events';
-import { App, Duration, RemovalPolicy, Stack, StackProps, CfnParameter, TimeZone } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Duration, RemovalPolicy, Stack, CfnParameter, TimeZone } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 import * as backup from 'aws-cdk-lib/aws-backup';
 
 class TestStack extends Stack {
@@ -71,6 +72,39 @@ class TestStack extends Stack {
         minute: '30',
       }),
       scheduleExpressionTimezone: TimeZone.ETC_UTC,
+    }));
+
+    // Tokenized durations (resolved at deploy time) must skip synth-time
+    // range/ordering validation and defer to AWS Backup.
+    const moveToColdStorageDays = new CfnParameter(this, 'MoveToColdStorageDays', {
+      type: 'Number',
+      default: 30,
+    });
+    const deleteAfterDays = new CfnParameter(this, 'DeleteAfterDays', {
+      type: 'Number',
+      default: 120,
+    });
+    const minRetentionDays = new CfnParameter(this, 'MinRetentionDays', {
+      type: 'Number',
+      default: 5,
+    });
+
+    const tokenVault = new backup.BackupVault(this, 'TokenLockVault', {
+      removalPolicy: RemovalPolicy.DESTROY,
+      lockConfiguration: {
+        minRetention: Duration.days(minRetentionDays.valueAsNumber),
+      },
+    });
+
+    const tokenPlan = new backup.BackupPlan(this, 'TokenPlan', { backupVault: tokenVault });
+    tokenPlan.addRule(new backup.BackupPlanRule({
+      deleteAfter: Duration.days(deleteAfterDays.valueAsNumber),
+      moveToColdStorageAfter: Duration.days(moveToColdStorageDays.valueAsNumber),
+      copyActions: [{
+        destinationBackupVault: secondaryVault,
+        deleteAfter: Duration.days(deleteAfterDays.valueAsNumber),
+        moveToColdStorageAfter: Duration.days(moveToColdStorageDays.valueAsNumber),
+      }],
     }));
   }
 }

@@ -1,7 +1,7 @@
-import { describe, test, expect, jest, beforeEach } from '@jest/globals';
-import * as prSync from '../lib/pr-sync.js';
+/* eslint-disable @typescript-eslint/unbound-method */
 import { GithubMock } from './github-mock.js';
 import { Github } from '../lib/github.js';
+import * as prSync from '../lib/pr-sync.js';
 
 jest.mock('../lib/github.js');
 

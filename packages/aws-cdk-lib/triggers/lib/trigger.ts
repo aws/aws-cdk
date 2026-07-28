@@ -1,5 +1,6 @@
-import { Construct, IConstruct, Node } from 'constructs';
-import * as lambda from '../../aws-lambda';
+import type { IConstruct } from 'constructs';
+import { Construct, Node } from 'constructs';
+import type * as lambda from '../../aws-lambda';
 import { CustomResource, Duration } from '../../core';
 import { TriggerProvider } from '../../custom-resource-handlers/dist/triggers/trigger-provider.generated';
 
@@ -43,7 +44,7 @@ export interface TriggerOptions {
    * Adds this trigger as a dependency on other constructs. This means that this
    * trigger will get executed *before* the given construct(s).
    *
-   * You can also use `trigger.executeBefore()` to add additional dependants.
+   * You can also use `trigger.executeBefore()` to add additional dependents.
    *
    * @default []
    */

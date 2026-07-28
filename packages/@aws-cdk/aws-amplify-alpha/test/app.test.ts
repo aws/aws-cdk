@@ -1,8 +1,8 @@
-import { Template } from 'aws-cdk-lib/assertions';
+import { SecretValue, Stack } from 'aws-cdk-lib';
+import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as codecommit from 'aws-cdk-lib/aws-codecommit';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { SecretValue, Stack } from 'aws-cdk-lib';
 import * as amplify from '../lib';
 
 let stack: Stack;
@@ -549,6 +549,24 @@ test('error with inconsistent appRoot in custom headers', () => {
   }).toThrow('appRoot must be either be present or absent across all custom response headers');
 });
 
+test('with empty custom response headers array', () => {
+  // WHEN - Empty array should be handled gracefully (regression test for #35693)
+  new amplify.App(stack, 'App', {
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.unsafePlainText('secret'),
+    }),
+    customResponseHeaders: [],
+  });
+
+  // THEN - CustomHeaders property should be omitted from CloudFormation
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
+    Name: 'App',
+    CustomHeaders: Match.absent(),
+  });
+});
+
 test('create a statically hosted app by default', () => {
   // WHEN
   new amplify.App(stack, 'App', {});
@@ -632,4 +650,18 @@ test('throws when compute role is set with a non SSR app', () => {
       computeRole,
     });
   }).toThrow('`computeRole` can only be specified for `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`.');
+});
+
+test.each([amplify.BuildComputeType.STANDARD_8GB, amplify.BuildComputeType.LARGE_16GB, amplify.BuildComputeType.XLARGE_72GB])('create an app with buildComputeType is set to %s', (buildComputeType) => {
+  // WHEN
+  new amplify.App(stack, 'App', {
+    buildComputeType,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
+    JobConfig: {
+      BuildComputeType: buildComputeType,
+    },
+  });
 });

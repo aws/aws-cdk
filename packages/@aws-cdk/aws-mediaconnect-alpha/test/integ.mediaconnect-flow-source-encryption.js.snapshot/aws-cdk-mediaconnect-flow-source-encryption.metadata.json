@@ -1,0 +1,374 @@
+{
+  "/aws-cdk-mediaconnect-flow-source-encryption/SrtListenerSecret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-source-encryption/ZixiPushSecret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-source-encryption/SrtCallerSecret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-source-encryption/SrtListenerFlow": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-source-encryption/ZixiPushFlow": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-source-encryption/SrtCallerFlow": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-source-encryption/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-source-encryption/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-source-encryption/SrtListenerSecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrtListenerSecret6805946C"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-source-encryption/ZixiPushSecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ZixiPushSecretEA3221FE"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-source-encryption/SrtCallerSecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrtCallerSecretE45E72CC"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-source-encryption/SrtListenerFlow/EncryptionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-source-encryption/SrtListenerFlow/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrtListenerFlowB0429A13"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-source-encryption/ZixiPushFlow/EncryptionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-source-encryption/ZixiPushFlow/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ZixiPushFlow2FEA3032"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-source-encryption/SrtCallerFlow/EncryptionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-source-encryption/SrtCallerFlow/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrtCallerFlow6E018B6B"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-source-encryption/SrtListenerFlow/EncryptionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrtListenerFlowEncryptionRole503EDE85"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-source-encryption/SrtListenerFlow/EncryptionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-source-encryption/ZixiPushFlow/EncryptionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ZixiPushFlowEncryptionRoleEEFFB7D7"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-source-encryption/ZixiPushFlow/EncryptionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-source-encryption/SrtCallerFlow/EncryptionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrtCallerFlowEncryptionRole4D061A8C"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-source-encryption/SrtCallerFlow/EncryptionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-source-encryption/SrtListenerFlow/EncryptionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrtListenerFlowEncryptionRoleDefaultPolicy94EF3746"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-source-encryption/ZixiPushFlow/EncryptionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ZixiPushFlowEncryptionRoleDefaultPolicy004A27F1"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-source-encryption/SrtCallerFlow/EncryptionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrtCallerFlowEncryptionRoleDefaultPolicyF5761A06"
+    }
+  ]
+}

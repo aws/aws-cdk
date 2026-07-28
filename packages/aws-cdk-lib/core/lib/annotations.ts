@@ -1,8 +1,9 @@
-import { IConstruct, MetadataEntry } from 'constructs';
-import { App } from './app';
+import type { IConstruct, MetadataEntry } from 'constructs';
 import { UnscopedValidationError } from './errors';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
+import { appOf } from './private/core-construct-finders';
+import { lit, type LiteralString } from './private/literal-string';
 
 /**
  * Includes API for attaching annotations such as warning messages to constructs.
@@ -60,6 +61,8 @@ export class Annotations {
    * If the warning is acknowledged using `acknowledgeWarning()`, it will not be shown by
    * the CLI, and will not cause `--strict` mode to fail synthesis.
    *
+   * Prefer using `Validations.of(scope).addWarning()` instead.
+   *
    * @example
    * declare const myConstruct: Construct;
    * Annotations.of(myConstruct).addWarningV2('my-library:Construct.someWarning', 'Some message explaining the warning');
@@ -74,7 +77,7 @@ export class Annotations {
   }
 
   /**
-   * Adds a warning metadata entry to this construct. Prefer using `addWarningV2`.
+   * Adds a warning metadata entry to this construct. Prefer using `Validations.of(scope).addWarning()`.
    *
    * The CLI will display the warning when an app is synthesized, or fail if run
    * in `--strict` mode.
@@ -148,10 +151,34 @@ export class Annotations {
   /**
    * Adds an { "error": <message> } metadata entry to this construct.
    * The toolkit will fail deployment of any stack that has errors reported against it.
+   * Prefer using `Validations.of(scope).addError()` instead.
    * @param message The error message.
    */
   public addError(message: string) {
     this.addMessage(cxschema.ArtifactMetadataEntryType.ERROR, message);
+  }
+
+  /**
+   * Add an error annotation to this construct, along with a tracking ID
+   *
+   * The toolkit will fail deployment of any stack that has errors reported against it.
+   *
+   * The error code will be tracked by telemetry; this method should only be used
+   * by CDK source code.
+   *
+   * @param id The error ID.
+   * @param message The error message.
+   * @internal
+   */
+  public _addTrackableError(id: LiteralString, message: string) {
+    this.addError(message);
+
+    const type = 'aws:cdk:error-code';
+
+    const isNew = !this.scope.node.metadata.find((x) => x.type === type && x.data === id);
+    if (isNew) {
+      this.scope.node.addMetadata(type, id);
+    }
   }
 
   /**
@@ -173,7 +200,7 @@ export class Annotations {
 
     // throw if CDK_BLOCK_DEPRECATIONS is set
     if (process.env.CDK_BLOCK_DEPRECATIONS) {
-      throw new UnscopedValidationError(`${this.scope.node.path}: ${text}`);
+      throw new UnscopedValidationError(lit`ValidationError`, `${this.scope.node.path}: ${text}`);
     }
 
     this.addWarningV2(`Deprecated:${api}`, text);
@@ -203,7 +230,7 @@ export class Annotations {
  */
 class Acknowledgements {
   public static of(scope: IConstruct): Acknowledgements {
-    const app = App.of(scope);
+    const app = appOf(scope);
     if (!app) {
       return new Acknowledgements();
     }

@@ -1,6 +1,6 @@
-import * as vpc_v2 from '../lib/vpc-v2';
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
+import * as vpc_v2 from '../lib/vpc-v2';
 
 const app = new cdk.App();
 

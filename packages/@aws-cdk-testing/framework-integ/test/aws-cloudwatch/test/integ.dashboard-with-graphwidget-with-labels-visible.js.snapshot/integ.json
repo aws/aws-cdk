@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "cdk-integ-dashboard-with-graph-widget-with-annotations/DefaultTest": {
+      "stacks": [
+        "DashboardWithGraphWidgetWithLabelsVisibleIntegrationTest"
+      ],
+      "assertionStack": "cdk-integ-dashboard-with-graph-widget-with-annotations/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegdashboardwithgraphwidgetwithannotationsDefaultTestDeployAssertCC28F170"
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}

@@ -12,7 +12,7 @@ import * as sns from '../../aws-sns';
 import * as cdk from '../../core';
 import * as servicecatalog from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 describe('ProductStack', () => {
   test('Asset bucket undefined in product stack without assets', () => {
     // GIVEN

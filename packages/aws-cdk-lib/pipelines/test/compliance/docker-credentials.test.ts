@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Match, Template } from '../../../assertions';
 import * as cb from '../../../aws-codebuild';
 import * as secretsmanager from '../../../aws-secretsmanager';

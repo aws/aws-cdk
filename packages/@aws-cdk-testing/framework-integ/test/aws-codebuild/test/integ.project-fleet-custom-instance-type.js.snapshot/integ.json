@@ -1,0 +1,28 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "CustomInstanceTypeComputeFleetIntegTest/DefaultTest": {
+      "stacks": [
+        "CustomInstanceTypeComputeFleetIntegStack0",
+        "CustomInstanceTypeComputeFleetIntegStack1",
+        "CustomInstanceTypeComputeFleetIntegStack2",
+        "CustomInstanceTypeComputeFleetIntegStack3"
+      ],
+      "regions": [
+        "us-east-1",
+        "us-east-2",
+        "us-west-2",
+        "ap-southeast-2",
+        "eu-central-1"
+      ],
+      "cdkCommandOptions": {
+        "destroy": {
+          "expectError": true
+        }
+      },
+      "assertionStack": "CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CustomInstanceTypeComputeFleetIntegTestDefaultTestDeployAssert3E1A7644"
+    }
+  },
+  "minimumCliVersion": "2.1123.0"
+}

@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-cdk-dynamodbv2-compound-key-gsi/DefaultTest": {
+      "stacks": [
+        "aws-cdk-dynamodb-v2-compound-keys"
+      ],
+      "assertionStack": "aws-cdk-dynamodbv2-compound-key-gsi/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkdynamodbv2compoundkeygsiDefaultTestDeployAssert00602B48"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

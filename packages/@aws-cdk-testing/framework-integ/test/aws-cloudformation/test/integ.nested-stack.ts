@@ -3,10 +3,8 @@ import * as sns from 'aws-cdk-lib/aws-sns';
 import * as sns_subscriptions from 'aws-cdk-lib/aws-sns-subscriptions';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { App, CfnParameter, NestedStack, Stack } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
-
-/* eslint-disable @cdklabs/no-core-construct */
 
 interface MyNestedStackProps {
   readonly subscriber?: sqs.Queue;

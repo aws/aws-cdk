@@ -1,4 +1,4 @@
-import * as ka from 'aws-cdk-lib/aws-kinesisanalytics';
+import type * as ka from 'aws-cdk-lib/aws-kinesisanalytics';
 
 export function environmentProperties(
   propertyGroups?: { readonly [propertyId: string]: { [mapKey: string]: string } },

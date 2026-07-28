@@ -1,6 +1,7 @@
 import * as cp from 'child_process';
 import { promisify } from 'util';
-import { notify, LoggingOptions, debug } from './print';
+import type { LoggingOptions } from './print';
+import { notify, debug } from './print';
 
 const execFile = promisify(cp.execFile);
 
