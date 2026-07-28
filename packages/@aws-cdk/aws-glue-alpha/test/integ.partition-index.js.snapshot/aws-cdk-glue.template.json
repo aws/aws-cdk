@@ -40,6 +40,10 @@
       {
        "Name": "month",
        "Type": "bigint"
+      },
+      {
+       "Name": "day",
+       "Type": "bigint"
       }
      ],
      "StorageDescriptor": {
@@ -137,6 +141,36 @@
     "awscdkawsgluealphaPartitionIndexProviderIsCompleteServiceRoleDefaultPolicyF8256777",
     "awscdkawsgluealphaPartitionIndexProviderIsCompleteServiceRole2FCB8267",
     "CSVTablepartitionindexindex1295EC599"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CSVTablepartitionindexindex3109814A9": {
+   "Type": "Custom::GluePartitionIndex",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "awscdkawsgluealphaPartitionIndexProviderframeworkonEventC84EA1EC",
+      "Arn"
+     ]
+    },
+    "DatabaseName": {
+     "Ref": "MyDatabase1E2517DB"
+    },
+    "TableName": {
+     "Ref": "CSVTableE499CABA"
+    },
+    "IndexName": "index3",
+    "Keys": [
+     "day"
+    ]
+   },
+   "DependsOn": [
+    "awscdkawsgluealphaPartitionIndexProviderHandlerServiceRoleDefaultPolicyBACAF1B6",
+    "awscdkawsgluealphaPartitionIndexProviderHandlerServiceRole303F5F62",
+    "awscdkawsgluealphaPartitionIndexProviderIsCompleteServiceRoleDefaultPolicyF8256777",
+    "awscdkawsgluealphaPartitionIndexProviderIsCompleteServiceRole2FCB8267",
+    "CSVTablepartitionindexindex256C55CE5"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -304,7 +338,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3b7b052e29f32afcde6ad771cc2f762817ea99a31410db0eb4c93bcf4f2626dc.zip"
+     "S3Key": "2b4fe4c0bc4d25fa1a387eaaa3c87bfb717c0f8f6a6dcfb0cdc0a7b8768f916d.zip"
     },
     "Handler": "index.onEvent",
     "Role": {
@@ -503,7 +537,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3b7b052e29f32afcde6ad771cc2f762817ea99a31410db0eb4c93bcf4f2626dc.zip"
+     "S3Key": "2b4fe4c0bc4d25fa1a387eaaa3c87bfb717c0f8f6a6dcfb0cdc0a7b8768f916d.zip"
     },
     "Handler": "index.isComplete",
     "Role": {
@@ -1160,7 +1194,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":10,\"MaxAttempts\":720,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":10,\"MaxAttempts\":90,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
        {
         "Fn::GetAtt": [
          "awscdkawsgluealphaPartitionIndexProviderframeworkisComplete5725C648",
@@ -1213,6 +1247,10 @@
       },
       {
        "Name": "month",
+       "Type": "bigint"
+      },
+      {
+       "Name": "day",
        "Type": "bigint"
       }
      ],

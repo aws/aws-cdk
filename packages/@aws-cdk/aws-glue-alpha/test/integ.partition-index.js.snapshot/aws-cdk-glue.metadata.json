@@ -65,6 +65,12 @@
       "data": "*"
     }
   ],
+  "/aws-cdk-glue/CSVTable/partition-index-index3": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
   "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Handler": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -117,6 +123,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CSVTablepartitionindexindex256C55CE5"
+    }
+  ],
+  "/aws-cdk-glue/CSVTable/partition-index-index3/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CSVTablepartitionindexindex3109814A9"
     }
   ],
   "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Handler/ServiceRole": [

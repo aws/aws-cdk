@@ -28,6 +28,9 @@ const partitionKeys = [{
 }, {
   name: 'month',
   type: glue.Schema.BIG_INT,
+}, {
+  name: 'day',
+  type: glue.Schema.BIG_INT,
 }];
 
 const csvTable = new glue.S3Table(stack, 'CSVTable', {
@@ -46,6 +49,11 @@ const csvTable = new glue.S3Table(stack, 'CSVTable', {
 csvTable.addPartitionIndex({
   indexName: 'index2',
   keyNames: ['month', 'year'],
+});
+
+csvTable.addPartitionIndex({
+  indexName: 'index3',
+  keyNames: ['day'],
 });
 
 const jsonTable = new glue.S3Table(stack, 'JSONTable', {
@@ -82,6 +90,7 @@ csvIndexes.expect(integ.ExpectedResult.objectLike({
   PartitionIndexDescriptorList: [
     { IndexName: 'index1', IndexStatus: 'ACTIVE' },
     { IndexName: 'index2', IndexStatus: 'ACTIVE' },
+    { IndexName: 'index3', IndexStatus: 'ACTIVE' },
   ],
 }));
 

@@ -65,7 +65,7 @@ export async function onEvent(event: any) {
       // The index may already exist if it was created out-of-band or by a previous
       // resource being replaced (CloudFormation creates the replacement before deleting
       // the old resource). Treat this as success and let isComplete verify its state.
-      if (e.name === 'AlreadyExistsException') {
+      if (e.name === 'AlreadyExistsException' || e.name === 'ResourceNumberLimitExceededException') {
         const existing = await findPartitionIndex(DatabaseName, TableName, IndexName);
         const existingKeys = existing?.Keys?.map((k: any) => k.Name);
         if (!existing || JSON.stringify(existingKeys) !== JSON.stringify(Keys)) {

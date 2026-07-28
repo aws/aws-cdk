@@ -11,7 +11,7 @@
     },
     "service": "Glue",
     "api": "getPartitionIndexes",
-    "expected": "{\"$ObjectLike\":{\"PartitionIndexDescriptorList\":[{\"IndexName\":\"index1\",\"IndexStatus\":\"ACTIVE\"},{\"IndexName\":\"index2\",\"IndexStatus\":\"ACTIVE\"}]}}",
+    "expected": "{\"$ObjectLike\":{\"PartitionIndexDescriptorList\":[{\"IndexName\":\"index1\",\"IndexStatus\":\"ACTIVE\"},{\"IndexName\":\"index2\",\"IndexStatus\":\"ACTIVE\"},{\"IndexName\":\"index3\",\"IndexStatus\":\"ACTIVE\"}]}}",
     "parameters": {
      "CatalogId": {
       "Fn::Join": [
@@ -29,7 +29,7 @@
      "TableName": "\"csv_table\""
     },
     "flattenResponse": "false",
-    "salt": "1784319740043"
+    "salt": "1785228080809"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
