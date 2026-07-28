@@ -102,7 +102,7 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
 
   @MethodMetadata()
   public addManagedPolicy(policy: IManagedPolicy): void {
-    // Using "Type Predicate" to confirm x is ManagedPolicy, which allows to avoid
+    // Using "Type Predicate" to confirm x is ManagedPolicy, which allows us to avoid
     // using try ... catch and throw error.
     const isManagedPolicy = (x: IManagedPolicy): x is ManagedPolicy => {
       return (x as ManagedPolicy).attachToRole !== undefined;

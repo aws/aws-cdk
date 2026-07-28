@@ -89,12 +89,12 @@ test('fs can be monkey-patched', () => {
 });
 
 test('classes can be instrumented', () => {
-  const SomeClass = profileClass(class SomeClass {
+  const InstrumentedClass = profileClass(class SomeClass {
     public method() {
     }
   });
 
-  new SomeClass().method();
+  new InstrumentedClass().method();
 
   // THEN
   const ctrs = readPerfCounters();

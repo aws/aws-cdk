@@ -1,6 +1,6 @@
 import { debugModeEnabled } from '../debug';
+import { captureStackTrace } from '../private/stack-trace';
 import type { IResolvable, IResolveContext } from '../resolvable';
-import { captureStackTrace } from '../stack-trace';
 
 const BOX_SYM = Symbol.for('@aws-cdk/core.Box');
 
