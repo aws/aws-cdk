@@ -6,7 +6,7 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
 import type { TreeInspector } from 'aws-cdk-lib';
-import { App, AssumptionError, CfnParameter, CfnResource, Lazy, Stack, aws_s3 } from 'aws-cdk-lib';
+import { App, AssumptionError, CfnParameter, CfnResource, Lazy, Stack, Validations, aws_s3 } from 'aws-cdk-lib';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { ForestFile, TreeFile } from 'aws-cdk-lib/core/lib/helpers-internal';
 
@@ -25,10 +25,21 @@ abstract class AbstractCfnResource extends CfnResource {
   protected abstract override get cfnProperties(): { [key: string]: any };
 }
 
+let app: App;
+beforeEach(() => {
+  app = new App();
+  acknowledgeProblems();
+});
+
+function acknowledgeProblems() {
+  Validations.of(app).acknowledge(
+    { id: 'CloudFormation-Validate::F3006', reason: 'We are using fake resource types here' },
+    { id: 'CloudFormation-Validate::F0001', reason: 'Empty resource sections' },
+  );
+}
+
 describe('tree metadata', () => {
   test('tree metadata is generated as expected', () => {
-    const app = new App();
-
     const stack = new Stack(app, 'mystack');
     new Construct(stack, 'myconstruct');
 
@@ -52,7 +63,7 @@ describe('tree metadata', () => {
             children: {
               BootstrapVersion: {
                 constructInfo: {
-                  fqn: expect.stringMatching(/(aws-cdk-lib.CfnParameter|constructs.Construct)/),
+                  fqn: expect.stringMatching(/(aws-cdk-lib.CfnParameter|aws-cdk-lib.CfnElement|constructs.Construct)/),
                   version: expect.any(String),
                 },
                 id: 'BootstrapVersion',
@@ -78,8 +89,6 @@ describe('tree metadata', () => {
   });
 
   test('L1 resource add logicalID to tree metadata', () => {
-    const app = new App();
-
     const stack = new Stack(app, 'mystack');
     new aws_s3.Bucket(stack, 'Bucky');
 
@@ -130,7 +139,6 @@ describe('tree metadata', () => {
       }
     }
 
-    const app = new App();
     const stack = new Stack(app, 'mystack');
     new MyCfnResource(stack, 'mycfnresource');
 
@@ -195,8 +203,6 @@ describe('tree metadata', () => {
     // class names are found. If this test is NOT running on CodeBuild, we will
     // allow the specific class name (for a 'jsii' build) or the generic
     // 'constructs.Construct' class name (for a 'tsc' build).
-    const app = new App();
-
     const stack = new Stack(app, 'mystack');
     new CfnResource(stack, 'myconstruct', { type: 'Aws::Some::Resource' });
 
@@ -237,12 +243,13 @@ describe('tree metadata', () => {
    */
   test('tree.json can be split over multiple files', () => {
     const MAX_NODES = 1_000;
-    const app = new App({
+    app = new App({
       context: {
         '@aws-cdk/core.TreeMetadata:maxNodes': MAX_NODES,
       },
       analyticsReporting: false,
     });
+    acknowledgeProblems();
 
     // GIVEN
     const buildStart = Date.now();
@@ -343,7 +350,6 @@ describe('tree metadata', () => {
   });
 
   test('token resolution & cfn parameter', () => {
-    const app = new App();
     const stack = new Stack(app, 'mystack');
     const cfnparam = new CfnParameter(stack, 'mycfnparam');
 
@@ -429,7 +435,6 @@ describe('tree metadata', () => {
       }
     }
 
-    const app = new App();
     const firststack = new Stack(app, 'myfirststack');
     const firstres = new MyFirstResource(firststack, 'myfirstresource');
     const secondstack = new Stack(app, 'mysecondstack');
@@ -488,9 +493,10 @@ describe('tree metadata', () => {
 
   test('tree metadata can be disabled', () => {
     // GIVEN
-    const app = new App({
+    app = new App({
       treeMetadata: false,
     });
+    acknowledgeProblems();
 
     // WHEN
     const stack = new Stack(app, 'mystack');
@@ -510,7 +516,6 @@ describe('tree metadata', () => {
       }
     }
 
-    const app = new App();
     const stack = new Stack(app, 'mystack');
     new MyCfnResource(stack, 'mycfnresource', {
       type: 'CDK::UnitTest::MyCfnResource',
