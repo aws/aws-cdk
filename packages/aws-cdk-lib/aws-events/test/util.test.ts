@@ -1,3 +1,4 @@
+import { assertNoPrototypePollution } from '../../core/test/prototype-pollution';
 import { mergeEventPattern } from '../lib/util';
 
 describe('util', () => {
@@ -85,6 +86,12 @@ describe('util', () => {
       })).toEqual({
         'detail-type': ['AWS API Call via CloudTrail'],
         'time': [{ prefix: '2017-10-02' }, { prefix: '2017-10-03' }],
+      });
+    });
+
+    test('does not allow prototype pollution', () => {
+      assertNoPrototypePollution(() => {
+        mergeEventPattern({}, { __proto__: { name: 'evil' } });
       });
     });
   });

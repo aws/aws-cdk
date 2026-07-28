@@ -8,6 +8,7 @@ import type { IResource } from '../../core';
 import { ArnFormat, Resource, Stack, UnscopedValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { ApiDestinationReference, IApiDestinationRef } from '../../interfaces/generated/aws-events-interfaces.generated';
 
@@ -125,7 +126,7 @@ export class ApiDestination extends Resource implements IApiDestination {
     ).resourceName;
 
     if (!apiDestinationName) {
-      throw new UnscopedValidationError('CouldNotExtractDestinationName', `Could not extract Api Destionation name from ARN: '${attrs.apiDestinationArn}'`);
+      throw new UnscopedValidationError(lit`CouldNotExtractDestinationName`, `Could not extract Api Destionation name from ARN: '${attrs.apiDestinationArn}'`);
     }
 
     class Import extends Resource implements IApiDestination {

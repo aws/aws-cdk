@@ -1,6 +1,7 @@
 import type { Construct } from 'constructs';
 import type * as cloudfront from '../../aws-cloudfront';
 import { ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /** Construction properties for `OriginGroup`. */
 export interface OriginGroupProps {
@@ -45,7 +46,7 @@ export class OriginGroup implements cloudfront.IOrigin {
   public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
     const primaryOriginConfig = this.props.primaryOrigin.bind(scope, options);
     if (primaryOriginConfig.failoverConfig) {
-      throw new ValidationError('OriginGroupCannotUseOriginWithFailover', 'An OriginGroup cannot use an Origin with its own failover configuration as its primary origin!', scope);
+      throw new ValidationError(lit`OriginGroupCannotUseOriginWithFailover`, 'An OriginGroup cannot use an Origin with its own failover configuration as its primary origin!', scope);
     }
 
     return {

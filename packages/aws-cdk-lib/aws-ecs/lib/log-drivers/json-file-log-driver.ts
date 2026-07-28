@@ -4,6 +4,7 @@ import type { LogDriverConfig } from './log-driver';
 import { LogDriver } from './log-driver';
 import { joinWithCommas, stringifyOptions } from './utils';
 import { UnscopedValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { ContainerDefinition } from '../container-definition';
 
 /**
@@ -51,7 +52,7 @@ export class JsonFileLogDriver extends LogDriver {
 
     // Validation
     if (props.maxFile && props.maxFile < 0) {
-      throw new UnscopedValidationError('MustBePositiveInteger', '`maxFile` must be a positive integer.');
+      throw new UnscopedValidationError(lit`MustBePositiveInteger`, '`maxFile` must be a positive integer.');
     }
   }
 

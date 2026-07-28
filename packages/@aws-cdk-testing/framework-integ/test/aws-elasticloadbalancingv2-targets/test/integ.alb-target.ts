@@ -34,7 +34,7 @@ class TestStack extends Stack {
     });
 
     const target = listener.addTargets('Targets', {
-      targets: [new targets.AlbTarget(svc.loadBalancer, 80)],
+      targets: [new targets.AlbListenerTarget(svc.listener)],
       port: 80,
       healthCheck: {
         protocol: elbv2.Protocol.HTTP,

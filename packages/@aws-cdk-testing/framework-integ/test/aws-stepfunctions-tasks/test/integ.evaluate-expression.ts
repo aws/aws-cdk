@@ -36,14 +36,14 @@ class TestStack extends Stack {
     });
 
     const statemachine = new sfn.StateMachine(this, 'StateMachine', {
-      definition: sum
+      definitionBody: sfn.DefinitionBody.fromChainable(sum
         .next(multiply)
         .next(
           new sfn.Wait(this, 'Wait', {
             time: sfn.WaitTime.secondsPath('$.d'),
           }),
         )
-        .next(now),
+        .next(now)),
     });
 
     new cdk.CfnOutput(this, 'StateMachineARN', {

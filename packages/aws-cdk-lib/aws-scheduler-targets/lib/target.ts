@@ -4,6 +4,7 @@ import type { CfnSchedule } from '../../aws-scheduler/lib/scheduler.generated';
 import type * as sqs from '../../aws-sqs';
 import { Duration, PhysicalName, Stack, Token, UnscopedValidationError } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Base properties for a Schedule Target
@@ -157,10 +158,10 @@ export abstract class ScheduleTargetBase {
     if (maximumEventAge) {
       maxAge = maximumEventAge.toSeconds({ integral: true });
       if (maxAge > maxMaxAge) {
-        throw new UnscopedValidationError('MaximumEvent', 'Maximum event age is 1 day');
+        throw new UnscopedValidationError(lit`MaximumEvent`, 'Maximum event age is 1 day');
       }
       if (maxAge < minMaxAge) {
-        throw new UnscopedValidationError('MinimumEventMinute', 'Minimum event age is 1 minute');
+        throw new UnscopedValidationError(lit`MinimumEventMinute`, 'Minimum event age is 1 minute');
       }
     }
     let maxAttempts = 185;

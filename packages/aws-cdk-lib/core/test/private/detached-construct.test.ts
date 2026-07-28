@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { ENABLE_ADDITIONAL_METADATA_COLLECTION } from '../../../cx-api/lib/features';
 import { JSII_RUNTIME_SYMBOL } from '../../lib/constants';
 import { UnscopedValidationError } from '../../lib/errors';
-import { addMetadata } from '../../lib/metadata-resource';
+import { addPropsAsMetadata } from '../../lib/metadata-resource';
 import { MetadataType } from '../../lib/metadata-type';
 import { DetachedConstruct } from '../../lib/private/detached-construct';
 
@@ -50,7 +50,7 @@ describe('DetachedConstruct', () => {
 
     const underTest = new TestConstruct();
     expect(() => {
-      addMetadata(underTest, MetadataType.CONSTRUCT, {
+      addPropsAsMetadata(underTest, MetadataType.CONSTRUCT, {
         managedPolicies: [new TestDetachedConstruct('test error message')],
       });
     }).not.toThrow();

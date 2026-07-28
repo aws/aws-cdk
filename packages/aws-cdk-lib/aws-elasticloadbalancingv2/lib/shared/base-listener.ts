@@ -4,8 +4,12 @@ import type { Attributes } from './util';
 import { mapTagMapToCxschema, renderAttributes } from './util';
 import * as cxschema from '../../../cloud-assembly-schema';
 import type { IResource } from '../../../core';
-import { Annotations, ContextProvider, Lazy, Resource, Token } from '../../../core';
+import { Annotations, ContextProvider, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
+import type { IBox } from '../../../core/lib/helpers-internal';
+import { Box } from '../../../core/lib/helpers-internal';
+import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
+import { lit } from '../../../core/lib/private/literal-string';
 import type * as cxapi from '../../../cx-api';
 import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { CfnListener } from '../elasticloadbalancingv2.generated';
@@ -74,6 +78,7 @@ export interface IListener extends IResource, aws_elasticloadbalancingv2.IListen
 /**
  * Base class for listeners
  */
+@noBoxStackTraces
 export abstract class BaseListener extends Resource implements IListener {
   /**
    * Queries the load balancer listener context provider for load balancer
@@ -84,7 +89,7 @@ export abstract class BaseListener extends Resource implements IListener {
     if (Token.isUnresolved(options.userOptions.loadBalancerArn)
       || Object.values(options.userOptions.loadBalancerTags ?? {}).some(Token.isUnresolved)
       || Token.isUnresolved(options.userOptions.listenerPort)) {
-      throw new ValidationError('ArgumentsLookUpLoadBalancer', 'All arguments to look up a load balancer listener must be concrete (no Tokens)', scope);
+      throw new ValidationError(lit`ArgumentsLookUpLoadBalancer`, 'All arguments to look up a load balancer listener must be concrete (no Tokens)', scope);
     }
 
     let cxschemaTags: cxschema.Tag[] | undefined;
@@ -129,17 +134,19 @@ export abstract class BaseListener extends Resource implements IListener {
   /**
    * Attributes set on this listener
    */
-  private readonly attributes: Attributes = {};
+  private readonly attributes: IBox<Attributes> = Box.fromValue({});
 
-  private defaultAction?: IListenerAction;
+  private readonly _defaultAction: IBox<IListenerAction | undefined>;
 
   constructor(scope: Construct, id: string, additionalProps: any) {
     super(scope, id);
 
+    this._defaultAction = Box.fromValue<IListenerAction | undefined>(undefined);
+
     const resource = new CfnListener(this, 'Resource', {
       ...additionalProps,
-      defaultActions: Lazy.any({ produce: () => this.defaultAction?.renderActions() ?? [] }),
-      listenerAttributes: Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true } ),
+      defaultActions: this._defaultAction.derive(a => a?.renderActions() ?? []),
+      listenerAttributes: this.attributes.derive(renderAttributes).derive(v => v.length === 0 ? undefined : v),
     });
 
     this.listenerArn = resource.ref;
@@ -152,7 +159,10 @@ export abstract class BaseListener extends Resource implements IListener {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-listenerattribute.html
    */
   public setAttribute(key: string, value: string | undefined) {
-    this.attributes[key] = value;
+    this.attributes.update(attributes => {
+      attributes[key] = value;
+      return attributes;
+    });
   }
 
   /**
@@ -166,7 +176,7 @@ export abstract class BaseListener extends Resource implements IListener {
    * Validate this listener
    */
   protected validateListener(): string[] {
-    if (!this.defaultAction) {
+    if (!this._defaultAction.get()) {
       return ['Listener needs at least one default action or target group (call addTargetGroups or addAction)'];
     }
     return [];
@@ -187,10 +197,10 @@ export abstract class BaseListener extends Resource implements IListener {
     //
     // Instead, signal this through a warning.
     // @deprecate: upon the next major version bump, replace this with a `throw`
-    if (this.defaultAction) {
+    if (this._defaultAction.get()) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-elbv2:listenerExistingDefaultActionReplaced', 'A default Action already existed on this Listener and was replaced. Configure exactly one default Action.');
     }
 
-    this.defaultAction = action;
+    this._defaultAction.set(action);
   }
 }
