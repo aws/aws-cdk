@@ -4,9 +4,13 @@ import type { IOptionGroupRef, OptionGroupReference } from './rds.generated';
 import { CfnOptionGroup } from './rds.generated';
 import * as ec2 from '../../aws-ec2';
 import type { IResource } from '../../core';
-import { Lazy, Resource } from '../../core';
+import { Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -110,6 +114,7 @@ export interface OptionGroupProps {
  * An option group
  */
 @propertyInjectable
+@noBoxStackTraces
 export class OptionGroup extends Resource implements IOptionGroup {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.OptionGroup';
@@ -138,7 +143,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
    */
   public readonly optionConnections: { [key: string]: ec2.Connections } = {};
 
-  private readonly configurations: OptionConfiguration[] = [];
+  private readonly configurations: IArrayBox<OptionConfiguration> = Box.fromArray([], { omitEmpty: false });
 
   constructor(scope: Construct, id: string, props: OptionGroupProps) {
     super(scope, id);
@@ -147,7 +152,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
 
     const majorEngineVersion = props.engine.engineVersion?.majorVersion;
     if (!majorEngineVersion) {
-      throw new ValidationError("OptionGroup cannot be used with an engine that doesn't specify a version", this);
+      throw new ValidationError(lit`OptiongroupCannotUsedEngine`, "OptionGroup cannot be used with an engine that doesn't specify a version", this);
     }
 
     props.configurations.forEach(config => this.addConfiguration(config));
@@ -156,7 +161,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
       engineName: props.engine.engineType,
       majorEngineVersion,
       optionGroupDescription: props.description || `Option group for ${props.engine.engineType} ${majorEngineVersion}`,
-      optionConfigurations: Lazy.any({ produce: () => this.renderConfigurations(this.configurations) }),
+      optionConfigurations: this.configurations.derive(c => this.renderConfigurations(c as OptionConfiguration[])),
       optionGroupName: props.optionGroupName,
     });
 
@@ -169,7 +174,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
 
     if (configuration.port) {
       if (!configuration.vpc) {
-        throw new ValidationError('`port` and `vpc` must be specified together.', this);
+        throw new ValidationError(lit`MustBeSpecifiedTogether`, '`port` and `vpc` must be specified together.', this);
       }
 
       const securityGroups = configuration.securityGroups && configuration.securityGroups.length > 0

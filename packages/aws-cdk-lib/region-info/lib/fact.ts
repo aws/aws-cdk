@@ -83,7 +83,7 @@ export class Fact {
    * @param allowReplacing whether new facts can replace existing facts or not.
    */
   public static register(fact: IFact, allowReplacing = false): void {
-    const regionFacts = this.database[fact.region] || (this.database[fact.region] = {});
+    const regionFacts = this.database[fact.region] || (this.database[fact.region] = Object.create(null));
     if (fact.name in regionFacts && regionFacts[fact.name] !== fact.value && !allowReplacing) {
       throw new RegionFactError(`Region ${fact.region} already has a fact ${fact.name}, with value ${regionFacts[fact.name]}`);
     }
@@ -100,14 +100,14 @@ export class Fact {
    *               current stored value).
    */
   public static unregister(region: string, name: string, value?: string): void {
-    const regionFacts = this.database[region] || {};
+    const regionFacts = this.database[region] || Object.create(null);
     if (name in regionFacts && value && regionFacts[name] !== value) {
       throw new RegionFactError(`Attempted to remove ${name} from ${region} with value ${value}, but the fact's value is ${regionFacts[name]}`);
     }
     delete regionFacts[name];
   }
 
-  private static readonly database: { [region: string]: { [name: string]: string } } = {};
+  private static readonly database: { [region: string]: { [name: string]: string } } = Object.create(null); // Prevent prototype pollution
 
   private constructor() {
     // this should never happen, so throw a regular error here

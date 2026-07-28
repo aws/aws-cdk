@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import {
   validateStringField,
   validateFieldPattern,
@@ -196,9 +197,9 @@ describe('validation-helpers tests', () => {
 
   describe('UnscopedValidationError', () => {
     test('Should be an instance of Error', () => {
-      const error = new UnscopedValidationError('Test error');
+      const error = new UnscopedValidationError(lit`TestError`, 'Test error');
       expect(error).toBeInstanceOf(Error);
-      expect(error.name).toBe('ValidationError');
+      expect(error.name).toBe('TestError');
       expect(error.message).toBe('Test error');
     });
   });

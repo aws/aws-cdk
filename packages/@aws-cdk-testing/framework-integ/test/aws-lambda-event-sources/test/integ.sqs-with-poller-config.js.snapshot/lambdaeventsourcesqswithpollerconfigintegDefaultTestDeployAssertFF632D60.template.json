@@ -1,0 +1,239 @@
+{
+ "Resources": {
+  "AwsApiCallLambdagetEventSourceMappingdc5cf574cc9016dcb9eb5e7ca31f8051": {
+   "Type": "Custom::DeployAssert@SdkCallLambdagetEventSourceMapping",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "getEventSourceMapping",
+    "expected": "{\"$ObjectLike\":{\"ProvisionedPollerConfig\":{\"MinimumPollers\":2,\"MaximumPollers\":1000}}}",
+    "parameters": {
+     "UUID": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "lambda-event-source-sqs-with-poller-config:ExportsOutputRefFunction1SqsEventSourcelambdaeventsourcesqswithpollerconfigQueue5EB77B4BD8D4BD92C92D3DE2"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1775747041439"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "lambda:GetEventSourceMapping"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:GetEventSourceMapping"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:GetEventSourceMapping"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs22.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallLambdagetEventSourceMapping32bec147bccdeb0e842bab63a4408552": {
+   "Type": "Custom::DeployAssert@SdkCallLambdagetEventSourceMapping",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "getEventSourceMapping",
+    "expected": "{\"$ObjectLike\":{\"ProvisionedPollerConfig\":{\"MinimumPollers\":3,\"MaximumPollers\":200}}}",
+    "parameters": {
+     "UUID": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "lambda-event-source-sqs-with-poller-config:ExportsOutputRefFunction2SqsEventSourcelambdaeventsourcesqswithpollerconfigQueue5EB77B4BCBC44E2668F6AD2C"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1775747041440"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallLambdagetEventSourceMappingc403a4fc85287fac7affd4bcd3b84b19": {
+   "Type": "Custom::DeployAssert@SdkCallLambdagetEventSourceMapping",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "getEventSourceMapping",
+    "expected": "{\"$ObjectLike\":{\"ProvisionedPollerConfig\":{\"MinimumPollers\":3,\"MaximumPollers\":1000}}}",
+    "parameters": {
+     "UUID": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "lambda-event-source-sqs-with-poller-config:ExportsOutputRefFunction3SqsEventSourcelambdaeventsourcesqswithpollerconfigQueue5EB77B4BC8070FD5B9457333"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1775747041440"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallLambdagetEventSourceMappingdc5cf574cc9016dcb9eb5e7ca31f8051": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallLambdagetEventSourceMappingdc5cf574cc9016dcb9eb5e7ca31f8051",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallLambdagetEventSourceMapping32bec147bccdeb0e842bab63a4408552": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallLambdagetEventSourceMapping32bec147bccdeb0e842bab63a4408552",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallLambdagetEventSourceMappingc403a4fc85287fac7affd4bcd3b84b19": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallLambdagetEventSourceMappingc403a4fc85287fac7affd4bcd3b84b19",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -16,7 +16,7 @@ class TestStack extends Stack {
     });
 
     new sfn.StateMachine(this, 'StateMachine', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
   }
 }

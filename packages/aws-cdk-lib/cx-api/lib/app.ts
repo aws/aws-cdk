@@ -16,6 +16,13 @@ export const PATH_METADATA_ENABLE_CONTEXT = 'aws:cdk:enable-path-metadata';
 export const ANALYTICS_REPORTING_ENABLED_CONTEXT = 'aws:cdk:version-reporting';
 
 /**
+ * Disable the collection and reporting of performance information.
+ *
+ * (Set to `false` to disable).
+ */
+export const PERFORMANCE_REPORTING_ENABLED_CONTEXT = 'aws:cdk:performance-reporting';
+
+/**
  * Disable asset staging (for use with SAM CLI).
  *
  * Disabling asset staging means that copyable assets will not be copied to the
@@ -44,6 +51,14 @@ export const DISABLE_METADATA_STACK_TRACE = 'aws:cdk:disable-stack-trace';
  * metadata in the manifest.
  */
 export const DISABLE_LOGICAL_ID_METADATA = 'aws:cdk:disable-logicalId-metadata';
+
+/**
+ * If this context key is set, construct stack traces will not be captured upon creation
+ *
+ * You should only need to set this for performance reasons, and `--debug` mode will
+ * turn it this back on unconditionally
+ */
+export const DISABLE_CREATION_STACK_TRACES = 'aws:cdk:disable-creation-stack-traces';
 
 /**
  * Run bundling for stacks specified in this context key
