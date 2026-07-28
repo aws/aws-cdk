@@ -22,6 +22,10 @@ const config = {
   },
 
   testEnvironment: './testhelpers/jest-bufferedconsole.ts',
+
+  setupFilesAfterEnv: [
+    ...baseConfig.setupFilesAfterEnv ?? [],
+  ],
 };
 
 module.exports = config;
