@@ -862,10 +862,11 @@ describe('from string list parameter', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    ssm.StringParameter.fromStringParameterAttributes(stack, 'my-param-name', {
+    const param = ssm.StringParameter.fromStringParameterAttributes(stack, 'my-param-name', {
       parameterName: 'my-param-name',
       type: ParameterType.STRING,
     });
+    param.stringValue;
 
     // THEN
     Template.fromStack(stack).templateMatches({
@@ -883,10 +884,11 @@ describe('from string list parameter', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    ssm.StringParameter.fromStringParameterAttributes(stack, 'my-param-name', {
+    const param = ssm.StringParameter.fromStringParameterAttributes(stack, 'my-param-name', {
       parameterName: 'my-param-name',
       valueType: ParameterValueType.STRING,
     });
+    param.stringValue;
 
     // THEN
     Template.fromStack(stack).templateMatches({
