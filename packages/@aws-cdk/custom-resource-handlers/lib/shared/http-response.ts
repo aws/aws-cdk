@@ -25,6 +25,18 @@ export interface RetryOptions {
 }
 
 /**
+ * Default retry options for sending a Custom Resource response to CloudFormation.
+ *
+ * Shared by the bundled handlers so they retry the response PUT consistently
+ * (5 attempts, exponential backoff from a 1s base) instead of each PUT being
+ * a single un-retried attempt.
+ */
+export const DEFAULT_RESPONSE_RETRY_OPTIONS: RetryOptions = {
+  attempts: 5,
+  sleep: 1000,
+};
+
+/**
  * Wraps an async function so it is retried with exponential backoff (and
  * jitter) on failure, throwing the last error once the attempts are exhausted.
  */

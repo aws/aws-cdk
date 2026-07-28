@@ -2,8 +2,7 @@
 
 import type { AwsCredentialIdentityProvider } from '@smithy/types';
 import type { AwsSdkCall } from './construct-types';
-import { httpRequest, withRetries } from '../../shared/http-response';
-import type { RetryOptions } from '../../shared/http-response';
+import { DEFAULT_RESPONSE_RETRY_OPTIONS, httpRequest, withRetries } from '../../shared/http-response';
 
 type Event = AWSLambda.CloudFormationCustomResourceEvent;
 
@@ -11,20 +10,6 @@ type Event = AWSLambda.CloudFormationCustomResourceEvent;
  * Serialized form of the physical resource id for use in the operation parameters
  */
 export const PHYSICAL_RESOURCE_ID_REFERENCE = 'PHYSICAL:RESOURCEID:';
-
-/**
- * Retry options used when sending the response to CloudFormation.
- *
- * The response PUT to the pre-signed S3 response URL is retried with
- * exponential backoff on a network error or a non-successful (>= 400) HTTP
- * response, instead of being sent exactly once and silently swallowed. Without
- * this, a single transient PUT failure causes CloudFormation to wait out its
- * ~1 hour timeout even though the function already logged a SUCCESS response.
- */
-const RESPONSE_RETRY_OPTIONS: RetryOptions = {
-  attempts: 5,
-  sleep: 1000,
-};
 
 /**
  * Decodes encoded special values (physicalResourceId)
@@ -98,7 +83,7 @@ export function respond(
     },
   };
 
-  return withRetries(RESPONSE_RETRY_OPTIONS, httpRequest)(requestOptions, responseBody);
+  return withRetries(DEFAULT_RESPONSE_RETRY_OPTIONS, httpRequest)(requestOptions, responseBody);
 }
 
 /**
