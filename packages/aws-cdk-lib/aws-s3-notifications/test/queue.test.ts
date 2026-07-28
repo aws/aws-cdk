@@ -71,7 +71,7 @@ test('queues can be used as destinations', () => {
   const resources = Template.fromStack(stack).findResources('Custom::S3BucketNotifications');
 
   expect(resources.BucketNotifications8F2E257D.DependsOn)
-    .toEqual(['QueuePolicy25439813', 'Queue4A7E3555']);
+    .toEqual(['BucketNotificationsHandlerPolicy2180A8BD', 'QueuePolicy25439813', 'Queue4A7E3555']);
 });
 
 test('if the queue is encrypted with a custom kms key, the key resource policy is updated to allow s3 to read messages', () => {

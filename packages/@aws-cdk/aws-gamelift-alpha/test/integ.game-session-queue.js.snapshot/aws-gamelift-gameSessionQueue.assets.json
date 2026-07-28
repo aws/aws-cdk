@@ -1,28 +1,30 @@
 {
-  "version": "22.0.0",
+  "version": "48.0.0",
   "files": {
     "b95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37": {
+      "displayName": "Build/Content",
       "source": {
         "path": "asset.b95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-cc556380": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "b95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "5cb96a6837fa171aa6c3da922798ccc4fbf1c2c083c89fe9882dfad8757930dd": {
+    "bcf43362326db430d5135a9688ca31854f7ade273106153a542e8e1973eb244f": {
+      "displayName": "aws-gamelift-gameSessionQueue Template",
       "source": {
         "path": "aws-gamelift-gameSessionQueue.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-2299514a": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "5cb96a6837fa171aa6c3da922798ccc4fbf1c2c083c89fe9882dfad8757930dd.json",
+          "objectKey": "bcf43362326db430d5135a9688ca31854f7ade273106153a542e8e1973eb244f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -14,6 +14,7 @@
 import {
   ASSET_PREFIX_SEPARATOR,
   ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY,
+  ASSET_RESOURCE_METADATA_DOCKER_BUILD_CONTEXTS_KEY,
   ASSET_RESOURCE_METADATA_DOCKER_BUILD_SECRETS_KEY,
   ASSET_RESOURCE_METADATA_DOCKER_BUILD_SSH_KEY,
   ASSET_RESOURCE_METADATA_DOCKER_BUILD_TARGET_KEY,
@@ -52,6 +53,7 @@ import type * as cxschema from '@aws-cdk/cloud-assembly-schema';
 export {
   ASSET_PREFIX_SEPARATOR,
   ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY,
+  ASSET_RESOURCE_METADATA_DOCKER_BUILD_CONTEXTS_KEY,
   ASSET_RESOURCE_METADATA_DOCKER_BUILD_SECRETS_KEY,
   ASSET_RESOURCE_METADATA_DOCKER_BUILD_SSH_KEY,
   ASSET_RESOURCE_METADATA_DOCKER_BUILD_TARGET_KEY,
@@ -327,6 +329,11 @@ export declare class CloudArtifact {
    * id. Should only be used in user interfaces.
    */
   get hierarchicalId(): string;
+
+  /**
+   * Returns the metadata associated with this Cloud Artifact
+   */
+  get metadata(): Record<string, cxschema.MetadataEntry[]>;
 }
 // Make these classes equal to the upstream versions
 exports.CloudArtifact = CloudArtifact_;

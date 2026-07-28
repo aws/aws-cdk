@@ -1,6 +1,7 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 const app = new cdk.App();
@@ -58,11 +59,16 @@ class VpcEndpointStack extends cdk.Stack {
 
     // Add a cross-region interface endpoint
     vpc.addInterfaceEndpoint('CrossRegionEndpoint', {
-      service: new ec2.InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-123456', 443),
-      serviceRegion: 'us-east-1', // Cross-region service
+      service: new ec2.InterfaceVpcEndpointService('com.amazonaws.eu-west-1.s3'),
+      serviceRegion: 'eu-west-1',
     });
   }
 }
 
 new VpcEndpointStack(app, 'aws-cdk-ec2-vpc-endpoint');
-app.synth();
+
+new IntegTest(app, 'VpcEndpointTest', {
+  testCases: [app.node.tryFindChild('aws-cdk-ec2-vpc-endpoint') as cdk.Stack],
+  // Exclude eu-west-1 to keep the cross-region interface endpoint (serviceRegion: 'eu-west-1') truly cross-region
+  regions: ['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2', 'ap-south-1', 'ap-northeast-1', 'ap-northeast-2', 'ap-southeast-1', 'ap-southeast-2', 'ca-central-1', 'eu-central-1', 'eu-north-1', 'eu-west-2', 'eu-west-3', 'sa-east-1', 'me-south-1'],
+});
