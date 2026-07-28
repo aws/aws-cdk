@@ -1,0 +1,32 @@
+name: Pending Maintainer Action Check
+on:
+  schedule:
+    - cron: "0 8 * * *" # Runs daily at 08:00 UTC
+  workflow_dispatch: # Manual trigger
+    inputs:
+      dry_run:
+        description: "If true, log intended changes without creating or updating the tracking issue"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  update_tracking_issue:
+    if: github.repository == 'aws/aws-cdk'
+    runs-on: ubuntu-latest
+    environment: automation
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Track PRs pending maintainer action
+        uses: actions/github-script@v9
+        env:
+          DRY_RUN: ${{ inputs.dry_run == true }}
+        with:
+          github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
+          script: |
+            const script = require('./scripts/prioritization/pending-maintainer-action.js')
+            await script({github, context})
