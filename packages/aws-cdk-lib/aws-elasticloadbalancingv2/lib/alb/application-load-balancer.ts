@@ -342,7 +342,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     const lb = this.node.defaultChild;
     const bucketPolicy = bucket.policy?.node.defaultChild;
     if (lb && bucketPolicy && CfnResource.isCfnResource(lb) && CfnResource.isCfnResource(bucketPolicy)) {
-      lb.addDependency(bucketPolicy);
+      lb.addResourceDependency(bucketPolicy);
     }
   }
 
@@ -405,7 +405,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     const lb = this.node.defaultChild;
     const bucketPolicy = bucket.policy?.node.defaultChild;
     if (lb && bucketPolicy && CfnResource.isCfnResource(lb) && CfnResource.isCfnResource(bucketPolicy)) {
-      lb.addDependency(bucketPolicy);
+      lb.addResourceDependency(bucketPolicy);
     }
   }
 
