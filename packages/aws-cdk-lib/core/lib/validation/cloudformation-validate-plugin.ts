@@ -102,12 +102,9 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
   public validate(context: IPolicyValidationContext): PolicyValidationPluginReport {
     const violations: MutableViolation[] = [];
 
-    for (const templatePath of context.templatePaths) {
+    for (const { stackConstructPath, templatePath } of context.stackTemplates) {
       const templateFile = new TemplateFile(templatePath);
-      const report = this.engine.validateStandard(templateFile, {
-        // Environment-agnostic stacks use these cx-api sentinels in the cloud assembly. Omitting
-        // them lets the engine model the pseudo-parameters symbolically instead of validating the
-        // sentinel text as if it were a real account or region.
+      const report = this.engine.validateDetailed(templateFile, {
         pseudoParameterOverrides: {
           accountId: context.accountId,
           region: context.region,
@@ -132,6 +129,8 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
 
         const violatingResource: PolicyViolatingResource = {
           resourceLogicalId: diagnostic.resourceId,
+          // If this is not about any resources, best we can do is point it to the stack
+          constructPath: !diagnostic.resourceId ? stackConstructPath : undefined,
           templatePath,
           locations: diagnostic.propertyPath ? [diagnostic.propertyPath] : [],
         };
