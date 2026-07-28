@@ -1,6 +1,7 @@
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as Logs from '@aws-sdk/client-cloudwatch-logs';
+import { DEFAULT_RESPONSE_RETRY_OPTIONS, httpRequest, withRetries } from '../../shared/http-response';
 
 let FAKE_SLEEP = false;
 
@@ -166,17 +167,7 @@ export async function handler(event: LogRetentionEvent, context: AWSLambda.Conte
       },
     };
 
-    return new Promise((resolve, reject) => {
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const request = require('https').request(requestOptions, resolve);
-        request.on('error', reject);
-        request.write(responseBody);
-        request.end();
-      } catch (e) {
-        reject(e);
-      }
-    });
+    return withRetries(DEFAULT_RESPONSE_RETRY_OPTIONS, httpRequest)(requestOptions, responseBody);
   }
 }
 
