@@ -662,7 +662,7 @@ function assertCustomOAuth2DiscoveryXor(scope: Construct, props: CustomOAuth2Cre
 function resolveClientSecretFragment(
   scope: Construct,
   props: OAuth2ClientCredentials,
-  vendorLabel: string,
+  vendorValue: string,
 ): { clientSecret?: string; clientSecretSource?: string; clientSecretConfig?: CfnOAuth2CredentialProvider.SecretReferenceProperty } {
   const hasSecret = props.clientSecret !== undefined;
   const hasConfig = props.clientSecretConfig !== undefined;
@@ -670,7 +670,7 @@ function resolveClientSecretFragment(
   if (hasSecret && hasConfig) {
     throw new ValidationError(
       lit`ClientSecretExclusive`,
-      `Provide either clientSecret or clientSecretConfig for ${vendorLabel}, not both.`,
+      `Provide either clientSecret or clientSecretConfig for ${vendorValue} OAuth2, not both.`,
       scope,
     );
   }
@@ -678,7 +678,7 @@ function resolveClientSecretFragment(
     throw new ValidationError(
       lit`ClientSecretRequired`,
       'Provide either clientSecret (ClientSecretSource.MANAGED) or clientSecretConfig' +
-        `(ClientSecretSource.EXTERNAL) for ${vendorLabel}.`,
+        `(ClientSecretSource.EXTERNAL) for ${vendorValue} OAuth2.`,
       scope,
     );
   }
@@ -818,7 +818,7 @@ function newOAuth2WithIncludedClientCredentialsOnly(
     oauth2ProviderConfigInput: {
       includedOauth2ProviderConfig: {
         clientId: props.clientId,
-        ...resolveClientSecretFragment(scope, props, `${vendor.value} OAuth2`),
+        ...resolveClientSecretFragment(scope, props, `${vendor.value}`),
       },
     },
   });
@@ -840,7 +840,7 @@ function newOAuth2WithIncludedTenant(
     oauth2ProviderConfigInput: {
       includedOauth2ProviderConfig: {
         clientId: props.clientId,
-        ...resolveClientSecretFragment(scope, props, `${vendor.value} OAuth2`),
+        ...resolveClientSecretFragment(scope, props, `${vendor.value}`),
         authorizationEndpoint: props.authorizationEndpoint,
         issuer: props.issuer,
         tokenEndpoint: props.tokenEndpoint,
@@ -877,7 +877,12 @@ export class OAuth2CredentialProvider extends OAuth2CredentialProviderBase {
       oAuth2CredentialProviderName: props.oAuth2CredentialProviderName,
       tags: props.tags,
       credentialProviderVendor: OAuth2CredentialProviderVendor.SLACK.value,
-      oauth2ProviderConfigInput: { slackOauth2ProviderConfig: { clientId: props.clientId, ...resolveClientSecretFragment(scope, props, 'Slack OAuth2') } },
+      oauth2ProviderConfigInput: {
+        slackOauth2ProviderConfig: {
+          clientId: props.clientId,
+          ...resolveClientSecretFragment(scope, props, OAuth2CredentialProviderVendor.SLACK.value ),
+        },
+      },
     });
   }
 
@@ -889,7 +894,12 @@ export class OAuth2CredentialProvider extends OAuth2CredentialProviderBase {
       oAuth2CredentialProviderName: props.oAuth2CredentialProviderName,
       tags: props.tags,
       credentialProviderVendor: OAuth2CredentialProviderVendor.GITHUB.value,
-      oauth2ProviderConfigInput: { githubOauth2ProviderConfig: { clientId: props.clientId, ...resolveClientSecretFragment(scope, props, 'GitHub OAuth2') } },
+      oauth2ProviderConfigInput: {
+        githubOauth2ProviderConfig: {
+          clientId: props.clientId,
+          ...resolveClientSecretFragment(scope, props, OAuth2CredentialProviderVendor.GITHUB.value),
+        },
+      },
     });
   }
 
@@ -901,7 +911,12 @@ export class OAuth2CredentialProvider extends OAuth2CredentialProviderBase {
       oAuth2CredentialProviderName: props.oAuth2CredentialProviderName,
       tags: props.tags,
       credentialProviderVendor: OAuth2CredentialProviderVendor.GOOGLE.value,
-      oauth2ProviderConfigInput: { googleOauth2ProviderConfig: { clientId: props.clientId, ...resolveClientSecretFragment(scope, props, 'Google OAuth2') } },
+      oauth2ProviderConfigInput: {
+        googleOauth2ProviderConfig: {
+          clientId: props.clientId,
+          ...resolveClientSecretFragment(scope, props, OAuth2CredentialProviderVendor.GOOGLE.value ),
+        },
+      },
     });
   }
 
@@ -913,7 +928,12 @@ export class OAuth2CredentialProvider extends OAuth2CredentialProviderBase {
       oAuth2CredentialProviderName: props.oAuth2CredentialProviderName,
       tags: props.tags,
       credentialProviderVendor: OAuth2CredentialProviderVendor.SALESFORCE.value,
-      oauth2ProviderConfigInput: { salesforceOauth2ProviderConfig: { clientId: props.clientId, ...resolveClientSecretFragment(scope, props, 'Salesforce OAuth2') } },
+      oauth2ProviderConfigInput: {
+        salesforceOauth2ProviderConfig: {
+          clientId: props.clientId,
+          ...resolveClientSecretFragment(scope, props, OAuth2CredentialProviderVendor.SALESFORCE.value ),
+        },
+      },
     });
   }
 
@@ -928,7 +948,7 @@ export class OAuth2CredentialProvider extends OAuth2CredentialProviderBase {
       oauth2ProviderConfigInput: {
         microsoftOauth2ProviderConfig: {
           clientId: props.clientId,
-          ...resolveClientSecretFragment(scope, props, 'Microsoft OAuth2'),
+          ...resolveClientSecretFragment(scope, props, OAuth2CredentialProviderVendor.MICROSOFT.value),
           tenantId: props.tenantId,
         },
       },
@@ -943,7 +963,12 @@ export class OAuth2CredentialProvider extends OAuth2CredentialProviderBase {
       oAuth2CredentialProviderName: props.oAuth2CredentialProviderName,
       tags: props.tags,
       credentialProviderVendor: OAuth2CredentialProviderVendor.ATLASSIAN.value,
-      oauth2ProviderConfigInput: { atlassianOauth2ProviderConfig: { clientId: props.clientId, ...resolveClientSecretFragment(scope, props, 'Atlassian OAuth2') } },
+      oauth2ProviderConfigInput: {
+        atlassianOauth2ProviderConfig: {
+          clientId: props.clientId,
+          ...resolveClientSecretFragment(scope, props, OAuth2CredentialProviderVendor.ATLASSIAN.value ),
+        },
+      },
     });
   }
 
@@ -955,7 +980,12 @@ export class OAuth2CredentialProvider extends OAuth2CredentialProviderBase {
       oAuth2CredentialProviderName: props.oAuth2CredentialProviderName,
       tags: props.tags,
       credentialProviderVendor: OAuth2CredentialProviderVendor.LINKEDIN.value,
-      oauth2ProviderConfigInput: { linkedinOauth2ProviderConfig: { clientId: props.clientId, ...resolveClientSecretFragment(scope, props, 'LinkedIn OAuth2') } },
+      oauth2ProviderConfigInput: {
+        linkedinOauth2ProviderConfig: {
+          clientId: props.clientId,
+          ...resolveClientSecretFragment(scope, props, OAuth2CredentialProviderVendor.LINKEDIN.value ),
+        },
+      },
     });
   }
 
