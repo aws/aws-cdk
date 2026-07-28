@@ -613,7 +613,7 @@
      "Ref": "MysqlSourceSubnetGroup213E979B"
     },
     "Engine": "mysql",
-    "EngineVersion": "8.4.9",
+    "EngineVersion": "8.4.10",
     "MasterUserPassword": {
      "Fn::Join": [
       "",

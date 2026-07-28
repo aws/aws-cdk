@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "aws-cdk-bedrock-agentcore-runtime-observability.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5acfc19e8c4bf6790a38e7516a40198b7a923b8f4b132da54abcd08b5f75fa8e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9a3484b86b150cae4b3185866b4cf1adacf8a10d6bad9d449316325f013924f7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,590 +33,7 @@
       "dependencies": [
         "aws-cdk-bedrock-agentcore-runtime-observability.assets"
       ],
-      "metadata": {
-        "/aws-cdk-bedrock-agentcore-runtime-observability/RuntimeLogGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy"
-            }
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/RuntimeLogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RuntimeLogGroup3BAFA9F3"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/RuntimeLogBucket": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy",
-              "autoDeleteObjects": true
-            }
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/RuntimeLogBucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RuntimeLogBucket4E1A66C5"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/RuntimeLogBucket/Policy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "bucket": "*"
-            }
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/RuntimeLogBucket/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RuntimeLogBucketPolicy030C08CA"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/RuntimeLogBucket/AutoDeleteObjectsCustomResource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/RuntimeLogBucket/AutoDeleteObjectsCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RuntimeLogBucketAutoDeleteObjectsCustomResource25C646A4"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/RuntimeLogStream": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "destination": "*",
-              "encryption": "*"
-            }
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/RuntimeLogStream/S3 Destination Role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/RuntimeLogStream/S3 Destination Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RuntimeLogStreamS3DestinationRole4B5C937D"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/RuntimeLogStream/S3 Destination Role/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/RuntimeLogStream/S3 Destination Role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RuntimeLogStreamS3DestinationRoleDefaultPolicy59EC96EE"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/RuntimeLogStream/LogGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/RuntimeLogStream/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RuntimeLogStreamLogGroup416367A4"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/RuntimeLogStream/LogGroup/S3Destination": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "logGroup": "*"
-            }
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/RuntimeLogStream/LogGroup/S3Destination/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RuntimeLogStreamLogGroupS3DestinationCF3A3795"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/RuntimeLogStream/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RuntimeLogStream30E43EC3"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/@aws-cdk--aws-kinesisfirehose.CidrBlocks": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "awscdkawskinesisfirehoseCidrBlocks"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:info",
-            "data": "Container URI validation skipped as it contains unresolved CDK tokens. The URI will be validated at deployment time."
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/ExecutionRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "description": "*",
-              "maxSessionDuration": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/ExecutionRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntimeExecutionRole4F442A24"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/ExecutionRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/ExecutionRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntimeExecutionRoleDefaultPolicyE11A724C"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntime2ECCDC7B"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/TracesDeliverySource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntimeTracesDeliverySource768F5924"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/TracesDeliveryDest": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntimeTracesDeliveryDestD33DDAED"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/TracesDelivery": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntimeTracesDelivery4BD8F49C"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/ApplicationLogsDeliverySource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntimeApplicationLogsDeliverySource0B1E3022"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/ApplicationLogs0Dest": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntimeApplicationLogs0Dest4CA00B4A"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/ApplicationLogs0Delivery": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntimeApplicationLogs0Delivery993A67FD"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/ApplicationLogs1Dest": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntimeApplicationLogs1DestB9D5AF3B"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/ApplicationLogs1Delivery": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntimeApplicationLogs1DeliveryB3CA9BA8"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/ApplicationLogs2Dest": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntimeApplicationLogs2Dest71AA7E41"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/ApplicationLogs2Delivery": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntimeApplicationLogs2Delivery82601469"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/UsageLogsDeliverySource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntimeUsageLogsDeliverySourceC73C8B47"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/UsageLogs0Dest": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntimeUsageLogs0Dest5D68ABDF"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/UsageLogs0Delivery": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntimeUsageLogs0Delivery6313AFDA"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/UsageLogs1Dest": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntimeUsageLogs1Dest9FADDF4A"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/UsageLogs1Delivery": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntimeUsageLogs1Delivery8D98228C"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/UsageLogs2Dest": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntimeUsageLogs2Dest259DB770"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/ObservabilityRuntime/UsageLogs2Delivery": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ObservabilityRuntimeUsageLogs2Delivery9EAB12D0"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/CdkXRayLogsDeliveryPolicy/ResourcePolicy": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CdkXRayLogsDeliveryPolicyResourcePolicy2C9C91AC"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/CdkLogGroupLogsDeliveryPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/CdkLogGroupLogsDeliveryPolicy/ResourcePolicy": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/RuntimeId": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RuntimeId"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/RuntimeArn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RuntimeArn"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/LogGroupArn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LogGroupArn"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/LogBucketArn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LogBucketArn"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/FirehoseStreamArn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FirehoseStreamArn"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-observability/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "aws-cdk-bedrock-agentcore-runtime-observability.metadata.json",
       "displayName": "aws-cdk-bedrock-agentcore-runtime-observability"
     },
     "BedrockAgentCoreRuntimeObservabilityTestDefaultTestDeployAssert68181C06.assets": {
@@ -651,20 +68,7 @@
       "dependencies": [
         "BedrockAgentCoreRuntimeObservabilityTestDefaultTestDeployAssert68181C06.assets"
       ],
-      "metadata": {
-        "/BedrockAgentCoreRuntimeObservabilityTest/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/BedrockAgentCoreRuntimeObservabilityTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "BedrockAgentCoreRuntimeObservabilityTestDefaultTestDeployAssert68181C06.metadata.json",
       "displayName": "BedrockAgentCoreRuntimeObservabilityTest/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -965,6 +369,7 @@
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
           "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
           },
@@ -1166,16 +571,39 @@
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
           "@aws-cdk/core:automaticL1Traits": {
             "recommendedValue": true,
             "explanation": "Automatically use the default L1 traits for L1 constructs`",
             "unconfiguredBehavesLike": {
               "v2": true
             }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1106.1"
+  "minimumCliVersion": "2.1108.0"
 }
