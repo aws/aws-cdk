@@ -1,5 +1,5 @@
 import * as https from 'https';
-import { httpRequest, withRetries } from '../../lib/shared/http-response';
+import { httpRequest, withRetries } from '../lib/utils';
 
 jest.mock('https');
 

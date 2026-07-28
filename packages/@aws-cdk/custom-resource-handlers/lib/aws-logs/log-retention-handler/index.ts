@@ -1,7 +1,7 @@
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as Logs from '@aws-sdk/client-cloudwatch-logs';
-import { DEFAULT_RESPONSE_RETRY_OPTIONS, httpRequest, withRetries } from '../../shared/http-response';
+import { DEFAULT_RESPONSE_RETRY_OPTIONS, httpRequest, withRetries } from '../../utils';
 
 let FAKE_SLEEP = false;
 
