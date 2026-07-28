@@ -197,8 +197,7 @@
        "Name": "summary_builtin_cdkGen0001",
        "Namespaces": [
         "/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}"
-       ],
-       "Type": "SUMMARIZATION"
+       ]
       }
      },
      {
@@ -207,8 +206,7 @@
        "Name": "semantic_builtin_cdkGen0001",
        "Namespaces": [
         "/strategies/{memoryStrategyId}/actors/{actorId}"
-       ],
-       "Type": "SEMANTIC"
+       ]
       }
      },
      {
@@ -217,8 +215,7 @@
        "Name": "preference_builtin_cdkGen0001",
        "Namespaces": [
         "/strategies/{memoryStrategyId}/actors/{actorId}"
-       ],
-       "Type": "USER_PREFERENCE"
+       ]
       }
      }
     ],
@@ -337,8 +334,7 @@
        "Name": "customSemanticStrategy",
        "Namespaces": [
         "/custom/strategies/{memoryStrategyId}/actors/{actorId}"
-       ],
-       "Type": "SEMANTIC"
+       ]
       }
      }
     ],
@@ -623,8 +619,7 @@
        "Name": "summary_builtin_cdkGen0001",
        "Namespaces": [
         "/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}"
-       ],
-       "Type": "SUMMARIZATION"
+       ]
       }
      },
      {
@@ -740,8 +735,7 @@
         "Namespaces": [
          "/strategy/{memoryStrategyId}/actor/{actorId}"
         ]
-       },
-       "Type": "EPISODIC"
+       }
       }
      }
     ],

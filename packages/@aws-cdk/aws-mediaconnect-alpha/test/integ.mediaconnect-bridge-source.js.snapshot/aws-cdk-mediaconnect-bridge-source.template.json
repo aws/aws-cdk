@@ -1,0 +1,188 @@
+{
+ "Resources": {
+  "Gateway43CB3636": {
+   "Type": "AWS::MediaConnect::Gateway",
+   "Properties": {
+    "EgressCidrBlocks": [
+     "10.0.0.0/23"
+    ],
+    "Name": "awscdkmediacourceGateway5AB16999",
+    "Networks": [
+     {
+      "CidrBlock": "10.0.0.0/23",
+      "Name": "network-1"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "IngressBridge39ECBE25": {
+   "Type": "AWS::MediaConnect::Bridge",
+   "Properties": {
+    "IngressGatewayBridge": {
+     "MaxBitrate": 5000000,
+     "MaxOutputs": 1
+    },
+    "Name": "bridge-source-ingress",
+    "PlacementArn": {
+     "Fn::GetAtt": [
+      "Gateway43CB3636",
+      "GatewayArn"
+     ]
+    },
+    "SourceFailoverConfig": {
+     "FailoverMode": "FAILOVER",
+     "State": "ENABLED"
+    },
+    "Sources": [
+     {
+      "NetworkSource": {
+       "MulticastIp": "239.0.0.1",
+       "MulticastSourceSettings": {},
+       "Name": "primary-network-source",
+       "NetworkName": "network-1",
+       "Port": 5000,
+       "Protocol": "rtp-fec"
+      }
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "IngressAdditionalSourceF4CE0178": {
+   "Type": "AWS::MediaConnect::BridgeSource",
+   "Properties": {
+    "BridgeArn": {
+     "Fn::GetAtt": [
+      "IngressBridge39ECBE25",
+      "BridgeArn"
+     ]
+    },
+    "Name": "backup-network-source",
+    "NetworkSource": {
+     "MulticastIp": "239.0.0.2",
+     "MulticastSourceSettings": {},
+     "NetworkName": "network-1",
+     "Port": 5002,
+     "Protocol": "rtp-fec"
+    }
+   }
+  },
+  "FeederFlowA5D8B2EC": {
+   "Type": "AWS::MediaConnect::Flow",
+   "Properties": {
+    "Name": "bridge-source-feeder",
+    "Source": {
+     "IngestPort": 5004,
+     "Name": "feeder-source",
+     "Protocol": "rtp",
+     "WhitelistCidr": "203.0.113.0/24"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "EgressBridge777128C1": {
+   "Type": "AWS::MediaConnect::Bridge",
+   "Properties": {
+    "EgressGatewayBridge": {
+     "MaxBitrate": 5000000
+    },
+    "Name": "bridge-source-egress",
+    "Outputs": [
+     {
+      "NetworkOutput": {
+       "IpAddress": "192.168.1.100",
+       "Name": "egress-output",
+       "NetworkName": "network-1",
+       "Port": 5010,
+       "Protocol": "rtp",
+       "Ttl": 64
+      }
+     }
+    ],
+    "PlacementArn": {
+     "Fn::GetAtt": [
+      "Gateway43CB3636",
+      "GatewayArn"
+     ]
+    },
+    "SourceFailoverConfig": {
+     "FailoverMode": "FAILOVER",
+     "State": "ENABLED"
+    },
+    "Sources": [
+     {
+      "FlowSource": {
+       "FlowArn": {
+        "Fn::GetAtt": [
+         "FeederFlowA5D8B2EC",
+         "FlowArn"
+        ]
+       },
+       "Name": "primary-flow-source"
+      }
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "EgressAdditionalSource0F3A274F": {
+   "Type": "AWS::MediaConnect::BridgeSource",
+   "Properties": {
+    "BridgeArn": {
+     "Fn::GetAtt": [
+      "EgressBridge777128C1",
+      "BridgeArn"
+     ]
+    },
+    "FlowSource": {
+     "FlowArn": {
+      "Fn::GetAtt": [
+       "FeederFlowA5D8B2EC",
+       "FlowArn"
+      ]
+     }
+    },
+    "Name": "backup-flow-source"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
