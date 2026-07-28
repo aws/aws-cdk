@@ -42,6 +42,29 @@ export function decodeCall(call: string | undefined): any {
 }
 
 /**
+ * Retry options used when sending the response to CloudFormation.
+ *
+ * Mirrors the behavior of the custom resource provider framework handler
+ * (see `core/nodejs-entrypoint-handler`): the PUT to the CloudFormation
+ * pre-signed S3 response URL is retried with exponential backoff on a network
+ * error or a non-successful (>= 400) HTTP response, instead of being sent
+ * exactly once and silently swallowed. Without this, a single transient PUT
+ * failure causes CloudFormation to wait out its ~1 hour timeout even though the
+ * function already logged a SUCCESS response.
+ */
+const RESPONSE_RETRY_OPTIONS: RetryOptions = {
+  attempts: 5,
+  sleep: 1000,
+};
+
+/**
+ * Indirection so unit tests can stub out the actual network call.
+ */
+export const external = {
+  sendHttpRequest: defaultSendHttpRequest,
+};
+
+/**
  * Responds to the CloudFormation Custom Resource.
  */
 export function respond(
@@ -82,9 +105,27 @@ export function respond(
     },
   };
 
-  return new Promise((resolve, reject) => {
+  return withRetries(RESPONSE_RETRY_OPTIONS, external.sendHttpRequest)(requestOptions, responseBody);
+}
+
+/**
+ * Sends a single PUT of the CloudFormation response to the pre-signed S3
+ * response URL. Rejects on a network error or a non-successful (>= 400) HTTP
+ * response so that the caller (via `withRetries`) can retry, rather than
+ * treating any received response as success.
+ */
+function defaultSendHttpRequest(requestOptions: any, responseBody: string): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
     try {
-      const request = require('https').request(requestOptions, resolve);
+      const request = require('https').request(requestOptions, (response: any) => {
+        // Consume the response stream so the socket can be freed.
+        response.resume();
+        if (!response.statusCode || response.statusCode >= 400) {
+          reject(new Error(`Unsuccessful HTTP response: ${response.statusCode}`));
+        } else {
+          resolve();
+        }
+      });
       request.on('error', reject);
       request.write(responseBody);
       request.end();
@@ -92,6 +133,35 @@ export function respond(
       reject(e);
     }
   });
+}
+
+export interface RetryOptions {
+  /** How many retries (will at least try once) */
+  readonly attempts: number;
+  /** Sleep base, in ms */
+  readonly sleep: number;
+}
+
+export function withRetries<A extends Array<any>, B>(options: RetryOptions, fn: (...xs: A) => Promise<B>): (...xs: A) => Promise<B> {
+  return async (...xs: A) => {
+    let attempts = options.attempts;
+    let ms = options.sleep;
+    while (true) {
+      try {
+        return await fn(...xs);
+      } catch (e) {
+        if (attempts-- <= 0) {
+          throw e;
+        }
+        await sleep(Math.floor(Math.random() * ms));
+        ms *= 2;
+      }
+    }
+  };
+}
+
+async function sleep(ms: number): Promise<void> {
+  return new Promise((ok) => setTimeout(ok, ms));
 }
 
 /**

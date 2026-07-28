@@ -1,5 +1,8 @@
+import * as https from 'https';
 import type { AwsSdkCall } from '../../../lib/custom-resources/aws-custom-resource-handler/construct-types';
-import { getCredentials } from '../../../lib/custom-resources/aws-custom-resource-handler/utils';
+import { external, getCredentials, respond, withRetries } from '../../../lib/custom-resources/aws-custom-resource-handler/utils';
+
+jest.mock('https');
 
 // Mock the @aws-sdk/credential-providers import
 const mockFromTemporaryCredentials = jest.fn();
@@ -182,5 +185,151 @@ describe('getCredentials with External ID support', () => {
     expect(roleSessionName).toMatch(/^\d+-very-long-resource-id-that-exceeds-the-maximum-len$/);
     expect(callArgs.params.ExternalId).toBe('test-external-id-123');
     expect(result).toBe(mockCredentials);
+  });
+});
+
+// Captured at load time before any test overrides it.
+const defaultSendHttpRequest = external.sendHttpRequest;
+
+function makeEvent(): AWSLambda.CloudFormationCustomResourceEvent {
+  return {
+    ResponseURL: 'https://cfn.example.com/response?token=abc',
+    StackId: '<StackId>',
+    RequestId: '<RequestId>',
+    LogicalResourceId: '<LogicalResourceId>',
+    ResourceType: '<ResourceType>',
+    ServiceToken: '<ServiceToken>',
+    ResourceProperties: { ServiceToken: '<ServiceToken>' },
+    RequestType: 'Create',
+  } as any;
+}
+
+describe('withRetries', () => {
+  beforeEach(() => {
+    // make backoff sleeps instantaneous and deterministic
+    jest.spyOn(Math, 'random').mockReturnValue(0);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  test('returns the result without retrying when the function succeeds', async () => {
+    const fn = jest.fn().mockResolvedValue('ok');
+
+    const result = await withRetries({ attempts: 5, sleep: 1 }, fn)();
+
+    expect(result).toEqual('ok');
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  test('retries and eventually succeeds', async () => {
+    const fn = jest.fn()
+      .mockRejectedValueOnce(new Error('transient'))
+      .mockRejectedValueOnce(new Error('transient'))
+      .mockResolvedValue('ok');
+
+    const result = await withRetries({ attempts: 5, sleep: 1 }, fn)();
+
+    expect(result).toEqual('ok');
+    expect(fn).toHaveBeenCalledTimes(3);
+  });
+
+  test('throws the last error after exhausting all attempts', async () => {
+    const fn = jest.fn().mockRejectedValue(new Error('always fails'));
+
+    // attempts: 3 => 1 initial call + 3 retries = 4 invocations
+    await expect(withRetries({ attempts: 3, sleep: 1 }, fn)()).rejects.toThrow('always fails');
+    expect(fn).toHaveBeenCalledTimes(4);
+  });
+});
+
+describe('respond', () => {
+  beforeEach(() => {
+    jest.spyOn(Math, 'random').mockReturnValue(0);
+    jest.spyOn(console, 'log').mockImplementation(() => undefined);
+  });
+
+  afterEach(() => {
+    external.sendHttpRequest = defaultSendHttpRequest;
+    jest.restoreAllMocks();
+  });
+
+  test('PUTs the response to the CloudFormation response URL exactly once on success', async () => {
+    // GIVEN
+    const send = jest.fn().mockResolvedValue(undefined);
+    external.sendHttpRequest = send;
+
+    // WHEN
+    await respond(makeEvent(), 'SUCCESS', 'reason', 'physical-id', { Foo: 'Bar' }, true);
+
+    // THEN
+    expect(send).toHaveBeenCalledTimes(1);
+    const [options, body] = send.mock.calls[0];
+    expect(options.method).toEqual('PUT');
+    expect(options.hostname).toEqual('cfn.example.com');
+    expect(options.path).toEqual('/response?token=abc');
+    const parsedBody = JSON.parse(body);
+    expect(parsedBody.Status).toEqual('SUCCESS');
+    expect(parsedBody.PhysicalResourceId).toEqual('physical-id');
+    expect(parsedBody.Data).toEqual({ Foo: 'Bar' });
+  });
+
+  test('retries a transient failure and then succeeds', async () => {
+    // GIVEN
+    const send = jest.fn()
+      .mockRejectedValueOnce(new Error('socket hang up'))
+      .mockResolvedValue(undefined);
+    external.sendHttpRequest = send;
+
+    // WHEN
+    await respond(makeEvent(), 'SUCCESS', 'reason', 'physical-id', {}, false);
+
+    // THEN
+    expect(send).toHaveBeenCalledTimes(2);
+  });
+
+  test('rejects after exhausting retries', async () => {
+    // GIVEN
+    const send = jest.fn().mockRejectedValue(new Error('Unsuccessful HTTP response: 500'));
+    external.sendHttpRequest = send;
+
+    // WHEN / THEN
+    // RESPONSE_RETRY_OPTIONS.attempts is 5 => 1 initial call + 5 retries = 6 invocations
+    await expect(respond(makeEvent(), 'SUCCESS', 'reason', 'physical-id', {}, false))
+      .rejects.toThrow('Unsuccessful HTTP response: 500');
+    expect(send).toHaveBeenCalledTimes(6);
+  });
+
+  describe('HTTP status-code handling (default sender)', () => {
+    beforeEach(() => {
+      external.sendHttpRequest = defaultSendHttpRequest;
+      (https.request as jest.Mock).mockReset();
+    });
+
+    test('resolves on a 2xx response', async () => {
+      // GIVEN
+      (https.request as jest.Mock).mockImplementation((_options: any, cb: any) => {
+        cb({ statusCode: 200, resume: jest.fn() });
+        return { on: jest.fn(), write: jest.fn(), end: jest.fn() };
+      });
+
+      // WHEN / THEN
+      await expect(respond(makeEvent(), 'SUCCESS', 'reason', 'physical-id', {}, false)).resolves.toBeUndefined();
+      expect(https.request).toHaveBeenCalledTimes(1);
+    });
+
+    test('treats a >= 400 response as a failure and retries, then throws', async () => {
+      // GIVEN
+      (https.request as jest.Mock).mockImplementation((_options: any, cb: any) => {
+        cb({ statusCode: 500, resume: jest.fn() });
+        return { on: jest.fn(), write: jest.fn(), end: jest.fn() };
+      });
+
+      // WHEN / THEN
+      await expect(respond(makeEvent(), 'SUCCESS', 'reason', 'physical-id', {}, false))
+        .rejects.toThrow('Unsuccessful HTTP response: 500');
+      expect(https.request).toHaveBeenCalledTimes(6);
+    });
   });
 });
