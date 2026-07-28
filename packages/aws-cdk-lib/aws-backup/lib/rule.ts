@@ -1,6 +1,6 @@
 import * as events from '../../aws-events';
 import type { TimeZone } from '../../core';
-import { Duration, Token, UnscopedValidationError } from '../../core';
+import { Duration, UnscopedValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
 import type { IBackupVaultRef } from '../../interfaces/generated/aws-backup-interfaces.generated';
 
@@ -213,7 +213,8 @@ export class BackupPlanRule {
 
   /** @param props Rule properties */
   constructor(props: BackupPlanRuleProps) {
-    if (props.deleteAfter && props.moveToColdStorageAfter &&
+    if (props.deleteAfter && !props.deleteAfter.isUnresolved() &&
+      props.moveToColdStorageAfter && !props.moveToColdStorageAfter.isUnresolved() &&
       props.deleteAfter.toDays() < props.moveToColdStorageAfter.toDays()) {
       throw new UnscopedValidationError(lit`DeleteAfterMustBeGreater`, '`deleteAfter` must be greater than `moveToColdStorageAfter`');
     }
@@ -228,15 +229,15 @@ export class BackupPlanRule {
       throw new UnscopedValidationError(lit`MoveToColdStorageNotAllowedWithContinuousBackup`, '`moveToColdStorageAfter` must not be specified if `enableContinuousBackup` is enabled');
     }
 
-    if (props.enableContinuousBackup && props.deleteAfter &&
-      (props.deleteAfter?.toDays() < 1 || props.deleteAfter?.toDays() > 35)) {
+    if (props.enableContinuousBackup && props.deleteAfter && !props.deleteAfter.isUnresolved() &&
+      (props.deleteAfter.toDays() < 1 || props.deleteAfter.toDays() > 35)) {
       throw new UnscopedValidationError(lit`DeleteAfterRangeInvalidForContinuousBackup`, `'deleteAfter' must be between 1 and 35 days if 'enableContinuousBackup' is enabled, but got ${props.deleteAfter.toHumanString()}`);
     }
 
     if (props.copyActions && props.copyActions.length > 0) {
       props.copyActions.forEach(copyAction => {
-        if (copyAction.deleteAfter && !Token.isUnresolved(copyAction.deleteAfter) &&
-          copyAction.moveToColdStorageAfter && !Token.isUnresolved(copyAction.moveToColdStorageAfter) &&
+        if (copyAction.deleteAfter && !copyAction.deleteAfter.isUnresolved() &&
+          copyAction.moveToColdStorageAfter && !copyAction.moveToColdStorageAfter.isUnresolved() &&
           copyAction.deleteAfter.toDays() < copyAction.moveToColdStorageAfter.toDays() + 90) {
           throw new UnscopedValidationError(lit`CopyActionDeleteAfterTooEarly`, [
             '\'deleteAfter\' must at least 90 days later than corresponding \'moveToColdStorageAfter\'',
