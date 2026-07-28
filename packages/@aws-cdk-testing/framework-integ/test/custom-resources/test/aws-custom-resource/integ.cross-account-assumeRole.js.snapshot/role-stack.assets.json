@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "53.0.0",
   "files": {
     "3eb6fd0ca4c47b396b9bfa11712c9ac73ac1e8e8638224ea3d97612f839ac65e": {
       "displayName": "role-stack Template",
@@ -8,7 +8,7 @@
         "packaging": "file"
       },
       "destinations": {
-        "12345678-us-east-1": {
+        "12345678-us-east-1-20e401cb": {
           "bucketName": "cdk-hnb659fds-assets-12345678-us-east-1",
           "objectKey": "3eb6fd0ca4c47b396b9bfa11712c9ac73ac1e8e8638224ea3d97612f839ac65e.json",
           "region": "us-east-1",

@@ -3,6 +3,7 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import * as rds from '../lib';
+import { acknowledgeTestValidationRules } from './util';
 
 describe('instance engine', () => {
   test('default parameterGroupFamily for versionless MariaDB instance engine is not defined', () => {
@@ -316,6 +317,7 @@ describe('instance engine', () => {
     ])('is passed correctly for %s', (engineVersion, version) => {
       // WHEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'VPC');
 
       new rds.DatabaseInstance(stack, 'Instance', {

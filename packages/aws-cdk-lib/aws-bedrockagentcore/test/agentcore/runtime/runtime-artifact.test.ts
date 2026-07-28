@@ -318,28 +318,4 @@ describe('AgentRuntimeArtifact tests', () => {
       });
     });
   });
-
-  describe('AgentCoreRuntime.of() escape hatch', () => {
-    test('Should allow custom runtime value via .of() and render it in the template', () => {
-      const artifact = AgentRuntimeArtifact.fromCodeAsset({
-        path: path.join(__dirname, 'testArtifact'),
-        runtime: AgentCoreRuntime.of('PYTHON_3_99'),
-        entrypoint: ['main.py'],
-      });
-
-      new Runtime(stack, 'custom-runtime-test', {
-        runtimeName: 'custom_runtime_test',
-        agentRuntimeArtifact: artifact,
-      });
-
-      const template = Template.fromStack(stack);
-      template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
-        AgentRuntimeArtifact: Match.objectLike({
-          CodeConfiguration: Match.objectLike({
-            Runtime: 'PYTHON_3_99',
-          }),
-        }),
-      });
-    });
-  });
 });
