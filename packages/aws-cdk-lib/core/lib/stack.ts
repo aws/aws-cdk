@@ -33,9 +33,6 @@ import { profileFn } from './private/perf';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { minimatch } = require('minimatch');
 
-const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
-const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
-
 export const STACK_RESOURCE_LIMIT_CONTEXT = '@aws-cdk/core:stackResourceLimit';
 
 const SUPPRESS_TEMPLATE_INDENTATION_CONTEXT = '@aws-cdk/core:suppressTemplateIndentation';
@@ -229,7 +226,7 @@ export class Stack extends Construct implements ITaggable {
    * We do attribute detection since we can't reliably use 'instanceof'.
    */
   public static isStack(this: void, x: any): x is Stack {
-    return x !== null && typeof (x) === 'object' && STACK_SYMBOL in x;
+    return STACK_TYPE.isMarked(x);
   }
 
   /**
@@ -240,36 +237,7 @@ export class Stack extends Construct implements ITaggable {
    * @param construct The construct to start the search from.
    */
   public static of(construct: IConstruct): Stack {
-    // we want this to be as cheap as possible. cache this result by mutating
-    // the object. anecdotally, at the time of this writing, @aws-cdk/core unit
-    // tests hit this cache 1,112 times, @aws-cdk/aws-cloudformation unit tests
-    // hit this 2,435 times).
-    const cache = (construct as any)[MY_STACK_CACHE] as Stack | undefined;
-    if (cache) {
-      return cache;
-    } else {
-      const value = _lookup(construct);
-      Object.defineProperty(construct, MY_STACK_CACHE, {
-        enumerable: false,
-        writable: false,
-        configurable: false,
-        value,
-      });
-      return value;
-    }
-
-    function _lookup(c: IConstruct): Stack {
-      if (Stack.isStack(c)) {
-        return c;
-      }
-
-      const _scope = c.node.scope;
-      if (Stage.isStage(c) || !_scope) {
-        throw new ValidationError(lit`ShouldBeCreatedInStackScope`, `${construct.constructor?.name ?? 'Construct'} at '${Node.of(construct).path}' should be created in the scope of a Stack, but no Stack found`, c);
-      }
-
-      return _lookup(_scope);
-    }
+    return stackOf(construct);
   }
 
   /**
@@ -509,7 +477,7 @@ export class Stack extends Construct implements ITaggable {
     this._crossRegionReferences = !!props.crossRegionReferences;
     this._suppressTemplateIndentation = props.suppressTemplateIndentation ?? this.node.tryGetContext(SUPPRESS_TEMPLATE_INDENTATION_CONTEXT) ?? false;
 
-    Object.defineProperty(this, STACK_SYMBOL, { value: true });
+    STACK_TYPE.mark(this);
 
     if (!this.node.tryGetContext(cxapi.DISABLE_CREATION_STACK_TRACES) || debugModeEnabled()) {
       this.node.addMetadata(cxschema.ArtifactMetadataEntryType.CREATION_STACK, captureStackTrace(new.target));
@@ -754,8 +722,32 @@ export class Stack extends Construct implements ITaggable {
    *
    * This can be used to define dependencies between any two stacks within an
    * app, and also supports nested stacks.
+   *
+   * Stack dependencies may not cross Stage boundaries.
+   *
+   * This method has been renamed to `addStackDependency` to more clearly
+   * set it apart from `construct.node.addDependency`. See the documentation
+   * of that function for more details.
+   *
+   * @deprecated Use `addStackDependency` instead.
    */
   public addDependency(target: Stack, reason?: string) {
+    this.addStackDependency(target, reason);
+  }
+
+  /**
+   * Add a dependency between this stack and another stack.
+   *
+   * This can be used to define dependencies between any two stacks within an
+   * app, and also supports nested stacks.
+   *
+   * Stack dependencies may not cross Stage boundaries.
+   *
+   * This method only adds dependencies between stacks. If you are looking
+   * for a generic construct-to-construct dependency mechanism, use
+   * `construct.node.addDependency` instead.
+   */
+  public addStackDependency(target: Stack, reason?: string) {
     addDependency(this, target, reason ?? `{${this.node.path}}.addDependency({${target.node.path}})`);
   }
 
@@ -1019,10 +1011,10 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
-   * Called implicitly by the `addDependency` helper function in order to
+   * Called implicitly by the `addStackDependency` helper function in order to
    * realize a dependency between two top-level stacks at the assembly level.
    *
-   * Use `stack.addDependency` to define the dependency between any two stacks,
+   * Use `stack.addStackDependency` to define the dependency between any two stacks,
    * and take into account nested stack relationships.
    *
    * @internal
@@ -1106,7 +1098,7 @@ export class Stack extends Construct implements ITaggable {
    * Called implicitly by the `removeDependency` helper function in order to
    * remove a dependency between two top-level stacks at the assembly level.
    *
-   * Use `stack.addDependency` to define the dependency between any two stacks,
+   * Use `stack.addStackDependency` to define the dependency between any two stacks,
    * and take into account nested stack relationships.
    *
    * @internal
@@ -1813,7 +1805,7 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
 
   for (const child of Node.of(node).children) {
     // Don't recurse into a substack
-    if (Stack.isStack(child)) { continue; }
+    if (STACK_TYPE.isMarked(child)) { continue; }
 
     cfnElements(child, into);
   }
@@ -1956,6 +1948,7 @@ import { AssumptionError, UnscopedValidationError, ValidationError } from './err
 import { lit } from './private/literal-string';
 import { debugModeEnabled } from './debug';
 import { captureStackTrace } from './private/stack-trace';
+import { STACK_TYPE, stackOf } from './private/core-construct-finders';
 /* eslint-enable import/order */
 
 function makeCustomCoupledReference(value: any, strength: ReferenceStrength): CustomCoupledReference {

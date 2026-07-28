@@ -3,7 +3,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:70:15)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:103:15)",
         "...node internals..."
       ]
     }
@@ -16,16 +16,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
-        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+        "addBootstrapVersionRule (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
+        "App.synth (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/app.js:208:27)"
       ]
     }
   ],
@@ -37,16 +37,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
-        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+        "addBootstrapVersionRule (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
+        "App.synth (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/app.js:208:27)"
       ]
     }
   ]
