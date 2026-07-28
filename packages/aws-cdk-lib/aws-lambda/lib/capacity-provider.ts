@@ -1,15 +1,18 @@
 import type { Construct } from 'constructs';
 import type { Architecture } from './architecture';
+import type { SystemLogLevel } from './function';
 import type { IFunction } from './function-base';
 import type { CfnFunction } from './lambda.generated';
 import { CfnCapacityProvider } from './lambda.generated';
 import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
+import type * as logs from '../../aws-logs';
 import type { IResource } from '../../core';
 import { Annotations, Arn, ArnFormat, Resource, Stack, Token, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { CapacityProviderReference, ICapacityProviderRef } from '../../interfaces/generated/aws-lambda-interfaces.generated';
 
@@ -98,6 +101,20 @@ export interface CapacityProviderProps {
    * @default - No KMS key specified, uses an AWS-managed key instead
    */
   readonly kmsKey?: kms.IKey;
+
+  /**
+   * The CloudWatch log group for capacity provider system logs.
+   *
+   * @default - Service creates a default log group at /aws/lambda/capacity-provider/<name>
+   */
+  readonly logGroup?: logs.ILogGroupRef;
+
+  /**
+   * The level of detail for capacity provider system logs.
+   *
+   * @default - Service default applies (INFO)
+   */
+  readonly systemLogLevel?: SystemLogLevel;
 }
 
 /**
@@ -454,6 +471,12 @@ export class CapacityProvider extends CapacityProviderBase {
       instanceRequirements,
       capacityProviderScalingConfig,
       kmsKeyArn: props.kmsKey?.keyArn,
+      telemetryConfig: props.logGroup || props.systemLogLevel ? {
+        loggingConfig: {
+          logGroup: props.logGroup?.logGroupRef.logGroupName,
+          systemLogLevel: props.systemLogLevel,
+        },
+      } : undefined,
     });
   }
 
@@ -461,15 +484,15 @@ export class CapacityProvider extends CapacityProviderBase {
     const validationErrorCPName = props.capacityProviderName || 'your capacity provider';
 
     if (props.maxVCpuCount !== undefined && !Token.isUnresolved(props.maxVCpuCount) && (props.maxVCpuCount < 12 || props.maxVCpuCount > 15000)) {
-      throw new ValidationError(`maxVCpuCount must be between 12 and 15000, but ${validationErrorCPName} has ${props.maxVCpuCount}.`, this);
+      throw new ValidationError(lit`MaxCpuCount`, `maxVCpuCount must be between 12 and 15000, but ${validationErrorCPName} has ${props.maxVCpuCount}.`, this);
     }
 
     if (!Token.isUnresolved(props.subnets) && (props.subnets.length < 1 || props.subnets.length > 16)) {
-      throw new ValidationError(`subnets must contain between 1 and 16 items but ${validationErrorCPName} has ${props.subnets.length} items.`, this);
+      throw new ValidationError(lit`SubnetsContainItems`, `subnets must contain between 1 and 16 items but ${validationErrorCPName} has ${props.subnets.length} items.`, this);
     }
 
     if (!Token.isUnresolved(props.securityGroups) && (props.securityGroups.length < 1 || props.securityGroups.length > 5)) {
-      throw new ValidationError(`securityGroups must contain between 1 and 5 items but ${validationErrorCPName} has ${props.securityGroups.length} items.`, this);
+      throw new ValidationError(lit`SecurityGroupsContainItems`, `securityGroups must contain between 1 and 5 items but ${validationErrorCPName} has ${props.securityGroups.length} items.`, this);
     }
 
     if (props.capacityProviderName) {
@@ -490,32 +513,32 @@ export class CapacityProvider extends CapacityProviderBase {
       return;
     }
     if (!/^([a-zA-Z0-9-_]+|arn:aws[a-zA-Z-]*:lambda:capacity-provider:[a-zA-Z0-9-_]+)$/.test(name)) {
-      throw new ValidationError(`capacityProviderName must be an arn or have only alphanumeric characters, but did not: ${name}`, this);
+      throw new ValidationError(lit`CapacityProviderNameArnAlphanumeric`, `capacityProviderName must be an arn or have only alphanumeric characters, but did not: ${name}`, this);
     }
     if (name.length > 140) {
-      throw new ValidationError(`Capacity provider name can not be longer than 140 characters but ${name} has ${name.length} characters.`, this);
+      throw new ValidationError(lit`CapacityProviderNameLongerCharacters`, `Capacity provider name can not be longer than 140 characters but ${name} has ${name.length} characters.`, this);
     }
   }
 
   private validateScalingPolicies(scalingOptions: ScalingOptions, validationErrorCPName: string) {
     if (scalingOptions?.scalingPolicies && !Token.isUnresolved(scalingOptions.scalingPolicies)) {
       if (scalingOptions.scalingPolicies.length < 1) {
-        throw new ValidationError(`scalingOptions must have at least one policy when scalingMode is 'Manual', but ${validationErrorCPName} has ${scalingOptions.scalingPolicies.length} items.`, this);
+        throw new ValidationError(lit`ScalingoptionsLeastPolicyScalingmode`, `scalingOptions must have at least one policy when scalingMode is 'Manual', but ${validationErrorCPName} has ${scalingOptions.scalingPolicies.length} items.`, this);
       }
 
       if (scalingOptions.scalingPolicies.length > 10) {
-        throw new ValidationError(`scalingOptions can have at most ten policies when scalingMode is 'Manual', but ${validationErrorCPName} has ${scalingOptions.scalingPolicies.length} items.`, this);
+        throw new ValidationError(lit`ScalingoptionsMostPoliciesScalingmode`, `scalingOptions can have at most ten policies when scalingMode is 'Manual', but ${validationErrorCPName} has ${scalingOptions.scalingPolicies.length} items.`, this);
       }
     }
   }
 
   private validateInstanceTypeFilter(instanceTypeFilter: InstanceTypeFilter, validationErrorCPName: string) {
     if (instanceTypeFilter?.allowedInstanceTypes && instanceTypeFilter.allowedInstanceTypes.length < 1) {
-      throw new ValidationError(`instanceTypeFilter must have at least one instanceType when configured, but ${validationErrorCPName} has ${instanceTypeFilter.allowedInstanceTypes.length} items.`, this);
+      throw new ValidationError(lit`InstanceTypeFilterLeastOne`, `instanceTypeFilter must have at least one instanceType when configured, but ${validationErrorCPName} has ${instanceTypeFilter.allowedInstanceTypes.length} items.`, this);
     }
 
     if (instanceTypeFilter?.excludedInstanceTypes && instanceTypeFilter.excludedInstanceTypes.length < 1) {
-      throw new ValidationError(`instanceTypeFilter must have at least one instanceType when configured, but ${validationErrorCPName} has ${instanceTypeFilter.excludedInstanceTypes.length} items.`, this);
+      throw new ValidationError(lit`InstanceTypeFilterLeastOne`, `instanceTypeFilter must have at least one instanceType when configured, but ${validationErrorCPName} has ${instanceTypeFilter.excludedInstanceTypes.length} items.`, this);
     }
   }
 
@@ -560,15 +583,15 @@ export class CapacityProvider extends CapacityProviderBase {
     const maxDefined = maxExecutionEnvironments !== undefined && !Token.isUnresolved(maxExecutionEnvironments);
 
     if (minDefined && (minExecutionEnvironments < 0 || minExecutionEnvironments > 15000)) {
-      throw new ValidationError(`minExecutionEnvironments must be between 0 and 15000, but was ${minExecutionEnvironments}.`, this);
+      throw new ValidationError(lit`MinExecutionEnvironments`, `minExecutionEnvironments must be between 0 and 15000, but was ${minExecutionEnvironments}.`, this);
     }
 
     if (maxDefined && (maxExecutionEnvironments < 0 || maxExecutionEnvironments > 15000)) {
-      throw new ValidationError(`maxExecutionEnvironments must be between 0 and 15000, but was ${maxExecutionEnvironments}.`, this);
+      throw new ValidationError(lit`MaxExecutionEnvironments`, `maxExecutionEnvironments must be between 0 and 15000, but was ${maxExecutionEnvironments}.`, this);
     }
 
     if (minDefined && maxDefined && minExecutionEnvironments > maxExecutionEnvironments) {
-      throw new ValidationError('minExecutionEnvironments must be less than or equal to maxExecutionEnvironments.', this);
+      throw new ValidationError(lit`MinExecutionEnvironmentsLessEqual`, 'minExecutionEnvironments must be less than or equal to maxExecutionEnvironments.', this);
     }
   }
 }
