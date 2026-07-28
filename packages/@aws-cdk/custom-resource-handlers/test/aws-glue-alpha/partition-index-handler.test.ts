@@ -89,9 +89,9 @@ describe('onEvent', () => {
     });
 
     test('rethrows any other error', async () => {
-      glueMock.on(CreatePartitionIndexCommand).rejects(awsError('ResourceNumberLimitExceededException'));
+      glueMock.on(CreatePartitionIndexCommand).rejects(awsError(' OperationTimeoutException '));
 
-      await expect(onEvent(event('Create'))).rejects.toThrow('ResourceNumberLimitExceededException');
+      await expect(onEvent(event('Create'))).rejects.toThrow(' OperationTimeoutException ');
     });
   });
 
