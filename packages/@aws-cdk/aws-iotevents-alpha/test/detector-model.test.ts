@@ -7,6 +7,10 @@ let stack: cdk.Stack;
 let input: iotevents.IInput;
 beforeEach(() => {
   stack = new cdk.Stack();
+  cdk.Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::E3710',
+    reason: 'Service is shutdown',
+  });
   input = iotevents.Input.fromInputName(stack, 'MyInput', 'test-input');
 });
 
