@@ -2,7 +2,7 @@
 
 import type { AwsCredentialIdentityProvider } from '@smithy/types';
 import type { AwsSdkCall } from './construct-types';
-import { DEFAULT_RESPONSE_RETRY_OPTIONS, httpRequest, withRetries } from '../../shared/http-response';
+import { DEFAULT_RESPONSE_RETRY_OPTIONS, httpRequest, withRetries } from '../../utils';
 
 type Event = AWSLambda.CloudFormationCustomResourceEvent;
 
