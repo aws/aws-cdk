@@ -1,12 +1,18 @@
 {
-  "version": "36.0.0",
+  "version": "52.0.0",
   "testCases": {
     "InvokeModel/DefaultTest": {
       "stacks": [
         "aws-stepfunctions-tasks-bedrock-invoke-model-guardrail-trace-integ"
       ],
+      "regions": [
+        "us-east-1",
+        "eu-west-2",
+        "ap-southeast-2"
+      ],
       "assertionStack": "InvokeModel/DefaultTest/DeployAssert",
       "assertionStackName": "InvokeModelDefaultTestDeployAssert9C0D2DFC"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

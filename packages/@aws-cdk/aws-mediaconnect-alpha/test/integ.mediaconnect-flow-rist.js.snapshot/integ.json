@@ -1,0 +1,13 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "cdk-integ-emx-flow-rist/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediaconnect-flow-rist"
+      ],
+      "assertionStack": "cdk-integ-emx-flow-rist/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegemxflowristDefaultTestDeployAssert325615E2"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}

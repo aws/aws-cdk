@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "testCases": {
     "aws-cdk-eks-cluster-interence-nodegroup-integ/DefaultTest": {
       "stacks": [
@@ -7,9 +7,10 @@
       ],
       "regions": [
         "us-east-1",
-        "us-east-2",
         "us-west-2",
-        "eu-west-1"
+        "eu-west-1",
+        "ap-south-1",
+        "sa-east-1"
       ],
       "diffAssets": false,
       "cdkCommandOptions": {
@@ -17,11 +18,14 @@
           "args": {
             "rollback": true
           }
+        },
+        "destroy": {
+          "expectError": true
         }
       },
       "assertionStack": "aws-cdk-eks-cluster-interence-nodegroup-integ/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkeksclusterinterencenodegroupintegDefaultTestDeployAssert694AC69B"
     }
   },
-  "minimumCliVersion": "2.1107.0"
+  "minimumCliVersion": "2.1125.0"
 }

@@ -662,7 +662,7 @@
      },
      "ManagedTerminationProtection": "ENABLED"
     },
-    "Name": "my-capacity-provider"
+    "Name": "cp-aws-ecs-integ-multiple-alb-healthchecksMyProviderAA30C88C"
    }
   },
   "myServicelb1FA8CBE12": {
