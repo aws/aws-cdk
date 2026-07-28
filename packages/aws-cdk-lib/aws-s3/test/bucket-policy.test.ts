@@ -155,8 +155,7 @@ describe('bucket policy', () => {
   });
 
   test('fails if bucket policy has no resources', () => {
-    const app = new App();
-    const stack = new Stack(app, 'my-stack');
+    const stack = new Stack();
     const myBucket = new s3.Bucket(stack, 'MyBucket');
     myBucket.addToResourcePolicy(new PolicyStatement({
       actions: ['s3:GetObject*'],
