@@ -404,6 +404,7 @@ abstract class PipelineBase extends Resource implements IPipeline {
   public get pipelineRef(): PipelineReference {
     return {
       pipelineName: this.pipelineName,
+      pipelineArn: this.pipelineArn,
     };
   }
 
@@ -928,7 +929,7 @@ export class Pipeline extends PipelineBase {
     const crossRegionSupport = this.obtainCrossRegionSupportFor(action);
 
     // the stack containing the replication bucket must be deployed before the pipeline
-    Stack.of(this).addDependency(crossRegionSupport.stack);
+    Stack.of(this).addStackDependency(crossRegionSupport.stack);
     // The Pipeline role must be able to replicate to that bucket
     crossRegionSupport.replicationBucket.grantReadWrite(this.role);
 
@@ -1098,7 +1099,7 @@ export class Pipeline extends PipelineBase {
         // an imported Role should not add the dependency
         if (iam.Role.isRole(action.actionProperties.role)) {
           const roleStack = Stack.of(action.actionProperties.role);
-          pipelineStack.addDependency(roleStack);
+          pipelineStack.addStackDependency(roleStack);
         }
 
         return action.actionProperties.role;
@@ -1142,7 +1143,7 @@ export class Pipeline extends PipelineBase {
       `${Names.uniqueId(this)}-${stage.stageName}-${action.actionProperties.actionName}-ActionRole`, roleProps);
     // the other stack with the role has to be deployed before the pipeline stack
     // (CodePipeline verifies you can assume the action Role on creation)
-    pipelineStack.addDependency(otherAccountStack);
+    pipelineStack.addStackDependency(otherAccountStack);
 
     return ret;
   }

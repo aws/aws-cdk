@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "testCases": {
     "lambda-python-function-dockercopy/DefaultTest": {
       "stacks": [
@@ -10,5 +10,5 @@
       "assertionStackName": "lambdapythonfunctiondockercopyDefaultTestDeployAssert9D2D26DD"
     }
   },
-  "minimumCliVersion": "2.1121.0"
+  "minimumCliVersion": "2.1126.0"
 }
