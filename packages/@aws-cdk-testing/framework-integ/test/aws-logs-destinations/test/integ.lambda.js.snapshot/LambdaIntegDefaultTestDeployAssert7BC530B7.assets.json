@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "files": {
     "6611813c56ee5ec64f812f46caf03748d8b30fea6e344cc7ac25035891a6dfe8": {
       "source": {
@@ -14,16 +14,16 @@
         }
       }
     },
-    "8f4e9da33b92f62c32d3813aef5112f0a21c3a46eac593113ee584497395c97f": {
+    "428a81be0a3bb90a31f2491d2251b537e35a7d93fad3087582bc680420ca002d": {
       "displayName": "LambdaIntegDefaultTestDeployAssert7BC530B7 Template",
       "source": {
         "path": "LambdaIntegDefaultTestDeployAssert7BC530B7.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-e254de4f": {
+        "current_account-current_region-5681c187": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "8f4e9da33b92f62c32d3813aef5112f0a21c3a46eac593113ee584497395c97f.json",
+          "objectKey": "428a81be0a3bb90a31f2491d2251b537e35a7d93fad3087582bc680420ca002d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

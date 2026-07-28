@@ -1,0 +1,13 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "cdk-integ-emx-gateway/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediaconnect-gateway"
+      ],
+      "assertionStack": "cdk-integ-emx-gateway/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegemxgatewayDefaultTestDeployAssertE5560978"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}

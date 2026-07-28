@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "files": {
     "6611813c56ee5ec64f812f46caf03748d8b30fea6e344cc7ac25035891a6dfe8": {
       "source": {
@@ -14,16 +14,16 @@
         }
       }
     },
-    "c712d17229a5ab7105f0c14f943c36581aa0175745b00dcd9279651ff43a60ca": {
+    "8de7b9b916c276fe33cdc91152aa076dcf3d3920cee36227209a7b0a00f20999": {
       "displayName": "CustomResourceAthenaDefaultTestDeployAssert7AE6A475 Template",
       "source": {
         "path": "CustomResourceAthenaDefaultTestDeployAssert7AE6A475.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-3b24e0f4": {
+        "current_account-current_region-71aebd6d": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c712d17229a5ab7105f0c14f943c36581aa0175745b00dcd9279651ff43a60ca.json",
+          "objectKey": "8de7b9b916c276fe33cdc91152aa076dcf3d3920cee36227209a7b0a00f20999.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

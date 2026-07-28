@@ -382,23 +382,6 @@
       "disable"
     ]
   },
-  "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/common.ts": {
-    "UserEngine": [
-      "valkey",
-      "redis"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/serverless-cache-base.ts": {
-    "CacheEngine": [
-      "valkey",
-      "valkey_7",
-      "valkey_8",
-      "redis",
-      "redis_7",
-      "memcached",
-      "memcached_1.6"
-    ]
-  },
   "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/serverless-cache.ts": {
     "DataStorageUnit": [
       "GB"
@@ -3430,6 +3413,8 @@
       "g6",
       "graphics6-efficient",
       "g6e",
+      "graphics7-efficient",
+      "g7e",
       "graphics-ram-6",
       "gr6",
       "parallel2",
@@ -6500,6 +6485,13 @@
       "NotTaggable"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/core/lib/cross-stack-reference-strength.ts": {
+    "ReferenceStrength": [
+      "strong",
+      "weak",
+      "both"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider.ts": {
     "CustomResourceProviderRuntime": [
       "nodejs12.x",
@@ -6508,7 +6500,8 @@
       "nodejs16.x",
       "nodejs18.x",
       "nodejs20.x",
-      "nodejs22.x"
+      "nodejs22.x",
+      "nodejs24.x"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/core/lib/deps.ts": {
@@ -6648,7 +6641,8 @@
     "Runtime": [
       "nodejs18.x",
       "nodejs20.x",
-      "nodejs22.x"
+      "nodejs22.x",
+      "nodejs24.x"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/triggers/lib/trigger.ts": {
