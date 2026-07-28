@@ -2097,3 +2097,192 @@ test('StateMachine get correct permission', () => {
     ],
   });
 });
+
+describe('EMR Instance Fleet Priority Feature', () => {
+  test('Create Cluster with PRIORITIZED allocation strategy', () => {
+    // WHEN
+    const task = new EmrCreateCluster(stack, 'Task', {
+      instances: {
+        instanceFleets: [{
+          instanceFleetType: EmrCreateCluster.InstanceRoleType.CORE,
+          launchSpecifications: {
+            onDemandSpecification: {
+              allocationStrategy: EmrCreateCluster.OnDemandAllocationStrategy.PRIORITIZED,
+            },
+          },
+          targetOnDemandCapacity: 1,
+        }],
+      },
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+    });
+
+    new sfn.StateMachine(stack, 'SM', {
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      DefinitionString: {
+        'Fn::Join': ['', [
+          '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"arn:',
+          { Ref: 'AWS::Partition' },
+          ':states:::elasticmapreduce:createCluster.sync","Parameters":{"Instances":{"InstanceFleets":[{"InstanceFleetType":"CORE","LaunchSpecifications":{"OnDemandSpecification":{"AllocationStrategy":"prioritized"}},"TargetOnDemandCapacity":1}],"KeepJobFlowAliveWhenNoSteps":true},"JobFlowRole":"',
+          { Ref: 'ClusterRoleD9CA7471' },
+          '","Name":"Cluster","ServiceRole":"',
+          { Ref: 'ServiceRole4288B192' },
+          '","VisibleToAllUsers":true}}}}',
+        ]],
+      },
+    });
+  });
+
+  test('Create Cluster with instance type priority configuration', () => {
+    // WHEN
+    const task = new EmrCreateCluster(stack, 'Task2', {
+      instances: {
+        instanceFleets: [{
+          instanceFleetType: EmrCreateCluster.InstanceRoleType.CORE,
+          instanceTypeConfigs: [{
+            instanceType: 'm5.large',
+            priority: 0,
+          }, {
+            instanceType: 'm5.xlarge',
+            priority: 1,
+          }],
+          launchSpecifications: {
+            onDemandSpecification: {
+              allocationStrategy: EmrCreateCluster.OnDemandAllocationStrategy.PRIORITIZED,
+            },
+          },
+          targetOnDemandCapacity: 2,
+        }],
+      },
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+    });
+
+    new sfn.StateMachine(stack, 'SM2', {
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      DefinitionString: {
+        'Fn::Join': ['', [
+          '{"StartAt":"Task2","States":{"Task2":{"End":true,"Type":"Task","Resource":"arn:',
+          { Ref: 'AWS::Partition' },
+          ':states:::elasticmapreduce:createCluster.sync","Parameters":{"Instances":{"InstanceFleets":[{"InstanceFleetType":"CORE","InstanceTypeConfigs":[{"InstanceType":"m5.large","Priority":0},{"InstanceType":"m5.xlarge","Priority":1}],"LaunchSpecifications":{"OnDemandSpecification":{"AllocationStrategy":"prioritized"}},"TargetOnDemandCapacity":2}],"KeepJobFlowAliveWhenNoSteps":true},"JobFlowRole":"',
+          { Ref: 'ClusterRoleD9CA7471' },
+          '","Name":"Cluster","ServiceRole":"',
+          { Ref: 'ServiceRole4288B192' },
+          '","VisibleToAllUsers":true}}}}',
+        ]],
+      },
+    });
+  });
+
+  test('OnDemandAllocationStrategy enum values', () => {
+    // THEN
+    expect(EmrCreateCluster.OnDemandAllocationStrategy.LOWEST_PRICE).toEqual('lowest-price');
+    expect(EmrCreateCluster.OnDemandAllocationStrategy.PRIORITIZED).toEqual('prioritized');
+  });
+
+  test('throws when priority is negative', () => {
+    const task = new EmrCreateCluster(stack, 'TaskNeg', {
+      instances: {
+        instanceFleets: [{
+          instanceFleetType: EmrCreateCluster.InstanceRoleType.CORE,
+          instanceTypeConfigs: [{
+            instanceType: 'm5.large',
+            priority: -1,
+          }],
+          launchSpecifications: {
+            onDemandSpecification: {
+              allocationStrategy: EmrCreateCluster.OnDemandAllocationStrategy.PRIORITIZED,
+            },
+          },
+          targetOnDemandCapacity: 1,
+        }],
+      },
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+    });
+
+    expect(() => stack.resolve(task.toStateJson())).toThrow(/priority must be a non-negative number/);
+  });
+
+  test('throws when priority is set with LOWEST_PRICE strategy', () => {
+    const task = new EmrCreateCluster(stack, 'TaskMismatch', {
+      instances: {
+        instanceFleets: [{
+          instanceFleetType: EmrCreateCluster.InstanceRoleType.CORE,
+          instanceTypeConfigs: [{
+            instanceType: 'm5.large',
+            priority: 0,
+          }],
+          launchSpecifications: {
+            onDemandSpecification: {
+              allocationStrategy: EmrCreateCluster.OnDemandAllocationStrategy.LOWEST_PRICE,
+            },
+          },
+          targetOnDemandCapacity: 1,
+        }],
+      },
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+    });
+
+    expect(() => stack.resolve(task.toStateJson())).toThrow(/Priority values are set on instance type configs, but allocation strategy is/);
+  });
+
+  test('throws when priority is set with no allocation strategy (defaults to LOWEST_PRICE)', () => {
+    const task = new EmrCreateCluster(stack, 'TaskNoStrategy', {
+      instances: {
+        instanceFleets: [{
+          instanceFleetType: EmrCreateCluster.InstanceRoleType.CORE,
+          instanceTypeConfigs: [{
+            instanceType: 'm5.large',
+            priority: 0,
+          }],
+          targetOnDemandCapacity: 1,
+        }],
+      },
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+    });
+
+    expect(() => stack.resolve(task.toStateJson())).toThrow(/Priority values are set on instance type configs, but allocation strategy is/);
+  });
+
+  test('throws when PRIORITIZED strategy is set but no priority values on instance type configs', () => {
+    const task = new EmrCreateCluster(stack, 'TaskNoPriority', {
+      instances: {
+        instanceFleets: [{
+          instanceFleetType: EmrCreateCluster.InstanceRoleType.CORE,
+          instanceTypeConfigs: [{
+            instanceType: 'm5.large',
+          }, {
+            instanceType: 'm5.xlarge',
+          }],
+          launchSpecifications: {
+            onDemandSpecification: {
+              allocationStrategy: EmrCreateCluster.OnDemandAllocationStrategy.PRIORITIZED,
+            },
+          },
+          targetOnDemandCapacity: 1,
+        }],
+      },
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+    });
+
+    expect(() => stack.resolve(task.toStateJson())).toThrow(/PRIORITIZED requires at least one instance type config to have a priority value set/);
+  });
+});

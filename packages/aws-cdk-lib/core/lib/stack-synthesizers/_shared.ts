@@ -6,7 +6,9 @@ import { Node } from 'constructs';
 import type { ISynthesisSession } from './types';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { UnscopedValidationError } from '../errors';
-import { Stack } from '../stack';
+import { STACK_TYPE } from '../private/core-construct-finders';
+import { lit } from '../private/literal-string';
+import type { Stack } from '../stack';
 import { Token } from '../token';
 
 /**
@@ -103,7 +105,7 @@ function collectStackMetadata(stack: Stack) {
   let next;
   while (next = queue.shift()) {
     // break off if we reached a Stack construct that is not a NestedStack
-    if (Stack.isStack(next) && next !== stack && next.nestedStackParent === undefined) {
+    if (STACK_TYPE.isMarked(next) && next !== stack && next.nestedStackParent === undefined) {
       continue;
     }
 
@@ -152,7 +154,7 @@ export function contentHash(content: string) {
  */
 export function assertBound<A>(x: A | undefined): asserts x is NonNullable<A> {
   if (x === null && x === undefined) {
-    throw new UnscopedValidationError('You must call bindStack() first');
+    throw new UnscopedValidationError(lit`CallBindstackFirst`, 'You must call bindStack() first');
   }
 }
 
