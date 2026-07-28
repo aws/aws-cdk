@@ -1,5 +1,8 @@
+import * as https from 'https';
 import type { AwsSdkCall } from '../../../lib/custom-resources/aws-custom-resource-handler/construct-types';
-import { getCredentials } from '../../../lib/custom-resources/aws-custom-resource-handler/utils';
+import { getCredentials, respond } from '../../../lib/custom-resources/aws-custom-resource-handler/utils';
+
+jest.mock('https');
 
 // Mock the @aws-sdk/credential-providers import
 const mockFromTemporaryCredentials = jest.fn();
@@ -182,5 +185,86 @@ describe('getCredentials with External ID support', () => {
     expect(roleSessionName).toMatch(/^\d+-very-long-resource-id-that-exceeds-the-maximum-len$/);
     expect(callArgs.params.ExternalId).toBe('test-external-id-123');
     expect(result).toBe(mockCredentials);
+  });
+});
+
+describe('respond', () => {
+  function makeEvent(): AWSLambda.CloudFormationCustomResourceEvent {
+    return {
+      ResponseURL: 'https://cfn.example.com/response?token=abc',
+      StackId: '<StackId>',
+      RequestId: '<RequestId>',
+      LogicalResourceId: '<LogicalResourceId>',
+      ResourceType: '<ResourceType>',
+      ServiceToken: '<ServiceToken>',
+      ResourceProperties: { ServiceToken: '<ServiceToken>' },
+      RequestType: 'Create',
+    } as any;
+  }
+
+  beforeEach(() => {
+    // make backoff sleeps instantaneous and deterministic
+    jest.spyOn(Math, 'random').mockReturnValue(0);
+    jest.spyOn(console, 'log').mockImplementation(() => undefined);
+    (https.request as jest.Mock).mockReset();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  test('PUTs the response to the CloudFormation response URL on success', async () => {
+    // GIVEN
+    let capturedOptions: any;
+    let capturedBody: string | undefined;
+    (https.request as jest.Mock).mockImplementation((options: any, cb: any) => {
+      capturedOptions = options;
+      cb({ statusCode: 200, resume: jest.fn() });
+      return { on: jest.fn(), write: (b: string) => { capturedBody = b; }, end: jest.fn() };
+    });
+
+    // WHEN
+    await respond(makeEvent(), 'SUCCESS', 'reason', 'physical-id', { Foo: 'Bar' }, true);
+
+    // THEN
+    expect(https.request).toHaveBeenCalledTimes(1);
+    expect(capturedOptions.method).toEqual('PUT');
+    expect(capturedOptions.hostname).toEqual('cfn.example.com');
+    expect(capturedOptions.path).toEqual('/response?token=abc');
+    const parsedBody = JSON.parse(capturedBody!);
+    expect(parsedBody.Status).toEqual('SUCCESS');
+    expect(parsedBody.PhysicalResourceId).toEqual('physical-id');
+    expect(parsedBody.Data).toEqual({ Foo: 'Bar' });
+  });
+
+  test('retries a transient failure and then succeeds', async () => {
+    // GIVEN: first attempt returns a 500, second attempt returns a 200
+    (https.request as jest.Mock)
+      .mockImplementationOnce((_options: any, cb: any) => {
+        cb({ statusCode: 500, resume: jest.fn() });
+        return { on: jest.fn(), write: jest.fn(), end: jest.fn() };
+      })
+      .mockImplementationOnce((_options: any, cb: any) => {
+        cb({ statusCode: 200, resume: jest.fn() });
+        return { on: jest.fn(), write: jest.fn(), end: jest.fn() };
+      });
+
+    // WHEN / THEN
+    await expect(respond(makeEvent(), 'SUCCESS', 'reason', 'physical-id', {}, false)).resolves.toBeUndefined();
+    expect(https.request).toHaveBeenCalledTimes(2);
+  });
+
+  test('rejects after exhausting retries when every attempt fails', async () => {
+    // GIVEN: every attempt returns a 500
+    (https.request as jest.Mock).mockImplementation((_options: any, cb: any) => {
+      cb({ statusCode: 500, resume: jest.fn() });
+      return { on: jest.fn(), write: jest.fn(), end: jest.fn() };
+    });
+
+    // WHEN / THEN
+    // RESPONSE_RETRY_OPTIONS.attempts is 5 => 1 initial call + 5 retries = 6 invocations
+    await expect(respond(makeEvent(), 'SUCCESS', 'reason', 'physical-id', {}, false))
+      .rejects.toThrow('Unsuccessful HTTP response: 500');
+    expect(https.request).toHaveBeenCalledTimes(6);
   });
 });
