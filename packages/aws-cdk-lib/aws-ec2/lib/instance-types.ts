@@ -1210,6 +1210,16 @@ export enum InstanceClass {
   G6E = 'g6e',
 
   /**
+   * Cost-efficient GPU-based instances for AI inference and spatial computing workloads, 7th generation
+   */
+  GRAPHICS7_EFFICIENT = 'graphics7-efficient',
+
+  /**
+   * Cost-efficient GPU-based instances for AI inference and spatial computing workloads, 7th generation
+   */
+  G7E = 'g7e',
+
+  /**
    * Graphics-optimized instances, 6th generation
    * Gr6 instances offer a 1:8 vCPU to RAM ratio, making them better suited for graphics workloads with higher memory requirements.
    */
@@ -2064,6 +2074,8 @@ export class InstanceType {
       [InstanceClass.G6]: 'g6',
       [InstanceClass.GRAPHICS6_EFFICIENT]: 'g6e',
       [InstanceClass.G6E]: 'g6e',
+      [InstanceClass.GRAPHICS7_EFFICIENT]: 'g7e',
+      [InstanceClass.G7E]: 'g7e',
       [InstanceClass.GRAPHICS_RAM_6]: 'gr6',
       [InstanceClass.GR6]: 'gr6',
       [InstanceClass.PARALLEL2]: 'p2',
