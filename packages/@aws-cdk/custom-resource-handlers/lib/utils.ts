@@ -4,11 +4,20 @@ import * as https from 'https';
  * Shared helpers for sending a Custom Resource response back to CloudFormation
  * over the pre-signed S3 response URL.
  *
- * This mirrors the behavior of the custom resource provider framework runtime
- * (`aws-cdk-lib/custom-resources/.../provider-framework/runtime`): the response
- * PUT is retried with exponential backoff, and only a successful (< 400) HTTP
- * response is treated as success. It lives here so it can be shared by the
- * bundled handlers in this package instead of being reimplemented per handler.
+ * This mirrors the behavior of the custom resource provider framework runtime:
+ * the response PUT is retried with exponential backoff, and only a successful
+ * (< 400) HTTP response is treated as success. It lives here so it can be
+ * shared by the bundled handlers in this package instead of being
+ * reimplemented per handler.
+ *
+ * `withRetries` mirrors:
+ * https://github.com/aws/aws-cdk/blob/3b1df7422f1e922849e94ec2a90928e6f2a05163/packages/aws-cdk-lib/custom-resources/lib/provider-framework/runtime/util.ts#L24-L40
+ * `httpRequest` mirrors `defaultHttpRequest` from:
+ * https://github.com/aws/aws-cdk/blob/3b1df7422f1e922849e94ec2a90928e6f2a05163/packages/aws-cdk-lib/custom-resources/lib/provider-framework/runtime/outbound.ts#L19-L36
+ *
+ * These cannot be imported directly: `aws-cdk-lib` depends on this package, so
+ * importing from it would create a circular dependency (see the
+ * `copied-from-aws-cdk-lib/` directory, which copies code for the same reason).
  *
  * NOTE: this module can only be consumed by handlers that are minified and
  * bundled by the custom-resources-framework (`minifyAndBundle: true`), because
