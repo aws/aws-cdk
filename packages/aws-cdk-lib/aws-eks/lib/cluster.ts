@@ -37,7 +37,7 @@ import type * as kms from '../../aws-kms';
 import type * as lambda from '../../aws-lambda';
 import * as ssm from '../../aws-ssm';
 import type { IResource, Duration, Size, RemovalPolicy } from '../../core';
-import { Annotations, CfnOutput, CfnResource, Resource, Stack, Tags, Token, ValidationError, UnscopedValidationError, RemovalPolicies, FeatureFlags } from '../../core';
+import { Annotations, CfnOutput, CfnResource, Resource, Stack, Tags, Token, ValidationError, UnscopedValidationError, RemovalPolicies, FeatureFlags, Validations } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
@@ -746,6 +746,17 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default - Resources will be deleted.
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * The current deletion protection setting for the cluster.
+   * When true, deletion protection is enabled and the cluster cannot be deleted until protection is disabled.
+   * When false, the cluster can be deleted normally. This setting only applies to clusters in an active state.
+   *
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/deletion-protection.html
+   *
+   * @default - deletion protection is disabled
+   */
+  readonly deletionProtection?: boolean;
 }
 
 /**
@@ -1858,7 +1869,10 @@ export class Cluster extends ClusterBase {
       tags: props.tags,
       logging: this.logging,
       bootstrapSelfManagedAddons: props.bootstrapSelfManagedAddons,
+      deletionProtection: props.deletionProtection,
     });
+
+    this.node.defaultChild = resource;
 
     if (this.endpointAccess._config.privateAccess && privateSubnets.length !== 0) {
       // when private access is enabled and the vpc has private subnets, lets connect
@@ -2860,6 +2874,10 @@ export class EksOptimizedImage implements ec2.IMachineImage {
    * Return the correct image
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
+    Validations.of(scope).acknowledge({
+      id: 'CloudFormation-Validate::W2506',
+      reason: 'SSM parameter is typed as String instead of AWS::SSM::Parameter::Value<AWS::EC2::Image::Id> for historical reasons.',
+    });
     const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
     return {
       imageId: ami,
