@@ -2817,14 +2817,12 @@ function validateInstanceRefreshPreferences(options: InstanceRefreshOptions): vo
   }
 
   // Duration already rejects negative values, so only the upper bound needs checking here.
-  const bakeTime = options.bakeTime?.toSeconds();
-  if (bakeTime !== undefined && bakeTime > 172800) {
-    throw new UnscopedValidationError(lit`InstanceRefreshBakeTime`, `bakeTime must be between 0 and 172800 seconds, got ${bakeTime}`);
+  if (options.bakeTime !== undefined && !options.bakeTime.isUnresolved() && options.bakeTime.toSeconds() > 172800) {
+    throw new UnscopedValidationError(lit`InstanceRefreshBakeTime`, `bakeTime must be between 0 and 172800 seconds, got ${options.bakeTime.toSeconds()}`);
   }
 
-  const checkpointDelay = options.checkpointDelay?.toSeconds();
-  if (checkpointDelay !== undefined && checkpointDelay > 172800) {
-    throw new UnscopedValidationError(lit`InstanceRefreshCheckpointDelay`, `checkpointDelay must be between 0 and 172800 seconds, got ${checkpointDelay}`);
+  if (options.checkpointDelay !== undefined && !options.checkpointDelay.isUnresolved() && options.checkpointDelay.toSeconds() > 172800) {
+    throw new UnscopedValidationError(lit`InstanceRefreshCheckpointDelay`, `checkpointDelay must be between 0 and 172800 seconds, got ${options.checkpointDelay.toSeconds()}`);
   }
 
   // Instance Refresh requires checkpointPercentages whenever checkpointDelay is set.
