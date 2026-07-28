@@ -1,6 +1,6 @@
 import { Template } from '../../assertions';
 import { AnyPrincipal, PolicyStatement } from '../../aws-iam';
-import { RemovalPolicy, Stack } from '../../core';
+import { App, RemovalPolicy, Stack } from '../../core';
 import * as s3 from '../lib';
 import type { CfnBucketPolicy } from '../lib';
 
@@ -155,7 +155,8 @@ describe('bucket policy', () => {
   });
 
   test('fails if bucket policy has no resources', () => {
-    const stack = new Stack();
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
     const myBucket = new s3.Bucket(stack, 'MyBucket');
     myBucket.addToResourcePolicy(new PolicyStatement({
       actions: ['s3:GetObject*'],
