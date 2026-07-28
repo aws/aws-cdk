@@ -1,4 +1,5 @@
 {
+ "Metadata": { "Test": "test" },
  "Resources": {
   "TableCD117FA1": {
    "Type": "AWS::DynamoDB::Table",

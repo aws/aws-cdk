@@ -29,3 +29,4 @@ readScaling.scaleOnSchedule('ScaleDownAtNight', {
 /// !hide
 
 app.synth();
+// linter update
