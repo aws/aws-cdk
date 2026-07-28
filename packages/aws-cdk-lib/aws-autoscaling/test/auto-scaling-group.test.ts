@@ -3367,6 +3367,63 @@ test('instance refresh fails when the difference between min and max healthy per
   })).toThrow(/the difference between minHealthyPercentage and maxHealthyPercentage cannot be greater than 100/);
 });
 
+test('instance refresh fails when bakeTime exceeds the maximum', () => {
+  expect(() => autoscaling.UpdatePolicy.instanceRefresh({
+    strategy: autoscaling.InstanceRefreshStrategy.ROLLING,
+    bakeTime: cdk.Duration.seconds(172801),
+  })).toThrow(/bakeTime must be between 0 and 172800 seconds/);
+});
+
+test('instance refresh fails when checkpointDelay is out of range', () => {
+  expect(() => autoscaling.UpdatePolicy.instanceRefresh({
+    strategy: autoscaling.InstanceRefreshStrategy.ROLLING,
+    checkpointPercentages: [100],
+    checkpointDelay: cdk.Duration.seconds(172801),
+  })).toThrow(/checkpointDelay must be between 0 and 172800 seconds/);
+});
+
+test('instance refresh fails when checkpointDelay is set without checkpointPercentages', () => {
+  expect(() => autoscaling.UpdatePolicy.instanceRefresh({
+    strategy: autoscaling.InstanceRefreshStrategy.ROLLING,
+    checkpointDelay: cdk.Duration.minutes(10),
+  })).toThrow(/checkpointDelay requires checkpointPercentages to be specified/);
+});
+
+test.each([[[0, 100]], [[50, 101]]])('instance refresh fails when checkpointPercentages are out of range (%j)', (percentages) => {
+  expect(() => autoscaling.UpdatePolicy.instanceRefresh({
+    strategy: autoscaling.InstanceRefreshStrategy.ROLLING,
+    checkpointPercentages: percentages,
+  })).toThrow(/each value in checkpointPercentages must be between 1 and 100/);
+});
+
+test('instance refresh fails when checkpointPercentages contains duplicates', () => {
+  expect(() => autoscaling.UpdatePolicy.instanceRefresh({
+    strategy: autoscaling.InstanceRefreshStrategy.ROLLING,
+    checkpointPercentages: [50, 50, 100],
+  })).toThrow(/each value in checkpointPercentages must be unique/);
+});
+
+test('instance refresh fails when checkpointPercentages are not in ascending order', () => {
+  expect(() => autoscaling.UpdatePolicy.instanceRefresh({
+    strategy: autoscaling.InstanceRefreshStrategy.ROLLING,
+    checkpointPercentages: [100, 50],
+  })).toThrow(/checkpointPercentages must be in ascending order/);
+});
+
+test('instance refresh fails when more than 10 alarms are specified', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const metric = new cloudwatch.Metric({ namespace: 'MyService', metricName: 'MyMetric' });
+  const alarms = Array.from({ length: 11 }, (_, i) =>
+    new cloudwatch.Alarm(stack, `Alarm${i}`, { metric, threshold: 100, evaluationPeriods: 1 }));
+
+  // THEN
+  expect(() => autoscaling.UpdatePolicy.instanceRefresh({
+    strategy: autoscaling.InstanceRefreshStrategy.ROLLING,
+    alarms,
+  })).toThrow(/a maximum of 10 alarms can be specified, got 11/);
+});
+
 test('instance refresh omits AlarmSpecification when no alarms are provided', () => {
   // GIVEN
   const stack = new cdk.Stack();

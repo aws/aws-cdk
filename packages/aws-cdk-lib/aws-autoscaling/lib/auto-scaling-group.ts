@@ -1151,6 +1151,9 @@ export enum InstanceRefreshStrategy {
 
   /**
    * Replace the root volume of instances in place.
+   *
+   * When this strategy is used, only `ImageId` changes within the launch template or mixed
+   * instances policy are allowed. Other property changes may cause the stack update to fail.
    */
   REPLACE_ROOT_VOLUME = 'ReplaceRootVolume',
 }
@@ -2811,6 +2814,44 @@ function validateInstanceRefreshPreferences(options: InstanceRefreshOptions): vo
       !Token.isUnresolved(minHealthyPercentage) && !Token.isUnresolved(maxHealthyPercentage) &&
       maxHealthyPercentage - minHealthyPercentage > 100) {
     throw new UnscopedValidationError(lit`InstanceRefreshHealthyPercentageDifference`, `the difference between minHealthyPercentage and maxHealthyPercentage cannot be greater than 100, got ${maxHealthyPercentage - minHealthyPercentage}`);
+  }
+
+  // Duration already rejects negative values, so only the upper bound needs checking here.
+  const bakeTime = options.bakeTime?.toSeconds();
+  if (bakeTime !== undefined && bakeTime > 172800) {
+    throw new UnscopedValidationError(lit`InstanceRefreshBakeTime`, `bakeTime must be between 0 and 172800 seconds, got ${bakeTime}`);
+  }
+
+  const checkpointDelay = options.checkpointDelay?.toSeconds();
+  if (checkpointDelay !== undefined && checkpointDelay > 172800) {
+    throw new UnscopedValidationError(lit`InstanceRefreshCheckpointDelay`, `checkpointDelay must be between 0 and 172800 seconds, got ${checkpointDelay}`);
+  }
+
+  // Instance Refresh requires checkpointPercentages whenever checkpointDelay is set.
+  if (options.checkpointDelay !== undefined && options.checkpointPercentages === undefined) {
+    throw new UnscopedValidationError(lit`InstanceRefreshCheckpointDelayRequiresPercentages`, 'checkpointDelay requires checkpointPercentages to be specified');
+  }
+
+  const checkpointPercentages = options.checkpointPercentages;
+  if (checkpointPercentages !== undefined && !Token.isUnresolved(checkpointPercentages)) {
+    const values = checkpointPercentages.filter(value => !Token.isUnresolved(value));
+
+    if (values.some(value => value < 1 || value > 100)) {
+      throw new UnscopedValidationError(lit`InstanceRefreshCheckpointPercentagesRange`, `each value in checkpointPercentages must be between 1 and 100, got ${JSON.stringify(checkpointPercentages)}`);
+    }
+
+    if (new Set(values).size !== values.length) {
+      throw new UnscopedValidationError(lit`InstanceRefreshCheckpointPercentagesUnique`, `each value in checkpointPercentages must be unique, got ${JSON.stringify(checkpointPercentages)}`);
+    }
+
+    const isAscending = values.every((value, i) => i === 0 || values[i - 1] < value);
+    if (!isAscending) {
+      throw new UnscopedValidationError(lit`InstanceRefreshCheckpointPercentagesAscending`, `checkpointPercentages must be in ascending order, got ${JSON.stringify(checkpointPercentages)}`);
+    }
+  }
+
+  if (options.alarms !== undefined && !Token.isUnresolved(options.alarms) && options.alarms.length > 10) {
+    throw new UnscopedValidationError(lit`InstanceRefreshAlarms`, `a maximum of 10 alarms can be specified, got ${options.alarms.length}`);
   }
 }
 
