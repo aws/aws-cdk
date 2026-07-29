@@ -513,6 +513,14 @@ through a single resource:
 const catalog = glue.Catalog.forAccount(this);
 ```
 
+The account catalog's encryption is an account- and region-wide setting, managed
+through the singleton `PutDataCatalogEncryptionSettings` API. Configure it in
+exactly one stack. Configuring it from multiple stacks in the same account and
+region makes those stacks overwrite one another at deploy time, and the result is
+order-dependent. Unlike duplicate settings within a single stack (which
+CloudFormation rejects), this cross-stack conflict is not caught at synthesis
+time, because each stack synthesizes to its own template.
+
 ### Creating a catalog
 
 To create a new catalog resource, use the `Catalog` constructor:

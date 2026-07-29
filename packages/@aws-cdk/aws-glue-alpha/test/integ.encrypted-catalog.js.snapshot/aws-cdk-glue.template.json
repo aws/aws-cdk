@@ -203,19 +203,6 @@
      "Statement": [
       {
        "Action": [
-        "kms:Decrypt",
-        "kms:GenerateDataKey*"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "CatalogKey9CBE1E01",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": [
         "glue:CreatePartitionIndex",
         "glue:DeletePartitionIndex",
         "glue:GetPartitionIndexes",
@@ -295,6 +282,19 @@
          ]
         }
        ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:GenerateDataKey*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "CatalogKey9CBE1E01",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -388,19 +388,6 @@
      "Statement": [
       {
        "Action": [
-        "kms:Decrypt",
-        "kms:GenerateDataKey*"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "CatalogKey9CBE1E01",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": [
         "glue:CreatePartitionIndex",
         "glue:DeletePartitionIndex",
         "glue:GetPartitionIndexes",
@@ -480,6 +467,19 @@
          ]
         }
        ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:GenerateDataKey*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "CatalogKey9CBE1E01",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"

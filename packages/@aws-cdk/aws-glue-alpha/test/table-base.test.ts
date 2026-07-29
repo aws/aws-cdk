@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { CfnTable } from 'aws-cdk-lib/aws-glue';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import * as glue from '../lib';
 
 test('unpartitioned JSON table', () => {
@@ -499,6 +500,48 @@ describe('parition indexes', () => {
         ),
       );
       expect(createStatements).toHaveLength(2);
+    });
+
+    test.each([
+      ['before the partition index is added', true],
+      ['after the partition index is added', false],
+    ])('grants the catalog encryption key to the handler roles when encryption is configured %s', (_, encryptFirst) => {
+      const stack = new cdk.Stack();
+      const key = new kms.Key(stack, 'Key');
+      const database = new glue.Database(stack, 'Database');
+
+      const configureEncryption = () =>
+        database.catalog.encryptAtRest(glue.DataCatalogEncryptionAtRest.kms(key));
+
+      if (encryptFirst) {
+        configureEncryption();
+      }
+
+      const table = new glue.S3Table(stack, 'Table', {
+        database,
+        columns: [{ name: 'col', type: glue.Schema.STRING }],
+        partitionKeys: [{ name: 'year', type: glue.Schema.SMALL_INT }],
+        dataFormat: glue.DataFormat.JSON,
+      });
+      table.addPartitionIndex({ indexName: 'index1', keyNames: ['year'] });
+
+      if (!encryptFirst) {
+        // Configuring catalog encryption after the table (and its partition
+        // index) already exist must still grant the handler roles access to the
+        // key - the grant is resolved at synthesis time.
+        configureEncryption();
+      }
+
+      const template = Template.fromStack(stack);
+
+      // Both handler roles (onEvent and isComplete) must be able to use the key.
+      const policies = template.findResources('AWS::IAM::Policy');
+      const kmsStatements = Object.values(policies).flatMap((policy: any) =>
+        policy.Properties.PolicyDocument.Statement.filter(
+          (s: any) => Array.isArray(s.Action) && s.Action.includes('kms:Decrypt') && s.Action.includes('kms:GenerateDataKey*'),
+        ),
+      );
+      expect(kmsStatements).toHaveLength(2);
     });
   });
 });

@@ -1,5 +1,5 @@
-import { App, Stack } from 'aws-cdk-lib';
-import { Annotations, Match, Template } from 'aws-cdk-lib/assertions';
+import { App, Fn, Stack } from 'aws-cdk-lib';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as glue from '../lib';
@@ -199,26 +199,21 @@ describe('single settings resource per catalog instance', () => {
   });
 });
 
-describe('duplicate settings warning', () => {
-  test('warns when two catalogs target the same id in one stack', () => {
+describe('duplicate settings', () => {
+  test('two catalogs targeting the same id fail template validation (E3019)', () => {
     glue.Catalog.forAccount(stack).encryptAtRest(glue.DataCatalogEncryptionAtRest.kms());
-    const imported = glue.Catalog.fromCatalogId(stack, 'Imported', '123456789012');
-    imported.encryptConnectionPasswords({});
+    glue.Catalog.fromCatalogId(stack, 'Imported', '123456789012').encryptConnectionPasswords({});
 
-    Annotations.fromStack(stack).hasWarning(
-      '/Stack/Imported',
-      Match.stringLikeRegexp('multiple Data Catalog encryption settings target catalog'),
-    );
+    // Both settings resources carry the same CatalogId, which CloudFormation
+    // template validation rejects as duplicate primary identifiers (E3019).
+    expect(() => Template.fromStack(stack)).toThrow('E3019');
   });
 
-  test('does not warn for distinct catalog ids', () => {
+  test('distinct catalog ids emit independent settings resources', () => {
     glue.Catalog.forAccount(stack).encryptAtRest(glue.DataCatalogEncryptionAtRest.kms());
     glue.Catalog.fromCatalogId(stack, 'Other', '999999999999').encryptConnectionPasswords({});
 
-    Annotations.fromStack(stack).hasNoWarning(
-      '*',
-      Match.stringLikeRegexp('multiple Data Catalog encryption settings'),
-    );
+    Template.fromStack(stack).resourceCountIs('AWS::Glue::DataCatalogEncryptionSettings', 2);
   });
 });
 
@@ -257,6 +252,27 @@ describe('imports', () => {
     const catalog = glue.Catalog.fromCatalogArn(stack, 'Imported', arn);
 
     expect(catalog.catalogId).toEqual('some-catalog');
+  });
+
+  test('fromCatalogArn treats a resource-name-less ARN as the account catalog, using the ARN account', () => {
+    const arn = 'arn:aws:glue:us-east-1:999999999999:catalog';
+    const catalog = glue.Catalog.fromCatalogArn(stack, 'Imported', arn);
+
+    expect(catalog.catalogId).toEqual('999999999999');
+  });
+
+  test('fromCatalogArn accepts a tokenized ARN without validation', () => {
+    const arn = Fn.importValue('SomeCatalogArn');
+
+    expect(() => glue.Catalog.fromCatalogArn(stack, 'Imported', arn)).not.toThrow();
+  });
+
+  test.each([
+    ['a non-Glue ARN', 'arn:aws:s3:::my-bucket'],
+    ['a non-catalog Glue ARN', 'arn:aws:glue:us-east-1:123456789012:database/some-db'],
+  ])('fromCatalogArn fails for %s', (_, arn) => {
+    expect(() => glue.Catalog.fromCatalogArn(stack, 'Imported', arn))
+      .toThrow('expected a Glue catalog ARN');
   });
 
   test('an imported catalog can attach encryption as a sibling settings resource', () => {

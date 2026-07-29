@@ -4,7 +4,7 @@
   "pluginReports": [
     {
       "pluginName": "CloudFormation Validate",
-      "pluginVersion": "1.2.0",
+      "pluginVersion": "1.5.1",
       "conclusion": "success",
       "violations": [
         {
@@ -16,7 +16,9 @@
           },
           "violatingConstructs": [
             {
-              "constructPath": ""
+              "constructPath": "aws-cdk-glue-table-integ/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
             }
           ]
         }

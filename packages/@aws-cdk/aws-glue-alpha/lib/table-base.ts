@@ -2,11 +2,11 @@ import type { CfnTable } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { KeyGrants } from 'aws-cdk-lib/aws-kms';
 import type * as lambda from 'aws-cdk-lib/aws-lambda';
-import type { IResource } from 'aws-cdk-lib/core';
-import { ArnFormat, CustomResource, Duration, Fn, Lazy, Names, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
+import type { IAspect, IResource } from 'aws-cdk-lib/core';
+import { ArnFormat, Aspects, CustomResource, Duration, Fn, Lazy, Names, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
 import { lit, md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import * as cr from 'aws-cdk-lib/custom-resources';
-import { Construct } from 'constructs';
+import { Construct, type IConstruct } from 'constructs';
 import type { DataFormat } from './data-format';
 import type { IDatabase } from './database';
 import { generatePartitionProjectionParameters, type PartitionProjection } from './partition-projection';
@@ -309,11 +309,11 @@ export abstract class TableBase extends Resource implements ITable {
       // https://docs.aws.amazon.com/service-authorization/latest/reference/list_awsglue.html
       const resources = [this.tableArn, this.database.databaseArn, this.database.catalog.catalogArn];
 
-      if (this.database.catalog.encryptionKey) {
-        const grants = KeyGrants.fromKey(this.database.catalog.encryptionKey);
-        grants.actions(provider.onEventHandler, 'kms:Decrypt', 'kms:GenerateDataKey*');
-        grants.actions(provider.isCompleteHandler, 'kms:Decrypt', 'kms:GenerateDataKey*');
-      }
+      // The catalog's encryption key may be configured after this table is
+      // created (e.g. database.catalog.encryptAtRest(...) called later), so
+      // reading it here would miss it. Defer the grant to synthesis time, when
+      // the final encryption configuration is known.
+      this.grantCatalogKeyOnSynth(provider);
 
       // Both handlers create, delete, and inspect indexes: onEvent creates/deletes on
       // Create/Delete/Update, and isComplete recreates the index while driving a
@@ -350,6 +350,32 @@ export abstract class TableBase extends Resource implements ITable {
       partitionIndexCustomResource.node.addDependency(this.partitionIndexCustomResources[numPartitions-1]);
     }
     this.partitionIndexCustomResources.push(partitionIndexCustomResource);
+  }
+
+  /**
+   * Grant the partition-index custom-resource handlers access to the catalog's
+   * customer-managed encryption key, if one is configured. Resolved at synthesis
+   * time via an Aspect so the grant reflects the final encryption configuration
+   * regardless of whether `encryptAtRest` was called before or after the table
+   * was created. No-op when the catalog uses an AWS-managed key or no encryption.
+   */
+  private grantCatalogKeyOnSynth(provider: PartitionIndexProvider): void {
+    const table = this;
+    Aspects.of(this).add({
+      visit(node: IConstruct) {
+        // Run once, anchored on the table itself.
+        if (node !== table) {
+          return;
+        }
+        const key = table.database.catalog.encryptionKey;
+        if (!key) {
+          return;
+        }
+        const grants = KeyGrants.fromKey(key);
+        grants.actions(provider.onEventHandler, 'kms:Decrypt', 'kms:GenerateDataKey*');
+        grants.actions(provider.isCompleteHandler, 'kms:Decrypt', 'kms:GenerateDataKey*');
+      },
+    } as IAspect);
   }
 
   private generateIndexName(keys: string[]): string {

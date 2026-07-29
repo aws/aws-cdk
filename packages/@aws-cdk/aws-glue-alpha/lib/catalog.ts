@@ -4,9 +4,9 @@ import type * as iam from 'aws-cdk-lib/aws-iam';
 import type * as kms from 'aws-cdk-lib/aws-kms';
 import { KeyGrants } from 'aws-cdk-lib/aws-kms';
 import type { IResource } from 'aws-cdk-lib/core';
-import { Annotations, ArnFormat, Resource, Stack, Token } from 'aws-cdk-lib/core';
+import { ArnFormat, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
 import type { IBox } from 'aws-cdk-lib/core/lib/helpers-internal';
-import { Box, noBoxStackTraces } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { Box, lit, noBoxStackTraces } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -147,7 +147,8 @@ export interface ICatalog extends IResource, ICatalogRef {
    * one was configured.
    *
    * Undefined when encryption is disabled or an AWS-managed key is used. Grant
-   * access to it directly, e.g. `catalog.encryptionKey?.grantEncrypt(grantee)`.
+   * access to it via `KeyGrants`, e.g.
+   * `if (catalog.encryptionKey) { KeyGrants.fromKey(catalog.encryptionKey).encrypt(grantee); }`.
    */
   readonly encryptionKey?: kms.IKeyRef;
 
@@ -156,8 +157,8 @@ export interface ICatalog extends IResource, ICatalogRef {
    * was configured.
    *
    * Undefined when password encryption uses an AWS-managed key or is not
-   * configured. Grant access to it directly, e.g.
-   * `catalog.connectionPasswordKey?.grantEncrypt(grantee)`.
+   * configured. Grant access to it via `KeyGrants`, e.g.
+   * `if (catalog.connectionPasswordKey) { KeyGrants.fromKey(catalog.connectionPasswordKey).encrypt(grantee); }`.
    */
   readonly connectionPasswordKey?: kms.IKeyRef;
 
@@ -175,14 +176,6 @@ export interface ICatalog extends IResource, ICatalogRef {
    */
   encryptConnectionPasswords(encryption: ConnectionPasswordEncryption): void;
 }
-
-/**
- * Tracks, per stack, the catalog ids for which a
- * `CfnDataCatalogEncryptionSettings` resource has already been emitted, so we
- * can warn when two catalogs would race to overwrite the same catalog's
- * settings via `PutDataCatalogEncryptionSettings`.
- */
-const emittedEncryptionSettings = new WeakMap<Stack, Set<string>>();
 
 /**
  * Base class for all `ICatalog` implementations. Owns the shared, deferred
@@ -266,31 +259,15 @@ abstract class CatalogBase extends Resource implements ICatalog {
       }),
     );
 
+    // Two catalog instances that target the same catalog id would each emit a
+    // settings resource and race to overwrite one another via
+    // `PutDataCatalogEncryptionSettings`. This is surfaced by CloudFormation
+    // template validation (E3019: duplicate primary identifiers), so we do not
+    // duplicate that check here.
     this.encryptionSettingsResource = new CfnDataCatalogEncryptionSettings(this, 'EncryptionSettings', {
       catalogId: this.catalogId,
       dataCatalogEncryptionSettings: Token.asAny(settings),
     });
-
-    this.warnOnDuplicateSettings();
-  }
-
-  private warnOnDuplicateSettings(): void {
-    const stack = Stack.of(this);
-    let ids = emittedEncryptionSettings.get(stack);
-    if (!ids) {
-      ids = new Set();
-      emittedEncryptionSettings.set(stack, ids);
-    }
-    if (ids.has(this.catalogId)) {
-      Annotations.of(this).addWarningV2(
-        '@aws-cdk/aws-glue-alpha:duplicateCatalogEncryptionSettings',
-        `multiple Data Catalog encryption settings target catalog "${this.catalogId}" in this stack; ` +
-        'they overwrite one another via PutDataCatalogEncryptionSettings and the result is order-dependent. ' +
-        'Configure encryption on a single catalog (e.g. Catalog.forAccount(this)) instead.',
-      );
-    } else {
-      ids.add(this.catalogId);
-    }
   }
 }
 
@@ -342,8 +319,15 @@ export class Catalog extends CatalogBase {
    *
    * The account catalog is not a CloudFormation resource; it always exists. This
    * returns a stack-scoped singleton, so repeated calls within the same stack
-   * return the same instance and share a single encryption-settings resource,
-   * avoiding competing `PutDataCatalogEncryptionSettings` calls.
+   * return the same instance and share a single encryption-settings resource.
+   *
+   * The account catalog's encryption is an account/region-wide setting, managed
+   * through the singleton `PutDataCatalogEncryptionSettings` API. Configure it in
+   * exactly one stack. Configuring it from multiple stacks in the same
+   * account and region makes those stacks overwrite one another at deploy time,
+   * and the result is order-dependent. Unlike duplicate settings within a single
+   * stack (which CloudFormation rejects), this cross-stack conflict is not caught
+   * at synthesis time, because each stack synthesizes to its own template.
    */
   public static forAccount(scope: Construct): ICatalog {
     const stack = Stack.of(scope);
@@ -354,10 +338,30 @@ export class Catalog extends CatalogBase {
 
   /**
    * Import an existing catalog by its ARN.
+   *
+   * The ARN must be a Glue catalog ARN, either the account-wide catalog
+   * (`arn:aws:glue:<region>:<account>:catalog`, whose id is the account) or a
+   * named catalog (`arn:aws:glue:<region>:<account>:catalog/<name>`, whose id is
+   * the name).
    */
   public static fromCatalogArn(scope: Construct, id: string, catalogArn: string): ICatalog {
     const stack = Stack.of(scope);
-    const catalogId = stack.splitArn(catalogArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName ?? stack.account;
+    const arn = stack.splitArn(catalogArn, ArnFormat.SLASH_RESOURCE_NAME);
+
+    // Only validate the shape of concrete ARNs; a tokenized ARN can't be
+    // inspected at synth time, so we trust it.
+    if (!Token.isUnresolved(catalogArn) && (arn.service !== 'glue' || arn.resource !== 'catalog')) {
+      throw new ValidationError(
+        lit`InvalidCatalogArn`,
+        `expected a Glue catalog ARN (arn:<partition>:glue:<region>:<account>:catalog[/<name>]), got ${JSON.stringify(catalogArn)}`,
+        scope,
+      );
+    }
+
+    // The account-wide catalog's ARN has no resource name; its id is the
+    // account from the ARN itself (falling back to the stack account for a
+    // tokenized ARN with no parseable account).
+    const catalogId = arn.resourceName ?? arn.account ?? stack.account;
     return new ImportedCatalog(scope, id, catalogId, catalogArn);
   }
 
