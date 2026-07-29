@@ -101,6 +101,24 @@
       "data": 0
     }
   ],
+  "/aws-cdk-glue/Exports/Output{\"Ref\":\"DatabaseB269D8BB\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefDatabaseB269D8BB88F4B1C4"
+    }
+  ],
+  "/aws-cdk-glue/Exports/Output{\"Ref\":\"MyTable85A92380\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefMyTable85A92380FBC619EF"
+    }
+  ],
+  "/aws-cdk-glue/Exports/Output{\"Fn::GetAtt\":[\"CatalogKey9CBE1E01\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttCatalogKey9CBE1E01ArnA0E0DB5A"
+    }
+  ],
   "/aws-cdk-glue/MyTable/Bucket/Resource": [
     {
       "type": "aws:cdk:logicalId",

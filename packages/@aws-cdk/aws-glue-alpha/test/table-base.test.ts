@@ -534,12 +534,16 @@ describe('parition indexes', () => {
 
       const template = Template.fromStack(stack);
 
-      // Both handler roles (onEvent and isComplete) must be able to use the key.
+      // Both handler roles (onEvent and isComplete) must be able to decrypt the
+      // catalog metadata they read. Only kms:Decrypt is granted - the index
+      // write happens asynchronously on the Glue backend, not under the
+      // handler's identity, so no write actions are needed.
       const policies = template.findResources('AWS::IAM::Policy');
       const kmsStatements = Object.values(policies).flatMap((policy: any) =>
-        policy.Properties.PolicyDocument.Statement.filter(
-          (s: any) => Array.isArray(s.Action) && s.Action.includes('kms:Decrypt') && s.Action.includes('kms:GenerateDataKey*'),
-        ),
+        policy.Properties.PolicyDocument.Statement.filter((s: any) => {
+          const actions = Array.isArray(s.Action) ? s.Action : [s.Action];
+          return actions.includes('kms:Decrypt');
+        }),
       );
       expect(kmsStatements).toHaveLength(2);
     });

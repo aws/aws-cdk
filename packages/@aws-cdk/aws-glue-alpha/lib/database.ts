@@ -75,8 +75,6 @@ export class Database extends Resource implements IDatabase {
     class Import extends Resource implements IDatabase {
       public databaseArn = databaseArn;
       public databaseName = stack.splitArn(databaseArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
-      public catalogArn = stack.formatArn({ service: 'glue', resource: 'catalog' });
-      public catalogId = stack.account;
       public catalog = Catalog.forAccount(this);
     }
 

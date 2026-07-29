@@ -372,8 +372,8 @@ export abstract class TableBase extends Resource implements ITable {
           return;
         }
         const grants = KeyGrants.fromKey(key);
-        grants.actions(provider.onEventHandler, 'kms:Decrypt', 'kms:GenerateDataKey*');
-        grants.actions(provider.isCompleteHandler, 'kms:Decrypt', 'kms:GenerateDataKey*');
+        grants.actions(provider.onEventHandler, 'kms:Decrypt');
+        grants.actions(provider.isCompleteHandler, 'kms:Decrypt');
       },
     } as IAspect);
   }
