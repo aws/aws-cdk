@@ -87,7 +87,6 @@ export * as aws_controltower from './aws-controltower';
 export * as aws_cur from './aws-cur';
 export * as aws_customerprofiles from './aws-customerprofiles';
 export * as aws_databrew from './aws-databrew';
-export * as aws_dataexchange from './aws-dataexchange';
 export * as aws_datapipeline from './aws-datapipeline';
 export * as aws_datasync from './aws-datasync';
 export * as aws_datazone from './aws-datazone';
