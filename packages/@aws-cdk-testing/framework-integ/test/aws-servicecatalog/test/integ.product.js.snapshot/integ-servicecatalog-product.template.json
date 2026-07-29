@@ -335,7 +335,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-     "S3Key": "97e9ebf0b174a5c8f7faa505739022b7f509edddffcab9211dcd08b759944c4f.zip"
+     "S3Key": "b96fd5b1f59f7dc2313e78de6a5653370faef9a06fcc911adaea179f375c4dfd.zip"
     },
     "Environment": {
      "Variables": {
