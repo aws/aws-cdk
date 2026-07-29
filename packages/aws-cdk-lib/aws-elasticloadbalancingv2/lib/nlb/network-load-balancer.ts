@@ -287,9 +287,17 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public readonly metrics: INetworkLoadBalancerMetrics;
   public readonly ipAddressType?: IpAddressType;
   public readonly connections: ec2.Connections;
-  public securityGroups?: string[];
-  public readonly enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: string;
+  private _securityGroups?: string[];
+  private _enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: string;
   private enablePrefixForIpv6SourceNat?: boolean;
+
+  public get securityGroups(): string[] | undefined {
+    return this._securityGroups;
+  }
+
+  public get enforceSecurityGroupInboundRulesOnPrivateLinkTraffic(): string | undefined {
+    return this._enforceSecurityGroupInboundRulesOnPrivateLinkTraffic;
+  }
 
   constructor(scope: Construct, id: string, props: NetworkLoadBalancerProps) {
     const enforceSgInboundRules = props.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic !== undefined
@@ -353,10 +361,10 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     if (props.zonalShift !== undefined) {
       this.setAttribute('zonal_shift.config.enabled', props.zonalShift ? 'true' : 'false');
     }
-    this.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic = props.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic !== undefined
+    this._enforceSecurityGroupInboundRulesOnPrivateLinkTraffic = props.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic !== undefined
       ? (props.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic ? 'on' : 'off')
       : undefined;
-    this.securityGroups = isSecurityGroupsPropertyDefined || this.connections.securityGroups.length
+    this._securityGroups = isSecurityGroupsPropertyDefined || this.connections.securityGroups.length
       ? this.connections.securityGroups.map(sg => sg.securityGroupId)
       : undefined;
   }
@@ -388,7 +396,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   @MethodMetadata()
   public addSecurityGroup(securityGroup: ec2.ISecurityGroup) {
     this.connections.addSecurityGroup(securityGroup);
-    this.securityGroups = this.connections.securityGroups.map(sg => sg.securityGroupId);
+    this._securityGroups = this.connections.securityGroups.map(sg => sg.securityGroupId);
   }
 
   /**
@@ -642,9 +650,13 @@ class LookedUpNetworkLoadBalancer extends Resource implements INetworkLoadBalanc
   public readonly loadBalancerArn: string;
   public readonly vpc?: ec2.IVpc;
   public readonly metrics: INetworkLoadBalancerMetrics;
-  public readonly securityGroups?: string[];
+  private _securityGroups?: string[];
   public readonly ipAddressType?: IpAddressType;
   public readonly connections: ec2.Connections;
+
+  public get securityGroups(): string[] | undefined {
+    return this._securityGroups;
+  }
 
   public get loadBalancerRef(): aws_elasticloadbalancingv2.LoadBalancerReference {
     return {
@@ -661,7 +673,7 @@ class LookedUpNetworkLoadBalancer extends Resource implements INetworkLoadBalanc
     this.loadBalancerCanonicalHostedZoneId = props.loadBalancerCanonicalHostedZoneId;
     this.loadBalancerDnsName = props.loadBalancerDnsName;
     this.metrics = new NetworkLoadBalancerMetrics(this, parseLoadBalancerFullName(props.loadBalancerArn));
-    this.securityGroups = props.securityGroupIds;
+    this._securityGroups = props.securityGroupIds;
     this.connections = new ec2.Connections({
       securityGroups: props.securityGroupIds.map(
         (securityGroupId, index) => ec2.SecurityGroup.fromLookupById(this, `SecurityGroup-${index}`, securityGroupId),
