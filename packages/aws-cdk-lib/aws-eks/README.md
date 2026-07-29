@@ -901,6 +901,38 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 });
 ```
 
+#### Isolated VPCs
+
+If you do not specify `vpcSubnets`, the control plane ENIs are placed in the VPC's public and
+private (NAT-egress) subnets. A fully isolated VPC has neither, so in that case the cluster falls
+back to the VPC's isolated subnets. Those subnets are also tagged with
+`kubernetes.io/role/internal-elb`, which is what lets the AWS Load Balancer Controller provision
+*internal* load balancers in them:
+
+```ts
+import { KubectlV35Layer } from '@aws-cdk/lambda-layer-kubectl-v35';
+
+const vpc = new ec2.Vpc(this, 'Vpc', {
+  natGateways: 0,
+  subnetConfiguration: [
+    { name: 'Isolated', subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+  ],
+});
+
+new eks.Cluster(this, 'HelloEKS', {
+  version: eks.KubernetesVersion.V1_35,
+  vpc,
+  kubectlLayer: new KubectlV35Layer(this, 'kubectl'),
+});
+```
+
+Isolated subnets have no internet access, so you must add [VPC endpoints] for the services the
+cluster and its handlers need to reach (at minimum STS, EKS, ECR and S3). See
+[private clusters] for the full list.
+
+[VPC endpoints]: https://docs.aws.amazon.com/vpc/latest/privatelink/create-interface-endpoint.html
+[private clusters]: https://docs.aws.amazon.com/eks/latest/userguide/private-clusters.html
+
 ### IPv6 Support
 
 You can optionally choose to configure your cluster to use IPv6 using the [`ipFamily`](https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily) definition for your cluster.  Note that this will require the underlying subnets to have an associated IPv6 CIDR.
