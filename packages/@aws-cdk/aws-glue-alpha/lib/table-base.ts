@@ -1,5 +1,6 @@
 import type { CfnTable } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { KeyGrants } from 'aws-cdk-lib/aws-kms';
 import type * as lambda from 'aws-cdk-lib/aws-lambda';
 import type { IResource } from 'aws-cdk-lib/core';
 import { ArnFormat, CustomResource, Duration, Fn, Lazy, Names, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
@@ -306,7 +307,13 @@ export abstract class TableBase extends Resource implements ITable {
     if (numPartitions === 0) {
       // Add scoped permissions for this table's Glue resources
       // https://docs.aws.amazon.com/service-authorization/latest/reference/list_awsglue.html
-      const resources = [this.tableArn, this.database.databaseArn, this.database.catalogArn];
+      const resources = [this.tableArn, this.database.databaseArn, this.database.catalog.catalogArn];
+
+      if (this.database.catalog.encryptionKey) {
+        const grants = KeyGrants.fromKey(this.database.catalog.encryptionKey);
+        grants.actions(provider.onEventHandler, 'kms:Decrypt', 'kms:GenerateDataKey*');
+        grants.actions(provider.isCompleteHandler, 'kms:Decrypt', 'kms:GenerateDataKey*');
+      }
 
       // Both handlers create, delete, and inspect indexes: onEvent creates/deletes on
       // Create/Delete/Update, and isComplete recreates the index while driving a
@@ -476,7 +483,7 @@ export abstract class TableBase extends Resource implements ITable {
       grantee,
       resourceArns: [
         this.tableArn,
-        this.database.catalogArn,
+        this.database.catalog.catalogArn,
         this.database.databaseArn,
       ],
       actions,
