@@ -4278,7 +4278,7 @@ test('TableV2MultiAccountReplica handles partially tokenized ARNs successfully',
   const app = new App();
   const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '111111111111', region: 'us-west-2' } });
 
-  const sourceTable = TableBaseV2.fromTableArn(replicaStack, 'SourceTable',
+  const sourceTable = TableV2.fromTableArn(replicaStack, 'SourceTable',
     `arn:aws:dynamodb:us-east-1:222222222222:table/${Token.asString('MyTable')}`);
 
   expect(() => {
