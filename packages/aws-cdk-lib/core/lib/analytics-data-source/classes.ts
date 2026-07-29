@@ -19506,6 +19506,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     'DatabaseCluster': {
       'credentials': '*',
       'replicationSourceIdentifier': '*',
+      'manageMasterUserPassword': 'boolean',
       'engine': {
         'singleUserRotationApplication': '*',
         'supportedLogTypes': '*',
@@ -19824,6 +19825,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'snapshotIdentifier': '*',
       'credentials': '*',
       'snapshotCredentials': '*',
+      'manageMasterUserPassword': 'boolean',
       'engine': {
         'singleUserRotationApplication': '*',
         'supportedLogTypes': '*',
@@ -20186,6 +20188,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'DatabaseInstance': {
       'credentials': '*',
+      'manageMasterUserPassword': 'boolean',
       'characterSetName': '*',
       'storageEncrypted': 'boolean',
       'storageEncryptionKey': '*',
