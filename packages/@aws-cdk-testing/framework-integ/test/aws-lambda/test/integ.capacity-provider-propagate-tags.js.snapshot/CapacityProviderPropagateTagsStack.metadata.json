@@ -275,18 +275,6 @@
       "data": "CpWithNone5AE4AD32"
     }
   ],
-  "/CapacityProviderPropagateTagsStack/Exports/Output{\"Ref\":\"CpWithExplicitTags77AFD84E\"}": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "ExportsOutputRefCpWithExplicitTags77AFD84E0801F124"
-    }
-  ],
-  "/CapacityProviderPropagateTagsStack/Exports/Output{\"Ref\":\"CpWithNone5AE4AD32\"}": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "ExportsOutputRefCpWithNone5AE4AD32FFE6E94A"
-    }
-  ],
   "/CapacityProviderPropagateTagsStack/Vpc/PublicSubnet1/Subnet": [
     {
       "type": "aws:cdk:logicalId",
