@@ -2,8 +2,9 @@ import * as path from 'path';
 import type { IConstruct } from 'constructs';
 import type { IPolicyValidationPlugin, IPolicyValidationContext } from '../validation';
 import { iterateDfsPreorder } from './construct-iteration';
-import { stackOf } from './core-construct-finders';
+import { stackOf, stageOf } from './core-construct-finders';
 import * as cxschema from '../../../cloud-assembly-schema';
+import { CfnResource } from '../cfn-resource';
 import type { NamedValidationPluginReport } from '../validation/private/report';
 import type { PolicyValidationPluginReport, PolicyViolation, PolicyViolatingResource } from '../validation/report';
 
@@ -37,7 +38,7 @@ export class AnnotationPlugin implements IPolicyValidationPlugin {
  * and convert them into a NamedValidationPluginReport that can be merged
  * into the same report pipeline as plugin violations.
  */
-export function collectAnnotationReport(root: IConstruct, outdir: string): IPolicyValidationPlugin | undefined {
+export function collectAnnotationReport(root: IConstruct): IPolicyValidationPlugin | undefined {
   const violationMap = new Map<string, PolicyViolation & { violatingResources: PolicyViolatingResource[] }>();
 
   for (const construct of iterateDfsPreorder(root)) {
@@ -55,13 +56,18 @@ export function collectAnnotationReport(root: IConstruct, outdir: string): IPoli
 
       let templatePath: string | undefined;
       try {
-        templatePath = path.join(outdir, stackOf(construct).templateFile);
-      } catch {
+        templatePath = path.join(stageOf(construct)?.outdir ?? '.', stackOf(construct).templateFile);
+      } catch (e) {
         // Construct is not inside a Stack
       }
 
+      const resourceLogicalId = CfnResource.isCfnResource(construct)
+        ? stackOf(construct).resolve(construct.logicalId)
+        : undefined;
+
       const violatingResource: PolicyViolatingResource = {
         constructPath: construct.node.path,
+        resourceLogicalId,
         templatePath,
         locations: [],
       };
