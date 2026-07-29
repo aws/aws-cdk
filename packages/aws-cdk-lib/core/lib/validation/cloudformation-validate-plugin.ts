@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { RegoEngine, TemplateFile, version } from '@aws/cloudformation-validate';
 import type { Engine, EngineConfig, RuleInfo, Severity } from '@aws/cloudformation-validate';
 import type { PolicyValidationPluginReport, PolicyViolatingResource } from './report';
@@ -66,7 +68,9 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
    */
   public static _singletonInstance() {
     if (!CloudFormationValidatePlugin._instance) {
-      CloudFormationValidatePlugin._instance = new CloudFormationValidatePlugin();
+      CloudFormationValidatePlugin._instance = new CloudFormationValidatePlugin({
+        regoRules: defaultRegoRules(),
+      });
     }
     return CloudFormationValidatePlugin._instance;
   }
@@ -175,6 +179,24 @@ function mapSeverity(severity: Severity): string {
     case 'DEBUG': return 'debug';
     default: return 'warning';
   }
+}
+
+/**
+ * CDK-authored default Rego rules, shipped with aws-cdk-lib.
+ *
+ * These are ports of L2 construct validations to template-level rules, so the
+ * same checks also apply to templates produced via L1 constructs, escape
+ * hatches, or `CfnInclude`. See `rules/` next to this file.
+ */
+function defaultRegoRules(): ValidationRuleSource[] {
+  const rulesDir = path.join(__dirname, 'rules');
+  return fs.readdirSync(rulesDir)
+    .filter((f) => f.endsWith('.rego'))
+    .sort()
+    .map((f) => ({
+      name: f,
+      content: fs.readFileSync(path.join(rulesDir, f), 'utf-8'),
+    }));
 }
 
 // Rules that the engine will report but we want to ignore because CDK creates
