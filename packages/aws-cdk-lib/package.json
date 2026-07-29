@@ -305,7 +305,6 @@
     "./aws-cur": "./aws-cur/index.js",
     "./aws-customerprofiles": "./aws-customerprofiles/index.js",
     "./aws-databrew": "./aws-databrew/index.js",
-    "./aws-dataexchange": "./aws-dataexchange/index.js",
     "./aws-datapipeline": "./aws-datapipeline/index.js",
     "./aws-datasync": "./aws-datasync/index.js",
     "./aws-datazone": "./aws-datazone/index.js",
