@@ -167,7 +167,7 @@ These options are available via the `DefaultStackSynthesizer` properties:
 class MyStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps) {
     super(scope, id, {
-      ...props,
+      // custom properties
       synthesizer: new DefaultStackSynthesizer({
         deployRoleExternalId: '',
         deployRoleAdditionalOptions: {
@@ -206,7 +206,7 @@ You can pass session tags for each [role created during bootstrap](https://docs.
 class MyStack extends Stack {
   constructor(parent: Construct, id: string, props: StackProps) {
     super(parent, id, {
-      ...props,
+      // custom properties
       synthesizer: new DefaultStackSynthesizer({
         deployRoleAdditionalOptions: {
           Tags: [{ Key: 'Department', Value: 'Engineering' }]
