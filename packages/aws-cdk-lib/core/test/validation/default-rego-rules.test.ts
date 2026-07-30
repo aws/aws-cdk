@@ -30,126 +30,147 @@ afterAll(() => {
   process.env.CDK_CONTEXT_JSON = originalContextJson;
 });
 
-describe('default GameLift fleet rules', () => {
-  test('CDK-GameLift-004 fires for a fleet with more than 50 ingress rules', () => {
-    const app = new core.App({
-      context: {
-        [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: false,
-      },
-    });
+describe('default GameLift rules', () => {
+  test('CDK-GameLift-001 fires for an inverted ingress port range', () => {
+    const app = testApp();
     const stack = new core.Stack(app, 'TestStack');
     new core.CfnResource(stack, 'MyFleet', {
       type: 'AWS::GameLift::Fleet',
       properties: {
-        Name: 'my-fleet',
-        BuildId: 'build-1234',
-        EC2InstanceType: 'c5.large',
-        EC2InboundPermissions: Array.from({ length: 60 }, (_, i) => ({
-          FromPort: 1000 + i,
-          ToPort: 1000 + i,
-          IpRange: '10.0.0.0/24',
-          Protocol: 'TCP',
-        })),
+        ...FLEET_BASE,
+        EC2InboundPermissions: [
+          { FromPort: 9000, ToPort: 80, IpRange: '10.0.0.0/24', Protocol: 'TCP' },
+        ],
       },
     });
 
-    const report = loadValidationReport(app.synth());
-    const violations = pluginViolations(report);
+    expect(pluginViolations(loadValidationReport(app.synth()))).toContainEqual(expect.objectContaining({
+      ruleName: 'CDK-GameLift-001',
+      description: expect.stringContaining('FromPort 9000 is greater than ToPort 80'),
+    }));
+  });
 
-    expect(violations).toContainEqual(expect.objectContaining({
+  test('CDK-GameLift-002 fires when a location capacity MinSize exceeds MaxSize', () => {
+    const app = testApp();
+    const stack = new core.Stack(app, 'TestStack');
+    new core.CfnResource(stack, 'MyFleet', {
+      type: 'AWS::GameLift::Fleet',
+      properties: {
+        ...FLEET_BASE,
+        Locations: [{
+          Location: 'us-east-1',
+          LocationCapacity: { DesiredEC2Instances: 5, MinSize: 10, MaxSize: 2 },
+        }],
+      },
+    });
+
+    expect(pluginViolations(loadValidationReport(app.synth()))).toContainEqual(expect.objectContaining({
+      ruleName: 'CDK-GameLift-002',
+      description: expect.stringContaining('MinSize 10 is greater than MaxSize 2'),
+    }));
+  });
+
+  test('CDK-GameLift-003 fires when DesiredEC2Instances is outside [MinSize, MaxSize]', () => {
+    const app = testApp();
+    const stack = new core.Stack(app, 'TestStack');
+    new core.CfnResource(stack, 'MyFleet', {
+      type: 'AWS::GameLift::Fleet',
+      properties: {
+        ...FLEET_BASE,
+        Locations: [{
+          Location: 'us-east-1',
+          LocationCapacity: { DesiredEC2Instances: 50, MinSize: 1, MaxSize: 10 },
+        }],
+      },
+    });
+
+    expect(pluginViolations(loadValidationReport(app.synth()))).toContainEqual(expect.objectContaining({
+      ruleName: 'CDK-GameLift-003',
+      description: expect.stringContaining('DesiredEC2Instances 50 is outside the range'),
+    }));
+  });
+
+  test('CDK-GameLift-004 fires for an alias with SIMPLE routing and a terminal message', () => {
+    const app = testApp();
+    const stack = new core.Stack(app, 'TestStack');
+    new core.CfnResource(stack, 'MyAlias', {
+      type: 'AWS::GameLift::Alias',
+      properties: {
+        Name: 'my-alias',
+        RoutingStrategy: { Type: 'SIMPLE', FleetId: 'fleet-1234', Message: 'goodbye' },
+      },
+    });
+
+    expect(pluginViolations(loadValidationReport(app.synth()))).toContainEqual(expect.objectContaining({
       ruleName: 'CDK-GameLift-004',
-      description: expect.stringContaining('No more than 50 ingress rules are allowed per fleet, given 60'),
     }));
   });
 
-  test('CDK-GameLift-005 fires for a fleet location with negative capacity', () => {
-    const app = new core.App({
-      context: {
-        [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: false,
-      },
-    });
+  test('CDK-GameLift-005 fires for an alias with TERMINAL routing and a fleet', () => {
+    const app = testApp();
     const stack = new core.Stack(app, 'TestStack');
-    new core.CfnResource(stack, 'MyFleet', {
-      type: 'AWS::GameLift::Fleet',
+    new core.CfnResource(stack, 'MyAlias', {
+      type: 'AWS::GameLift::Alias',
       properties: {
-        Name: 'my-fleet',
-        BuildId: 'build-1234',
-        EC2InstanceType: 'c5.large',
-        Locations: [{
-          Location: 'us-east-1',
-          LocationCapacity: { DesiredEC2Instances: 1, MinSize: -2, MaxSize: 3 },
-        }],
+        Name: 'my-alias',
+        RoutingStrategy: { Type: 'TERMINAL', Message: 'goodbye', FleetId: 'fleet-1234' },
       },
     });
 
-    const report = loadValidationReport(app.synth());
-    const violations = pluginViolations(report);
-
-    expect(violations).toContainEqual(expect.objectContaining({
+    expect(pluginViolations(loadValidationReport(app.synth()))).toContainEqual(expect.objectContaining({
       ruleName: 'CDK-GameLift-005',
-      description: expect.stringContaining('MinSize for the Fleet cannot be lower than 0, given -2'),
     }));
   });
 
-  test('no GameLift findings for a compliant fleet', () => {
-    const app = new core.App({
-      context: {
-        [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: false,
-      },
-    });
+  test('no GameLift findings for compliant resources', () => {
+    const app = testApp();
     const stack = new core.Stack(app, 'TestStack');
     new core.CfnResource(stack, 'MyFleet', {
       type: 'AWS::GameLift::Fleet',
       properties: {
-        Name: 'my-fleet',
-        BuildId: 'build-1234',
-        EC2InstanceType: 'c5.large',
-        EC2InboundPermissions: [{ FromPort: 7777, ToPort: 7777, IpRange: '10.0.0.0/24', Protocol: 'TCP' }],
+        ...FLEET_BASE,
+        EC2InboundPermissions: [
+          { FromPort: 7777, ToPort: 7777, IpRange: '10.0.0.0/24', Protocol: 'TCP' },
+        ],
         Locations: [{
           Location: 'us-east-1',
-          LocationCapacity: { DesiredEC2Instances: 1, MinSize: 0, MaxSize: 3 },
+          LocationCapacity: { DesiredEC2Instances: 5, MinSize: 1, MaxSize: 10 },
         }],
       },
     });
+    new core.CfnResource(stack, 'SimpleAlias', {
+      type: 'AWS::GameLift::Alias',
+      properties: {
+        Name: 'simple-alias',
+        RoutingStrategy: { Type: 'SIMPLE', FleetId: 'fleet-1234' },
+      },
+    });
+    new core.CfnResource(stack, 'TerminalAlias', {
+      type: 'AWS::GameLift::Alias',
+      properties: {
+        Name: 'terminal-alias',
+        RoutingStrategy: { Type: 'TERMINAL', Message: 'goodbye' },
+      },
+    });
 
-    const report = loadValidationReport(app.synth());
-    const violations = pluginViolations(report);
-
+    const violations = pluginViolations(loadValidationReport(app.synth()));
     expect(violations.filter((v) => v.ruleName.startsWith('CDK-GameLift'))).toEqual([]);
   });
-
-  test('all five GameLift rules are wired into the report', () => {
-    const app = new core.App({
-      context: {
-        [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: false,
-      },
-    });
-    const stack = new core.Stack(app, 'TestStack');
-    new core.CfnResource(stack, 'MyFleet', {
-      type: 'AWS::GameLift::Fleet',
-      properties: {
-        Name: 'x'.repeat(1025),
-        Description: 'y'.repeat(1025),
-        BuildId: 'build-1234',
-        EC2InstanceType: 'c5.large',
-        EC2InboundPermissions: Array.from({ length: 60 }, (_, i) => ({
-          FromPort: 1000 + i, ToPort: 1000 + i, IpRange: '10.0.0.0/24', Protocol: 'TCP',
-        })),
-        Locations: Array.from({ length: 101 }, (_, i) => ({
-          Location: `loc-${i}`,
-          LocationCapacity: { DesiredEC2Instances: 1, MinSize: -1, MaxSize: 3 },
-        })),
-      },
-    });
-
-    const report = loadValidationReport(app.synth());
-    const ruleNames = new Set(pluginViolations(report).map((v) => v.ruleName));
-
-    for (const id of ['CDK-GameLift-001', 'CDK-GameLift-002', 'CDK-GameLift-003', 'CDK-GameLift-004', 'CDK-GameLift-005']) {
-      expect(ruleNames).toContain(id);
-    }
-  });
 });
+
+const FLEET_BASE = {
+  Name: 'my-fleet',
+  BuildId: 'build-1234',
+  EC2InstanceType: 'c5.large',
+};
+
+function testApp() {
+  return new core.App({
+    context: {
+      [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: false,
+    },
+  });
+}
 
 function loadValidationReport(asm: cxapi.CloudAssembly) {
   const p = path.join(asm.directory, 'validation-report.json');
