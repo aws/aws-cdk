@@ -1,5 +1,5 @@
 import type { Bitrate, IResource } from 'aws-cdk-lib';
-import { ArnFormat, Resource, Lazy, Names, Duration, Stack, Token, Fn, UnscopedValidationError, Validations, ValidationError } from 'aws-cdk-lib';
+import { ArnFormat, Resource, Lazy, Names, Duration, Stack, Token, Fn, UnscopedValidationError, ValidationError } from 'aws-cdk-lib';
 import type { MetricOptions } from 'aws-cdk-lib/aws-cloudwatch';
 import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
 import { CfnFlow } from 'aws-cdk-lib/aws-mediaconnect';
