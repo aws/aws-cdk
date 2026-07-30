@@ -8,11 +8,11 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
  *
  * The stack contains a compliant TERMINAL-routing GameLift alias (deployable
  * without a fleet, no cost) and a violating alias that both routes to a fleet
- * and carries a terminal message (CDK-GameLift-005). The violating alias sits
- * behind a never-true condition: the default Rego rules evaluate the full
- * template regardless of conditions, so the finding is still reported at
- * synth, but CloudFormation never creates the invalid resource — which the
- * GameLift API would reject.
+ * and carries a terminal message (CDK-GameLift-005) — contradictory
+ * configuration that GameLift accepts but partially ignores. The violating
+ * alias sits behind a never-true condition: the default Rego rules evaluate
+ * the full template regardless of conditions, so the finding is still
+ * reported at synth, while CloudFormation never creates the resource.
  *
  * With the default warning posture the violation does not block deployment;
  * the snapshot captures the violating template so a regression in default

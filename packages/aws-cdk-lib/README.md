@@ -1769,11 +1769,11 @@ addition to* the CDK default rules described below; pass
 In addition to the built-in rule set of the validation engine, the CDK ships
 its own default rules, written in [Rego](https://www.openpolicyagent.org/docs/latest/policy-language/).
 These check cross-field invariants that the CloudFormation resource schemas
-cannot express — mistakes that would otherwise pass template validation and
-only fail at the service API during deployment. Because they run on the
-synthesized template, they also cover resources defined through L1 constructs,
-escape hatches, and `CfnInclude`, which construct-level (L2) validation cannot
-see.
+cannot express: mistakes that pass template validation but fail at the service
+API during deployment, and contradictory configuration that the service
+accepts but partially ignores. Because they run on the synthesized template,
+they also cover resources defined through L1 constructs, escape hatches, and
+`CfnInclude`, which construct-level (L2) validation cannot see.
 
 The current rules cover Amazon GameLift resources:
 
@@ -1784,6 +1784,11 @@ The current rules cover Amazon GameLift resources:
 | `CDK-GameLift-003` | A fleet location's `DesiredEC2Instances` lies within `[MinSize, MaxSize]` |
 | `CDK-GameLift-004` | An alias with `SIMPLE` routing does not carry a terminal `Message` |
 | `CDK-GameLift-005` | An alias with `TERMINAL` routing does not reference a fleet |
+
+The fleet rules (001–003) catch deployment failures: the GameLift API rejects
+these values, rolling back the stack mid-deployment. The alias rules (004–005)
+catch contradictory routing configuration that deploys successfully but leaves
+one of the two fields silently unused.
 
 Like all findings of this plugin, violations are reported as warnings unless
 the `@aws-cdk/core:validateAgainstDefaultRules` context key is set to `true`,

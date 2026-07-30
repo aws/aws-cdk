@@ -8,6 +8,14 @@ import rego.v1
 # limits (lengths, item counts, per-field ranges, patterns) are already
 # covered by the engine's built-in rules (F3031-F3034).
 #
+# The fleet rules (001-003) catch verified deploy-time failures: the GameLift
+# API rejects inverted port ranges at CreateFleet and out-of-range capacity
+# values at UpdateFleetCapacity, so these mistakes otherwise surface as a
+# CloudFormation rollback mid-deployment. The alias rules (004-005) catch
+# contradictory configuration that the service accepts but partially ignores:
+# a routing strategy carrying both a fleet and a terminal message deploys
+# successfully, with one of the two fields silently unused.
+#
 # Because these run on the synthesized template, they also cover L1
 # constructs, escape hatches, and CfnInclude, and token-valued properties
 # are already resolved.
