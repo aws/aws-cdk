@@ -194,6 +194,12 @@ const IGNORE_RULES = new Set([
   // Will be silenced forever.
   'W1020',
 
+  // WHAT: Fn::GetStackOutput is not an allowed direct source for Fn::Split.
+  // WHY: CDK generates this nesting when deserializing weak string-list cross-stack references,
+  // and customers cannot control the generated expression.
+  // https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/intrinsic-function-reference-split.html
+  'E1018',
+
   // WHAT: Circular dependency detection
   // WHY: Something seems fishy about it
   // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/53>.
