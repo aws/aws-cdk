@@ -102,12 +102,9 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
   public validate(context: IPolicyValidationContext): PolicyValidationPluginReport {
     const violations: MutableViolation[] = [];
 
-    for (const templatePath of context.templatePaths) {
+    for (const { stackConstructPath, templatePath } of context.stackTemplates) {
       const templateFile = new TemplateFile(templatePath);
-      const report = this.engine.validateStandard(templateFile, {
-        // Environment-agnostic stacks use these cx-api sentinels in the cloud assembly. Omitting
-        // them lets the engine model the pseudo-parameters symbolically instead of validating the
-        // sentinel text as if it were a real account or region.
+      const report = this.engine.validateDetailed(templateFile, {
         pseudoParameterOverrides: {
           accountId: context.accountId,
           region: context.region,
@@ -130,8 +127,14 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
       for (const diagnostic of report.diagnostics) {
         const severity = mapSeverity(diagnostic.severity);
 
+        const resourceLogicalId = diagnostic.entity?.entityType === 'Resource'
+          ? diagnostic.entity.logicalId
+          : undefined;
+
         const violatingResource: PolicyViolatingResource = {
-          resourceLogicalId: diagnostic.resourceId,
+          resourceLogicalId,
+          // If this is not about any resources, best we can do is point it to the stack
+          constructPath: !resourceLogicalId ? stackConstructPath : undefined,
           templatePath,
           locations: diagnostic.propertyPath ? [diagnostic.propertyPath] : [],
         };
@@ -191,9 +194,11 @@ const IGNORE_RULES = new Set([
   // Will be silenced forever.
   'W1020',
 
-  // WHAT: Condition can never be false.
-  // WHY: The engine assumes AWS::Partition can only ever equal 'aws', which is not true. Should be removed.
-  'W1028',
+  // WHAT: Fn::GetStackOutput is not an allowed direct source for Fn::Split.
+  // WHY: CDK generates this nesting when deserializing weak string-list cross-stack references,
+  // and customers cannot control the generated expression.
+  // https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/intrinsic-function-reference-split.html
+  'E1018',
 
   // WHAT: Circular dependency detection
   // WHY: Something seems fishy about it
@@ -208,11 +213,6 @@ const IGNORE_RULES = new Set([
   // WHY: Hardcoding an account ID in ARNs is commonly done in CDK when we are setting up large applications that
   // span accounts.
   'W9013',
-
-  // WHAT: Lambda Permission should always have a SourceAccount
-  // WHY: It doesn't seem to detect the account that's there in the ARN?
-  // <https://github.com/aws-cloudformation/cloudformation-validate/issues/183>
-  'W3663',
 
   // WHAT: value type tracking (parameter default should be a string)
   // WHY: When the value is imported, it is considered not a string.
