@@ -152,27 +152,6 @@ const cluster = new docdb.DatabaseCluster(this, 'Database', {
 });
 ```
 
-### Manual Password Rotation
-
-To trigger an immediate one-time rotation of the managed master user password, set
-`rotateMasterUserPassword` to `true` on an existing cluster and deploy the change. It has no
-effect when creating a new cluster, and it does not change the automatic rotation schedule
-(the managed secret is rotated every 7 days by default).
-
-```ts
-declare const vpc: ec2.Vpc;
-
-const cluster = new docdb.DatabaseCluster(this, 'Database', {
-  manageMasterUserPassword: true,
-  masterUser: {
-    username: 'myuser',
-  },
-  rotateMasterUserPassword: true, // One-time rotation, takes effect when applied to an existing cluster
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.MEMORY5, ec2.InstanceSize.LARGE),
-  vpc,
-});
-```
-
 ### Accessing the Managed Secret
 
 The ARN of the secret created by `manageMasterUserPassword` is not provided by CloudFormation currently

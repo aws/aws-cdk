@@ -351,21 +351,6 @@ export interface DatabaseClusterProps {
    * @default - default AWS managed key `aws/secretsmanager`
    */
   readonly masterUserSecretKmsKey?: kms.IKey;
-
-  /**
-   * Specifies whether to trigger an immediate one-time rotation of the master user password
-   * managed by AWS Secrets Manager.
-   *
-   * Takes effect only in an update to an existing cluster; it has no effect at cluster
-   * creation. It does NOT establish scheduled rotation - Amazon DocumentDB rotates the
-   * managed secret every 7 days by default.
-   *
-   * This setting is valid only if `manageMasterUserPassword` is true.
-   *
-   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/docdb-secrets-manager.html
-   * @default false
-   */
-  readonly rotateMasterUserPassword?: boolean;
 }
 
 /**
@@ -664,10 +649,6 @@ export class DatabaseCluster extends DatabaseClusterBase {
       throw new ValidationError(lit`MasterUserSecretKmsKeyRequiresManagedPassword`, 'masterUserSecretKmsKey is valid only if manageMasterUserPassword is true', this);
     }
 
-    if (props.rotateMasterUserPassword && !props.manageMasterUserPassword) {
-      throw new ValidationError(lit`RotateMasterUserPasswordRequiresManagedPassword`, 'rotateMasterUserPassword is valid only if manageMasterUserPassword is true', this);
-    }
-
     this.manageMasterUserPassword = props.manageMasterUserPassword;
 
     // Create the secret manager secret if no password is specified and manageMasterUserPassword is false
@@ -724,7 +705,6 @@ export class DatabaseCluster extends DatabaseClusterBase {
       // ManageMasterUserPassword
       manageMasterUserPassword: props.manageMasterUserPassword,
       masterUserSecretKmsKeyId: props.masterUserSecretKmsKey?.keyArn,
-      rotateMasterUserPassword: props.rotateMasterUserPassword,
       // Backup
       backupRetentionPeriod: props.backup?.retention?.toDays(),
       preferredBackupWindow: props.backup?.preferredWindow,
