@@ -1471,29 +1471,6 @@ describe('DatabaseCluster', () => {
       });
     });
 
-    test('can enable password rotation for managed master user password', () => {
-      // GIVEN
-      const stack = testStack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-
-      // WHEN
-      new DatabaseCluster(stack, 'Database', {
-        manageMasterUserPassword: true,
-        masterUser: {
-          username: 'admin',
-        },
-        rotateMasterUserPassword: true,
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-        vpc,
-      });
-
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
-        ManageMasterUserPassword: true,
-        RotateMasterUserPassword: true,
-      });
-    });
-
     test('throws error when manageMasterUserPassword is true but masterUser.password is specified', () => {
       // GIVEN
       const stack = testStack();
@@ -1530,24 +1507,6 @@ describe('DatabaseCluster', () => {
           vpc,
         });
       }).toThrow('masterUserSecretKmsKey is valid only if manageMasterUserPassword is true');
-    });
-
-    test('throws error when rotateMasterUserPassword is specified but manageMasterUserPassword is false', () => {
-      // GIVEN
-      const stack = testStack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-
-      // WHEN/THEN
-      expect(() => {
-        new DatabaseCluster(stack, 'Database', {
-          masterUser: {
-            username: 'admin',
-          },
-          rotateMasterUserPassword: true,
-          instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-          vpc,
-        });
-      }).toThrow('rotateMasterUserPassword is valid only if manageMasterUserPassword is true');
     });
 
     test('fails when addRotationSingleUser is called with manageMasterUserPassword enabled', () => {

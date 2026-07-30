@@ -24,7 +24,6 @@ class TestStack extends cdk.Stack {
         username: 'docdbuser',
       },
       masterUserSecretKmsKey: kmsKey,
-      rotateMasterUserPassword: true,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
       vpc,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
