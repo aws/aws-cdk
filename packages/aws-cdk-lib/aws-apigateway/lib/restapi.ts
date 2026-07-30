@@ -1013,11 +1013,11 @@ export class RestApi extends RestApiBase {
     }
 
     if (props.securityPolicy?.startsWith('SecurityPolicy_') && !props.endpointAccessMode ) {
-      throw new ValidationError('When using a SecurityPolicy starting with "SecurityPolicy_", endpointAccessMode must be specified.', this);
+      throw new ValidationError(lit`SecurityPolicyRequiresEndpointAccessMode`, 'When using a SecurityPolicy starting with "SecurityPolicy_", endpointAccessMode must be specified.', this);
     }
 
     if ((props.endpointTypes?.includes(EndpointType.EDGE) || props.endpointConfiguration?.types?.includes(EndpointType.EDGE)) && props.securityPolicy && !props.securityPolicy?.endsWith('_EDGE')) {
-      throw new ValidationError('When using an EDGE endpoint configuration, the securityPolicy must end with "_EDGE".', this);
+      throw new ValidationError(lit`EdgeEndpointRequiresEdgeSecurityPolicy`, 'When using an EDGE endpoint configuration, the securityPolicy must end with "_EDGE".', this);
     }
 
     this._setResourcePolicy(props.policy);
