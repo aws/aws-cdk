@@ -156,6 +156,84 @@ describe('default GameLift rules', () => {
     const violations = pluginViolations(loadValidationReport(app.synth()));
     expect(violations.filter((v) => v.ruleName.startsWith('CDK-GameLift'))).toEqual([]);
   });
+
+  test('an explicitly registered plugin with custom rules still evaluates the default rules', () => {
+    const app = testApp();
+    core.Validations.of(app).addPlugins(new core.CloudFormationValidatePlugin({
+      regoRules: [{
+        name: 'my-custom.rego',
+        content: [
+          'package my_custom',
+          'import rego.v1',
+          'violation contains v if {',
+          '	some name in resources_of_type("AWS::GameLift::Alias")',
+          '	v := make_diag("MY-CUSTOM-001", "WARN", name, "custom rule fired")',
+          '}',
+        ].join('\n'),
+      }],
+    }));
+    const stack = new core.Stack(app, 'TestStack');
+    new core.CfnResource(stack, 'MyAlias', {
+      type: 'AWS::GameLift::Alias',
+      properties: {
+        Name: 'my-alias',
+        RoutingStrategy: { Type: 'SIMPLE', FleetId: 'fleet-1234', Message: 'goodbye' },
+      },
+    });
+
+    const violations = pluginViolations(loadValidationReport(app.synth()));
+
+    // Both the user's custom rule and the CDK default rule must fire
+    expect(violations).toContainEqual(expect.objectContaining({ ruleName: 'MY-CUSTOM-001' }));
+    expect(violations).toContainEqual(expect.objectContaining({ ruleName: 'CDK-GameLift-004' }));
+  });
+
+  test('default rule findings can be suppressed via acknowledge()', () => {
+    const app = testApp();
+    core.Validations.of(app).acknowledge({
+      id: 'CloudFormation-Validate::CDK-GameLift-004',
+      reason: 'testing suppression of a default rule',
+    });
+    const stack = new core.Stack(app, 'TestStack');
+    new core.CfnResource(stack, 'MyAlias', {
+      type: 'AWS::GameLift::Alias',
+      properties: {
+        Name: 'my-alias',
+        RoutingStrategy: { Type: 'SIMPLE', FleetId: 'fleet-1234', Message: 'goodbye' },
+      },
+    });
+
+    const report = loadValidationReport(app.synth());
+    const violations = pluginViolations(report);
+
+    // The finding is moved from violations to suppressedViolations
+    expect(violations.filter((v) => v.ruleName === 'CDK-GameLift-004')).toEqual([]);
+    const suppressed = report.pluginReports
+      .filter((r) => r.pluginName === 'CloudFormation Validate')
+      .flatMap((r) => r.suppressedViolations ?? []);
+    expect(suppressed).toContainEqual(expect.objectContaining({
+      ruleName: 'CDK-GameLift-004',
+    }));
+  });
+
+  test('includeDefaultRules: false opts out of the default rules', () => {
+    const app = testApp();
+    core.Validations.of(app).addPlugins(new core.CloudFormationValidatePlugin({
+      includeDefaultRules: false,
+    }));
+    const stack = new core.Stack(app, 'TestStack');
+    new core.CfnResource(stack, 'MyAlias', {
+      type: 'AWS::GameLift::Alias',
+      properties: {
+        Name: 'my-alias',
+        RoutingStrategy: { Type: 'SIMPLE', FleetId: 'fleet-1234', Message: 'goodbye' },
+      },
+    });
+
+    const violations = pluginViolations(loadValidationReport(app.synth()));
+
+    expect(violations.filter((v) => v.ruleName.startsWith('CDK-GameLift'))).toEqual([]);
+  });
 });
 
 const FLEET_BASE = {

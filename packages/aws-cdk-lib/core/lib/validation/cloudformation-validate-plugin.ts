@@ -46,6 +46,18 @@ export interface CloudFormationValidatePluginProps {
    * @default - no guard rules
    */
   readonly guardRules?: ValidationRuleSource[];
+
+  /**
+   * Whether to evaluate the default Rego rules that ship with the CDK.
+   *
+   * Registering a `CloudFormationValidatePlugin` explicitly replaces the
+   * auto-registered default instance, so without this flag adding custom
+   * rules would silently drop the CDK default rules. Individual default
+   * rules can be suppressed by ID via `Validations.of(scope).acknowledge()`.
+   *
+   * @default true
+   */
+  readonly includeDefaultRules?: boolean;
 }
 
 /**
@@ -68,9 +80,7 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
    */
   public static _singletonInstance() {
     if (!CloudFormationValidatePlugin._instance) {
-      CloudFormationValidatePlugin._instance = new CloudFormationValidatePlugin({
-        regoRules: defaultRegoRules(),
-      });
+      CloudFormationValidatePlugin._instance = new CloudFormationValidatePlugin();
     }
     return CloudFormationValidatePlugin._instance;
   }
@@ -83,8 +93,12 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
 
   constructor(props: CloudFormationValidatePluginProps = {}) {
     const config: EngineConfig = {};
-    if (props.regoRules) {
-      config.customRules = props.regoRules;
+    const regoRules = [
+      ...(props.includeDefaultRules ?? true) ? defaultRegoRules() : [],
+      ...props.regoRules ?? [],
+    ];
+    if (regoRules.length > 0) {
+      config.customRules = regoRules;
     }
     if (props.guardRules) {
       config.guardRules = props.guardRules;

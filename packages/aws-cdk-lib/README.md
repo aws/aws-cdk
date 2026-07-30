@@ -1759,6 +1759,46 @@ Validations.of(app).addPlugins(new CloudFormationValidatePlugin({
 }));
 ```
 
+An explicitly registered `CloudFormationValidatePlugin` replaces the
+auto-registered default instance. Your custom rules are evaluated *in
+addition to* the CDK default rules described below; pass
+`includeDefaultRules: false` to opt out of the default rules entirely.
+
+#### CDK default rules
+
+In addition to the built-in rule set of the validation engine, the CDK ships
+its own default rules, written in [Rego](https://www.openpolicyagent.org/docs/latest/policy-language/).
+These check cross-field invariants that the CloudFormation resource schemas
+cannot express — mistakes that would otherwise pass template validation and
+only fail at the service API during deployment. Because they run on the
+synthesized template, they also cover resources defined through L1 constructs,
+escape hatches, and `CfnInclude`, which construct-level (L2) validation cannot
+see.
+
+The current rules cover Amazon GameLift resources:
+
+| Rule ID | Checks |
+|---------|--------|
+| `CDK-GameLift-001` | A fleet ingress rule's port range is not inverted (`FromPort` &le; `ToPort`) |
+| `CDK-GameLift-002` | A fleet location's capacity satisfies `MinSize` &le; `MaxSize` |
+| `CDK-GameLift-003` | A fleet location's `DesiredEC2Instances` lies within `[MinSize, MaxSize]` |
+| `CDK-GameLift-004` | An alias with `SIMPLE` routing does not carry a terminal `Message` |
+| `CDK-GameLift-005` | An alias with `TERMINAL` routing does not reference a fleet |
+
+Like all findings of this plugin, violations are reported as warnings unless
+the `@aws-cdk/core:validateAgainstDefaultRules` context key is set to `true`,
+in which case they become errors and fail synthesis. Individual rules can be
+suppressed by their ID, using the same mechanism shown above:
+
+```ts fixture=validation-plugin
+const app = new App();
+
+Validations.of(app).acknowledge({
+  id: 'CloudFormation-Validate::CDK-GameLift-001',
+  reason: 'This template is never deployed as-is; ports are rewritten downstream',
+});
+```
+
 ### Additional plugins
 
 You can also add custom plugins like [cdk-nag](https://github.com/cdklabs/cdk-nag) and
