@@ -523,7 +523,7 @@
     ],
     "EnableIAMDatabaseAuthentication": true,
     "Engine": "postgres",
-    "EngineVersion": "18.2",
+    "EngineVersion": "18.3",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -652,7 +652,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Handler": "index.handler",
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Timeout": 900,
     "Code": {
      "S3Bucket": {

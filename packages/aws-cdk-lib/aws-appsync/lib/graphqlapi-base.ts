@@ -22,6 +22,7 @@ import type { IDatabaseCluster, IServerlessCluster } from '../../aws-rds';
 import type { ISecret } from '../../aws-secretsmanager';
 import type { CfnResource, IResource } from '../../core';
 import { ArnFormat, Resource, Stack, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 import type { IGraphQLApiRef, GraphQLApiReference } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
 /**
@@ -76,7 +77,7 @@ export class IamResource {
    */
   public static custom(...arns: string[]): IamResource {
     if (arns.length === 0) {
-      throw new UnscopedValidationError('At least 1 custom ARN must be provided.');
+      throw new UnscopedValidationError(lit`MustBeLeastCustomProvided`, 'At least 1 custom ARN must be provided.');
     }
     return new IamResource(arns);
   }
@@ -171,7 +172,7 @@ export enum AuthorizationType {
 export interface IGraphqlApi extends IResource, IGraphQLApiRef {
 
   /**
-   * an unique AWS AppSync GraphQL API identifier
+   * a unique AWS AppSync GraphQL API identifier
    * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
    *
    * @attribute
@@ -352,7 +353,7 @@ export interface IGraphqlApi extends IResource, IGraphQLApiRef {
  */
 export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
   /**
-   * an unique AWS AppSync GraphQL API identifier
+   * a unique AWS AppSync GraphQL API identifier
    * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
    */
   public abstract readonly apiId: string;

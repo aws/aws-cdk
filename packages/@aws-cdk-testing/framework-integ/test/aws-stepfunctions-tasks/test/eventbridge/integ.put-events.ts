@@ -36,7 +36,7 @@ const putEventsTask = new EventBridgePutEvents(stack, 'Put Custom Events', {
 });
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
-  definition: putEventsTask,
+  definitionBody: sfn.DefinitionBody.fromChainable(putEventsTask),
   timeout: cdk.Duration.seconds(30),
 });
 

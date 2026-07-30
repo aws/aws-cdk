@@ -866,6 +866,95 @@ describe('Environment', () => {
     });
   });
 
+  test('logs config - s3 with encrypted true sets EncryptionDisabled to false', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'LogBucket', 'mybucketname');
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        path: 'path',
+      }),
+      logging: {
+        s3: {
+          bucket,
+          encrypted: true,
+        },
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      LogsConfig: Match.objectLike({
+        S3Logs: {
+          Status: 'ENABLED',
+          EncryptionDisabled: false,
+        },
+      }),
+    });
+  });
+
+  test('logs config - s3 with encrypted false sets EncryptionDisabled to true', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'LogBucket', 'mybucketname');
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        path: 'path',
+      }),
+      logging: {
+        s3: {
+          bucket,
+          encrypted: false,
+        },
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      LogsConfig: Match.objectLike({
+        S3Logs: {
+          Status: 'ENABLED',
+          EncryptionDisabled: true,
+        },
+      }),
+    });
+  });
+
+  test('logs config - s3 with encrypted unset does not set EncryptionDisabled', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'LogBucket', 'mybucketname');
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        path: 'path',
+      }),
+      logging: {
+        s3: {
+          bucket,
+        },
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      LogsConfig: Match.objectLike({
+        S3Logs: {
+          Status: 'ENABLED',
+          EncryptionDisabled: Match.absent(),
+        },
+      }),
+    });
+  });
+
   test('logs config - cloudWatch and s3', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -972,6 +1061,7 @@ describe('Environment', () => {
   test.each([
     ['Base 14', codebuild.MacBuildImage.BASE_14, 'aws/codebuild/macos-arm-base:14'],
     ['Base 15', codebuild.MacBuildImage.BASE_15, 'aws/codebuild/macos-arm-base:15'],
+    ['Base 26', codebuild.MacBuildImage.BASE_26, 'aws/codebuild/macos-arm-base:26'],
   ])('has build image for %s', (_, buildImage, expected) => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1043,6 +1133,7 @@ describe('Environment', () => {
   test.each([
     ['BASE_14', codebuild.MacBuildImage.BASE_14, 'aws/codebuild/macos-arm-base:14'],
     ['BASE_15', codebuild.MacBuildImage.BASE_15, 'aws/codebuild/macos-arm-base:15'],
+    ['BASE_26', codebuild.MacBuildImage.BASE_26, 'aws/codebuild/macos-arm-base:26'],
   ])('can set macOS fleet with %s', (_, buildImage, expectedImage) => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1114,6 +1205,7 @@ describe('Environment', () => {
   test.each([
     ['BASE_14', codebuild.MacBuildImage.BASE_14, 'aws/codebuild/macos-arm-base:14'],
     ['BASE_15', codebuild.MacBuildImage.BASE_15, 'aws/codebuild/macos-arm-base:15'],
+    ['BASE_26', codebuild.MacBuildImage.BASE_26, 'aws/codebuild/macos-arm-base:26'],
   ])('can set imported macOS fleet with %s', (_, buildImage, expectedImage) => {
     // GIVEN
     const stack = new cdk.Stack();
