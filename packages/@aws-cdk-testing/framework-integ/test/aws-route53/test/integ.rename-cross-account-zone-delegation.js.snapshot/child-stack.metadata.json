@@ -3,7 +3,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.rename-cross-account-zone-delegation.js:102:23)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.rename-cross-account-zone-delegation.js:102:23)",
         "...node internals..."
       ]
     }
@@ -48,16 +48,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
-        "DefaultStackSynthesizer.synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
-        "/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
-        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
-        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
-        "synthesizeTree (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
-        "synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
-        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
-        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
       ]
     }
   ],
@@ -69,16 +69,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
-        "DefaultStackSynthesizer.synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
-        "/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
-        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
-        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
-        "synthesizeTree (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
-        "synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
-        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
-        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
       ]
     }
   ],
@@ -90,13 +90,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new HostedZone (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-route53/lib/hosted-zone.js:290:30)",
-        "new HostedZone (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new HostedZone (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicHostedZone (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-route53/lib/hosted-zone.js:482:13)",
-        "new PublicHostedZone (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new ChildStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.rename-cross-account-zone-delegation.js:70:25)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.rename-cross-account-zone-delegation.js:102:23)",
+        "new HostedZone (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/hosted-zone.js:290:30)",
+        "new HostedZone (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new HostedZone (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicHostedZone (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/hosted-zone.js:482:13)",
+        "new PublicHostedZone (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ChildStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.rename-cross-account-zone-delegation.js:70:25)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.rename-cross-account-zone-delegation.js:102:23)",
         "...node internals..."
       ]
     }
@@ -133,12 +133,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResourceProviderBase (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:131:25)",
-        "new CrossAccountZoneDelegationProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-route53/cross-account-zone-delegation-provider.generated.js:57:9)",
-        "CrossAccountZoneDelegationProvider.getOrCreateProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-route53/cross-account-zone-delegation-provider.generated.js:54:28)",
-        "new CrossAccountZoneDelegationRecord (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-route53/lib/record-set.js:1383:114)",
-        "new ChildStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.rename-cross-account-zone-delegation.js:73:9)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.rename-cross-account-zone-delegation.js:102:23)",
+        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:131:25)",
+        "new CrossAccountZoneDelegationProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-route53/cross-account-zone-delegation-provider.generated.js:57:9)",
+        "CrossAccountZoneDelegationProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-route53/cross-account-zone-delegation-provider.generated.js:54:28)",
+        "new CrossAccountZoneDelegationRecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:1383:114)",
+        "new ChildStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.rename-cross-account-zone-delegation.js:73:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.rename-cross-account-zone-delegation.js:102:23)",
         "...node internals..."
       ]
     }
@@ -151,12 +151,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResourceProviderBase (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:153:24)",
-        "new CrossAccountZoneDelegationProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-route53/cross-account-zone-delegation-provider.generated.js:57:9)",
-        "CrossAccountZoneDelegationProvider.getOrCreateProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-route53/cross-account-zone-delegation-provider.generated.js:54:28)",
-        "new CrossAccountZoneDelegationRecord (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-route53/lib/record-set.js:1383:114)",
-        "new ChildStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.rename-cross-account-zone-delegation.js:73:9)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.rename-cross-account-zone-delegation.js:102:23)",
+        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:153:24)",
+        "new CrossAccountZoneDelegationProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-route53/cross-account-zone-delegation-provider.generated.js:57:9)",
+        "CrossAccountZoneDelegationProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-route53/cross-account-zone-delegation-provider.generated.js:54:28)",
+        "new CrossAccountZoneDelegationRecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:1383:114)",
+        "new ChildStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.rename-cross-account-zone-delegation.js:73:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.rename-cross-account-zone-delegation.js:102:23)",
         "...node internals..."
       ]
     }
@@ -201,12 +201,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new CrossAccountZoneDelegationRecord (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-route53/lib/record-set.js:1390:32)",
-        "new ChildStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.rename-cross-account-zone-delegation.js:73:9)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.rename-cross-account-zone-delegation.js:102:23)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new CrossAccountZoneDelegationRecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:1390:32)",
+        "new ChildStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.rename-cross-account-zone-delegation.js:73:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.rename-cross-account-zone-delegation.js:102:23)",
         "...node internals..."
       ]
     }
@@ -219,14 +219,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/private/imported-role.js:144:38)",
-        "WrappedClass.<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new CrossAccountZoneDelegationRecord (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-route53/lib/record-set.js:1385:49)",
-        "new ChildStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.rename-cross-account-zone-delegation.js:73:9)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.rename-cross-account-zone-delegation.js:102:23)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/private/imported-role.js:144:38)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new CrossAccountZoneDelegationRecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:1385:49)",
+        "new ChildStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.rename-cross-account-zone-delegation.js:73:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.rename-cross-account-zone-delegation.js:102:23)",
         "...node internals..."
       ]
     }

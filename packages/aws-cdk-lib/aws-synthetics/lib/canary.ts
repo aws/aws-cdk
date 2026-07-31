@@ -589,6 +589,14 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
     });
     this._resource = resource;
 
+    if (props.resourcesToReplicateTags?.length === 0) {
+      // Silence a CloudFormation-Validate warning that it would emit about an empty array here
+      cdk.Validations.of(resource).acknowledge({
+        id: 'CloudFormation-Validate::F3032',
+        reason: 'An empty list of resources to replicate tags is historically supported by this construct.',
+      });
+    }
+
     this.canaryArn = cdk.Stack.of(this).formatArn({
       service: 'synthetics',
       resource: 'canary',

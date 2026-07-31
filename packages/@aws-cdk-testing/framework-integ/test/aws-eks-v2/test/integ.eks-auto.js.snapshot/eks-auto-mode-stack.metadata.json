@@ -3,7 +3,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
         "...node internals..."
       ]
     }
@@ -30,16 +30,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
-        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
-        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
-        "synthesizeTree (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
-        "synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
-        "App.synth (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "App.synth (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
       ]
     }
   ],
@@ -51,16 +51,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
-        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
-        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
-        "synthesizeTree (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
-        "synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
-        "App.synth (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "App.synth (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
       ]
     }
   ],
@@ -72,10 +72,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:770:29)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksAutoModeBaseStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:35:21)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:770:29)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksAutoModeBaseStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:35:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
         "...node internals..."
       ]
     }
@@ -208,10 +208,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:825:29)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksAutoModeBaseStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:35:21)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:825:29)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksAutoModeBaseStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:35:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
         "...node internals..."
       ]
     }
@@ -224,10 +224,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:828:29)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksAutoModeBaseStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:35:21)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:828:29)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksAutoModeBaseStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:35:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
         "...node internals..."
       ]
     }
@@ -246,14 +246,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResourceProviderBase (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:98:25)",
-        "new RestrictDefaultSgProvider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:24:9)",
-        "RestrictDefaultSgProvider.getOrCreateProvider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:21:28)",
-        "WrappedClass.restrictDefaultSecurityGroup (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1072:99)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:894:22)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksAutoModeBaseStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:35:21)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
+        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:98:25)",
+        "new RestrictDefaultSgProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:24:9)",
+        "RestrictDefaultSgProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:21:28)",
+        "WrappedClass.restrictDefaultSecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1072:99)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:894:22)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksAutoModeBaseStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:35:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
         "...node internals..."
       ]
     }
@@ -266,14 +266,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResourceProviderBase (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:120:24)",
-        "new RestrictDefaultSgProvider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:24:9)",
-        "RestrictDefaultSgProvider.getOrCreateProvider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:21:28)",
-        "WrappedClass.restrictDefaultSecurityGroup (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1072:99)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:894:22)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksAutoModeBaseStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:35:21)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
+        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:120:24)",
+        "new RestrictDefaultSgProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:24:9)",
+        "RestrictDefaultSgProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:21:28)",
+        "WrappedClass.restrictDefaultSecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1072:99)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:894:22)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksAutoModeBaseStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:35:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
         "...node internals..."
       ]
     }
@@ -312,16 +312,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
       ]
     }
   ],
@@ -333,16 +333,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
       ]
     }
   ],
@@ -354,16 +354,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
       ]
     }
   ],
@@ -375,14 +375,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addDefaultInternetRoute (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1304:27)",
-        "WrappedClass.<anonymous> (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:3)",
+        "WrappedClass.addDefaultInternetRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1304:27)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:3)",
         "Array.forEach (:)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksAutoModeBaseStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:35:21)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksAutoModeBaseStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:35:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
         "...node internals..."
       ]
     }
@@ -395,14 +395,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addNatGateway (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1556:50)",
-        "WrappedClass.<anonymous> (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureNat (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
-        "WrappedClass.createNatGateways (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksAutoModeBaseStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:35:21)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
+        "WrappedClass.addNatGateway (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1556:50)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksAutoModeBaseStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:35:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
         "...node internals..."
       ]
     }
@@ -415,14 +415,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addNatGateway (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1554:25)",
-        "WrappedClass.<anonymous> (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureNat (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
-        "WrappedClass.createNatGateways (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksAutoModeBaseStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:35:21)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
+        "WrappedClass.addNatGateway (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1554:25)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksAutoModeBaseStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:35:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
         "...node internals..."
       ]
     }
@@ -435,16 +435,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
       ]
     }
   ],
@@ -456,16 +456,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
       ]
     }
   ],
@@ -477,16 +477,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
       ]
     }
   ],
@@ -498,14 +498,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addDefaultInternetRoute (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1304:27)",
-        "WrappedClass.<anonymous> (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:3)",
+        "WrappedClass.addDefaultInternetRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1304:27)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:3)",
         "Array.forEach (:)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksAutoModeBaseStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:35:21)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksAutoModeBaseStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:35:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
         "...node internals..."
       ]
     }
@@ -518,16 +518,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
       ]
     }
   ],
@@ -539,16 +539,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
       ]
     }
   ],
@@ -560,16 +560,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
       ]
     }
   ],
@@ -581,15 +581,15 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addRoute (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1393:27)",
-        "WrappedClass.<anonymous> (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureSubnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
-        "NatGatewayProvider.configureNat (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
-        "WrappedClass.createNatGateways (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksAutoModeBaseStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:35:21)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
+        "WrappedClass.addRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1393:27)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
+        "NatGatewayProvider.configureNat (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
+        "WrappedClass.createNatGateways (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksAutoModeBaseStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:35:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
         "...node internals..."
       ]
     }
@@ -602,16 +602,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
       ]
     }
   ],
@@ -623,16 +623,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
       ]
     }
   ],
@@ -644,16 +644,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
       ]
     }
   ],
@@ -665,15 +665,15 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addRoute (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1393:27)",
-        "WrappedClass.<anonymous> (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureSubnet (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
-        "NatGatewayProvider.configureNat (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
-        "WrappedClass.createNatGateways (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksAutoModeBaseStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:35:21)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
+        "WrappedClass.addRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1393:27)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
+        "NatGatewayProvider.configureNat (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
+        "WrappedClass.createNatGateways (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksAutoModeBaseStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:35:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
         "...node internals..."
       ]
     }
@@ -686,14 +686,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "WrappedClass.restrictDefaultSecurityGroup (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1091:13)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:894:22)",
-        "new Vpc (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksAutoModeBaseStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:35:21)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "WrappedClass.restrictDefaultSecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1091:13)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:894:22)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksAutoModeBaseStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:35:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
         "...node internals..."
       ]
     }
@@ -706,12 +706,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new LayerVersion (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:164:30)",
-        "new LayerVersion (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:164:30)",
+        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "...new KubectlV33Layer in @aws-cdk/lambda-layer-kubectl-v33...",
-        "new EksMinimalCluster (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:18:31)",
-        "new EksAutoModeBaseStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:36:9)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
+        "new EksMinimalCluster (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:18:31)",
+        "new EksAutoModeBaseStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:36:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
         "...node internals..."
       ]
     }
@@ -808,11 +808,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:706:46)",
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksMinimalCluster (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:26:9)",
-        "new EksAutoModeBaseStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:36:9)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:706:46)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksMinimalCluster (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:26:9)",
+        "new EksAutoModeBaseStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:36:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
         "...node internals..."
       ]
     }
@@ -825,11 +825,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:793:41)",
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksMinimalCluster (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:26:9)",
-        "new EksAutoModeBaseStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:36:9)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:793:41)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksMinimalCluster (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:26:9)",
+        "new EksAutoModeBaseStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:36:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
         "...node internals..."
       ]
     }
@@ -866,13 +866,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:640:39)",
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksMinimalCluster (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:26:9)",
-        "new EksAutoModeBaseStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:36:9)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:640:39)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksMinimalCluster (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:26:9)",
+        "new EksAutoModeBaseStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:36:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
         "...node internals..."
       ]
     }
@@ -885,14 +885,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new SecurityGroup (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
-        "new SecurityGroup (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new SecurityGroup (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:671:58)",
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksMinimalCluster (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:26:9)",
-        "new EksAutoModeBaseStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:36:9)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
+        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
+        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:671:58)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksMinimalCluster (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:26:9)",
+        "new EksAutoModeBaseStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:36:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
         "...node internals..."
       ]
     }
@@ -905,14 +905,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addNodePoolRole (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:1261:26)",
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:722:66)",
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksMinimalCluster (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:26:9)",
-        "new EksAutoModeBaseStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:36:9)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addNodePoolRole (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:1261:26)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:722:66)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksMinimalCluster (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:26:9)",
+        "new EksAutoModeBaseStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:36:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
         "...node internals..."
       ]
     }
@@ -981,16 +981,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new AccessEntry (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/access-entry.js:338:29)",
-        "new AccessEntry (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new AccessEntry (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.grantClusterAdmin (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:929:30)",
-        "WrappedClass.<anonymous> (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:835:49)",
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksMinimalCluster (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:26:9)",
-        "new EksAutoModeBaseStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:36:9)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)"
+        "new AccessEntry (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/access-entry.js:338:29)",
+        "new AccessEntry (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AccessEntry (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.grantClusterAdmin (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:929:30)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:835:49)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksMinimalCluster (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:26:9)",
+        "new EksAutoModeBaseStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:36:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)"
       ]
     }
   ],
@@ -1073,14 +1073,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:104:25)",
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksMinimalCluster (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:26:9)",
-        "new EksAutoModeBaseStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:36:9)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:104:25)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksMinimalCluster (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:26:9)",
+        "new EksAutoModeBaseStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:36:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
         "...node internals..."
       ]
     }
@@ -1093,12 +1093,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new KubectlProvider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:141:39)",
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksMinimalCluster (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:26:9)",
-        "new EksAutoModeBaseStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:36:9)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
+        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:141:39)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksMinimalCluster (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:26:9)",
+        "new EksAutoModeBaseStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:36:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)",
         "...node internals..."
       ]
     }
@@ -1111,16 +1111,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new LayerVersion (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:164:30)",
-        "new LayerVersion (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AwsCliLayer (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/lambda-layer-awscli/lib/awscli-layer.js:77:13)",
-        "new AwsCliLayer (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:123:48)",
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksMinimalCluster (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:26:9)",
-        "new EksAutoModeBaseStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:36:9)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)"
+        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:164:30)",
+        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsCliLayer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/lambda-layer-awscli/lib/awscli-layer.js:77:13)",
+        "new AwsCliLayer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:123:48)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksMinimalCluster (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:26:9)",
+        "new EksAutoModeBaseStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:36:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)"
       ]
     }
   ],
@@ -1169,16 +1169,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:104:25)",
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksMinimalCluster (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:26:9)",
-        "new EksAutoModeBaseStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:36:9)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)"
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:104:25)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksMinimalCluster (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:26:9)",
+        "new EksAutoModeBaseStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:36:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:64:16)"
       ]
     }
   ],
@@ -1291,16 +1291,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:146:26)",
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksMinimalCluster (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:26:9)",
-        "new EksAutoModeBaseStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:36:9)"
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:146:26)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksMinimalCluster (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:26:9)",
+        "new EksAutoModeBaseStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:36:9)"
       ]
     }
   ],
@@ -1344,16 +1344,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
-        "WrappedClass.<anonymous> (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new KubectlProvider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:126:21)",
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksMinimalCluster (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:26:9)",
-        "new EksAutoModeBaseStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:36:9)"
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:126:21)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksMinimalCluster (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:26:9)",
+        "new EksAutoModeBaseStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-auto.js:36:9)"
       ]
     }
   ],
@@ -1365,16 +1365,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:146:26)",
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:146:26)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
       ]
     }
   ],
@@ -1422,16 +1422,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToRolePolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:206:33)",
-        "WrappedClass.addPermissions (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:184:29)",
-        "WrappedClass.createFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:216:18)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
-        "new Provider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:146:26)",
-        "new Cluster (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)"
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToRolePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:206:33)",
+        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:184:29)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:216:18)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:146:26)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)"
       ]
     }
   ],
@@ -1443,16 +1443,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
-        "WrappedClass.<anonymous> (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "Grant.addToPrincipal (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
-        "Grant.addToPrincipalOrResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
-        "WrappedClass.grant (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:483:35)",
-        "WrappedClass.grantInvoke (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:287:26)",
-        "WrappedClass.addPermissions (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:179:38)"
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "WrappedClass.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:483:35)",
+        "WrappedClass.grantInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:287:26)",
+        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:179:38)"
       ]
     }
   ]
