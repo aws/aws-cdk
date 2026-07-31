@@ -7,7 +7,7 @@ import { lit } from '../../core/lib/private/literal-string';
 import { RegionInfo } from '../../region-info';
 
 /**
- * Use a S3 as an alias record target
+ * Use an S3 as an alias record target
  */
 export class BucketWebsiteTarget implements route53.IAliasRecordTarget {
   constructor(private readonly bucket: s3.IBucket, private readonly props?: IAliasRecordTargetProps) {}
