@@ -16,6 +16,7 @@ import {
   AudioCodec, VideoCodec, VideoDynamicRange, TrickplayType,
   SegmentTemplateFormat, DashPeriodTriggers, MssManifestLayout,
   DrmSettingsKey, HeadersCMSD, AdMarkerHls,
+  MediaPackageV2Origin,
 } from '@aws-cdk/aws-mediapackagev2-alpha';
 
 class Fixture extends Stack {
