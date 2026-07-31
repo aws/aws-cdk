@@ -122,6 +122,156 @@ describe('default GameLift rules', () => {
     }));
   });
 
+  test('CDK-GameLift-006 fires when a fleet on a Windows build launches from a non-Windows path', () => {
+    const app = testApp();
+    const stack = new core.Stack(app, 'TestStack');
+    const build = new core.CfnResource(stack, 'MyBuild', {
+      type: 'AWS::GameLift::Build',
+      properties: {
+        Name: 'my-build',
+        OperatingSystem: 'WINDOWS_2016',
+      },
+    });
+    new core.CfnResource(stack, 'MyFleet', {
+      type: 'AWS::GameLift::Fleet',
+      properties: {
+        ...FLEET_BASE,
+        BuildId: build.ref,
+        RuntimeConfiguration: {
+          ServerProcesses: [
+            { LaunchPath: '/local/game/server', ConcurrentExecutions: 1 },
+          ],
+        },
+      },
+    });
+
+    expect(pluginViolations(loadValidationReport(app.synth()))).toContainEqual(expect.objectContaining({
+      ruleName: 'CDK-GameLift-006',
+      description: expect.stringContaining('does not match the referenced build\'s Windows operating system'),
+    }));
+  });
+
+  test('CDK-GameLift-007 fires when a fleet on a Linux build launches from a non-Linux path', () => {
+    const app = testApp();
+    const stack = new core.Stack(app, 'TestStack');
+    const build = new core.CfnResource(stack, 'MyBuild', {
+      type: 'AWS::GameLift::Build',
+      properties: {
+        Name: 'my-build',
+        OperatingSystem: 'AMAZON_LINUX_2023',
+      },
+    });
+    new core.CfnResource(stack, 'MyFleet', {
+      type: 'AWS::GameLift::Fleet',
+      properties: {
+        ...FLEET_BASE,
+        BuildId: build.ref,
+        RuntimeConfiguration: {
+          ServerProcesses: [
+            { LaunchPath: 'C:\\game\\server.exe', ConcurrentExecutions: 1 },
+          ],
+        },
+      },
+    });
+
+    expect(pluginViolations(loadValidationReport(app.synth()))).toContainEqual(expect.objectContaining({
+      ruleName: 'CDK-GameLift-007',
+      description: expect.stringContaining('does not match the referenced build\'s Linux operating system'),
+    }));
+  });
+
+  test('cross-resource rules stay silent for an imported build', () => {
+    const app = testApp();
+    const stack = new core.Stack(app, 'TestStack');
+    // BuildId is a literal external ID — the build's OS is unknowable, so no
+    // launch-path finding regardless of path shape.
+    new core.CfnResource(stack, 'MyFleet', {
+      type: 'AWS::GameLift::Fleet',
+      properties: {
+        ...FLEET_BASE,
+        BuildId: 'build-11111111-2222-3333-4444-555555555555',
+        RuntimeConfiguration: {
+          ServerProcesses: [
+            { LaunchPath: 'some/relative/path', ConcurrentExecutions: 1 },
+          ],
+        },
+      },
+    });
+
+    const violations = pluginViolations(loadValidationReport(app.synth()));
+    expect(violations.filter((v) => v.ruleName === 'CDK-GameLift-006' || v.ruleName === 'CDK-GameLift-007')).toEqual([]);
+  });
+
+  test('cross-resource rules stay silent when the build omits OperatingSystem', () => {
+    const app = testApp();
+    const stack = new core.Stack(app, 'TestStack');
+    // GameLift applies a server-side default OS; rather than guess it, the
+    // rules only fire when the OS is stated in the template.
+    const build = new core.CfnResource(stack, 'MyBuild', {
+      type: 'AWS::GameLift::Build',
+      properties: {
+        Name: 'my-build',
+      },
+    });
+    new core.CfnResource(stack, 'MyFleet', {
+      type: 'AWS::GameLift::Fleet',
+      properties: {
+        ...FLEET_BASE,
+        BuildId: build.ref,
+        RuntimeConfiguration: {
+          ServerProcesses: [
+            { LaunchPath: 'some/relative/path', ConcurrentExecutions: 1 },
+          ],
+        },
+      },
+    });
+
+    const violations = pluginViolations(loadValidationReport(app.synth()));
+    expect(violations.filter((v) => v.ruleName === 'CDK-GameLift-006' || v.ruleName === 'CDK-GameLift-007')).toEqual([]);
+  });
+
+  test('no cross-resource findings when launch paths match the build OS', () => {
+    const app = testApp();
+    const stack = new core.Stack(app, 'TestStack');
+    const windowsBuild = new core.CfnResource(stack, 'WindowsBuild', {
+      type: 'AWS::GameLift::Build',
+      properties: { Name: 'windows-build', OperatingSystem: 'WINDOWS_2016' },
+    });
+    const linuxBuild = new core.CfnResource(stack, 'LinuxBuild', {
+      type: 'AWS::GameLift::Build',
+      properties: { Name: 'linux-build', OperatingSystem: 'AMAZON_LINUX_2023' },
+    });
+    new core.CfnResource(stack, 'WindowsFleet', {
+      type: 'AWS::GameLift::Fleet',
+      properties: {
+        ...FLEET_BASE,
+        Name: 'windows-fleet',
+        BuildId: windowsBuild.ref,
+        RuntimeConfiguration: {
+          ServerProcesses: [
+            { LaunchPath: 'C:\\game\\server.exe', ConcurrentExecutions: 1 },
+          ],
+        },
+      },
+    });
+    new core.CfnResource(stack, 'LinuxFleet', {
+      type: 'AWS::GameLift::Fleet',
+      properties: {
+        ...FLEET_BASE,
+        Name: 'linux-fleet',
+        BuildId: linuxBuild.ref,
+        RuntimeConfiguration: {
+          ServerProcesses: [
+            { LaunchPath: '/local/game/server', ConcurrentExecutions: 1 },
+          ],
+        },
+      },
+    });
+
+    const violations = pluginViolations(loadValidationReport(app.synth()));
+    expect(violations.filter((v) => v.ruleName.startsWith('CDK-GameLift'))).toEqual([]);
+  });
+
   test('no GameLift findings for compliant resources', () => {
     const app = testApp();
     const stack = new core.Stack(app, 'TestStack');

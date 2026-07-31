@@ -1773,7 +1773,9 @@ cannot express: mistakes that pass template validation but fail at the service
 API during deployment, and contradictory configuration that the service
 accepts but partially ignores. Because they run on the synthesized template,
 they also cover resources defined through L1 constructs, escape hatches, and
-`CfnInclude`, which construct-level (L2) validation cannot see.
+`CfnInclude`, which construct-level (L2) validation cannot see — and they can
+check invariants *across* resources by following the template's `Ref` graph,
+which no single construct can validate in isolation.
 
 The current rules cover Amazon GameLift resources:
 
@@ -1784,11 +1786,20 @@ The current rules cover Amazon GameLift resources:
 | `CDK-GameLift-003` | A fleet location's `DesiredEC2Instances` lies within `[MinSize, MaxSize]` |
 | `CDK-GameLift-004` | An alias with `SIMPLE` routing does not carry a terminal `Message` |
 | `CDK-GameLift-005` | An alias with `TERMINAL` routing does not reference a fleet |
+| `CDK-GameLift-006` | A fleet referencing a Windows build launches server processes from `C:\game` |
+| `CDK-GameLift-007` | A fleet referencing a Linux build launches server processes from `/local/game` |
 
 The fleet rules (001–003) catch deployment failures: the GameLift API rejects
 these values, rolling back the stack mid-deployment. The alias rules (004–005)
 catch contradictory routing configuration that deploys successfully but leaves
-one of the two fields silently unused.
+one of the two fields silently unused. The launch-path rules (006–007) are
+cross-resource: they join a fleet to the `AWS::GameLift::Build` it references
+and check that every server-process launch path lives under the install root
+dictated by the build's operating system. A mismatch deploys, but the fleet
+then activates into `ERROR` state because no server process can start. These
+rules only fire when the build is defined in the same template; a fleet
+referencing an imported build (a literal build ID) is not checked, since the
+build's operating system is not knowable from the template.
 
 Like all findings of this plugin, violations are reported as warnings unless
 the `@aws-cdk/core:validateAgainstDefaultRules` context key is set to `true`,
