@@ -388,7 +388,7 @@ export class Workflow extends WorkflowBase {
   }
 
   /**
-   * Import an workflow from it's name
+   * Import a workflow from its name
    */
   public static fromWorkflowArn(scope: constructs.Construct, id: string, workflowArn: string): IWorkflow {
     return this.fromWorkflowAttributes(scope, id, {

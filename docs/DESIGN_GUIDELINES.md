@@ -305,6 +305,9 @@ When to use a Facade:
 - The feature should work with both L1 and L2 constructs.
 - The feature is not *about* the target resource's own behavior.
 
+For detailed implementation guidelines, see the
+[Facades and Traits Design Guidelines](./FACADES_AND_TRAITS_DESIGN_GUIDELINES.md).
+
 The [Grants](#grants) section below describes the most common Facade in detail.
 
 ### Traits
@@ -329,6 +332,9 @@ Examples: `IEncryptedResource` (via `IEncryptedResourceFactory`),
 Traits are primarily an implementation detail used by Facades and the grant
 system. They are not typically part of the public-facing API that end users
 interact with directly.
+
+For detailed implementation guidelines for both Facades and Traits, see the
+[Facades and Traits Design Guidelines](./FACADES_AND_TRAITS_DESIGN_GUIDELINES.md).
 
 ### When to use which
 
@@ -438,7 +444,7 @@ As a rule of thumb, most constructs should directly extend the **Construct** or
 behavior through interfaces and not through inheritance.
 
 Construct classes should extend only one of the following classes
-[_awslint:construct-inheritence_]:
+[_awslint:construct-inheritance_]:
 
 * The **Resource** class (if it represents an AWS resource)
 * The **Construct** class (if it represents an abstract component)
@@ -1828,16 +1834,29 @@ See <https://github.com/awslabs/aws-cdk/issues/2283>
 ### Tags
 
 The AWS platform has a powerful tagging system that can be used to tag resources
-with key/values. The AWS CDK exposes this capability through the **Tag**
-“aspect”, which can seamlessly tag all resources within a subtree:
+with key/values. The AWS CDK exposes this capability through the **Tags**
+"aspect", which can seamlessly tag all taggable resources within a subtree:
 
 ```ts
-// add a tag to all taggable resource under "myConstruct"
-myConstruct.node.apply(new cdk.Tag("myKey", "myValue"));
+// add a tag to all taggable resources under "myConstruct"
+Tags.of(myConstruct).add("myKey", "myValue");
 ```
 
 Constructs for AWS resources that can be tagged must have an optional **tags**
-hash in their props [_awslint:tags-prop_].
+hash in their props [_awslint:tags-prop_], wired straight through to the
+underlying L1 default child.
+
+Only L1 (`Cfn*`) resources implement the `ITaggable` / `ITaggableV2` interfaces —
+those interfaces are auto-generated as part of the CloudFormation spec import.
+L2 constructs MUST NOT implement `ITaggable` or `ITaggableV2` and MUST NOT
+expose a `TagManager` on themselves; `TagManager.of(l2)` returning `undefined`
+is intentional. `Tags.of(scope)` works on any `IConstruct` and walks the tree
+to apply tags to every taggable L1 underneath, which is the only well-defined
+tagging semantic for an L2 (an L2 typically aggregates multiple L1 resources,
+so there is no single sensible target for tags applied "to the L2").
+
+For the prescriptive agent-oriented version of this rule plus a worked
+anti-pattern, see [AGENTS_CONSTRUCT_DESIGN.md § Tags](./AGENTS_CONSTRUCT_DESIGN.md#tags).
 
 ### Secrets
 

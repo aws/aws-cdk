@@ -72,7 +72,7 @@ jobs:
     environment: automation
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Install & Build prlint
         run: yarn install --frozen-lockfile && cd tools/@aws-cdk/prlint && yarn build+test

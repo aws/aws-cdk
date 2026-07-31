@@ -1,5 +1,5 @@
 {
-  "version": "50.0.0",
+  "version": "53.0.0",
   "testCases": {
     "AppRunnerVpcIngressConnection/DefaultTest": {
       "stacks": [
@@ -22,5 +22,5 @@
       "assertionStackName": "AppRunnerVpcIngressConnectionDefaultTestDeployAssertC725050C"
     }
   },
-  "minimumCliVersion": "2.1105.0"
+  "minimumCliVersion": "2.1123.0"
 }

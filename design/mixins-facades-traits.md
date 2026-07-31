@@ -390,3 +390,4 @@ development.
 - [RFC 0814: CDK Mixins](https://github.com/aws/aws-cdk-rfcs/blob/main/text/0814-cdk-mixins.md)
 - [Design Guidelines: Mixins, Facades, and Traits](../docs/DESIGN_GUIDELINES.md#mixins-facades-and-traits)
 - [Mixins Design Guidelines](../docs/MIXINS_DESIGN_GUIDELINES.md)
+- [Facades and Traits Design Guidelines](../docs/FACADES_AND_TRAITS_DESIGN_GUIDELINES.md)
