@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "files": {
     "3fd34b6f315db2f0776d25cd9f1d803c9b73456e59d40260359fb31501865180": {
       "displayName": "com.amazonaws.cdk.custom-resources.s3file-provider/s3file-on-event/Code",
@@ -43,16 +43,16 @@
         }
       }
     },
-    "c73889f6023ba45bfc4e0da6644dfd8a387d7de48af9619c0751d1f697ddeec3": {
+    "96ae9a40f15db75e459108d12a7bde9b84fd4a50ddbff54148f92226ebb3d0f5": {
       "displayName": "integ-provider-framework Template",
       "source": {
         "path": "integ-provider-framework.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-efb822cc": {
+        "current_account-current_region-e9d58797": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c73889f6023ba45bfc4e0da6644dfd8a387d7de48af9619c0751d1f697ddeec3.json",
+          "objectKey": "96ae9a40f15db75e459108d12a7bde9b84fd4a50ddbff54148f92226ebb3d0f5.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

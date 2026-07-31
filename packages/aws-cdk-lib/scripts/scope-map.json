@@ -241,6 +241,13 @@
       }
     ]
   },
+  "aws-bcm": {
+    "scopes": [
+      {
+        "namespace": "AWS::BCM"
+      }
+    ]
+  },
   "aws-bcmdataexports": {
     "scopes": [
       {
@@ -526,6 +533,13 @@
       }
     ]
   },
+  "aws-controlcatalog": {
+    "scopes": [
+      {
+        "namespace": "AWS::ControlCatalog"
+      }
+    ]
+  },
   "aws-controltower": {
     "scopes": [
       {
@@ -551,6 +565,13 @@
     "scopes": [
       {
         "namespace": "AWS::DataBrew"
+      }
+    ]
+  },
+  "aws-dataexchange": {
+    "scopes": [
+      {
+        "namespace": "AWS::DataExchange"
       }
     ]
   },
@@ -1446,6 +1467,13 @@
       }
     ]
   },
+  "aws-outposts": {
+    "scopes": [
+      {
+        "namespace": "AWS::Outposts"
+      }
+    ]
+  },
   "aws-panorama": {
     "scopes": [
       {
@@ -1590,6 +1618,13 @@
     "scopes": [
       {
         "namespace": "AWS::ResilienceHub"
+      }
+    ]
+  },
+  "aws-resiliencehubv2": {
+    "scopes": [
+      {
+        "namespace": "AWS::ResilienceHubV2"
       }
     ]
   },

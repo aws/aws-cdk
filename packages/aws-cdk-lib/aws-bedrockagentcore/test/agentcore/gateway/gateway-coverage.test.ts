@@ -1231,11 +1231,11 @@ describe('GatewayExceptionLevel.of() escape hatch', () => {
     const stack = new cdk.Stack();
     new Gateway(stack, 'TestGateway', {
       gatewayName: 'test-exception',
-      exceptionLevel: GatewayExceptionLevel.of('VERBOSE'),
+      exceptionLevel: GatewayExceptionLevel.DEBUG,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
-      ExceptionLevel: 'VERBOSE',
+      ExceptionLevel: 'DEBUG',
     });
   });
 });
@@ -1244,13 +1244,12 @@ describe('InterceptionPoint rendering', () => {
   test('renders custom interception point in the template', () => {
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Fn', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_22_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('exports.handler = async () => {}'),
     });
     const gateway = new Gateway(stack, 'TestGateway', { gatewayName: 'test-intercept' });
     gateway.addInterceptor(LambdaInterceptor.forRequest(fn));
-
     Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
       InterceptorConfigurations: Match.arrayWith([
         Match.objectLike({
@@ -1299,7 +1298,7 @@ describe('SchemaDefinitionType.of() escape hatch', () => {
     gateway.addLambdaTarget('SchemaTarget', {
       gatewayTargetName: 'schema-target',
       lambdaFunction: new lambda.Function(stack, 'Fn', {
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_22_X,
         handler: 'index.handler',
         code: lambda.Code.fromInline('exports.handler = async () => {}'),
       }),
