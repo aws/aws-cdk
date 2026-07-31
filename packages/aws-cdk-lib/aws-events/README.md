@@ -379,4 +379,6 @@ const bus =  new EventBus(this, 'Bus', {
     });
 ```
 
+**Note**: Configuring logging on the event bus is required when using [vended logs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-and-resource-policy.html). Vended logs require that the event bus has logging enabled with the appropriate log configuration before logs can be delivered to the destination.
+
 See more [Specifying event bus log level](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-bus-logs.html#eb-event-bus-logs-level)

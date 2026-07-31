@@ -1,21 +1,19 @@
 import type { IConstruct } from 'constructs';
 import type { IPostProcessor, IResolvable, IResolveContext } from '../../../core';
-import { DefaultTokenResolver, Lazy, StringConcat, Token, Tokenization, UnscopedValidationError, ValidationError } from '../../../core';
+import {
+  DefaultTokenResolver,
+  StringConcat,
+  Token,
+  Tokenization,
+  UnscopedValidationError,
+  ValidationError,
+} from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 import type { IPolicy } from '../policy';
 
 export const MAX_POLICY_NAME_LEN = 128;
 
 export const LITERAL_STRING_KEY = 'LiteralString';
-
-export function undefinedIfEmpty(f: () => string[]): string[] {
-  return Lazy.list({
-    produce: () => {
-      const array = f();
-      return (array && array.length > 0) ? array : undefined;
-    },
-  });
-}
 
 /**
  * Used to generate a unique policy name based on the policy resource construct.
