@@ -23,6 +23,22 @@ test('default secret', () => {
   });
 });
 
+test('secret with blockPublicPolicy passes it to the resource policy', () => {
+  const secret = new secretsmanager.Secret(stack, 'Secret', {
+    blockPublicPolicy: true,
+  });
+
+  secret.addToResourcePolicy(new iam.PolicyStatement({
+    actions: ['secretsmanager:GetSecretValue'],
+    principals: [new iam.AccountRootPrincipal()],
+    resources: ['*'],
+  }));
+
+  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::ResourcePolicy', {
+    BlockPublicPolicy: true,
+  });
+});
+
 test('secret without replica regions omits ReplicaRegions', () => {
   // WHEN
   new secretsmanager.Secret(stack, 'Secret');
