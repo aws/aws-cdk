@@ -13,8 +13,8 @@ import { clearLargeFileFingerprintCache } from './fs/fingerprint';
 import { Names } from './names';
 import { AssetBundlingVolumeCopy, AssetBundlingBindMount } from './private/asset-staging';
 import { Cache } from './private/cache';
-import { Stack } from './stack';
-import { Stage } from './stage';
+import { stackOf, stageOf } from './private/core-construct-finders';
+import type { Stack } from './stack';
 import * as cxapi from '../../cx-api';
 import { lit } from './private/literal-string';
 import { profileSpan } from './private/perf';
@@ -183,7 +183,7 @@ export class AssetStaging extends Construct {
 
     this._sourceStats = fs.statSync(this.sourcePath);
 
-    const outdir = Stage.of(this)?.assetOutdir;
+    const outdir = stageOf(this)?.assetOutdir;
     if (!outdir) {
       throw new ValidationError(lit`UnableToDetermineCloudAssembly`, 'unable to determine cloud assembly asset output directory. Assets must be defined indirectly within a "Stage" or an "App" scope', this);
     }
@@ -199,7 +199,7 @@ export class AssetStaging extends Construct {
     let skip = false;
     if (props.bundling) {
       // Check if we actually have to bundle for this stack
-      skip = !Stack.of(this).bundlingRequired;
+      skip = !stackOf(this).bundlingRequired;
       const bundling = props.bundling;
       stageThisAsset = () => this.stageByBundling(bundling, skip);
     } else {
@@ -281,7 +281,7 @@ export class AssetStaging extends Construct {
    * ```
    */
   public relativeStagedPath(stack: Stack) {
-    const asmManifestDir = Stage.of(stack)?.outdir;
+    const asmManifestDir = stageOf(stack)?.outdir;
     if (!asmManifestDir) { return this.stagedPath; }
 
     const isOutsideAssetDir = path.relative(this.assetOutdir, this.stagedPath).startsWith('..');

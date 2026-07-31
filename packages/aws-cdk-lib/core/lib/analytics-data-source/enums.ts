@@ -1134,7 +1134,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "nodejs16.x",
     "nodejs18.x",
     "nodejs20.x",
-    "nodejs22.x"
+    "nodejs22.x",
+    "nodejs24.x"
   ],
   "CustomThreatProtectionMode": [
     "ENFORCED",
@@ -2242,6 +2243,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "g6",
     "graphics6-efficient",
     "g6e",
+    "graphics7-efficient",
+    "g7e",
     "graphics-ram-6",
     "gr6",
     "parallel2",
