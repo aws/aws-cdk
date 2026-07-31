@@ -129,6 +129,11 @@
   resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v35/-/lambda-layer-kubectl-v35-2.2.2.tgz#7a232b03d1f894e6b567c2c935636831d5c8a7e3"
   integrity sha512-QJYajbSLiKepLMn4Iu/xftbhYERkaqYcwtMH6EyqiiRZryV9g67fkfBk5BIfgRqOS9skmylprDci4Ev13RpThg==
 
+"@aws-cdk/lambda-layer-kubectl-v36@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v36/-/lambda-layer-kubectl-v36-2.0.0.tgz#7c84dc3cedad93003e161c0ef6add78cf04c8700"
+  integrity sha512-GAzsW4F7pDVq6L233cA7Qvp5hmXfREKfyVcYi9oq1Yvx2aU9jS8mYDRHT+GEX+B79qeFod76fzVgvchsPYvP1Q==
+
 "@aws-cdk/service-spec-importers@0.0.133":
   version "0.0.133"
   resolved "https://registry.npmjs.org/@aws-cdk/service-spec-importers/-/service-spec-importers-0.0.133.tgz#3937c1c44d1a32f47ae79a62f64e603808f53a1d"
@@ -2335,10 +2340,10 @@
     "@smithy/types" "^4.16.0"
     tslib "^2.6.2"
 
-"@aws/cloudformation-validate@1.5.1-beta":
-  version "1.5.1-beta"
-  resolved "https://registry.npmjs.org/@aws/cloudformation-validate/-/cloudformation-validate-1.5.1-beta.tgz#c25166a2e6f22b3a7fd3b6454c2794df44f4cf13"
-  integrity sha512-AHua/1/kmVLxkk0qs5bt4vWy64ZV5JUb1MsGKbxttYCF/NykR7WrtQrAGExLi7fdkGa+Ys8U612nG7QIp/z3nQ==
+"@aws/cloudformation-validate@1.6.0-beta":
+  version "1.6.0-beta"
+  resolved "https://registry.npmjs.org/@aws/cloudformation-validate/-/cloudformation-validate-1.6.0-beta.tgz#f1760f823462bd04f9810479e287d8bb62b2570a"
+  integrity sha512-criDxL/FP0Te5HIH6p+TvENftgUztOMKw7LMLhAIDuq/N/kkMsYfxlG7XeyHlq0lEpQwUUek3tgPdSjhLTK3jQ==
 
 "@aws/lambda-invoke-store@^0.3.0":
   version "0.3.0"
