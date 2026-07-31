@@ -149,7 +149,7 @@ function operateOnDependency(operation: DependencyOperation, source: Element, ta
 export function obtainDependencies(source: Element) {
   let dependencies: Element[] = [];
   if (source instanceof CfnResource) {
-    dependencies = source.obtainResourceDependencies();
+    dependencies = source._obtainResourceDependencies();
   }
 
   let stacks = pathToRoot(Stack.of(source));
