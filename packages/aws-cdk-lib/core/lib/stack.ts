@@ -33,9 +33,6 @@ import { profileFn } from './private/perf';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { minimatch } = require('minimatch');
 
-const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
-const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
-
 export const STACK_RESOURCE_LIMIT_CONTEXT = '@aws-cdk/core:stackResourceLimit';
 
 const SUPPRESS_TEMPLATE_INDENTATION_CONTEXT = '@aws-cdk/core:suppressTemplateIndentation';
@@ -229,7 +226,7 @@ export class Stack extends Construct implements ITaggable {
    * We do attribute detection since we can't reliably use 'instanceof'.
    */
   public static isStack(this: void, x: any): x is Stack {
-    return x !== null && typeof(x) === 'object' && STACK_SYMBOL in x;
+    return STACK_TYPE.isMarked(x);
   }
 
   /**
@@ -240,36 +237,7 @@ export class Stack extends Construct implements ITaggable {
    * @param construct The construct to start the search from.
    */
   public static of(construct: IConstruct): Stack {
-    // we want this to be as cheap as possible. cache this result by mutating
-    // the object. anecdotally, at the time of this writing, @aws-cdk/core unit
-    // tests hit this cache 1,112 times, @aws-cdk/aws-cloudformation unit tests
-    // hit this 2,435 times).
-    const cache = (construct as any)[MY_STACK_CACHE] as Stack | undefined;
-    if (cache) {
-      return cache;
-    } else {
-      const value = _lookup(construct);
-      Object.defineProperty(construct, MY_STACK_CACHE, {
-        enumerable: false,
-        writable: false,
-        configurable: false,
-        value,
-      });
-      return value;
-    }
-
-    function _lookup(c: IConstruct): Stack {
-      if (Stack.isStack(c)) {
-        return c;
-      }
-
-      const _scope = Node.of(c).scope;
-      if (Stage.isStage(c) || !_scope) {
-        throw new ValidationError(lit`ShouldBeCreatedInStackScope`, `${construct.constructor?.name ?? 'Construct'} at '${Node.of(construct).path}' should be created in the scope of a Stack, but no Stack found`, c);
-      }
-
-      return _lookup(_scope);
-    }
+    return stackOf(construct);
   }
 
   /**
@@ -504,12 +472,12 @@ export class Stack extends Construct implements ITaggable {
     }
 
     this._missingContext = new Array<cxschema.MissingContext>();
-    this._stackDependencies = { };
-    this.templateOptions = { };
+    this._stackDependencies = {};
+    this.templateOptions = {};
     this._crossRegionReferences = !!props.crossRegionReferences;
     this._suppressTemplateIndentation = props.suppressTemplateIndentation ?? this.node.tryGetContext(SUPPRESS_TEMPLATE_INDENTATION_CONTEXT) ?? false;
 
-    Object.defineProperty(this, STACK_SYMBOL, { value: true });
+    STACK_TYPE.mark(this);
 
     if (!this.node.tryGetContext(cxapi.DISABLE_CREATION_STACK_TRACES) || debugModeEnabled()) {
       this.node.addMetadata(cxschema.ArtifactMetadataEntryType.CREATION_STACK, captureStackTrace(new.target));
@@ -634,11 +602,11 @@ export class Stack extends Construct implements ITaggable {
     }
     if (arn &&
       (arn.includes('${Qualifier}')
-      || arn.includes('${AWS::AccountId}')
-      || arn.includes('${AWS::Region}')
-      || arn.includes('${AWS::Partition}'))) {
+        || arn.includes('${AWS::AccountId}')
+        || arn.includes('${AWS::Region}')
+        || arn.includes('${AWS::Partition}'))) {
       throw new ValidationError(lit`PermissionsBoundaryContainsPseudoParameter`, `The permissions boundary ${arn} includes a pseudo parameter, ` +
-      'which is not supported for environment agnostic stacks', this);
+        'which is not supported for environment agnostic stacks', this);
     }
     return arn;
   }
@@ -654,7 +622,7 @@ export class Stack extends Construct implements ITaggable {
         visit(node: IConstruct) {
           if (
             CfnResource.isCfnResource(node) &&
-              (node.cfnResourceType == 'AWS::IAM::Role' || node.cfnResourceType == 'AWS::IAM::User')
+            (node.cfnResourceType == 'AWS::IAM::Role' || node.cfnResourceType == 'AWS::IAM::User')
           ) {
             node.addPropertyOverride('PermissionsBoundary', permissionsBoundaryArn);
           }
@@ -754,8 +722,32 @@ export class Stack extends Construct implements ITaggable {
    *
    * This can be used to define dependencies between any two stacks within an
    * app, and also supports nested stacks.
+   *
+   * Stack dependencies may not cross Stage boundaries.
+   *
+   * This method has been renamed to `addStackDependency` to more clearly
+   * set it apart from `construct.node.addDependency`. See the documentation
+   * of that function for more details.
+   *
+   * @deprecated Use `addStackDependency` instead.
    */
   public addDependency(target: Stack, reason?: string) {
+    this.addStackDependency(target, reason);
+  }
+
+  /**
+   * Add a dependency between this stack and another stack.
+   *
+   * This can be used to define dependencies between any two stacks within an
+   * app, and also supports nested stacks.
+   *
+   * Stack dependencies may not cross Stage boundaries.
+   *
+   * This method only adds dependencies between stacks. If you are looking
+   * for a generic construct-to-construct dependency mechanism, use
+   * `construct.node.addDependency` instead.
+   */
+  public addStackDependency(target: Stack, reason?: string) {
     addDependency(this, target, reason ?? `{${this.node.path}}.addDependency({${target.node.path}})`);
   }
 
@@ -1019,10 +1011,10 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
-   * Called implicitly by the `addDependency` helper function in order to
+   * Called implicitly by the `addStackDependency` helper function in order to
    * realize a dependency between two top-level stacks at the assembly level.
    *
-   * Use `stack.addDependency` to define the dependency between any two stacks,
+   * Use `stack.addStackDependency` to define the dependency between any two stacks,
    * and take into account nested stack relationships.
    *
    * @internal
@@ -1106,12 +1098,12 @@ export class Stack extends Construct implements ITaggable {
    * Called implicitly by the `removeDependency` helper function in order to
    * remove a dependency between two top-level stacks at the assembly level.
    *
-   * Use `stack.addDependency` to define the dependency between any two stacks,
+   * Use `stack.addStackDependency` to define the dependency between any two stacks,
    * and take into account nested stack relationships.
    *
    * @internal
    */
-  public _removeAssemblyDependency(target: Stack, reasonFilter: StackDependencyReason={}) {
+  public _removeAssemblyDependency(target: Stack, reasonFilter: StackDependencyReason = {}) {
     // defensive: we should never get here for nested stacks
     if (this.nested || target.nested) {
       throw new ValidationError(lit`CannotRemoveAssemblyLevelDependencies`, 'There cannot be assembly-level dependencies for nested stacks', this);
@@ -1526,12 +1518,12 @@ export class Stack extends Construct implements ITaggable {
     // between producer and consumer anyway, so we can just assume that they are).
     const containingAssembly = Stage.of(this);
 
-    if (env.account && typeof(env.account) !== 'string') {
-      throw new ValidationError(lit`AccountIdMustBeString`, `Account id of stack environment must be a 'string' but received '${typeof(env.account)}'`, this);
+    if (env.account && typeof (env.account) !== 'string') {
+      throw new ValidationError(lit`AccountIdMustBeString`, `Account id of stack environment must be a 'string' but received '${typeof (env.account)}'`, this);
     }
 
-    if (env.region && typeof(env.region) !== 'string') {
-      throw new ValidationError(lit`RegionMustBeString`, `Region of stack environment must be a 'string' but received '${typeof(env.region)}'`, this);
+    if (env.region && typeof (env.region) !== 'string') {
+      throw new ValidationError(lit`RegionMustBeString`, `Region of stack environment must be a 'string' but received '${typeof (env.region)}'`, this);
     }
 
     const account = env.account ?? containingAssembly?.account ?? Aws.ACCOUNT_ID;
@@ -1619,7 +1611,7 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Generate an ID with respect to the given container construct.
    */
-  private generateStackId(container: IConstruct | undefined, prefix: string='') {
+  private generateStackId(container: IConstruct | undefined, prefix: string = '') {
     const rootPath = rootPathTo(this, container);
     const ids = rootPath.map(c => Node.of(c).id);
 
@@ -1813,7 +1805,7 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
 
   for (const child of Node.of(node).children) {
     // Don't recurse into a substack
-    if (Stack.isStack(child)) { continue; }
+    if (STACK_TYPE.isMarked(child)) { continue; }
 
     cfnElements(child, into);
   }
@@ -1843,7 +1835,7 @@ export function rootPathTo(construct: IConstruct, ancestor?: IConstruct): IConst
  * has only one component. Otherwise we fall back to the regular "makeUniqueId"
  * behavior.
  */
-function makeStackName(components: string[], prefix: string='') {
+function makeStackName(components: string[], prefix: string = '') {
   if (components.length === 1) {
     const stack_name = prefix + components[0];
     if (stack_name.length <= 128) {
@@ -1955,7 +1947,8 @@ import { mutatingAspectPrio32333 } from './private/aspect-prio';
 import { AssumptionError, UnscopedValidationError, ValidationError } from './errors';
 import { lit } from './private/literal-string';
 import { debugModeEnabled } from './debug';
-import { captureStackTrace } from './stack-trace';
+import { captureStackTrace } from './private/stack-trace';
+import { STACK_TYPE, stackOf } from './private/core-construct-finders';
 /* eslint-enable import/order */
 
 function makeCustomCoupledReference(value: any, strength: ReferenceStrength): CustomCoupledReference {
