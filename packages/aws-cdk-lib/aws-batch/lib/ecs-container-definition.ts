@@ -9,7 +9,10 @@ import { LogGroup } from '../../aws-logs';
 import type * as secretsmanager from '../../aws-secretsmanager';
 import type * as ssm from '../../aws-ssm';
 import type { Size } from '../../core';
-import { Lazy, PhysicalName, UnscopedValidationError, ValidationError } from '../../core';
+import { PhysicalName, UnscopedValidationError, ValidationError } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IFileSystemRef } from '../../interfaces/generated/aws-efs-interfaces.generated';
 
@@ -624,10 +627,14 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
   public readonly readonlyRootFilesystem?: boolean;
   public readonly secrets?: { [envVarName: string]: Secret };
   public readonly user?: string;
-  public readonly volumes: EcsVolume[];
   public readonly enableExecuteCommand?: boolean;
 
+  private readonly _volumes: IArrayBox<EcsVolume>;
   private readonly imageConfig: ecs.ContainerImageConfig;
+
+  public get volumes(): EcsVolume[] {
+    return this._volumes.getMutable();
+  }
 
   constructor(scope: Construct, id: string, props: EcsContainerDefinitionProps) {
     super(scope, id);
@@ -655,7 +662,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     this.readonlyRootFilesystem = props.readonlyRootFilesystem ?? false;
     this.secrets = props.secrets;
     this.user = props.user;
-    this.volumes = props.volumes ?? [];
+    this._volumes = Box.fromArray(props.volumes ?? []);
 
     this.imageConfig = props.image.bind(this, {
       ...this as any,
@@ -690,53 +697,36 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
           valueFrom: secret.arn,
         };
       }) : undefined,
-      mountPoints: Lazy.any({
-        produce: () => {
-          if (this.volumes.length === 0) {
-            return undefined;
-          }
-          return this.volumes.map((volume) => {
-            return {
-              containerPath: volume.containerPath,
-              readOnly: volume.readonly,
-              sourceVolume: volume.name,
-            };
-          });
-        },
-      }),
-      volumes: Lazy.any({
-        produce: () => {
-          if (this.volumes.length === 0) {
-            return undefined;
-          }
+      mountPoints: this._volumes.map((volume) => ({
+        containerPath: volume.containerPath,
+        readOnly: volume.readonly,
+        sourceVolume: volume.name,
+      })),
+      volumes: this._volumes.map((volume) => {
+        if (EfsVolume.isEfsVolume(volume)) {
+          return {
+            name: volume.name,
+            efsVolumeConfiguration: {
+              fileSystemId: volume._fileSystemRef.fileSystemRef.fileSystemId,
+              rootDirectory: volume.rootDirectory,
+              transitEncryption: volume.enableTransitEncryption ? 'ENABLED' : (volume.enableTransitEncryption === false ? 'DISABLED' : undefined),
+              transitEncryptionPort: volume.transitEncryptionPort,
+              authorizationConfig: volume.accessPointId || volume.useJobRole ? {
+                accessPointId: volume.accessPointId,
+                iam: volume.useJobRole ? 'ENABLED' : (volume.useJobRole === false ? 'DISABLED' : undefined),
+              } : undefined,
+            },
+          };
+        } else if (HostVolume.isHostVolume(volume)) {
+          return {
+            name: volume.name,
+            host: {
+              sourcePath: volume.hostPath,
+            },
+          };
+        }
 
-          return this.volumes.map((volume) => {
-            if (EfsVolume.isEfsVolume(volume)) {
-              return {
-                name: volume.name,
-                efsVolumeConfiguration: {
-                  fileSystemId: volume._fileSystemRef.fileSystemRef.fileSystemId,
-                  rootDirectory: volume.rootDirectory,
-                  transitEncryption: volume.enableTransitEncryption ? 'ENABLED' : (volume.enableTransitEncryption === false ? 'DISABLED' : undefined),
-                  transitEncryptionPort: volume.transitEncryptionPort,
-                  authorizationConfig: volume.accessPointId || volume.useJobRole ? {
-                    accessPointId: volume.accessPointId,
-                    iam: volume.useJobRole ? 'ENABLED' : (volume.useJobRole === false ? 'DISABLED' : undefined),
-                  } : undefined,
-                },
-              };
-            } else if (HostVolume.isHostVolume(volume)) {
-              return {
-                name: volume.name,
-                host: {
-                  sourcePath: volume.hostPath,
-                },
-              };
-            }
-
-            throw new ValidationError('UnsupportedVolumeEncountered', 'unsupported Volume encountered', this);
-          });
-        },
+        throw new ValidationError(lit`UnsupportedVolumeEncountered`, 'unsupported Volume encountered', this);
       }),
       user: this.user,
       enableExecuteCommand: this.enableExecuteCommand,
@@ -744,7 +734,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
   }
 
   public addVolume(volume: EcsVolume): void {
-    this.volumes.push(volume);
+    this._volumes.push(volume);
   }
 
   /**
@@ -991,13 +981,18 @@ export class EcsEc2ContainerDefinition extends EcsContainerDefinitionBase implem
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.EcsEc2ContainerDefinition';
 
   public readonly privileged?: boolean;
-  public readonly ulimits: Ulimit[];
   public readonly gpu?: number;
+
+  private readonly _ulimits: IArrayBox<Ulimit>;
+
+  public get ulimits(): Ulimit[] {
+    return this._ulimits.getMutable();
+  }
 
   constructor(scope: Construct, id: string, props: EcsEc2ContainerDefinitionProps) {
     super(scope, id, props);
     this.privileged = props.privileged;
-    this.ulimits = props.ulimits ?? [];
+    this._ulimits = Box.fromArray(props.ulimits ?? []);
     this.gpu = props.gpu;
   }
 
@@ -1007,19 +1002,11 @@ export class EcsEc2ContainerDefinition extends EcsContainerDefinitionBase implem
   public _renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty {
     return {
       ...super._renderContainerDefinition(),
-      ulimits: Lazy.any({
-        produce: () => {
-          if (this.ulimits.length === 0) {
-            return undefined;
-          }
-
-          return this.ulimits.map((ulimit) => ({
-            hardLimit: ulimit.hardLimit,
-            name: ulimit.name,
-            softLimit: ulimit.softLimit,
-          }));
-        },
-      }),
+      ulimits: this._ulimits.map((ulimit) => ({
+        hardLimit: ulimit.hardLimit,
+        name: ulimit.name,
+        softLimit: ulimit.softLimit,
+      })),
       privileged: this.privileged,
       resourceRequirements: this._renderResourceRequirements(),
     };
@@ -1029,7 +1016,7 @@ export class EcsEc2ContainerDefinition extends EcsContainerDefinitionBase implem
    * Add a ulimit to this container
    */
   addUlimit(ulimit: Ulimit): void {
-    this.ulimits.push(ulimit);
+    this._ulimits.push(ulimit);
   }
 
   /**
@@ -1162,15 +1149,15 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
 
     if (this.fargateOperatingSystemFamily?.isWindows() && this.readonlyRootFilesystem) {
       // see https://kubernetes.io/docs/concepts/windows/intro/
-      throw new ValidationError('ReadonlyRootFilesystemPossibleWindows', 'Readonly root filesystem is not possible on Windows; write access is required for registry & system processes to run inside the container', this);
+      throw new ValidationError(lit`ReadonlyRootFilesystemPossibleWindows`, 'Readonly root filesystem is not possible on Windows; write access is required for registry & system processes to run inside the container', this);
     }
 
     // validates ephemeralStorageSize is within limits
     if (props.ephemeralStorageSize) {
       if (props.ephemeralStorageSize.toGibibytes() > 200) {
-        throw new ValidationError('FargateContainer', `ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} > 200 GB`, this);
+        throw new ValidationError(lit`FargateContainer`, `ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} > 200 GB`, this);
       } else if (props.ephemeralStorageSize.toGibibytes() < 21) {
-        throw new ValidationError('FargateContainer', `ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} < 21 GB`, this);
+        throw new ValidationError(lit`FargateContainer`, `ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} < 21 GB`, this);
       }
     }
   }
@@ -1222,7 +1209,7 @@ function createExecutionRole(scope: Construct, id: string, logging: boolean): ia
 
 function toIFileSystem(fileSystem: IFileSystemRef): IFileSystem {
   if (!('fileSystemId' in fileSystem) || !('fileSystemArn' in fileSystem)) {
-    throw new UnscopedValidationError('FilesystemInstanceShouldImplement', `'fileSystem' instance should implement IFileSystem, but doesn't: ${fileSystem.constructor.name}`);
+    throw new UnscopedValidationError(lit`FilesystemInstanceShouldImplement`, `'fileSystem' instance should implement IFileSystem, but doesn't: ${fileSystem.constructor.name}`);
   }
   return fileSystem as IFileSystem;
 }

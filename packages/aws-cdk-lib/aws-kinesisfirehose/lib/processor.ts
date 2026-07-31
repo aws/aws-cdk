@@ -32,7 +32,7 @@ export interface DataProcessorProps {
 /**
  * The key-value pair that identifies the underlying processor resource.
  *
- * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-processorparameter.html
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-processorparameter.html
  */
 export interface DataProcessorIdentifier {
   /**

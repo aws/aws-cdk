@@ -1,0 +1,1 @@
+{"subnets":<<marker:0xbaba:0>>,"expectedValues":["subnet-12345","subnet-67890"],"version":"2.207.0","issue":"StringListParameter tokens not resolved in Source.jsonData","timestamp":"2026-05-28T13:04:21.215Z"}

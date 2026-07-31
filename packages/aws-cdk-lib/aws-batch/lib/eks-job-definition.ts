@@ -4,9 +4,10 @@ import type { EksContainerDefinition } from './eks-container-definition';
 import { EmptyDirVolume, HostPathVolume, SecretPathVolume } from './eks-container-definition';
 import type { IJobDefinition, JobDefinitionProps } from './job-definition-base';
 import { baseJobDefinitionProperties, JobDefinitionBase } from './job-definition-base';
-import { ArnFormat, Lazy, Stack, ValidationError } from '../../core';
+import { ArnFormat, Stack, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -192,42 +193,35 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
           dnsPolicy: this.dnsPolicy,
           hostNetwork: this.useHostNetwork,
           serviceAccountName: this.serviceAccount,
-          volumes: Lazy.any({
-            produce: () => {
-              if (this.container.volumes.length === 0) {
-                return undefined;
-              }
-              return this.container.volumes.map((volume) => {
-                if (EmptyDirVolume.isEmptyDirVolume(volume)) {
-                  return {
-                    name: volume.name,
-                    emptyDir: {
-                      medium: volume.medium,
-                      sizeLimit: volume.sizeLimit ? volume.sizeLimit.toMebibytes().toString() + 'Mi' : undefined,
-                    },
-                  };
-                }
-                if (HostPathVolume.isHostPathVolume(volume)) {
-                  return {
-                    name: volume.name,
-                    hostPath: {
-                      path: volume.path,
-                    },
-                  };
-                }
-                if (SecretPathVolume.isSecretPathVolume(volume)) {
-                  return {
-                    name: volume.name,
-                    secret: {
-                      optional: volume.optional,
-                      secretName: volume.secretName,
-                    },
-                  };
-                }
+          volumes: this.container._mapVolumes((volume) => {
+            if (EmptyDirVolume.isEmptyDirVolume(volume)) {
+              return {
+                name: volume.name,
+                emptyDir: {
+                  medium: volume.medium,
+                  sizeLimit: volume.sizeLimit ? volume.sizeLimit.toMebibytes().toString() + 'Mi' : undefined,
+                },
+              };
+            }
+            if (HostPathVolume.isHostPathVolume(volume)) {
+              return {
+                name: volume.name,
+                hostPath: {
+                  path: volume.path,
+                },
+              };
+            }
+            if (SecretPathVolume.isSecretPathVolume(volume)) {
+              return {
+                name: volume.name,
+                secret: {
+                  optional: volume.optional,
+                  secretName: volume.secretName,
+                },
+              };
+            }
 
-                throw new ValidationError('UnknownVolumeType', 'unknown volume type', this);
-              });
-            },
+            throw new ValidationError(lit`UnknownVolumeType`, 'unknown volume type', this);
           }),
         },
       },

@@ -1,5 +1,6 @@
 import type { StackProps } from 'aws-cdk-lib';
 import { App, RemovalPolicy, Stack, UnscopedValidationError } from 'aws-cdk-lib';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as logs from 'aws-cdk-lib/aws-logs';
@@ -12,9 +13,9 @@ import type { Construct } from 'constructs';
  * to validate the domain identity.
  */
 const hostedZoneId = process.env.CDK_INTEG_HOSTED_ZONE_ID ?? process.env.HOSTED_ZONE_ID;
-if (!hostedZoneId) throw new UnscopedValidationError('HostedZoneIdRequired', 'For this test you must provide your own HostedZoneId as an env var "HOSTED_ZONE_ID". See framework-integ/README.md for details.');
+if (!hostedZoneId) throw new UnscopedValidationError(lit`HostedZoneIdRequired`, 'For this test you must provide your own HostedZoneId as an env var "HOSTED_ZONE_ID". See framework-integ/README.md for details.');
 const hostedZoneName = process.env.CDK_INTEG_HOSTED_ZONE_NAME ?? process.env.HOSTED_ZONE_NAME;
-if (!hostedZoneName) throw new UnscopedValidationError('HostedZoneNameRequired', 'For this test you must provide your own HostedZoneName as an env var "HOSTED_ZONE_NAME". See framework-integ/README.md for details.');
+if (!hostedZoneName) throw new UnscopedValidationError(lit`HostedZoneNameRequired`, 'For this test you must provide your own HostedZoneName as an env var "HOSTED_ZONE_NAME". See framework-integ/README.md for details.');
 
 interface TestStackProps extends StackProps {
   hostedZoneId: string;

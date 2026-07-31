@@ -1,6 +1,7 @@
 import { StandardAttributeNames } from './private/attr-names';
 import { Token } from '../../core';
 import { UnscopedValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * The set of standard attributes that can be marked as required or mutable.
@@ -243,10 +244,10 @@ export class StringAttribute implements ICustomAttribute {
 
   constructor(props: StringAttributeProps = {}) {
     if (props.minLen && !Token.isUnresolved(props.minLen) && props.minLen < 0) {
-      throw new UnscopedValidationError('MinlenCannotLessThan', `minLen cannot be less than 0 (value: ${props.minLen}).`);
+      throw new UnscopedValidationError(lit`MinlenCannotLessThan`, `minLen cannot be less than 0 (value: ${props.minLen}).`);
     }
     if (props.maxLen && !Token.isUnresolved(props.maxLen) && props.maxLen > 2048) {
-      throw new UnscopedValidationError('MaxlenCannotGreaterThan', `maxLen cannot be greater than 2048 (value: ${props.maxLen}).`);
+      throw new UnscopedValidationError(lit`MaxlenCannotGreaterThan`, `maxLen cannot be greater than 2048 (value: ${props.maxLen}).`);
     }
     this.minLen = props?.minLen;
     this.maxLen = props?.maxLen;

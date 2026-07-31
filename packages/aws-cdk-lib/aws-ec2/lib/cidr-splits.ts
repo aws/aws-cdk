@@ -1,4 +1,5 @@
 import { UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Return the splits necessary to allocate the given sequence of cidrs in the given order
@@ -45,7 +46,7 @@ export function calculateCidrSplits(rootNetmask: number, netmasks: number[]): Ci
   }
 
   if (offset > Math.pow(2, 32 - rootNetmask)) {
-    throw new UnscopedValidationError('CidrSpaceInsufficientSize', `IP space of size /${rootNetmask} not big enough to allocate subnets of sizes ${netmasks.map(x => `/${x}`)}`);
+    throw new UnscopedValidationError(lit`CidrSpaceInsufficientSize`, `IP space of size /${rootNetmask} not big enough to allocate subnets of sizes ${netmasks.map(x => `/${x}`)}`);
   }
 
   return ret;

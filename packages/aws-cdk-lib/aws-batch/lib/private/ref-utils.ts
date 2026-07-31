@@ -1,4 +1,5 @@
 import { UnscopedValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { ISchedulingPolicyRef } from '../../../interfaces/generated/aws-batch-interfaces.generated';
 import type { ISchedulingPolicy } from '../scheduling-policy';
 
@@ -7,7 +8,7 @@ import type { ISchedulingPolicy } from '../scheduling-policy';
  */
 export function toISchedulingPolicy(policy: ISchedulingPolicyRef): ISchedulingPolicy {
   if (!('schedulingPolicyArn' in policy) || !('schedulingPolicyName' in policy)) {
-    throw new UnscopedValidationError('SchedulingPolicyInstanceImplementScheduling', `'schedulingPolicy' instance should implement ISchedulingPolicy, but doesn't: ${policy.constructor.name}`);
+    throw new UnscopedValidationError(lit`SchedulingPolicyInstanceImplementScheduling`, `'schedulingPolicy' instance should implement ISchedulingPolicy, but doesn't: ${policy.constructor.name}`);
   }
   return policy as ISchedulingPolicy;
 }

@@ -2,6 +2,7 @@ import * as apigwv2 from '../../../aws-apigatewayv2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { ValidationError } from '../../../core/lib/errors';
+import { lit } from '../../../core/lib/private/literal-string';
 
 /**
  * Properties to initialize `HttpStepFunctionsIntegration`.
@@ -52,13 +53,13 @@ export class HttpStepFunctionsIntegration extends apigwv2.HttpRouteIntegration {
 
   public bind(options: apigwv2.HttpRouteIntegrationBindOptions): apigwv2.HttpRouteIntegrationConfig {
     if (this.props.subtype && !this.props.subtype.startsWith('StepFunctions-')) {
-      throw new ValidationError('SubtypeStart', 'Subtype must start with `STEPFUNCTIONS_`', options.scope);
+      throw new ValidationError(lit`SubtypeStart`, 'Subtype must start with `STEPFUNCTIONS_`', options.scope);
     }
     if (
       this.props.subtype === apigwv2.HttpIntegrationSubtype.STEPFUNCTIONS_START_SYNC_EXECUTION
       && this.props.stateMachine.stateMachineType === sfn.StateMachineType.STANDARD
     ) {
-      throw new ValidationError('CannotSubtypeStandardTypeSta', 'Cannot use subtype `STEPFUNCTIONS_START_SYNC_EXECUTION` with a standard type state machine', options.scope);
+      throw new ValidationError(lit`CannotSubtypeStandardTypeSta`, 'Cannot use subtype `STEPFUNCTIONS_START_SYNC_EXECUTION` with a standard type state machine', options.scope);
     }
 
     const invokeRole = new iam.Role(options.scope, 'InvokeRole', {

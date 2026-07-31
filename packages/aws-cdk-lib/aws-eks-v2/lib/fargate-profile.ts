@@ -5,6 +5,7 @@ import { CfnFargateProfile } from '../../aws-eks';
 import * as iam from '../../aws-iam';
 import type { ITaggable, RemovalPolicy } from '../../core';
 import { Annotations, RemovalPolicies, TagManager, TagType, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Options for defining EKS Fargate Profiles.
@@ -172,11 +173,11 @@ export class FargateProfile extends Construct implements ITaggable {
     }
 
     if (props.selectors.length < 1) {
-      throw new ValidationError('FargateProfileRequiresLeastOne', 'Fargate profile requires at least one selector', this);
+      throw new ValidationError(lit`FargateProfileRequiresLeastOne`, 'Fargate profile requires at least one selector', this);
     }
 
     if (props.selectors.length > 5) {
-      throw new ValidationError('FargateProfileSupportsUpFive', 'Fargate profile supports up to five selectors', this);
+      throw new ValidationError(lit`FargateProfileSupportsUpFive`, 'Fargate profile supports up to five selectors', this);
     }
 
     this.tags = new TagManager(TagType.MAP, 'AWS::EKS::FargateProfile');
