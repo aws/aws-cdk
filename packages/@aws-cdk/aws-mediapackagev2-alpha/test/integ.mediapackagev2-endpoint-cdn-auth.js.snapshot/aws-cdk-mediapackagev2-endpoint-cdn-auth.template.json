@@ -3,7 +3,7 @@
   "GroupC77FDACD": {
    "Type": "AWS::MediaPackageV2::ChannelGroup",
    "Properties": {
-    "ChannelGroupName": "awscdkmediapackagev2endpointcdnauthGroup4C5F5FE1"
+    "ChannelGroupName": "integ-cdn-auth-group"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -11,7 +11,7 @@
   "Channel4048F119": {
    "Type": "AWS::MediaPackageV2::Channel",
    "Properties": {
-    "ChannelGroupName": "awscdkmediapackagev2endpointcdnauthGroup4C5F5FE1",
+    "ChannelGroupName": "integ-cdn-auth-group",
     "ChannelName": "awscdkmediapackagev2endpointcdnauthChannel27B061A3",
     "InputType": "CMAF"
    },
@@ -21,15 +21,26 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "CdnSecret32008E6A": {
+  "secret1737E0624": {
    "Type": "AWS::SecretsManager::Secret",
    "Properties": {
     "GenerateSecretString": {
      "ExcludePunctuation": true,
      "GenerateStringKey": "MediaPackageV2CDNIdentifier",
      "SecretStringTemplate": "{\"MediaPackageV2CDNIdentifier\":\"\"}"
-    },
-    "Name": "integ-cdn-auth-secret"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "secret2659C8405": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "GenerateSecretString": {
+     "ExcludePunctuation": true,
+     "GenerateStringKey": "MediaPackageV2CDNIdentifier",
+     "SecretStringTemplate": "{\"MediaPackageV2CDNIdentifier\":\"\"}"
+    }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -37,7 +48,7 @@
   "EndpointEEF1FD8F": {
    "Type": "AWS::MediaPackageV2::OriginEndpoint",
    "Properties": {
-    "ChannelGroupName": "awscdkmediapackagev2endpointcdnauthGroup4C5F5FE1",
+    "ChannelGroupName": "integ-cdn-auth-group",
     "ChannelName": "awscdkmediapackagev2endpointcdnauthChannel27B061A3",
     "ContainerType": "CMAF",
     "HlsManifests": [
@@ -91,9 +102,14 @@
         "secretsmanager:GetSecretValue"
        ],
        "Effect": "Allow",
-       "Resource": {
-        "Ref": "CdnSecret32008E6A"
-       }
+       "Resource": [
+        {
+         "Ref": "secret1737E0624"
+        },
+        {
+         "Ref": "secret2659C8405"
+        }
+       ]
       },
       {
        "Action": "secretsmanager:BatchGetSecretValue",
@@ -117,7 +133,10 @@
     "CdnAuthConfiguration": {
      "CdnIdentifierSecretArns": [
       {
-       "Ref": "CdnSecret32008E6A"
+       "Ref": "secret1737E0624"
+      },
+      {
+       "Ref": "secret2659C8405"
       }
      ],
      "SecretsRoleArn": {
@@ -127,32 +146,27 @@
       ]
      }
     },
-    "ChannelGroupName": "awscdkmediapackagev2endpointcdnauthGroup4C5F5FE1",
+    "ChannelGroupName": "integ-cdn-auth-group",
     "ChannelName": "awscdkmediapackagev2endpointcdnauthChannel27B061A3",
     "OriginEndpointName": "awscdkmediapackagev2endpointcdnauthEndpoint99074D39",
     "Policy": {
      "Statement": [
       {
-       "Action": [
-        "mediapackagev2:GetHeadObject",
-        "mediapackagev2:GetObject"
-       ],
+       "Action": "mediapackagev2:GetObject",
        "Condition": {
         "Bool": {
-         "mediapackagev2:RequestHasMatchingCdnAuthHeader": true
+         "mediapackagev2:RequestHasMatchingCdnAuthHeader": "true"
         }
        },
        "Effect": "Allow",
-       "Principal": {
-        "Service": "cloudfront.amazonaws.com"
-       },
+       "Principal": "*",
        "Resource": {
         "Fn::GetAtt": [
          "EndpointEEF1FD8F",
          "Arn"
         ]
        },
-       "Sid": "AllowCloudFront"
+       "Sid": "AllowGetObjectAccessForAuthorizedRequest"
       }
      ],
      "Version": "2012-10-17"
@@ -162,6 +176,16 @@
     "EndpointPolicyCdnAuthRoleDefaultPolicyEF103B96",
     "EndpointPolicyCdnAuthRole803DA187"
    ]
+  }
+ },
+ "Outputs": {
+  "EndpointArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "EndpointEEF1FD8F",
+     "Arn"
+    ]
+   }
   }
  },
  "Parameters": {

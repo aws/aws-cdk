@@ -3,10 +3,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new DeployAssert (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:38:38)",
-        "new IntegTestCase (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
-        "new IntegTest (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:253:19)",
+        "new DeployAssert (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:38:38)",
+        "new IntegTestCase (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:253:19)",
         "...node internals..."
       ]
     }
@@ -19,19 +19,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:258:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
-        "DefaultStackSynthesizer.synthesize (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
-        "/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
-        "visit (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
-        "visit (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
-        "visit (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
-        "visit (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
-        "synthesizeTree (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
-        "synthesize (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
-        "App.synth (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:92)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:289:5)",
-        "...node internals..."
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)"
       ]
     }
   ],
@@ -43,19 +40,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:266:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
-        "DefaultStackSynthesizer.synthesize (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
-        "/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
-        "visit (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
-        "visit (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
-        "visit (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
-        "visit (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
-        "synthesizeTree (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
-        "synthesize (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
-        "App.synth (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:92)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:289:5)",
-        "...node internals..."
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)"
       ]
     }
   ],
@@ -81,17 +75,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "Object.visit (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:84:25)",
-        "recurse (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:262:38)",
-        "recurse (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
-        "recurse (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
-        "recurse (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
-        "recurse (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
-        "invokeAspectsV2 (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:234:5)",
-        "synthesize (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:32:9)",
-        "App.synth (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:92)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:289:5)",
-        "...node internals..."
+        "Object.visit (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:84:25)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:291:38)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:305:43)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:305:43)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:305:43)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:305:43)",
+        "invokeAspectsV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:263:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:35:9)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:289:5)"
       ]
     }
   ],
@@ -103,14 +96,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new LambdaFunctionProvider (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:78:26)",
-        "SingletonFunction.ensureFunction (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
-        "new SingletonFunction (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
-        "new AssertionsProvider (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
-        "new AwsApiCall (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:47:25)",
-        "DeployAssert.awsApiCall (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
-        "assertLambdaPasses (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:262:41)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:286:1)",
+        "new LambdaFunctionProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:78:26)",
+        "SingletonFunction.ensureFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new AwsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:47:25)",
+        "DeployAssert.awsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "assertLambdaPasses (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:262:41)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:286:1)",
         "...node internals..."
       ]
     }
@@ -123,14 +116,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new LambdaFunctionProvider (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:126:28)",
-        "SingletonFunction.ensureFunction (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
-        "new SingletonFunction (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
-        "new AssertionsProvider (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
-        "new AwsApiCall (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:47:25)",
-        "DeployAssert.awsApiCall (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
-        "assertLambdaPasses (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:262:41)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:286:1)",
+        "new LambdaFunctionProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:126:28)",
+        "SingletonFunction.ensureFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new AwsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:47:25)",
+        "DeployAssert.awsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "assertLambdaPasses (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:262:41)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:286:1)",
         "...node internals..."
       ]
     }
@@ -143,14 +136,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new LambdaFunctionProvider (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:78:26)",
-        "SingletonFunction.ensureFunction (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
-        "new SingletonFunction (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
-        "new AssertionsProvider (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
-        "new WaiterStateMachine (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:62:35)",
-        "AwsApiCall.waitForAssertions (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
-        "assertLambdaPasses (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:286:1)",
+        "new LambdaFunctionProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:78:26)",
+        "SingletonFunction.ensureFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:62:35)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:286:1)",
         "...node internals..."
       ]
     }
@@ -163,14 +156,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new LambdaFunctionProvider (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:126:28)",
-        "SingletonFunction.ensureFunction (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
-        "new SingletonFunction (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
-        "new AssertionsProvider (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
-        "new WaiterStateMachine (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:62:35)",
-        "AwsApiCall.waitForAssertions (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
-        "assertLambdaPasses (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:286:1)",
+        "new LambdaFunctionProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:126:28)",
+        "SingletonFunction.ensureFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:62:35)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:286:1)",
         "...node internals..."
       ]
     }
@@ -183,14 +176,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new LambdaFunctionProvider (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:78:26)",
-        "SingletonFunction.ensureFunction (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
-        "new SingletonFunction (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
-        "new AssertionsProvider (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
-        "new WaiterStateMachine (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:66:33)",
-        "AwsApiCall.waitForAssertions (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
-        "assertLambdaPasses (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:286:1)",
+        "new LambdaFunctionProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:78:26)",
+        "SingletonFunction.ensureFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:66:33)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:286:1)",
         "...node internals..."
       ]
     }
@@ -203,14 +196,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new LambdaFunctionProvider (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:126:28)",
-        "SingletonFunction.ensureFunction (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
-        "new SingletonFunction (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
-        "new AssertionsProvider (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
-        "new WaiterStateMachine (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:66:33)",
-        "AwsApiCall.waitForAssertions (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
-        "assertLambdaPasses (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:286:1)",
+        "new LambdaFunctionProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:126:28)",
+        "SingletonFunction.ensureFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:66:33)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:286:1)",
         "...node internals..."
       ]
     }
@@ -237,17 +230,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "Object.visit (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:84:25)",
-        "recurse (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:262:38)",
-        "recurse (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
-        "recurse (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
-        "recurse (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
-        "recurse (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
-        "invokeAspectsV2 (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:234:5)",
-        "synthesize (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:32:9)",
-        "App.synth (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:92)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:289:5)",
-        "...node internals..."
+        "Object.visit (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:84:25)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:291:38)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:305:43)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:305:43)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:305:43)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:305:43)",
+        "invokeAspectsV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:263:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:35:9)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:289:5)"
       ]
     }
   ],
@@ -273,17 +265,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "Object.visit (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:84:25)",
-        "recurse (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:262:38)",
-        "recurse (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
-        "recurse (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
-        "recurse (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
-        "recurse (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
-        "invokeAspectsV2 (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:234:5)",
-        "synthesize (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:32:9)",
-        "App.synth (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:92)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:289:5)",
-        "...node internals..."
+        "Object.visit (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:84:25)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:291:38)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:305:43)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:305:43)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:305:43)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:305:43)",
+        "invokeAspectsV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:263:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:35:9)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:289:5)"
       ]
     }
   ],
@@ -295,12 +286,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:127:29)",
-        "new CustomResource (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AwsApiCall (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
-        "DeployAssert.awsApiCall (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
-        "assertLambdaPasses (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:262:41)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:286:1)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "DeployAssert.awsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "assertLambdaPasses (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:262:41)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:286:1)",
         "...node internals..."
       ]
     }
@@ -313,10 +305,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new WaiterStateMachine (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:70:22)",
-        "AwsApiCall.waitForAssertions (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
-        "assertLambdaPasses (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:286:1)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:70:22)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:286:1)",
         "...node internals..."
       ]
     }
@@ -329,10 +321,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new WaiterStateMachine (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:120:26)",
-        "AwsApiCall.waitForAssertions (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
-        "assertLambdaPasses (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:286:1)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:120:26)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:286:1)",
         "...node internals..."
       ]
     }
@@ -345,12 +337,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:127:29)",
-        "new CustomResource (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AwsApiCall (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
-        "DeployAssert.awsApiCall (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
-        "assertLambdaPasses (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:262:41)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:287:1)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "DeployAssert.awsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "assertLambdaPasses (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:262:41)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:287:1)",
         "...node internals..."
       ]
     }
@@ -363,10 +356,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new WaiterStateMachine (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:70:22)",
-        "AwsApiCall.waitForAssertions (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
-        "assertLambdaPasses (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:287:1)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:70:22)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:287:1)",
         "...node internals..."
       ]
     }
@@ -379,10 +372,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new WaiterStateMachine (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:120:26)",
-        "AwsApiCall.waitForAssertions (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
-        "assertLambdaPasses (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:287:1)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:120:26)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:287:1)",
         "...node internals..."
       ]
     }
@@ -395,12 +388,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:127:29)",
-        "new CustomResource (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AwsApiCall (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
-        "DeployAssert.awsApiCall (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
-        "assertLambdaPasses (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:262:41)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:288:1)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "DeployAssert.awsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "assertLambdaPasses (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:262:41)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:288:1)",
         "...node internals..."
       ]
     }
@@ -413,10 +407,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new WaiterStateMachine (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:70:22)",
-        "AwsApiCall.waitForAssertions (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
-        "assertLambdaPasses (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:288:1)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:70:22)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:288:1)",
         "...node internals..."
       ]
     }
@@ -429,10 +423,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new WaiterStateMachine (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:120:26)",
-        "AwsApiCall.waitForAssertions (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
-        "assertLambdaPasses (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:288:1)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:120:26)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:288:1)",
         "...node internals..."
       ]
     }
@@ -445,11 +439,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "AssertionsProvider.grantInvoke (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
-        "new WaiterStateMachine (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:130:33)",
-        "AwsApiCall.waitForAssertions (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
-        "assertLambdaPasses (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:286:1)",
+        "AssertionsProvider.grantInvoke (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:130:33)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:286:1)",
         "...node internals..."
       ]
     }
@@ -462,11 +456,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "AssertionsProvider.grantInvoke (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
-        "new WaiterStateMachine (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:131:25)",
-        "AwsApiCall.waitForAssertions (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
-        "assertLambdaPasses (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:286:1)",
+        "AssertionsProvider.grantInvoke (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:131:25)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:286:1)",
         "...node internals..."
       ]
     }
@@ -479,11 +473,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "AssertionsProvider.grantInvoke (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
-        "new WaiterStateMachine (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:130:33)",
-        "AwsApiCall.waitForAssertions (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
-        "assertLambdaPasses (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:287:1)",
+        "AssertionsProvider.grantInvoke (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:130:33)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:287:1)",
         "...node internals..."
       ]
     }
@@ -496,11 +490,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "AssertionsProvider.grantInvoke (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
-        "new WaiterStateMachine (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:131:25)",
-        "AwsApiCall.waitForAssertions (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
-        "assertLambdaPasses (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:287:1)",
+        "AssertionsProvider.grantInvoke (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:131:25)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:287:1)",
         "...node internals..."
       ]
     }
@@ -513,11 +507,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "AssertionsProvider.grantInvoke (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
-        "new WaiterStateMachine (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:130:33)",
-        "AwsApiCall.waitForAssertions (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
-        "assertLambdaPasses (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:288:1)",
+        "AssertionsProvider.grantInvoke (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:130:33)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:288:1)",
         "...node internals..."
       ]
     }
@@ -530,11 +524,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "AssertionsProvider.grantInvoke (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
-        "new WaiterStateMachine (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:131:25)",
-        "AwsApiCall.waitForAssertions (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
-        "assertLambdaPasses (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:288:1)",
+        "AssertionsProvider.grantInvoke (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:131:25)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "assertLambdaPasses (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:273:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:288:1)",
         "...node internals..."
       ]
     }
