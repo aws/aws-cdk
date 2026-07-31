@@ -47,6 +47,7 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
     - [Other configuration](#other-configuration)
       - [Lifecycle configuration](#lifecycle-configuration)
       - [Request header configuration](#request-header-configuration)
+      - [Application log group](#application-log-group)
   - [Browser](#browser)
     - [Browser Network modes](#browser-network-modes)
     - [Browser Properties](#browser-properties)
@@ -839,6 +840,27 @@ new agentcore.Runtime(this, 'test-runtime', {
   ],
 });
 ```
+
+#### Application log group
+
+Every Runtime has a default endpoint whose stdout is written to the AgentCore-managed log group at `/aws/bedrock-agentcore/runtimes/{agentRuntimeId}-DEFAULT`. The Runtime construct exposes this log group as `applicationLogGroup` so you can attach metric filters, subscription filters, or alarms without hardcoding the path:
+
+```typescript fixture=default
+const repository = new ecr.Repository(this, 'TestRepository');
+
+const runtime = new agentcore.Runtime(this, 'Runtime', {
+  agentRuntimeArtifact: agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0'),
+});
+
+new logs.MetricFilter(this, 'ToolErrors', {
+  logGroup: runtime.applicationLogGroup,
+  filterPattern: logs.FilterPattern.stringValue('$.tool_status', '=', 'error'),
+  metricNamespace: 'MyApp',
+  metricName: 'ToolExecutionErrors',
+});
+```
+
+The log group itself is created by the AgentCore service on the runtime's first invocation, not by CDK. Constructs that require the log group to exist at deploy time may race the first invocation; if that is a concern, pre-create the log group with a `LogRetention` resource using the same name.
 
 ## Browser
 
@@ -1687,8 +1709,16 @@ and authorized during Inbound Auth.
 
 AgentCore Gateway supports the following types of outbound authorization:
 
-**IAM-based outbound authorization** – The gateway uses its execution role to authenticate with AWS services. This is the default
- and most common approach for Lambda targets and AWS service integrations.
+**IAM-based outbound authorization** – The gateway uses its execution role to authenticate with AWS services. This is the default and most common approach for Lambda targets and AWS service integrations. Use `GatewayCredentialProvider.fromIamRole()`; by default the gateway infers the SigV4 signing service and region from the target endpoint. For **MCP Server** and **OpenAPI** targets, you can override the service, and optionally the region too — useful for cross-region calls or when the service can't be inferred from the URL:
+
+```typescript fixture=default
+agentcore.GatewayCredentialProvider.fromIamRole({
+  service: 'bedrock-runtime', // SigV4 signing name (typically the endpoint prefix); see the AWS service authorization reference
+  region: 'us-east-1',         // defaults to the gateway's region
+});
+```
+
+The Bedrock AgentCore service only accepts `IamCredentialProvider` with explicit `service` / `region` for MCP Server and OpenAPI targets. Lambda, API Gateway and Smithy targets must use the bare `GatewayCredentialProvider.fromIamRole()` (with no arguments); the CDK enforces this with a synth-time validation.
 
 **2-legged OAuth (OAuth 2LO)** – Use OAuth 2.0 two-legged flow (2LO) for targets that require OAuth authentication.
 The gateway authenticates on its own behalf, not on behalf of a user.
