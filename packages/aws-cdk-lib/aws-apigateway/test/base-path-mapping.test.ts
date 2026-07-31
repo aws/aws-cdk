@@ -14,6 +14,7 @@ describe('BasePathMapping', () => {
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       endpointType: apigw.EndpointType.REGIONAL,
     });
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // WHEN
     new apigw.BasePathMapping(stack, 'MyBasePath', {
@@ -39,6 +40,7 @@ describe('BasePathMapping', () => {
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       endpointType: apigw.EndpointType.REGIONAL,
     });
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // WHEN
     new apigw.BasePathMapping(stack, 'MyBasePath', {
@@ -63,6 +65,7 @@ describe('BasePathMapping', () => {
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       endpointType: apigw.EndpointType.REGIONAL,
     });
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // WHEN
     new apigw.BasePathMapping(stack, 'MyBasePath', {
@@ -87,6 +90,7 @@ describe('BasePathMapping', () => {
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       endpointType: apigw.EndpointType.REGIONAL,
     });
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // WHEN
     const invalidBasePath = 'invalid-/base-path?';
@@ -111,6 +115,7 @@ describe('BasePathMapping', () => {
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       endpointType: apigw.EndpointType.REGIONAL,
     });
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // WHEN
     const invalidBasePath = '/invalid-base-path';
@@ -135,6 +140,7 @@ describe('BasePathMapping', () => {
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       endpointType: apigw.EndpointType.REGIONAL,
     });
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // WHEN
     const invalidBasePath = 'invalid-base-path/';
@@ -159,6 +165,7 @@ describe('BasePathMapping', () => {
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       endpointType: apigw.EndpointType.REGIONAL,
     });
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // WHEN
     const invalidBasePath = 'in//valid-base-path';
@@ -183,6 +190,8 @@ describe('BasePathMapping', () => {
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       endpointType: apigw.EndpointType.REGIONAL,
     });
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
+
     const stage = new apigw.Stage(stack, 'MyStage', {
       deployment: new apigw.Deployment(stack, 'MyDeplouyment', {
         api,
@@ -213,6 +222,7 @@ describe('BasePathMapping', () => {
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       endpointType: apigw.EndpointType.REGIONAL,
     });
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // WHEN
     new apigw.BasePathMapping(stack, 'MyBasePath', {
@@ -223,6 +233,54 @@ describe('BasePathMapping', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::BasePathMapping', {
+      Stage: Match.absent(),
+    });
+  });
+
+  test('works with imported domain name from attributes', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'MyApi');
+    api.root.addMethod('GET');
+    const domain = apigw.DomainName.fromDomainNameAttributes(stack, 'Domain', {
+      domainName: 'domainName',
+      domainNameAliasHostedZoneId: 'domainNameAliasHostedZoneId',
+      domainNameAliasTarget: 'domainNameAliasTarget',
+    });
+
+    // WHEN
+    new apigw.BasePathMapping(stack, 'MappingOne', {
+      domainName: domain,
+      restApi: api,
+    });
+    new apigw.BasePathMapping(stack, 'MappingTwo', {
+      domainName: domain,
+      restApi: api,
+      basePath: 'path',
+      attachToStage: false,
+    });
+    new apigw.BasePathMapping(stack, 'MappingThree', {
+      domainName: domain,
+      restApi: api,
+      basePath: 'api/v1/multi-level-path',
+      attachToStage: false,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ApiGateway::BasePathMapping', {
+      DomainName: 'domainName',
+      RestApiId: { Ref: 'MyApi49610EDF' },
+      Stage: { Ref: 'MyApiDeploymentStageprodE1054AF0' },
+    });
+    template.hasResourceProperties('AWS::ApiGateway::BasePathMapping', {
+      DomainName: 'domainName',
+      BasePath: 'path',
+      Stage: Match.absent(),
+    });
+    template.hasResourceProperties('AWS::ApiGateway::BasePathMapping', {
+      DomainName: 'domainName',
+      BasePath: 'api/v1/multi-level-path',
       Stage: Match.absent(),
     });
   });

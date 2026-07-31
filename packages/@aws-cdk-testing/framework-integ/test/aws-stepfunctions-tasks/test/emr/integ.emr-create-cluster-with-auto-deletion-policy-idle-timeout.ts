@@ -40,6 +40,18 @@ const stateMachine = new sfn.StateMachine(stack, 'SM', {
 
 const testCase = new IntegTest(app, 'EmrCreateClusterTestAutoDeletionPolicyIdleTimeout', {
   testCases: [stack],
+  // EMR cluster teardown is asynchronous — ENIs attached to VPC subnets may not be
+  // released before CloudFormation attempts to delete the subnets/VPC, causing
+  // DELETE_FAILED on the VPC resources. The deploy + assertions succeed; only
+  // the destroy phase races against EMR's cleanup.
+  cdkCommandOptions: {
+    destroy: {
+      args: {
+        force: true,
+      },
+      expectError: true,
+    },
+  },
 });
 
 testCase.assertions
