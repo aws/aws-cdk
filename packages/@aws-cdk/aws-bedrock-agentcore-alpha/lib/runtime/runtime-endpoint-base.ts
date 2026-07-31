@@ -22,6 +22,7 @@ import type { Construct } from 'constructs';
 
 /**
  * Interface for Runtime Endpoint resources
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface IRuntimeEndpoint extends IResource, IRuntimeEndpointRef {
   /**
@@ -78,6 +79,7 @@ export interface IRuntimeEndpoint extends IResource, IRuntimeEndpointRef {
 
 /**
  * Base class for Runtime Endpoint
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export abstract class RuntimeEndpointBase extends Resource implements IRuntimeEndpoint {
   public abstract readonly agentRuntimeEndpointArn: string;
@@ -105,6 +107,7 @@ export abstract class RuntimeEndpointBase extends Resource implements IRuntimeEn
 
 /**
  * Attributes for importing an existing Runtime Endpoint
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface RuntimeEndpointAttributes {
   /**

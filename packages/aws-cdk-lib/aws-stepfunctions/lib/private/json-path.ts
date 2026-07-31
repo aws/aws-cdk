@@ -1,7 +1,8 @@
 import type { IntrinsicExpression } from './intrinstics';
 import { IntrinsicParser } from './intrinstics';
 import type { IResolvable, IResolveContext } from '../../../core';
-import { captureStackTrace, Token, Tokenization, UnscopedValidationError } from '../../../core';
+import { Token, Tokenization, UnscopedValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 
 const JSON_PATH_TOKEN_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.JsonPathToken');
 
@@ -10,11 +11,10 @@ export class JsonPathToken implements IResolvable {
     return (x as any)[JSON_PATH_TOKEN_SYMBOL] === true;
   }
 
-  public readonly creationStack: string[];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
   public displayHint: string;
 
   constructor(public readonly path: string) {
-    this.creationStack = captureStackTrace();
     this.displayHint = path.replace(/^[^a-zA-Z]+/, '');
     Object.defineProperty(this, JSON_PATH_TOKEN_SYMBOL, { value: true });
   }
@@ -194,7 +194,7 @@ function resolveArray(arr: any[], handlers: FieldHandlers, visited: object[] = [
     if ((typeof value === 'string' && jsonPathString(value) !== undefined)
         || (typeof value === 'number' && jsonPathNumber(value) !== undefined)
         || (isStringArray(value) && jsonPathStringList(value) !== undefined)) {
-      throw new UnscopedValidationError('JsonPathFieldsNotAllowedInArray', 'Cannot use JsonPath fields in an array, they must be used in objects');
+      throw new UnscopedValidationError(lit`JsonPathFieldsNotAllowedInArray`, 'Cannot use JsonPath fields in an array, they must be used in objects');
     }
     if (Array.isArray(value)) {
       return resolveArray(value, handlers, visited);
@@ -284,7 +284,7 @@ export function jsonPathString(x: string): string | undefined {
   const jsonPathTokens = fragments.tokens.filter(JsonPathToken.isJsonPathToken);
 
   if (jsonPathTokens.length > 0 && fragments.length > 1) {
-    throw new UnscopedValidationError('FieldReferenceMustBeEntireString', `Field references must be the entire string, cannot concatenate them (found '${x}')`);
+    throw new UnscopedValidationError(lit`FieldReferenceMustBeEntireString`, `Field references must be the entire string, cannot concatenate them (found '${x}')`);
   }
   if (jsonPathTokens.length > 0) {
     return jsonPathTokens[0].path;
@@ -336,7 +336,7 @@ export function renderInExpression(x: any): string {
   if (path) return path;
   if (typeof x === 'number') return x.toString(10);
   if (typeof x === 'string') return singleQuotestring(x);
-  throw new UnscopedValidationError('UnexpectedValue', 'Unexpected value.');
+  throw new UnscopedValidationError(lit`UnexpectedValue`, 'Unexpected value.');
 }
 
 function singleQuotestring(x: string): string {

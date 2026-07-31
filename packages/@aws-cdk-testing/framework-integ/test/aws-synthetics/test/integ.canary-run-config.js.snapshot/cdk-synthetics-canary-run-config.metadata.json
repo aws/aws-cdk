@@ -1,0 +1,83 @@
+{
+  "/cdk-synthetics-canary-run-config/Canary": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "canaryName": "*",
+        "runtime": "*",
+        "test": "*",
+        "provisionedResourceCleanup": true,
+        "activeTracing": true,
+        "memory": "*",
+        "timeout": "*"
+      }
+    }
+  ],
+  "/cdk-synthetics-canary-run-config/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cdk-synthetics-canary-run-config/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/cdk-synthetics-canary-run-config/Canary/ArtifactsBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryption": "KMS_MANAGED",
+        "enforceSSL": true,
+        "lifecycleRules": "*"
+      }
+    }
+  ],
+  "/cdk-synthetics-canary-run-config/Canary/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "inlinePolicies": "*",
+        "managedPolicies": []
+      }
+    }
+  ],
+  "/cdk-synthetics-canary-run-config/Canary/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Canary11957FE2"
+    }
+  ],
+  "/cdk-synthetics-canary-run-config/Canary/ArtifactsBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CanaryArtifactsBucket4A60D32B"
+    }
+  ],
+  "/cdk-synthetics-canary-run-config/Canary/ArtifactsBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/cdk-synthetics-canary-run-config/Canary/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CanaryServiceRoleD132250E"
+    }
+  ],
+  "/cdk-synthetics-canary-run-config/Canary/ArtifactsBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CanaryArtifactsBucketPolicy63096C41"
+    }
+  ]
+}

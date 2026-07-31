@@ -4,6 +4,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { App, Stack } from 'aws-cdk-lib';
+import { EKS_USE_NATIVE_OIDC_PROVIDER } from 'aws-cdk-lib/cx-api';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { getClusterVersionConfig, getLatestVersions } from './integ-tests-kubernetes-version';
 import * as eks from 'aws-cdk-lib/aws-eks';
@@ -157,6 +158,7 @@ class EksClusterStack extends Stack {
 const app = new App({
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    [EKS_USE_NATIVE_OIDC_PROVIDER]: false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });

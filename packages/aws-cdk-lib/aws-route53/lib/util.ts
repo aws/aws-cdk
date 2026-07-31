@@ -2,6 +2,7 @@ import type { Construct } from 'constructs';
 import type { GrantDelegationOptions, IHostedZone, INamedHostedZoneRef } from './hosted-zone-ref';
 import * as iam from '../../aws-iam';
 import { Stack, Token, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Validates a zone name is valid by Route53 specific naming rules,
@@ -13,13 +14,13 @@ import { Stack, Token, UnscopedValidationError } from '../../core';
  */
 export function validateZoneName(zoneName: string) {
   if (zoneName.length > 255) {
-    throw new UnscopedValidationError('ZoneNameTooLong', 'zone name cannot be more than 255 bytes long');
+    throw new UnscopedValidationError(lit`ZoneNameTooLong`, 'zone name cannot be more than 255 bytes long');
   }
   if (zoneName.split('.').find(label => label.length > 63)) {
-    throw new UnscopedValidationError('ZoneLabelTooLong', 'zone name labels cannot be more than 63 bytes long');
+    throw new UnscopedValidationError(lit`ZoneLabelTooLong`, 'zone name labels cannot be more than 63 bytes long');
   }
   if (!zoneName.match(/^[a-z0-9!"#$%&'()*+,/:;<=>?@[\\\]^_`{|}~.-]+$/i)) {
-    throw new UnscopedValidationError('InvalidZoneNameCharacters', 'zone names can only contain a-z, 0-9, -, ! " # $ % & \' ( ) * + , - / : ; < = > ? @ [ \ ] ^ _ ` { | } ~ .');
+    throw new UnscopedValidationError(lit`InvalidZoneNameCharacters`, 'zone names can only contain a-z, 0-9, -, ! " # $ % & \' ( ) * + , - / : ; < = > ? @ [ \ ] ^ _ ` { | } ~ .');
   }
 }
 
@@ -88,7 +89,7 @@ function octalEncodeDelegatedZoneName(delegatedZoneName: string): string {
 function validateDelegatedZoneName(parentZoneName: string, delegatedZoneName: string) {
   if (delegatedZoneName.endsWith('.')) {
     throw new UnscopedValidationError(
-      'DelegatedZoneNameTrailingPeriod',
+      lit`DelegatedZoneNameTrailingPeriod`,
       `Error while validating delegate zone name '${delegatedZoneName}': delegated zone name cannot have a trailing period`,
     );
   }
@@ -101,7 +102,7 @@ function validateDelegatedZoneName(parentZoneName: string, delegatedZoneName: st
 
   if (delegatedZoneName.toLowerCase() !== delegatedZoneName) {
     throw new UnscopedValidationError(
-      'DelegatedZoneNameUppercase',
+      lit`DelegatedZoneNameUppercase`,
       `Error while validating delegate zone name '${delegatedZoneName}': delegated zone name cannot contain uppercase characters`,
     );
   }
@@ -114,14 +115,14 @@ function validateDelegatedZoneName(parentZoneName: string, delegatedZoneName: st
 
   if (!delegatedZoneName.endsWith(parentZoneNameNoTrailingDot)) {
     throw new UnscopedValidationError(
-      'DelegatedZoneNameNotSuffixed',
+      lit`DelegatedZoneNameNotSuffixed`,
       `Error while validating delegate zone name '${delegatedZoneName}': delegated zone name must be suffixed by parent zone name`,
     );
   }
 
   if (delegatedZoneName === parentZoneNameNoTrailingDot) {
     throw new UnscopedValidationError(
-      'DelegatedZoneNameSameAsParent',
+      lit`DelegatedZoneNameSameAsParent`,
       `Error while validating delegate zone name '${delegatedZoneName}': delegated zone name cannot be the same as the parent zone name`,
     );
   }

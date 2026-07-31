@@ -1,6 +1,5 @@
 /* eslint-disable import/order */
 import { Construct, Node } from 'constructs';
-import { debugModeEnabled } from './debug';
 import { Lazy } from './lazy';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
@@ -66,15 +65,16 @@ export abstract class CfnElement extends Construct {
 
     this.stack = Stack.of(this);
 
-    this.logicalId = Lazy.uncachedString({ produce: () => this.synthesizeLogicalId() }, {
+    // eslint-disable-next-line no-restricted-syntax
+    this.logicalId = Lazy.uncachedString({ produce: () => this._synthesizeLogicalId() }, {
       displayHint: `${notTooLong(Node.of(this).path)}.LogicalID`,
     });
 
     if (!this.node.tryGetContext(cxapi.DISABLE_LOGICAL_ID_METADATA)) {
-      Node.of(this).addMetadata(cxschema.ArtifactMetadataEntryType.LOGICAL_ID, this.logicalId, {
-        stackTrace: debugModeEnabled(),
-        traceFromFunction: this.constructor,
-      });
+      Node.of(this).addMetadata(cxschema.ArtifactMetadataEntryType.LOGICAL_ID, this.logicalId);
+    }
+    if (!this.node.tryGetContext(cxapi.DISABLE_CREATION_STACK_TRACES) || debugModeEnabled()) {
+      this.node.addMetadata(cxschema.ArtifactMetadataEntryType.CREATION_STACK, captureStackTrace(new.target));
     }
   }
 
@@ -88,7 +88,7 @@ export abstract class CfnElement extends Construct {
    */
   public overrideLogicalId(newLogicalId: string) {
     if (this._logicalIdLocked) {
-      throw new ValidationError('LogicalIdLocked', `The logicalId for resource at path ${Node.of(this).path} has been locked and cannot be overridden\n` +
+      throw new ValidationError(lit`LogicalIdLocked`, `The logicalId for resource at path ${Node.of(this).path} has been locked and cannot be overridden\n` +
         'Make sure you are calling "overrideLogicalId" before Stack.exportValue', this);
     } else {
       this._logicalIdOverride = newLogicalId;
@@ -126,25 +126,9 @@ export abstract class CfnElement extends Construct {
    *      node +internal+ entries filtered.
    */
   public get creationStack(): string[] {
-    const trace = Node.of(this).metadata.find(md => md.type === cxschema.ArtifactMetadataEntryType.LOGICAL_ID)!.trace;
-    if (!trace) {
-      return [];
-    }
+    const trace = Node.of(this).metadata.find(md => md.type === cxschema.ArtifactMetadataEntryType.CREATION_STACK)?.data;
 
-    return filterStackTrace(trace);
-
-    function filterStackTrace(stack: string[]): string[] {
-      const result = Array.of(...stack);
-      while (result.length > 0 && shouldFilter(result[result.length - 1])) {
-        result.pop();
-      }
-      // It's weird if we filtered everything, so return the whole stack...
-      return result.length === 0 ? stack : result;
-    }
-
-    function shouldFilter(str: string): boolean {
-      return str.match(/[^(]+\(internal\/.*/) !== null;
-    }
+    return trace ?? [];
   }
 
   /**
@@ -170,8 +154,10 @@ export abstract class CfnElement extends Construct {
    * Called during synthesize to render the logical ID of this element. If
    * `overrideLogicalId` was it will be used, otherwise, we will allocate the
    * logical ID through the stack.
+   *
+   * @internal
    */
-  private synthesizeLogicalId() {
+  protected _synthesizeLogicalId() {
     if (this._logicalIdOverride) {
       return this._logicalIdOverride;
     } else {
@@ -210,7 +196,11 @@ function notTooLong(x: string) {
 // These imports have to be at the end to prevent circular imports
 import { CfnReference } from './private/cfn-reference';
 import { Stack } from './stack';
-import { Token } from './token';import { ValidationError } from './errors';
+import { Token } from './token';
+import { ValidationError } from './errors';
 import type { IConstruct, IMixin } from 'constructs';
 import { withMixins } from './mixins/private/mixin-metadata';
+import { lit } from './private/literal-string';
+import { captureStackTrace } from './private/stack-trace';
+import { debugModeEnabled } from './debug';
 
