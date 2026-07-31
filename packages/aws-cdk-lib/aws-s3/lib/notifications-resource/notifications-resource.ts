@@ -4,6 +4,9 @@ import { NotificationsResourceHandler } from './notifications-resource-handler';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
+import type { IArrayBox, IBox } from '../../../core/lib/helpers-internal';
+import { Box } from '../../../core/lib/helpers-internal';
+import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
 import { lit } from '../../../core/lib/private/literal-string';
 import * as cxapi from '../../../cx-api';
 import type { IBucket, EventType, NotificationKeyFilter } from '../bucket';
@@ -43,11 +46,12 @@ interface NotificationsProps {
  * @see
  * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-notificationconfig.html
  */
+@noBoxStackTraces
 export class BucketNotifications extends Construct {
-  private eventBridgeEnabled = false;
-  private readonly lambdaNotifications = new Array<LambdaFunctionConfiguration>();
-  private readonly queueNotifications = new Array<QueueConfiguration>();
-  private readonly topicNotifications = new Array<TopicConfiguration>();
+  private readonly eventBridgeEnabled: IBox<boolean> = Box.fromValue(false);
+  private readonly lambdaNotifications: IArrayBox<LambdaFunctionConfiguration> = Box.fromArray();
+  private readonly queueNotifications: IArrayBox<QueueConfiguration> = Box.fromArray();
+  private readonly topicNotifications: IArrayBox<TopicConfiguration> = Box.fromArray();
   private resource?: cdk.CfnResource;
   private readonly bucket: IBucket;
   private readonly handlerRole?: iam.IRole;
@@ -107,16 +111,21 @@ export class BucketNotifications extends Construct {
 
   public enableEventBridgeNotification() {
     this.createResourceOnce();
-    this.eventBridgeEnabled = true;
+    this.eventBridgeEnabled.set(true);
   }
 
-  private renderNotificationConfiguration(): NotificationConfiguration {
-    return {
-      EventBridgeConfiguration: this.eventBridgeEnabled ? {} : undefined,
-      LambdaFunctionConfigurations: this.lambdaNotifications.length > 0 ? this.lambdaNotifications : undefined,
-      QueueConfigurations: this.queueNotifications.length > 0 ? this.queueNotifications : undefined,
-      TopicConfigurations: this.topicNotifications.length > 0 ? this.topicNotifications : undefined,
-    };
+  private renderNotificationConfiguration() {
+    return Box.combine({
+      eventBridge: this.eventBridgeEnabled,
+      lambda: this.lambdaNotifications,
+      queue: this.queueNotifications,
+      topic: this.topicNotifications,
+    }, v => ({
+      EventBridgeConfiguration: v.eventBridge ? {} : undefined,
+      LambdaFunctionConfigurations: v.lambda.length > 0 ? v.lambda : undefined,
+      QueueConfigurations: v.queue.length > 0 ? v.queue : undefined,
+      TopicConfigurations: v.topic.length > 0 ? v.topic : undefined,
+    }));
   }
 
   /**
@@ -139,19 +148,28 @@ export class BucketNotifications extends Construct {
         managed = false;
       }
 
-      // Add permissions for this bucket to the handler
-      this.addHandlerPermissions(handler, managed);
+      // Add permissions for this bucket to the handler via a dedicated policy.
+      // Each bucket gets its own IAM policy so that when a notification is removed,
+      // the policy is deleted (not updated), and CloudFormation correctly orders
+      // the custom resource deletion before the policy deletion.
+      // See https://github.com/aws/aws-cdk/issues/37667
+      const handlerPolicy = this.addHandlerPermissions(handler, managed);
 
       this.resource = new cdk.CfnResource(this, 'Resource', {
         type: 'Custom::S3BucketNotifications',
         properties: {
           ServiceToken: handler.functionArn,
           BucketName: this.bucket.bucketName,
-          NotificationConfiguration: cdk.Lazy.any({ produce: () => this.renderNotificationConfiguration() }),
+          NotificationConfiguration: this.renderNotificationConfiguration(),
           Managed: managed,
           SkipDestinationValidation: this.skipDestinationValidation,
         },
       });
+
+      // The custom resource must depend on its dedicated IAM policy so that
+      // on deletion, the custom resource is deleted first (handler still has
+      // permission), then the policy is deleted.
+      this.resource.node.addDependency(handlerPolicy);
 
       // Add dependency on bucket policy if it exists to avoid race conditions
       // S3 does not allow calling PutBucketPolicy and PutBucketNotification APIs at the same time
@@ -181,22 +199,27 @@ export class BucketNotifications extends Construct {
    * @param handler The notifications resource handler
    * @param managed Whether this is a managed (CDK-created) bucket
    */
-  private addHandlerPermissions(handler: NotificationsResourceHandler, managed: boolean): void {
-    // All buckets need PutBucketNotification to set/update notification configurations
-    handler.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['s3:PutBucketNotification'],
-      resources: [this.bucket.bucketArn],
-    }));
+  private addHandlerPermissions(handler: NotificationsResourceHandler, managed: boolean): iam.Policy {
+    const statements = [
+      new iam.PolicyStatement({
+        actions: ['s3:PutBucketNotification'],
+        resources: [this.bucket.bucketArn],
+      }),
+    ];
 
     // Unmanaged (imported) buckets need GetBucketNotification to read existing configurations
     // before merging with new notifications. Managed buckets don't need this since CDK
     // controls their complete notification state from creation.
     if (!managed) {
-      handler.addToRolePolicy(new iam.PolicyStatement({
+      statements.push(new iam.PolicyStatement({
         actions: ['s3:GetBucketNotification'],
         resources: [this.bucket.bucketArn],
       }));
     }
+
+    const policy = new iam.Policy(this, 'HandlerPolicy', { statements });
+    handler.role.attachInlinePolicy(policy);
+    return policy;
   }
 }
 
@@ -238,20 +261,11 @@ function renderFilters(filters: NotificationKeyFilter[], scope: BucketNotificati
   };
 }
 
-interface NotificationConfiguration {
-  EventBridgeConfiguration?: EventBridgeConfiguration;
-  LambdaFunctionConfigurations?: LambdaFunctionConfiguration[];
-  QueueConfigurations?: QueueConfiguration[];
-  TopicConfigurations?: TopicConfiguration[];
-}
-
 interface CommonConfiguration {
   Id?: string;
   Events: EventType[];
   Filter?: Filter;
 }
-
-interface EventBridgeConfiguration { }
 
 interface LambdaFunctionConfiguration extends CommonConfiguration {
   LambdaFunctionArn: string;

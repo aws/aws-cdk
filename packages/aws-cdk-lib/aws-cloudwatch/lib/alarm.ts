@@ -14,7 +14,7 @@ import { dispatchMetric, metricPeriod } from './private/metric-util';
 import { dropUndefined } from './private/object';
 import { MetricSet } from './private/rendering';
 import { normalizeStatistic, parseStatistic } from './private/statistic';
-import { ArnFormat, Lazy, Stack, Token, Annotations, ValidationError, AssumptionError } from '../../core';
+import { ArnFormat, Stack, Token, Annotations, ValidationError, AssumptionError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
@@ -292,9 +292,9 @@ export class Alarm extends AlarmBase {
 
       // Actions
       actionsEnabled: props.actionsEnabled,
-      alarmActions: Lazy.list({ produce: () => this.alarmActionArns }),
-      insufficientDataActions: Lazy.list({ produce: (() => this.insufficientDataActionArns) }),
-      okActions: Lazy.list({ produce: () => this.okActionArns }),
+      alarmActions: Token.asList(this._alarmActionArns),
+      insufficientDataActions: Token.asList(this._insufficientDataActionArns),
+      okActions: Token.asList(this._okActionArns),
 
       // Metric
       ...metricProps,
@@ -376,11 +376,7 @@ export class Alarm extends AlarmBase {
    */
   @MethodMetadata()
   public addAlarmAction(...actions: IAlarmAction[]) {
-    if (this.alarmActionArns === undefined) {
-      this.alarmActionArns = [];
-    }
-
-    this.alarmActionArns.push(...actions.map(a =>
+    this._alarmActionArns.push(...actions.map(a =>
       this.validateActionArn(a.bind(this, this).alarmActionArn),
     ));
   }

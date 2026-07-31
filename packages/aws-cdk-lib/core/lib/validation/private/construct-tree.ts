@@ -1,9 +1,11 @@
+import { ArtifactMetadataEntryType } from '@aws-cdk/cloud-assembly-schema';
 import type { Construct, IConstruct } from 'constructs';
 import { App } from '../../app';
 import { CfnResource } from '../../cfn-resource';
 import { iterateDfsPreorder } from '../../private/construct-iteration';
+import { stackOf } from '../../private/core-construct-finders';
 import { constructInfoFromConstruct } from '../../private/runtime-info';
-import { Stack } from '../../stack';
+import type { Stack } from '../../stack';
 
 /**
  * A construct centric view of a stack trace
@@ -82,7 +84,7 @@ export class ConstructTree {
       this._constructByPath.set(child.node.path, child);
       const defaultChild = child.node.defaultChild;
       if (defaultChild && CfnResource.isCfnResource(defaultChild)) {
-        const stack = Stack.of(defaultChild);
+        const stack = stackOf(defaultChild);
         const logicalId = stack.resolve(defaultChild.logicalId);
         this.setLogicalId(stack, logicalId, child);
       }
@@ -91,8 +93,8 @@ export class ConstructTree {
     // Another pass to include all the L1s that haven't been added yet
     for (const child of iterateDfsPreorder(this.root)) {
       if (CfnResource.isCfnResource(child)) {
-        const stack = Stack.of(child);
-        const logicalId = Stack.of(child).resolve(child.logicalId);
+        const stack = stackOf(child);
+        const logicalId = stackOf(child).resolve(child.logicalId);
         this.setLogicalId(stack, logicalId, child);
       }
     }
@@ -169,6 +171,14 @@ export class ConstructTree {
     }
   }
 
+  public constructTraceLevelFromConstructPath(constructPath: string): ReturnType<ConstructTree['constructTraceLevelFromTreeNode']> | undefined {
+    const construct = this.getConstructByPath(constructPath);
+    if (!construct) {
+      return undefined;
+    }
+    return this.constructTraceLevelFromTreeNode(construct);
+  }
+
   /**
    * Convert a Tree Metadata Node into a ConstructTrace object, except its child and stack trace info
    *
@@ -185,13 +195,21 @@ export class ConstructTree {
     };
   }
 
+  public stackTraceByPath(path: string) {
+    const construct = this.getConstructByPath(path);
+    if (!construct) {
+      return undefined;
+    }
+    return this.stackTrace(construct);
+  }
+
   /**
    * Return the stack trace for a given construct path
    *
    * Returns a stack trace if stack trace information is found, or `undefined` if not.
    */
   private stackTrace(construct: IConstruct): string[] | undefined {
-    return construct?.node.metadata.find(meta => !!meta.trace)?.trace;
+    return construct?.node.metadata.find(meta => meta.type === ArtifactMetadataEntryType.CREATION_STACK)?.data;
   }
 
   /**
@@ -200,7 +218,7 @@ export class ConstructTree {
    * @param path the node.addr of the construct
    * @returns the Construct
    */
-  public getConstructByPath(path: string): Construct | undefined {
+  private getConstructByPath(path: string): Construct | undefined {
     return this._constructByPath.get(path);
   }
 
