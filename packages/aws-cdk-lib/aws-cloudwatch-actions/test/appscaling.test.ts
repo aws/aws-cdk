@@ -1,12 +1,16 @@
 import { Template } from '../../assertions';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
-import { Stack } from '../../core';
+import { Stack, Validations } from '../../core';
 import * as actions from '../lib';
 
 test('can use topic as alarm action', () => {
   // GIVEN
   const stack = new Stack();
+  Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::W3030',
+    reason: 'The dimension is not real.',
+  });
   const scalingTarget = new appscaling.ScalableTarget(stack, 'Target', {
     minCapacity: 1,
     maxCapacity: 100,

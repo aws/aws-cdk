@@ -178,7 +178,7 @@ export class CachePolicy extends Resource implements ICachePolicy {
       throw new ValidationError(lit`CachepolicynameOnlyInclude`, `'cachePolicyName' can only include '-', '_', and alphanumeric characters, got: '${cachePolicyName}'`, this);
     }
 
-    if (cachePolicyName.length > 128) {
+    if (!Token.isUnresolved(cachePolicyName) && cachePolicyName.length > 128) {
       throw new ValidationError(lit`CachepolicynameCannotLongerThan`, `'cachePolicyName' cannot be longer than 128 characters, got: '${cachePolicyName.length}'`, this);
     }
 

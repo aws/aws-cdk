@@ -1,5 +1,5 @@
 import * as path from 'path';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import * as fs from 'fs-extra';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const bundled = require('npm-bundled');

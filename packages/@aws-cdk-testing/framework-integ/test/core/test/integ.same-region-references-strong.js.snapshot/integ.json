@@ -1,0 +1,17 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "SameRegionStrongReferenceTest/DefaultTest": {
+      "stacks": [
+        "SameRegionStrongRefConsumerInteg"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "diffAssets": true,
+      "assertionStack": "SameRegionStrongReferenceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SameRegionStrongReferenceTestDefaultTestDeployAssertACC46230"
+    }
+  },
+  "minimumCliVersion": "2.1121.0"
+}
