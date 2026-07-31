@@ -11,6 +11,10 @@ import { JobType, GlueVersion, WorkerType, Runtime } from '../constants';
 
 /**
  * Properties for creating a Ray Glue job
+ *
+ * @deprecated AWS Glue for Ray is closed to new customers as of April 30, 2026.
+ * Migrate to Amazon EKS with KubeRay Operator. See
+ * https://docs.aws.amazon.com/glue/latest/dg/awsglue-ray-jobs-availability-change.html
  */
 export interface RayJobProps extends JobProps {
   /**
@@ -58,6 +62,10 @@ export interface RayJobProps extends JobProps {
  * These are not overrideable since these are the only configuration that
  * Glue Ray jobs currently support. The runtime defaults to Ray2.4 and min
  * workers defaults to 3.
+ *
+ * @deprecated AWS Glue for Ray is closed to new customers as of April 30, 2026.
+ * Migrate to Amazon EKS with KubeRay Operator. See
+ * https://docs.aws.amazon.com/glue/latest/dg/awsglue-ray-jobs-availability-change.html
  */
 @propertyInjectable
 export class RayJob extends Job {

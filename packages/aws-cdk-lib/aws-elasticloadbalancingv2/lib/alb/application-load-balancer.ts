@@ -229,7 +229,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
 
     if (props.http2Enabled !== undefined) { this.setAttribute('routing.http2.enabled', props.http2Enabled ? 'true' : 'false'); }
     if (props.idleTimeout !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeout.toSeconds().toString()); }
-    if (props.dropInvalidHeaderFields) { this.setAttribute('routing.http.drop_invalid_header_fields.enabled', 'true'); }
+    if (props.dropInvalidHeaderFields !== undefined) { this.setAttribute('routing.http.drop_invalid_header_fields.enabled', props.dropInvalidHeaderFields ? 'true' : 'false'); }
     if (props.desyncMitigationMode !== undefined) { this.setAttribute('routing.http.desync_mitigation_mode', props.desyncMitigationMode); }
     if (props.preserveHostHeader) { this.setAttribute('routing.http.preserve_host_header.enabled', 'true'); }
     if (props.xAmznTlsVersionAndCipherSuiteHeaders) { this.setAttribute('routing.http.x_amzn_tls_version_and_cipher_suite.enabled', 'true'); }
@@ -342,7 +342,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     const lb = this.node.defaultChild;
     const bucketPolicy = bucket.policy?.node.defaultChild;
     if (lb && bucketPolicy && CfnResource.isCfnResource(lb) && CfnResource.isCfnResource(bucketPolicy)) {
-      lb.addDependency(bucketPolicy);
+      lb.addResourceDependency(bucketPolicy);
     }
   }
 
@@ -405,7 +405,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     const lb = this.node.defaultChild;
     const bucketPolicy = bucket.policy?.node.defaultChild;
     if (lb && bucketPolicy && CfnResource.isCfnResource(lb) && CfnResource.isCfnResource(bucketPolicy)) {
-      lb.addDependency(bucketPolicy);
+      lb.addResourceDependency(bucketPolicy);
     }
   }
 
