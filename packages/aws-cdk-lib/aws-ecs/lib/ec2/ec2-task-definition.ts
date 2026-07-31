@@ -1,6 +1,7 @@
 import type { Construct } from 'constructs';
 import { Stack, ValidationError } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { ImportedTaskDefinition } from '../base/_imported-task-definition';
 import type {
@@ -137,7 +138,7 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
     if (invalidConstraints.length > 0) {
       const invalidConstraintTypes = invalidConstraints.map(
         constraint => constraint.toJson().map(constraintProperty => constraintProperty.type)).flat();
-      throw new ValidationError('InvalidPlacementConstraints', `Invalid placement constraint(s): ${invalidConstraintTypes.join(', ')}. Only 'memberOf' is currently supported in the Ec2TaskDefinition class.`, scope);
+      throw new ValidationError(lit`InvalidPlacementConstraints`, `Invalid placement constraint(s): ${invalidConstraintTypes.join(', ')}. Only 'memberOf' is currently supported in the Ec2TaskDefinition class.`, scope);
     }
   }
 

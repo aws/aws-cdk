@@ -11,6 +11,7 @@ import { FeatureFlags } from '../feature-flags';
 import { Lazy } from '../lazy';
 import type { Stack } from '../stack';
 import { Token } from '../token';
+import { lit } from './literal-string';
 import type { ConstructInfo } from './runtime-info';
 import type { ConstructAnalytics } from './stack-metadata';
 import { constructAnalyticsFromScope } from './stack-metadata';
@@ -147,7 +148,7 @@ export function parseAnalytics(analyticsString: string): ConstructInfo[] {
     const trie = parsePrefixEncodedList(prefixEncodedList);
     return trieToConstructInfos(trie);
   } else {
-    throw new AssumptionError('InvalidAnalyticsString', `Invalid analytics string: ${analyticsString}`);
+    throw new AssumptionError(lit`InvalidAnalyticsString`, `Invalid analytics string: ${analyticsString}`);
   }
 }
 
@@ -307,7 +308,7 @@ function parsePrefixEncodedList(data: string): Trie {
 function setGzipOperatingSystemToUnknown(gzipBuffer: Buffer) {
   // check that this is indeed a gzip buffer (https://datatracker.ietf.org/doc/html/rfc1952#page-6)
   if (gzipBuffer[0] !== 0x1f || gzipBuffer[1] !== 0x8b) {
-    throw new AssumptionError('ExpectingGzipBufferMust', 'Expecting a gzip buffer (must start with 0x1f8b)');
+    throw new AssumptionError(lit`ExpectingGzipBufferMust`, 'Expecting a gzip buffer (must start with 0x1f8b)');
   }
 
   gzipBuffer[9] = 255;

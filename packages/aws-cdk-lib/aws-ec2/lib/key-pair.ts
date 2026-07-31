@@ -7,6 +7,7 @@ import { StringParameter } from '../../aws-ssm';
 import type { IResource, ResourceProps } from '../../core';
 import { Lazy, Names, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -221,7 +222,7 @@ export class KeyPair extends Resource implements IKeyPair {
     addConstructMetadata(this, props);
 
     if (props?.publicKeyMaterial && props?.type) {
-      throw new ValidationError('CannotSpecifyTypeKeysImported', 'Cannot specify \'type\' for keys with imported material', this);
+      throw new ValidationError(lit`CannotSpecifyTypeKeysImported`, 'Cannot specify \'type\' for keys with imported material', this);
     }
 
     this._isImport = !!props?.publicKeyMaterial;
@@ -264,7 +265,7 @@ export class KeyPair extends Resource implements IKeyPair {
    */
   public get privateKey(): IStringParameter {
     if (this._isImport) {
-      throw new ValidationError('ParameterPrivateKeyMaterialCreated', 'An SSM parameter with private key material is not created for imported keys', this);
+      throw new ValidationError(lit`ParameterPrivateKeyMaterialCreated`, 'An SSM parameter with private key material is not created for imported keys', this);
     }
     if (!this._privateKeySsm) {
       // This parameter is created by the underlying CloudFormation resource with a defined

@@ -1,0 +1,583 @@
+{
+  "/MyStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/custom-resource-config/integ.custom-resource-config-logRetention.js:10:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/MyStack/WebsiteBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/MyStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "layers": [
+          "*"
+        ],
+        "environment": "*",
+        "timeout": "*",
+        "role": "*",
+        "memorySize": "*",
+        "ephemeralStorageSize": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "filesystem": "*",
+        "logRetention": 7,
+        "logGroup": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addLayers": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-singleton",
+      "data": true
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 2
+    }
+  ],
+  "/MyStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/MyStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/MyStack/WebsiteBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebsiteBucket75C24D94"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/custom-resource-config/integ.custom-resource-config-logRetention.js:11:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/MyStack/s3deploy/AwsCliLayer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {}
+    }
+  ],
+  "/MyStack/s3deploy/CustomResourceHandler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "uuid": "*",
+        "layers": [
+          "*"
+        ],
+        "environment": "*",
+        "lambdaPurpose": "*",
+        "timeout": "*",
+        "role": "*",
+        "memorySize": "*",
+        "ephemeralStorageSize": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "filesystem": "*",
+        "logRetention": 7,
+        "logGroup": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          true
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/MyStack/s3deploy/CustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/MyStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/MyStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "BucketDeploymentSingletonFunction.ensureLambda (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:272:20)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:135:40)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new BucketDeploymentSingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated.js:9:9)",
+        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:155:29)",
+        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/custom-resource-config/integ.custom-resource-config-logRetention.js:12:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/MyStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/LogRetention": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-logRetention",
+      "data": true
+    }
+  ],
+  "/MyStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/MyStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetentionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:180:26)",
+        "WrappedClass.ensureSingletonLogRetentionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:145:20)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:103:35)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:762:38)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "BucketDeploymentSingletonFunction.ensureLambda (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:272:20)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:135:40)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new BucketDeploymentSingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated.js:9:9)"
+      ]
+    }
+  ],
+  "/MyStack/s3deploy/AwsCliLayer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "s3deployAwsCliLayerD0CD1E6B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:164:30)",
+        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsCliLayer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/lambda-layer-awscli/lib/awscli-layer.js:77:13)",
+        "new AwsCliLayer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:157:26)",
+        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/custom-resource-config/integ.custom-resource-config-logRetention.js:12:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/MyStack/s3deploy/Asset1/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/MyStack/s3deploy/CustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "s3deployCustomResourceDB97D82D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:207:23)",
+        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/custom-resource-config/integ.custom-resource-config-logRetention.js:12:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/MyStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "BucketDeploymentSingletonFunction.ensureLambda (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:272:20)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:135:40)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new BucketDeploymentSingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated.js:9:9)",
+        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:155:29)",
+        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+      ]
+    }
+  ],
+  "/MyStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/MyStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/MyStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource/logGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "retention": 3653
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-logGroup",
+      "data": true
+    }
+  ],
+  "/MyStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/LogRetention/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CLogRetention1948627D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:762:38)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "BucketDeploymentSingletonFunction.ensureLambda (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:272:20)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:135:40)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new BucketDeploymentSingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated.js:9:9)",
+        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:155:29)",
+        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+      ]
+    }
+  ],
+  "/MyStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/MyStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:166:36)",
+        "WrappedClass.ensureSingletonLogRetentionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:145:20)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:103:35)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:762:38)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "BucketDeploymentSingletonFunction.ensureLambda (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:272:20)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:135:40)"
+      ]
+    }
+  ],
+  "/MyStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/MyStack/s3deploy/AwsCliLayer/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/MyStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "BucketGrants.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:325:65)",
+        "BucketGrants.grantActions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:321:21)",
+        "BucketGrants.actionsOnBucketAndObjectKeys (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:215:21)"
+      ]
+    }
+  ],
+  "/MyStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource/logGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756ClogGroupD6937F08"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "CustomResourceLogRetention.createLogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/custom-resource-config/custom-resource-config.js:137:29)",
+        "CustomResourceLogRetention.visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/custom-resource-config/custom-resource-config.js:120:46)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:314:38)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:43)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:43)",
+        "invokeAspectsV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:286:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:35:9)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)"
+      ]
+    }
+  ],
+  "/MyStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new LogRetentionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:171:14)",
+        "WrappedClass.ensureSingletonLogRetentionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:145:20)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:103:35)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:762:38)"
+      ]
+    }
+  ]
+}

@@ -45,6 +45,24 @@ describe('volume', () => {
     });
   });
 
+  test('DeletionPolicy snapshot', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new Volume(stack, 'Volume', {
+      availabilityZone: 'us-east-1a',
+      size: cdk.Size.gibibytes(8),
+      volumeName: 'MyVolume',
+      removalPolicy: cdk.RemovalPolicy.SNAPSHOT,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::EC2::Volume', {
+      DeletionPolicy: 'Snapshot',
+    });
+  });
+
   test('fromVolumeAttributes', () => {
     // GIVEN
     const stack = new cdk.Stack();

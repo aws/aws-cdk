@@ -2,6 +2,7 @@ import * as iam from '../../../aws-iam';
 import type * as sns from '../../../aws-sns';
 import * as sfn from '../../../aws-stepfunctions';
 import { ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { getResourceArn } from '../resource-arn-suffix';
 
 /**
@@ -66,12 +67,12 @@ export class PublishToTopic implements sfn.IStepFunctionsTask {
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new ValidationError('InvalidServiceIntegrationPattern', `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call SNS.`, topic);
+      throw new ValidationError(lit`InvalidServiceIntegrationPattern`, `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call SNS.`, topic);
     }
 
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(props.message)) {
-        throw new ValidationError('TaskTokenMissingInMessage', 'Task Token is missing in message (pass JsonPath.taskToken somewhere in message)', topic);
+        throw new ValidationError(lit`TaskTokenMissingInMessage`, 'Task Token is missing in message (pass JsonPath.taskToken somewhere in message)', topic);
       }
     }
   }

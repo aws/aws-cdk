@@ -121,6 +121,15 @@ describe('default properties', () => {
     Template.fromStack(stack).hasResource('AWS::DynamoDB::Table', { DeletionPolicy: CfnDeletionPolicy.RETAIN });
   });
 
+  test('table without indexes omits GSI and LSI properties', () => {
+    new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+      GlobalSecondaryIndexes: Match.absent(),
+      LocalSecondaryIndexes: Match.absent(),
+    });
+  });
+
   test('removalPolicy is DESTROY', () => {
     new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, removalPolicy: RemovalPolicy.DESTROY });
 
@@ -2462,6 +2471,70 @@ describe('grants', () => {
 
   test('"grantFullAccess" allows the principal to perform any action on the table ("*")', () => {
     testGrant(['*'], (p, t) => t.grantFullAccess(p));
+  });
+
+  test('grant* with ServicePrincipal throws error', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // THEN
+    expect(() => table.grantReadWriteData(new iam.ServicePrincipal('bedrock.amazonaws.com')))
+      .toThrow(/DynamoDB grant\* methods do not support ServicePrincipal grantees/);
+  });
+
+  test('grant* with wrapped ServicePrincipal (withConditions) throws error', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // WHEN
+    const principal = new iam.ServicePrincipal('bedrock.amazonaws.com').withConditions({
+      StringEquals: { 'aws:SourceAccount': '123456789012' },
+    });
+
+    // THEN
+    expect(() => table.grantReadData(principal))
+      .toThrow(/DynamoDB grant\* methods do not support ServicePrincipal grantees/);
+  });
+
+  test.each([
+    'redshift.amazonaws.com',
+    'replication.dynamodb.amazonaws.com',
+    'glue.amazonaws.com',
+  ])('grant* with allowlisted ServicePrincipal %s succeeds', (serviceName) => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // WHEN
+    const grant = table.grantReadWriteData(new iam.ServicePrincipal(serviceName));
+
+    // THEN
+    expect(grant.success).toBe(true);
+  });
+
+  test('grant* with wrapped allowlisted ServicePrincipal succeeds', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // WHEN
+    const principal = new iam.ServicePrincipal('redshift.amazonaws.com').withConditions({
+      StringEquals: { 'aws:SourceAccount': '123456789012' },
+    });
+    const grant = table.grantReadWriteData(principal);
+
+    // THEN
+    expect(grant.success).toBe(true);
   });
 
   testDeprecated('"Table.grantListStreams" allows principal to list all streams', () => {
@@ -5296,7 +5369,7 @@ test('Throws when more than four multi-attribute sort keys are specified', () =>
 });
 
 describe('L1 table grants', () => {
-  test('grant read permission to service principal (L1)', () => {
+  test('grant read permission to service principal (L1) throws error', () => {
     const stack = new Stack();
     const table = new CfnTable(stack, 'Table', {
       keySchema: [{ attributeName: 'id', keyType: 'HASH' }],
@@ -5304,20 +5377,8 @@ describe('L1 table grants', () => {
     });
     const principal = new iam.ServicePrincipal('lambda.amazonaws.com');
 
-    TableGrants.fromTable(table).readData(principal);
-
-    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
-      ResourcePolicy: {
-        PolicyDocument: {
-          Statement: Match.arrayWith([{
-            Action: ['dynamodb:BatchGetItem', 'dynamodb:Query', 'dynamodb:GetItem', 'dynamodb:Scan', 'dynamodb:ConditionCheckItem', 'dynamodb:DescribeTable'],
-            Effect: 'Allow',
-            Principal: { Service: 'lambda.amazonaws.com' },
-            Resource: '*',
-          }]),
-        },
-      },
-    });
+    expect(() => TableGrants.fromTable(table).readData(principal))
+      .toThrow(/DynamoDB grant\* methods do not support ServicePrincipal grantees/);
   });
 });
 

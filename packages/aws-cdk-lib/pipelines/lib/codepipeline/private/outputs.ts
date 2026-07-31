@@ -1,5 +1,6 @@
 import type * as cp from '../../../../aws-codepipeline';
 import { ValidationError } from '../../../../core';
+import { lit } from '../../../../core/lib/private/literal-string';
 import type { Step } from '../../blueprint/step';
 import { StepOutput } from '../../helpers-internal';
 
@@ -17,11 +18,11 @@ export function namespaceStepOutputs(step: Step, stage: cp.IStage, name: string)
   for (const output of StepOutput.producedStepOutputs(step)) {
     ret = namespaceName(stage, name);
     if (output.engineName !== CODEPIPELINE_ENGINE_NAME) {
-      throw new ValidationError('FoundUnrecognizedOutputType', `Found unrecognized output type: ${output.engineName}`, stage.pipeline);
+      throw new ValidationError(lit`FoundUnrecognizedOutputType`, `Found unrecognized output type: ${output.engineName}`, stage.pipeline);
     }
 
     if (typeof output.engineSpecificInformation !== 'string') {
-      throw new ValidationError('CodePipelineRequiresEngineSpecific', `CodePipeline requires that 'engineSpecificInformation' is a string, got: ${JSON.stringify(output.engineSpecificInformation)}`, stage.pipeline);
+      throw new ValidationError(lit`CodePipelineRequiresEngineSpecific`, `CodePipeline requires that 'engineSpecificInformation' is a string, got: ${JSON.stringify(output.engineSpecificInformation)}`, stage.pipeline);
     }
     output.defineResolution(`#{${ret}.${output.engineSpecificInformation}}`);
   }
