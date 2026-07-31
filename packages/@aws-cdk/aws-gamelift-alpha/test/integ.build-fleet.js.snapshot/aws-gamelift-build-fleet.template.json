@@ -123,8 +123,18 @@
       "Arn"
      ]
     },
-    "MaxSize": 1,
-    "MinSize": 0,
+    "Locations": [
+     {
+      "Location": {
+       "Ref": "AWS::Region"
+      },
+      "LocationCapacity": {
+       "DesiredEC2Instances": 0,
+       "MaxSize": 1,
+       "MinSize": 0
+      }
+     }
+    ],
     "Name": "test-fleet",
     "NewGameSessionProtectionPolicy": "NoProtection",
     "RuntimeConfiguration": {

@@ -10,7 +10,7 @@
    "Properties": {
     "Name": "MyPipeParameter",
     "Type": "String",
-    "Value": "\ud83c\udf27\ufe0f"
+    "Value": "🌧️"
    }
   },
   "TargetStateMachineRoleF8CC820D": {
