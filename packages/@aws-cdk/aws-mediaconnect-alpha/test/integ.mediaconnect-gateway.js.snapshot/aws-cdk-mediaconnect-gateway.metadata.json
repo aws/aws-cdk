@@ -1,0 +1,26 @@
+{
+  "/aws-cdk-mediaconnect-gateway/gateway": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-gateway/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-gateway/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-gateway/gateway/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "gatewayB15F83BA"
+    }
+  ]
+}

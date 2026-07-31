@@ -21,7 +21,7 @@ import type {
 import { CfnOAuth2CredentialProvider } from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import { buildIdentityResourceArns, grantCredentialSecret, grantReadWithList, TOKEN_VAULT_OAUTH2_PARENT_RESOURCES, WORKLOAD_IDENTITY_USE_RESOURCES } from './grant-helpers';
@@ -40,6 +40,7 @@ import {
  * Built-in OAuth2 vendors supported by `AWS::BedrockAgentCore::OAuth2CredentialProvider`.
  *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-bedrockagentcore-oauth2credentialprovider.html
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export enum OAuth2CredentialProviderVendor {
   /** Google OAuth2. */
@@ -100,6 +101,7 @@ export enum OAuth2CredentialProviderVendor {
 
 /**
  * An OAuth2 credential provider registered in AgentCore Token Vault.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface IOAuth2CredentialProvider extends IResource, iam.IGrantable, IOAuth2CredentialProviderRef {
   /**
@@ -174,6 +176,7 @@ export interface IOAuth2CredentialProvider extends IResource, iam.IGrantable, IO
 
 /**
  * Provider ARN, secret ARN, and OAuth scopes for wiring a Token Vault OAuth2 identity into a gateway target.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface GatewayOAuth2IdentityBinding {
   /**
@@ -201,6 +204,7 @@ export interface GatewayOAuth2IdentityBinding {
 
 /**
  * Shared properties for OAuth2 credential providers created via {@link OAuth2CredentialProvider} factory methods.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface OAuth2CredentialProviderBaseProps {
   /**
@@ -220,6 +224,7 @@ export interface OAuth2CredentialProviderBaseProps {
 
 /**
  * OAuth2 client identifier and secret registered with the identity provider (all vendors).
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface OAuth2ClientCredentials {
   /** OAuth2 client identifier. */
@@ -238,36 +243,42 @@ export interface OAuth2ClientCredentials {
 
 /**
  * Naming, tags, and client credentials shared by every {@link OAuth2CredentialProvider} factory.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface OAuth2CredentialProviderFactoryBaseProps extends OAuth2CredentialProviderBaseProps, OAuth2ClientCredentials {
 }
 
 /**
  * Props for {@link OAuth2CredentialProvider.usingSlack}.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface SlackOAuth2CredentialProviderProps extends OAuth2CredentialProviderFactoryBaseProps {
 }
 
 /**
  * Props for {@link OAuth2CredentialProvider.usingGithub}.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface GithubOAuth2CredentialProviderProps extends OAuth2CredentialProviderFactoryBaseProps {
 }
 
 /**
  * Props for {@link OAuth2CredentialProvider.usingGoogle}.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface GoogleOAuth2CredentialProviderProps extends OAuth2CredentialProviderFactoryBaseProps {
 }
 
 /**
  * Props for {@link OAuth2CredentialProvider.usingSalesforce}.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface SalesforceOAuth2CredentialProviderProps extends OAuth2CredentialProviderFactoryBaseProps {
 }
 
 /**
  * Props for {@link OAuth2CredentialProvider.usingMicrosoft}.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface MicrosoftOAuth2CredentialProviderProps extends OAuth2CredentialProviderFactoryBaseProps {
   /**
@@ -280,12 +291,14 @@ export interface MicrosoftOAuth2CredentialProviderProps extends OAuth2Credential
 
 /**
  * Props for {@link OAuth2CredentialProvider.usingAtlassian}.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface AtlassianOAuth2CredentialProviderProps extends OAuth2CredentialProviderFactoryBaseProps {
 }
 
 /**
  * Props for {@link OAuth2CredentialProvider.usingLinkedin}.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface LinkedinOAuth2CredentialProviderProps extends OAuth2CredentialProviderFactoryBaseProps {
 }
@@ -294,6 +307,7 @@ export interface LinkedinOAuth2CredentialProviderProps extends OAuth2CredentialP
  * Props for {@link OAuth2CredentialProvider.usingFacebook}.
  *
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-idp-facebook.html
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface FacebookOAuth2CredentialProviderProps extends OAuth2CredentialProviderFactoryBaseProps {
 }
@@ -302,6 +316,7 @@ export interface FacebookOAuth2CredentialProviderProps extends OAuth2CredentialP
  * Props for {@link OAuth2CredentialProvider.usingX}.
  *
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-idp-x.html
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface XOAuth2CredentialProviderProps extends OAuth2CredentialProviderFactoryBaseProps {
 }
@@ -310,6 +325,7 @@ export interface XOAuth2CredentialProviderProps extends OAuth2CredentialProvider
  * Props for {@link OAuth2CredentialProvider.usingYandex}.
  *
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-idp-yandex.html
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface YandexOAuth2CredentialProviderProps extends OAuth2CredentialProviderFactoryBaseProps {
 }
@@ -318,6 +334,7 @@ export interface YandexOAuth2CredentialProviderProps extends OAuth2CredentialPro
  * Props for {@link OAuth2CredentialProvider.usingReddit}.
  *
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-idp-reddit.html
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface RedditOAuth2CredentialProviderProps extends OAuth2CredentialProviderFactoryBaseProps {
 }
@@ -326,6 +343,7 @@ export interface RedditOAuth2CredentialProviderProps extends OAuth2CredentialPro
  * Props for {@link OAuth2CredentialProvider.usingZoom}.
  *
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-idp-zoom.html
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface ZoomOAuth2CredentialProviderProps extends OAuth2CredentialProviderFactoryBaseProps {
 }
@@ -334,6 +352,7 @@ export interface ZoomOAuth2CredentialProviderProps extends OAuth2CredentialProvi
  * Props for {@link OAuth2CredentialProvider.usingTwitch}.
  *
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-idp-twitch.html
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface TwitchOAuth2CredentialProviderProps extends OAuth2CredentialProviderFactoryBaseProps {
 }
@@ -342,6 +361,7 @@ export interface TwitchOAuth2CredentialProviderProps extends OAuth2CredentialPro
  * Props for {@link OAuth2CredentialProvider.usingSpotify}.
  *
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-idp-spotify.html
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface SpotifyOAuth2CredentialProviderProps extends OAuth2CredentialProviderFactoryBaseProps {
 }
@@ -350,6 +370,7 @@ export interface SpotifyOAuth2CredentialProviderProps extends OAuth2CredentialPr
  * Props for {@link OAuth2CredentialProvider.usingDropbox}.
  *
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-idp-dropbox.html
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface DropboxOAuth2CredentialProviderProps extends OAuth2CredentialProviderFactoryBaseProps {
 }
@@ -358,6 +379,7 @@ export interface DropboxOAuth2CredentialProviderProps extends OAuth2CredentialPr
  * Props for {@link OAuth2CredentialProvider.usingNotion}.
  *
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-idp-notion.html
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface NotionOAuth2CredentialProviderProps extends OAuth2CredentialProviderFactoryBaseProps {
 }
@@ -366,6 +388,7 @@ export interface NotionOAuth2CredentialProviderProps extends OAuth2CredentialPro
  * Props for {@link OAuth2CredentialProvider.usingHubspot}.
  *
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-idp-hubspot.html
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface HubspotOAuth2CredentialProviderProps extends OAuth2CredentialProviderFactoryBaseProps {
 }
@@ -373,6 +396,7 @@ export interface HubspotOAuth2CredentialProviderProps extends OAuth2CredentialPr
 /**
  * Optional tenant OAuth endpoints for IdPs that use CloudFormation `IncludedOauth2ProviderConfig`
  * with issuer and/or endpoints per the IdP’s outbound documentation.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface IncludedOauth2TenantEndpoints {
   /**
@@ -399,6 +423,7 @@ export interface IncludedOauth2TenantEndpoints {
  * Props for `IncludedOauth2ProviderConfig` IdPs whose [outbound documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-idps.html)
  * requires `issuer`, `authorizationEndpoint`, and/or `tokenEndpoint` (for example Okta, Auth0, Amazon Cognito, OneLogin,
  * PingOne, CyberArk, FusionAuth).
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface IncludedOauth2TenantCredentialProviderProps extends OAuth2CredentialProviderFactoryBaseProps, IncludedOauth2TenantEndpoints {
 }
@@ -407,6 +432,7 @@ export interface IncludedOauth2TenantCredentialProviderProps extends OAuth2Crede
  * Static OAuth2 authorization server metadata for custom credential providers.
  *
  * @see https://www.rfc-editor.org/rfc/rfc8414
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface OAuth2AuthorizationServerMetadata {
   /**
@@ -437,6 +463,7 @@ export interface OAuth2AuthorizationServerMetadata {
  *
  * Set exactly one of {@link discoveryUrl} (OIDC discovery document) or {@link authorizationServerMetadata}
  * (static OAuth2 server metadata). Do not pass both.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface CustomOAuth2CredentialProviderProps extends OAuth2CredentialProviderFactoryBaseProps {
   /**
@@ -455,6 +482,7 @@ export interface CustomOAuth2CredentialProviderProps extends OAuth2CredentialPro
 
 /**
  * Low-level properties when you need full control (prefer {@link OAuth2CredentialProvider.usingSlack} and other factories).
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface OAuth2CredentialProviderProps {
   /**
@@ -484,6 +512,7 @@ export interface OAuth2CredentialProviderProps {
 
 /**
  * Attributes for importing an existing OAuth2 credential provider.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface OAuth2CredentialProviderAttributes {
   /**
@@ -754,6 +783,10 @@ function newOAuth2WithIncludedTenant(
  * @resource AWS::BedrockAgentCore::OAuth2CredentialProvider
  */
 @propertyInjectable
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export class OAuth2CredentialProvider extends OAuth2CredentialProviderBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-bedrock-agentcore-alpha.OAuth2CredentialProvider';
@@ -1128,6 +1161,7 @@ export class OAuth2CredentialProvider extends OAuth2CredentialProviderBase {
    * @param scopes OAuth scopes the gateway target should request (see vendor documentation).
    * @param customParameters Optional custom parameters for the OAuth flow.
    */
+  @MethodMetadata()
   public bindForGatewayOAuthTarget(
     scopes: string[],
     customParameters?: { [key: string]: string },

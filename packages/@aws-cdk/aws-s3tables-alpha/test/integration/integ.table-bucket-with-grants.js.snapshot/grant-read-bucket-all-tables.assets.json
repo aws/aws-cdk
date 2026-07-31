@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "files": {
     "d206dbb42802564127a0b8dba464e12c67b92c14fd97d201c4d8e8ba6af1116b": {
       "displayName": "grant-read-bucket-all-tables Template",

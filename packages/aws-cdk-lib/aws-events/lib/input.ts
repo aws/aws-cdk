@@ -227,6 +227,7 @@ export class FieldAwareEventInput extends RuleTargetInput {
   private unquoteKeyPlaceholders(sub: string, keys: string[]) {
     if (this.inputType !== InputType.Object) { return sub; }
 
+    // eslint-disable-next-line no-restricted-syntax
     return Lazy.uncachedString({ produce: (ctx: IResolveContext) => Token.asString(deepUnquote(ctx.resolve(sub))) });
 
     function deepUnquote(resolved: any): any {

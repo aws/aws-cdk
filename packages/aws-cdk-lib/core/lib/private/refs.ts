@@ -5,7 +5,7 @@
 import type { IConstruct } from 'constructs';
 import { Construct } from 'constructs';
 import { CfnReference } from './cfn-reference';
-import type { Intrinsic } from './intrinsic';
+import { Intrinsic } from './intrinsic';
 import { findTokens } from './resolve';
 import { makeUniqueId } from './uniqueid';
 import * as cxapi from '../../../cx-api';
@@ -17,10 +17,11 @@ import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
 import { ExportWriter } from '../custom-resource-provider/cross-region-export-providers/export-writer-provider';
 import { AssumptionError, UnscopedValidationError } from '../errors';
+import { Lazy } from '../lazy';
 import { Names } from '../names';
 import type { Reference } from '../reference';
-import type { IResolvable } from '../resolvable';
-import { Stack } from '../stack';
+import type { IResolvable, IResolveContext } from '../resolvable';
+import type { Stack } from '../stack';
 import { Token, Tokenization } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
 import { iterateDfsPreorder } from './construct-iteration';
@@ -30,35 +31,73 @@ import type {
   PolicyReference,
   RoleReference,
 } from '../../../interfaces/generated/aws-iam-interfaces.generated';
+import { ReferenceStrength } from '../cross-stack-reference-strength';
+import { stackOf } from './core-construct-finders';
 
 export const STRING_LIST_REFERENCE_DELIMITER = '||';
 
-const CROSS_STACK_REFERENCE_VALUES = ['strong', 'weak', 'both'] as const;
-type CrossStackReferenceStrength = (typeof CROSS_STACK_REFERENCE_VALUES)[number];
-
-function crossStackReferenceStrength(scope: IConstruct): CrossStackReferenceStrength {
+function crossStackReferenceStrength(scope: IConstruct): ReferenceStrength | undefined {
   const value = scope.node.tryGetContext(cxapi.DEFAULT_CROSS_STACK_REFERENCES);
   if (value === undefined || value === null) {
-    return 'strong';
+    return undefined;
   }
-  if (CROSS_STACK_REFERENCE_VALUES.includes(value)) {
+  if (Object.values(ReferenceStrength).includes(value)) {
     return value;
   }
   throw new UnscopedValidationError(
-    lit`InvalidCrossStackReferenceStrength`,
+    lit`InvalidReferenceStrength`,
     `Invalid value for ${cxapi.DEFAULT_CROSS_STACK_REFERENCES}: "${value}". Must be "strong", "weak", or "both".`,
   );
 }
 
+const WEAK_REFS_WARNING_EMITTED = Symbol.for('@aws-cdk/core.WeakRefsWarningEmitted');
+
+const OVERRIDDEN_REFERENCE_SYMBOL = Symbol.for('@aws-cdk/core.CustomCoupledReference');
+
+/**
+ * A token wrapper that carries a per-usage reference strength override.
+ *
+ * When the resolution loop encounters this token, it resolves the underlying
+ * CfnReference using the overridden strength instead of the default lookup chain,
+ * and stores the result on this wrapper (not on the singleton CfnReference).
+ */
+export class CustomCoupledReference extends Intrinsic {
+  public static isCustomCoupledReference(x: IResolvable): x is CustomCoupledReference {
+    return OVERRIDDEN_REFERENCE_SYMBOL in x;
+  }
+
+  public readonly reference: CfnReference;
+  public readonly strength: ReferenceStrength;
+  private resolvedValue?: IResolvable;
+
+  constructor(reference: CfnReference, strength: ReferenceStrength) {
+    super(reference, { typeHint: reference.typeHint });
+    this.reference = reference;
+    this.strength = strength;
+    Object.defineProperty(this, OVERRIDDEN_REFERENCE_SYMBOL, { value: true });
+  }
+
+  public assignValue(value: IResolvable): void {
+    this.resolvedValue = value;
+  }
+
+  public resolve(context: IResolveContext): any {
+    if (this.resolvedValue) {
+      return this.resolvedValue.resolve(context);
+    }
+    return this.reference.resolve(context);
+  }
+}
+
 /**
  * This is called from the App level to resolve all references defined. Each
- * reference is resolved based on it's consumption context.
+ * reference is resolved based on its consumption context.
  */
 export function resolveReferences(scope: IConstruct): void {
-  const edges = findAllReferences(scope);
+  const { refs, overrides } = findAllReferences(scope);
 
-  for (const { source, value } of edges) {
-    const consumer = Stack.of(source);
+  for (const { source, value } of refs) {
+    const consumer = stackOf(source);
 
     // resolve the value in the context of the consumer
     if (!value.hasValueForStack(consumer)) {
@@ -66,17 +105,32 @@ export function resolveReferences(scope: IConstruct): void {
       value.assignValueForStack(consumer, resolved);
     }
   }
+
+  for (const { source, override } of overrides) {
+    const consumer = stackOf(source);
+    const resolved = resolveValue(consumer, override.reference, override.strength);
+    override.assignValue(resolved);
+  }
 }
 
 /**
  * Resolves the value for `reference` in the context of `consumer`.
  */
-function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
-  const producer = Stack.of(reference.target);
+function resolveValue(consumer: Stack, reference: CfnReference, strengthOverride?: ReferenceStrength): IResolvable {
+  const producer = stackOf(reference.target);
   const producerAccount = !Token.isUnresolved(producer.account) ? producer.account : cxapi.UNKNOWN_ACCOUNT;
   const producerRegion = !Token.isUnresolved(producer.region) ? producer.region : cxapi.UNKNOWN_REGION;
   const consumerAccount = !Token.isUnresolved(consumer.account) ? consumer.account : cxapi.UNKNOWN_ACCOUNT;
   const consumerRegion = !Token.isUnresolved(consumer.region) ? consumer.region : cxapi.UNKNOWN_REGION;
+
+  // Priority: per-usage override > per-resource override > global consumer context > default
+  const resourceStrength = CfnResource.isCfnResource(reference.target)
+    ? reference.target._crossStackReferenceStrengthOverride
+    : undefined;
+  const strength = strengthOverride
+    ?? resourceStrength
+    ?? crossStackReferenceStrength(consumer)
+    ?? 'strong';
 
   // produce and consumer stacks are the same, we can just return the value itself.
   if (producer === consumer) {
@@ -86,51 +140,6 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   // unsupported: stacks from different apps
   if (producer.node.root !== consumer.node.root) {
     throw new UnscopedValidationError(lit`CannotReferenceAcrossApps`, 'Cannot reference across apps. Consuming and producing stacks must be defined within the same CDK app.');
-  }
-
-  // stacks are not in the same account
-  if (producerAccount !== consumerAccount) {
-    const strength = crossStackReferenceStrength(consumer);
-
-    if (strength === 'strong') {
-      Annotations.of(consumer).addWarningV2(
-        '@aws-cdk/core:crossAccountRefsAreAlwaysWeak',
-        'Strong references requested, but cross-account references can only be weak. ' +
-        `Acknowledge this warning or set "${cxapi.DEFAULT_CROSS_STACK_REFERENCES}" to "weak" to remove this message.`,
-      );
-      // Fall through to weak behavior since strong is not possible for cross-account
-    }
-
-    // "weak" or "both" fallback — use Fn::GetStackOutput with cross-account role
-    if (consumer.synthesizer.cloudFormationExecutionRole == null) {
-      throw new UnscopedValidationError(lit`NoCfnExecutionRoleForCrossAccountRefs`,
-        `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
-        'Could not find a CloudFormation execution role for the consumer stack. Use a stack synthesizer that provides a ' +
-        'CloudFormation execution role, such as DefaultStackSynthesizer (that uses the role from the bootstrap stack), ' +
-        'or one that you can customize, such as BootstraplessSynthesizer.',
-      );
-    }
-
-    if (producerRegion === cxapi.UNKNOWN_REGION || consumerRegion === cxapi.UNKNOWN_REGION) {
-      throw new UnscopedValidationError(lit`CrossRegionReferencesRequireExplicitRegion`,
-        `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
-        'Cross stack/region references are only supported for stacks with an explicit region defined. ');
-    }
-
-    const producerStackArn = Stack.of(reference.target).formatArn({
-      service: 'cloudformation',
-      resource: 'stack',
-      resourceName: `${producer.stackName}/*`,
-      region: producerRegion,
-      account: producerAccount,
-    });
-
-    return createGetStackOutput(reference, {
-      consumerRoleArn: Fn.sub(consumer.synthesizer.cloudFormationExecutionRole),
-      producerAccount,
-      producerRegion,
-      producerStackArn,
-    });
   }
 
   // ----------------------------------------------------------------------
@@ -174,6 +183,70 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   // export/import
   // ----------------------------------------------------------------------
 
+  // Emit a once-per-app warning nudging users toward weak references
+  const appRoot = consumer.node.root;
+  if (!(appRoot as any)[WEAK_REFS_WARNING_EMITTED]) {
+    const contextStrength = crossStackReferenceStrength(consumer);
+    if (contextStrength === undefined) {
+      (appRoot as any)[WEAK_REFS_WARNING_EMITTED] = true;
+      Annotations.of(consumer).addWarningV2(
+        '@aws-cdk/core:crossStackReferencesDefaultStrong',
+        `No cross-stack-reference strength configured, defaulting to "strong". We recommend you set feature flag "${cxapi.DEFAULT_CROSS_STACK_REFERENCES}" to "both", then deploy everywhere, then set it to "weak". Alternatively, set it to "strong" explicitly to lock in the current producer-protecting behavior. ` +
+        '(See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength)',
+      );
+    } else if (contextStrength === 'both') {
+      (appRoot as any)[WEAK_REFS_WARNING_EMITTED] = true;
+      Annotations.of(consumer).addWarningV2(
+        '@aws-cdk/core:crossStackReferencesBothTransitional',
+        `Feature flag "${cxapi.DEFAULT_CROSS_STACK_REFERENCES}" currently set to "both". This is a transitory state. After you have finished deploying this application everywhere, set it to "weak". ` +
+        '(See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength)',
+      );
+    }
+  }
+
+  // stacks are not in the same account
+  if (producerAccount !== consumerAccount) {
+    if (strength === 'strong') {
+      Annotations.of(consumer).addWarningV2(
+        '@aws-cdk/core:crossAccountRefsAreAlwaysWeak',
+        'Strong references requested, but cross-account references can only be weak. ' +
+        `Acknowledge this warning or set "${cxapi.DEFAULT_CROSS_STACK_REFERENCES}" to "weak" to remove this message.`,
+      );
+      // Fall through to weak behavior since strong is not possible for cross-account
+    }
+
+    // "weak" or "both" fallback — use Fn::GetStackOutput with cross-account role
+    if (consumer.synthesizer.cloudFormationExecutionRole == null) {
+      throw new UnscopedValidationError(lit`NoCfnExecutionRoleForCrossAccountRefs`,
+        `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
+        'Could not find a CloudFormation execution role for the consumer stack. Use a stack synthesizer that provides a ' +
+        'CloudFormation execution role, such as DefaultStackSynthesizer (that uses the role from the bootstrap stack), ' +
+        'or one that you can customize, such as BootstraplessSynthesizer.',
+      );
+    }
+
+    if (producerRegion === cxapi.UNKNOWN_REGION || consumerRegion === cxapi.UNKNOWN_REGION) {
+      throw new UnscopedValidationError(lit`CrossRegionReferencesRequireExplicitRegion`,
+        `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
+        'Cross stack/region references are only supported for stacks with an explicit region defined. ');
+    }
+
+    const producerStackArn = stackOf(reference.target).formatArn({
+      service: 'cloudformation',
+      resource: 'stack',
+      resourceName: `${producer.stackName}/*`,
+      region: producerRegion,
+      account: producerAccount,
+    });
+
+    return createGetStackOutput(reference, {
+      consumerRoleArn: consumer.synthesizer.cloudFormationExecutionRole,
+      producerAccount,
+      producerRegion,
+      producerStackArn,
+    });
+  }
+
   // Stacks are in the same account, but different regions
   if (producerRegion !== consumerRegion) {
     if (producerRegion === cxapi.UNKNOWN_REGION || consumerRegion === cxapi.UNKNOWN_REGION) {
@@ -181,10 +254,8 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
         `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
         'Cross stack/region references are only supported for stacks with an explicit region defined. ');
     }
-    consumer.addDependency(producer,
+    consumer.addStackDependency(producer,
       `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
-
-    const strength = crossStackReferenceStrength(consumer);
 
     if (strength === 'strong') {
       return createCrossRegionImportValue(reference, consumer);
@@ -214,19 +285,20 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   // add a dependency between the producer and the consumer. dependency logic
   // will take care of applying the dependency at the right level (e.g. the
   // top-level stacks).
-  consumer.addDependency(producer,
+  consumer.addStackDependency(producer,
     `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
 
-  const strength = crossStackReferenceStrength(consumer);
-  if (strength === 'weak' || strength === 'both') {
-    Annotations.of(consumer).addWarningV2(
-      '@aws-cdk/core:sameRegionWeakRefsNotImplemented',
-      'Weak cross-stack references for same-account, same-region stacks are not yet implemented. ' +
-      `Stack "${consumer.node.path}" will use strong (Fn::ImportValue) references to stack "${producer.node.path}".`,
-    );
+  if (strength === 'strong') {
+    return createImportValue(reference);
   }
 
-  return createImportValue(reference);
+  if (strength === 'both') {
+    // Create the Import/Export pair, but drop the Import side.
+    createImportValue(reference);
+  }
+
+  // strength === 'weak'
+  return createGetStackOutput(reference, {});
 }
 
 /**
@@ -240,7 +312,9 @@ function renderReference(ref: CfnReference) {
  * Finds all the CloudFormation references in a construct tree.
  */
 function findAllReferences(root: IConstruct) {
-  const result = new Array<{ source: CfnElement; value: CfnReference }>();
+  const refs = new Array<{ source: CfnElement; value: CfnReference }>();
+  const overrides = new Array<{ source: CfnElement; override: CustomCoupledReference }>();
+
   for (const consumer of iterateDfsPreorder(root)) {
     // include only CfnElements (i.e. resources)
     if (!CfnElement.isCfnElement(consumer)) {
@@ -253,15 +327,11 @@ function findAllReferences(root: IConstruct) {
       // iterate over all the tokens (e.g. intrinsic functions, lazies, etc) that
       // were found in the cloudformation representation of this resource.
       for (const token of tokens) {
-        // include only CfnReferences (i.e. "Ref" and "Fn::GetAtt")
-        if (!CfnReference.isCfnReference(token)) {
-          continue;
+        if (CustomCoupledReference.isCustomCoupledReference(token)) {
+          overrides.push({ source: consumer, override: token });
+        } else if (CfnReference.isCfnReference(token)) {
+          refs.push({ source: consumer, value: token });
         }
-
-        result.push({
-          source: consumer,
-          value: token,
-        });
       }
     } catch (e: any) {
       // Note: it might be that the properties of the CFN object aren't valid.
@@ -281,7 +351,7 @@ function findAllReferences(root: IConstruct) {
     }
   }
 
-  return result;
+  return { refs, overrides };
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -293,7 +363,7 @@ function findAllReferences(root: IConstruct) {
  * and returning an "Fn::ImportValue" token.
  */
 function createImportValue(reference: Reference): Intrinsic {
-  const exportingStack = Stack.of(reference.target);
+  const exportingStack = stackOf(reference.target);
   let importExpr;
 
   if (reference.typeHint === ResolutionTypeHint.STRING_LIST) {
@@ -308,7 +378,7 @@ function createImportValue(reference: Reference): Intrinsic {
 }
 
 function getOrCreateExportWriter(reference: Reference, importStack: Stack): { exportWriter: ExportWriter; exportName: string } {
-  const referenceStack = Stack.of(reference.target);
+  const referenceStack = stackOf(reference.target);
   const exportingStack = referenceStack.nestedStackParent ?? referenceStack;
 
   const exportable = getExportable(exportingStack, reference);
@@ -352,7 +422,7 @@ function createCrossRegionExportOnly(reference: Reference, importStack: Stack): 
  * Generate a unique physical name for the export
  */
 function generateExportName(importStack: Stack, reference: Reference, id: string): string {
-  const referenceStack = Stack.of(reference.target);
+  const referenceStack = stackOf(reference.target);
 
   const components = [
     referenceStack.stackName ?? '',
@@ -380,7 +450,10 @@ interface GetStackOutputRoleProps {
   readonly producerAccount?: string;
 }
 
+const ROLE_CONSUMERS = new WeakMap<CfnResource, Set<string>>();
+
 function createGetStackOutputRole(scope: Construct, id: string, props: GetStackOutputRoleProps): { resource: CfnResource; roleRef: RoleReference } {
+  const consumers = new Set<string>([props.consumerRoleArn]);
   const resource = new CfnResource(scope, id, {
     type: 'AWS::IAM::Role',
     properties: {
@@ -390,7 +463,12 @@ function createGetStackOutputRole(scope: Construct, id: string, props: GetStackO
           {
             Effect: 'Allow',
             Principal: {
-              AWS: props.consumerRoleArn,
+              AWS: Lazy.any({
+                produce: () => {
+                  const arns = [...consumers].map(arn => ({ 'Fn::Sub': arn }));
+                  return arns.length === 1 ? arns[0] : arns;
+                },
+              }),
             },
             Action: [
               'sts:AssumeRole',
@@ -400,12 +478,14 @@ function createGetStackOutputRole(scope: Construct, id: string, props: GetStackO
       },
     },
   });
+  ROLE_CONSUMERS.set(resource, consumers);
+
   const roleName = Names.uniqueResourceName(resource, {
     maxLength: 64,
   });
   resource.addPropertyOverride('RoleName', roleName);
 
-  const roleArn = Stack.of(scope).formatArn({
+  const roleArn = stackOf(scope).formatArn({
     service: 'iam',
     resource: 'role',
     resourceName: roleName,
@@ -415,6 +495,13 @@ function createGetStackOutputRole(scope: Construct, id: string, props: GetStackO
   });
 
   return { resource, roleRef: { roleArn, roleName } };
+}
+
+function addConsumerToRole(roleResource: CfnResource, consumerRoleArn: string): void {
+  const consumers = ROLE_CONSUMERS.get(roleResource);
+  if (consumers) {
+    consumers.add(consumerRoleArn);
+  }
 }
 
 interface GetStackOutputPolicyProps {
@@ -453,12 +540,12 @@ function createGetStackOutputPolicy(
 }
 
 function createGetStackOutput(reference: Reference, options: GetStackOutputOptions = {}): Intrinsic {
-  const exportingStack = Stack.of(reference.target);
+  const exportingStack = stackOf(reference.target);
 
   const resolved = JSON.stringify(exportingStack.resolve(reference));
   const outputId = 'Output' + resolved;
-  const roleId = 'Role' + resolved;
-  const policyId = 'Policy' + resolved;
+  const roleId = 'GetStackOutputRole';
+  const policyId = 'GetStackOutputPolicy';
 
   function createScope(stack: Stack) {
     const scopeName = 'Publish';
@@ -474,9 +561,13 @@ function createGetStackOutput(reference: Reference, options: GetStackOutputOptio
 
   let output = scope.node.tryFindChild(outputId) as CfnOutput;
   if (output == null) {
-    output = new CfnOutput(scope, outputId, {
-      value: Token.asString(reference),
-    });
+    if (reference.typeHint === ResolutionTypeHint.STRING_LIST) {
+      output = new CfnOutput(scope, outputId, { value: Fn.join(STRING_LIST_REFERENCE_DELIMITER, Token.asList(reference)) });
+    } else {
+      output = new CfnOutput(scope, outputId, {
+        value: Token.asString(reference),
+      });
+    }
   }
 
   let roleArn: string | undefined = undefined;
@@ -489,6 +580,17 @@ function createGetStackOutput(reference: Reference, options: GetStackOutputOptio
       });
       roleResource = resource;
       roleArn = roleRef.roleArn;
+    } else {
+      addConsumerToRole(roleResource, options.consumerRoleArn);
+      const roleName = Names.uniqueResourceName(roleResource, { maxLength: 64 });
+      roleArn = exportingStack.formatArn({
+        service: 'iam',
+        resource: 'role',
+        resourceName: roleName,
+        account: options.producerAccount,
+        arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+        region: '',
+      });
     }
 
     let policy = scope.node.tryFindChild(policyId) as CfnResource;
@@ -500,9 +602,13 @@ function createGetStackOutput(reference: Reference, options: GetStackOutputOptio
     }
   }
 
-  return Tokenization.reverseCompleteString(
-    Fn.getStackOutput(exportingStack.stackName, output.logicalId, exportingStack.region, roleArn),
-  ) as Intrinsic;
+  const getStackOutput = Fn.getStackOutput(exportingStack.stackName, output.logicalId, exportingStack.region, roleArn);
+
+  if (reference.typeHint === ResolutionTypeHint.STRING_LIST) {
+    return Tokenization.reverseList(Fn.split(STRING_LIST_REFERENCE_DELIMITER, getStackOutput)) as Intrinsic;
+  }
+
+  return Tokenization.reverseCompleteString(getStackOutput) as Intrinsic;
 }
 
 export function getExportable(stack: Stack, reference: Reference): Intrinsic {
@@ -571,7 +677,7 @@ function createNestedStackOutput(producer: Stack, reference: Reference): CfnRefe
  * Will create Outputs along the chain of Nested Stacks, and return the final `{ Fn::GetAtt }`.
  */
 export function referenceNestedStackValueInParent(reference: Reference, targetStack: Stack): Intrinsic {
-  let currentStack = Stack.of(reference.target);
+  let currentStack = stackOf(reference.target);
   if (currentStack !== targetStack && !isNested(currentStack, targetStack)) {
     throw new UnscopedValidationError(lit`ReferencedResourceMustBeInTargetStack`, `Referenced resource must be in stack '${targetStack.node.path}', got '${reference.target.node.path}'`);
   }
@@ -579,8 +685,8 @@ export function referenceNestedStackValueInParent(reference: Reference, targetSt
   const isNestedListReference = currentStack !== targetStack && reference.typeHint === ResolutionTypeHint.STRING_LIST;
 
   while (currentStack !== targetStack) {
-    reference = createNestedStackOutput(Stack.of(reference.target), reference);
-    currentStack = Stack.of(reference.target);
+    reference = createNestedStackOutput(stackOf(reference.target), reference);
+    currentStack = stackOf(reference.target);
   }
 
   if (isNestedListReference) {

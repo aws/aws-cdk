@@ -38,11 +38,13 @@ import {
   validateSamplingPercentage,
   validateFilters,
   validateSessionTimeout,
+  validateEvaluationTags,
   throwIfInvalid,
 } from './validation-helpers';
 
 /**
  * Properties for creating an OnlineEvaluationConfig.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface OnlineEvaluationConfigProps extends OnlineEvaluationBaseProps {
   /**
@@ -59,6 +61,14 @@ export interface OnlineEvaluationConfigProps extends OnlineEvaluationBaseProps {
    * The data source configuration that specifies where to read agent traces from.
    */
   readonly dataSource: DataSourceConfig;
+
+  /**
+   * Tags for the online evaluation configuration.
+   * A list of key:value pairs of tags to apply to this OnlineEvaluationConfig resource.
+   *
+   * @default - No tags
+   */
+  readonly tags?: { [key: string]: string };
 }
 
 /**
@@ -84,6 +94,10 @@ export interface OnlineEvaluationConfigProps extends OnlineEvaluationBaseProps {
  * });
  */
 @propertyInjectable
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export class OnlineEvaluationConfig extends OnlineEvaluationBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string =
@@ -242,6 +256,10 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
     throwIfInvalid(validateFilters, props.filters, this);
     throwIfInvalid(validateSessionTimeout, props.sessionTimeout?.toMinutes(), this);
 
+    if (props.tags) {
+      throwIfInvalid(validateEvaluationTags, props.tags, this);
+    }
+
     this.onlineEvaluationConfigName = this.physicalName;
     this.executionRole = props.executionRole ?? this.createExecutionRole(props.dataSource);
     this.grantPrincipal = this.executionRole;
@@ -254,6 +272,9 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
       rule: this.buildRuleConfig(props),
       description: props.description,
       executionStatus: props.executionStatus?.value,
+      tags: props.tags && Object.keys(props.tags).length > 0
+        ? Object.entries(props.tags).map(([key, value]) => ({ key, value }))
+        : undefined,
     });
 
     // Ensure the execution role's policies are created before the L1 resource,
