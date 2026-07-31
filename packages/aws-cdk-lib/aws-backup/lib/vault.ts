@@ -367,20 +367,20 @@ function renderLockConfiguration(scope: Construct, config?: LockConfiguration): 
     return undefined;
   }
 
-  if (config.changeableFor && config.changeableFor.toHours() < 72) {
+  if (config.changeableFor && !config.changeableFor.isUnresolved() && config.changeableFor.toHours() < 72) {
     throw new ValidationError(lit`BackupEnforcesHourCoolingPeriod`, `AWS Backup enforces a 72-hour cooling-off period before Vault Lock takes effect and becomes immutable, got ${config.changeableFor.toHours()} hours`, scope);
   }
 
-  if (config.maxRetention) {
+  if (config.maxRetention && !config.maxRetention.isUnresolved()) {
     if (config.maxRetention.toDays() > 36500) {
       throw new ValidationError(lit`LongestMaximumRetentionPeriodSpecify`, `The longest maximum retention period you can specify is 36500 days, got ${config.maxRetention.toDays()} days`, scope);
     }
-    if (config.maxRetention.toDays() <= config.minRetention.toDays()) {
+    if (!config.minRetention.isUnresolved() && config.maxRetention.toDays() <= config.minRetention.toDays()) {
       throw new ValidationError(lit`MaximumRetentionPeriod`, `The maximum retention period (${config.maxRetention.toDays()} days) must be greater than the minimum retention period (${config.minRetention.toDays()} days)`, scope);
     }
   }
 
-  if (config.minRetention.toHours() < 24) {
+  if (!config.minRetention.isUnresolved() && config.minRetention.toHours() < 24) {
     throw new ValidationError(lit`ShortestMinimumRetentionPeriodSpecify`, `The shortest minimum retention period you can specify is 1 day, got ${config.minRetention.toHours()} hours`, scope);
   }
 

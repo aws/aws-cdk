@@ -1,3 +1,4 @@
+import { acknowledgeTestValidationRules } from './util';
 import { Match, Template } from '../../assertions';
 import { EbsDeviceVolumeType } from '../../aws-ec2';
 import * as ecr from '../../aws-ecr';
@@ -11,10 +12,11 @@ describe('task definition', () => {
     test('A task definition with EC2 and Fargate compatibilities defaults to networkmode AwsVpc', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       // WHEN
       new ecs.TaskDefinition(stack, 'TD', {
-        cpu: '512',
+        cpu: '256',
         memoryMiB: '512',
         compatibility: ecs.Compatibility.EC2_AND_FARGATE,
       });
@@ -28,6 +30,7 @@ describe('task definition', () => {
     test('A task definition with External compatibility defaults to networkmode Bridge', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       // WHEN
       new ecs.TaskDefinition(stack, 'TD', {
@@ -45,13 +48,14 @@ describe('task definition', () => {
     test('A task definition creates the correct policy for grantRun', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       // WHEN
       const role = new iam.Role(stack, 'Role', {
         assumedBy: new iam.AccountRootPrincipal(),
       });
       const taskDef = new ecs.TaskDefinition(stack, 'TD', {
-        cpu: '512',
+        cpu: '256',
         memoryMiB: '512',
         compatibility: ecs.Compatibility.EC2_AND_FARGATE,
       });
@@ -88,6 +92,7 @@ describe('task definition', () => {
     test('A task definition with executionRole creates the correct policy for grantRun', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       const role = new iam.Role(stack, 'Role', {
         assumedBy: new iam.AccountRootPrincipal(),
@@ -96,7 +101,7 @@ describe('task definition', () => {
         assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
       });
       const taskDef = new ecs.TaskDefinition(stack, 'TD', {
-        cpu: '512',
+        cpu: '256',
         memoryMiB: '512',
         compatibility: ecs.Compatibility.EC2_AND_FARGATE,
         executionRole: executionRole,
@@ -142,6 +147,7 @@ describe('task definition', () => {
     test('A task definition creates the correct policy for grantRun with ContainerDefinition added late', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       // WHEN
       const role = new iam.Role(stack, 'Role', {
@@ -154,7 +160,7 @@ describe('task definition', () => {
         },
       );
       const taskDef = new ecs.TaskDefinition(stack, 'TD', {
-        cpu: '512',
+        cpu: '256',
         memoryMiB: '512',
         compatibility: ecs.Compatibility.EC2_AND_FARGATE,
       });
@@ -205,6 +211,7 @@ describe('task definition', () => {
     test('A task definition where multiple containers have a port mapping with the same name throws an error', () =>{
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
 
       new ecs.ContainerDefinition(stack, 'Container', {
@@ -235,6 +242,7 @@ describe('task definition', () => {
     test('throws when multiple runtime volumes are set', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const taskDefinition =new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
       const container = taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
@@ -270,6 +278,7 @@ describe('task definition', () => {
     test('throws when none of the container mounts the volume', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const taskDefinition =new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
       taskDefinition.addVolume({
         name: 'nginx-vol',
@@ -285,6 +294,7 @@ describe('task definition', () => {
     test('throws when none of the container mount the volume using ServiceManagedVolume', () => {
     // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const ebsRole = new iam.Role(stack, 'Role', {
         assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
       });
@@ -318,6 +328,7 @@ describe('task definition', () => {
     test('throws when multiple runtime volumes are set using ServiceManagedVolume', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const ebsRole = new iam.Role(stack, 'Role', {
         assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
       });
@@ -375,6 +386,7 @@ describe('task definition', () => {
     test('You can specify a container ulimits using the dedicated property in ContainerDefinitionOptions', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       // WHEN
       const role = new iam.Role(stack, 'Role', {
@@ -387,7 +399,7 @@ describe('task definition', () => {
         },
       );
       const taskDef = new ecs.TaskDefinition(stack, 'TD', {
-        cpu: '512',
+        cpu: '256',
         memoryMiB: '512',
         compatibility: ecs.Compatibility.EC2_AND_FARGATE,
       });
@@ -421,6 +433,7 @@ describe('task definition', () => {
     test('You can omit container-level memory and memoryReservation parameters with EC2 compatibilities if task-level memory parameter is defined', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       // WHEN
       const taskDef = new ecs.TaskDefinition(stack, 'TD', {
@@ -441,6 +454,7 @@ describe('task definition', () => {
     test('A task definition where task-level memory, container-level memory and memoryReservation are not defined throws an error', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       // WHEN
       const taskDef = new ecs.TaskDefinition(stack, 'TD', {
@@ -460,6 +474,7 @@ describe('task definition', () => {
     test.each([true, false])('set enableFaultInjection to %s.', (enableFaultInjection) => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       // WHEN
       new ecs.TaskDefinition(stack, 'TD', {
@@ -478,6 +493,7 @@ describe('task definition', () => {
     test('throws when enableFaultInjection is true with non AWSVPC or HOST Network Mode', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       // THEN
       expect(() => {
@@ -495,6 +511,7 @@ describe('task definition', () => {
     test('can import using a task definition arn', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const taskDefinitionArn = 'TDArn';
 
       // WHEN
@@ -509,6 +526,7 @@ describe('task definition', () => {
     test('can import a Task Definition using attributes', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const expectTaskDefinitionArn = 'TD_ARN';
       const expectCompatibility = ecs.Compatibility.EC2;
       const expectNetworkMode = ecs.NetworkMode.AWS_VPC;
@@ -581,6 +599,7 @@ describe('task definition', () => {
     test('returns an imported TaskDefinition that will throw an error when trying to access its yet to defined networkMode', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const expectTaskDefinitionArn = 'TD_ARN';
       const expectCompatibility = ecs.Compatibility.EC2;
       const expectTaskRole = new iam.Role(stack, 'TaskRole', {
@@ -604,6 +623,7 @@ describe('task definition', () => {
     test('returns an imported TaskDefinition that will throw an error when trying to access its yet to defined taskRole', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const expectTaskDefinitionArn = 'TD_ARN';
       const expectCompatibility = ecs.Compatibility.EC2;
       const expectNetworkMode = ecs.NetworkMode.AWS_VPC;
@@ -628,6 +648,7 @@ describe('task definition', () => {
       test('created successfully if the total CPU allocated to the task and the CPU allocated to the container are the same', () => {
         // GIVEN
         const stack = new cdk.Stack();
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.TaskDefinition(stack, 'TaskDef', {
           cpu: '512',
           memoryMiB: '512',
@@ -652,6 +673,7 @@ describe('task definition', () => {
       test('throws an error if the total CPU allocated to the container exceeds the task CPU', () => {
         // GIVEN
         const stack = new cdk.Stack();
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.TaskDefinition(stack, 'TaskDef', {
           cpu: '256',
           memoryMiB: '512',
@@ -678,6 +700,7 @@ describe('task definition', () => {
       test('created successfully if the total CPU allocated to the task and the CPU allocated to the container are the same', () => {
         // GIVEN
         const stack = new cdk.Stack();
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.TaskDefinition(stack, 'TaskDef', {
           cpu: '512',
           memoryMiB: '512',
@@ -704,6 +727,7 @@ describe('task definition', () => {
       test('throws an error if the total CPU allocated to the container exceeds the task CPU', () => {
         // GIVEN
         const stack = new cdk.Stack();
+        acknowledgeTestValidationRules(stack);
         const taskDefinition = new ecs.TaskDefinition(stack, 'TaskDef', {
           cpu: '256',
           memoryMiB: '512',
@@ -755,6 +779,7 @@ describe('Managed Instances compatibility', () => {
     test('A task definition with Managed Instances compatibility defaults to networkmode AwsVpc', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       // WHEN
       new ecs.TaskDefinition(stack, 'TD', {
@@ -773,6 +798,7 @@ describe('Managed Instances compatibility', () => {
     test('allows Host network mode for Managed Instances', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       // WHEN
       new ecs.TaskDefinition(stack, 'TD', {
@@ -791,6 +817,7 @@ describe('Managed Instances compatibility', () => {
     test('throws when using Bridge network mode with Managed Instances', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       // THEN
       expect(() => {
@@ -806,6 +833,7 @@ describe('Managed Instances compatibility', () => {
     test('throws when using None network mode with Managed Instances', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       // THEN
       expect(() => {
@@ -821,6 +849,7 @@ describe('Managed Instances compatibility', () => {
     test('throws when using inference accelerators with Managed Instances', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       // THEN
       expect(() => {
@@ -839,6 +868,7 @@ describe('Managed Instances compatibility', () => {
     test('throws when using ephemeral storage with Managed Instances', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       // THEN
       expect(() => {
@@ -854,6 +884,7 @@ describe('Managed Instances compatibility', () => {
     test('throws when using IPC mode with Managed Instances', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       // THEN
       expect(() => {
@@ -869,6 +900,7 @@ describe('Managed Instances compatibility', () => {
     test('throws when using proxy configuration with Managed Instances', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const proxyConfig = new ecs.AppMeshProxyConfiguration({
         containerName: 'envoy',
         properties: {
@@ -894,6 +926,7 @@ describe('Managed Instances compatibility', () => {
     test('throws when using non-Linux operating system family with Managed Instances', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       // THEN
       expect(() => {
@@ -911,6 +944,7 @@ describe('Managed Instances compatibility', () => {
     test('allows Linux operating system family with Managed Instances', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       // WHEN
       new ecs.TaskDefinition(stack, 'TD', {
@@ -933,6 +967,7 @@ describe('Managed Instances compatibility', () => {
     test('allows runtime platform with Managed Instances', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       // WHEN
       new ecs.TaskDefinition(stack, 'TD', {
@@ -957,6 +992,7 @@ describe('Managed Instances compatibility', () => {
     test('throws when using DockerVolumeConfiguration with Managed Instances', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
         cpu: '512',
         memoryMiB: '512',
@@ -978,6 +1014,7 @@ describe('Managed Instances compatibility', () => {
     test('isManagedInstancesCompatible returns true for MANAGED_INSTANCES compatibility', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
         cpu: '512',
         memoryMiB: '512',
@@ -994,6 +1031,7 @@ describe('Managed Instances compatibility', () => {
     test('isManagedInstancesCompatible returns true for EC2_AND_MANAGED_INSTANCES compatibility', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
         cpu: '512',
         memoryMiB: '512',
@@ -1010,6 +1048,7 @@ describe('Managed Instances compatibility', () => {
     test('isManagedInstancesCompatible returns true for FARGATE_AND_MANAGED_INSTANCES compatibility', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
         cpu: '512',
         memoryMiB: '512',
@@ -1026,6 +1065,7 @@ describe('Managed Instances compatibility', () => {
     test('placement constraints are not rendered for Managed Instances compatible tasks', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
         cpu: '512',
         memoryMiB: '512',
@@ -1046,6 +1086,7 @@ describe('Managed Instances compatibility', () => {
     test('throws when volume with configuredAtLaunch has other configurations', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
         cpu: '512',
         memoryMiB: '512',
@@ -1067,6 +1108,7 @@ describe('Managed Instances compatibility', () => {
     test('throws when volume with configuredAtLaunch has dockerVolumeConfiguration', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
         cpu: '512',
         memoryMiB: '512',
@@ -1089,6 +1131,7 @@ describe('Managed Instances compatibility', () => {
     test('throws when volume with configuredAtLaunch has efsVolumeConfiguration', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
         cpu: '512',
         memoryMiB: '512',
