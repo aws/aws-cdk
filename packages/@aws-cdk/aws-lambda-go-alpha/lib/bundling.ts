@@ -1,8 +1,10 @@
 import * as os from 'os';
 import * as path from 'path';
-import { Architecture, AssetCode, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
+import type { Architecture, AssetCode } from 'aws-cdk-lib/aws-lambda';
+import { Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib/core';
-import { BundlingOptions } from './types';
+import { profileSpan } from 'aws-cdk-lib/core/lib/helpers-internal';
+import type { BundlingOptions } from './types';
 import { exec, findUp, getGoBuildVersion } from './util';
 
 /**
@@ -101,6 +103,8 @@ export class Bundling implements cdk.BundlingOptions {
 
   private static runsLocally?: boolean;
 
+  public readonly [cdk.PERF_BUNDLING_SRC_SYM] = 'GoFunction';
+
   // Core bundling options
   public readonly image: cdk.DockerImage;
   public readonly command: string[];
@@ -141,16 +145,28 @@ export class Bundling implements cdk.BundlingOptions {
 
     // Docker bundling
     const shouldBuildImage = props.forcedDockerBundling || !Bundling.runsLocally;
-    this.image = shouldBuildImage
-      ? props.dockerImage ?? cdk.DockerImage.fromBuild(path.join(__dirname, '..', 'lib'), {
+
+    if (shouldBuildImage && props.dockerImage) {
+      // Use the user's image
+      this.image = props.dockerImage;
+    } else if (shouldBuildImage && !props.dockerImage) {
+      // Build our own image to run esbuild in. We do some counter trickery here: we do want to count
+      // the time spent here as part of 'bundle:GoFunction', but by default only the RUNNING of the Docker
+      // image would count as that. So we add an additional timer span just for the building of the runner image.
+      using _span = profileSpan(`bundle:${this[cdk.PERF_BUNDLING_SRC_SYM]}`, { telemetry: true, skipCount: true });
+
+      this.image = cdk.DockerImage.fromBuild(path.join(__dirname, 'docker'), {
         buildArgs: {
           ...props.buildArgs ?? {},
           IMAGE: Runtime.GO_1_X.bundlingImage.image, // always use the GO_1_X build image
         },
         platform: props.architecture.dockerPlatform,
         network: props.network,
-      })
-      : cdk.DockerImage.fromRegistry('dummy'); // Do not build if we don't need to
+      });
+    } else {
+      // We won't use a Docker image, but this field must have a value.
+      this.image = cdk.DockerImage.fromRegistry('dummy');
+    }
 
     const bundlingCommand = this.createBundlingCommand(cdk.AssetStaging.BUNDLING_INPUT_DIR, cdk.AssetStaging.BUNDLING_OUTPUT_DIR);
     this.command = props.command ?? ['bash', '-c', bundlingCommand];
@@ -175,6 +191,8 @@ export class Bundling implements cdk.BundlingOptions {
             process.stderr.write('go build cannot run locally. Switching to Docker bundling.\n');
             return false;
           }
+
+          using _span = profileSpan('GoFunction#tryBundle', { telemetry: true });
 
           const localCommand = createLocalCommand(outputDir);
           exec(
@@ -207,7 +225,7 @@ export class Bundling implements cdk.BundlingOptions {
 
     const goBuildCommand: string = [
       'go', 'build',
-      hasVendor ? '-mod=vendor': '',
+      hasVendor ? '-mod=vendor' : '',
       '-o', `"${pathJoin(outputDir, 'bootstrap')}"`,
       `${this.props.goBuildFlags ? this.props.goBuildFlags.join(' ') : ''}`,
       `${this.relativeEntryPath.replace(/\\/g, '/')}`,
@@ -225,7 +243,7 @@ export class Bundling implements cdk.BundlingOptions {
  * Platform specific path join
  */
 function osPathJoin(platform: NodeJS.Platform) {
-  return function(...paths: string[]): string {
+  return function (...paths: string[]): string {
     const joined = path.join(...paths);
     // If we are on win32 but need posix style paths
     if (os.platform() === 'win32' && platform !== 'win32') {

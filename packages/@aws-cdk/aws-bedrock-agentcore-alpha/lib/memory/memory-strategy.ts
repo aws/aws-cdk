@@ -11,11 +11,13 @@
  *  and limitations under the License.
  */
 
-import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
-import * as iam from 'aws-cdk-lib/aws-iam';
+import type * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
+import type * as iam from 'aws-cdk-lib/aws-iam';
 // Internal libs
-import { ManagedMemoryStrategy, ManagedStrategyProps } from './strategies/managed-strategy';
-import { SelfManagedMemoryStrategy, SelfManagedStrategyProps } from './strategies/self-managed-strategy';
+import type { ManagedStrategyProps } from './strategies/managed-strategy';
+import { ManagedMemoryStrategy } from './strategies/managed-strategy';
+import type { SelfManagedStrategyProps } from './strategies/self-managed-strategy';
+import { SelfManagedMemoryStrategy } from './strategies/self-managed-strategy';
 
 /******************************************************************************
  *                              CONSTANTS
@@ -23,16 +25,19 @@ import { SelfManagedMemoryStrategy, SelfManagedStrategyProps } from './strategie
 /**
  * Minimum length for memory strategy name
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const MEMORY_NAME_MIN_LENGTH = 1;
 /**
  * Maximum length for memory strategy name
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const MEMORY_NAME_MAX_LENGTH = 48;
 
 /**
  * Long-term memory extraction strategy types.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export enum MemoryStrategyType {
   /**
@@ -49,6 +54,10 @@ export enum MemoryStrategyType {
    */
   USER_PREFERENCE = 'USER_PREFERENCE',
   /**
+   * Episodic memory strategy - captures meaningful slices of user and system interactions
+   */
+  EPISODIC = 'EPISODIC',
+  /**
    * Customize memory processing through custom foundation model and prompt templates.
    */
   CUSTOM = 'CUSTOM',
@@ -59,6 +68,7 @@ export enum MemoryStrategyType {
  *****************************************************************************/
 /**
  * Configuration parameters common for any memory strategy
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface MemoryStrategyCommonProps {
   /**
@@ -77,6 +87,7 @@ export interface MemoryStrategyCommonProps {
  *****************************************************************************/
 /**
  * Interface for Memory strategies
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface IMemoryStrategy {
   /**
@@ -112,6 +123,7 @@ export interface IMemoryStrategy {
  * Use built-in strategies for quick setup, use built-in strategies with override to specify models and prompt templates.
  *
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/memory-strategies.html
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class MemoryStrategy {
   /**
@@ -155,6 +167,22 @@ export class MemoryStrategy {
     });
   }
   /**
+   * Default strategies for organizing and extracting memory data, each optimized for specific use cases.
+   * Captures meaningful slices of user and system interactions, preserve them into compact records after summarizing.
+   * Extracted memory example: User first asked about pricing on Monday, then requested feature comparison on Tuesday, finally made purchase decision on Wednesday.
+   * @returns A ManagedMemoryStrategy.
+   */
+  public static usingBuiltInEpisodic(): ManagedMemoryStrategy {
+    return new ManagedMemoryStrategy(MemoryStrategyType.EPISODIC, {
+      name: 'episodic_builtin_cdkGen0001',
+      description: 'Captures meaningful slices of user and system interactions.',
+      namespaces: ['/strategy/{memoryStrategyId}/actor/{actorId}/session/{sessionId}'],
+      reflectionConfiguration: {
+        namespaces: ['/strategy/{memoryStrategyId}/actor/{actorId}'],
+      },
+    });
+  }
+  /**
    * Creates a semantic memory strategy with custom configuration.
    * Distills general facts, concepts, and underlying meanings from raw conversational data, presenting the information in a context-independent format.
    * Extracted memory example: In-context learning = task-solving via examples, no training needed.
@@ -183,6 +211,16 @@ export class MemoryStrategy {
    */
   public static usingSummarization(config: ManagedStrategyProps): ManagedMemoryStrategy {
     return new ManagedMemoryStrategy(MemoryStrategyType.SUMMARIZATION, config);
+  }
+  /**
+   * Creates an episodic memory strategy with custom configuration.
+   * Captures meaningful slices of user and system interactions, preserve them into compact records after summarizing.
+   * Extracted memory example: User first asked about pricing on Monday, then requested feature comparison on Tuesday, finally made purchase decision on Wednesday.
+   * @param config - The configuration for the episodic memory strategy.
+   * @returns A ManagedMemoryStrategy.
+   */
+  public static usingEpisodic(config: ManagedStrategyProps): ManagedMemoryStrategy {
+    return new ManagedMemoryStrategy(MemoryStrategyType.EPISODIC, config);
   }
   /**
    * Creates a self-managed memory strategy.

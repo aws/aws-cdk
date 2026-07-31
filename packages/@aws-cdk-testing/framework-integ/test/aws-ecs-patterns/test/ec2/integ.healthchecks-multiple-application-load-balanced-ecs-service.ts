@@ -2,7 +2,8 @@ import { InstanceType, Vpc, SecurityGroup, Peer, Port } from 'aws-cdk-lib/aws-ec
 import { Cluster, ContainerImage, AsgCapacityProvider, EcsOptimizedImage } from 'aws-cdk-lib/aws-ecs';
 import { AutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
 import { Protocol } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import { App, Duration, Stack, CfnResource } from 'aws-cdk-lib';
+import type { CfnResource } from 'aws-cdk-lib';
+import { App, Duration, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 import { ApplicationMultipleTargetGroupsEc2Service } from 'aws-cdk-lib/aws-ecs-patterns';
@@ -31,7 +32,6 @@ const provider = new AsgCapacityProvider(stack, 'MyProvider', {
     machineImage: EcsOptimizedImage.amazonLinux2(),
     securityGroup,
   }),
-  capacityProviderName: 'my-capacity-provider',
 });
 cluster.addAsgCapacityProvider(provider);
 
@@ -101,6 +101,14 @@ applicationMultipleTargetGroupsFargateService.targetGroups[1].configureHealthChe
   healthyHttpCodes: '200',
 });
 
-new IntegTest(app, 'Integ', { testCases: [stack] });
+new IntegTest(app, 'Integ', {
+  testCases: [stack],
+  cdkCommandOptions: {
+    destroy: {
+      // https://github.com/aws/aws-cdk/issues/19275
+      expectError: true,
+    },
+  },
+});
 
 app.synth();

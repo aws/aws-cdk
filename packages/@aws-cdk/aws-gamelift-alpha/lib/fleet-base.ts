@@ -1,12 +1,13 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { CfnFleet } from 'aws-cdk-lib/aws-gamelift';
+import type * as ec2 from 'aws-cdk-lib/aws-ec2';
+import type { CfnFleet } from 'aws-cdk-lib/aws-gamelift';
 import { GameLiftMetrics } from 'aws-cdk-lib/aws-gamelift/lib/gamelift-canned-metrics.generated';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import { Alias, AliasOptions } from './alias';
-import { IGameSessionQueueDestination } from './game-session-queue';
+import type { Construct } from 'constructs';
+import type { AliasOptions } from './alias';
+import { Alias } from './alias';
+import type { IGameSessionQueueDestination } from './game-session-queue';
 
 /**
  * Current resource capacity settings in a specified fleet or location.
@@ -307,7 +308,7 @@ export interface FleetProps {
    * The GameLift-supported Amazon EC2 instance type to use for all fleet instances.
    * Instance type determines the computing resources that will be used to host your game servers, including CPU, memory, storage, and networking capacity.
    *
-   * @see http://aws.amazon.com/ec2/instance-types/ for detailed descriptions of Amazon EC2 instance types.
+   * @see https://aws.amazon.com/ec2/instance-types/ for detailed descriptions of Amazon EC2 instance types.
    */
   readonly instanceType: ec2.InstanceType;
 
@@ -486,6 +487,9 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
     });
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       resourceArns: [this.fleetArn],

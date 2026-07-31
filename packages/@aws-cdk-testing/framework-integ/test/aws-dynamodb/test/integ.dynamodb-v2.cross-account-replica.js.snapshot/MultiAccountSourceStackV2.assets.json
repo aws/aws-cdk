@@ -1,0 +1,21 @@
+{
+  "version": "50.0.0",
+  "files": {
+    "2f28ff3cdebecdbf1fc76afab289a9097c8f9b50ac7cc1ec04b3eb5e441e44cf": {
+      "displayName": "MultiAccountSourceStackV2 Template",
+      "source": {
+        "path": "MultiAccountSourceStackV2.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "12345678-eu-west-1-f16a1f26": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-eu-west-1",
+          "objectKey": "2f28ff3cdebecdbf1fc76afab289a9097c8f9b50ac7cc1ec04b3eb5e441e44cf.json",
+          "region": "eu-west-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-eu-west-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,8 +1,9 @@
-import { IPipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
-import { ITableV2 } from 'aws-cdk-lib/aws-dynamodb';
-import { IRole } from 'aws-cdk-lib/aws-iam';
-import { DynamoDBStartingPosition } from './enums';
-import { StreamSource, StreamSourceParameters } from './streamSource';
+import type { IPipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
+import type { ITableV2 } from 'aws-cdk-lib/aws-dynamodb';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import type { DynamoDBStartingPosition } from './enums';
+import type { StreamSourceParameters } from './streamSource';
+import { StreamSource } from './streamSource';
 
 /**
  * Parameters for the DynamoDB source.

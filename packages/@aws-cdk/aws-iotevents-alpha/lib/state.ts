@@ -1,8 +1,8 @@
-import { CfnDetectorModel } from 'aws-cdk-lib/aws-iotevents';
-import { Construct } from 'constructs';
-import { IAction, ActionBindOptions } from './action';
-import { Event } from './event';
-import { Expression } from './expression';
+import type { CfnDetectorModel } from 'aws-cdk-lib/aws-iotevents';
+import type { Construct } from 'constructs';
+import type { IAction, ActionBindOptions } from './action';
+import type { Event } from './event';
+import type { Expression } from './expression';
 
 /**
  * Properties for options of state transition.

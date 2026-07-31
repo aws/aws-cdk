@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "OptionGroupTest/DefaultTest": {
+      "stacks": [
+        "aws-rds-option-group"
+      ],
+      "assertionStack": "OptionGroupTest/DefaultTest/DeployAssert",
+      "assertionStackName": "OptionGroupTestDefaultTestDeployAssertE388BCA6"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

@@ -1,9 +1,11 @@
-import { Resource, TypeDefinition } from '@aws-cdk/service-spec-types';
-import { ClassType, expr, FreeFunction, Module, PropertySpec, Stability, stmt, StructType, Type } from '@cdklabs/typewriter';
+import type { Resource, TypeDefinition } from '@aws-cdk/service-spec-types';
+import type { ClassType, Expression, PropertySpec } from '@cdklabs/typewriter';
+import { expr, FreeFunction, Module, Stability, stmt, StructType, Type } from '@cdklabs/typewriter';
 import { CloudFormationMapping } from './cloudformation-mapping';
-import { RelationshipDecider } from './relationship-decider';
-import { TypeConverter } from './type-converter';
+import type { RelationshipDecider } from './relationship-decider';
+import type { TypeConverter } from './type-converter';
 import { TypeDefinitionDecider } from './typedefinition-decider';
+import type { TypeDefProperty } from './typedefinition-decider';
 import { cloudFormationDocLink, flattenFunctionNameFromType, structNameFromTypeDefinition } from '../naming';
 import { splitDocumentation } from '../util';
 import { CDK_CORE } from './cdk';
@@ -101,7 +103,7 @@ export class TypeDefinitionStruct extends StructType {
           Object.fromEntries(
             decider.properties.map(prop => [
               prop.propertySpec.name,
-              prop.resolver(propsParam),
+              this.resolverExpression(prop, propsParam),
             ]),
           ),
         )),
@@ -114,6 +116,10 @@ export class TypeDefinitionStruct extends StructType {
     if (this.options.cfnParser ?? true) {
       cfnMapping.makeCfnParser(this.module, this);
     }
+  }
+
+  protected resolverExpression(prop: TypeDefProperty, propsParam: Expression): Expression {
+    return prop.resolver(propsParam);
   }
 }
 
@@ -129,5 +135,18 @@ export class PartialTypeDefinitionStruct extends TypeDefinitionStruct {
       ...prop,
       optional: true,
     });
+  }
+
+  protected resolverExpression(prop: TypeDefProperty, propsParam: Expression): Expression {
+    const propValue = expr.get(propsParam, prop.propertySpec.name);
+    const resolved = prop.resolver(propsParam);
+    // All properties are optional in partial structs, so we need to guard against undefined.
+    // Reference equality is safe here: when a property has no relationship to resolve,
+    // prop.resolver returns the exact same expr.get() object as propValue, so we can
+    // skip the redundant ternary guard for simple pass-through properties.
+    if (resolved === propValue) {
+      return resolved;
+    }
+    return expr.cond(expr.not(propValue)).then(expr.UNDEFINED).else(resolved);
   }
 }

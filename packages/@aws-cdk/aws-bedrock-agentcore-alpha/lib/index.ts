@@ -2,10 +2,23 @@ export * from './memory/memory';
 export * from './memory/strategies/managed-strategy';
 export * from './memory/strategies/self-managed-strategy';
 export * from './memory/memory-strategy';
+
+// ===================================
+// Identity (Token Vault credential providers and workload identities)
+// ===================================
+export * from './identity/perms';
+export * from './identity/api-key-credential-provider';
+export * from './identity/oauth2-credential-provider';
+export * from './identity/workload-identity';
 // ===================================
 // Network Configuration
 // ===================================
 export * from './network/network-configuration';
+
+// ===================================
+// Common (shared types)
+// ===================================
+export * from './common/types';
 
 // ===================================
 // Runtime
@@ -14,10 +27,12 @@ export * from './runtime/perms';
 export * from './runtime/types';
 export * from './runtime/runtime-base';
 export * from './runtime/runtime-artifact';
-export * from './runtime/runtime-authorizer-configuration';
+export * from './runtime/inbound-auth/custom-claim';
+export * from './runtime/inbound-auth/runtime-authorizer-configuration';
 export * from './runtime/runtime-endpoint-base';
 export * from './runtime/runtime-endpoint';
 export * from './runtime/runtime';
+export * from './runtime/observability';
 // Tools
 // ===================================
 export * from './tools/code-interpreter';
@@ -28,6 +43,7 @@ export * from './tools/browser';
 // ===================================
 export * from './gateway/gateway-base';
 export * from './gateway/gateway';
+export * from './gateway/interceptor';
 export * from './gateway/perms';
 export * from './gateway/protocol';
 // validation-helpers contains internal utilities and should not be exported
@@ -36,6 +52,7 @@ export * from './gateway/protocol';
 // Gateway - Inbound Auth
 // ===================================
 export * from './gateway/inbound-auth/authorizer';
+export * from './gateway/inbound-auth/custom-claim';
 
 // ===================================
 // Gateway - Outbound Auth
@@ -58,3 +75,28 @@ export * from './gateway/targets/target-configuration';
 export * from './gateway/targets/schema/base-schema';
 export * from './gateway/targets/schema/api-schema';
 export * from './gateway/targets/schema/tool-schema';
+
+// ===================================
+// Evaluation
+// ===================================
+export * from './evaluation/types';
+export * from './evaluation/perms';
+export * from './evaluation/evaluator';
+export * from './evaluation/evaluator-config';
+export * from './evaluation/evaluator-base';
+export * from './evaluation/custom-evaluator';
+export * from './evaluation/data-source';
+export * from './evaluation/online-evaluation-base';
+export * from './evaluation/online-evaluation';
+
+// ===================================
+// Policy
+// ===================================
+export * from './policy/perms';
+export * from './policy/policy-types';
+export * from './policy/policy-engine-base';
+export * from './policy/policy-engine';
+export * from './policy/policy-base';
+export * from './policy/policy';
+export * from './policy/policy-statement';
+// validation-helpers contains internal utilities and should not be exported

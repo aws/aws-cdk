@@ -1,6 +1,6 @@
-import * as iot from '@aws-cdk/aws-iot-alpha';
+import type * as iot from '@aws-cdk/aws-iot-alpha';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
-import { CommonActionProps } from './common-action-props';
+import type { CommonActionProps } from './common-action-props';
 import { singletonActionRole } from './private/role';
 
 /**

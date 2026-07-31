@@ -1,7 +1,10 @@
-import { Construct } from 'constructs';
-import { ArnFormat, IResource as IResourceBase, Resource, Stack } from '../../../core';
-import { ThrottleSettings } from '../common';
-import { QuotaSettings, UsagePlan, UsagePlanPerApiStage } from './usage-plan';
+import type { Construct } from 'constructs';
+import type { IResource as IResourceBase } from '../../../core';
+import { ArnFormat, Resource, Stack } from '../../../core';
+import type { ThrottleSettings } from '../common';
+import type { QuotaSettings, UsagePlanPerApiStage } from './usage-plan';
+import { UsagePlan } from './usage-plan';
+import type { ApiKeyReference, IApiKeyRef } from '../../../aws-apigateway/lib';
 import { CfnApiKey } from '../../../aws-apigateway/lib';
 import * as iam from '../../../aws-iam';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
@@ -10,8 +13,10 @@ import { propertyInjectable } from '../../../core/lib/prop-injectable';
 /**
  * API keys are alphanumeric string values that you distribute to
  * app developer customers to grant access to your API
+ *
+ * API Keys are an API Gateway V1 concept.
  */
-export interface IApiKey extends IResourceBase {
+export interface IApiKey extends IResourceBase, IApiKeyRef {
   /**
    * The API key ID.
    * @attribute
@@ -31,7 +36,7 @@ export interface IApiKey extends IResourceBase {
 export interface ApiKeyOptions {
   /**
    * A name for the API key. If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the API key name.
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-name
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-name
    * @default automatically generated name
    */
   readonly apiKeyName?: string;
@@ -45,7 +50,7 @@ export interface ApiKeyOptions {
 
   /**
    * A description of the purpose of the API key.
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-description
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-description
    * @default none
    */
   readonly description?: string;
@@ -58,21 +63,21 @@ export interface ApiKeyProps extends ApiKeyOptions {
 
   /**
    * An AWS Marketplace customer identifier to use when integrating with the AWS SaaS Marketplace.
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-customerid
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-customerid
    * @default none
    */
   readonly customerId?: string;
 
   /**
    * Indicates whether the API key can be used by clients.
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-enabled
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-enabled
    * @default true
    */
   readonly enabled?: boolean;
 
   /**
    * Specifies whether the key identifier is distinct from the created API key value.
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-generatedistinctid
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-generatedistinctid
    * @default false
    */
   readonly generateDistinctId?: boolean;
@@ -87,6 +92,7 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
 
   /**
    * Permits the IAM principal all read operations through this key
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
    */
@@ -100,6 +106,7 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
 
   /**
    * Permits the IAM principal all write operations through this key
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
    */
@@ -113,6 +120,7 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
 
   /**
    * Permits the IAM principal all read and write operations through this key
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
    */
@@ -122,6 +130,10 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
       actions: [...readPermissions, ...writePermissions],
       resourceArns: [this.keyArn],
     });
+  }
+
+  public get apiKeyRef(): ApiKeyReference {
+    return { apiKeyId: this.keyId };
   }
 }
 

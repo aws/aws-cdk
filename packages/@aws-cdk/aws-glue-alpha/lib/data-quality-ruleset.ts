@@ -1,9 +1,11 @@
 import * as cdk from 'aws-cdk-lib';
 import { CfnDataQualityRuleset } from 'aws-cdk-lib/aws-glue';
-import { IResource, Resource } from 'aws-cdk-lib/core';
+import type { IResource } from 'aws-cdk-lib/core';
+import { Resource } from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 
 /**
  * Properties of a DataQualityTargetTable.
@@ -114,15 +116,7 @@ export class DataQualityRuleset extends Resource implements IDataQualityRuleset 
     });
   }
 
-  /**
-   * Name of this ruleset.
-   */
-  public readonly rulesetName: string;
-
-  /**
-   * ARN of this ruleset.
-   */
-  public readonly rulesetArn: string;
+  private resource: CfnDataQualityRuleset;
 
   constructor(scope: constructs.Construct, id: string, props: DataQualityRulesetProps) {
     super(scope, id, {
@@ -131,7 +125,7 @@ export class DataQualityRuleset extends Resource implements IDataQualityRuleset 
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    const rulesetResource = new CfnDataQualityRuleset(this, 'Resource', {
+    this.resource = new CfnDataQualityRuleset(this, 'Resource', {
       clientToken: props.clientToken,
       description: props.description,
       name: props.rulesetName,
@@ -139,9 +133,21 @@ export class DataQualityRuleset extends Resource implements IDataQualityRuleset 
       tags: props.tags,
       targetTable: props.targetTable,
     });
+  }
 
-    const resourceName = this.getResourceNameAttribute(rulesetResource.ref);
-    this.rulesetArn = DataQualityRuleset.buildRulesetArn(this, resourceName);
-    this.rulesetName = resourceName;
+  /**
+   * Name of this ruleset.
+   */
+  @memoizedGetter
+  public get rulesetName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  /**
+   * ARN of this ruleset.
+   */
+  @memoizedGetter
+  public get rulesetArn(): string {
+    return DataQualityRuleset.buildRulesetArn(this, this.rulesetName);
   }
 }

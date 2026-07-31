@@ -1,7 +1,7 @@
-import { ScheduleTargetInput } from './input';
-import { ISchedule } from './schedule';
-import { CfnSchedule } from './scheduler.generated';
-import * as iam from '../../aws-iam';
+import type { ScheduleTargetInput } from './input';
+import type { ISchedule } from './schedule';
+import type { CfnSchedule } from './scheduler.generated';
+import type * as iam from '../../aws-iam';
 
 /**
  * Interface representing a Event Bridge Schedule Target.

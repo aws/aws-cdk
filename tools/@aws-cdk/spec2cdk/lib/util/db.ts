@@ -1,6 +1,6 @@
-import { Service, SpecDatabase } from '@aws-cdk/service-spec-types';
-import { GenerateServiceRequest } from '../generate';
-import { ModuleMapScope } from '../module-topology';
+import type { Service, SpecDatabase } from '@aws-cdk/service-spec-types';
+import type { GenerateServiceRequest } from '../generate';
+import type { ModuleMapScope } from '../module-topology';
 
 export function getAllServices(db: SpecDatabase) {
   return db.all('service');

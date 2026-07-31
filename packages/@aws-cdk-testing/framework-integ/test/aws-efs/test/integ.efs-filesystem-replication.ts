@@ -18,7 +18,7 @@ const kmsKey = new kms.Key(stack, 'Key', {
 new efs.FileSystem(stack, 'oneZoneReplicationFileSystem', {
   vpc,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
-  replicationConfiguration: efs.ReplicationConfiguration.oneZoneFileSystem('us-east-1', 'us-east-1a', kmsKey),
+  replicationConfiguration: efs.ReplicationConfiguration.oneZoneFileSystem(cdk.Aws.REGION, cdk.Stack.of(vpc).availabilityZones[0], kmsKey),
 });
 
 const destination = new efs.FileSystem(stack, 'destinationFileSystem', {

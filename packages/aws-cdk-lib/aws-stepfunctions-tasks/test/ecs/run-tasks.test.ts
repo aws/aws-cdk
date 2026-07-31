@@ -893,3 +893,189 @@ test('set enableExecuteCommand', () => {
     Type: 'Task',
   });
 });
+
+describe('capacityProviderOptions', () => {
+  describe('EcsFargateLaunchTarget', () => {
+    test('with custom() capacity provider options', () => {
+      const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+        memoryMiB: '512',
+        cpu: '256',
+        compatibility: ecs.Compatibility.FARGATE,
+      });
+      taskDefinition.addContainer('TheContainer', {
+        image: ecs.ContainerImage.fromRegistry('foo/bar'),
+        memoryLimitMiB: 256,
+      });
+
+      const runTask = new tasks.EcsRunTask(stack, 'Run', {
+        cluster,
+        taskDefinition,
+        launchTarget: new tasks.EcsFargateLaunchTarget({
+          platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+          capacityProviderOptions: tasks.CapacityProviderOptions.custom([
+            { capacityProvider: 'FARGATE_SPOT', weight: 2, base: 1 },
+            { capacityProvider: 'FARGATE', weight: 1 },
+          ]),
+        }),
+      });
+
+      expect(stack.resolve(runTask.toStateJson())).toMatchObject({
+        Parameters: {
+          CapacityProviderStrategy: [
+            { CapacityProvider: 'FARGATE_SPOT', Weight: 2, Base: 1 },
+            { CapacityProvider: 'FARGATE', Weight: 1 },
+          ],
+          PlatformVersion: '1.4.0',
+        },
+      });
+      expect(stack.resolve(runTask.toStateJson()).Parameters.LaunchType).toBeUndefined();
+    });
+
+    test('with default() capacity provider options', () => {
+      const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+        memoryMiB: '512',
+        cpu: '256',
+        compatibility: ecs.Compatibility.FARGATE,
+      });
+      taskDefinition.addContainer('TheContainer', {
+        image: ecs.ContainerImage.fromRegistry('foo/bar'),
+        memoryLimitMiB: 256,
+      });
+
+      const runTask = new tasks.EcsRunTask(stack, 'Run', {
+        cluster,
+        taskDefinition,
+        launchTarget: new tasks.EcsFargateLaunchTarget({
+          platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+          capacityProviderOptions: tasks.CapacityProviderOptions.default(),
+        }),
+      });
+
+      const stateJson = stack.resolve(runTask.toStateJson());
+      expect(stateJson).toMatchObject({
+        Parameters: {
+          PlatformVersion: '1.4.0',
+        },
+      });
+      expect(stateJson.Parameters.LaunchType).toBeUndefined();
+      expect(stateJson.Parameters.CapacityProviderStrategy).toBeUndefined();
+    });
+
+    test('without capacity provider options (defaults to FARGATE launch type)', () => {
+      const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+        memoryMiB: '512',
+        cpu: '256',
+        compatibility: ecs.Compatibility.FARGATE,
+      });
+      taskDefinition.addContainer('TheContainer', {
+        image: ecs.ContainerImage.fromRegistry('foo/bar'),
+        memoryLimitMiB: 256,
+      });
+
+      const runTask = new tasks.EcsRunTask(stack, 'Run', {
+        cluster,
+        taskDefinition,
+        launchTarget: new tasks.EcsFargateLaunchTarget({
+          platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+        }),
+      });
+
+      const stateJson = stack.resolve(runTask.toStateJson());
+      expect(stateJson).toMatchObject({
+        Parameters: {
+          LaunchType: 'FARGATE',
+          PlatformVersion: '1.4.0',
+        },
+      });
+      expect(stateJson.Parameters.CapacityProviderStrategy).toBeUndefined();
+    });
+  });
+
+  describe('EcsEc2LaunchTarget', () => {
+    test('with custom() capacity provider options', () => {
+      const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+        compatibility: ecs.Compatibility.EC2,
+      });
+      taskDefinition.addContainer('TheContainer', {
+        image: ecs.ContainerImage.fromRegistry('foo/bar'),
+        memoryLimitMiB: 256,
+      });
+
+      const runTask = new tasks.EcsRunTask(stack, 'Run', {
+        cluster,
+        taskDefinition,
+        launchTarget: new tasks.EcsEc2LaunchTarget({
+          capacityProviderOptions: tasks.CapacityProviderOptions.custom([
+            { capacityProvider: 'my-capacity-provider', weight: 1, base: 2 },
+          ]),
+        }),
+      });
+
+      expect(stack.resolve(runTask.toStateJson())).toMatchObject({
+        Parameters: {
+          CapacityProviderStrategy: [
+            { CapacityProvider: 'my-capacity-provider', Weight: 1, Base: 2 },
+          ],
+        },
+      });
+      expect(stack.resolve(runTask.toStateJson()).Parameters.LaunchType).toBeUndefined();
+    });
+
+    test('with default() capacity provider options', () => {
+      const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+        compatibility: ecs.Compatibility.EC2,
+      });
+      taskDefinition.addContainer('TheContainer', {
+        image: ecs.ContainerImage.fromRegistry('foo/bar'),
+        memoryLimitMiB: 256,
+      });
+
+      const runTask = new tasks.EcsRunTask(stack, 'Run', {
+        cluster,
+        taskDefinition,
+        launchTarget: new tasks.EcsEc2LaunchTarget({
+          capacityProviderOptions: tasks.CapacityProviderOptions.default(),
+        }),
+      });
+
+      const stateJson = stack.resolve(runTask.toStateJson());
+      expect(stateJson.Parameters.LaunchType).toBeUndefined();
+      expect(stateJson.Parameters.CapacityProviderStrategy).toBeUndefined();
+    });
+
+    test('without capacity provider options (defaults to EC2 launch type)', () => {
+      const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+        compatibility: ecs.Compatibility.EC2,
+      });
+      taskDefinition.addContainer('TheContainer', {
+        image: ecs.ContainerImage.fromRegistry('foo/bar'),
+        memoryLimitMiB: 256,
+      });
+
+      const runTask = new tasks.EcsRunTask(stack, 'Run', {
+        cluster,
+        taskDefinition,
+        launchTarget: new tasks.EcsEc2LaunchTarget(),
+      });
+
+      const stateJson = stack.resolve(runTask.toStateJson());
+      expect(stateJson).toMatchObject({
+        Parameters: {
+          LaunchType: 'EC2',
+        },
+      });
+      expect(stateJson.Parameters.CapacityProviderStrategy).toBeUndefined();
+    });
+  });
+
+  test.each([0, 21])('throws error when custom() is called with %s', (length: number) => {
+    const capacityProviders = Array.from({ length }, (_, i) => ({
+      capacityProvider: `provider-${i}`,
+      weight: 1,
+    }));
+
+    expect(() => {
+      tasks.CapacityProviderOptions.custom(capacityProviders);
+    }).toThrow(`Capacity provider strategy must contain between 1 and 20 capacity providers, got ${length}`);
+  });
+});

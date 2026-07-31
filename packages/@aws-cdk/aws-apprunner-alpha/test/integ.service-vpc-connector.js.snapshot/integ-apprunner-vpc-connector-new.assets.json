@@ -1,0 +1,20 @@
+{
+  "version": "50.0.0",
+  "files": {
+    "29cc7a3720663c304d75b7deea8af91a7c66cf4997851ef510016f72b6ef0779": {
+      "displayName": "integ-apprunner-vpc-connector-new Template",
+      "source": {
+        "path": "integ-apprunner-vpc-connector-new.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-c2a5c2ee": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "29cc7a3720663c304d75b7deea8af91a7c66cf4997851ef510016f72b6ef0779.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

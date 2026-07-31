@@ -1,6 +1,7 @@
 import * as ec2 from '../../aws-ec2';
 import { App, Stack } from '../../core';
-import { Cluster, FargateCluster, ClusterProps, KubernetesVersion } from '../lib';
+import type { ClusterProps } from '../lib';
+import { Cluster, FargateCluster, KubernetesVersion } from '../lib';
 
 const CLUSTER_VERSION = KubernetesVersion.V1_25;
 const DEFAULT_REGION = 'us-east-1';

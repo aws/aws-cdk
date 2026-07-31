@@ -1,14 +1,7 @@
 import { Token } from 'aws-cdk-lib';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
-/**
- * Error thrown when validation fails
- */
-export class ValidationError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'ValidationError';
-  }
-}
 interface IntervalValidation {
   fieldName: string;
   minLength: number;
@@ -27,6 +20,7 @@ interface StringLengthValidation extends IntervalValidation {
  * @param maxLength - Maximum allowed length
  * @returns true if validation passes
  * @throws Error if validation fails with current length information
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateStringFieldLength(params: StringLengthValidation): string[] {
   const errors: string[] = [];
@@ -64,6 +58,7 @@ export function validateStringFieldLength(params: StringLengthValidation): strin
  * @param customMessage - Optional custom error message
  * @returns true if validation passes
  * @throws Error if validation fails with detailed message
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateFieldPattern(
   value: string,
@@ -101,10 +96,14 @@ export function validateFieldPattern(
 
 export type ValidationFn<T> = (param: T) => string[];
 
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export function throwIfInvalid<T>(validationFn: ValidationFn<T>, param: T): T {
   const errors = validationFn(param);
   if (errors.length > 0) {
-    throw new ValidationError(errors.join('\n'));
+    throw new UnscopedValidationError(lit`ValidationFailed`, errors.join('\n'));
   }
   return param;
 }

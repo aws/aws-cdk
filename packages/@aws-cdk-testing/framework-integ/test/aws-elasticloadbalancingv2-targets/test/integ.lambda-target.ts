@@ -2,7 +2,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App, Stack } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as targets from 'aws-cdk-lib/aws-elasticloadbalancingv2-targets';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 

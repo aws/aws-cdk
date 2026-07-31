@@ -5,7 +5,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as kms from 'aws-cdk-lib/aws-kms';
 
 import { REDSHIFT_COLUMN_ID } from 'aws-cdk-lib/cx-api';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import * as redshift from '../lib';
 
 const useColumnIds = { [REDSHIFT_COLUMN_ID]: true };
@@ -20,11 +20,7 @@ const app = new cdk.App({
   },
 });
 
-const stack = new cdk.Stack(app, 'aws-cdk-redshift-cluster-database', {
-  env: {
-    region: 'us-east-1',
-  },
-});
+const stack = new cdk.Stack(app, 'aws-cdk-redshift-cluster-database');
 
 cdk.Aspects.of(stack).add({
   visit(node: constructs.IConstruct) {

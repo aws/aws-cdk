@@ -1,9 +1,12 @@
-import { spawnSync, SpawnSyncOptions } from 'child_process';
+import type { SpawnSyncOptions } from 'child_process';
+import { spawnSync } from 'child_process';
 import * as crypto from 'crypto';
 import * as os from 'os';
 import { AssetStaging } from '../asset-staging';
-import { BundlingOptions } from '../bundling';
+import { type BundlingOptions } from '../bundling';
 import { ExecutionError } from '../errors';
+import { lit } from './literal-string';
+import { profileFn } from './perf';
 
 /**
  * Options for Docker based bundling of assets
@@ -50,6 +53,7 @@ export class AssetBundlingBindMount extends AssetBundlingBase {
   /**
    * Bundle files with bind mount as copy method
    */
+  @profileFn('AssetBundlingBindMount.run', { telemetry: true })
   public run() {
     this.options.image.run({
       command: this.options.command,
@@ -158,7 +162,7 @@ export class AssetBundlingVolumeCopy extends AssetBundlingBase {
   }
 
   /**
-   * copy files from the the output volume to the host where this is executed
+   * copy files from the output volume to the host where this is executed
    * @param outputPath - path to folder where files should be copied to - without trailing slash
    */
   private copyOutputTo(outputPath: string) {
@@ -172,6 +176,7 @@ export class AssetBundlingVolumeCopy extends AssetBundlingBase {
   /**
    * Bundle files with VOLUME_COPY method
    */
+  @profileFn('AssetBundlingVolumeCopy.run', { telemetry: true })
   public run() {
     const user = this.determineUser();
     this.prepareVolumes();
@@ -229,7 +234,7 @@ export function dockerExec(args: string[], options?: SpawnSyncOptions) {
       return text.toString('utf-8').split('\n').map((line, idx) => `${idx === 0 ? firstLine : padding}${line}`);
     }
 
-    throw new ExecutionError([
+    throw new ExecutionError(lit`CommandExecutionFailed`, [
       `${prog} exited with ${reason}`,
       ...prependLines('--> STDOUT:  ', proc.stdout ) ?? [],
       ...prependLines('--> STDERR:  ', proc.stderr ) ?? [],

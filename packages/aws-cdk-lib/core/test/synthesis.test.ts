@@ -7,10 +7,16 @@ import { Template } from '../../assertions';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
 import * as cdk from '../lib';
+import { MetadataType } from '../lib/metadata-type';
 import { synthesize } from '../lib/private/synthesis';
 
 function createModernApp() {
-  return new cdk.App();
+  const app = new cdk.App();
+  cdk.Validations.of(app).acknowledge({
+    id: 'CloudFormation-Validate::F0005',
+    reason: 'Invalid template sections',
+  });
+  return app;
 }
 
 describe('synthesis', () => {
@@ -23,7 +29,7 @@ describe('synthesis', () => {
 
     // THEN
     expect(app.synth()).toEqual(session); // same session if we synth() again
-    expect(list(session.directory)).toEqual(['cdk.out', 'manifest.json', 'tree.json']);
+    expect(list(session.directory)).toEqual(expect.arrayContaining(['cdk.out', 'manifest.json', 'tree.json']));
     expect(readJson(session.directory, 'manifest.json').artifacts).toMatchObject({
       Tree: {
         type: 'cdk:tree',
@@ -47,7 +53,45 @@ describe('synthesis', () => {
       treeMetadata: false,
     });
     const assembly = app.synth();
-    expect(list(assembly.directory)).toEqual(['cdk.out', 'manifest.json']);
+    expect(list(assembly.directory)).not.toContain('tree.json');
+  });
+
+  test('tree.json constructInfo does not contain metadata', () => {
+    // GIVEN
+    const app = createModernApp();
+
+    // enable analytics flags
+    app.node.setContext(cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT, true);
+    app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);
+
+    const stack = new cdk.Stack(app, 'Stack');
+    const resource = new class extends cdk.Resource {}(stack, 'MyResource');
+    resource.node.addMetadata(MetadataType.CONSTRUCT, { some: 'data' });
+
+    // WHEN
+    const session = app.synth();
+    const treeJson = readJson(session.directory, 'tree.json');
+
+    // THEN - verify no constructInfo in the tree contains a metadata field
+    const allConstructInfos: any[] = [];
+    collectConstructInfos(treeJson.tree, allConstructInfos);
+
+    for (const info of allConstructInfos) {
+      expect(info).not.toHaveProperty('metadata');
+      // constructInfo should only have fqn and version
+      expect(Object.keys(info).sort()).toEqual(['fqn', 'version']);
+    }
+
+    function collectConstructInfos(node: any, result: any[]) {
+      if (node.constructInfo) {
+        result.push(node.constructInfo);
+      }
+      if (node.children) {
+        for (const child of Object.values(node.children)) {
+          collectConstructInfos(child, result);
+        }
+      }
+    }
   });
 
   test('synthesis respects disabling logicalId metadata', () => {
@@ -80,20 +124,10 @@ describe('synthesis', () => {
     const session = app.synth();
 
     // THEN
-    expect(session.manifest.artifacts?.['one-stack'].metadata).toEqual({
-      '/one-stack': [
-        {
-          type: 'aws:cdk:stack-tags',
-          data: [
-            {
-              key: 'boomTag',
-              value: 'BOOM',
-            },
-          ],
-        },
-      ],
-      // no logicalId entry
-    });
+    const metaDataTypes = Object.values(session.getStackByName('one-stack').metadata)
+      .flatMap((xs) => xs.map(x => x.type));
+
+    expect(metaDataTypes).not.toContain('aws:cdk:logicalId');
   });
 
   test('single empty stack', () => {
@@ -380,6 +414,27 @@ describe('synthesis', () => {
     expect(() => {
       Template.fromStack(stack);
     }).toThrow('Synthesis has been called multiple times and the construct tree was modified after the first synthesis');
+  });
+
+  test('metadata gets written to separate file but can still be read', () => {
+    const app = new cdk.App();
+
+    const stack = new cdk.Stack(app, 'SomeStack');
+    for (let i = 0; i < 10; i++) {
+      new cdk.CfnResource(stack, `Resource${i}`, { type: 'Aws::Some::Resource' });
+    }
+
+    const assembly = app.synth();
+
+    const stackArtifact = assembly.getStackByName('SomeStack');
+    expect(stackArtifact.manifest.additionalMetadataFile).toBeDefined();
+
+    expect(stackArtifact.metadata).toEqual(expect.objectContaining({
+      '/SomeStack/Resource0': expect.arrayContaining([{
+        data: 'Resource0',
+        type: 'aws:cdk:logicalId',
+      }]),
+    }));
   });
 });
 

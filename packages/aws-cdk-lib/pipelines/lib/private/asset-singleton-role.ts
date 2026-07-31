@@ -1,6 +1,6 @@
-import { Construct, IDependable } from 'constructs';
+import type { Construct, IDependable } from 'constructs';
 import * as iam from '../../../aws-iam';
-import { PolicyStatement } from '../../../aws-iam';
+import type { PolicyStatement } from '../../../aws-iam';
 import { ArnFormat, Stack } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';

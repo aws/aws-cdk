@@ -1,6 +1,6 @@
-/* eslint-disable no-console */
-import { Octokit } from '@octokit/rest';
-import { CheckRun, GitHubComment, GitHubPr, Review } from './github';
+
+import type { Octokit } from '@octokit/rest';
+import type { CheckRun, GitHubComment, GitHubPr, Review } from './github';
 
 export const PR_FROM_MAIN_ERROR = 'Pull requests from `main` branch of a fork cannot be accepted. Please reopen this contribution from another branch on your fork. For more information, see https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#step-4-pull-request.';
 

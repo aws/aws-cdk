@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { App, Stack } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CodeInterpreterNetworkConfiguration } from '../../../lib/network/network-configuration';
@@ -982,5 +983,84 @@ describe('CodeInterpreterCustom execution role edge cases', () => {
     expect(invocationsMetric).toBeDefined();
     expect(errorsMetric).toBeDefined();
     expect(sessionDurationMetric).toBeDefined();
+  });
+});
+
+describe('CodeInterpreterCustom error metric methods tests', () => {
+  let stack: cdk.Stack;
+  let codeInterpreter: CodeInterpreterCustom;
+
+  function alarmForMetric(id: string, metric: cloudwatch.Metric): void {
+    new cloudwatch.Alarm(stack, id, { metric, evaluationPeriods: 1, threshold: 1 });
+  }
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack');
+    codeInterpreter = new CodeInterpreterCustom(stack, 'test-code-interpreter-error-metrics', {
+      codeInterpreterCustomName: 'test_code_interpreter_error_metrics',
+      networkConfiguration: CodeInterpreterNetworkConfiguration.usingPublicNetwork(),
+    });
+  });
+
+  test('metricThrottlesForApiOperation() produces Throttles with Operation dimension', () => {
+    alarmForMetric('ThrottlesAlarm', codeInterpreter.metricThrottlesForApiOperation('TestOperation'));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Throttles',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Operation', Value: 'TestOperation' }),
+      ]),
+    });
+  });
+
+  test('metricSystemErrorsForApiOperation() produces SystemErrors with Operation dimension', () => {
+    alarmForMetric('SysErrAlarm', codeInterpreter.metricSystemErrorsForApiOperation('TestOperation'));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'SystemErrors',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Operation', Value: 'TestOperation' }),
+      ]),
+    });
+  });
+
+  test('metricUserErrorsForApiOperation() produces UserErrors with Operation dimension', () => {
+    alarmForMetric('UserErrAlarm', codeInterpreter.metricUserErrorsForApiOperation('TestOperation'));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'UserErrors',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Operation', Value: 'TestOperation' }),
+      ]),
+    });
+  });
+});
+
+describe('CodeInterpreter Optional Physical Names', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+  });
+
+  test('Should create CodeInterpreterCustom without codeInterpreterCustomName (auto-generated)', () => {
+    const codeInterpreter = new CodeInterpreterCustom(stack, 'TestCodeInterpreter', {
+    });
+
+    expect(codeInterpreter.name).toBeDefined();
+    expect(codeInterpreter.name).not.toBe('');
   });
 });

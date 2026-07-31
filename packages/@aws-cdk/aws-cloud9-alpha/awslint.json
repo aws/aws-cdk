@@ -2,6 +2,12 @@
   "exclude": [
     "props-physical-name:@aws-cdk/aws-cloud9-alpha.Ec2EnvironmentProps",
     "docs-public-apis:@aws-cdk/aws-cloud9-alpha.CloneRepository.pathComponent",
-    "docs-public-apis:@aws-cdk/aws-cloud9-alpha.CloneRepository.repositoryUrl"
+    "docs-public-apis:@aws-cdk/aws-cloud9-alpha.CloneRepository.repositoryUrl",
+    "prefer-ref-interface:@aws-cdk/aws-cloud9-alpha.Ec2EnvironmentProps.vpc",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.ClientVpnEndpointOptions.securityGroups",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.SubnetSelection.subnets",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.ISubnet.associateNetworkAcl.acl",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.InterfaceVpcEndpointOptions.securityGroups",
+    "interface-extends-ref:@aws-cdk/aws-cloud9-alpha.IEc2Environment"
   ]
 }

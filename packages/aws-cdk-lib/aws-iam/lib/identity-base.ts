@@ -1,10 +1,12 @@
-import { IManagedPolicy } from './managed-policy';
-import { Policy } from './policy';
-import { IPrincipal } from './principals';
-import { IResource } from '../../core';
+import type { IManagedPolicy } from './managed-policy';
+import type { Policy } from './policy';
+import type { IPrincipal } from './principals';
+import type { IResource } from '../../core';
 
 /**
  * A construct that represents an IAM principal, such as a user, group or role.
+ *
+ * [awslint:interface-extends-ref]
  */
 export interface IIdentity extends IPrincipal, IResource {
   /**
