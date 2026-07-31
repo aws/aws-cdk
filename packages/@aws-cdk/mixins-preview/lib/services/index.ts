@@ -20,6 +20,7 @@ export * as aws_codeguruprofiler from './aws-codeguruprofiler';
 export * as aws_codepipeline from './aws-codepipeline';
 export * as aws_cognito from './aws-cognito';
 export * as aws_connect from './aws-connect';
+export * as aws_dataexchange from './aws-dataexchange';
 export * as aws_datasync from './aws-datasync';
 export * as aws_deadline from './aws-deadline';
 export * as aws_devopsagent from './aws-devopsagent';

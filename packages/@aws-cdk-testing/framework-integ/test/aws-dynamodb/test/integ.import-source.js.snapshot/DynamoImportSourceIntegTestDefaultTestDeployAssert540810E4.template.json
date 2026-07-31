@@ -28,7 +28,7 @@
      "Key": "{\"id\":{\"S\":\"1\"}}"
     },
     "flattenResponse": "false",
-    "salt": "1780412110623"
+    "salt": "1780567345292"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -95,12 +95,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
+     "S3Key": "6611813c56ee5ec64f812f46caf03748d8b30fea6e344cc7ac25035891a6dfe8.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -109,6 +109,10 @@
       "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -140,7 +144,7 @@
      "Key": "{\"id\":{\"S\":\"1\"}}"
     },
     "flattenResponse": "false",
-    "salt": "1780412110624"
+    "salt": "1780567345294"
    },
    "DependsOn": [
     "AwsApiCallDynamoDBgetItema11c39c31c1a4ed94eac5ae4525a751c"
@@ -176,7 +180,7 @@
      "Key": "{\"id\":{\"S\":\"1\"}}"
     },
     "flattenResponse": "false",
-    "salt": "1780412110624"
+    "salt": "1780567345295"
    },
    "DependsOn": [
     "AwsApiCallDynamoDBgetItem07e988d6f5c0d6f38baf1b39c2dcd982"
