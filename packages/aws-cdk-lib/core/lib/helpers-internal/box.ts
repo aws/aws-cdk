@@ -1,6 +1,6 @@
 import { debugModeEnabled } from '../debug';
+import { captureStackTrace } from '../private/stack-trace';
 import type { IResolvable, IResolveContext } from '../resolvable';
-import { captureStackTrace } from '../stack-trace';
 
 const BOX_SYM = Symbol.for('@aws-cdk/core.Box');
 
@@ -159,6 +159,16 @@ export interface IArrayBox<A> extends IBox<Array<A>>, Iterable<A> {
    * @returns `true` if the predicate returns a truthy value for at least one element, otherwise `false`.
    */
   some(predicate: (value: A, index: number, obj: Array<A>) => unknown): boolean;
+
+  /**
+   * Determines whether the array includes a certain element, returning true or false as appropriate.
+   *
+   * Delegates to `Array.prototype.includes` on the underlying array.
+   *
+   * @param searchElement the element to search for.
+   * @returns `true` if the element is found, `false` otherwise.
+   */
+  includes(searchElement: A): boolean;
 
   /**
    * Creates a derived read-only box by applying `fn` to each element of the array.
@@ -532,13 +542,11 @@ class Computed<A, B> extends BaseReadableBox<B> {
   }
 }
 
-class State<A> extends BaseReadableBox<A> implements IBox<A> {
+export abstract class ReadonlyState<A> extends BaseReadableBox<A> {
   protected orderedTraces: Array<OrderedStackTrace> = [];
-  private readonly equals: (a: A, b: A) => boolean;
 
-  constructor(private value: A, options?: { equals?: (a: A, b: A) => boolean }) {
+  constructor(protected value: A) {
     super();
-    this.equals = options?.equals ?? ((a, b) => a === b);
     if (debugModeEnabled() && stackTraceCollectionEnabled) {
       this.orderedTraces = [{ trace: captureStackTrace(this.constructor), seq: globalSeq++ }];
     }
@@ -550,6 +558,23 @@ class State<A> extends BaseReadableBox<A> implements IBox<A> {
 
   public getMutable(): A {
     return this.value;
+  }
+
+  public getStackTraces(): Array<StackTrace> {
+    return this.orderedTraces.map((t) => t.trace);
+  }
+
+  public getOrderedStackTraces(): Array<OrderedStackTrace> {
+    return this.orderedTraces;
+  }
+}
+
+class State<A> extends ReadonlyState<A> implements IBox<A> {
+  private readonly equals: (a: A, b: A) => boolean;
+
+  constructor(value: A, options?: { equals?: (a: A, b: A) => boolean }) {
+    super(value);
+    this.equals = options?.equals ?? ((a, b) => a === b);
   }
 
   public set(value: A): void {
@@ -564,14 +589,6 @@ class State<A> extends BaseReadableBox<A> implements IBox<A> {
 
   public update(fn: (a: A) => A): void {
     this.set(fn(this.value));
-  }
-
-  public getStackTraces(): Array<StackTrace> {
-    return this.orderedTraces.map((t) => t.trace);
-  }
-
-  public getOrderedStackTraces(): Array<OrderedStackTrace> {
-    return this.orderedTraces;
   }
 }
 
@@ -629,6 +646,10 @@ class ArrayState<A> extends State<Array<A>> implements IArrayBox<A> {
 
   public some(predicate: (value: A, index: number, obj: Array<A>) => unknown): boolean {
     return this.array.some(predicate);
+  }
+
+  public includes(searchElement: A): boolean {
+    return this.array.includes(searchElement);
   }
 
   public map<B>(fn: (a: A) => B): IReadableBox<Array<B>> {

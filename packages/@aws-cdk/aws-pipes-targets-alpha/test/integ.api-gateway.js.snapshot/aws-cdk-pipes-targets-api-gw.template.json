@@ -49,7 +49,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "ConnectHandlerServiceRole7E4A9B1F"
@@ -395,7 +395,11 @@
       }
      }
     }
-   }
+   },
+   "DependsOn": [
+    "PipeRoleDefaultPolicy56E6A74D",
+    "PipeRole7D4AFC73"
+   ]
   },
   "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
    "Type": "AWS::IAM::Role",
@@ -456,7 +460,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Handler": "index.handler",
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Timeout": 900,
     "Code": {
      "S3Bucket": {

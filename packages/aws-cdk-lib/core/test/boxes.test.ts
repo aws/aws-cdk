@@ -1,3 +1,4 @@
+import { Lazy, Tokenization } from '../lib';
 import { Box } from '../lib/helpers-internal';
 
 describe('Boxes', () => {
@@ -328,6 +329,23 @@ describe('Boxes', () => {
         const doubled = box.map(x => x * 2);
         expect(doubled.get()).toEqual([]);
       });
+
+      test('includes() returns true for existing element', () => {
+        const box = Box.fromArray([1, 2, 3]);
+        expect(box.includes(2)).toBe(true);
+      });
+
+      test('includes() returns false for missing element', () => {
+        const box = Box.fromArray([1, 2, 3]);
+        expect(box.includes(4)).toBe(false);
+      });
+
+      test('includes() reflects push()', () => {
+        const box = Box.fromArray([1]);
+        expect(box.includes(2)).toBe(false);
+        box.push(2);
+        expect(box.includes(2)).toBe(true);
+      });
     });
 
     describe('Boxes.isBox', () => {
@@ -374,6 +392,69 @@ describe('Boxes', () => {
         const result = Box.combine({ a, b }, (x) => x.a + x.b);
         expect(result.get()).toBe(14);
       });
+    });
+  });
+
+  describe('Lazy tokens are boxes', () => {
+    test('Lazy.any() is a box', () => {
+      const token = Lazy.any({ produce: () => 'hello' });
+      expect(Box.isBox(token)).toBe(true);
+    });
+
+    test('Lazy.uncachedAny() is not a box', () => {
+      const token = Lazy.uncachedAny({ produce: () => 42 });
+      expect(Box.isBox(token)).toBe(false);
+    });
+
+    test('Lazy.string() produces a box (encoded as string)', () => {
+      const str = Lazy.string({ produce: () => 'hi' });
+      const reversed = Tokenization.reverse(str);
+      expect(Box.isBox(reversed)).toBe(true);
+    });
+
+    test('Lazy.uncachedString() is not a box', () => {
+      const str = Lazy.uncachedString({ produce: () => 'hi' });
+      const reversed = Tokenization.reverse(str);
+      expect(Box.isBox(reversed)).toBe(false);
+    });
+
+    test('Lazy.number() produces a box (encoded as number)', () => {
+      const num = Lazy.number({ produce: () => 99 });
+      const reversed = Tokenization.reverse(num);
+      expect(Box.isBox(reversed)).toBe(true);
+    });
+
+    test('Lazy.list() produces a box (encoded as list)', () => {
+      const list = Lazy.list({ produce: () => ['a', 'b'] });
+      const reversed = Tokenization.reverse(list);
+      expect(Box.isBox(reversed)).toBe(true);
+    });
+
+    test('Lazy.any() resolves correctly', () => {
+      const token = Lazy.any({ produce: () => ({ key: 'value' }) });
+      expect(token.resolve({} as any)).toEqual({ key: 'value' });
+    });
+
+    test('Lazy.any() supports derive()', () => {
+      const token = Lazy.any({ produce: () => 5 });
+      const derived = (token as any).derive((x: number) => x * 2);
+      expect(derived.resolve({} as any)).toBe(10);
+    });
+
+    test('Lazy.any() caches the produced value', () => {
+      let count = 0;
+      const token = Lazy.any({ produce: () => ++count });
+      token.resolve({} as any);
+      token.resolve({} as any);
+      expect(count).toBe(1);
+    });
+
+    test('Lazy.uncachedAny() does not cache', () => {
+      let count = 0;
+      const token = Lazy.uncachedAny({ produce: () => ++count });
+      token.resolve({} as any);
+      token.resolve({} as any);
+      expect(count).toBe(2);
     });
   });
 });

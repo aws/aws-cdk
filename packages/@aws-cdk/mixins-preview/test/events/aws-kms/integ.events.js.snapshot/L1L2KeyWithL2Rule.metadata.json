@@ -1,0 +1,267 @@
+{
+  "/L1L2KeyWithL2Rule": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:59:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/L1L2KeyWithL2Rule/KeyL1": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "KeyL1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new L1L2KeyWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:14:23)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:59:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/L1L2KeyWithL2Rule/KeyL2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/L1L2KeyWithL2Rule/MyFuncA": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*"
+      }
+    }
+  ],
+  "/L1L2KeyWithL2Rule/L2RuleForL1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "targets": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEventPattern": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addTarget": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEventPattern": [
+          {
+            "source": "*",
+            "detailType": "*",
+            "detail": "*",
+            "version": "*",
+            "resources": "*",
+            "region": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEventPattern": [
+          {
+            "source": "*",
+            "detailType": "*",
+            "detail": "*",
+            "version": "*",
+            "resources": "*",
+            "region": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/L1L2KeyWithL2Rule/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/L1L2KeyWithL2Rule/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/L1L2KeyWithL2Rule/KeyL2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "KeyL25E747C61"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Key (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key.js:651:30)",
+        "new Key (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new L1L2KeyWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:16:23)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:59:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/L1L2KeyWithL2Rule/MyFuncA/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/L1L2KeyWithL2Rule/MyFuncA/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyFuncAAF5F3089"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new L1L2KeyWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:18:20)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:59:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/L1L2KeyWithL2Rule/MyFuncA/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/L1L2KeyWithL2Rule/L2RuleForL1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "L2RuleForL13AA6354B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events/lib/rule.js:169:30)",
+        "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new L1L2KeyWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:28:22)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:59:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/L1L2KeyWithL2Rule/L2RuleForL1/AllowEventRuleL1L2KeyWithL2RuleMyFuncAA6804792": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "L2RuleForL1AllowEventRuleL1L2KeyWithL2RuleMyFuncAA680479253AB68ED"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addPermission (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:170:9)",
+        "addLambdaPermission (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/util.js:63:17)",
+        "LambdaFunction.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/lambda.js:43:42)",
+        "WrappedClass.addTarget (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events/lib/rule.js:206:40)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events/lib/rule.js:181:22)",
+        "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new L1L2KeyWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:28:22)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:59:20)"
+      ]
+    }
+  ],
+  "/L1L2KeyWithL2Rule/MyFuncA/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyFuncAServiceRole9A674AAA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new L1L2KeyWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:18:20)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:59:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/L1L2KeyWithL2Rule/MyFuncA/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyFuncALogGroupD7C330A5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:773:34)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new L1L2KeyWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:18:20)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:59:20)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

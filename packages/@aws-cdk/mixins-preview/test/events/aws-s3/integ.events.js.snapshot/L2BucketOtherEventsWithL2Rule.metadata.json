@@ -3,7 +3,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:129:20)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:129:20)",
         "...node internals..."
       ]
     }
@@ -123,17 +123,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:258:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
-        "DefaultStackSynthesizer.synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
-        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
-        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
-        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
-        "synthesizeTree (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
-        "synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
-        "App.synth (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
-        "process.<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
-        "...node internals..."
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
       ]
     }
   ],
@@ -145,17 +144,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:266:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
-        "DefaultStackSynthesizer.synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
-        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
-        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
-        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
-        "synthesizeTree (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
-        "synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
-        "App.synth (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
-        "process.<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
-        "...node internals..."
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
       ]
     }
   ],
@@ -167,10 +165,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1329:30)",
-        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new L2BucketOtherEventsWithL2Rule (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:104:26)",
-        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:129:20)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new L2BucketOtherEventsWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:104:26)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:129:20)",
         "...node internals..."
       ]
     }
@@ -220,18 +219,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new NotificationsResourceHandler (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource-handler.js:75:26)",
-        "NotificationsResourceHandler.singleton (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource-handler.js:44:22)",
-        "BucketNotifications.createResourceOnce (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:100:93)",
-        "BucketNotifications.enableEventBridgeNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:82:14)",
-        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:694: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:694:6)",
-        "WrappedClass.withNotifications (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:635:13)",
-        "WrappedClass.enableEventBridgeNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:694:18)",
-        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1404:22)",
-        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new L2BucketOtherEventsWithL2Rule (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:104:26)",
-        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:129:20)",
-        "...node internals..."
+        "new NotificationsResourceHandler (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource-handler.js:75:26)",
+        "NotificationsResourceHandler.singleton (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource-handler.js:44:22)",
+        "WrappedClass.createResourceOnce (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:168:97)",
+        "WrappedClass.enableEventBridgeNotification (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:145:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:695: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:695:6)",
+        "WrappedClass.withNotifications (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:636:13)",
+        "WrappedClass.enableEventBridgeNotification (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:695:18)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1483:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
       ]
     }
   ],
@@ -259,10 +256,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
-        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new L2BucketOtherEventsWithL2Rule (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:106:20)",
-        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:129:20)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new L2BucketOtherEventsWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:106:20)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:129:20)",
         "...node internals..."
       ]
     }
@@ -291,10 +288,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Trail (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-cloudtrail/lib/cloudtrail.js:307:27)",
-        "new Trail (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new L2BucketOtherEventsWithL2Rule (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:116:23)",
-        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:129:20)",
+        "new Trail (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudtrail/lib/cloudtrail.js:307:27)",
+        "new Trail (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new L2BucketOtherEventsWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:116:23)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:129:20)",
         "...node internals..."
       ]
     }
@@ -307,10 +304,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Rule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-events/lib/rule.js:167:30)",
-        "new Rule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new L2BucketOtherEventsWithL2Rule (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:118:24)",
-        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:129:20)",
+        "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events/lib/rule.js:169:30)",
+        "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new L2BucketOtherEventsWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:118:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:129:20)",
         "...node internals..."
       ]
     }
@@ -323,16 +321,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addPermission (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:170:9)",
-        "addLambdaPermission (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/util.js:63:17)",
-        "LambdaFunction.bind (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/lambda.js:43:42)",
-        "WrappedClass.addTarget (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-events/lib/rule.js:204:40)",
-        "WrappedClass.<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new Rule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-events/lib/rule.js:179:22)",
-        "new Rule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new L2BucketOtherEventsWithL2Rule (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:118:24)",
-        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:129:20)",
-        "...node internals..."
+        "WrappedClass.addPermission (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:170:9)",
+        "addLambdaPermission (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/util.js:63:17)",
+        "LambdaFunction.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/lambda.js:43:42)",
+        "WrappedClass.addTarget (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events/lib/rule.js:206:40)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events/lib/rule.js:181:22)",
+        "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new L2BucketOtherEventsWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:118:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:129:20)"
       ]
     }
   ],
@@ -376,16 +374,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "BucketNotifications.createResourceOnce (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:116:29)",
-        "BucketNotifications.enableEventBridgeNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:82:14)",
-        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:694: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:694:6)",
-        "WrappedClass.withNotifications (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:635:13)",
-        "WrappedClass.enableEventBridgeNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:694:18)",
-        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1404:22)",
-        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new L2BucketOtherEventsWithL2Rule (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:104:26)",
-        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:129:20)",
-        "...node internals..."
+        "WrappedClass.createResourceOnce (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:184:33)",
+        "WrappedClass.enableEventBridgeNotification (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:145:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:695: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:695:6)",
+        "WrappedClass.withNotifications (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:636:13)",
+        "WrappedClass.enableEventBridgeNotification (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:695:18)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1483:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new L2BucketOtherEventsWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:104:26)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:129:20)"
       ]
     }
   ],
@@ -397,20 +395,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new NotificationsResourceHandler (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource-handler.js:59:35)",
-        "NotificationsResourceHandler.singleton (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource-handler.js:44:22)",
-        "BucketNotifications.createResourceOnce (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:100:93)",
-        "BucketNotifications.enableEventBridgeNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:82:14)",
-        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:694: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:694:6)",
-        "WrappedClass.withNotifications (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:635:13)",
-        "WrappedClass.enableEventBridgeNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:694:18)",
-        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1404:22)",
-        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new L2BucketOtherEventsWithL2Rule (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:104:26)",
-        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:129:20)",
-        "...node internals..."
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NotificationsResourceHandler (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource-handler.js:59:35)",
+        "NotificationsResourceHandler.singleton (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource-handler.js:44:22)",
+        "WrappedClass.createResourceOnce (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:168:97)",
+        "WrappedClass.enableEventBridgeNotification (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:145:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:695: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:695:6)",
+        "WrappedClass.withNotifications (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:636:13)",
+        "WrappedClass.enableEventBridgeNotification (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:695:18)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1483:22)"
       ]
     }
   ],
@@ -422,12 +416,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
-        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new L2BucketOtherEventsWithL2Rule (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:106:20)",
-        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:129:20)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new L2BucketOtherEventsWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:106:20)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:129:20)",
         "...node internals..."
       ]
     }
@@ -440,12 +434,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new LogGroup (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
-        "new LogGroup (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:777:34)",
-        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new L2BucketOtherEventsWithL2Rule (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:106:20)",
-        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:129:20)",
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:773:34)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new L2BucketOtherEventsWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:106:20)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:129:20)",
         "...node internals..."
       ]
     }
@@ -458,12 +452,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1329:30)",
-        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Trail (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-cloudtrail/lib/cloudtrail.js:234:45)",
-        "new Trail (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new L2BucketOtherEventsWithL2Rule (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:116:23)",
-        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:129:20)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Trail (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudtrail/lib/cloudtrail.js:234:45)",
+        "new Trail (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new L2BucketOtherEventsWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:116:23)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:129:20)",
         "...node internals..."
       ]
     }
@@ -484,19 +479,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
-        "new Policy (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "BucketNotifications.addHandlerPermissions (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:172:24)",
-        "BucketNotifications.createResourceOnce (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:115:40)",
-        "BucketNotifications.enableEventBridgeNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:82:14)",
-        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:694: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:694:6)",
-        "WrappedClass.withNotifications (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:635:13)",
-        "WrappedClass.enableEventBridgeNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:694:18)",
-        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1404:22)",
-        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new L2BucketOtherEventsWithL2Rule (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:104:26)",
-        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:129:20)",
-        "...node internals..."
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addHandlerPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:240:28)",
+        "WrappedClass.createResourceOnce (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:183:44)",
+        "WrappedClass.enableEventBridgeNotification (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:145:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:695: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:695:6)",
+        "WrappedClass.withNotifications (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:636:13)",
+        "WrappedClass.enableEventBridgeNotification (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:695:18)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1483:22)"
       ]
     }
   ],
@@ -508,18 +500,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new BucketPolicy (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:177:29)",
-        "new BucketPolicy (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.maybeAutoCreatePolicy (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:287:31)",
-        "WrappedClass.addToResourcePolicy (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:275:18)",
-        "WrappedClass.enforceSSLStatement (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1491:18)",
-        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1360:22)",
-        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Trail (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-cloudtrail/lib/cloudtrail.js:234:45)",
-        "new Trail (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new L2BucketOtherEventsWithL2Rule (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:116:23)",
-        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:129:20)",
-        "...node internals..."
+        "new BucketPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:177:29)",
+        "new BucketPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.maybeAutoCreatePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:288:31)",
+        "WrappedClass.addToResourcePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:276:18)",
+        "WrappedClass.enforceSSLStatement (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1570:18)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1439:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Trail (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudtrail/lib/cloudtrail.js:234:45)",
+        "new Trail (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
       ]
     }
   ]

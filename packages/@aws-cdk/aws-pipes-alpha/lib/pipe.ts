@@ -350,5 +350,13 @@ export class Pipe extends PipeBase {
 
     this.pipeName = resource.ref;
     this.pipeArn = resource.attrArn;
+
+    // When CDK creates the role, the DefaultPolicy is a separate CFN resource.
+    // The CfnPipe only has an implicit dependency on the Role (via roleArn),
+    // not on the DefaultPolicy, so the Pipe can be created before permissions
+    // are in place. Add an explicit dependency for auto-created roles only.
+    if (!props.role) {
+      resource.node.addDependency(this.pipeRole);
+    }
   }
 }

@@ -1,6 +1,6 @@
-import * as child_process from 'child_process';
-import * as os from 'os';
-import * as path from 'path';
+import child_process from 'child_process';
+import os from 'os';
+import path from 'path';
 import { exec, findUp, getGoBuildVersion } from '../lib/util';
 
 beforeEach(() => {

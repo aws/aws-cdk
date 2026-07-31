@@ -1,0 +1,14 @@
+[
+  {
+    "name": "tool1",
+    "description": "First test tool",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "param1": {
+          "type": "string"
+        }
+      }
+    }
+  }
+]

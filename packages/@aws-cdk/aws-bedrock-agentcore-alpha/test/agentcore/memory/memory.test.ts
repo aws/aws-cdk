@@ -2,6 +2,7 @@ import * as bedrock from '@aws-cdk/aws-bedrock-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Duration } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -1084,6 +1085,223 @@ describe('Memory grant methods tests', () => {
     expect(grant).toBeDefined();
     expect(grant.principalStatement).toBeDefined();
     // resourceStatement might be undefined if no resource policy is needed
+  });
+});
+
+describe('Memory metric methods tests', () => {
+  let stack: cdk.Stack;
+  let memory: Memory;
+
+  function alarmForMetric(id: string, metric: cloudwatch.Metric): void {
+    new cloudwatch.Alarm(stack, id, { metric, evaluationPeriods: 1, threshold: 1 });
+  }
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack');
+    memory = new Memory(stack, 'test-memory-metrics', {
+      memoryName: 'test_memory_metrics',
+      description: 'A test memory for testing metric methods',
+      expirationDuration: Duration.days(30),
+    });
+  });
+
+  test('metric() produces correct namespace, name, and dimensions', () => {
+    alarmForMetric('CustomAlarm', memory.metric('CustomMetric', { CustomDimension: 'value' }));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'CustomMetric',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'CustomDimension', Value: 'value' }),
+        Match.objectLike({ Name: 'Resource' }),
+      ]),
+    });
+  });
+
+  test('metricForApiOperation() produces correct Operation dimension', () => {
+    alarmForMetric('OpAlarm', memory.metricForApiOperation('CustomMetric', 'CreateEvent'));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'CustomMetric',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Operation', Value: 'CreateEvent' }),
+      ]),
+    });
+  });
+
+  test('metricLatencyForApiOperation() produces Latency with Average statistic', () => {
+    alarmForMetric('LatencyAlarm', memory.metricLatencyForApiOperation('CreateEvent'));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Latency',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Average',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Operation', Value: 'CreateEvent' }),
+      ]),
+    });
+  });
+
+  test('metricInvocationsForApiOperation() produces Invocations with Sum statistic', () => {
+    alarmForMetric('InvocAlarm', memory.metricInvocationsForApiOperation('CreateEvent'));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Operation', Value: 'CreateEvent' }),
+      ]),
+    });
+  });
+
+  test('metricErrorsForApiOperation() produces Errors with Sum statistic', () => {
+    alarmForMetric('ErrorsAlarm', memory.metricErrorsForApiOperation('CreateEvent'));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Errors',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Operation', Value: 'CreateEvent' }),
+      ]),
+    });
+  });
+
+  test('metricEventCreationCount() produces CreationCount with Event ItemType dimension', () => {
+    alarmForMetric('EventCountAlarm', memory.metricEventCreationCount());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'CreationCount',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'ItemType', Value: 'Event' }),
+      ]),
+    });
+  });
+
+  test('metricMemoryRecordCreationCount() produces CreationCount with MemoryRecordsExtracted dimension', () => {
+    alarmForMetric('RecordCountAlarm', memory.metricMemoryRecordCreationCount());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'CreationCount',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'ItemType', Value: 'MemoryRecordsExtracted' }),
+      ]),
+    });
+  });
+
+  test('custom statistic prop overrides the default', () => {
+    alarmForMetric('OverrideAlarm', memory.metricInvocationsForApiOperation('CreateEvent', { statistic: 'Average' }));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Statistic: 'Average',
+    });
+  });
+});
+
+describe('Memory.addMemoryStrategy behavior tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let memory: Memory;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+    memory = new Memory(stack, 'test-memory', {
+      memoryName: 'test_add_memory_strategy',
+      description: 'A test memory for addMemoryStrategy',
+      expirationDuration: Duration.days(30),
+    });
+  });
+
+  test('Should include the added strategy in the rendered CloudFormation template', () => {
+    memory.addMemoryStrategy(MemoryStrategy.usingBuiltInSemantic());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      MemoryStrategies: Match.arrayWith([
+        Match.objectLike({
+          SemanticMemoryStrategy: Match.objectLike({
+            Type: 'SEMANTIC',
+          }),
+        }),
+      ]),
+    });
+  });
+
+  test('Should not throw when the strategy grant returns undefined (built-in strategy without overrides)', () => {
+    // Built-in strategies without custom overrides have grant() returning undefined.
+    // addMemoryStrategy must handle this via the optional chain `grant?.applyBefore(...)`.
+    expect(() => {
+      memory.addMemoryStrategy(MemoryStrategy.usingBuiltInSummarization());
+    }).not.toThrow();
+  });
+
+  test('Should grant model invoke permissions when strategy has custom overrides (grant returns defined)', () => {
+    // Custom strategy with both extraction and consolidation overrides — grant() returns a combined Grant
+    const customStrategy = MemoryStrategy.usingSemantic({
+      name: 'custom_semantic',
+      description: 'Custom strategy with model overrides',
+      namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
+      customConsolidation: {
+        model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+        appendToPrompt: 'custom consolidation',
+      },
+      customExtraction: {
+        model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+        appendToPrompt: 'custom extraction',
+      },
+    });
+
+    memory.addMemoryStrategy(customStrategy);
+
+    const template = Template.fromStack(stack);
+    // The execution role must have been granted bedrock:InvokeModel on the foundation model
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: Match.arrayWith(['bedrock:InvokeModel*']),
+            Effect: 'Allow',
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should support adding multiple strategies of different types in sequence', () => {
+    memory.addMemoryStrategy(MemoryStrategy.usingBuiltInSummarization());
+    memory.addMemoryStrategy(MemoryStrategy.usingBuiltInSemantic());
+    memory.addMemoryStrategy(MemoryStrategy.usingBuiltInUserPreference());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      MemoryStrategies: Match.arrayWith([
+        Match.objectLike({ SummaryMemoryStrategy: Match.anyValue() }),
+        Match.objectLike({ SemanticMemoryStrategy: Match.anyValue() }),
+        Match.objectLike({ UserPreferenceMemoryStrategy: Match.anyValue() }),
+      ]),
+    });
   });
 });
 

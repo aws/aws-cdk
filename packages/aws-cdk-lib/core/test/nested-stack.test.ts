@@ -4,8 +4,10 @@ import { readFileSync } from 'fs-extra';
 import { toCloudFormation } from './util';
 import * as cxapi from '../../cx-api';
 import type { CfnStack } from '../lib';
-import { App, CfnResource, NestedStack, Resource, Stack } from '../lib';
-import { memoizedGetter } from '../lib/helpers-internal';
+import {
+  Stack, NestedStack, Resource, CfnResource, App, CfnOutput,
+} from '../lib';
+import { memoizedGetter } from '../lib/helpers-internal/memoize';
 
 describe('nested-stack', () => {
   test('a nested-stack has a defaultChild', () => {
@@ -94,7 +96,7 @@ describe('nested-stack', () => {
 
   test('can create cross region references when crossRegionReferences=true', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
     const stack1 = new Stack(app, 'Stack1', {
       env: {
         account: '123456789012',
@@ -142,7 +144,16 @@ describe('nested-stack', () => {
       },
     });
     const template1 = assembly.getStackByName(stack1.stackName).template;
-    expect(template1?.Outputs).toEqual({
+    const nestedTemplate1 = JSON.parse(readFileSync(path.join(assembly.directory, `${nestedStack.artifactId}.nested.template.json`), 'utf8'));
+    expect(nestedTemplate1?.Outputs).toEqual({
+      Stack1Nested1Resource178AEB067Ref: {
+        Value: {
+          Ref: 'Resource1CCD41AB7',
+        },
+      },
+    });
+
+    expect(template1?.Outputs).toMatchObject({
       PublishOutputFnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067Ref9772E2BF: {
         Value: {
           'Fn::GetAtt': [
@@ -152,15 +163,34 @@ describe('nested-stack', () => {
         },
       },
     });
+  });
 
-    const nestedTemplate1 = JSON.parse(readFileSync(path.join(assembly.directory, `${nestedStack.artifactId}.nested.template.json`), 'utf8'));
-    expect(nestedTemplate1?.Outputs).toEqual({
-      Stack1Nested1Resource178AEB067Ref: {
-        Value: {
-          Ref: 'Resource1CCD41AB7',
-        },
+  test('cross region references require explicit physical name on nested stack resources', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', {
+      env: {
+        account: '123456789012',
+        region: 'bermuda-triangle-1337',
       },
     });
+    const stack2 = new Stack(app, 'Stack2', {
+      env: {
+        account: '123456789012',
+        region: 'bermuda-triangle-42',
+      },
+    });
+    const nestedStack = new NestedStack(stack1, 'MyNestedStack');
+
+    // WHEN
+    const myResource = new MyResource(nestedStack, 'MyResource');
+    new CfnOutput(stack2, 'Output', {
+      value: myResource.name,
+    });
+
+    // THEN
+    expect(() => app.synth()).toThrow(
+      /Cannot use resource 'Stack1\/MyNestedStack\/MyResource' in a cross-environment fashion/);
   });
 
   test('requires bundling when root stack has exact match in BUNDLING_STACKS', () => {
