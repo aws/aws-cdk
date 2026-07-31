@@ -38,7 +38,7 @@ export class LambdaSubscription implements sns.ITopicSubscription {
     // if the topic and function are created in different stacks
     // then we need to make sure the topic is created first
     if (topic instanceof sns.Topic && topic.stack !== this.fn.stack) {
-      this.fn.stack.addDependency(topic.stack);
+      this.fn.stack.addStackDependency(topic.stack);
     }
 
     return {

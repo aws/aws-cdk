@@ -1,0 +1,21 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "c9ac08260c5360c3f6e768c816ebfec873a9f9a34c9d78032bd991e0a520e7d5": {
+      "displayName": "CrossAccountMultiConsumerTwo Template",
+      "source": {
+        "path": "CrossAccountMultiConsumerTwo.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "222222222222-us-east-2-999d5826": {
+          "bucketName": "cdk-hnb659fds-assets-222222222222-us-east-2",
+          "objectKey": "c9ac08260c5360c3f6e768c816ebfec873a9f9a34c9d78032bd991e0a520e7d5.json",
+          "region": "us-east-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::222222222222:role/cdk-hnb659fds-file-publishing-role-222222222222-us-east-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
