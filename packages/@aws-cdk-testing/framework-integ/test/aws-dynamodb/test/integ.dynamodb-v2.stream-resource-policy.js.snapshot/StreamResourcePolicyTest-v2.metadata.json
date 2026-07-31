@@ -1,0 +1,86 @@
+{
+  "/StreamResourcePolicyTest-v2/GlobalTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "partitionKey": {
+          "name": "*",
+          "type": "S"
+        },
+        "removalPolicy": "destroy",
+        "dynamoStream": "NEW_AND_OLD_IMAGES",
+        "replicas": [
+          {
+            "region": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addReplica": [
+          {
+            "region": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/StreamResourcePolicyTest-v2/GlobalTableImperative": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "partitionKey": {
+          "name": "*",
+          "type": "S"
+        },
+        "removalPolicy": "destroy",
+        "dynamoStream": "NEW_AND_OLD_IMAGES",
+        "replicas": [
+          {
+            "region": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addReplica": [
+          {
+            "region": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/StreamResourcePolicyTest-v2/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/StreamResourcePolicyTest-v2/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/StreamResourcePolicyTest-v2/GlobalTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GlobalTable89F068B2"
+    }
+  ],
+  "/StreamResourcePolicyTest-v2/GlobalTableImperative/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GlobalTableImperativeE14B615E"
+    }
+  ]
+}

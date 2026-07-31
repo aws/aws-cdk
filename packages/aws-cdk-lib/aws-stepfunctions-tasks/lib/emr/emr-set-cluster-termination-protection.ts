@@ -32,7 +32,7 @@ export interface EmrSetClusterTerminationProtectionJsonataProps extends sfn.Task
 export interface EmrSetClusterTerminationProtectionProps extends sfn.TaskStateBaseProps, EmrSetClusterTerminationProtectionOptions { }
 
 /**
- * A Step Functions Task to to set Termination Protection on an EMR Cluster.
+ * A Step Functions Task to set Termination Protection on an EMR Cluster.
  */
 export class EmrSetClusterTerminationProtection extends sfn.TaskStateBase {
   /**
