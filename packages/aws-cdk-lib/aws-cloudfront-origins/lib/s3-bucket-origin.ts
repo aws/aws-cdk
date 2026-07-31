@@ -5,6 +5,7 @@ import * as iam from '../../aws-iam';
 import type { IKey } from '../../aws-kms';
 import type { IBucket } from '../../aws-s3';
 import { Annotations, Aws, Names, Stack, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 import type { IOriginAccessControlRef } from '../../interfaces/generated/aws-cloudfront-interfaces.generated';
 
 interface BucketPolicyAction {
@@ -264,7 +265,7 @@ class S3BucketOriginWithOAI extends S3BucketOrigin {
 
   protected renderS3OriginConfig(): cloudfront.CfnDistribution.S3OriginConfigProperty | undefined {
     if (!this.originAccessIdentity) {
-      throw new UnscopedValidationError('OriginAccessIdentityCannotBeUndefined', 'Origin access identity cannot be undefined');
+      throw new UnscopedValidationError(lit`OriginAccessIdentityCannotBeUndefined`, 'Origin access identity cannot be undefined');
     }
     return { originAccessIdentity: `origin-access-identity/cloudfront/${this.originAccessIdentity.cloudFrontOriginAccessIdentityRef.cloudFrontOriginAccessIdentityId}` };
   }

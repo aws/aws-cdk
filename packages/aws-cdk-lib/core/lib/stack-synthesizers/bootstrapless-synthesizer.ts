@@ -2,6 +2,7 @@ import { DefaultStackSynthesizer } from './default-synthesizer';
 import type { ISynthesisSession } from './types';
 import type { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { UnscopedValidationError } from '../errors';
+import { lit } from '../private/literal-string';
 
 /**
  * Construction properties of `BootstraplessSynthesizer`.
@@ -62,11 +63,11 @@ export class BootstraplessSynthesizer extends DefaultStackSynthesizer {
   }
 
   public addFileAsset(_asset: FileAssetSource): FileAssetLocation {
-    throw new UnscopedValidationError('CannotAddAssetsStackUses', 'Cannot add assets to a Stack that uses the BootstraplessSynthesizer');
+    throw new UnscopedValidationError(lit`CannotAddAssetsStackUses`, 'Cannot add assets to a Stack that uses the BootstraplessSynthesizer');
   }
 
   public addDockerImageAsset(_asset: DockerImageAssetSource): DockerImageAssetLocation {
-    throw new UnscopedValidationError('CannotAddAssetsStackUses', 'Cannot add assets to a Stack that uses the BootstraplessSynthesizer');
+    throw new UnscopedValidationError(lit`CannotAddAssetsStackUses`, 'Cannot add assets to a Stack that uses the BootstraplessSynthesizer');
   }
 
   public synthesize(session: ISynthesisSession): void {

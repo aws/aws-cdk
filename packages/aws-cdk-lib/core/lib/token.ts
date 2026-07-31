@@ -3,6 +3,7 @@ import { UnscopedValidationError } from './errors';
 import { Lazy } from './lazy';
 import { unresolved } from './private/encoding';
 import { Intrinsic } from './private/intrinsic';
+import { lit } from './private/literal-string';
 import { resolve } from './private/resolve';
 import { TokenMap } from './private/token-map';
 import type { IResolvable, ITokenResolver, IResolveContext } from './resolvable';
@@ -154,7 +155,7 @@ export class Tokenization {
   public static reverseCompleteString(s: string): IResolvable | undefined {
     const fragments = Tokenization.reverseString(s);
     if (fragments.length !== 1) {
-      throw new UnscopedValidationError('TokenzationReverseCompleteStringArgument', `Tokenzation.reverseCompleteString: argument must not be a concatenation, got '${s}'`);
+      throw new UnscopedValidationError(lit`TokenzationReverseCompleteStringArgument`, `Tokenzation.reverseCompleteString: argument must not be a concatenation, got '${s}'`);
     }
     return fragments.firstToken;
   }
@@ -227,6 +228,7 @@ export class Tokenization {
     // only convert numbers to strings so that Refs, conditions, and other things don't end up synthesizing as [object object]
 
     if (Token.isUnresolved(x)) {
+      // eslint-disable-next-line no-restricted-syntax
       return Lazy.uncachedString({
         produce: context => {
           const resolved = context.resolve(x);
@@ -250,7 +252,7 @@ export class JsonNull implements IResolvable {
   /** The canonical instance of `JsonNull`. */
   public static readonly INSTANCE = new JsonNull();
 
-  public readonly creationStack: string[] = [];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
 
   private constructor() { }
 

@@ -5,6 +5,7 @@ import { PolicyDocument } from '../../aws-iam';
 import { Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -59,6 +60,6 @@ export class QueuePolicy extends Resource {
    * @attribute
    */
   public get queuePolicyId(): string {
-    throw new ValidationError('QueuePolicyQueuePolicyId', 'QueuePolicy.queuePolicyId has been removed from CloudFormation', this);
+    throw new ValidationError(lit`QueuePolicyQueuePolicyId`, 'QueuePolicy.queuePolicyId has been removed from CloudFormation', this);
   }
 }

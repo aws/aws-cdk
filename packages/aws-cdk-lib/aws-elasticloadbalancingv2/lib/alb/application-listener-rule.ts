@@ -5,6 +5,10 @@ import type { IApplicationTargetGroup } from './application-target-group';
 import type { ListenerCondition } from './conditions';
 import * as cdk from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
+import type { IArrayBox, IBox } from '../../../core/lib/helpers-internal';
+import { Box } from '../../../core/lib/helpers-internal';
+import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
+import { lit } from '../../../core/lib/private/literal-string';
 import { CfnListenerRule } from '../elasticloadbalancingv2.generated';
 import type { IListenerAction } from '../shared/listener-action';
 
@@ -198,45 +202,47 @@ export interface RedirectResponse {
 /**
  * Define a new listener rule
  */
+@noBoxStackTraces
 export class ApplicationListenerRule extends Construct {
   /**
    * The ARN of this rule
    */
   public readonly listenerRuleArn: string;
 
-  private readonly conditions: ListenerCondition[];
+  private readonly conditions: IArrayBox<ListenerCondition>;
   private readonly legacyConditions: {[key: string]: string[]} = {};
 
   private readonly listener: IApplicationListener;
-  private action?: IListenerAction;
+  private readonly _action: IBox<IListenerAction | undefined>;
 
   constructor(scope: Construct, id: string, props: ApplicationListenerRuleProps) {
     super(scope, id);
 
-    this.conditions = props.conditions || [];
+    this.conditions = Box.fromArray(props.conditions ?? [], { omitEmpty: false });
 
     const hasPathPatterns = props.pathPatterns || props.pathPattern;
     if (this.conditions.length === 0 && !props.hostHeader && !hasPathPatterns) {
-      throw new ValidationError('LeastConditions', 'At least one of \'conditions\', \'hostHeader\', \'pathPattern\' or \'pathPatterns\' is required when defining a load balancing rule.', this);
+      throw new ValidationError(lit`LeastConditions`, 'At least one of \'conditions\', \'hostHeader\', \'pathPattern\' or \'pathPatterns\' is required when defining a load balancing rule.', this);
     }
 
     const possibleActions: Array<keyof ApplicationListenerRuleProps> = ['action', 'targetGroups', 'fixedResponse', 'redirectResponse'];
     const providedActions = possibleActions.filter(action => props[action] !== undefined);
     if (providedActions.length > 1) {
-      throw new ValidationError('SpecifiedTogether', `'${providedActions}' specified together, specify only one`, this);
+      throw new ValidationError(lit`SpecifiedTogether`, `'${providedActions}' specified together, specify only one`, this);
     }
 
     if (!cdk.Token.isUnresolved(props.priority) && props.priority <= 0) {
-      throw new ValidationError('PriorityValueGreaterEqual', 'Priority must have value greater than or equal to 1', this);
+      throw new ValidationError(lit`PriorityValueGreaterEqual`, 'Priority must have value greater than or equal to 1', this);
     }
 
+    this._action = Box.fromValue<IListenerAction | undefined>(undefined);
     this.listener = props.listener;
 
     const resource = new CfnListenerRule(this, 'Resource', {
       listenerArn: props.listener.listenerArn,
       priority: props.priority,
-      conditions: cdk.Lazy.any({ produce: () => this.renderConditions() }),
-      actions: cdk.Lazy.any({ produce: () => this.action ? this.action.renderRuleActions() : [] }),
+      conditions: this.conditions.derive(_ => this.renderConditions()),
+      actions: this._action.derive(a => a ? a.renderRuleActions() : []),
     });
 
     if (props.hostHeader) {
@@ -245,7 +251,7 @@ export class ApplicationListenerRule extends Construct {
 
     if (hasPathPatterns) {
       if (props.pathPattern && props.pathPatterns) {
-        throw new ValidationError('BothSpecified', 'Both `pathPatterns` and `pathPattern` are specified, specify only one', this);
+        throw new ValidationError(lit`BothSpecified`, 'Both `pathPatterns` and `pathPattern` are specified, specify only one', this);
       }
       const pathPattern = props.pathPattern ? [props.pathPattern] : props.pathPatterns;
       this.setCondition('path-pattern', pathPattern);
@@ -306,12 +312,12 @@ export class ApplicationListenerRule extends Construct {
     //
     // Instead, signal this through a warning.
     // @deprecate: upon the next major version bump, replace this with a `throw`
-    if (this.action) {
+    if (this._action.get()) {
       cdk.Annotations.of(this).addWarningV2('@aws-cdk/aws-elbv2:albListnerRuleDefaultActionReplaced', 'An Action already existed on this ListenerRule and was replaced. Configure exactly one default Action.');
     }
 
     action.bind(this, this.listener, this);
-    this.action = action;
+    this._action.set(action);
   }
 
   /**
@@ -359,7 +365,7 @@ export class ApplicationListenerRule extends Construct {
    * Validate the rule
    */
   private validateListenerRule() {
-    if (this.action === undefined) {
+    if (this._action.get() === undefined) {
       return ['Listener rule needs at least one action'];
     }
 
@@ -378,7 +384,7 @@ export class ApplicationListenerRule extends Construct {
     const legacyConditions = Object.entries(this.legacyConditions).map(([field, values]) => {
       return { field, values };
     });
-    const conditions = this.conditions.map(condition => condition.renderRawCondition());
+    const conditions = Array.from(this.conditions).map(condition => condition.renderRawCondition());
 
     return [
       ...legacyConditions,
@@ -394,11 +400,11 @@ export class ApplicationListenerRule extends Construct {
  */
 function validateFixedResponse(fixedResponse: FixedResponse) {
   if (fixedResponse.statusCode && !/^(2|4|5)\d\d$/.test(fixedResponse.statusCode)) {
-    throw new UnscopedValidationError('MustBe', '`statusCode` must be 2XX, 4XX or 5XX.');
+    throw new UnscopedValidationError(lit`MustBe`, '`statusCode` must be 2XX, 4XX or 5XX.');
   }
 
   if (fixedResponse.messageBody && fixedResponse.messageBody.length > 1024) {
-    throw new UnscopedValidationError('MessageBodyCannotCharacters', '`messageBody` cannot have more than 1024 characters.');
+    throw new UnscopedValidationError(lit`MessageBodyCannotCharacters`, '`messageBody` cannot have more than 1024 characters.');
   }
 }
 
@@ -409,10 +415,10 @@ function validateFixedResponse(fixedResponse: FixedResponse) {
  */
 function validateRedirectResponse(redirectResponse: RedirectResponse) {
   if (redirectResponse.protocol && !/^(HTTPS?|#\{protocol\})$/i.test(redirectResponse.protocol)) {
-    throw new UnscopedValidationError('MustBeHttp', '`protocol` must be HTTP, HTTPS, or #{protocol}.');
+    throw new UnscopedValidationError(lit`MustBeHttp`, '`protocol` must be HTTP, HTTPS, or #{protocol}.');
   }
 
   if (!redirectResponse.statusCode || !/^HTTP_30[12]$/.test(redirectResponse.statusCode)) {
-    throw new UnscopedValidationError('StatusCode', '`statusCode` must be HTTP_301 or HTTP_302.');
+    throw new UnscopedValidationError(lit`StatusCode`, '`statusCode` must be HTTP_301 or HTTP_302.');
   }
 }

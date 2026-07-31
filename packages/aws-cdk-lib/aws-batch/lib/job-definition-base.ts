@@ -1,7 +1,9 @@
 import type { Construct } from 'constructs';
 import type { CfnJobDefinitionProps } from './batch.generated';
 import type { Duration, IResource } from '../../core';
-import { Lazy, Resource } from '../../core';
+import { Resource } from '../../core';
+import type { IArrayBox, IReadableBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import type { IJobDefinitionRef, JobDefinitionReference } from '../../interfaces/generated/aws-batch-interfaces.generated';
 
 /**
@@ -126,6 +128,16 @@ export interface JobDefinitionProps {
    * @default - no timeout
    */
   readonly timeout?: Duration;
+
+  /**
+   * Specifies whether the previous revision of the job definition is retained in an active status after UPDATE events for the resource.
+   *
+   * When the property is set to false, the previous revision of the job definition is de-registered after a new revision is created.
+   * When the property is set to true, the previous revision of the job definition is not de-registered.
+   *
+   * @default undefined - AWS Batch default is false
+   */
+  readonly skipDeregisterOnUpdate?: boolean;
 }
 
 /**
@@ -242,15 +254,16 @@ export abstract class JobDefinitionBase extends Resource implements IJobDefiniti
 
   public readonly parameters?: { [key:string]: any };
   public readonly retryAttempts?: number;
-  public readonly retryStrategies: RetryStrategy[];
   public readonly schedulingPriority?: number;
   public readonly timeout?: Duration;
+  /**
+   * Specifies whether the previous revision of the job definition is retained in an active status after UPDATE events for the resource.
+   *
+   * @default undefined - AWS Batch default is false
+   */
+  public readonly skipDeregisterOnUpdate?: boolean;
 
-  public get jobDefinitionRef(): JobDefinitionReference {
-    return {
-      jobDefinitionArn: this.jobDefinitionArn,
-    };
-  }
+  private readonly _retryStrategies: IArrayBox<RetryStrategy>;
 
   constructor(scope: Construct, id: string, props?: JobDefinitionProps) {
     super(scope, id, {
@@ -259,13 +272,31 @@ export abstract class JobDefinitionBase extends Resource implements IJobDefiniti
 
     this.parameters = props?.parameters;
     this.retryAttempts = props?.retryAttempts;
-    this.retryStrategies = props?.retryStrategies ?? [];
+    this._retryStrategies = Box.fromArray(props?.retryStrategies ?? []);
     this.schedulingPriority = props?.schedulingPriority;
     this.timeout = props?.timeout;
+    this.skipDeregisterOnUpdate = props?.skipDeregisterOnUpdate;
+  }
+
+  public get jobDefinitionRef(): JobDefinitionReference {
+    return {
+      jobDefinitionArn: this.jobDefinitionArn,
+    };
+  }
+
+  public get retryStrategies(): RetryStrategy[] {
+    return this._retryStrategies.getMutable();
+  }
+
+  /**
+   * @internal
+   */
+  public _mapRetryStrategies<B>(fn: (strategy: RetryStrategy) => B): IReadableBox<Array<B>> {
+    return this._retryStrategies.map(fn);
   }
 
   addRetryStrategy(strategy: RetryStrategy): void {
-    this.retryStrategies.push(strategy);
+    this._retryStrategies.push(strategy);
   }
 }
 
@@ -277,24 +308,18 @@ export function baseJobDefinitionProperties(baseJobDefinition: JobDefinitionBase
     parameters: baseJobDefinition.parameters,
     retryStrategy: {
       attempts: baseJobDefinition.retryAttempts,
-      evaluateOnExit: Lazy.any({
-        produce: () => {
-          if (baseJobDefinition.retryStrategies.length === 0) {
-            return undefined;
-          }
-          return baseJobDefinition.retryStrategies.map((strategy) => {
-            return {
-              action: strategy.action,
-              ...strategy.on,
-            };
-          });
-        },
-      }),
+      evaluateOnExit: baseJobDefinition._mapRetryStrategies((strategy) => ({
+        action: strategy.action,
+        ...strategy.on,
+      })),
     },
     schedulingPriority: baseJobDefinition.schedulingPriority,
     timeout: {
       attemptDurationSeconds: baseJobDefinition.timeout?.toSeconds(),
     },
     type: 'dummy',
+    resourceRetentionPolicy: baseJobDefinition.skipDeregisterOnUpdate !== undefined ? {
+      skipDeregisterOnUpdate: baseJobDefinition.skipDeregisterOnUpdate,
+    } : undefined,
   };
 }

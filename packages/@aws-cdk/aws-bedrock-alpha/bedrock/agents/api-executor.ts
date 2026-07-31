@@ -1,6 +1,7 @@
 import type * as bedrock from 'aws-cdk-lib/aws-bedrock';
 import type { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * The type of custom control for the action group executor.
@@ -54,7 +55,7 @@ export class ActionGroupExecutor {
 
   private constructor(lambdaFunction?: IFunction, customControl?: CustomControl) {
     if (lambdaFunction && customControl) {
-      throw new UnscopedValidationError('MutuallyExclusiveExecutorTypes', 'ActionGroupExecutor cannot have both lambdaFunction and customControl defined - they are mutually exclusive.');
+      throw new UnscopedValidationError(lit`MutuallyExclusiveExecutorTypes`, 'ActionGroupExecutor cannot have both lambdaFunction and customControl defined - they are mutually exclusive.');
     }
     this.lambdaFunction = lambdaFunction;
     this.customControl = customControl;

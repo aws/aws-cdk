@@ -44,7 +44,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "AssetActionGroupFunctionServiceRoleC53BA920"
@@ -129,7 +129,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "InlineActionGroupFunctionServiceRole5543D9A3"
@@ -214,7 +214,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "S3ActionGroupFunctionServiceRole7E4C5A58"
@@ -383,7 +383,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -408,7 +408,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip"
+     "S3Key": "e2659170a0721541efa761a8d5d04d5e36cbbf691c4b15a9053002b7c825055d.zip"
     },
     "Description": "/opt/awscli/aws"
    }

@@ -1,5 +1,6 @@
 import type * as codepipeline from '../../aws-codepipeline';
 import { Token, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * The ArtifactBounds that make sense for source Actions -
@@ -33,6 +34,6 @@ export function validatePercentage(name: string, value?: number) {
   }
 
   if (value < 0 || value > 100 || !Number.isInteger(value)) {
-    throw new UnscopedValidationError('InvalidPercentage', `'${name}': must be a whole number between 0 and 100, got: ${value}`);
+    throw new UnscopedValidationError(lit`InvalidPercentage`, `'${name}': must be a whole number between 0 and 100, got: ${value}`);
   }
 }

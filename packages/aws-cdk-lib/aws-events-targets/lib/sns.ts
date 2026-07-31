@@ -4,6 +4,7 @@ import type * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import type * as sns from '../../aws-sns';
 import { ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Customize the SNS Topic Event Target
@@ -61,7 +62,7 @@ export class SnsTopic implements events.IRuleTarget {
     } else {
       // role can't be passed when authorizeUsingRole is false
       if (this.props.role) {
-        throw new ValidationError('CannotProvideRoleWhenAuthorizeUsingRoleIsFalse', 'Cannot provide a role when authorizeUsingRole is false', rule);
+        throw new ValidationError(lit`CannotProvideRoleWhenAuthorizeUsingRoleIsFalse`, 'Cannot provide a role when authorizeUsingRole is false', rule);
       }
       // deduplicated automatically
       this.topic.grantPublish(new iam.ServicePrincipal('events.amazonaws.com'));

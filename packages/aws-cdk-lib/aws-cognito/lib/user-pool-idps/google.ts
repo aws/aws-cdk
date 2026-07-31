@@ -4,6 +4,7 @@ import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
 import type { SecretValue } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 
@@ -57,7 +58,7 @@ export class UserPoolIdentityProviderGoogle extends UserPoolIdentityProviderBase
     // at least one of the properties must be configured
     if ((!props.clientSecret && !props.clientSecretValue) ||
       (props.clientSecret && props.clientSecretValue)) {
-      throw new ValidationError('ExactlyOneClientSecretClient', 'Exactly one of "clientSecret" or "clientSecretValue" must be configured.', this);
+      throw new ValidationError(lit`ExactlyOneClientSecretClient`, 'Exactly one of "clientSecret" or "clientSecretValue" must be configured.', this);
     }
 
     const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {
