@@ -16,17 +16,26 @@ Principles:
 - Full surface area. Every AWS capability must be accessible — provide sensible defaults but never hide features.
 - Escape hatches over perfection. Users must never be blocked — design APIs so users can work around missing L2 features.
 - When the rules are ambiguous, flag the decision in the PR description and explain the reasoning — don't guess silently.
+- If you have been briefed for a task this file does not cover (e.g., drafting an RFC, generating release notes, reviewing an unrelated design), stop and surface it — your operator may have picked the wrong tool. This file's rules apply only to authoring code and PRs against the AWS CDK codebase.
 
 ## Quick Reference — Commands
 
 | Task | Command | Working Directory |
 |------|---------|-------------------|
+| Install dependencies | `yarn install` | repo root |
 | Build everything | `npx lerna run build --skip-nx-cache` | repo root |
+| Build aws-cdk-lib package only | `npx lerna run build --scope=aws-cdk-lib --stream` | repo root |
+| Build one module | `yarn build` | `packages/aws-cdk-lib/aws-{service}` or `packages/@aws-cdk/aws-{service}-alpha` |
+| Build stable module integ tests | `npx lerna run build --scope=@aws-cdk-testing/framework-integ --stream` | repo root |
+| Test all in package | `yarn test` | `packages/aws-cdk-lib` |
 | Test one module | `yarn test aws-lambda` | `packages/aws-cdk-lib` |
 | Test one file | `npx jest aws-lambda/test/function.test.ts` | `packages/aws-cdk-lib` |
 | Lint | `npx lerna run lint` | repo root |
+| Lint with auto-fix | `yarn lint --fix` | repo root |
 | Rosetta (README compile check) | `/bin/bash ./scripts/run-rosetta.sh` | repo root |
-| Run integ snapshots | `yarn integ --directory test/aws-lambda/test` | `packages/@aws-cdk-testing/framework-integ` |
+| Run all integ snapshots | `yarn integ` | `packages/@aws-cdk-testing/framework-integ` |
+| Run integ snapshots in module | `yarn integ --directory test/aws-lambda/test` | `packages/@aws-cdk-testing/framework-integ` |
+| Update integ snapshots (no deploy) | `yarn integ --dry-run --update-on-failed` | `packages/@aws-cdk-testing/framework-integ` |
 | Run integ with deploy | `yarn integ test/aws-lambda/test/integ.lambda.js --update-on-failed` | `packages/@aws-cdk-testing/framework-integ` |
 
 > **Note:** All test, lint, integ, and rosetta commands require the project to be compiled first. Run the build command above before any of these.
@@ -42,6 +51,7 @@ Principles:
 | Alpha modules | `packages/@aws-cdk/aws-{service}-alpha/` | Experimental, separate packages |
 | Design guidelines | `docs/DESIGN_GUIDELINES.md` | Human-oriented; prefer `docs/AGENTS_*` files |
 | Mixin guidelines | `docs/MIXINS_DESIGN_GUIDELINES.md` | Human-oriented; prefer `docs/AGENTS_*` files |
+| Facade & Trait guidelines | `docs/FACADES_AND_TRAITS_DESIGN_GUIDELINES.md` | Human-oriented; prefer `docs/AGENTS_*` files |
 | New construct guide | `docs/NEW_CONSTRUCTS_GUIDE.md` | Human-oriented; prefer `docs/AGENTS_*` files |
 
 ## Architecture — The Layer Model
@@ -56,6 +66,7 @@ L2 design rules:
 - You MUST hide CloudFormation details — do not require users to understand CFN to use an L2. Do not leak implementation details (ARNs, IAM actions, internal wiring) through the API
 - You MUST provide escape hatches — expose the underlying L1 construct so users are never blocked by missing L2 features
 - You SHOULD define resource contracts as interfaces — ensure third-party constructs can look and feel like first-party constructs
+- You MUST NOT make L2s taggable themselves. Only L1 (`Cfn*`) resources implement `ITaggable` / `ITaggableV2`. L2s expose an optional `tags` prop wired to the L1 default child; users tag at any scope via `Tags.of(scope).add(...)`, which traverses the tree — see [AGENTS_CONSTRUCT_DESIGN.md § Tags](./docs/AGENTS_CONSTRUCT_DESIGN.md#tags)
 
 ### L2 Building Blocks
 
@@ -74,7 +85,7 @@ L2 design rules:
 4. Advertises capability other constructs query → `Trait`, STOP
 5. Otherwise → L2 construct method
 
-> For full rules on each building block, see [AGENTS_CONSTRUCT_DESIGN.md#feature-placement-decision](./docs/AGENTS_CONSTRUCT_DESIGN.md#feature-placement-decision). For additional human-oriented detail: [DESIGN_GUIDELINES.md#mixins-facades-and-traits](./docs/DESIGN_GUIDELINES.md#mixins-facades-and-traits) and [MIXINS_DESIGN_GUIDELINES.md](./docs/MIXINS_DESIGN_GUIDELINES.md).
+> For full rules on each building block, see [AGENTS_CONSTRUCT_DESIGN.md#feature-placement-decision](./docs/AGENTS_CONSTRUCT_DESIGN.md#feature-placement-decision). For additional human-oriented detail: [DESIGN_GUIDELINES.md#mixins-facades-and-traits](./docs/DESIGN_GUIDELINES.md#mixins-facades-and-traits), [MIXINS_DESIGN_GUIDELINES.md](./docs/MIXINS_DESIGN_GUIDELINES.md), and [FACADES_AND_TRAITS_DESIGN_GUIDELINES.md](./docs/FACADES_AND_TRAITS_DESIGN_GUIDELINES.md).
 
 ## Construct Anatomy
 
@@ -175,12 +186,36 @@ Tokens can encode strings, numbers, and lists. Any object implementing `IResolva
 - Use `Tokenization.stringifyNumber()` to safely convert a possibly-tokenized number to string
 - Don't use resource attributes (Tokens) in hash calculations for physical names
 
-### Lazy Values
+### Deferred Values (Box API)
 
-- `Lazy.any()` for arrays: pass `{ omitEmptyArray: true }`
+L2 constructs that accumulate state after construction (e.g., adding actions, policy statements, security groups) MUST use the **Box API** to defer value resolution — not `Lazy`. Boxes implement `IResolvable` and capture stack traces at mutation call sites (under `CDK_DEBUG`), enabling accurate property attribution in synthesized templates.
+
+- Use `Box.fromArray<T>([])` for accumulator lists, `Box.fromValue<T>(initial)` for single values, `Box.fromMap<K,V>()` for maps, `Box.fromSet<A>()` for sets
+- Pass to L1 props via `Token.asList(box)`, `Token.asString(box)`, `Token.asNumber(box)`, or `Token.asAny(box)` for complex/object values
+- `Box.fromArray` resolves to `undefined` when empty (omitEmpty default) — no manual empty-array check needed. Pass `{ omitEmpty: false }` to resolve to an empty array instead
+- Mutate via `box.push(item)` or `box.set(newValue)` — each captures a stack trace at the call site
+- Use `box.derive(fn)` for single-source transforms or `Box.combine({ name: box, ... }, ({ name, ... }) => ...)` for multi-source derived values
+- Apply `@noBoxStackTraces` decorator on L2 classes that create or mutate Boxes in their constructor (suppresses irrelevant internal traces)
+- NEVER mutate construct tree in Lazy or Box callbacks
+
+`Lazy` is legacy — existing code still uses it but new L2 constructs MUST prefer Boxes. See `packages/aws-cdk-lib/core/adr/box-api.md` for full rationale.
+
+**Before (legacy — do not use in new code):**
+```ts
+alarmActions: Lazy.list({ produce: () => this.alarmActionArns }),
+```
+
+**After (preferred):**
+```ts
+protected readonly _alarmActionArns: IArrayBox<string> = Box.fromArray([]);
+// in constructor:
+alarmActions: Token.asList(this._alarmActionArns),
+// in mutating method:
+this._alarmActionArns.push(newArn); // stack trace captured here
+```
+
 - Map empty arrays to `undefined` for CFN properties
 - Optional nested CFN objects: `undefined` (not `{}`) when no sub-properties set
-- NEVER mutate construct tree in Lazy callbacks
 
 ### ARN Construction
 
@@ -250,6 +285,8 @@ if (FeatureFlags.of(this).isEnabled(cxapi.MY_NEW_FLAG)) { ... }
   });
   ```
 - Other `Match` helpers: `Match.objectEquals`, `Match.arrayWith`, `Match.stringLikeRegexp`, `Match.absent()`
+- Avoid `Match.anyValue()` — it weakens assertions and hides regressions; assert the specific value, using `Match.stringLikeRegexp()` for non-deterministic values (asset hashes, generated IDs)
+- Avoid `app.synth()` — `Template.fromStack()` synthesizes the stack internally, so an explicit synth is redundant
 - `test.each` for boundary conditions: `test.each([0, -1, 256])('fails for invalid value %d', (val) => { ... })`
 - Error tests: assert on specific error message, prefix test name with "fails"
 - Test utility functions separately from constructs (e.g. `util.test.ts`)
@@ -320,6 +357,7 @@ Required for: new CFN resource types, new CFN properties, cross-service integrat
 | [`docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md`](./docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md) | Agent-optimized | Implementation patterns — grants, metrics, events, connections, IAM, VPC, removal policy | When implementing cross-cutting L2 patterns |
 | [`docs/DESIGN_GUIDELINES.md`](./docs/DESIGN_GUIDELINES.md) | Human reference | Authoritative API design reference | Before designing a new L2 API, adding props, or making architectural decisions |
 | [`docs/MIXINS_DESIGN_GUIDELINES.md`](./docs/MIXINS_DESIGN_GUIDELINES.md) | Human reference | Mixin architecture and implementation | When adding a feature that modifies resource behavior or L1 props |
+| [`docs/FACADES_AND_TRAITS_DESIGN_GUIDELINES.md`](./docs/FACADES_AND_TRAITS_DESIGN_GUIDELINES.md) | Human reference | Facade and Trait architecture and implementation | When implementing a new Facade or Trait factory |
 | [`docs/NEW_CONSTRUCTS_GUIDE.md`](./docs/NEW_CONSTRUCTS_GUIDE.md) | Human reference | Step-by-step new construct walkthrough | When creating a new L2 construct from scratch |
 | [`CONTRIBUTING.md`](./CONTRIBUTING.md) | Human reference | Contribution workflow, PR process, setup | First-time setup, PR submission, or understanding review process |
 | [`INTEGRATION_TESTS.md`](./INTEGRATION_TESTS.md) | Human reference | Integration test deep-dive | When writing, running, or debugging integration tests |

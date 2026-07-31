@@ -21,7 +21,6 @@ const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
 // Add capacity to it
 cluster.addCapacity('DefaultAutoScalingGroupCapacity', {
   instanceType: new ec2.InstanceType("t2.xlarge"),
-  desiredCapacity: 3,
 });
 
 const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
@@ -36,6 +35,9 @@ const ecsService = new ecs.Ec2Service(this, 'Service', {
   cluster,
   taskDefinition,
   minHealthyPercent: 100,
+  circuitBreaker: {
+    enable: true,
+  },
 });
 ```
 
@@ -127,7 +129,6 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 // Either add default capacity
 cluster.addCapacity('DefaultAutoScalingGroupCapacity', {
   instanceType: new ec2.InstanceType("t2.xlarge"),
-  desiredCapacity: 3,
 });
 
 // Or add customized capacity. Be sure to start the Amazon ECS-optimized AMI.
@@ -306,7 +307,7 @@ cluster.addCapacity('graviton-cluster', {
 });
 ```
 
-### Amazon Linux 2 (Neuron) Instances
+### Neuron Instances
 
 To launch Amazon EC2 Inf1, Trn1 or Inf2 instances, you can use the Amazon ECS optimized Amazon Linux 2 (Neuron) AMI. It comes pre-configured with AWS Inferentia and AWS Trainium drivers and the AWS Neuron runtime for Docker which makes running machine learning inference workloads easier on Amazon ECS.
 
@@ -360,7 +361,7 @@ cluster.addCapacity('ASGEncryptedSNS', {
 
 ### Container Insights
 
-On a cluster, CloudWatch Container Insights can be enabled by setting the `containerInsightsV2` property. [Container Insights](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cloudwatch-container-insights.html) 
+On a cluster, CloudWatch Container Insights can be enabled by setting the `containerInsightsV2` property. [Container Insights](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cloudwatch-container-insights.html)
 can be disabled, enabled, or enhanced.
 
 ```ts
@@ -807,6 +808,9 @@ const service = new ecs.FargateService(this, 'Service', {
   taskDefinition,
   desiredCount: 5,
   minHealthyPercent: 100,
+  circuitBreaker: {
+    enable: true,
+  },
 });
 ```
 
@@ -1551,6 +1555,51 @@ ecsService.associateCloudMapService({
 });
 ```
 
+### Using an Existing Cloud Map Namespace
+
+You can use an existing Cloud Map namespace as the default namespace for a cluster
+instead of creating a new one. This is useful when you want to share a namespace
+across multiple clusters or when you want to use a namespace that was created
+outside of CDK:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+// Create or reference an existing namespace
+const existingNamespace = new cloudmap.PrivateDnsNamespace(this, 'Namespace', {
+  name: 'example.local',
+  vpc,
+});
+
+const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
+
+// Use the existing namespace as the default
+cluster.addExistingDefaultCloudMapNamespace({
+  namespace: existingNamespace,
+  useForServiceConnect: true,
+});
+```
+
+You can also import an existing namespace:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const importedNamespace = cloudmap.PrivateDnsNamespace.fromPrivateDnsNamespaceAttributes(
+  this, 'ImportedNamespace', {
+    namespaceId: 'ns-xxxxxxxxxxxxx',
+    namespaceArn: 'arn:aws:servicediscovery:us-east-1:123456789012:namespace/ns-xxxxxxxxxxxxx',
+    namespaceName: 'example.local',
+  }
+);
+
+const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
+
+cluster.addExistingDefaultCloudMapNamespace({
+  namespace: importedNamespace,
+});
+```
+
 ## Capacity Providers
 
 There are two major families of Capacity Providers: [AWS
@@ -1683,7 +1732,7 @@ Capacity Option Type provides the purchasing option for the EC2 instances used i
 See [ECS documentation for Managed Instances Capacity Provider](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/managed-instances-capacity-providers-concept.html) for more documentation.
 
 #### IAM Roles Setup
-Managed instances require an infrastructure and an EC2 instance profile. You can either provide your own infrastructure role and/or instance profile, or let the construct create them automatically. 
+Managed instances require an infrastructure and an EC2 instance profile. You can either provide your own infrastructure role and/or instance profile, or let the construct create them automatically.
 
 Option 1: Let CDK create the role and instance profile automatically
 ```ts
@@ -1850,16 +1899,16 @@ const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICap
     acceleratorManufacturers: [ec2.AcceleratorManufacturer.NVIDIA],
     acceleratorNames: [ec2.AcceleratorName.T4, ec2.AcceleratorName.V100],
     acceleratorCountMin: 1,
-    
+
     // Storage requirements
     localStorage: ec2.LocalStorage.REQUIRED,
     localStorageTypes: [ec2.LocalStorageType.SSD],
     totalLocalStorageGBMin: 100,
-    
+
     // Network requirements
     networkInterfaceCountMin: 2,
     networkBandwidthGbpsMin: 10,
-    
+
     // Cost optimization
     onDemandMaxPricePercentageOverLowestPrice: 10,
   },
@@ -2519,6 +2568,28 @@ service.forceNewDeployment();
 // Or provide your own nonce to control when deployments are triggered
 service.forceNewDeployment('my-custom-nonce-v2');
 ```
+
+Alternatively, you can configure `forceNewDeployment` declaratively as a constructor option.
+This approach also allows you to explicitly disable the feature with `enabled: false`.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+// Force a new deployment on every `cdk deploy` by using a time-based nonce
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  forceNewDeployment: {
+    enabled: true,
+    nonce: Date.now().toString(),
+  },
+});
+```
+
+Calling the `forceNewDeployment()` method takes precedence over the constructor option. The nonce passed
+to the method (or the auto-generated one when none is provided) overrides any value configured through the
+`forceNewDeployment` property.
 
 ## Mixins
 

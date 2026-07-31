@@ -645,4 +645,168 @@ describe('Evaluator', () => {
       }).not.toThrow();
     });
   });
+
+  describe('tags', () => {
+    test('passes tags to the L1 resource', () => {
+      new Evaluator(stack, 'TaggedEvaluator', {
+        evaluatorName: 'tagged_evaluator',
+        level: EvaluationLevel.SESSION,
+        evaluatorConfig: EvaluatorConfig.llmAsAJudge({
+          instructions: 'Evaluate helpfulness.',
+          modelId: 'us.anthropic.claude-sonnet-4-6',
+          ratingScale: EvaluatorRatingScale.categorical([
+            { label: 'Good', definition: 'Helpful.' },
+            { label: 'Bad', definition: 'Not helpful.' },
+          ]),
+        }),
+        tags: {
+          Environment: 'Production',
+          Team: 'AgentCore',
+        },
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::Evaluator', {
+        Tags: Match.arrayWith([
+          { Key: 'Environment', Value: 'Production' },
+          { Key: 'Team', Value: 'AgentCore' },
+        ]),
+      });
+    });
+
+    test('does not include tags when not specified', () => {
+      new Evaluator(stack, 'NoTagsEvaluator', {
+        evaluatorName: 'no_tags_evaluator',
+        level: EvaluationLevel.SESSION,
+        evaluatorConfig: EvaluatorConfig.llmAsAJudge({
+          instructions: 'Evaluate helpfulness.',
+          modelId: 'us.anthropic.claude-sonnet-4-6',
+          ratingScale: EvaluatorRatingScale.categorical([
+            { label: 'Good', definition: 'Helpful.' },
+            { label: 'Bad', definition: 'Not helpful.' },
+          ]),
+        }),
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::Evaluator', {
+        Tags: Match.absent(),
+      });
+    });
+
+    test('does not include tags when empty object is passed', () => {
+      new Evaluator(stack, 'EmptyTagsEvaluator', {
+        evaluatorName: 'empty_tags_evaluator',
+        level: EvaluationLevel.SESSION,
+        evaluatorConfig: EvaluatorConfig.llmAsAJudge({
+          instructions: 'Evaluate helpfulness.',
+          modelId: 'us.anthropic.claude-sonnet-4-6',
+          ratingScale: EvaluatorRatingScale.categorical([
+            { label: 'Good', definition: 'Helpful.' },
+            { label: 'Bad', definition: 'Not helpful.' },
+          ]),
+        }),
+        tags: {},
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::Evaluator', {
+        Tags: Match.absent(),
+      });
+    });
+
+    test('throws on invalid tag key characters', () => {
+      expect(() => {
+        new Evaluator(stack, 'InvalidTagEvaluator', {
+          evaluatorName: 'invalid_tag_evaluator',
+          level: EvaluationLevel.SESSION,
+          evaluatorConfig: EvaluatorConfig.llmAsAJudge({
+            instructions: 'Evaluate helpfulness.',
+            modelId: 'us.anthropic.claude-sonnet-4-6',
+            ratingScale: EvaluatorRatingScale.categorical([
+              { label: 'Good', definition: 'Helpful.' },
+              { label: 'Bad', definition: 'Not helpful.' },
+            ]),
+          }),
+          tags: { 'invalid!key': 'value' },
+        });
+      }).toThrow(/invalid characters/);
+    });
+
+    test('throws on aws: reserved prefix in tag key', () => {
+      expect(() => {
+        new Evaluator(stack, 'AwsPrefixTagEvaluator', {
+          evaluatorName: 'aws_prefix_tag',
+          level: EvaluationLevel.SESSION,
+          evaluatorConfig: EvaluatorConfig.llmAsAJudge({
+            instructions: 'Evaluate helpfulness.',
+            modelId: 'us.anthropic.claude-sonnet-4-6',
+            ratingScale: EvaluatorRatingScale.categorical([
+              { label: 'Good', definition: 'Helpful.' },
+              { label: 'Bad', definition: 'Not helpful.' },
+            ]),
+          }),
+          tags: { 'aws:reserved': 'value' },
+        });
+      }).toThrow(/cannot start with "aws:"/);
+    });
+
+    test('throws on whitespace-only tag key', () => {
+      expect(() => {
+        new Evaluator(stack, 'WhitespaceTagEvaluator', {
+          evaluatorName: 'whitespace_tag',
+          level: EvaluationLevel.SESSION,
+          evaluatorConfig: EvaluatorConfig.llmAsAJudge({
+            instructions: 'Evaluate helpfulness.',
+            modelId: 'us.anthropic.claude-sonnet-4-6',
+            ratingScale: EvaluatorRatingScale.categorical([
+              { label: 'Good', definition: 'Helpful.' },
+              { label: 'Bad', definition: 'Not helpful.' },
+            ]),
+          }),
+          tags: { '   ': 'value' },
+        });
+      }).toThrow(/cannot be empty or consist only of whitespace/);
+    });
+
+    test('accepts Unicode characters in tag values', () => {
+      expect(() => {
+        new Evaluator(stack, 'UnicodeTagEvaluator', {
+          evaluatorName: 'unicode_tag',
+          level: EvaluationLevel.SESSION,
+          evaluatorConfig: EvaluatorConfig.llmAsAJudge({
+            instructions: 'Evaluate helpfulness.',
+            modelId: 'us.anthropic.claude-sonnet-4-6',
+            ratingScale: EvaluatorRatingScale.categorical([
+              { label: 'Good', definition: 'Helpful.' },
+              { label: 'Bad', definition: 'Not helpful.' },
+            ]),
+          }),
+          tags: { Environment: '日本語テスト' },
+        });
+      }).not.toThrow();
+    });
+
+    test('throws when more than 50 tags are provided', () => {
+      const tooManyTags: { [key: string]: string } = {};
+      for (let i = 0; i < 51; i++) {
+        tooManyTags[`key${i}`] = `value${i}`;
+      }
+      expect(() => {
+        new Evaluator(stack, 'TooManyTagsEvaluator', {
+          evaluatorName: 'too_many_tags',
+          level: EvaluationLevel.SESSION,
+          evaluatorConfig: EvaluatorConfig.llmAsAJudge({
+            instructions: 'Evaluate helpfulness.',
+            modelId: 'us.anthropic.claude-sonnet-4-6',
+            ratingScale: EvaluatorRatingScale.categorical([
+              { label: 'Good', definition: 'Helpful.' },
+              { label: 'Bad', definition: 'Not helpful.' },
+            ]),
+          }),
+          tags: tooManyTags,
+        });
+      }).toThrow(/Cannot have more than 50 tags/);
+    });
+  });
 });

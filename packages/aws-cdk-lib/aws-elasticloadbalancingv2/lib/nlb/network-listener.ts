@@ -237,7 +237,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       sslPolicy = SslPolicy.TLS13_12_PQ;
     }
 
-    const certificateArns = Box.fromArray<string>([]);
+    const certificateArns: IArrayBox<string> = Box.fromArray();
 
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,

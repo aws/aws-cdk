@@ -43,6 +43,23 @@ test('replace re-export with getter', () => {
   expect(mod.some_module.bar).toEqual(5);
 });
 
+test('replace re-export wrapped in __importStar with getter (esModuleInterop)', () => {
+  // `export * as some_module from './some-module'` with esModuleInterop compiles to
+  // `exports.some_module = __importStar(require("./some-module"));`
+  const fakeFile = path.join(__dirname, 'index.ts');
+  const transformed = transformFileContents(fakeFile, [
+    'exports.some_module = __importStar(require("./some-module"));',
+  ].join('\n'));
+
+  expect(parse(transformed).exports).toEqual([
+    'some_module',
+  ]);
+
+  const mod = evalModule(transformed);
+  expect(mod.some_module.foo()).toEqual('foo');
+  expect(mod.some_module.bar).toEqual(5);
+});
+
 /**
  * Fake NodeJS evaluation of a module
  */
@@ -51,6 +68,9 @@ function evalModule(x: string) {
     '(function() {',
     'const exports = {};',
     'const module = { exports };',
+    // Stand-ins for the esModuleInterop helpers TypeScript emits at the top of the file.
+    'const __importStar = (m) => m;',
+    'const __importDefault = (m) => ({ default: m });',
     x,
     'return exports;',
     '})()',

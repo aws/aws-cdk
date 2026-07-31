@@ -416,7 +416,7 @@ export class BucketDeployment extends Construct {
 
     this.sources = Box.fromArray(
       props.sources.map((source: ISource) => source.bind(this, { handlerRole: this.handlerRole })),
-      { omitEmpty: true },
+      { omitEmpty: false },
     );
 
     this.destinationBucket.grantReadWrite(handler);
