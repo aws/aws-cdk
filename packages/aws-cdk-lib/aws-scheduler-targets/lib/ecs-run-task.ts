@@ -6,6 +6,7 @@ import type { IRole } from '../../aws-iam';
 import { PolicyStatement } from '../../aws-iam';
 import type { ISchedule, IScheduleTarget, ScheduleTargetConfig } from '../../aws-scheduler';
 import { Lazy, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Metadata that you apply to a resource to help categorize and organize the resource. Each tag consists of a key and an optional value, both of which you define.
@@ -217,14 +218,14 @@ export class EcsRunFargateTask extends EcsRunTask {
 
   protected bindBaseTargetConfig(_schedule: ISchedule): ScheduleTargetConfig {
     if (!this.props.taskDefinition.isFargateCompatible) {
-      throw new ValidationError('TaskDefinitionCompatibleFargateLaunch', 'TaskDefinition is not compatible with Fargate launch type.', _schedule);
+      throw new ValidationError(lit`TaskDefinitionCompatibleFargateLaunch`, 'TaskDefinition is not compatible with Fargate launch type.', _schedule);
     }
 
     const subnetSelection = this.subnetSelection || { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS };
 
     // Throw an error if assignPublicIp is true and the subnet type is not public
     if (this.assignPublicIp && subnetSelection.subnetType !== ec2.SubnetType.PUBLIC) {
-      throw new ValidationError('AssignPublicIpSetTrue', 'assignPublicIp should be set to true only for public subnets', _schedule);
+      throw new ValidationError(lit`AssignPublicIpSetTrue`, 'assignPublicIp should be set to true only for public subnets', _schedule);
     }
 
     const assignPublicIp = this.assignPublicIp !== undefined
@@ -278,7 +279,7 @@ export class EcsRunEc2Task extends EcsRunTask {
 
   protected bindBaseTargetConfig(_schedule: ISchedule): ScheduleTargetConfig {
     if (this.props.taskDefinition.compatibility === ecs.Compatibility.FARGATE) {
-      throw new ValidationError('TaskDefinitionCompatibleLaunchType', 'TaskDefinition is not compatible with EC2 launch type', _schedule);
+      throw new ValidationError(lit`TaskDefinitionCompatibleLaunchType`, 'TaskDefinition is not compatible with EC2 launch type', _schedule);
     }
 
     // Only one of capacityProviderStrategy or launchType can be set
@@ -290,7 +291,7 @@ export class EcsRunEc2Task extends EcsRunTask {
     // Security groups are only configurable with the "awsvpc" network mode.
     // See https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RunTask.html#ECS-RunTask-request-networkConfiguration
     if (!taskDefinitionUsesAwsVpc && (this.props.securityGroups || this.props.vpcSubnets)) {
-      throw new ValidationError('SecurityGroupsSubnetsAwsvpcNetwork', 'Security groups and subnets can only be used with awsvpc network mode', _schedule);
+      throw new ValidationError(lit`SecurityGroupsSubnetsAwsvpcNetwork`, 'Security groups and subnets can only be used with awsvpc network mode', _schedule);
     }
 
     const subnetSelection =

@@ -1,0 +1,60 @@
+{
+  "/aws-cdk-logs-insights-querydefinition-integ/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-logs-insights-querydefinition-integ/QueryDefinition": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "queryDefinitionName": "*",
+        "queryString": "*",
+        "logGroups": "*"
+      }
+    }
+  ],
+  "/aws-cdk-logs-insights-querydefinition-integ/QueryDefinitionWithMultipleStatements": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "queryDefinitionName": "*",
+        "queryString": "*",
+        "logGroups": "*"
+      }
+    }
+  ],
+  "/aws-cdk-logs-insights-querydefinition-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-logs-insights-querydefinition-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-logs-insights-querydefinition-integ/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogGroupF5B46931"
+    }
+  ],
+  "/aws-cdk-logs-insights-querydefinition-integ/QueryDefinition/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "QueryDefinition4190BC36"
+    }
+  ],
+  "/aws-cdk-logs-insights-querydefinition-integ/QueryDefinitionWithMultipleStatements/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "QueryDefinitionWithMultipleStatements58A3EF74"
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import type { Construct } from 'constructs';
 import { UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Creates a field index policy for CloudWatch Logs log groups.
@@ -9,7 +10,7 @@ export class FieldIndexPolicy {
 
   constructor(props: FieldIndexPolicyProps) {
     if (props.fields.length > 20) {
-      throw new UnscopedValidationError('MaximumFieldsIndexedGroup', 'A maximum of 20 fields can be indexed per log group');
+      throw new UnscopedValidationError(lit`MaximumFieldsIndexedGroup`, 'A maximum of 20 fields can be indexed per log group');
     }
     this.fieldIndexPolicyProps = props;
   }

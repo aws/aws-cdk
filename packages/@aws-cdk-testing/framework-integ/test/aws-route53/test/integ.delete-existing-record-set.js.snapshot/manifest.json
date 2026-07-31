@@ -1,5 +1,5 @@
 {
-  "version": "50.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "cdk-route53-integ-delete-existing-record-set.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cfbbcb3abc7fccac5236c217e5d54a1f13fc8c63a6228133f37a1df2c58337cf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d31ae6d66f2c01cc155b32bebe939459536ed5a9454d1d680af65fd95e46e5ae.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,126 +33,7 @@
       "dependencies": [
         "cdk-route53-integ-delete-existing-record-set.assets"
       ],
-      "metadata": {
-        "/cdk-route53-integ-delete-existing-record-set/HostedZone": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "zoneName": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "zoneName": "*"
-            }
-          }
-        ],
-        "/cdk-route53-integ-delete-existing-record-set/HostedZone/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HostedZoneDB99F866"
-          }
-        ],
-        "/cdk-route53-integ-delete-existing-record-set/ExistingRecord": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "target": "*",
-              "zone": "*",
-              "recordName": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "target": "*",
-              "zone": "*",
-              "recordName": "*"
-            }
-          }
-        ],
-        "/cdk-route53-integ-delete-existing-record-set/ExistingRecord/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExistingRecord8E2B2167"
-          }
-        ],
-        "/cdk-route53-integ-delete-existing-record-set/NewRecord": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "target": "*",
-              "ttl": "*",
-              "zone": "*",
-              "recordName": "*",
-              "deleteExisting": true
-            }
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "deleteExisting field is deprecated do not use it [ack: @aws-cdk/aws-route53:deleteExisting]"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "target": "*",
-              "ttl": "*",
-              "zone": "*",
-              "recordName": "*",
-              "deleteExisting": true
-            }
-          }
-        ],
-        "/cdk-route53-integ-delete-existing-record-set/NewRecord/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NewRecordB9E8EE35"
-          }
-        ],
-        "/cdk-route53-integ-delete-existing-record-set/NewRecord/DeleteExistingRecordSetCustomResource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/cdk-route53-integ-delete-existing-record-set/NewRecord/DeleteExistingRecordSetCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NewRecordDeleteExistingRecordSetCustomResource3CF98631"
-          }
-        ],
-        "/cdk-route53-integ-delete-existing-record-set/Custom::DeleteExistingRecordSetCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/cdk-route53-integ-delete-existing-record-set/Custom::DeleteExistingRecordSetCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomDeleteExistingRecordSetCustomResourceProviderRole03A7ED08"
-          }
-        ],
-        "/cdk-route53-integ-delete-existing-record-set/Custom::DeleteExistingRecordSetCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomDeleteExistingRecordSetCustomResourceProviderHandlerAD00231E"
-          }
-        ],
-        "/cdk-route53-integ-delete-existing-record-set/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/cdk-route53-integ-delete-existing-record-set/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "cdk-route53-integ-delete-existing-record-set.metadata.json",
       "displayName": "cdk-route53-integ-delete-existing-record-set"
     },
     "Rooute53DeleteExistingRecordSetIntegDefaultTestDeployAssert62638412.assets": {
@@ -187,20 +68,7 @@
       "dependencies": [
         "Rooute53DeleteExistingRecordSetIntegDefaultTestDeployAssert62638412.assets"
       ],
-      "metadata": {
-        "/Rooute53DeleteExistingRecordSetInteg/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/Rooute53DeleteExistingRecordSetInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "Rooute53DeleteExistingRecordSetIntegDefaultTestDeployAssert62638412.metadata.json",
       "displayName": "Rooute53DeleteExistingRecordSetInteg/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -501,6 +369,7 @@
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
           "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
           },
@@ -698,12 +567,28 @@
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
           "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1101.0"
+  "minimumCliVersion": "2.1108.0"
 }

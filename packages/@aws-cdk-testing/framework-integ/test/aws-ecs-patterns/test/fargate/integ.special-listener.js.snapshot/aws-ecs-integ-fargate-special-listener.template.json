@@ -433,18 +433,30 @@
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "Automatically created Security Group for ELB awsecsintegfargatespeciallistenerFargateNlbServiceLBFB8D1BFB",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "255.255.255.255/32",
-      "Description": "Disallow all traffic",
-      "FromPort": 252,
-      "IpProtocol": "icmp",
-      "ToPort": 86
-     }
-    ],
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   }
+  },
+  "FargateNlbServiceLBSecurityGrouptoawsecsintegfargatespeciallistenerFargateNlbServiceSecurityGroupF3BEC9C88080D591F1": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
+   "Properties": {
+    "Description": "to awsecsintegfargatespeciallistenerFargateNlbServiceSecurityGroupF3BEC9C8:80",
+    "DestinationSecurityGroupId": {
+     "Fn::GetAtt": [
+      "FargateNlbServiceSecurityGroup4718761F",
+      "GroupId"
+     ]
+    },
+    "FromPort": 80,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "FargateNlbServiceLBSecurityGroupE6D2F93E",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 80
    }
   },
   "FargateNlbServiceLBPublicListener91199F13": {
@@ -468,7 +480,7 @@
   "FargateNlbServiceLBPublicListenerECSGroup7501571D": {
    "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
    "Properties": {
-    "Port": 2015,
+    "Port": 80,
     "Protocol": "TCP",
     "TargetType": "ip",
     "VpcId": {
@@ -499,7 +511,7 @@
     "ContainerDefinitions": [
      {
       "Essential": true,
-      "Image": "abiosoft/caddy",
+      "Image": "amazon/amazon-ecs-sample",
       "LogConfiguration": {
        "LogDriver": "awslogs",
        "Options": {
@@ -515,7 +527,7 @@
       "Name": "web",
       "PortMappings": [
        {
-        "ContainerPort": 2015,
+        "ContainerPort": 80,
         "Protocol": "tcp"
        }
       ]
@@ -609,7 +621,7 @@
     "LoadBalancers": [
      {
       "ContainerName": "web",
-      "ContainerPort": 2015,
+      "ContainerPort": 80,
       "TargetGroupArn": {
        "Ref": "FargateNlbServiceLBPublicListenerECSGroup7501571D"
       }
@@ -660,6 +672,30 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   },
+   "DependsOn": [
+    "FargateNlbServiceTaskDefTaskRoleD95D755C"
+   ]
+  },
+  "FargateNlbServiceSecurityGroupfromawsecsintegfargatespeciallistenerFargateNlbServiceLBSecurityGroupAF28D5AB80FEAC29D7": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "from awsecsintegfargatespeciallistenerFargateNlbServiceLBSecurityGroupAF28D5AB:80",
+    "FromPort": 80,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "FargateNlbServiceSecurityGroup4718761F",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "FargateNlbServiceLBSecurityGroupE6D2F93E",
+      "GroupId"
+     ]
+    },
+    "ToPort": 80
    },
    "DependsOn": [
     "FargateNlbServiceTaskDefTaskRoleD95D755C"
@@ -718,7 +754,7 @@
     }
    }
   },
-  "FargateAlbServiceLBSecurityGrouptoawsecsintegfargatespeciallistenerFargateAlbServiceSecurityGroupAB131FAF20155DCA13D5": {
+  "FargateAlbServiceLBSecurityGrouptoawsecsintegfargatespeciallistenerFargateAlbServiceSecurityGroupAB131FAF807EE22811": {
    "Type": "AWS::EC2::SecurityGroupEgress",
    "Properties": {
     "Description": "Load balancer to target",
@@ -728,7 +764,7 @@
       "GroupId"
      ]
     },
-    "FromPort": 2015,
+    "FromPort": 80,
     "GroupId": {
      "Fn::GetAtt": [
       "FargateAlbServiceLBSecurityGroupE10F3DF3",
@@ -736,7 +772,7 @@
      ]
     },
     "IpProtocol": "tcp",
-    "ToPort": 2015
+    "ToPort": 80
    }
   },
   "FargateAlbServiceLBPublicListener9C1349BE": {
@@ -797,7 +833,7 @@
     "ContainerDefinitions": [
      {
       "Essential": true,
-      "Image": "abiosoft/caddy",
+      "Image": "amazon/amazon-ecs-sample",
       "LogConfiguration": {
        "LogDriver": "awslogs",
        "Options": {
@@ -813,7 +849,7 @@
       "Name": "web",
       "PortMappings": [
        {
-        "ContainerPort": 2015,
+        "ContainerPort": 80,
         "Protocol": "tcp"
        }
       ]
@@ -907,7 +943,7 @@
     "LoadBalancers": [
      {
       "ContainerName": "web",
-      "ContainerPort": 2015,
+      "ContainerPort": 80,
       "TargetGroupArn": {
        "Ref": "FargateAlbServiceLBPublicListenerECSGroupB3826700"
       }
@@ -963,11 +999,11 @@
     "FargateAlbServiceTaskDefTaskRoleC9259C01"
    ]
   },
-  "FargateAlbServiceSecurityGroupfromawsecsintegfargatespeciallistenerFargateAlbServiceLBSecurityGroup0327D42E20157F514694": {
+  "FargateAlbServiceSecurityGroupfromawsecsintegfargatespeciallistenerFargateAlbServiceLBSecurityGroup0327D42E80E35650E3": {
    "Type": "AWS::EC2::SecurityGroupIngress",
    "Properties": {
     "Description": "Load balancer to target",
-    "FromPort": 2015,
+    "FromPort": 80,
     "GroupId": {
      "Fn::GetAtt": [
       "FargateAlbServiceSecurityGroupF5AFFC6E",
@@ -981,7 +1017,7 @@
       "GroupId"
      ]
     },
-    "ToPort": 2015
+    "ToPort": 80
    },
    "DependsOn": [
     "FargateAlbServiceTaskDefTaskRoleC9259C01"

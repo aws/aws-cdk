@@ -2,6 +2,7 @@ import { EOL } from 'os';
 import { CfnNamespace } from 'aws-cdk-lib/aws-s3tables';
 import type { IResource, RemovalPolicy } from 'aws-cdk-lib/core';
 import { Resource, Token, UnscopedValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -133,7 +134,7 @@ export class Namespace extends Resource implements INamespace {
 
     if (errors.length > 0) {
       throw new UnscopedValidationError(
-        'InvalidNamespaceName',
+        lit`InvalidNamespaceName`,
         `Invalid S3 Tables namespace name (value: ${namespaceName})${EOL}${errors.join(EOL)}`,
       );
     }

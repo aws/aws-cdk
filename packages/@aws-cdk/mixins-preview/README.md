@@ -216,7 +216,7 @@ const pattern = bucketEvents.objectCreatedPattern({
 
 ### Standalone Event Patterns
 
-Standalone patterns are not tied to any specific resource. They match events across all resources of that type. For example, a standalone `awsAPICallViaCloudTrailPattern()` will match CloudTrail API calls for all S3 buckets in the account, not just a specific one.
+Standalone patterns are not tied to any specific resource. They match events across all resources of that type. For example, a standalone `AWSAPICallViaCloudTrail.eventPattern()` will match CloudTrail API calls for all S3 buckets in the account, not just a specific one.
 
 #### Event Patterns Basic Usage
 
@@ -229,7 +229,7 @@ declare const fn: lambda.Function;
 
 // Works with L2 Rule
 new events.Rule(scope, 'Rule', {
-  eventPattern: AWSAPICallViaCloudTrail.awsAPICallViaCloudTrailPattern({
+  eventPattern: AWSAPICallViaCloudTrail.eventPattern({
     tlsDetails: { tlsVersion: ['TLSv1.3'] },
     eventMetadata: { region: ['us-east-1'] },
   }),
@@ -239,7 +239,7 @@ new events.Rule(scope, 'Rule', {
 // Also works with L1 CfnRule
 new events.CfnRule(scope, 'CfnRule', {
   state: 'ENABLED',
-  eventPattern: AWSAPICallViaCloudTrail.awsAPICallViaCloudTrailPattern({
+  eventPattern: AWSAPICallViaCloudTrail.eventPattern({
     tlsDetails: { tlsVersion: ['TLSv1.3'] },
     eventMetadata: { region: ['us-east-1'] },
   }),
@@ -253,7 +253,7 @@ new events.CfnRule(scope, 'CfnRule', {
 import { AWSAPICallViaCloudTrail } from '@aws-cdk/mixins-preview/aws-s3/events';
 
 // Matches CloudTrail API calls across ALL S3 buckets
-const pattern = AWSAPICallViaCloudTrail.awsAPICallViaCloudTrailPattern();
+const pattern = AWSAPICallViaCloudTrail.eventPattern();
 ```
 
 **Event Metadata Support**: Control EventBridge pattern metadata
@@ -262,7 +262,7 @@ const pattern = AWSAPICallViaCloudTrail.awsAPICallViaCloudTrailPattern();
 import { AWSAPICallViaCloudTrail } from '@aws-cdk/mixins-preview/aws-s3/events';
 import * as events from 'aws-cdk-lib/aws-events';
 
-const pattern = AWSAPICallViaCloudTrail.awsAPICallViaCloudTrailPattern({
+const pattern = AWSAPICallViaCloudTrail.eventPattern({
   eventMetadata: {
     region: events.Match.prefix('us-'),
     version: ['0']
@@ -276,10 +276,10 @@ Event patterns are generated for EventBridge events available in the AWS Event S
 
 **S3 Events**:
 
-* `objectCreatedPattern()` - Object creation events
-* `objectDeletedPattern()` - Object deletion events
-* `objectTagsAddedPattern()` - Object tagging events
-* `awsAPICallViaCloudTrailPattern()` - CloudTrail API calls
+* `ObjectCreated.eventPattern()` - Object creation events
+* `ObjectDeleted.eventPattern()` - Object deletion events
+* `ObjectTagsAdded.eventPattern()` - Object tagging events
+* `AWSAPICallViaCloudTrail.eventPattern()` - CloudTrail API calls
 
 Import events from service-specific modules:
 

@@ -6,6 +6,7 @@ import { FollowMode } from '../../assets';
 import * as ecr from '../../aws-ecr';
 import type { FileFingerprintOptions, CfnResource } from '../../core';
 import { Annotations, AssetStaging, FeatureFlags, IgnoreMode, Stack, SymlinkFollowMode, Token, Stage, Names, ValidationError, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
@@ -103,6 +104,13 @@ export interface DockerImageAssetInvalidationOptions {
    * @default true
    */
   readonly buildArgs?: boolean;
+
+  /**
+   * Use `buildContexts` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly buildContexts?: boolean;
 
   /**
    * Use `buildSecrets` while calculating the asset hash
@@ -217,6 +225,23 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * @default - no build args are passed
    */
   readonly buildArgs?: { [key: string]: string };
+
+  /**
+   * Build contexts to pass to the `docker build` command.
+   *
+   * Build contexts can be used to specify additional directories or images
+   * to use during the build. Each entry specifies a named build context
+   * and its source (a directory path, a URL, or a docker image).
+   *
+   * Since Docker build contexts are resolved before deployment, keys and
+   * values cannot refer to unresolved tokens (such as `lambda.functionArn` or
+   * `queue.queueUrl`).
+   *
+   * @see https://docs.docker.com/build/building/context/#additional-build-contexts
+   *
+   * @default - no additional build contexts
+   */
+  readonly buildContexts?: { [key: string]: string };
 
   /**
    * Build secrets.
@@ -420,6 +445,11 @@ export class DockerImageAsset extends Construct implements IAsset {
   private readonly dockerBuildArgs?: { [key: string]: string };
 
   /**
+   * Build contexts to pass to the `docker build` command.
+   */
+  private readonly dockerBuildContexts?: { [key: string]: string };
+
+  /**
    * Build secrets to pass to the `docker build` command.
    */
   private readonly dockerBuildSecrets?: { [key: string]: string };
@@ -470,14 +500,14 @@ export class DockerImageAsset extends Construct implements IAsset {
     // resolve full path
     const dir = path.resolve(props.directory);
     if (!fs.existsSync(dir)) {
-      throw new ValidationError('CannotFindImageDirectory', `Cannot find image directory at ${dir}`, this);
+      throw new ValidationError(lit`CannotFindImageDirectory`, `Cannot find image directory at ${dir}`, this);
     }
 
     // validate the docker file exists
     this.dockerfilePath = props.file || 'Dockerfile';
     const file = path.join(dir, this.dockerfilePath);
     if (!fs.existsSync(file)) {
-      throw new ValidationError('CannotFindFile', `Cannot find file at ${file}`, this);
+      throw new ValidationError(lit`CannotFindFile`, `Cannot find file at ${file}`, this);
     }
 
     const defaultIgnoreMode = FeatureFlags.of(this).isEnabled(cxapi.DOCKER_IGNORE_SUPPORT)
@@ -514,6 +544,7 @@ export class DockerImageAsset extends Construct implements IAsset {
     const extraHash: { [field: string]: any } = {};
     if (props.invalidation?.extraHash !== false && props.extraHash) { extraHash.user = props.extraHash; }
     if (props.invalidation?.buildArgs !== false && props.buildArgs) { extraHash.buildArgs = props.buildArgs; }
+    if (props.invalidation?.buildContexts !== false && props.buildContexts) { extraHash.buildContexts = props.buildContexts; }
     if (props.invalidation?.buildSecrets !== false && props.buildSecrets) { extraHash.buildSecrets = props.buildSecrets; }
     if (props.invalidation?.buildSsh !== false && props.buildSsh) {extraHash.buildSsh = props.buildSsh; }
     if (props.invalidation?.target !== false && props.target) { extraHash.target = props.target; }
@@ -546,6 +577,7 @@ export class DockerImageAsset extends Construct implements IAsset {
     this.assetPath = staging.relativeStagedPath(stack);
     this.assetName = props.assetName;
     this.dockerBuildArgs = props.buildArgs;
+    this.dockerBuildContexts = props.buildContexts;
     this.dockerBuildSecrets = props.buildSecrets;
     this.dockerBuildSsh = props.buildSsh;
     this.dockerBuildTarget = props.target;
@@ -558,6 +590,7 @@ export class DockerImageAsset extends Construct implements IAsset {
       directoryName: this.assetPath,
       assetName: this.assetName,
       dockerBuildArgs: this.dockerBuildArgs,
+      dockerBuildContexts: this.dockerBuildContexts,
       dockerBuildSecrets: this.dockerBuildSecrets,
       dockerBuildSsh: this.dockerBuildSsh,
       dockerBuildTarget: this.dockerBuildTarget,
@@ -604,6 +637,7 @@ export class DockerImageAsset extends Construct implements IAsset {
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.assetPath;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY] = this.dockerfilePath;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY] = this.dockerBuildArgs;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_CONTEXTS_KEY] = this.dockerBuildContexts;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SECRETS_KEY] = this.dockerBuildSecrets;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SSH_KEY] = this.dockerBuildSsh;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_TARGET_KEY] = this.dockerBuildTarget;
@@ -618,24 +652,29 @@ export class DockerImageAsset extends Construct implements IAsset {
 function validateProps(props: DockerImageAssetProps) {
   for (const [key, value] of Object.entries(props)) {
     if (Token.isUnresolved(value)) {
-      throw new UnscopedValidationError('CannotTokenValue', `Cannot use Token as value of '${key}': this value is used before deployment starts`);
+      throw new UnscopedValidationError(lit`CannotTokenValue`, `Cannot use Token as value of '${key}': this value is used before deployment starts`);
     }
   }
 
   validateBuildArgs(props.buildArgs);
+  validateBuildContexts(props.buildContexts);
   validateBuildSecrets(props.buildSecrets);
 }
 
 function validateBuildProps(buildPropName: string, buildProps?: { [key: string]: string }) {
   for (const [key, value] of Object.entries(buildProps || {})) {
     if (Token.isUnresolved(key) || Token.isUnresolved(value)) {
-      throw new UnscopedValidationError('CannotTokensKeysValues', `Cannot use tokens in keys or values of "${buildPropName}" since they are needed before deployment`);
+      throw new UnscopedValidationError(lit`CannotTokensKeysValues`, `Cannot use tokens in keys or values of "${buildPropName}" since they are needed before deployment`);
     }
   }
 }
 
 function validateBuildArgs(buildArgs?: { [key: string]: string }) {
   validateBuildProps('buildArgs', buildArgs);
+}
+
+function validateBuildContexts(buildContexts?: { [key: string]: string }) {
+  validateBuildProps('buildContexts', buildContexts);
 }
 
 function validateBuildSecrets(buildSecrets?: { [key: string]: string }) {

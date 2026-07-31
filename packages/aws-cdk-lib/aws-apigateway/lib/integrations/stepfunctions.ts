@@ -6,6 +6,7 @@ import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { IntegrationConfig, IntegrationOptions } from '../integration';
 import { PassthroughBehavior } from '../integration';
 import type { Method } from '../method';
@@ -152,7 +153,7 @@ class StepFunctionsExecutionIntegration extends AwsIntegration {
     if (this.stateMachine instanceof sfn.StateMachine) {
       const stateMachineType = (this.stateMachine as sfn.StateMachine).stateMachineType;
       if (stateMachineType !== sfn.StateMachineType.EXPRESS) {
-        throw new ValidationError('MustBeStateMachineType', 'State Machine must be of type "EXPRESS". Please use StateMachineType.EXPRESS as the stateMachineType', method);
+        throw new ValidationError(lit`MustBeStateMachineType`, 'State Machine must be of type "EXPRESS". Please use StateMachineType.EXPRESS as the stateMachineType', method);
       }
 
       // if not imported, extract the name from the CFN layer to reach the
