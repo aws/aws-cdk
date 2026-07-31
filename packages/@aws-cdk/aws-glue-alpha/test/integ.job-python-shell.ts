@@ -42,6 +42,14 @@ new glue.PythonShellJob(stack, 'BasicShellJob', {
   glueVersion: glue.GlueVersion.V1_0,
 });
 
+new glue.PythonShellJob(stack, 'ShellJobWithExtraPyFiles', {
+  script: script,
+  role: iam_role,
+  extraPythonFiles: [
+    glue.Code.fromAsset(path.join(__dirname, 'job-script', 'hello_world.py')),
+  ],
+});
+
 new glue.PythonShellJob(stack, 'DetailedShellJob39', {
   script: script,
   role: iam_role,

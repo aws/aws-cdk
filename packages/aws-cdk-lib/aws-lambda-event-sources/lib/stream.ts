@@ -51,6 +51,9 @@ export interface BaseStreamEventSourceProps {
    * Configuration for provisioned pollers that read from the event source.
    * When specified, allows control over the minimum and maximum number of pollers
    * that can be provisioned to process events from the source.
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/kafka-scaling-modes.html
+   *
    * @default - no provisioned pollers
    */
   readonly provisionedPollerConfig?: ProvisionedPollerConfig;
@@ -63,15 +66,19 @@ export interface ProvisionedPollerConfig {
   /**
    * The minimum number of pollers that should be provisioned.
    *
+   * Valid Range: Minimum value of 1. Maximum value of 200.
+   *
    * @default 1
    */
-  readonly minimumPollers: number;
+  readonly minimumPollers?: number;
   /**
    * The maximum number of pollers that can be provisioned.
    *
+   * Valid Range: Minimum value of 1. Maximum value of 2000.
+   *
    * @default 200
    */
-  readonly maximumPollers: number;
+  readonly maximumPollers?: number;
   /**
    * An optional identifier that groups multiple ESMs to share EPU capacity
    * and reduce costs. ESMs with the same PollerGroupName share compute

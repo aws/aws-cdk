@@ -1,15 +1,15 @@
-
 import type { PropertyType, Resource, SpecDatabase } from '@aws-cdk/service-spec-types';
 import type {
   Expression,
   Initializer,
   IScope,
-  Statement,
   Property,
+  Statement,
 } from '@cdklabs/typewriter';
 import {
   $E,
   $T,
+  $this,
   AnonymousInterfaceImplementation,
   Block,
   ClassType,
@@ -22,6 +22,7 @@ import {
   MemberVisibility,
   Module,
   ObjectLiteral,
+  SelectiveModuleImport,
   Stability,
   stmt,
   StructType,
@@ -30,8 +31,6 @@ import {
   TruthyOr,
   Type,
   TypeDeclarationStatement,
-  SelectiveModuleImport,
-  $this,
 } from '@cdklabs/typewriter';
 import { extractVariablesFromArnFormat, findNonIdentifierArnProperty } from './arn';
 import type { ImportPaths } from './aws-cdk-lib';
@@ -52,7 +51,7 @@ import {
   staticRequiredTransform,
   staticResourceTypeName,
 } from '../naming';
-import { isDefined, splitDocumentation, maybeDeprecated } from '../util';
+import { isDefined, maybeDeprecated, splitDocumentation } from '../util';
 import { RelationshipDecider } from './relationship-decider';
 
 export interface ITypeHost {
@@ -249,6 +248,7 @@ export class ResourceClass extends ClassType implements Referenceable {
     this.makeAttributeGetters();
     this.makeInspectMethod();
     this.makeCfnProperties();
+    this.makeCfnPropertyNames();
     this.makeRenderProperties();
 
     // Make converter functions for the props type
@@ -822,6 +822,27 @@ export class ResourceClass extends ClassType implements Referenceable {
             Object.fromEntries(
               this.decider.classProperties.flatMap(({ cfnValueToRender }) => Object.entries(cfnValueToRender)),
             ),
+          ),
+        ),
+      ),
+    });
+  }
+
+  /**
+   * Make the cfnPropertyNames override
+   *
+   * This maps CDK property names to their corresponding CloudFormation property names.
+   */
+  private makeCfnPropertyNames() {
+    this.addProperty({
+      name: 'cfnPropertyNames',
+      type: Type.mapOf(Type.STRING),
+      visibility: MemberVisibility.Protected,
+      immutable: true,
+      initializer: expr.object(
+        Object.fromEntries(
+          this.decider.classProperties.flatMap(({ cfnName, cfnValueToRender }) =>
+            Object.keys(cfnValueToRender).map(cdkName => [cdkName, expr.lit(cfnName)]),
           ),
         ),
       ),

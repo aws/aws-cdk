@@ -3,8 +3,6 @@ import { lit } from '../../../core/lib/private/literal-string';
 import type { IApplicationRef, IDeploymentConfigRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
 import type { IBaseDeploymentConfig } from '../base-deployment-config';
 import type { IEcsApplication } from '../ecs/application';
-import type { IEcsDeploymentConfig } from '../ecs/deployment-config';
-import type { ILambdaApplication } from '../lambda/application';
 import type { ILambdaDeploymentConfig } from '../lambda/deployment-config';
 import type { IServerApplication } from '../server/application';
 import type { IServerDeploymentConfig } from '../server/deployment-config';
@@ -30,16 +28,6 @@ export function toIEcsApplication(app: IApplicationRef): IEcsApplication {
 }
 
 /**
- * Convert an IApplicationRef to ILambdaApplication, validating it has the required properties
- */
-export function toILambdaApplication(app: IApplicationRef): ILambdaApplication {
-  if (!('applicationArn' in app) || !('applicationName' in app)) {
-    throw new UnscopedValidationError(lit`ApplicationInstanceShouldImplement`, `'application' instance should implement ILambdaApplication, but doesn't: ${app.constructor.name}`);
-  }
-  return app as ILambdaApplication;
-}
-
-/**
  * Convert an IDeploymentConfigRef to IServerDeploymentConfig, validating it has the required properties
  */
 export function toIServerDeploymentConfig(config: IDeploymentConfigRef): IServerDeploymentConfig {
@@ -47,16 +35,6 @@ export function toIServerDeploymentConfig(config: IDeploymentConfigRef): IServer
     throw new UnscopedValidationError(lit`DeploymentConfigInstanceImplementServer`, `'deploymentConfig' instance should implement IServerDeploymentConfig, but doesn't: ${config.constructor.name}`);
   }
   return config as IServerDeploymentConfig;
-}
-
-/**
- * Convert an IDeploymentConfigRef to IEcsDeploymentConfig, validating it has the required properties
- */
-export function toIEcsDeploymentConfig(config: IDeploymentConfigRef): IEcsDeploymentConfig {
-  if (!('deploymentConfigArn' in config) || !('deploymentConfigName' in config)) {
-    throw new UnscopedValidationError(lit`DeploymentConfigInstanceImplementEcs`, `'deploymentConfig' instance should implement IEcsDeploymentConfig, but doesn't: ${config.constructor.name}`);
-  }
-  return config as IEcsDeploymentConfig;
 }
 
 /**
