@@ -890,7 +890,7 @@ test('fromSecretCompleteArn - can be assigned to a property with type number', (
   new lambda.Function(stack, 'MyFunction', {
     code: lambda.Code.fromInline('foo'),
     handler: 'bar',
-    runtime: lambda.Runtime.NODEJS,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     memorySize: cdk.Token.asNumber(secret.secretValueFromJson('LambdaFunctionMemorySize')),
   });
 

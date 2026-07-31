@@ -3,11 +3,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.edgeStack (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:552:29)",
-        "WrappedClass.createCrossRegionFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:495:40)",
-        "new EdgeFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:214:24)",
-        "new EdgeFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-lambda-cross-region.js:58:25)",
+        "WrappedClass.edgeStack (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:552:29)",
+        "WrappedClass.createCrossRegionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:495:40)",
+        "new EdgeFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:214:24)",
+        "new EdgeFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-lambda-cross-region.js:58:25)",
         "...node internals..."
       ]
     }
@@ -30,16 +30,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
-        "DefaultStackSynthesizer.synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
-        "/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
-        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
-        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
-        "synthesizeTree (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
-        "synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
-        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
-        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
       ]
     }
   ],
@@ -51,16 +51,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
-        "DefaultStackSynthesizer.synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
-        "/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
-        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
-        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
-        "synthesizeTree (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
-        "synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
-        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
-        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
       ]
     }
   ],
@@ -88,12 +88,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createCrossRegionFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:496:34)",
-        "new EdgeFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:214:24)",
-        "new EdgeFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-lambda-cross-region.js:58:25)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createCrossRegionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:496:34)",
+        "new EdgeFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:214:24)",
+        "new EdgeFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-lambda-cross-region.js:58:25)",
         "...node internals..."
       ]
     }
@@ -140,14 +140,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new Role (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createCrossRegionFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:496:34)",
-        "new EdgeFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:214:24)",
-        "new EdgeFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-lambda-cross-region.js:58:25)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createCrossRegionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:496:34)",
+        "new EdgeFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:214:24)",
+        "new EdgeFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-lambda-cross-region.js:58:25)",
         "...node internals..."
       ]
     }
@@ -160,14 +160,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new LogGroup (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-logs/lib/log-group.js:578:29)",
-        "new LogGroup (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function.js:814:34)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createCrossRegionFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:496:34)",
-        "new EdgeFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:214:24)",
-        "new EdgeFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-lambda-cross-region.js:58:25)",
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:578:29)",
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:814:34)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createCrossRegionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:496:34)",
+        "new EdgeFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:214:24)",
+        "new EdgeFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-lambda-cross-region.js:58:25)",
         "...node internals..."
       ]
     }
@@ -180,13 +180,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Version (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/lambda-version.js:207:29)",
-        "new Version (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "get currentVersion (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function.js:307:36)",
-        "WrappedClass.createCrossRegionFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:499:42)",
-        "new EdgeFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:214:24)",
-        "new EdgeFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-lambda-cross-region.js:58:25)",
+        "new Version (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/lambda-version.js:207:29)",
+        "new Version (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "get currentVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:307:36)",
+        "WrappedClass.createCrossRegionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:499:42)",
+        "new EdgeFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:214:24)",
+        "new EdgeFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-lambda-cross-region.js:58:25)",
         "...node internals..."
       ]
     }
@@ -199,12 +199,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new StringParameter (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-ssm/lib/parameter.js:555:30)",
-        "new StringParameter (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createCrossRegionFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:500:13)",
-        "new EdgeFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:214:24)",
-        "new EdgeFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-lambda-cross-region.js:58:25)",
+        "new StringParameter (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ssm/lib/parameter.js:555:30)",
+        "new StringParameter (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createCrossRegionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:500:13)",
+        "new EdgeFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:214:24)",
+        "new EdgeFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-lambda-cross-region.js:58:25)",
         "...node internals..."
       ]
     }
@@ -217,11 +217,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Alias (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/alias.js:230:26)",
-        "new Alias (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addAlias (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:256:20)",
-        "WrappedClass.<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-lambda-cross-region.js:65:17)",
+        "new Alias (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/alias.js:230:26)",
+        "new Alias (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addAlias (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:256:20)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-lambda-cross-region.js:65:17)",
         "...node internals..."
       ]
     }
