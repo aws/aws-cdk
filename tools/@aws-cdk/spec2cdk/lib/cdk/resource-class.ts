@@ -1,15 +1,15 @@
-
 import type { PropertyType, Resource, SpecDatabase } from '@aws-cdk/service-spec-types';
 import type {
   Expression,
   Initializer,
   IScope,
-  Statement,
   Property,
+  Statement,
 } from '@cdklabs/typewriter';
 import {
   $E,
   $T,
+  $this,
   AnonymousInterfaceImplementation,
   Block,
   ClassType,
@@ -22,6 +22,7 @@ import {
   MemberVisibility,
   Module,
   ObjectLiteral,
+  SelectiveModuleImport,
   Stability,
   stmt,
   StructType,
@@ -30,8 +31,6 @@ import {
   TruthyOr,
   Type,
   TypeDeclarationStatement,
-  SelectiveModuleImport,
-  $this,
 } from '@cdklabs/typewriter';
 import { extractVariablesFromArnFormat, findNonIdentifierArnProperty } from './arn';
 import type { ImportPaths } from './aws-cdk-lib';
@@ -52,7 +51,7 @@ import {
   staticRequiredTransform,
   staticResourceTypeName,
 } from '../naming';
-import { isDefined, splitDocumentation, maybeDeprecated } from '../util';
+import { isDefined, maybeDeprecated, splitDocumentation } from '../util';
 import { RelationshipDecider } from './relationship-decider';
 
 export interface ITypeHost {
@@ -217,7 +216,31 @@ export class ResourceClass extends ClassType implements Referenceable {
     }
 
     for (const prop of this.decider.classProperties) {
-      this.addProperty(prop.propertySpec);
+      const spec = prop.propertySpec;
+      if (spec.immutable) {
+        this.addProperty(spec);
+      } else {
+        // For mutable properties, generate getter and setter
+        const backingFieldName = `_${spec.name}`;
+        this.addProperty({
+          name: backingFieldName,
+          type: spec.type,
+          optional: spec.optional,
+          visibility: MemberVisibility.Private,
+          docs: spec.docs,
+        });
+        this.addProperty({
+          name: spec.name,
+          type: spec.type,
+          optional: spec.optional,
+          docs: spec.docs,
+          getterBody: Block.with(stmt.ret($this[backingFieldName])),
+          setterBody: (value: Expression) => Block.with(
+            CDK_CORE.traceProperty($this.node, expr.lit(prop.cfnName)),
+            stmt.assign($this[backingFieldName], value),
+          ),
+        });
+      }
     }
 
     // Copy properties onto class and props type
@@ -225,6 +248,7 @@ export class ResourceClass extends ClassType implements Referenceable {
     this.makeAttributeGetters();
     this.makeInspectMethod();
     this.makeCfnProperties();
+    this.makeCfnPropertyNames();
     this.makeRenderProperties();
 
     // Make converter functions for the props type
@@ -745,8 +769,8 @@ export class ResourceClass extends ClassType implements Referenceable {
 
     init.addBody(
       // Props
-      ...this.decider.classProperties.map(({ propertySpec: { name }, initializer }) =>
-        stmt.assign($this[name], initializer(props)),
+      ...this.decider.classProperties.map(({ propertySpec: { name, immutable }, initializer }) =>
+        stmt.assign($this[immutable ? name : `_${name}`], initializer(props)),
       ),
     );
 
@@ -774,6 +798,10 @@ export class ResourceClass extends ClassType implements Referenceable {
         expr.lit('aws:cdk:cloudformation:type'),
         $E(expr.sym(this.symbol))[staticResourceTypeName()],
       ),
+      $inspector.addAttribute(
+        expr.lit('aws:cdk:cloudformation:logicalId'),
+        $E(expr.this_())._synthesizeLogicalId(),
+      ),
       $inspector.addAttribute(expr.lit('aws:cdk:cloudformation:props'), $E(expr.this_()).cfnProperties),
     );
   }
@@ -794,6 +822,27 @@ export class ResourceClass extends ClassType implements Referenceable {
             Object.fromEntries(
               this.decider.classProperties.flatMap(({ cfnValueToRender }) => Object.entries(cfnValueToRender)),
             ),
+          ),
+        ),
+      ),
+    });
+  }
+
+  /**
+   * Make the cfnPropertyNames override
+   *
+   * This maps CDK property names to their corresponding CloudFormation property names.
+   */
+  private makeCfnPropertyNames() {
+    this.addProperty({
+      name: 'cfnPropertyNames',
+      type: Type.mapOf(Type.STRING),
+      visibility: MemberVisibility.Protected,
+      immutable: true,
+      initializer: expr.object(
+        Object.fromEntries(
+          this.decider.classProperties.flatMap(({ cfnName, cfnValueToRender }) =>
+            Object.keys(cfnValueToRender).map(cdkName => [cdkName, expr.lit(cfnName)]),
           ),
         ),
       ),

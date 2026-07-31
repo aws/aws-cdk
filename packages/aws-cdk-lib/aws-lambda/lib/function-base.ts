@@ -49,7 +49,7 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable, 
   /**
    * Whether or not this Lambda function was bound to a VPC
    *
-   * If this is is `false`, trying to access the `connections` object will fail.
+   * If this is `false`, trying to access the `connections` object will fail.
    */
   readonly isBoundToVpc: boolean;
 
@@ -490,7 +490,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   /**
    * Whether or not this Lambda function was bound to a VPC
    *
-   * If this is is `false`, trying to access the `connections` object will fail.
+   * If this is `false`, trying to access the `connections` object will fail.
    */
   public get isBoundToVpc(): boolean {
     return !!this._connections;
