@@ -18,13 +18,13 @@ export interface AddHeaderActionConfig {
   /**
    * The name of the header that you want to add to the incoming message
    *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-addheaderaction.html#cfn-ses-receiptrule-addheaderaction-headername
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-addheaderaction.html#cfn-ses-receiptrule-addheaderaction-headername
    */
   readonly headerName: string;
   /**
    * The content that you want to include in the header.
    *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-addheaderaction.html#cfn-ses-receiptrule-addheaderaction-headervalue
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-addheaderaction.html#cfn-ses-receiptrule-addheaderaction-headervalue
    */
   readonly headerValue: string;
 }
@@ -36,26 +36,26 @@ export interface BounceActionConfig {
   /**
    * Human-readable text to include in the bounce message.
    *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-bounceaction.html#cfn-ses-receiptrule-bounceaction-message
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-bounceaction.html#cfn-ses-receiptrule-bounceaction-message
    */
   readonly message: string;
   /**
    * The email address of the sender of the bounced email.
    * This is the address that the bounce message is sent from.
    *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-bounceaction.html#cfn-ses-receiptrule-bounceaction-sender
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-bounceaction.html#cfn-ses-receiptrule-bounceaction-sender
    */
   readonly sender: string;
   /**
    * The SMTP reply code, as defined by RFC 5321
    *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-bounceaction.html#cfn-ses-receiptrule-bounceaction-smtpreplycode
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-bounceaction.html#cfn-ses-receiptrule-bounceaction-smtpreplycode
    */
   readonly smtpReplyCode: string;
   /**
    * The SMTP enhanced status code, as defined by RFC 3463
    *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-bounceaction.html#cfn-ses-receiptrule-bounceaction-statuscode
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-bounceaction.html#cfn-ses-receiptrule-bounceaction-statuscode
    *
    * @default - No status code.
    */
@@ -64,7 +64,7 @@ export interface BounceActionConfig {
    * The Amazon Resource Name (ARN) of the Amazon SNS topic to
    * notify when the bounce action is taken.
    *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-bounceaction.html#cfn-ses-receiptrule-bounceaction-topicarn
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-bounceaction.html#cfn-ses-receiptrule-bounceaction-topicarn
    *
    * @default - No notification is sent to SNS.
    */
@@ -78,13 +78,13 @@ export interface LambdaActionConfig {
   /**
    * The Amazon Resource Name (ARN) of the AWS Lambda function.
    *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-lambdaaction.html#cfn-ses-receiptrule-lambdaaction-functionarn
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-lambdaaction.html#cfn-ses-receiptrule-lambdaaction-functionarn
    */
   readonly functionArn: string;
   /**
    * The invocation type of the AWS Lambda function
    *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-lambdaaction.html#cfn-ses-receiptrule-lambdaaction-invocationtype
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-lambdaaction.html#cfn-ses-receiptrule-lambdaaction-invocationtype
    *
    * @default 'Event'
    */
@@ -93,7 +93,7 @@ export interface LambdaActionConfig {
    * The Amazon Resource Name (ARN) of the Amazon SNS topic to
    * notify when the Lambda action is executed.
    *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-lambdaaction.html#cfn-ses-receiptrule-lambdaaction-topicarn
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-lambdaaction.html#cfn-ses-receiptrule-lambdaaction-topicarn
    *
    * @default - No notification is sent to SNS.
    */
@@ -107,14 +107,14 @@ export interface S3ActionConfig {
   /**
    * The name of the Amazon S3 bucket that you want to send incoming mail to.
    *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-s3action.html#cfn-ses-receiptrule-s3action-bucketname
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-s3action.html#cfn-ses-receiptrule-s3action-bucketname
    */
   readonly bucketName: string;
   /**
    * The customer master key that Amazon SES should use to encrypt your emails before saving
    * them to the Amazon S3 bucket.
    *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-s3action.html#cfn-ses-receiptrule-s3action-kmskeyarn
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-s3action.html#cfn-ses-receiptrule-s3action-kmskeyarn
    *
    * @default - Emails are not encrypted.
    */
@@ -122,7 +122,7 @@ export interface S3ActionConfig {
   /**
    * The key prefix of the Amazon S3 bucket.
    *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-s3action.html#cfn-ses-receiptrule-s3action-objectkeyprefix
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-s3action.html#cfn-ses-receiptrule-s3action-objectkeyprefix
    *
    * @default - No prefix.
    */
@@ -130,7 +130,7 @@ export interface S3ActionConfig {
   /**
    * The ARN of the Amazon SNS topic to notify when the message is saved to the Amazon S3 bucket.
    *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-s3action.html#cfn-ses-receiptrule-s3action-topicarn
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-s3action.html#cfn-ses-receiptrule-s3action-topicarn
    *
    * @default - No notification is sent to SNS.
    */
@@ -144,7 +144,7 @@ export interface SNSActionConfig {
   /**
    * The encoding to use for the email within the Amazon SNS notification.
    *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-snsaction.html#cfn-ses-receiptrule-snsaction-encoding
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-snsaction.html#cfn-ses-receiptrule-snsaction-encoding
    *
    * @default 'UTF-8'
    */
@@ -152,7 +152,7 @@ export interface SNSActionConfig {
   /**
    * The Amazon Resource Name (ARN) of the Amazon SNS topic to notify.
    *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-snsaction.html#cfn-ses-receiptrule-snsaction-topicarn
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-snsaction.html#cfn-ses-receiptrule-snsaction-topicarn
    *
    * @default - No notification is sent to SNS.
    */
@@ -166,13 +166,13 @@ export interface StopActionConfig {
   /**
    * The scope of the StopAction. The only acceptable value is RuleSet.
    *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-stopaction.html#cfn-ses-receiptrule-stopaction-scope
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-stopaction.html#cfn-ses-receiptrule-stopaction-scope
    */
   readonly scope: string;
   /**
    * The Amazon Resource Name (ARN) of the Amazon SNS topic to notify when the stop action is taken.
    *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-stopaction.html#cfn-ses-receiptrule-stopaction-topicarn
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-stopaction.html#cfn-ses-receiptrule-stopaction-topicarn
    *
    * @default - No notification is sent to SNS.
    */
@@ -186,13 +186,13 @@ export interface WorkmailActionConfig {
   /**
    * The Amazon Resource Name (ARN) of the Amazon WorkMail organization.
    *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-workmailaction.html#cfn-ses-receiptrule-workmailaction-organizationarn
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-workmailaction.html#cfn-ses-receiptrule-workmailaction-organizationarn
    */
   readonly organizationArn: string;
   /**
    * The Amazon Resource Name (ARN) of the Amazon SNS topic to notify when the WorkMail action is called.
    *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-workmailaction.html#cfn-ses-receiptrule-workmailaction-topicarn
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-receiptrule-workmailaction.html#cfn-ses-receiptrule-workmailaction-topicarn
    *
    * @default - No notification is sent to SNS.
    */

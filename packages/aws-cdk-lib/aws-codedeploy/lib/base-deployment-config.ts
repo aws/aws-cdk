@@ -6,6 +6,7 @@ import type { TrafficRouting } from './traffic-routing-config';
 import type { Duration } from '../../core';
 import { ArnFormat, Resource, Stack, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { lit } from '../../core/lib/private/literal-string';
 import type { DeploymentConfigReference, IDeploymentConfigRef, IDeploymentGroupRef } from '../../interfaces/generated/aws-codedeploy-interfaces.generated';
 
 /**
@@ -197,12 +198,12 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
 
     // Traffic routing is not applicable to Server-based deployment configs
     if (props?.trafficRouting && (props?.computePlatform === undefined || props?.computePlatform === ComputePlatform.SERVER)) {
-      throw new ValidationError('TrafficRoutingConfigSpecifiedServer', 'Traffic routing config must not be specified for a Server-base deployment configuration', this);
+      throw new ValidationError(lit`TrafficRoutingConfigSpecifiedServer`, 'Traffic routing config must not be specified for a Server-base deployment configuration', this);
     }
 
     // Minimum healthy hosts is only applicable to Server-based deployment configs
     if (props?.minimumHealthyHosts && props?.computePlatform && props?.computePlatform !== ComputePlatform.SERVER) {
-      throw new ValidationError('MinimumHealthyHostsConfigSpecified', 'Minimum healthy hosts config must only be specified for a Server-base deployment configuration', this);
+      throw new ValidationError(lit`MinimumHealthyHostsConfigSpecified`, 'Minimum healthy hosts config must only be specified for a Server-base deployment configuration', this);
     }
 
     if (props?.zonalConfig) {
@@ -232,7 +233,7 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
   private validateMinimumDuration(duration: Duration, name: string) {
     const milliseconds = duration.toMilliseconds();
     if (milliseconds > 0 && milliseconds < 1000) {
-      throw new ValidationError('DurationTooShort', `${name} must be greater than or equal to 1 second or be equal to 0, got ${milliseconds}ms`, this);
+      throw new ValidationError(lit`DurationTooShort`, `${name} must be greater than or equal to 1 second or be equal to 0, got ${milliseconds}ms`, this);
     }
   }
 }

@@ -1,5 +1,6 @@
 import { ConcreteWidget } from './widget';
 import * as cdk from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Types of view
@@ -134,11 +135,11 @@ export class LogQueryWidget extends ConcreteWidget {
     this.props = props;
 
     if (props.logGroupNames.length === 0) {
-      throw new cdk.UnscopedValidationError('AtLeastOneLogGroupRequired', 'Specify at least one log group name.');
+      throw new cdk.UnscopedValidationError(lit`AtLeastOneLogGroupRequired`, 'Specify at least one log group name.');
     }
 
     if (!!props.queryString === !!props.queryLines) {
-      throw new cdk.UnscopedValidationError('ExactlyOneQueryStringOrLines', 'Specify exactly one of \'queryString\' and \'queryLines\'');
+      throw new cdk.UnscopedValidationError(lit`ExactlyOneQueryStringOrLines`, 'Specify exactly one of \'queryString\' and \'queryLines\'');
     }
   }
   public toJson(): any[] {

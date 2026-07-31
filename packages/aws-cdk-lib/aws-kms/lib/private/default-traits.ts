@@ -10,6 +10,7 @@ import {
 } from '../../../aws-iam';
 import type { CfnResource } from '../../../core';
 import { Token, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { ResourceEnvironment } from '../../../interfaces';
 import { CfnKey } from '../kms.generated';
 
@@ -19,7 +20,7 @@ import { CfnKey } from '../kms.generated';
 class KeyWithPolicyFactory implements IResourcePolicyFactory {
   public forResource(resource: CfnResource): IResourceWithPolicyV2 {
     if (!CfnKey.isCfnKey(resource)) {
-      throw new ValidationError('Construct', `Construct ${resource.node.path} is not of type CfnKey`, resource);
+      throw new ValidationError(lit`Construct`, `Construct ${resource.node.path} is not of type CfnKey`, resource);
     }
 
     return new CfnKeyWithPolicy(resource);
