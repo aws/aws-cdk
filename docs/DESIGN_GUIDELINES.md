@@ -444,7 +444,7 @@ As a rule of thumb, most constructs should directly extend the **Construct** or
 behavior through interfaces and not through inheritance.
 
 Construct classes should extend only one of the following classes
-[_awslint:construct-inheritence_]:
+[_awslint:construct-inheritance_]:
 
 * The **Resource** class (if it represents an AWS resource)
 * The **Construct** class (if it represents an abstract component)
