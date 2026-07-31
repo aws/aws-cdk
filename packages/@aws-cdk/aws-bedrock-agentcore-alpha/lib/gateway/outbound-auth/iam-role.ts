@@ -12,6 +12,7 @@ import type { IGateway } from '../gateway-base';
  * Gateway IAM Role credential provider configuration implementation
  * Can be used with Lambda and Smithy targets
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class GatewayIamRoleCredentialProviderConfig implements ICredentialProviderConfig {
   public readonly credentialProviderType = CredentialProviderType.GATEWAY_IAM_ROLE;

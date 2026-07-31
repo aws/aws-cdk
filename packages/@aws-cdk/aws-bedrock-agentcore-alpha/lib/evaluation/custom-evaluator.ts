@@ -29,6 +29,7 @@ import {
 
 /**
  * Properties for creating an Evaluator.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface EvaluatorProps {
   /**
@@ -115,6 +116,10 @@ export interface EvaluatorProps {
  * });
  */
 @propertyInjectable
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export class Evaluator extends EvaluatorBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string =

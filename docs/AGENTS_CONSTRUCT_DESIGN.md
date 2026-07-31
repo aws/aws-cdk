@@ -257,9 +257,46 @@ These are design decisions about what interfaces and props every L2 construct MU
 - You MUST implement the `stateful` property on `IResource`
 - You MUST include a `removalPolicy?: RemovalPolicy` prop (defaulting to `ORPHAN`) on stateful resources
 
-### Tags & Secrets
+### Tags
 
-- You MUST include an optional `tags` hash prop on taggable resources
+- You MUST include an optional `tags` hash prop on taggable resources, and you MUST plumb it straight through to the L1 default child (e.g. `tags: props.tags`)
+- You MUST NOT make an L2 implement `ITaggable` or `ITaggableV2`. Only L1 (`Cfn*`) resources implement those interfaces — they are auto-generated for every taggable CloudFormation resource. `ITaggableV2` is the modern variant for L1s where the auto-generator could not produce a `tags: TagManager` field
+- You MUST NOT expose a `tags: TagManager` or `cdkTagManager: TagManager` field on an L2. `TagManager.of(l2)` is expected to return `undefined` — that is the correct, intentional behavior
+- The user-facing API for applying tags to any scope is `Tags.of(scope: IConstruct).add(key, value)`. It works on any `IConstruct` (L2s, Stages, Stacks, the App) — it traverses the construct tree via aspects and applies tags to every taggable L1 underneath, regardless of whether the scope itself is taggable
+- Tagging an L2 directly has no single well-defined meaning (tag only the primary resource? all aggregated resources? ones added later via mutation methods?). It is deliberately not modeled — the traversal-from-`Tags.of` semantics are the only supported answer
+
+**❌ Anti-pattern — do not do this:**
+
+```ts
+// Adding ITaggableV2 to an L2 just to make `TagManager.of(dashboard)` return something.
+export class Dashboard extends Resource implements cdk.ITaggableV2 {
+  public readonly cdkTagManager: cdk.TagManager;
+  // ...
+}
+```
+
+This is wrong because: (1) an L2 typically aggregates multiple L1 resources, so a single `TagManager` on the L2 has no defined target; (2) `Tags.of(dashboard).add(...)` already does the right thing without it — it traverses and tags every taggable L1 underneath; (3) it introduces an `ITaggableV2`-conforming surface that consumers may start to rely on, locking in semantics that were never designed.
+
+**✅ Correct pattern:**
+
+```ts
+// L2: just expose a `tags` prop and pass it to the L1.
+export class Dashboard extends Resource {
+  constructor(scope: Construct, id: string, props: DashboardProps) {
+    super(scope, id);
+    new CfnDashboard(this, 'Resource', {
+      // ...
+      tags: props.tags, // L1 owns ITaggable — that's the only place it lives
+    });
+  }
+}
+
+// User code:
+Tags.of(myDashboard).add('Environment', 'prod'); // traverses and tags all L1s underneath
+```
+
+### Secrets
+
 - You MUST use `cdk.SecretValue` for any prop that accepts a secret value — any property named `password` or containing the word `token` MUST use `SecretValue`
 
 ---

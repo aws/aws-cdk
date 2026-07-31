@@ -153,7 +153,7 @@ table.with(new CfnGlobalTablePropsMixin({
 //       PointInTimeRecoveryEnabled: true
 ```
 
-**Lazys and Tokens are not supported.** If a property value is a `Lazy` or raw `Token` (not a Box), the merge strategy cannot inspect or defer it — the mixin will treat it as an opaque value and replace it. Most L2 constructs already use Boxes, but if you encounter one that doesn't, please [open an issue](https://github.com/aws/aws-cdk/issues/new?template=bug-report.yml) so we can migrate it.
+Most L2 constructs in `aws-cdk-lib` use Boxes or Lazys internally to defer property computation until synthesis time. Property mixins detect these automatically and defer the merge until the value resolves, so the merge strategy always operates on final values — no special handling is needed from the user. The only case where merging cannot be deferred is a raw `Token` that is not backed by a Box. This is very rare in the AWS Construct Library, but may occur in third-party packages. If you encounter a construct where merging doesn't work as expected, please [open an issue](https://github.com/aws/aws-cdk/issues/new?template=bug-report.yml) so we can investigate.
 
 ### CloudFormation Property Mixins for Every Service
 
