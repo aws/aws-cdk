@@ -796,6 +796,17 @@ const prefixList = new ec2.PrefixList(this, 'PrefixList', { maxEntries: 10 });
 appFleet.connections.allowFrom(prefixList, ec2.Port.HTTPS);
 ```
 
+#### Rule Configuration Interfaces
+
+The `IPeer` interface provides type-safe methods for generating security group rule configurations.
+The `toIngressRuleConfig()` and `toEgressRuleConfig()` methods return strongly-typed interfaces
+instead of `any`, enabling better IDE autocompletion and compile-time type checking:
+
+- `IngressRuleConfig`: Configuration for ingress rules with properties like `cidrIp`, `cidrIpv6`,
+  `sourcePrefixListId`, `sourceSecurityGroupId`, and `sourceSecurityGroupOwnerId`
+- `EgressRuleConfig`: Configuration for egress rules with properties like `cidrIp`, `cidrIpv6`,
+  `destinationPrefixListId`, and `destinationSecurityGroupId`
+
 ### Port Ranges
 
 The connections that are allowed are specified by port ranges. A number of classes provide

@@ -320,7 +320,7 @@ export abstract class BaseLoadBalancer extends Resource {
   /**
    * Attributes set on this load balancer
    */
-  private readonly attributes: IMapBox<string, string | undefined> = Box.fromMap(new Map());
+  private readonly attributes: IMapBox<string, string | undefined> = Box.fromMap();
 
   constructor(scope: Construct, id: string, baseProps: BaseLoadBalancerProps, additionalProps: any) {
     super(scope, id, {
@@ -460,7 +460,7 @@ export abstract class BaseLoadBalancer extends Resource {
     const lb = this.node.defaultChild;
     const bucketPolicy = bucket.policy?.node.defaultChild;
     if (lb && bucketPolicy && CfnResource.isCfnResource(lb) && CfnResource.isCfnResource(bucketPolicy)) {
-      lb.addDependency(bucketPolicy);
+      lb.addResourceDependency(bucketPolicy);
     }
   }
 

@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "testCases": {
     "integ-test-bucket-deployment-vpc-security-groups/DefaultTest": {
       "stacks": [
@@ -10,5 +10,5 @@
       "assertionStackName": "integtestbucketdeploymentvpcsecuritygroupsDefaultTestDeployAssert9F968A00"
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1123.0"
 }

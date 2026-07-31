@@ -45,6 +45,19 @@ type CfnWritableProps<T extends CfnResource> = {
  * ```
  */
 export class CfnPropsMixin<T extends CfnResource> implements IMixin {
+  /**
+   * Create a CfnPropsMixin without importing the resource class (avoids circular deps).
+   * Requires an explicit type parameter for autocomplete: `CfnPropsMixin.of<CfnBucket>(...)`.
+   */
+  public static of<T extends CfnResource = never>(
+    cfnResourceTypeName: string,
+    props: DeepPartial<CfnWritableProps<T>>,
+    options: CfnPropsMixinOptions = {},
+  ): CfnPropsMixin<T> {
+    const mixin = new CfnPropsMixin<T>({ CFN_RESOURCE_TYPE_NAME: cfnResourceTypeName } as any, props, options);
+    return mixin;
+  }
+
   private readonly cfnResourceType: string;
   private readonly props: DeepPartial<CfnWritableProps<T>>;
   private readonly propertyKeys: string[];
@@ -55,7 +68,7 @@ export class CfnPropsMixin<T extends CfnResource> implements IMixin {
     props: DeepPartial<CfnWritableProps<T>>,
     options: CfnPropsMixinOptions = {},
   ) {
-    this.cfnResourceType = resourceClass.CFN_RESOURCE_TYPE_NAME;
+    this.cfnResourceType = resourceClass?.CFN_RESOURCE_TYPE_NAME;
     this.props = props;
     this.propertyKeys = Object.keys(props);
     this.strategy = options.strategy ?? PropertyMergeStrategy.combine();

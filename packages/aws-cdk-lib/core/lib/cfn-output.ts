@@ -147,9 +147,10 @@ export class CfnOutput extends CfnElement {
    */
   public get importValue() {
     // We made _exportName mutable so this will have to be lazy.
+    // eslint-disable-next-line no-restricted-syntax
     return Fn.importValue(Lazy.uncachedString({
       produce: (ctx) => {
-        if (Stack.of(ctx.scope) === this.stack) {
+        if (stackOf(ctx.scope) === this.stack) {
           throw new ValidationError(lit`ImportvaluePropertyShouldOnly`, `'importValue' property of '${this.node.path}' should only be used in a different Stack`, this);
         }
         if (!this._exportName) {
@@ -198,8 +199,8 @@ export class CfnOutput extends CfnElement {
 import type { CfnCondition } from './cfn-condition';
 import { Fn } from './cfn-fn';
 import { Lazy } from './lazy';
-import { Stack } from './stack';
 import { Token } from './token';
 import { ValidationError } from './errors';
 import { lit } from './private/literal-string';
+import { stackOf } from './private/core-construct-finders';
 

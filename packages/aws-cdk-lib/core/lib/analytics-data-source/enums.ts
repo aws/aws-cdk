@@ -163,7 +163,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "PYTHON_3_10",
     "PYTHON_3_11",
     "PYTHON_3_12",
-    "PYTHON_3_13"
+    "PYTHON_3_13",
+    "PYTHON_3_14",
+    "NODE_22"
   ],
   "AgentStepType": [
     "PRE_PROCESSING",
@@ -436,6 +438,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "DEPLOYMENT_STOP_ON_ALARM",
     "DEPLOYMENT_STOP_ON_REQUEST"
   ],
+  "AutoValidationThreshold": [
+    "MEDIUM",
+    "HIGH",
+    "MANAGED"
+  ],
   "AvailabilityZoneRebalancing": [
     "ENABLED",
     "DISABLED"
@@ -538,6 +545,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "DSSE_MANAGED",
     "DSSE"
   ],
+  "BucketNamespace": [
+    "global",
+    "account-regional"
+  ],
   "BucketNotificationDestinationType": [
     0,
     1,
@@ -576,15 +587,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "CacheConfigType": [
     "AMPLIFY_MANAGED",
     "AMPLIFY_MANAGED_NO_COOKIES"
-  ],
-  "CacheEngine": [
-    "valkey",
-    "valkey_7",
-    "valkey_8",
-    "redis",
-    "redis_7",
-    "memcached",
-    "memcached_1.6"
   ],
   "Capability": [
     "ALL",
@@ -1132,7 +1134,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "nodejs16.x",
     "nodejs18.x",
     "nodejs20.x",
-    "nodejs22.x"
+    "nodejs22.x",
+    "nodejs24.x"
   ],
   "CustomThreatProtectionMode": [
     "ENFORCED",
@@ -2158,6 +2161,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "c8i-flex",
     "compute7-amd",
     "c7a",
+    "compute8-amd",
+    "c8a",
     "storage2",
     "d2",
     "storage3",
@@ -2238,6 +2243,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "g6",
     "graphics6-efficient",
     "g6e",
+    "graphics7-efficient",
+    "g7e",
     "graphics-ram-6",
     "gr6",
     "parallel2",
@@ -2999,6 +3006,33 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "SET_TO_NULL",
     "DROP_ROW"
   ],
+  "OAuth2CredentialProviderVendor": [
+    "GoogleOauth2",
+    "GithubOauth2",
+    "SlackOauth2",
+    "SalesforceOauth2",
+    "MicrosoftOauth2",
+    "CustomOauth2",
+    "AtlassianOauth2",
+    "LinkedinOauth2",
+    "XOauth2",
+    "OktaOauth2",
+    "OneLoginOauth2",
+    "PingOneOauth2",
+    "FacebookOauth2",
+    "YandexOauth2",
+    "RedditOauth2",
+    "ZoomOauth2",
+    "TwitchOauth2",
+    "SpotifyOauth2",
+    "DropboxOauth2",
+    "NotionOauth2",
+    "HubspotOauth2",
+    "CyberArkOauth2",
+    "FusionAuthOauth2",
+    "Auth0Oauth2",
+    "CognitoOauth2"
+  ],
   "OCSFSourceType": [
     "CloudTrail",
     "Route53Resolver",
@@ -3433,7 +3467,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "ProtocolType": [
     "MCP",
     "HTTP",
-    "A2A"
+    "A2A",
+    "AGUI"
   ],
   "ProviderType": [
     "CodeStarSourceConnection"
@@ -3521,6 +3556,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "ReferenceRendering": [
     0,
     1
+  ],
+  "ReferenceStrength": [
+    "strong",
+    "weak",
+    "both"
   ],
   "RegistryType": [
     "private",
@@ -4478,10 +4518,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "UsagePlanKeyType": [
     "API_KEY"
-  ],
-  "UserEngine": [
-    "valkey",
-    "redis"
   ],
   "UserPoolDefaultAction": [
     "ALLOW",
