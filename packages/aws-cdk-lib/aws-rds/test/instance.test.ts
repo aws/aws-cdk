@@ -9,6 +9,7 @@ import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as rds from '../lib';
+import { acknowledgeTestValidationRules } from './util';
 
 let stack: cdk.Stack;
 let vpc: ec2.Vpc;
@@ -16,6 +17,7 @@ let vpc: ec2.Vpc;
 describe('instance', () => {
   beforeEach(() => {
     stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     vpc = new ec2.Vpc(stack, 'VPC');
   });
 
@@ -2688,6 +2690,7 @@ describe('cross-account instance', () => {
     ['PhysicalName.GENERATE_IF_NEEDED', cdk.PhysicalName.GENERATE_IF_NEEDED, 'instancestackncestackinstancec830ba83756a6dfc7154'],
   ])("with database identifier '%s' can be referenced from a Stack in a different account", (_, providedInstanceId, expectedInstanceId) => {
     const app = new cdk.App();
+    acknowledgeTestValidationRules(app);
     const instanceStack = new cdk.Stack(app, 'InstanceStack', {
       env: { account: '123', region: 'my-region' },
     });
