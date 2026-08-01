@@ -1731,7 +1731,7 @@ test('beforeInstall hook fires after pnpm workspace files are written (Docker)',
     bundling: expect.objectContaining({
       command: expect.arrayContaining([
         expect.stringMatching(
-          /echo '' > "\/asset-output\/pnpm-workspace\.yaml".*allowBuilds.*pnpm install/s,
+          /echo '' > '\/asset-output\/pnpm-workspace\.yaml'.*allowBuilds.*pnpm install/s,
         ),
       ]),
     }),
