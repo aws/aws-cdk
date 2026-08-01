@@ -36,6 +36,7 @@ import { RUNTIME_INVOKE_PERMS, RUNTIME_INVOKE_USER_PERMS } from './perms';
 
 /**
  * Interface for Agent Runtime resources
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface IBedrockAgentRuntime extends IResource, iam.IGrantable, ec2.IConnectable, IRuntimeRef {
   /**
@@ -193,6 +194,7 @@ export interface IBedrockAgentRuntime extends IResource, iam.IGrantable, ec2.ICo
 
 /**
  * Base class for Agent Runtime
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export abstract class RuntimeBase extends Resource implements IBedrockAgentRuntime {
   // Abstract properties
@@ -414,6 +416,7 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
 
 /**
  * Attributes for importing an existing Agent Runtime
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface AgentRuntimeAttributes {
   /**

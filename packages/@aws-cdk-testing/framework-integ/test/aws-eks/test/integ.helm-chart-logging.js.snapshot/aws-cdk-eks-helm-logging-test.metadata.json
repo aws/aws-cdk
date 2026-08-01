@@ -636,6 +636,12 @@
       "data": "VpcPrivateSubnet2DefaultRoute060D2087"
     }
   ],
+  "/aws-cdk-eks-helm-logging-test/KubectlLayer/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
   "/aws-cdk-eks-helm-logging-test/Cluster/KubectlHandlerRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -1258,10 +1264,22 @@
       "data": "Clusterchartawsloadbalancercontroller9E1FDE79"
     }
   ],
+  "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
   "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "OnEventHandlerServiceRole15A26729"
+    }
+  ],
+  "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/LogGroup/Resource": [
@@ -1274,6 +1292,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "IsCompleteHandlerServiceRole5810CC58"
+    }
+  ],
+  "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/LogGroup/Resource": [
@@ -1573,10 +1597,22 @@
       "data": "Providerwaiterstatemachine5D4A9DF0"
     }
   ],
+  "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
   "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.KubectlProvider/Handler/LogGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "HandlerLogGroup50A7B41D"
+    }
+  ],
+  "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole": [
@@ -1724,6 +1760,12 @@
       }
     }
   ],
+  "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
   "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/LogGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -1790,6 +1832,12 @@
       }
     }
   ],
+  "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
   "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/LogGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -1854,6 +1902,12 @@
           {}
         ]
       }
+    }
+  ],
+  "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/LogGroup/Resource": [
@@ -1948,6 +2002,12 @@
           {}
         ]
       }
+    }
+  ],
+  "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/LogGroup/Resource": [

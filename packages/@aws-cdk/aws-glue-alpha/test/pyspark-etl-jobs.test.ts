@@ -15,6 +15,10 @@ describe('Job', () => {
 
   beforeEach(() => {
     stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::E1155',
+      reason: 'Syntactically incorrect log group name',
+    });
     role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/TestRole');
     codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketname');
     script = glue.Code.fromBucket(codeBucket, 'script');
@@ -755,6 +759,25 @@ describe('Job', () => {
           '--enable-metrics': '',
           '--enable-observability-metrics': 'true',
         }),
+      });
+    });
+  });
+
+  describe('Create PySpark ETL Job with notifyDelayAfter', () => {
+    beforeEach(() => {
+      job = new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
+        role,
+        script,
+        jobName: 'PySparkETLJob',
+        notifyDelayAfter: cdk.Duration.minutes(10),
+      });
+    });
+
+    test('NotificationProperty is set', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        NotificationProperty: {
+          NotifyDelayAfter: 10,
+        },
       });
     });
   });

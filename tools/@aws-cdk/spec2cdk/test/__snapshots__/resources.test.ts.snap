@@ -86,6 +86,10 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   private _id?: string;
 
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    id: "Id"
+  };
+
   /**
    * Create a new \`AWS::Some::Resource\`.
    *
@@ -259,6 +263,10 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   private _id?: string;
 
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    id: "Id"
+  };
+
   /**
    * Create a new \`AWS::Some::Resource\`.
    *
@@ -427,6 +435,8 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
   }
 
+  protected readonly cfnPropertyNames: Record<string, string> = {};
+
   /**
    * Create a new \`AWS::Some::Resource\`.
    *
@@ -581,6 +591,8 @@ export class CfnSomething extends cdk.CfnResource implements cdk.IInspectable, I
   public static arnForSomething(resource: ISomethingRef): string {
     return resource.somethingRef.somethingArn;
   }
+
+  protected readonly cfnPropertyNames: Record<string, string> = {};
 
   /**
    * Create a new \`AWS::Some::Something\`.
@@ -747,6 +759,8 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     return resource.resourceRef.resourceArn;
   }
 
+  protected readonly cfnPropertyNames: Record<string, string> = {};
+
   /**
    * Create a new \`AWS::Some::Resource\`.
    *
@@ -912,6 +926,10 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    * The arn for the resource.
    */
   private _arn?: string;
+
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    arn: "Arn"
+  };
 
   /**
    * Create a new \`AWS::Some::Resource\`.
@@ -1094,6 +1112,8 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     return resource.resourceRef.resourceArn;
   }
 
+  protected readonly cfnPropertyNames: Record<string, string> = {};
+
   /**
    * Create a new \`AWS::Some::Resource\`.
    *
@@ -1244,6 +1264,8 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   public static isCfnResource(x: any): x is CfnResource {
     return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
   }
+
+  protected readonly cfnPropertyNames: Record<string, string> = {};
 
   /**
    * Create a new \`AWS::Some::Resource\`.
@@ -1444,6 +1466,10 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   private _id?: string;
 
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    id: "Id"
+  };
+
   /**
    * Create a new \`AWS::Some::Resource\`.
    *
@@ -1621,6 +1647,11 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    * The identifier of the resource.
    */
   private _id?: string;
+
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    anotherId: "AnotherId",
+    id: "Id"
+  };
 
   /**
    * Create a new \`AWS::Some::Resource\`.
@@ -1821,6 +1852,10 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    * The identifier of the resource.
    */
   private _id?: string;
+
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    id: "Id"
+  };
 
   /**
    * Create a new \`AWS::Some::Resource\`.

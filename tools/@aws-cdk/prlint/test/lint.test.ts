@@ -960,6 +960,78 @@ describe('integration tests required on features', () => {
       });
     });
 
+    test('needs maintainer review when community-review-timeout label is present', async () => {
+      // GIVEN - no community approval, but timeout label is present
+      (pr as any).labels = [
+        { name: 'pr/community-review-timeout' },
+      ];
+
+      // WHEN
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
+
+      // THEN
+      expect(mockAddLabel.mock.calls[0][0]).toEqual({
+        issue_number: 1234,
+        labels: ['pr/needs-maintainer-review'],
+        owner: 'aws',
+        repo: 'aws-cdk',
+      });
+    });
+
+    test('community-review-timeout on draft PR does not get maintainer review', async () => {
+      // GIVEN
+      const draftPr = {
+        ...pr,
+        draft: true,
+        labels: [
+          { name: 'pr/community-review-timeout' },
+          { name: 'pr/needs-community-review' },
+        ],
+      };
+
+      // WHEN
+      const prLinter = configureMock(draftPr, files);
+      await legacyValidatePullRequestTarget(prLinter);
+
+      // THEN - should remove both labels, not add maintainer-review
+      expect(mockAddLabel.mock.calls).toEqual([]);
+      expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
+        issue_number: 1234,
+        name: 'pr/needs-community-review',
+        owner: 'aws',
+        repo: 'aws-cdk',
+      });
+    });
+
+    test('community-review-timeout with maintainer NACK does not get maintainer review', async () => {
+      // GIVEN - timeout label present, but a maintainer requested changes
+      mockListReviews.mockImplementation(() => {
+        return {
+          data: [
+            { id: 1111122223, user: { login: 'someuser' }, author_association: 'MEMBER', state: 'CHANGES_REQUESTED', submitted_at: '2019-11-17T17:43:43Z' },
+          ],
+        };
+      });
+      (pr as any).labels = [
+        { name: 'pr/community-review-timeout' },
+        { name: 'pr/needs-community-review' },
+      ];
+
+      // WHEN
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
+
+      // THEN - maintainer NACK takes precedence, remove both labels
+      expect(mockAddLabel.mock.calls).toEqual([]);
+      expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
+        issue_number: 1234,
+        name: 'pr/needs-community-review',
+        owner: 'aws',
+        repo: 'aws-cdk',
+      });
+    });
+
     test('untrusted community member approval has no affect', async () => {
       // GIVEN
       mockListReviews.mockImplementation(() => {
