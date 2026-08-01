@@ -1,0 +1,49 @@
+{
+  "version": "54.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.2.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F0001",
+          "description": "Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": ""
+            }
+          ]
+        },
+        {
+          "ruleName": "W2531",
+          "description": "Runtime: Runtime 'python3.9' is deprecated",
+          "suggestedFix": "Update to a current runtime",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Deprecation"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "DualStackVpc/Lambda_with_IPv6_VPC/Resource",
+              "constructFqn": "constructs.Construct",
+              "libraryVersion": "10.6.0",
+              "cloudFormationResource": {
+                "templatePath": "C:\\Projects\\oss-contrib\\aws-cdk\\packages\\@aws-cdk-testing\\framework-integ\\test\\aws-lambda\\test\\integ.lambda_with_dualStack_vpc.js.snapshot\\DualStackVpc.template.json",
+                "logicalId": "LambdawithIPv6VPCF50054B3",
+                "propertyPaths": [
+                  "Properties.Runtime"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

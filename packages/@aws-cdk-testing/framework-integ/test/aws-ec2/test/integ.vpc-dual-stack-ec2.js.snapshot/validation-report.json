@@ -1,0 +1,81 @@
+{
+  "version": "54.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.2.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "E9002",
+          "description": "SecurityGroupIngress: FromPort 8 is greater than ToPort -1",
+          "suggestedFix": "Set FromPort to a value less than or equal to ToPort",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Resource"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "vpc-dual-stack-ec2/MyInstance/InstanceSecurityGroup/Resource",
+              "constructFqn": "constructs.Construct",
+              "libraryVersion": "10.6.0",
+              "cloudFormationResource": {
+                "templatePath": "C:\\Projects\\oss-contrib\\aws-cdk\\packages\\@aws-cdk-testing\\framework-integ\\test\\aws-ec2\\test\\integ.vpc-dual-stack-ec2.js.snapshot\\vpc-dual-stack-ec2.template.json",
+                "logicalId": "MyInstanceInstanceSecurityGroup3E7A7DD1",
+                "propertyPaths": [
+                  "Properties.SecurityGroupIngress"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "W2508",
+          "description": "SecurityGroupIngress: Security group allows 0.0.0.0/0 access to sensitive port 22 (range 22-22)",
+          "suggestedFix": "Restrict the CIDR range to specific IP addresses",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Security"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "vpc-dual-stack-ec2/MyInstance/InstanceSecurityGroup/Resource",
+              "constructFqn": "constructs.Construct",
+              "libraryVersion": "10.6.0",
+              "cloudFormationResource": {
+                "templatePath": "C:\\Projects\\oss-contrib\\aws-cdk\\packages\\@aws-cdk-testing\\framework-integ\\test\\aws-ec2\\test\\integ.vpc-dual-stack-ec2.js.snapshot\\vpc-dual-stack-ec2.template.json",
+                "logicalId": "MyInstanceInstanceSecurityGroup3E7A7DD1",
+                "propertyPaths": [
+                  "Properties.SecurityGroupIngress"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "W3687",
+          "description": "SecurityGroupIngress.3.FromPort: ['FromPort', 'ToPort'] are ignored when using 'IpProtocol' value 'icmpv6'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Best Practice"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "vpc-dual-stack-ec2/MyInstance/InstanceSecurityGroup/Resource",
+              "constructFqn": "constructs.Construct",
+              "libraryVersion": "10.6.0",
+              "cloudFormationResource": {
+                "templatePath": "C:\\Projects\\oss-contrib\\aws-cdk\\packages\\@aws-cdk-testing\\framework-integ\\test\\aws-ec2\\test\\integ.vpc-dual-stack-ec2.js.snapshot\\vpc-dual-stack-ec2.template.json",
+                "logicalId": "MyInstanceInstanceSecurityGroup3E7A7DD1",
+                "propertyPaths": [
+                  "Properties.SecurityGroupIngress.3.FromPort"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
