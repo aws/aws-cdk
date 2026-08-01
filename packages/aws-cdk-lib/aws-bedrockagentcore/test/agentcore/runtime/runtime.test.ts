@@ -2257,6 +2257,8 @@ describe('Runtime role validation tests', () => {
     // Should not throw, just add warning
     expect(runtime.role).toBe(crossAccountRole);
 
+    cdk.Validations.of(app).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'Testing hardcoded ARN for cross-account role' });
+
     const annotations = Annotations.fromStack(stack).findWarning('*', Match.stringLikeRegexp('.*different account.*cross-account.*'));
     expect(annotations.length).toBe(1);
 
@@ -2552,7 +2554,7 @@ describe('Runtime request header configuration tests', () => {
           allowlistedHeaders: ['Invalid-Header@Name'],
         },
       });
-    }).toThrow(/Request header must contain only letters, numbers, and hyphens/);
+    }).toThrow(/Request header must start with a letter and contain only letters, numbers, underscores, and hyphens/);
   });
 
   test('Should throw error for empty header name', () => {
@@ -2565,6 +2567,59 @@ describe('Runtime request header configuration tests', () => {
         },
       });
     }).toThrow(/The field Request header is 0 characters long but must be at least 1 characters/);
+  });
+
+  test('Should accept headers beyond the X-Amzn-Bedrock-AgentCore-Runtime-Custom- prefix', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        requestHeaderConfiguration: {
+          allowlistedHeaders: [
+            'X-Custom-Auth',
+            'X-Request-Signature',
+            'X-Amzn-Bedrock-AgentCore-Runtime-Custom-MyHeader',
+            'Authorization',
+          ],
+        },
+      });
+    }).not.toThrow();
+  });
+
+  test('Should throw error for header with spaces', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        requestHeaderConfiguration: {
+          allowlistedHeaders: ['Invalid Header With Spaces'],
+        },
+      });
+    }).toThrow(/Request header must start with a letter and contain only letters, numbers, underscores, and hyphens/);
+  });
+
+  test('Should throw error for header starting with a number', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        requestHeaderConfiguration: {
+          allowlistedHeaders: ['123-invalid'],
+        },
+      });
+    }).toThrow(/Request header must start with a letter and contain only letters, numbers, underscores, and hyphens/);
+  });
+
+  test('Should accept headers with underscores', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        requestHeaderConfiguration: {
+          allowlistedHeaders: ['X-Custom_Header', 'My_Header_Name'],
+        },
+      });
+    }).not.toThrow();
   });
 });
 
@@ -3262,30 +3317,6 @@ describe('Runtime observability tests', () => {
   });
 });
 
-describe('ProtocolType.of() escape hatch', () => {
-  let stack: cdk.Stack;
-
-  beforeEach(() => {
-    stack = new cdk.Stack();
-  });
-
-  test('renders custom protocol value in the template', () => {
-    new Runtime(stack, 'TestRuntime', {
-      runtimeName: 'test_protocol',
-      agentRuntimeArtifact: AgentRuntimeArtifact.fromCodeAsset({
-        path: path.join(__dirname, 'testArtifact'),
-        runtime: AgentCoreRuntime.PYTHON_3_12,
-        entrypoint: ['main.py'],
-      }),
-      protocolConfiguration: ProtocolType.of('CUSTOM_PROTOCOL'),
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
-      ProtocolConfiguration: 'CUSTOM_PROTOCOL',
-    });
-  });
-});
-
 describe('Runtime applicationLogGroup tests', () => {
   test('Should expose applicationLogGroup pointing at the default endpoint log group', () => {
     const app = new cdk.App();
@@ -3406,3 +3437,4 @@ describe('Runtime applicationLogGroup tests', () => {
     });
   });
 });
+

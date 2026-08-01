@@ -6,7 +6,6 @@ import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { Construct } from 'constructs';
 import type { IOriginEndpoint } from './endpoint';
 import type { IChannelGroup } from './group';
-import type { CdnAuthConfiguration } from './origin-endpoint-policy';
 
 /**
  * Properties for a MediaPackage V2 Origin with OAC.
@@ -25,17 +24,6 @@ export interface MediaPackageV2OriginProps extends cloudfront.OriginProps {
    * @default - an Origin Access Control will be created automatically.
    */
   readonly originAccessControl?: cloudfront.IOriginAccessControlRef;
-
-  /**
-   * Optional CDN authorization configuration.
-   *
-   * If you need CDN auth on this endpoint, provide it here so it is configured
-   * on the first `addToResourcePolicy` call. If CDN auth is added separately
-   * after this origin is bound, it will be ignored.
-   *
-   * @default - no CDN authorization
-   */
-  readonly cdnAuth?: CdnAuthConfiguration;
 }
 
 /**
@@ -66,7 +54,6 @@ export interface MediaPackageV2OriginProps extends cloudfront.OriginProps {
 export class MediaPackageV2Origin extends cloudfront.OriginBase {
   private originAccessControl?: cloudfront.IOriginAccessControlRef;
   private readonly endpoint: IOriginEndpoint;
-  private readonly cdnAuth?: CdnAuthConfiguration;
 
   constructor(endpoint: IOriginEndpoint, props: MediaPackageV2OriginProps) {
     if (!props.channelGroup.egressDomain) {
@@ -78,7 +65,6 @@ export class MediaPackageV2Origin extends cloudfront.OriginBase {
     super(props.channelGroup.egressDomain, props);
     this.endpoint = endpoint;
     this.originAccessControl = props.originAccessControl;
-    this.cdnAuth = props.cdnAuth;
   }
 
   protected renderCustomOriginConfig(): cloudfront.CfnDistribution.CustomOriginConfigProperty | undefined {
@@ -116,7 +102,6 @@ export class MediaPackageV2Origin extends cloudfront.OriginBase {
           },
         },
       }),
-      this.cdnAuth,
     );
 
     return {

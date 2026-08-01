@@ -1,5 +1,4 @@
 import { spawnSync } from 'child_process';
-import * as crypto from 'crypto';
 import { isAbsolute, join } from 'path';
 import type { DockerCacheOption } from './assets';
 import { ExecutionError, UnscopedValidationError } from './errors';
@@ -7,6 +6,7 @@ import { FileSystem } from './fs';
 import { dockerExec } from './private/asset-staging';
 import { quiet, reset } from './private/jsii-deprecated';
 import { lit } from './private/literal-string';
+import { profileFn } from './private/perf';
 
 /**
  * Methods to build Docker CLI arguments for builds using secrets.
@@ -256,6 +256,7 @@ export class BundlingDockerImage {
   /**
    * Runs a Docker image
    */
+  @profileFn('BundlingDockerImage.run', { telemetry: true })
   public run(options: DockerRunOptions = {}) {
     const volumes = options.volumes || [];
     const environment = options.environment || {};
@@ -310,6 +311,7 @@ export class BundlingDockerImage {
    * @param outputPath the destination path for the copy operation
    * @returns the destination path
    */
+  @profileFn('BundlingDockerImage.cp', { telemetry: true })
   public cp(imagePath: string, outputPath?: string): string {
     const { stdout } = dockerExec(['create', this.image], {}); // Empty options to avoid stdout redirect here
     const match = stdout.toString().match(/([0-9a-f]{16,})/);
@@ -341,6 +343,7 @@ export class DockerImage extends BundlingDockerImage {
    * @param path The path to the directory containing the Docker file
    * @param options Docker build options
    */
+  @profileFn('DockerImage.fromBuild', { telemetry: true })
   public static fromBuild(path: string, options: DockerBuildOptions = {}) {
     const buildArgs = options.buildArgs || {};
 
@@ -348,15 +351,24 @@ export class DockerImage extends BundlingDockerImage {
       throw new UnscopedValidationError(lit`MustBeFileRelativeDocker`, `"file" must be relative to the docker build directory. Got ${options.file}`);
     }
 
-    // Image tag derived from path and build options
-    const input = JSON.stringify({ path, ...options });
-    const tagHash = crypto.createHash('sha256').update(input).digest('hex');
-    const tag = `cdk-${tagHash}`;
+    // Fingerprints the directory containing the Dockerfile we're building and
+    // differentiates the fingerprint based on build arguments. We do this so
+    // we can provide a stable image hash. Otherwise, the image ID will be
+    // different every time the Docker layer cache is cleared, due primarily to
+    // timestamps.
+    const hash = FileSystem.fingerprint(path, { extraHash: JSON.stringify(options) });
+    const tag = `cdk-${hash}`;
 
     // Skip the build if the image already exists in the local Docker daemon.
-    // The tag is deterministic (content-addressed from path + all options),
+    // The tag is content-addressed from the build context and all options,
     // so an existing image with this tag is guaranteed to be up-to-date.
-    if (!this.isImageCached(tag)) {
+    //
+    // NOTE: we don't support properly hashing all possible types of `--build-context`
+    // yet, so if we detect any of those we skip the cache check and hope the `docker
+    // build` itself is fairly quick in figuring out caching.
+    const usingBuildContexts = Object.keys(options.buildContexts ?? {}).length > 0;
+
+    if (usingBuildContexts || !this.imageAlreadyExists(tag)) {
       const dockerArgs: string[] = [
         'build', '-t', tag,
         ...(options.file ? ['-f', join(path, options.file)] : []),
@@ -374,12 +386,6 @@ export class DockerImage extends BundlingDockerImage {
       dockerExec(dockerArgs);
     }
 
-    // Fingerprints the directory containing the Dockerfile we're building and
-    // differentiates the fingerprint based on build arguments. We do this so
-    // we can provide a stable image hash. Otherwise, the image ID will be
-    // different every time the Docker layer cache is cleared, due primarily to
-    // timestamps.
-    const hash = FileSystem.fingerprint(path, { extraHash: JSON.stringify(options) });
     return new DockerImage(tag, hash);
   }
 
@@ -392,7 +398,7 @@ export class DockerImage extends BundlingDockerImage {
     return new DockerImage(image);
   }
 
-  private static isImageCached(tag: string): boolean {
+  private static imageAlreadyExists(tag: string): boolean {
     const prog = process.env.CDK_DOCKER ?? 'docker';
     const proc = spawnSync(prog, ['image', 'inspect', tag], {
       stdio: 'ignore',
@@ -702,3 +708,8 @@ function isSeLinux(): boolean {
     return false;
   }
 }
+
+/**
+ * If this symbol is present on the `BundlingOptions`, it will be used as the source of an additional timer measurement.
+ */
+export const PERF_BUNDLING_SRC_SYM = Symbol.for('@aws-cdk/core.bundlingSource');
