@@ -1,16 +1,30 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "files": {
-    "44425c57619a94852a4c86803cf7b74485a99cec03a7a3ea245cb92a359e967c": {
+    "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f": {
+      "displayName": "aws-cdk-ec2-vpc-endpoint-cfn-subnet/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
+      "source": {
+        "path": "asset.55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-65a3ca72": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "7acc54f3614cb89afe81477bc7fe47bf3d8f0d4a318c654dd7c7117162d071f4": {
       "displayName": "aws-cdk-ec2-vpc-endpoint-cfn-subnet Template",
       "source": {
         "path": "aws-cdk-ec2-vpc-endpoint-cfn-subnet.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-1906d281": {
+        "current_account-current_region-b5bf1ff2": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "44425c57619a94852a4c86803cf7b74485a99cec03a7a3ea245cb92a359e967c.json",
+          "objectKey": "7acc54f3614cb89afe81477bc7fe47bf3d8f0d4a318c654dd7c7117162d071f4.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
