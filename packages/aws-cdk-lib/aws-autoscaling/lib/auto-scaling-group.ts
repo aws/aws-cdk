@@ -2746,7 +2746,7 @@ function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: Block
     }
 
     if (ebs) {
-      const { iops, volumeType, throughput } = ebs;
+      const { iops, volumeType, throughput, volumeInitializationRate } = ebs;
 
       if (throughput) {
         const throughputRange = { Min: 125, Max: 2000 };
@@ -2778,6 +2778,12 @@ function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: Block
         }
       } else if (volumeType !== EbsDeviceVolumeType.IO1) {
         Annotations.of(construct).addWarningV2('@aws-cdk/aws-autoscaling:iopsIgnored', 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+      }
+
+      if (volumeInitializationRate) {
+        Annotations.of(construct).addWarningV2('@aws-cdk/aws-autoscaling-group:volumeInitializationRateNotSupported',
+          'The volumeInitializationRate is not supported on Autoscaling Group LaunchCofigurations. Use a Launch Template instead.',
+        );
       }
     }
 
