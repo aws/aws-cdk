@@ -174,6 +174,28 @@ thirdDomain.addBasePathMapping(api2.restApi, {
 });
 
 /**
+ * Test 4
+ *
+ * Test dualstack custom domain endpoint.
+ */
+const dualstackDomain = new apigw.DomainName(testCase, 'DualstackDomain', {
+  domainName: `dualstack-${domainName}`,
+  certificate,
+  mapping: api1.restApi,
+  basePath: 'orders',
+  endpointConfiguration: { ipAddressType: apigw.IpAddressType.DUAL_STACK },
+});
+new CfnRecordSet(testCase, 'DualstackDomainRecord', {
+  name: `dualstack-${domainName}`,
+  type: 'AAAA',
+  hostedZoneId,
+  aliasTarget: {
+    hostedZoneId: dualstackDomain.domainNameAliasHostedZoneId,
+    dnsName: dualstackDomain.domainNameAliasDomainName,
+  },
+});
+
+/**
  * -------------------------------------------------------
  * ------------------------- THEN ------------------------
  * -------------------------------------------------------
@@ -204,6 +226,13 @@ domain2api1Invoke.expect(ExpectedResult.objectLike({
 }));
 const domain2api2Invoke = integ.assertions.httpApiCall(`https://${secondDomain.domainName}/orders/v2/items`, { });
 domain2api2Invoke.expect(ExpectedResult.objectLike({
+  body: { message: 'Hello, world' },
+  ok: true,
+  status: 202,
+}));
+
+const dualstackDomainInvoke = integ.assertions.httpApiCall(`https://${dualstackDomain.domainName}/orders/items`, { });
+dualstackDomainInvoke.expect(ExpectedResult.objectLike({
   body: { message: 'Hello, world' },
   ok: true,
   status: 202,

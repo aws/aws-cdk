@@ -133,7 +133,7 @@ export interface DomainNameOptions {
   /**
    * The endpoint configuration for this domain name
    */
-  readonly endpointConfiguration?: EndpointConfiguration;
+  readonly endpointConfiguration?: DomainNameEndpointConfiguration;
 
   /**
    * The Transport Layer Security (TLS) version + cipher suite for this domain name.
@@ -210,7 +210,7 @@ export interface IDomainName extends IResource, IDomainNameRef {
  *
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-domainname-endpointconfiguration.html
  */
-export interface EndpointConfiguration {
+export interface DomainNameEndpointConfiguration {
   /**
    * The IP address types that can invoke this DomainName.
    *

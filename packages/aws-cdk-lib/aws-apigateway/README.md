@@ -1186,6 +1186,7 @@ new apigateway.DomainName(this, 'custom-domain', {
   domainName: 'example.com',
   certificate: acmCertificateForExampleCom,
   endpointType: apigateway.EndpointType.EDGE, // default is REGIONAL
+  endpointConfiguration: { ipAddressType: apigw.IpAddressType.DUAL_STACK }, // enables IPv6
   securityPolicy: apigateway.SecurityPolicy.TLS_1_2
 });
 ```
