@@ -158,6 +158,40 @@ describe('prefix list', () => {
     }).toThrow('Invalid IPv6 address range: 10.0.0.1/32');
   });
 
+  test('ipv6 prefixlist accepts entries with an embedded IPv4 address', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    new PrefixList(stack, 'prefix-list', {
+      addressFamily: AddressFamily.IP_V6,
+      entries: [
+        { cidr: '::ffff:192.168.0.1/128' },
+        { cidr: '64:ff9b::192.0.2.33/96', description: 'nat64' },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::PrefixList', {
+      AddressFamily: 'IPv6',
+      Entries: [
+        { Cidr: '::ffff:192.168.0.1/128' },
+        { Cidr: '64:ff9b::192.0.2.33/96', Description: 'nat64' },
+      ],
+    });
+  });
+
+  test('ipv6 prefixlist rejects a malformed embedded IPv4 address', () => {
+    // GIVEN
+    const stack = new Stack();
+    expect(() => {
+      new PrefixList(stack, 'prefix-list', {
+        addressFamily: AddressFamily.IP_V6,
+        entries: [
+          { cidr: '::ffff:1dd.1dd.1dd.1dd/128' },
+        ],
+      });
+    }).toThrow('Invalid IPv6 address range: ::ffff:1dd.1dd.1dd.1dd/128');
+  });
+
   test('fromLookup returns a correct PrefixList', () => {
     // GIVEN
     const resultObjs = [
