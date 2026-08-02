@@ -386,6 +386,17 @@ describe('instance', () => {
       });
       // THEN
       Annotations.fromStack(stack).hasWarning('/Default/Instance', Match.stringLikeRegexp('The volumeInitializationRate is not supported on EC2 instances. Use a Launch Template instead.'));
+
+      // Assert VolumeInitializationRate is absent from the synthesized template
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+        BlockDeviceMappings: Match.arrayWith([
+          Match.objectLike({
+            Ebs: Match.not(Match.objectLike({
+              VolumeInitializationRate: Match.anyValue(),
+            })),
+          }),
+        ]),
+      });
     });
 
     test('throws if ephemeral volumeIndex < 0', () => {
