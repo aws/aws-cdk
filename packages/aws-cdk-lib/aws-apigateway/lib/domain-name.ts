@@ -132,6 +132,7 @@ export interface DomainNameOptions {
 
   /**
    * The endpoint configuration for this domain name
+   * @default - see default values of nested attributes
    */
   readonly endpointConfiguration?: DomainNameEndpointConfiguration;
 
@@ -218,7 +219,7 @@ export interface DomainNameEndpointConfiguration {
    *
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-ip-address-type.html
    *
-   * @default undefined
+   * @default DUAL_STACK for PRIVATE endpoint type; IPV4 otherwise.
    */
   readonly ipAddressType?: IpAddressType;
 }
