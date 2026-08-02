@@ -4116,6 +4116,32 @@ test('TableV2MultiAccountReplica on imported table does not throw', () => {
   expect(warnings[0].entry.data).toContain('manually configure multi-account replication permissions');
 });
 
+test('TableV2MultiAccountReplica does not throw with partially tokenized source ARN', () => {
+  const app = new App();
+  const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+
+  // Source ARN has concrete account (`111111111111`) and region (`us-east-2`),
+  // but a tokenized table name. `Token.isUnresolved(tableArn)` returns true for
+  // the whole ARN (because the resourceName is a token), but `splitArn`
+  // correctly extracts the concrete account/region components. The
+  // validation must use those extracted components, not fall back to the
+  // replica stack's own account/region — that fallback would falsely trigger
+  // "must be in a different account" because the fallback equals
+  // `this.stack.account`.
+  const dynamicTableName = Lazy.string({ produce: () => 'dynamic-source-table' });
+  const importedTable = TableV2.fromTableArn(
+    replicaStack,
+    'ImportedTable',
+    `arn:aws:dynamodb:us-east-2:111111111111:table/${dynamicTableName}`,
+  );
+
+  expect(() => {
+    new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+      replicaSourceTable: importedTable,
+    });
+  }).not.toThrow();
+});
+
 test('TableV2MultiAccountReplica works with fromTableArn without key schema', () => {
   const app = new App();
   const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
