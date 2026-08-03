@@ -169,7 +169,7 @@ export interface RouterOutputProps {
   /** Indicates whether the router output is configured for Regional or global routing. */
   readonly routingScope: RoutingScope;
   /**
-   * The tier level of the router output.
+   * Select a tier based on your maximum bitrate requirements.
    * @default RouterOutputTier.OUTPUT_20
    */
   readonly tier?: RouterOutputTier;
