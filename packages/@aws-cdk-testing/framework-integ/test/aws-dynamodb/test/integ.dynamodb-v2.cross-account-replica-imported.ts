@@ -23,7 +23,7 @@
  * 4. Before you commit, set both accounts to dummy values, run integ test in dry run mode, and then push the snapshot.
  */
 
-import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { App, Lazy, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 
@@ -47,6 +47,25 @@ const importedSource = dynamodb.TableV2.fromTableArn(
 new dynamodb.TableV2MultiAccountReplica(replicaStack, 'Replica', {
   tableName: 'MultiAccountGlobalTable',
   replicaSourceTable: importedSource,
+  globalTableSettingsReplicationMode: dynamodb.GlobalTableSettingsReplicationMode.ALL,
+  removalPolicy: RemovalPolicy.DESTROY,
+});
+
+// Test: partially tokenized source ARN (concrete account/region, tokenized table name).
+// The table name is a Lazy token that resolves at synthesis time, but the account
+// and region are concrete. This exercises the fix in TableV2MultiAccountReplica
+// that extracts concrete account/region from the ARN even when the resourceName is
+// tokenized (rather than falling back to the replica stack's own account/region).
+const dynamicTableName = Lazy.string({ produce: () => 'dynamic-source-table' });
+const importedPartial = dynamodb.TableV2.fromTableArn(
+  replicaStack,
+  'ImportedPartial',
+  `arn:aws:dynamodb:eu-west-1:${account}:table/${dynamicTableName}`,
+);
+
+new dynamodb.TableV2MultiAccountReplica(replicaStack, 'ReplicaPartial', {
+  tableName: 'MultiAccountGlobalTable',
+  replicaSourceTable: importedPartial,
   globalTableSettingsReplicationMode: dynamodb.GlobalTableSettingsReplicationMode.ALL,
   removalPolicy: RemovalPolicy.DESTROY,
 });
