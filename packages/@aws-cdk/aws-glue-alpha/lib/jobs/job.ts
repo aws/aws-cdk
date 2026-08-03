@@ -505,9 +505,13 @@ export abstract class Job extends JobBase {
    * prop (e.g. `continuousLogging`, `enableMetrics`, `sparkUI`) or from the job class itself
    * (e.g. `--job-language`). Those arguments, plus the arguments Glue reserves for its own use,
    * MUST be configured through their dedicated props rather than the untyped `defaultArguments`
-   * map, so there is exactly one way to express each intent. Passing a managed or Glue-reserved
-   * key through `defaultArguments` therefore throws instead of silently winning or being silently
-   * dropped.
+   * map, so there is exactly one way to express each intent. Passing such a key through
+   * `defaultArguments` therefore throws instead of silently winning or being silently dropped.
+   *
+   * A managed key whose supplied value is identical to the construct's value is not contradictory,
+   * so it is allowed rather than rejected (auto-correcting config is preferred over errors).
+   * Glue-reserved keys are never emitted by the construct, so there is no value to reconcile and
+   * they always throw.
    *
    * The reserved set is derived from `managedArguments` (the arguments the caller actually emits)
    * rather than a hand-maintained list, so adding a new typed prop automatically reserves its
@@ -521,7 +525,8 @@ export abstract class Job extends JobBase {
   ): { [key: string]: string } {
     if (defaultArguments) {
       const conflicts = Object.keys(defaultArguments).filter(
-        (arg) => arg in managedArguments || Job.GLUE_RESERVED_ARGUMENTS.has(arg),
+        (arg) => Job.GLUE_RESERVED_ARGUMENTS.has(arg)
+          || (arg in managedArguments && defaultArguments[arg] !== managedArguments[arg]),
       );
       if (conflicts.length > 0) {
         throw new cdk.ValidationError(

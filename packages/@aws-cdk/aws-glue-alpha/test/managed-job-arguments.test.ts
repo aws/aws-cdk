@@ -104,28 +104,47 @@ function baseSparkProps(scope: cdk.Stack) {
   };
 }
 
-/** Synthesize a class with no `defaultArguments` and return the managed keys it emits. */
-function managedKeysOf(build: (scope: cdk.Stack, props: any) => void): string[] {
+/** Synthesize a class with no `defaultArguments` and return the managed args (key→value) it emits. */
+function managedArgsOf(build: (scope: cdk.Stack, props: any) => void): { [key: string]: string } {
   const stack = new cdk.Stack(new cdk.App(), 'S');
   build(stack, {});
   const jobs = Template.fromStack(stack).findResources('AWS::Glue::Job');
   const resource = Object.values(jobs)[0];
-  return Object.keys(resource.Properties.DefaultArguments);
+  return resource.Properties.DefaultArguments;
 }
 
 describe('defaultArguments managed-key invariant', () => {
   for (const jobClass of JOB_CLASSES) {
     describe(jobClass.name, () => {
-      const managedKeys = managedKeysOf(jobClass.build);
+      const managedArgs = managedArgsOf(jobClass.build);
+      const managedKeys = Object.keys(managedArgs);
 
       test('emits at least one managed argument', () => {
         expect(managedKeys.length).toBeGreaterThan(0);
       });
 
-      test.each(managedKeys)('rejects managed key %s passed via defaultArguments', (key) => {
+      test.each(managedKeys)('rejects managed key %s passed via defaultArguments with a different value', (key) => {
         const stack = new cdk.Stack(new cdk.App(), 'S');
-        expect(() => jobClass.build(stack, { defaultArguments: { [key]: 'x' } }))
+        // Use a value guaranteed to differ from the managed value.
+        const differentValue = `${managedArgs[key]}-different`;
+        expect(() => jobClass.build(stack, { defaultArguments: { [key]: differentValue } }))
           .toThrow(/managed by the construct or reserved by Glue/);
+      });
+
+      test('allows managed keys passed via defaultArguments when the value is identical', () => {
+        // Only literal-valued managed args can be reconciled by value at synth time. Token-valued
+        // args (e.g. --spark-event-logs-path, extra-* S3 URLs) synthesize to CloudFormation
+        // intrinsics, so equality cannot be proven and they are (correctly) always rejected — see
+        // the "different value" case, which covers them.
+        const literalArgs = Object.fromEntries(
+          Object.entries(managedArgs).filter(([, value]) => typeof value === 'string'),
+        );
+        const stack = new cdk.Stack(new cdk.App(), 'S');
+        // Passing the exact same values the construct would emit is not contradictory.
+        expect(() => jobClass.build(stack, { defaultArguments: literalArgs })).not.toThrow();
+        Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+          DefaultArguments: managedArgs,
+        });
       });
 
       test.each(GLUE_RESERVED)('rejects Glue-reserved key %s passed via defaultArguments', (key) => {
