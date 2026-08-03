@@ -438,6 +438,18 @@
      }
     }
    }
+  },
+  "SnowflakeConnectionDC9F05AB": {
+   "Type": "AWS::Glue::Connection",
+   "Properties": {
+    "CatalogId": {
+     "Ref": "AWS::AccountId"
+    },
+    "ConnectionInput": {
+     "Name": "snowflake-connection",
+     "ConnectionType": "SNOWFLAKE"
+    }
+   }
   }
  },
  "Parameters": {

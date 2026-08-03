@@ -191,6 +191,18 @@
       "data": "NetworkConnection2B07B7E5"
     }
   ],
+  "/aws-glue-connection/SnowflakeConnection": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-glue-connection/SnowflakeConnection/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SnowflakeConnectionDC9F05AB"
+    }
+  ],
   "/aws-glue-connection/Vpc/PublicSubnet1/Subnet": [
     {
       "type": "aws:cdk:logicalId",
