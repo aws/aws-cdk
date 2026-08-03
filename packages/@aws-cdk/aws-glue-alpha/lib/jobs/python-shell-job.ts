@@ -93,14 +93,14 @@ export class PythonShellJob extends Job {
     }
 
     // Combine command line arguments into a single line item
-    const defaultArguments = {
+    const managedArguments = {
       ...executableArgs,
       ...extraPythonFilesArgs,
       ...continuousLoggingArgs,
       ...profilingMetricsArgs,
       ...observabilityMetricsArgs,
-      ...this.checkNoReservedArgs(props.defaultArguments),
     };
+    const defaultArguments = this.mergeManagedArguments(managedArguments, props.defaultArguments);
 
     this.resource = new CfnJob(this, 'Resource', {
       name: props.jobName,

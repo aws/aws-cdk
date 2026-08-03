@@ -375,6 +375,15 @@ export interface JobProps {
    * The default arguments for every run of this Glue job,
    * specified as name-value pairs.
    *
+   * This map is the escape hatch for Glue job arguments that this construct does not model. It
+   * MUST NOT be used to set arguments that already have a dedicated prop — configure those through
+   * the corresponding prop instead (`continuousLogging`, `enableMetrics`,
+   * `enableObservabilityMetrics`, `sparkUI`, `className`, `extraJars`, `extraJarsFirst`,
+   * `extraPythonFiles`, `extraFiles`). Passing a construct-managed argument (e.g.
+   * `--enable-continuous-cloudwatch-log`, `--enable-metrics`, `--enable-spark-ui`,
+   * `--job-language`) or a Glue-reserved argument (`--debug`, `--mode`, `--JOB_NAME`) here throws
+   * at synthesis time, so there is exactly one way to express each intent.
+   *
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    * for a list of reserved parameters
    * @default - no arguments
@@ -476,25 +485,50 @@ export abstract class Job extends JobBase {
   }
 
   /**
+   * Argument keys that Glue reserves for its own use and that a caller must never set through
+   * `defaultArguments`. Unlike construct-managed arguments (which are derived from what each job
+   * class emits), these are owned by the Glue service itself and are reserved for every job type.
+   *
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  private static readonly GLUE_RESERVED_ARGUMENTS = new Set(['--debug', '--mode', '--JOB_NAME']);
+
+  /**
    * The IAM role Glue assumes to run this job.
    */
   public readonly abstract role: iam.IRole;
 
   /**
-   * Check no usage of reserved arguments.
+   * Merge the customer-supplied `defaultArguments` with the arguments this construct manages.
+   *
+   * The construct owns every argument it emits — whether the value comes from a dedicated typed
+   * prop (e.g. `continuousLogging`, `enableMetrics`, `sparkUI`) or from the job class itself
+   * (e.g. `--job-language`). Those arguments, plus the arguments Glue reserves for its own use,
+   * MUST be configured through their dedicated props rather than the untyped `defaultArguments`
+   * map, so there is exactly one way to express each intent. Passing a managed or Glue-reserved
+   * key through `defaultArguments` therefore throws instead of silently winning or being silently
+   * dropped.
+   *
+   * The reserved set is derived from `managedArguments` (the arguments the caller actually emits)
+   * rather than a hand-maintained list, so adding a new typed prop automatically reserves its
+   * argument key without a second place to update.
    *
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
-  protected checkNoReservedArgs(defaultArguments?: { [key: string]: string }) {
+  protected mergeManagedArguments(managedArguments: { [key: string]: string }, defaultArguments?: { [key: string]: string }) {
     if (defaultArguments) {
-      const reservedArgs = new Set(['--debug', '--mode', '--JOB_NAME']);
-      Object.keys(defaultArguments).forEach((arg) => {
-        if (reservedArgs.has(arg)) {
-          throw new cdk.ValidationError(lit`ReservedArgumentUsed`, `The ${arg} argument is reserved by Glue. Don't set it`, this);
-        }
-      });
+      const conflicts = Object.keys(defaultArguments).filter(
+        (arg) => arg in managedArguments || Job.GLUE_RESERVED_ARGUMENTS.has(arg),
+      );
+      if (conflicts.length > 0) {
+        throw new cdk.ValidationError(
+          lit`ManagedJobArgument`,
+          `the job argument(s) ${JSON.stringify(conflicts)} are managed by the construct or reserved by Glue; configure them through the corresponding props (e.g. continuousLogging, enableMetrics, enableObservabilityMetrics, sparkUI) instead of defaultArguments`,
+          this,
+        );
+      }
     }
-    return defaultArguments;
+    return { ...defaultArguments, ...managedArguments };
   }
 
   /**

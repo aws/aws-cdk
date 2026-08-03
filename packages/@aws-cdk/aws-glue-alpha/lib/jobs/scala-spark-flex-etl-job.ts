@@ -90,10 +90,11 @@ export class ScalaSparkFlexEtlJob extends SparkJob {
     addConstructMetadata(this, props);
 
     // Combine command line arguments into a single line item
-    const defaultArguments = {
+    const managedArguments = {
       ...this.executableArguments(props),
       ...this.nonExecutableCommonArguments(props),
     };
+    const defaultArguments = this.mergeManagedArguments(managedArguments, props.defaultArguments);
 
     this.resource = new CfnJob(this, 'Resource', {
       name: props.jobName,

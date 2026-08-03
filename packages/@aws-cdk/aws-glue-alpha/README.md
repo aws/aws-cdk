@@ -344,6 +344,47 @@ new glue.PySparkEtlJob(stack, 'SelectiveJob', {
 
 This feature is available for all Spark job types (ETL, Streaming, Flex).
 
+### Job Arguments
+
+Glue jobs are configured through a map of name-value arguments (`DefaultArguments`). This construct
+manages several of these arguments on your behalf and exposes each one through a dedicated,
+strongly-typed prop:
+
+| Managed argument(s)                                                      | Prop                                                            |
+|--------------------------------------------------------------------------|-----------------------------------------------------------------|
+| `--enable-continuous-cloudwatch-log`, `--continuous-log-*`               | `continuousLogging`                                             |
+| `--enable-metrics`                                                       | `enableMetrics`                                                 |
+| `--enable-observability-metrics`                                         | `enableObservabilityMetrics`                                    |
+| `--enable-spark-ui`, `--spark-event-logs-path`                           | `sparkUI`                                                       |
+| `--job-language`, `--class`                                              | job class / `className`                                         |
+| `--extra-jars`, `--user-jars-first`, `--extra-py-files`, `--extra-files` | `extraJars`, `extraJarsFirst`, `extraPythonFiles`, `extraFiles` |
+
+The `defaultArguments` prop is the escape hatch for arguments this construct does **not** model.
+Use it for any argument without a dedicated prop:
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const stack: cdk.Stack;
+declare const role: iam.IRole;
+declare const script: glue.Code;
+
+new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
+  role,
+  script,
+  defaultArguments: {
+    // an argument this construct does not manage
+    '--enable-glue-datacatalog': 'true',
+  },
+});
+```
+
+To keep a single, unambiguous way to express each intent, setting a **construct-managed** argument
+(any argument in the table above) or a **Glue-reserved** argument (`--debug`, `--mode`,
+`--JOB_NAME`) through `defaultArguments` throws at synthesis time. Configure those through their
+dedicated prop instead — for example, use `continuousLogging: { enabled: false }` rather than
+`defaultArguments: { '--enable-continuous-cloudwatch-log': 'false' }`.
+
 ### Enable Job Run Queuing
 
 AWS Glue job queuing monitors your account level quotas and limits. If quotas or limits are insufficient to start a Glue job run, AWS Glue will automatically queue the job and wait for limits to free up. Once limits become available, AWS Glue will retry the job run. Glue jobs will queue for limits like max concurrent job runs per account, max concurrent Data Processing Units (DPU), and resource unavailable due to IP address exhaustion in Amazon Virtual Private Cloud (Amazon VPC).
