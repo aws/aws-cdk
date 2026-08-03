@@ -696,7 +696,7 @@ class MediaLiveInputRouterOutputConfig extends RouterOutputConfiguration {
 }
 
 /**
- * Internal options for {@link MediaLiveInputRouterOutputConfig}. Not exported; jsii never sees this.
+ * Internal options for {@link MediaLiveInputRouterOutputConfig}.
  */
 interface MediaLiveInputRouterOutputOptions {
   readonly mediaLiveInputArn?: string;
@@ -731,7 +731,7 @@ class MediaConnectFlowRouterOutputConfig extends RouterOutputConfiguration {
 }
 
 /**
- * Internal options for {@link MediaConnectFlowRouterOutputConfig}. Not exported; jsii never sees this.
+ * Internal options for {@link MediaConnectFlowRouterOutputConfig}.
  */
 interface MediaConnectFlowRouterOutputOptions {
   readonly flow?: IFlow;

@@ -1053,7 +1053,7 @@ class MergeRouterInputConfig extends RouterInputConfiguration {
 }
 
 /**
- * Internal options for {@link MediaConnectFlowRouterInputConfig}. Not exported; jsii never sees this.
+ * Internal options for {@link MediaConnectFlowRouterInputConfig}.
  */
 interface MediaConnectFlowRouterInputOptions {
   readonly flow?: IFlow;
@@ -1090,7 +1090,7 @@ class MediaConnectFlowRouterInputConfig extends RouterInputConfiguration {
 }
 
 /**
- * Internal options for {@link MediaLiveChannelRouterInputConfig}. Not exported; jsii never sees this.
+ * Internal options for {@link MediaLiveChannelRouterInputConfig}.
  */
 interface MediaLiveChannelRouterInputOptions {
   readonly mediaLiveChannelArn?: string;
