@@ -152,9 +152,7 @@ export abstract class SparkJob extends Job {
   }
 
   /**
-   * The arguments this construct manages for a Spark job. These are owned by the construct
-   * (derived from typed props) and are reserved from `defaultArguments` by
-   * {@link Job.mergeManagedArguments}.
+   * The arguments this construct manages for a Spark job. These are owned by the construct (derived from typed props).
    */
   protected nonExecutableCommonArguments(props: SparkJobProps): {[key: string]: string} {
     // Enable CloudWatch metrics and continuous logging by default as a best practice
