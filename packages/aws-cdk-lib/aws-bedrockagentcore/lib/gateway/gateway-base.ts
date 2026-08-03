@@ -11,6 +11,9 @@ import type * as kms from '../../../aws-kms';
 import { Resource } from '../../../core';
 import type { IResource, ResourceProps } from '../../../core';
 
+/** The operation dimension value for AgentCore Gateway invocation metrics. */
+const INVOKE_OPERATION = 'InvokeGateway';
+
 /******************************************************************************
  *                                 Enums
  *****************************************************************************/
@@ -346,8 +349,9 @@ export abstract class GatewayBase extends Resource implements IGateway {
   /**
    * Return the given named metric for this gateway.
    *
-   * By default, the metric will be calculated as a sum over a period of 5 minutes.
-   * You can customize this by using the `statistic` and `period` properties.
+   * The metric is scoped to this gateway. By default, the metric will be calculated
+   * as a sum over a period of 5 minutes. You can customize this by using the `statistic`
+   * and `period` properties.
    *
    * @param metricName The name of the metric
    * @param props Optional metric configuration
@@ -357,7 +361,12 @@ export abstract class GatewayBase extends Resource implements IGateway {
       namespace: 'AWS/Bedrock-AgentCore',
       metricName,
       ...props,
-      dimensionsMap: { Resource: this.gatewayRef.gatewayArn, ...props?.dimensionsMap },
+      dimensionsMap: {
+        Operation: INVOKE_OPERATION,
+        Protocol: this.protocolConfiguration.protocolType,
+        Resource: this.gatewayRef.gatewayArn,
+        ...props?.dimensionsMap,
+      },
     };
     return this.configureMetric(metricProps);
   }
