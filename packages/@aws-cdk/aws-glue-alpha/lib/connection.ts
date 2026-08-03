@@ -219,6 +219,11 @@ export class ConnectionType {
   public static readonly DYNAMODB = new ConnectionType('DYNAMODB');
 
   /**
+   * Designates a connection to Snowflake.
+   */
+  public static readonly SNOWFLAKE = new ConnectionType('SNOWFLAKE');
+
+  /**
    * The name of this ConnectionType, as expected by Connection resource.
    */
   public readonly name: string;
