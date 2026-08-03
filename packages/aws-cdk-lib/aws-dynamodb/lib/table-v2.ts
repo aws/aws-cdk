@@ -874,11 +874,8 @@ export class TableV2 extends TableBaseV2 {
     props.replicas?.forEach(replica => this.addReplica(replica));
 
     // Initialize grants with replica regions for multi-account permissions.
-    // `hasIndex` is intentionally NOT passed here. Passing the eagerly evaluated
-    // value would bake in whatever index state exists at construction time, which
-    // misses indexes added later via `addGlobalSecondaryIndex` / `addLocalSecondaryIndex`.
-    // The `Lazy.string` in `TableGrants.arnForIndex` falls back to reading
-    // `table.hasIndex` at synth time, which is what we want.
+    // `hasIndex` deliberately omitted: `TableGrants` resolves `table.hasIndex` lazily at synth
+    // time, so indexes added after construction (`addGlobalSecondaryIndex`) are included.
     this.grants = new TableGrants({
       table: this,
       regions: Array.from(this.replicaTables.keys()),
