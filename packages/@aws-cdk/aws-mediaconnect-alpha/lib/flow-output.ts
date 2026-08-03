@@ -218,6 +218,10 @@ export interface SrtCallerOutputConfig {
   /**
    * The minimum latency in milliseconds for SRT-based streams.
    *
+   * In streams that use the SRT protocol, this value that you set on your MediaConnect source or output represents
+   * the minimal potential latency of that connection. The latency of the stream is set to the highest number between
+   * the sender’s minimum latency and the receiver’s minimum latency.
+   *
    * @default - no minimum latency
    */
   readonly minLatency?: Duration;
@@ -255,6 +259,10 @@ export interface SrtCallerOutputConfig {
 export interface SrtListenerOutputConfig {
   /**
    * The minimum latency in milliseconds for SRT-based streams.
+   *
+   * In streams that use the SRT protocol, this value that you set on your MediaConnect source or output represents
+   * the minimal potential latency of that connection. The latency of the stream is set to the highest number between
+   * the sender’s minimum latency and the receiver’s minimum latency.
    *
    * @default - no minimum latency
    */
