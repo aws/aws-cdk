@@ -515,7 +515,10 @@ export abstract class Job extends JobBase {
    *
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
-  protected mergeManagedArguments(managedArguments: { [key: string]: string }, defaultArguments?: { [key: string]: string }) {
+  protected mergeManagedArguments(
+    managedArguments: { [key: string]: string },
+    defaultArguments?: { [key: string]: string },
+  ): { [key: string]: string } {
     if (defaultArguments) {
       const conflicts = Object.keys(defaultArguments).filter(
         (arg) => arg in managedArguments || Job.GLUE_RESERVED_ARGUMENTS.has(arg),
