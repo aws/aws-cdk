@@ -79,7 +79,7 @@ export class PythonShellJob extends Job {
     this.grantPrincipal = this.role;
 
     // Enable CloudWatch metrics and continuous logging by default as a best practice
-    const continuousLoggingArgs = this.setupContinuousLogging(this.role, props.continuousLogging);
+    const continuousLoggingArgs = this.setupContinuousLogging(this.role, props.continuousLogging, props.securityConfiguration);
     const profilingMetricsArgs = { '--enable-metrics': '' };
     const observabilityMetricsArgs = { '--enable-observability-metrics': 'true' };
 

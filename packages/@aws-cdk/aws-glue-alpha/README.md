@@ -79,6 +79,17 @@ The following ETL features are enabled by default:
 You can find more details about version, worker type and other features in
 [Glue's public documentation](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-jobs-job.html).
 
+> **Note on continuous logging and encryption:** Because continuous logging is
+> enabled by default, job driver and executor stdout/stderr are streamed to
+> CloudWatch. Unless you attach a [`SecurityConfiguration`](#securityconfiguration)
+> with `cloudWatchEncryption`, these logs are written to the account-shared,
+> default Glue log group (`/aws-glue/jobs/logs-v2/`), which is **not** encrypted
+> with a customer-managed key. Since job logs can contain sensitive runtime data
+> (SQL statements, row values, error stack traces), attach a `SecurityConfiguration`
+> with `cloudWatchEncryption` for regulated workloads. The construct emits a
+> synthesis-time warning when continuous logging is on and no `SecurityConfiguration`
+> is attached.
+
 Reference the pyspark-etl-jobs.test.ts and scalaspark-etl-jobs.test.ts unit tests
 for examples of required-only and optional job parameters when creating these
 types of jobs.

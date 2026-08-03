@@ -501,12 +501,25 @@ export abstract class Job extends JobBase {
    * Setup Continuous Logging Properties
    * @param role The IAM role to use for continuous logging
    * @param props The properties for continuous logging configuration
+   * @param securityConfiguration The security configuration attached to the job, if any
    * @returns String containing the args for the continuous logging command
    */
-  protected setupContinuousLogging(role: iam.IRole, props: ContinuousLoggingProps | undefined) : any {
+  protected setupContinuousLogging(role: iam.IRole, props: ContinuousLoggingProps | undefined, securityConfiguration?: ISecurityConfiguration) : any {
     // If the developer has explicitly disabled continuous logging return no args
     if (props && !props.enabled) {
       return {};
+    }
+
+    // Continuous logging is on (explicitly or by default), but the logs will be written to an
+    // unencrypted CloudWatch log group unless a SecurityConfiguration is attached. We cannot
+    // introspect whether the attached SecurityConfiguration actually configures cloudWatchEncryption
+    // (the ISecurityConfiguration interface only exposes the name), so we only warn when none is
+    // attached at all to avoid false positives.
+    if (!securityConfiguration) {
+      cdk.Annotations.of(this).addWarningV2(
+        'aws-cdk/aws-glue-alpha:unencryptedContinuousLogging',
+        'Continuous CloudWatch logging is enabled but no SecurityConfiguration with cloudWatchEncryption is attached. Job stdout and stderr will be written to an unencrypted CloudWatch log group. See https://docs.aws.amazon.com/glue/latest/dg/encryption-security-configuration.html',
+      );
     }
 
     // Else we turn on continuous logging by default. Determine what log group to use.

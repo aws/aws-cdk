@@ -90,7 +90,7 @@ export class RayJob extends Job {
     this.grantPrincipal = this.role;
 
     // Enable CloudWatch metrics and continuous logging by default as a best practice
-    const continuousLoggingArgs = this.setupContinuousLogging(this.role, props.continuousLogging);
+    const continuousLoggingArgs = this.setupContinuousLogging(this.role, props.continuousLogging, props.securityConfiguration);
 
     // Conditionally include metrics arguments (default to enabled for backward compatibility)
     const profilingMetricsArgs = (props.enableMetrics ?? true) ? { '--enable-metrics': '' } : {};
