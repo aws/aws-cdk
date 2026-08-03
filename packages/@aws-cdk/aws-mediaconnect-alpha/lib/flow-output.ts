@@ -216,10 +216,7 @@ export interface ZixiPushOutputConfig {
  */
 export interface SrtCallerOutputConfig {
   /**
-   * The minimum latency in milliseconds for SRT-based streams. The value you set on your
-   * MediaConnect output represents the minimal potential latency of that connection. The
-   * latency of the stream is set to the higher of the sender's minimum latency and the
-   * receiver's minimum latency.
+   * The minimum latency in milliseconds for SRT-based streams.
    *
    * @default - no minimum latency
    */
@@ -257,10 +254,7 @@ export interface SrtCallerOutputConfig {
  */
 export interface SrtListenerOutputConfig {
   /**
-   * The minimum latency in milliseconds for SRT-based streams. The value you set on your
-   * MediaConnect output represents the minimal potential latency of that connection. The
-   * latency of the stream is set to the higher of the sender's minimum latency and the
-   * receiver's minimum latency.
+   * The minimum latency in milliseconds for SRT-based streams.
    *
    * @default - no minimum latency
    */
