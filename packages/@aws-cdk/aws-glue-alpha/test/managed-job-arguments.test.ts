@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Annotations, Match, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as glue from '../lib';
@@ -164,4 +164,36 @@ describe('defaultArguments managed-key invariant', () => {
       });
     });
   }
+
+  describe('token-keyed defaultArguments', () => {
+    test('warns that a token argument key cannot be checked for conflicts', () => {
+      const stack = new cdk.Stack(new cdk.App(), 'S');
+      // A Lazy.string resolves to a plain string, so it survives synthesis (unlike a CfnParameter
+      // key, which resolves to an intrinsic and fails). Its value is unknown at synth time, so the
+      // conflict check cannot see that it collides with a managed argument.
+      const tokenKey = cdk.Lazy.string({ produce: () => '--enable-continuous-cloudwatch-log' });
+      new glue.PythonShellJob(stack, 'Job', {
+        role: roleOf(stack),
+        script: scriptOf(stack),
+        jobName: 'Job',
+        defaultArguments: { [tokenKey]: 'false' },
+      });
+      Annotations.fromStack(stack).hasWarning('/S/Job', Match.stringLikeRegexp('.*unresolved token as an argument key.*'));
+    });
+
+    test('construct-managed value takes precedence when a token key resolves to a managed key', () => {
+      const stack = new cdk.Stack(new cdk.App(), 'S');
+      const tokenKey = cdk.Lazy.string({ produce: () => '--enable-continuous-cloudwatch-log' });
+      new glue.PythonShellJob(stack, 'Job', {
+        role: roleOf(stack),
+        script: scriptOf(stack),
+        jobName: 'Job',
+        defaultArguments: { [tokenKey]: 'false' },
+      });
+      // The managed 'true' wins over the user-supplied 'false' (documented, and warned about).
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        DefaultArguments: Match.objectLike({ '--enable-continuous-cloudwatch-log': 'true' }),
+      });
+    });
+  });
 });

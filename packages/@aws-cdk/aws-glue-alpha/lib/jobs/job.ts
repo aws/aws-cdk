@@ -517,6 +517,12 @@ export abstract class Job extends JobBase {
    * rather than a hand-maintained list, so adding a new typed prop automatically reserves its
    * argument key without a second place to update.
    *
+   * Conflict detection relies on string equality of the argument keys, which cannot see through
+   * unresolved tokens (e.g. a key produced by `CfnJson` that only resolves at deploy time). If a
+   * key is a token, the check is skipped for that key and a synthesis-time warning is emitted, so
+   * the (rare) case where a token key resolves to a managed argument at deploy time — in which the
+   * construct-managed value would silently take precedence — is surfaced rather than hidden.
+   *
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   protected mergeManagedArguments(
@@ -524,6 +530,12 @@ export abstract class Job extends JobBase {
     defaultArguments?: { [key: string]: string },
   ): { [key: string]: string } {
     if (defaultArguments) {
+      if (Object.keys(defaultArguments).some((arg) => cdk.Token.isUnresolved(arg))) {
+        cdk.Annotations.of(this).addWarningV2(
+          'aws-cdk/aws-glue-alpha:tokenJobArgumentKey',
+          'defaultArguments contains an unresolved token as an argument key, so it cannot be checked for conflicts with construct-managed arguments. If it resolves to a managed argument at deploy time, the construct-managed value will take precedence. Configure managed arguments through their dedicated props (e.g. continuousLogging, enableMetrics, enableObservabilityMetrics, sparkUI).',
+        );
+      }
       const conflicts = Object.keys(defaultArguments).filter(
         (arg) => Job.GLUE_RESERVED_ARGUMENTS.has(arg)
           || (arg in managedArguments && defaultArguments[arg] !== managedArguments[arg]),
