@@ -110,9 +110,7 @@
     "DefaultArguments": {
      "--job-language": "python",
      "library-set": "analytics",
-     "--enable-continuous-cloudwatch-log": "true",
-     "--enable-metrics": "",
-     "--enable-observability-metrics": "true"
+     "--enable-continuous-cloudwatch-log": "true"
     },
     "GlueVersion": "3.0",
     "JobRunQueuingEnabled": false,
@@ -147,9 +145,7 @@
     },
     "DefaultArguments": {
      "--job-language": "python",
-     "--enable-continuous-cloudwatch-log": "true",
-     "--enable-metrics": "",
-     "--enable-observability-metrics": "true"
+     "--enable-continuous-cloudwatch-log": "true"
     },
     "GlueVersion": "1.0",
     "JobRunQueuingEnabled": false,
@@ -197,9 +193,7 @@
        ]
       ]
      },
-     "--enable-continuous-cloudwatch-log": "true",
-     "--enable-metrics": "",
-     "--enable-observability-metrics": "true"
+     "--enable-continuous-cloudwatch-log": "true"
     },
     "GlueVersion": "3.0",
     "JobRunQueuingEnabled": false,
@@ -233,13 +227,11 @@
      }
     },
     "DefaultArguments": {
+     "arg1": "value1",
+     "arg2": "value2",
      "--job-language": "python",
      "library-set": "analytics",
-     "--enable-continuous-cloudwatch-log": "true",
-     "--enable-metrics": "",
-     "--enable-observability-metrics": "true",
-     "arg1": "value1",
-     "arg2": "value2"
+     "--enable-continuous-cloudwatch-log": "true"
     },
     "Description": "My detailed Python 3.9 Shell Job",
     "GlueVersion": "3.0",

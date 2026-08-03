@@ -256,8 +256,9 @@ Python shell jobs support a Python version that depends on the AWS Glue
 version you use. These can be used to schedule and run tasks that don't
 require an Apache Spark environment. Python shell jobs default to
 Python 3.9 and a MaxCapacity of `0.0625`. Python 3.9 supports pre-loaded
-analytics libraries using the `library-set=analytics` flag, which is
-enabled by default.
+analytics libraries, enabled by default (`librarySet: glue.LibrarySet.ANALYTICS`).
+Set `librarySet: glue.LibrarySet.NONE` when your libraries are custom or
+conflict with the pre-installed ones.
 
 Reference the pyspark-shell-job.test.ts unit tests for examples of 
 required-only and optional job parameters when creating these types of jobs.

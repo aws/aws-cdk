@@ -74,12 +74,19 @@ describe('Job', () => {
     test('Has Continuous Logging Enabled', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         DefaultArguments: Match.objectLike({
-          '--enable-metrics': '',
-          '--enable-observability-metrics': 'true',
           '--enable-continuous-cloudwatch-log': 'true',
           '--job-language': 'python',
           'library-set': 'analytics',
         }),
+      });
+    });
+
+    test('does not set Spark-only profiling metrics args (not supported on Python shell)', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        DefaultArguments: Match.not(Match.objectLike({ '--enable-metrics': Match.anyValue() })),
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        DefaultArguments: Match.not(Match.objectLike({ '--enable-observability-metrics': Match.anyValue() })),
       });
     });
   });
@@ -105,8 +112,6 @@ describe('Job', () => {
     test('Has Continuous Logging enabled with optional args', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         DefaultArguments: Match.objectLike({
-          '--enable-metrics': '',
-          '--enable-observability-metrics': 'true',
           '--continuous-log-logGroup': Match.objectLike({
             Ref: Match.anyValue(),
           }),
@@ -135,11 +140,48 @@ describe('Job', () => {
     test('Has Continuous Logging Disabled', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         DefaultArguments: {
-          '--enable-metrics': '',
-          '--enable-observability-metrics': 'true',
           '--job-language': 'python',
         },
       });
+    });
+  });
+
+  describe('librarySet', () => {
+    test('defaults to analytics on Python 3.9', () => {
+      new glue.PythonShellJob(stack, 'PythonShellJob', { role, script });
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        DefaultArguments: Match.objectLike({ 'library-set': 'analytics' }),
+      });
+    });
+
+    test('can be overridden to none', () => {
+      new glue.PythonShellJob(stack, 'PythonShellJob', {
+        role,
+        script,
+        librarySet: glue.LibrarySet.NONE,
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        DefaultArguments: Match.objectLike({ 'library-set': 'none' }),
+      });
+    });
+
+    test('is not set for non-3.9 Python versions', () => {
+      new glue.PythonShellJob(stack, 'PythonShellJob', {
+        role,
+        script,
+        pythonVersion: glue.PythonVersion.TWO,
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        DefaultArguments: Match.not(Match.objectLike({ 'library-set': Match.anyValue() })),
+      });
+    });
+
+    test('rejects the managed `library-set` key passed via defaultArguments', () => {
+      expect(() => new glue.PythonShellJob(stack, 'PythonShellJob', {
+        role,
+        script,
+        defaultArguments: { 'library-set': 'none' },
+      })).toThrow(/managed by the construct or reserved by Glue/);
     });
   });
 
@@ -231,8 +273,6 @@ describe('Job', () => {
     test('Verify Default Arguemnts', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         DefaultArguments: Match.objectLike({
-          '--enable-metrics': '',
-          '--enable-observability-metrics': 'true',
           '--job-language': 'python',
         }),
       });
@@ -402,8 +442,6 @@ describe('Job', () => {
     test('Verify Default Arguemnts', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         DefaultArguments: Match.objectLike({
-          '--enable-metrics': '',
-          '--enable-observability-metrics': 'true',
           '--job-language': 'python',
         }),
       });
