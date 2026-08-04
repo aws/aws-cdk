@@ -36,17 +36,6 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "DatabaseB269D8BB": {
-   "Type": "AWS::Glue::Database",
-   "Properties": {
-    "CatalogId": {
-     "Ref": "AWS::AccountId"
-    },
-    "DatabaseInput": {
-     "Name": "testdb"
-    }
-   }
-  },
   "awscdkawsgluealphaAccountCatalogEncryptionSettingsEFB2BA3D": {
    "Type": "AWS::Glue::DataCatalogEncryptionSettings",
    "Properties": {
@@ -63,6 +52,17 @@
        ]
       }
      }
+    }
+   }
+  },
+  "DatabaseB269D8BB": {
+   "Type": "AWS::Glue::Database",
+   "Properties": {
+    "CatalogId": {
+     "Ref": "AWS::AccountId"
+    },
+    "DatabaseInput": {
+     "Name": "testdb"
     }
    }
   },
@@ -202,6 +202,16 @@
     "PolicyDocument": {
      "Statement": [
       {
+       "Action": "kms:Decrypt",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "CatalogKey9CBE1E01",
+         "Arn"
+        ]
+       }
+      },
+      {
        "Action": [
         "glue:CreatePartitionIndex",
         "glue:DeletePartitionIndex",
@@ -282,16 +292,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": "kms:Decrypt",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "CatalogKey9CBE1E01",
-         "Arn"
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"
@@ -384,6 +384,16 @@
     "PolicyDocument": {
      "Statement": [
       {
+       "Action": "kms:Decrypt",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "CatalogKey9CBE1E01",
+         "Arn"
+        ]
+       }
+      },
+      {
        "Action": [
         "glue:CreatePartitionIndex",
         "glue:DeletePartitionIndex",
@@ -464,16 +474,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": "kms:Decrypt",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "CatalogKey9CBE1E01",
-         "Arn"
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"

@@ -502,20 +502,15 @@ describe('parition indexes', () => {
       expect(createStatements).toHaveLength(2);
     });
 
-    test.each([
-      ['before the partition index is added', true],
-      ['after the partition index is added', false],
-    ])('grants the catalog encryption key to the handler roles when encryption is configured %s', (_, encryptFirst) => {
+    test('grants the catalog encryption key to the handler roles when the catalog is encrypted', () => {
       const stack = new cdk.Stack();
       const key = new kms.Key(stack, 'Key');
+      // Encryption is fixed at construction, so the account catalog must be
+      // encrypted before the database (which uses it by default) is created.
+      glue.Catalog.encryptAccount(stack, {
+        encryptionAtRest: glue.DataCatalogEncryptionAtRest.kms(key),
+      });
       const database = new glue.Database(stack, 'Database');
-
-      const configureEncryption = () =>
-        database.catalog.encryptAtRest(glue.DataCatalogEncryptionAtRest.kms(key));
-
-      if (encryptFirst) {
-        configureEncryption();
-      }
 
       const table = new glue.S3Table(stack, 'Table', {
         database,
@@ -524,13 +519,6 @@ describe('parition indexes', () => {
         dataFormat: glue.DataFormat.JSON,
       });
       table.addPartitionIndex({ indexName: 'index1', keyNames: ['year'] });
-
-      if (!encryptFirst) {
-        // Configuring catalog encryption after the table (and its partition
-        // index) already exist must still grant the handler roles access to the
-        // key - the grant is resolved at synthesis time.
-        configureEncryption();
-      }
 
       const template = Template.fromStack(stack);
 

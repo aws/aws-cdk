@@ -2,7 +2,7 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { Database, DataCatalogEncryptionAtRest, DataFormat, S3Table, Schema } from '../lib';
+import { Catalog, Database, DataCatalogEncryptionAtRest, DataFormat, S3Table, Schema } from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-glue');
@@ -12,15 +12,17 @@ const catalogKey = new Key(stack, 'CatalogKey', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
+// Encrypt the account-wide catalog. This must be configured before the account
+// catalog is first used (e.g. by the Database below, which uses it by default).
+// All Data Catalog metadata - including partition indexes - is now encrypted
+// with this customer-managed key.
+Catalog.encryptAccount(stack, {
+  encryptionAtRest: DataCatalogEncryptionAtRest.kms(catalogKey),
+});
+
 const database = new Database(stack, 'Database', {
   databaseName: 'testdb',
 });
-
-// Encrypt this database's catalog, which happens to be the account-wide one,
-// since we constructed it without passing an explicit catalog. All Data Catalog
-// metadata - including partition indexes - is now encrypted with this
-// customer-managed key.
-database.catalog.encryptAtRest(DataCatalogEncryptionAtRest.kms(catalogKey));
 
 const table = new S3Table(stack, 'MyTable', {
   database: database,
@@ -86,5 +88,3 @@ indexes.expect(integ.ExpectedResult.objectLike({
     { IndexName: 'test', IndexStatus: 'ACTIVE' },
   ],
 }));
-
-app.synth();

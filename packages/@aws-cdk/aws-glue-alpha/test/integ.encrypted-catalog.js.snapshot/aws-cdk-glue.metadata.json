@@ -38,16 +38,16 @@
       "data": "CatalogKey9CBE1E01"
     }
   ],
-  "/aws-cdk-glue/Database/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "DatabaseB269D8BB"
-    }
-  ],
   "/aws-cdk-glue/@aws-cdk.aws-glue-alpha.AccountCatalog/EncryptionSettings": [
     {
       "type": "aws:cdk:logicalId",
       "data": "awscdkawsgluealphaAccountCatalogEncryptionSettingsEFB2BA3D"
+    }
+  ],
+  "/aws-cdk-glue/Database/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DatabaseB269D8BB"
     }
   ],
   "/aws-cdk-glue/MyTable/Bucket": [

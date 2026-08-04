@@ -1,5 +1,6 @@
 import { App, Fn, Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
+import { CfnDataCatalogEncryptionSettings } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as glue from '../lib';
@@ -33,10 +34,76 @@ describe('Catalog.forAccount', () => {
   });
 });
 
+describe('Catalog.encryptAccount', () => {
+  test('returns the account catalog singleton', () => {
+    const configured = glue.Catalog.encryptAccount(stack, {
+      encryptionAtRest: glue.DataCatalogEncryptionAtRest.kms(),
+    });
+
+    expect(glue.Catalog.forAccount(stack)).toBe(configured);
+  });
+
+  test('configures the account catalog encryption', () => {
+    const key = new kms.Key(stack, 'Key');
+    glue.Catalog.encryptAccount(stack, {
+      encryptionAtRest: glue.DataCatalogEncryptionAtRest.kms(key),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::DataCatalogEncryptionSettings', {
+      CatalogId: '123456789012',
+      DataCatalogEncryptionSettings: {
+        EncryptionAtRest: {
+          CatalogEncryptionMode: 'SSE-KMS',
+          SseAwsKmsKeyId: { 'Fn::GetAtt': [Match.stringLikeRegexp('Key'), 'Arn'] },
+        },
+      },
+    });
+  });
+
+  test('a Database created after encryptAccount uses the configured account catalog', () => {
+    const key = new kms.Key(stack, 'Key');
+    const configured = glue.Catalog.encryptAccount(stack, {
+      encryptionAtRest: glue.DataCatalogEncryptionAtRest.kms(key),
+    });
+
+    const database = new glue.Database(stack, 'Database');
+
+    expect(database.catalog).toBe(configured);
+    expect(database.catalog.encryptionKey).toBe(key);
+  });
+
+  test('fails when the account catalog was already materialized via forAccount', () => {
+    glue.Catalog.forAccount(stack);
+
+    expect(() => glue.Catalog.encryptAccount(stack, {
+      encryptionAtRest: glue.DataCatalogEncryptionAtRest.kms(),
+    })).toThrow('the account catalog has already been used in this stack');
+  });
+
+  test('fails when the account catalog was already materialized by a Database', () => {
+    const database = new glue.Database(stack, 'Database');
+    // Materialize the account catalog by reading the getter.
+    expect(database.catalog).toBeDefined();
+
+    expect(() => glue.Catalog.encryptAccount(stack, {
+      encryptionAtRest: glue.DataCatalogEncryptionAtRest.kms(),
+    })).toThrow('the account catalog has already been used in this stack');
+  });
+
+  test('fails when called twice', () => {
+    glue.Catalog.encryptAccount(stack, { encryptionAtRest: glue.DataCatalogEncryptionAtRest.kms() });
+
+    expect(() => glue.Catalog.encryptAccount(stack, {
+      encryptionAtRest: glue.DataCatalogEncryptionAtRest.disabled(),
+    })).toThrow('the account catalog has already been used in this stack');
+  });
+});
+
 describe('encryption at rest', () => {
   test('disabled mode', () => {
-    const catalog = glue.Catalog.forAccount(stack);
-    catalog.encryptAtRest(glue.DataCatalogEncryptionAtRest.disabled());
+    glue.Catalog.encryptAccount(stack, {
+      encryptionAtRest: glue.DataCatalogEncryptionAtRest.disabled(),
+    });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Glue::DataCatalogEncryptionSettings', {
       CatalogId: '123456789012',
@@ -48,8 +115,9 @@ describe('encryption at rest', () => {
 
   test('SSE-KMS with a customer-managed key exposes the key and sets the ARN', () => {
     const key = new kms.Key(stack, 'Key');
-    const catalog = glue.Catalog.forAccount(stack);
-    catalog.encryptAtRest(glue.DataCatalogEncryptionAtRest.kms(key));
+    const catalog = glue.Catalog.encryptAccount(stack, {
+      encryptionAtRest: glue.DataCatalogEncryptionAtRest.kms(key),
+    });
 
     expect(catalog.encryptionKey).toBe(key);
     Template.fromStack(stack).hasResourceProperties('AWS::Glue::DataCatalogEncryptionSettings', {
@@ -63,8 +131,9 @@ describe('encryption at rest', () => {
   });
 
   test('SSE-KMS without a key uses an AWS-managed key and exposes no key', () => {
-    const catalog = glue.Catalog.forAccount(stack);
-    catalog.encryptAtRest(glue.DataCatalogEncryptionAtRest.kms());
+    const catalog = glue.Catalog.encryptAccount(stack, {
+      encryptionAtRest: glue.DataCatalogEncryptionAtRest.kms(),
+    });
 
     expect(catalog.encryptionKey).toBeUndefined();
     Template.fromStack(stack).hasResourceProperties('AWS::Glue::DataCatalogEncryptionSettings', {
@@ -80,8 +149,9 @@ describe('encryption at rest', () => {
   test('SSE-KMS-WITH-SERVICE-ROLE auto-grants the role on the key', () => {
     const key = new kms.Key(stack, 'Key');
     const role = new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal('glue.amazonaws.com') });
-    const catalog = glue.Catalog.forAccount(stack);
-    catalog.encryptAtRest(glue.DataCatalogEncryptionAtRest.kmsWithServiceRole(role, key));
+    glue.Catalog.encryptAccount(stack, {
+      encryptionAtRest: glue.DataCatalogEncryptionAtRest.kmsWithServiceRole(role, key),
+    });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Glue::DataCatalogEncryptionSettings', {
       DataCatalogEncryptionSettings: {
@@ -105,8 +175,9 @@ describe('encryption at rest', () => {
 
   test('service role without a key does not create a policy', () => {
     const role = new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal('glue.amazonaws.com') });
-    const catalog = glue.Catalog.forAccount(stack);
-    catalog.encryptAtRest(glue.DataCatalogEncryptionAtRest.kmsWithServiceRole(role));
+    const catalog = glue.Catalog.encryptAccount(stack, {
+      encryptionAtRest: glue.DataCatalogEncryptionAtRest.kmsWithServiceRole(role),
+    });
 
     expect(catalog.encryptionKey).toBeUndefined();
     Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
@@ -115,8 +186,9 @@ describe('encryption at rest', () => {
 
 describe('connection password encryption', () => {
   test('defaults returnConnectionPasswordEncrypted to true', () => {
-    const catalog = glue.Catalog.forAccount(stack);
-    catalog.encryptConnectionPasswords({});
+    glue.Catalog.encryptAccount(stack, {
+      connectionPasswordEncryption: {},
+    });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Glue::DataCatalogEncryptionSettings', {
       DataCatalogEncryptionSettings: {
@@ -127,8 +199,9 @@ describe('connection password encryption', () => {
 
   test('exposes the connection password key', () => {
     const key = new kms.Key(stack, 'Key');
-    const catalog = glue.Catalog.forAccount(stack);
-    catalog.encryptConnectionPasswords({ kmsKey: key, returnConnectionPasswordEncrypted: false });
+    const catalog = glue.Catalog.encryptAccount(stack, {
+      connectionPasswordEncryption: { kmsKey: key, returnConnectionPasswordEncrypted: false },
+    });
 
     expect(catalog.connectionPasswordKey).toBe(key);
     Template.fromStack(stack).hasResourceProperties('AWS::Glue::DataCatalogEncryptionSettings', {
@@ -146,10 +219,10 @@ describe('independence of the two encryption blocks', () => {
   test('the two keys may differ and neither block requires the other', () => {
     const atRestKey = new kms.Key(stack, 'AtRestKey');
     const passwordKey = new kms.Key(stack, 'PasswordKey');
-    const catalog = glue.Catalog.forAccount(stack);
-
-    catalog.encryptAtRest(glue.DataCatalogEncryptionAtRest.kms(atRestKey));
-    catalog.encryptConnectionPasswords({ kmsKey: passwordKey });
+    const catalog = glue.Catalog.encryptAccount(stack, {
+      encryptionAtRest: glue.DataCatalogEncryptionAtRest.kms(atRestKey),
+      connectionPasswordEncryption: { kmsKey: passwordKey },
+    });
 
     expect(catalog.encryptionKey).toBe(atRestKey);
     expect(catalog.connectionPasswordKey).toBe(passwordKey);
@@ -164,8 +237,9 @@ describe('independence of the two encryption blocks', () => {
   });
 
   test('connection password encryption alone does not emit an at-rest block', () => {
-    const catalog = glue.Catalog.forAccount(stack);
-    catalog.encryptConnectionPasswords({});
+    glue.Catalog.encryptAccount(stack, {
+      connectionPasswordEncryption: {},
+    });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Glue::DataCatalogEncryptionSettings', {
       DataCatalogEncryptionSettings: {
@@ -177,41 +251,41 @@ describe('independence of the two encryption blocks', () => {
 });
 
 describe('single settings resource per catalog instance', () => {
-  test('multiple mutations reuse one settings resource', () => {
-    const catalog = glue.Catalog.forAccount(stack);
-    catalog.encryptAtRest(glue.DataCatalogEncryptionAtRest.disabled());
-    catalog.encryptAtRest(glue.DataCatalogEncryptionAtRest.kms());
-    catalog.encryptConnectionPasswords({});
+  test('a fully configured catalog emits exactly one settings resource', () => {
+    glue.Catalog.encryptAccount(stack, {
+      encryptionAtRest: glue.DataCatalogEncryptionAtRest.kms(),
+      connectionPasswordEncryption: {},
+    });
 
     Template.fromStack(stack).resourceCountIs('AWS::Glue::DataCatalogEncryptionSettings', 1);
-  });
-
-  test('the last at-rest configuration wins', () => {
-    const catalog = glue.Catalog.forAccount(stack);
-    catalog.encryptAtRest(glue.DataCatalogEncryptionAtRest.disabled());
-    catalog.encryptAtRest(glue.DataCatalogEncryptionAtRest.kms());
-
-    Template.fromStack(stack).hasResourceProperties('AWS::Glue::DataCatalogEncryptionSettings', {
-      DataCatalogEncryptionSettings: {
-        EncryptionAtRest: { CatalogEncryptionMode: 'SSE-KMS' },
-      },
-    });
   });
 });
 
 describe('duplicate settings', () => {
-  test('two catalogs targeting the same id fail template validation (E3019)', () => {
-    glue.Catalog.forAccount(stack).encryptAtRest(glue.DataCatalogEncryptionAtRest.kms());
-    glue.Catalog.fromCatalogId(stack, 'Imported', '123456789012').encryptConnectionPasswords({});
+  test('encryptAccount alongside an escape-hatch settings resource for the same id fails template validation (E3019)', () => {
+    glue.Catalog.encryptAccount(stack, { encryptionAtRest: glue.DataCatalogEncryptionAtRest.kms() });
+    // The account catalog's id is the account. A second settings resource
+    // targeting the same id (here via the L1 escape hatch) collides.
+    new CfnDataCatalogEncryptionSettings(stack, 'EscapeHatch', {
+      catalogId: '123456789012',
+      dataCatalogEncryptionSettings: {
+        connectionPasswordEncryption: { returnConnectionPasswordEncrypted: true },
+      },
+    });
 
     // Both settings resources carry the same CatalogId, which CloudFormation
     // template validation rejects as duplicate primary identifiers (E3019).
     expect(() => Template.fromStack(stack)).toThrow('E3019');
   });
 
-  test('distinct catalog ids emit independent settings resources', () => {
-    glue.Catalog.forAccount(stack).encryptAtRest(glue.DataCatalogEncryptionAtRest.kms());
-    glue.Catalog.fromCatalogId(stack, 'Other', '999999999999').encryptConnectionPasswords({});
+  test('settings targeting distinct catalog ids coexist', () => {
+    glue.Catalog.encryptAccount(stack, { encryptionAtRest: glue.DataCatalogEncryptionAtRest.kms() });
+    new CfnDataCatalogEncryptionSettings(stack, 'EscapeHatch', {
+      catalogId: '999999999999',
+      dataCatalogEncryptionSettings: {
+        connectionPasswordEncryption: { returnConnectionPasswordEncrypted: true },
+      },
+    });
 
     Template.fromStack(stack).resourceCountIs('AWS::Glue::DataCatalogEncryptionSettings', 2);
   });
@@ -234,6 +308,12 @@ describe('new Catalog (CfnCatalog)', () => {
         EncryptionAtRest: { CatalogEncryptionMode: 'SSE-KMS' },
       },
     });
+  });
+
+  test('emits no settings resource when no encryption is configured', () => {
+    new glue.Catalog(stack, 'Catalog', { catalogName: 'my-catalog' });
+
+    Template.fromStack(stack).resourceCountIs('AWS::Glue::DataCatalogEncryptionSettings', 0);
   });
 });
 
@@ -275,12 +355,9 @@ describe('imports', () => {
       .toThrow('expected a Glue catalog ARN');
   });
 
-  test('an imported catalog can attach encryption as a sibling settings resource', () => {
-    const catalog = glue.Catalog.fromCatalogId(stack, 'Imported', 'some-catalog');
-    catalog.encryptAtRest(glue.DataCatalogEncryptionAtRest.kms());
+  test('an imported catalog is a pure identity handle and emits no resources', () => {
+    glue.Catalog.fromCatalogId(stack, 'Imported', 'some-catalog');
 
-    Template.fromStack(stack).hasResourceProperties('AWS::Glue::DataCatalogEncryptionSettings', {
-      CatalogId: 'some-catalog',
-    });
+    Template.fromStack(stack).resourceCountIs('AWS::Glue::DataCatalogEncryptionSettings', 0);
   });
 });

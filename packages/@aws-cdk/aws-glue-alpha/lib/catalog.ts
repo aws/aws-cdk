@@ -5,8 +5,7 @@ import type * as kms from 'aws-cdk-lib/aws-kms';
 import { KeyGrants } from 'aws-cdk-lib/aws-kms';
 import type { IResource } from 'aws-cdk-lib/core';
 import { ArnFormat, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
-import type { IBox } from 'aws-cdk-lib/core/lib/helpers-internal';
-import { Box, lit, noBoxStackTraces } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -126,6 +125,29 @@ export interface ConnectionPasswordEncryption {
 }
 
 /**
+ * Encryption configuration for a Glue Data Catalog.
+ *
+ * Encryption is fixed at construction: a catalog either carries encryption
+ * settings or it does not, which keeps its configuration easy to reason about
+ * and avoids order-dependent mutation after the catalog is created.
+ */
+export interface CatalogEncryptionOptions {
+  /**
+   * Encryption-at-rest configuration for the catalog.
+   *
+   * @default - encryption at rest is not managed by CDK (the catalog default applies)
+   */
+  readonly encryptionAtRest?: DataCatalogEncryptionAtRest;
+
+  /**
+   * Connection-password encryption configuration for the catalog.
+   *
+   * @default - connection-password encryption is not managed by CDK
+   */
+  readonly connectionPasswordEncryption?: ConnectionPasswordEncryption;
+}
+
+/**
  * A Glue Data Catalog, either the implicit account-wide catalog or one created
  * as an `AWS::Glue::Catalog` resource.
  */
@@ -161,41 +183,20 @@ export interface ICatalog extends IResource, ICatalogRef {
    * `if (catalog.connectionPasswordKey) { KeyGrants.fromKey(catalog.connectionPasswordKey).encrypt(grantee); }`.
    */
   readonly connectionPasswordKey?: kms.IKeyRef;
-
-  /**
-   * Configure encryption at rest for this catalog.
-   *
-   * Calling this again overwrites the previous encryption-at-rest configuration.
-   */
-  encryptAtRest(encryption: DataCatalogEncryptionAtRest): void;
-
-  /**
-   * Configure connection-password encryption for this catalog.
-   *
-   * Calling this again overwrites the previous connection-password configuration.
-   */
-  encryptConnectionPasswords(encryption: ConnectionPasswordEncryption): void;
 }
 
 /**
- * Base class for all `ICatalog` implementations. Owns the shared, deferred
- * `CfnDataCatalogEncryptionSettings` wiring so that a single instance only ever
- * emits one settings resource, targeting its own `catalogId`.
+ * Base class for all `ICatalog` implementations. Materializes the single
+ * `CfnDataCatalogEncryptionSettings` resource (targeting its own `catalogId`)
+ * from the encryption options supplied at construction. Encryption is fixed at
+ * construction, so a catalog either carries settings or it does not.
  */
-@noBoxStackTraces
 abstract class CatalogBase extends Resource implements ICatalog {
   public abstract readonly catalogId: string;
   public abstract readonly catalogArn: string;
 
   private _encryptionKey?: kms.IKeyRef;
   private _connectionPasswordKey?: kms.IKeyRef;
-
-  private readonly _encryptionAtRest: IBox<CfnDataCatalogEncryptionSettings.EncryptionAtRestProperty | undefined> =
-    Box.fromValue(undefined);
-  private readonly _connectionPassword: IBox<CfnDataCatalogEncryptionSettings.ConnectionPasswordEncryptionProperty | undefined> =
-    Box.fromValue(undefined);
-
-  private encryptionSettingsResource?: CfnDataCatalogEncryptionSettings;
 
   public get encryptionKey(): kms.IKeyRef | undefined {
     return this._encryptionKey;
@@ -211,62 +212,52 @@ abstract class CatalogBase extends Resource implements ICatalog {
     };
   }
 
-  public encryptAtRest(encryption: DataCatalogEncryptionAtRest): void {
-    this._encryptionKey = encryption.kmsKey;
+  /**
+   * Emit the catalog's encryption settings from the options fixed at
+   * construction. Subclasses call this once, after `catalogId`/`catalogArn` are
+   * assigned. When neither block is configured, no resource is emitted, avoiding
+   * an empty settings resource that would reset the catalog on deploy.
+   */
+  protected configureEncryption(options: CatalogEncryptionOptions): void {
+    const atRest = options.encryptionAtRest;
+    const password = options.connectionPasswordEncryption;
+
+    if (!atRest && !password) {
+      return;
+    }
+
+    this._encryptionKey = atRest?.kmsKey;
+    this._connectionPasswordKey = password?.kmsKey;
 
     // Auto-grant the service role access to the customer-managed key it needs
     // to encrypt and decrypt catalog data. Nothing to grant for an AWS-managed
     // key (we don't own its key policy).
-    if (encryption.serviceRole && encryption.kmsKey) {
-      KeyGrants.fromKey(encryption.kmsKey).encryptDecrypt(encryption.serviceRole);
+    if (atRest?.serviceRole && atRest.kmsKey) {
+      KeyGrants.fromKey(atRest.kmsKey).encryptDecrypt(atRest.serviceRole);
     }
-
-    this._encryptionAtRest.set({
-      catalogEncryptionMode: encryption.mode,
-      sseAwsKmsKeyId: encryption.kmsKey?.keyRef.keyArn,
-      catalogEncryptionServiceRole: encryption.serviceRole?.roleArn,
-    });
-    this.ensureEncryptionSettings();
-  }
-
-  public encryptConnectionPasswords(encryption: ConnectionPasswordEncryption): void {
-    this._connectionPasswordKey = encryption.kmsKey;
-
-    this._connectionPassword.set({
-      kmsKeyId: encryption.kmsKey?.keyRef.keyArn,
-      returnConnectionPasswordEncrypted: encryption.returnConnectionPasswordEncrypted ?? true,
-    });
-    this.ensureEncryptionSettings();
-  }
-
-  /**
-   * Create the single, deferred `CfnDataCatalogEncryptionSettings` resource on
-   * first configuration. Subsequent mutations reuse it, so one catalog instance
-   * never emits more than one settings resource. When no block is configured no
-   * resource is created, avoiding an empty settings resource that would reset
-   * the catalog on deploy.
-   */
-  private ensureEncryptionSettings(): void {
-    if (this.encryptionSettingsResource) {
-      return;
-    }
-
-    const settings = Box.combine(
-      { encryptionAtRest: this._encryptionAtRest, connectionPasswordEncryption: this._connectionPassword },
-      ({ encryptionAtRest, connectionPasswordEncryption }) => ({
-        encryptionAtRest,
-        connectionPasswordEncryption,
-      }),
-    );
 
     // Two catalog instances that target the same catalog id would each emit a
     // settings resource and race to overwrite one another via
-    // `PutDataCatalogEncryptionSettings`. This is surfaced by CloudFormation
-    // template validation (E3019: duplicate primary identifiers), so we do not
-    // duplicate that check here.
-    this.encryptionSettingsResource = new CfnDataCatalogEncryptionSettings(this, 'EncryptionSettings', {
+    // `PutDataCatalogEncryptionSettings`. Within one stack this is surfaced by
+    // CloudFormation template validation (E3019: duplicate primary identifiers),
+    // so we do not duplicate that check here.
+    new CfnDataCatalogEncryptionSettings(this, 'EncryptionSettings', {
       catalogId: this.catalogId,
-      dataCatalogEncryptionSettings: Token.asAny(settings),
+      dataCatalogEncryptionSettings: {
+        encryptionAtRest: atRest
+          ? {
+            catalogEncryptionMode: atRest.mode,
+            sseAwsKmsKeyId: atRest.kmsKey?.keyRef.keyArn,
+            catalogEncryptionServiceRole: atRest.serviceRole?.roleArn,
+          }
+          : undefined,
+        connectionPasswordEncryption: password
+          ? {
+            kmsKeyId: password.kmsKey?.keyRef.keyArn,
+            returnConnectionPasswordEncrypted: password.returnConnectionPasswordEncrypted ?? true,
+          }
+          : undefined,
+      },
     });
   }
 }
@@ -274,7 +265,7 @@ abstract class CatalogBase extends Resource implements ICatalog {
 /**
  * Construction properties for a `Catalog`.
  */
-export interface CatalogProps {
+export interface CatalogProps extends CatalogEncryptionOptions {
   /**
    * The name of the catalog.
    */
@@ -286,28 +277,19 @@ export interface CatalogProps {
    * @default - no description
    */
   readonly description?: string;
-
-  /**
-   * Encryption-at-rest configuration for the catalog.
-   *
-   * @default - encryption at rest is not managed by CDK (the catalog default applies)
-   */
-  readonly encryptionAtRest?: DataCatalogEncryptionAtRest;
-
-  /**
-   * Connection-password encryption configuration for the catalog.
-   *
-   * @default - connection-password encryption is not managed by CDK
-   */
-  readonly connectionPasswordEncryption?: ConnectionPasswordEncryption;
 }
+
+/**
+ * The stack-scoped singleton id for the implicit account-wide catalog.
+ */
+const ACCOUNT_CATALOG_UID = '@aws-cdk.aws-glue-alpha.AccountCatalog';
 
 /**
  * A Glue Data Catalog.
  *
- * Use `Catalog.forAccount(scope)` to obtain the implicit account-wide catalog
- * (for example, to configure Data Catalog encryption), or `new Catalog(...)` to
- * create an `AWS::Glue::Catalog` resource.
+ * Use `Catalog.forAccount(scope)` to obtain the implicit account-wide catalog,
+ * `Catalog.encryptAccount(scope, options)` to configure its Data Catalog
+ * encryption, or `new Catalog(...)` to create an `AWS::Glue::Catalog` resource.
  */
 @propertyInjectable
 export class Catalog extends CatalogBase {
@@ -319,21 +301,46 @@ export class Catalog extends CatalogBase {
    *
    * The account catalog is not a CloudFormation resource; it always exists. This
    * returns a stack-scoped singleton, so repeated calls within the same stack
-   * return the same instance and share a single encryption-settings resource.
+   * return the same instance.
    *
-   * The account catalog's encryption is an account/region-wide setting, managed
-   * through the singleton `PutDataCatalogEncryptionSettings` API. Configure it in
-   * exactly one stack. Configuring it from multiple stacks in the same
-   * account and region makes those stacks overwrite one another at deploy time,
-   * and the result is order-dependent. Unlike duplicate settings within a single
-   * stack (which CloudFormation rejects), this cross-stack conflict is not caught
-   * at synthesis time, because each stack synthesizes to its own template.
+   * This returns the account catalog without managing its encryption. To
+   * configure Data Catalog encryption for the account, use
+   * `Catalog.encryptAccount(scope, options)` instead - it must be called before
+   * the account catalog is first used in the stack.
    */
   public static forAccount(scope: Construct): ICatalog {
     const stack = Stack.of(scope);
-    const uid = '@aws-cdk.aws-glue-alpha.AccountCatalog';
-    const existing = stack.node.tryFindChild(uid);
-    return (existing as AccountCatalog) ?? new AccountCatalog(stack, uid);
+    const existing = stack.node.tryFindChild(ACCOUNT_CATALOG_UID);
+    return (existing as AccountCatalog) ?? new AccountCatalog(stack, ACCOUNT_CATALOG_UID, {});
+  }
+
+  /**
+   * Configure Data Catalog encryption for the implicit, account-wide catalog and
+   * return it.
+   *
+   * The account catalog's encryption is an account/region-wide setting, managed
+   * through the singleton `PutDataCatalogEncryptionSettings` API. Because
+   * encryption is fixed at construction, it must be configured before the
+   * account catalog is first used in the stack: calling this after the account
+   * catalog has already been materialized (for example by `Catalog.forAccount`,
+   * or by a `Database` that uses the account catalog) throws.
+   *
+   * Configure it in exactly one stack. Configuring it from multiple stacks in the
+   * same account and region makes those stacks overwrite one another at deploy
+   * time, and the result is order-dependent. Unlike duplicate settings within a
+   * single stack (which CloudFormation rejects), this cross-stack conflict is not
+   * caught at synthesis time, because each stack synthesizes to its own template.
+   */
+  public static encryptAccount(scope: Construct, options: CatalogEncryptionOptions): ICatalog {
+    const stack = Stack.of(scope);
+    if (stack.node.tryFindChild(ACCOUNT_CATALOG_UID)) {
+      throw new ValidationError(
+        lit`AccountCatalogAlreadyInUse`,
+        'the account catalog has already been used in this stack; call Catalog.encryptAccount() before Catalog.forAccount() or any Database that uses the account catalog',
+        scope,
+      );
+    }
+    return new AccountCatalog(stack, ACCOUNT_CATALOG_UID, options);
   }
 
   /**
@@ -343,6 +350,11 @@ export class Catalog extends CatalogBase {
    * (`arn:aws:glue:<region>:<account>:catalog`, whose id is the account) or a
    * named catalog (`arn:aws:glue:<region>:<account>:catalog/<name>`, whose id is
    * the name).
+   *
+   * The imported catalog is a pure identity handle and does not manage the
+   * catalog's encryption. To manage an existing catalog's Data Catalog
+   * encryption, add a `CfnDataCatalogEncryptionSettings` resource targeting its
+   * id.
    */
   public static fromCatalogArn(scope: Construct, id: string, catalogArn: string): ICatalog {
     const stack = Stack.of(scope);
@@ -367,6 +379,11 @@ export class Catalog extends CatalogBase {
 
   /**
    * Import an existing catalog by its id.
+   *
+   * The imported catalog is a pure identity handle and does not manage the
+   * catalog's encryption. To manage an existing catalog's Data Catalog
+   * encryption, add a `CfnDataCatalogEncryptionSettings` resource targeting its
+   * id.
    */
   public static fromCatalogId(scope: Construct, id: string, catalogId: string): ICatalog {
     const stack = Stack.of(scope);
@@ -392,12 +409,7 @@ export class Catalog extends CatalogBase {
     this.catalogId = this.resource.attrCatalogId;
     this.catalogArn = this.resource.attrResourceArn;
 
-    if (props.encryptionAtRest) {
-      this.encryptAtRest(props.encryptionAtRest);
-    }
-    if (props.connectionPasswordEncryption) {
-      this.encryptConnectionPasswords(props.connectionPasswordEncryption);
-    }
+    this.configureEncryption(props);
   }
 }
 
@@ -409,18 +421,20 @@ class AccountCatalog extends CatalogBase {
   public readonly catalogId: string;
   public readonly catalogArn: string;
 
-  constructor(scope: Construct, id: string) {
+  constructor(scope: Construct, id: string, encryption: CatalogEncryptionOptions) {
     super(scope, id);
     const stack = Stack.of(this);
     this.catalogId = stack.account;
     // The account catalog's id is implicitly the account id, so the ARN has no resource name.
     this.catalogArn = stack.formatArn({ service: 'glue', resource: 'catalog' });
+
+    this.configureEncryption(encryption);
   }
 }
 
 /**
- * An imported catalog. Encryption settings attached here are emitted as a
- * sibling `CfnDataCatalogEncryptionSettings` targeting the imported catalog id.
+ * An imported catalog. A pure identity handle: it emits no resources and does
+ * not manage the imported catalog's encryption.
  */
 class ImportedCatalog extends CatalogBase {
   public readonly catalogId: string;

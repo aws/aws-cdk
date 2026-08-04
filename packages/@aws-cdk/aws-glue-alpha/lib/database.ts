@@ -75,7 +75,13 @@ export class Database extends Resource implements IDatabase {
     class Import extends Resource implements IDatabase {
       public databaseArn = databaseArn;
       public databaseName = stack.splitArn(databaseArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
-      public catalog = Catalog.forAccount(this);
+
+      // Materialize the account catalog only on access, so importing a database
+      // does not pre-empt Catalog.encryptAccount() for the stack.
+      @memoizedGetter
+      public get catalog(): ICatalog {
+        return Catalog.forAccount(this);
+      }
     }
 
     return new Import(scope, id);
@@ -86,7 +92,7 @@ export class Database extends Resource implements IDatabase {
    */
   public locationUri?: string;
 
-  public readonly catalog: ICatalog;
+  private readonly _catalog?: ICatalog;
 
   private resource: CfnDatabase;
 
@@ -118,12 +124,27 @@ export class Database extends Resource implements IDatabase {
       };
     }
 
-    this.catalog = props.catalog ?? Catalog.forAccount(this);
+    this._catalog = props.catalog;
 
+    // When the database uses the implicit account catalog, its id is the
+    // account id. Reference that directly rather than materializing the account
+    // catalog singleton, so a plain `new Database()` does not pre-empt
+    // `Catalog.encryptAccount()` for the stack.
     this.resource = new CfnDatabase(this, 'Resource', {
-      catalogId: this.catalog.catalogId,
+      catalogId: this._catalog?.catalogId ?? Stack.of(this).account,
       databaseInput,
     });
+  }
+
+  /**
+   * The catalog this database belongs to.
+   *
+   * Defaults to the implicit, account-wide catalog, materialized on first
+   * access.
+   */
+  @memoizedGetter
+  public get catalog(): ICatalog {
+    return this._catalog ?? Catalog.forAccount(this);
   }
 
   @memoizedGetter

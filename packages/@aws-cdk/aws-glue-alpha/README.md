@@ -501,17 +501,34 @@ account has an implicit, account-wide catalog that always exists, and you can al
 create additional catalogs as `AWS::Glue::Catalog` resources (for example, to
 federate to another metastore).
 
+A catalog's encryption is fixed when the catalog is created: a catalog either
+carries encryption settings or it does not. This keeps its configuration easy to
+reason about — there are no mutation methods that change encryption after the fact.
+
 ### The account-wide catalog
 
 Use `Catalog.forAccount(scope)` to obtain the implicit account catalog. It is not
-a CloudFormation resource — it always exists — so this is most useful for
-configuring account-level settings such as Data Catalog encryption. Repeated calls
-within the same stack return the same instance, so encryption settings are managed
-through a single resource:
+a CloudFormation resource — it always exists. Repeated calls within the same stack
+return the same instance:
 
 ```ts
 const catalog = glue.Catalog.forAccount(this);
 ```
+
+To configure Data Catalog encryption for the account, use
+`Catalog.encryptAccount(scope, options)`:
+
+```ts
+declare const key: kms.Key;
+glue.Catalog.encryptAccount(this, {
+  encryptionAtRest: glue.DataCatalogEncryptionAtRest.kms(key),
+});
+```
+
+Because encryption is fixed at construction, `encryptAccount` must be called
+*before* the account catalog is first used in the stack — before any
+`Catalog.forAccount(this)` call, and before any `Database` that uses the account
+catalog. Calling it after the account catalog has been materialized throws.
 
 The account catalog's encryption is an account- and region-wide setting, managed
 through the singleton `PutDataCatalogEncryptionSettings` API. Configure it in
@@ -523,7 +540,8 @@ time, because each stack synthesizes to its own template.
 
 ### Creating a catalog
 
-To create a new catalog resource, use the `Catalog` constructor:
+To create a new catalog resource, use the `Catalog` constructor. Encryption is
+configured through the `encryptionAtRest` and `connectionPasswordEncryption` props:
 
 ```ts
 new glue.Catalog(this, 'MyCatalog', {
@@ -534,21 +552,29 @@ new glue.Catalog(this, 'MyCatalog', {
 
 ### Encryption at rest
 
-You can configure Data Catalog encryption at rest either through the
-`encryptionAtRest` prop or by calling `encryptAtRest()` on a catalog. Both accept a
-`DataCatalogEncryptionAtRest` describing the mode:
+Configure Data Catalog encryption at rest through the `encryptionAtRest` option
+(on `Catalog.encryptAccount`, the `Catalog` constructor, or the import factories).
+It accepts a `DataCatalogEncryptionAtRest` describing the mode:
 
 ```ts
-// SSE-KMS with a customer-managed key
 declare const key: kms.Key;
-const catalog = glue.Catalog.forAccount(this);
-catalog.encryptAtRest(glue.DataCatalogEncryptionAtRest.kms(key));
+
+// SSE-KMS with a customer-managed key
+glue.Catalog.encryptAccount(this, {
+  encryptionAtRest: glue.DataCatalogEncryptionAtRest.kms(key),
+});
 
 // SSE-KMS with an AWS-managed key (omit the key)
-catalog.encryptAtRest(glue.DataCatalogEncryptionAtRest.kms());
+new glue.Catalog(this, 'ManagedKeyCatalog', {
+  catalogName: 'managed-key-catalog',
+  encryptionAtRest: glue.DataCatalogEncryptionAtRest.kms(),
+});
 
 // Disable encryption at rest
-catalog.encryptAtRest(glue.DataCatalogEncryptionAtRest.disabled());
+new glue.Catalog(this, 'PlaintextCatalog', {
+  catalogName: 'plaintext-catalog',
+  encryptionAtRest: glue.DataCatalogEncryptionAtRest.disabled(),
+});
 ```
 
 When you use `SSE-KMS-WITH-SERVICE-ROLE`, AWS Glue accesses the KMS key through a
@@ -559,8 +585,9 @@ automatically granted the permissions it needs to encrypt and decrypt catalog da
 import * as iam from 'aws-cdk-lib/aws-iam';
 declare const key: kms.Key;
 declare const role: iam.IRole;
-const catalog = glue.Catalog.forAccount(this);
-catalog.encryptAtRest(glue.DataCatalogEncryptionAtRest.kmsWithServiceRole(role, key));
+glue.Catalog.encryptAccount(this, {
+  encryptionAtRest: glue.DataCatalogEncryptionAtRest.kmsWithServiceRole(role, key),
+});
 ```
 
 The customer-managed key, when configured, is exposed on the catalog as
@@ -572,15 +599,16 @@ disabled or an AWS-managed key is used.
 
 Independently from encryption at rest, the Data Catalog can encrypt the passwords
 stored in connection properties. Configure it through the
-`connectionPasswordEncryption` prop or by calling `encryptConnectionPasswords()`:
+`connectionPasswordEncryption` option:
 
 ```ts
 declare const key: kms.Key;
-const catalog = glue.Catalog.forAccount(this);
-catalog.encryptConnectionPasswords({
-  kmsKey: key,
-  // Whether GetConnection/GetConnections return the password encrypted (default: true)
-  returnConnectionPasswordEncrypted: true,
+glue.Catalog.encryptAccount(this, {
+  connectionPasswordEncryption: {
+    kmsKey: key,
+    // Whether GetConnection/GetConnections return the password encrypted (default: true)
+    returnConnectionPasswordEncrypted: true,
+  },
 });
 ```
 
@@ -590,12 +618,32 @@ passwords is exposed as `connectionPasswordKey`.
 
 ### Importing a catalog
 
-You can import an existing catalog by ARN or by id and then attach encryption
-settings to it:
+You can import an existing catalog by ARN or by id. An imported catalog is a pure
+identity handle — it emits no resources and does not manage the catalog's
+encryption:
 
 ```ts
 const byId = glue.Catalog.fromCatalogId(this, 'ById', 'my-catalog-id');
 const byArn = glue.Catalog.fromCatalogArn(this, 'ByArn', 'arn:aws:glue:us-east-1:123456789012:catalog/my-catalog-id');
+```
+
+To manage the Data Catalog encryption of a catalog you did not create in this
+stack, add a `CfnDataCatalogEncryptionSettings` resource targeting its id
+directly. Do this from exactly one stack: like the account catalog, a catalog has
+a single encryption configuration, so two settings resources targeting the same id
+race to overwrite one another at deploy time. Within a single stack this is caught
+by CloudFormation template validation (E3019, duplicate primary identifiers);
+across stacks it is not, since each stack synthesizes to its own template.
+
+```ts
+import { CfnDataCatalogEncryptionSettings } from 'aws-cdk-lib/aws-glue';
+
+new CfnDataCatalogEncryptionSettings(this, 'Encryption', {
+  catalogId: 'my-catalog-id',
+  dataCatalogEncryptionSettings: {
+    encryptionAtRest: { catalogEncryptionMode: 'SSE-KMS' },
+  },
+});
 ```
 
 ## Database
