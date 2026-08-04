@@ -20,7 +20,7 @@ jobs:
     steps:
       - name: Save PR number
         env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_NUMBER: 38493
           PR_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           mkdir -p ./pr
