@@ -1,12 +1,13 @@
 import * as path from 'node:path';
 import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
 import { DatabaseBuilder } from '@aws-cdk/service-spec-importers';
-import { Service, SpecDatabase } from '@aws-cdk/service-spec-types';
+import type { Service, SpecDatabase } from '@aws-cdk/service-spec-types';
 import { TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
-import { AwsCdkLibBuilder, GrantsProps } from './cdk/aws-cdk-lib';
+import type { GrantsProps } from './cdk/aws-cdk-lib';
+import { AwsCdkLibBuilder } from './cdk/aws-cdk-lib';
 import { GrantsModule } from './cdk/grants-module';
-import { LibraryBuilder } from './cdk/library-builder';
+import type { LibraryBuilder } from './cdk/library-builder';
 import { queryDb, log, TsFileWriter } from './util';
 
 export type BuilderProps<T> = T extends new (first: infer P, ...args: any[]) => any ? P : never;

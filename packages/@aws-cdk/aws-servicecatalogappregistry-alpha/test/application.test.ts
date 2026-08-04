@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Annotations, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as appreg from '../lib';
 
 describe('Application', () => {
@@ -540,8 +540,8 @@ describe('Conditional nested stack Associations with Application within Same Acc
         ResourceType: 'CFN_STACK',
       },
     });
-    Template.fromStack(stack.nestedStack).hasCondition('ShouldCreateStackCondition', {
-      'Fn::Equals': ['us-east-1'],
+    Template.fromStack(stack).hasCondition('ShouldCreateStackCondition', {
+      'Fn::Equals': [{ Ref: 'AWS::Region' }, 'us-east-1'],
     });
   });
 });
@@ -564,8 +564,8 @@ class AppRegistryNestedStack extends cdk.NestedStack {
   public constructor(scope: Construct, id: string, props?: cdk.NestedStackProps) {
     super(scope, id, props);
 
-    const shouldCreateStack = new cdk.CfnCondition(this, 'ShouldCreateStackCondition', {
-      expression: cdk.Fn.conditionEquals(process.env.CDK_DEFAULT_REGION, 'us-east-1'),
+    const shouldCreateStack = new cdk.CfnCondition(scope, 'ShouldCreateStackCondition', {
+      expression: cdk.Fn.conditionEquals(cdk.Aws.REGION, 'us-east-1'),
     });
     (this.nestedStackResource as cdk.CfnStack).cfnOptions.condition = shouldCreateStack;
   }

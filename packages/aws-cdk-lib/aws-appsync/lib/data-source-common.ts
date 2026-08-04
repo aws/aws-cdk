@@ -1,23 +1,26 @@
 import { Construct } from 'constructs';
-import { IApi } from './api-base';
+import type { IApi } from './api-base';
 import { CfnDataSource } from './appsync.generated';
-import { ITable } from '../../aws-dynamodb';
-import { IEventBus } from '../../aws-events';
-import {
+import type { ITable } from '../../aws-dynamodb';
+import type { IEventBus } from '../../aws-events';
+import type {
   IRole,
-  Role,
-  ServicePrincipal,
   IPrincipal,
   IGrantable,
+} from '../../aws-iam';
+import {
+  Role,
+  ServicePrincipal,
   Grant,
 } from '../../aws-iam';
-import { IFunction } from '../../aws-lambda';
-import { IDomain } from '../../aws-opensearchservice';
-import { IDatabaseCluster, IServerlessCluster } from '../../aws-rds';
-import { ISecret } from '../../aws-secretsmanager';
-import { IResolvable, Token, Lazy, Stack } from '../../core';
+import type { IFunction } from '../../aws-lambda';
+import type { IDomain } from '../../aws-opensearchservice';
+import type { IDatabaseCluster, IServerlessCluster } from '../../aws-rds';
+import type { ISecret } from '../../aws-secretsmanager';
+import type { IResolvable } from '../../core';
+import { Token, Lazy, Stack } from '../../core';
 import { extractApiIdFromApiRef, toIApi } from './private/ref-utils';
-import { IApiRef } from '../../interfaces/generated/aws-appsync-interfaces.generated';
+import type { IApiRef } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
 /**
  * Valid data source types for AppSync

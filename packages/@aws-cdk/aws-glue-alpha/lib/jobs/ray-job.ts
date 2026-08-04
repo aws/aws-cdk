@@ -1,15 +1,20 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
-import * as iam from 'aws-cdk-lib/aws-iam';
+import type * as iam from 'aws-cdk-lib/aws-iam';
 import { ValidationError } from 'aws-cdk-lib/core';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { Job, JobProps } from './job';
+import type { Construct } from 'constructs';
+import type { JobProps } from './job';
+import { Job } from './job';
 import { JobType, GlueVersion, WorkerType, Runtime } from '../constants';
 
 /**
  * Properties for creating a Ray Glue job
+ *
+ * @deprecated AWS Glue for Ray is closed to new customers as of April 30, 2026.
+ * Migrate to Amazon EKS with KubeRay Operator. See
+ * https://docs.aws.amazon.com/glue/latest/dg/awsglue-ray-jobs-availability-change.html
  */
 export interface RayJobProps extends JobProps {
   /**
@@ -57,6 +62,10 @@ export interface RayJobProps extends JobProps {
  * These are not overrideable since these are the only configuration that
  * Glue Ray jobs currently support. The runtime defaults to Ray2.4 and min
  * workers defaults to 3.
+ *
+ * @deprecated AWS Glue for Ray is closed to new customers as of April 30, 2026.
+ * Migrate to Amazon EKS with KubeRay Operator. See
+ * https://docs.aws.amazon.com/glue/latest/dg/awsglue-ray-jobs-availability-change.html
  */
 @propertyInjectable
 export class RayJob extends Job {
@@ -96,7 +105,7 @@ export class RayJob extends Job {
     };
 
     if (props.workerType && props.workerType !== WorkerType.Z_2X) {
-      throw new ValidationError('Ray jobs only support Z.2X worker type', this);
+      throw new ValidationError(lit`RayJobsOnlySupportZ2XWorkerType`, 'Ray jobs only support Z.2X worker type', this);
     }
 
     this.resource = new CfnJob(this, 'Resource', {

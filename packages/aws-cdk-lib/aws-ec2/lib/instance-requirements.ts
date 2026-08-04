@@ -1,4 +1,4 @@
-import { Size } from '../../core';
+import type { Size } from '../../core';
 
 /**
  * Hardware accelerator categories available for EC2 instances.

@@ -1,12 +1,16 @@
 import { Construct } from 'constructs';
-import { IReceiptRuleAction } from './receipt-rule-action';
+import type { IReceiptRuleAction } from './receipt-rule-action';
 import { CfnReceiptRule } from './ses.generated';
 import * as iam from '../../aws-iam';
-import { Aws, IResource, Lazy, Resource } from '../../core';
+import type { IResource } from '../../core';
+import { Aws, Resource } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { DropSpamSingletonFunction } from '../../custom-resource-handlers/dist/aws-ses/drop-spam-provider.generated';
-import { IReceiptRuleSetRef, IReceiptRuleRef, ReceiptRuleReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
+import type { IReceiptRuleSetRef, IReceiptRuleRef, ReceiptRuleReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
 /**
  * A receipt rule.
@@ -105,6 +109,7 @@ export interface ReceiptRuleProps extends ReceiptRuleOptions {
  * A new receipt rule.
  */
 @propertyInjectable
+@noBoxStackTraces
 export class ReceiptRule extends Resource implements IReceiptRule {
   /**
    * Uniquely identifies this class.
@@ -125,7 +130,7 @@ export class ReceiptRule extends Resource implements IReceiptRule {
   }
 
   public readonly receiptRuleName: string;
-  private readonly actions = new Array<CfnReceiptRule.ActionProperty>();
+  private readonly actions: IArrayBox<CfnReceiptRule.ActionProperty> = Box.fromArray();
 
   public get receiptRuleRef(): ReceiptRuleReference {
     return {
@@ -143,7 +148,7 @@ export class ReceiptRule extends Resource implements IReceiptRule {
     const resource = new CfnReceiptRule(this, 'Resource', {
       after: props.after?.receiptRuleRef.receiptRuleId,
       rule: {
-        actions: Lazy.any({ produce: () => this.renderActions() }),
+        actions: this.actions,
         enabled: props.enabled ?? true,
         name: this.physicalName,
         recipients: props.recipients,
@@ -166,14 +171,6 @@ export class ReceiptRule extends Resource implements IReceiptRule {
   @MethodMetadata()
   public addAction(action: IReceiptRuleAction) {
     this.actions.push(action.bind(this));
-  }
-
-  private renderActions() {
-    if (this.actions.length === 0) {
-      return undefined;
-    }
-
-    return this.actions;
   }
 }
 

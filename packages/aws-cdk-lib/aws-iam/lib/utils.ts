@@ -1,5 +1,6 @@
-import { Construct, IConstruct } from 'constructs';
-import { IPrincipal } from './principals';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
+import type { IPrincipal } from './principals';
 import { Resource } from '../../core';
 
 /**

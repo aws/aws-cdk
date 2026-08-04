@@ -417,7 +417,7 @@
     "ContainerDefinitions": [
      {
       "Essential": true,
-      "Image": "public.ecr.aws/ecs-sample-image/amazon-ecs-sample:latest",
+      "Image": "public.ecr.aws/nginx/nginx:stable-alpine",
       "Name": "Container",
       "PortMappings": [
        {
@@ -577,7 +577,7 @@
     "ContainerDefinitions": [
      {
       "Essential": true,
-      "Image": "public.ecr.aws/ecs-sample-image/amazon-ecs-sample:latest",
+      "Image": "public.ecr.aws/nginx/nginx:stable-alpine",
       "Name": "Container",
       "PortMappings": [
        {

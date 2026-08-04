@@ -1,6 +1,6 @@
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import { App, CfnOutput, Stack } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
 
 /*
@@ -15,18 +15,17 @@ class TestStack extends Stack {
     super(scope, id);
 
     const child = new sfn.StateMachine(this, 'Child', {
-      definition: new sfn.Pass(this, 'Pass'),
+      definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Pass(this, 'Pass')),
     });
 
     const parent = new sfn.StateMachine(this, 'Parent', {
-      definition: new sfn.Task(this, 'Task', {
-        task: new tasks.StartExecution(child, {
-          input: {
-            hello: sfn.JsonPath.stringAt('$.hello'),
-          },
-          integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+      definitionBody: sfn.DefinitionBody.fromChainable(new tasks.StepFunctionsStartExecution(this, 'Task', {
+        stateMachine: child,
+        input: sfn.TaskInput.fromObject({
+          hello: sfn.JsonPath.stringAt('$.hello'),
         }),
-      }),
+        integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+      })),
     });
 
     new CfnOutput(this, 'StateMachineARN', {

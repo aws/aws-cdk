@@ -1,8 +1,8 @@
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import * as s3 from '../../aws-s3';
-import * as ses from '../../aws-ses';
-import * as sns from '../../aws-sns';
+import type * as kms from '../../aws-kms';
+import type * as s3 from '../../aws-s3';
+import type * as ses from '../../aws-ses';
+import type * as sns from '../../aws-sns';
 import * as cdk from '../../core';
 
 /**

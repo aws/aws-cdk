@@ -1,8 +1,11 @@
-import { Construct } from 'constructs';
-import { CfnVirtualRouter, IVirtualRouterRef, VirtualRouterReference } from './appmesh.generated';
-import { IMesh, Mesh } from './mesh';
+import type { Construct } from 'constructs';
+import type { IVirtualRouterRef, VirtualRouterReference } from './appmesh.generated';
+import { CfnVirtualRouter } from './appmesh.generated';
+import type { IMesh } from './mesh';
+import { Mesh } from './mesh';
 import { renderMeshOwner } from './private/utils';
-import { Route, RouteBaseProps } from './route';
+import type { RouteBaseProps } from './route';
+import { Route } from './route';
 import { VirtualRouterListener } from './virtual-router-listener';
 import * as cdk from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';

@@ -1,18 +1,22 @@
-import { IResource, Resource, ResourceProps } from 'aws-cdk-lib';
-import { DimensionsMap, Metric, MetricOptions, MetricProps, Stats } from 'aws-cdk-lib/aws-cloudwatch';
+import type { IResource, ResourceProps } from 'aws-cdk-lib';
+import { Resource } from 'aws-cdk-lib';
+import type { GatewayReference, IGatewayRef } from 'aws-cdk-lib/aws-bedrockagentcore';
+import type { DimensionsMap, MetricOptions, MetricProps } from 'aws-cdk-lib/aws-cloudwatch';
+import { Metric, Stats } from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as kms from 'aws-cdk-lib/aws-kms';
-import { Construct } from 'constructs';
+import type * as kms from 'aws-cdk-lib/aws-kms';
+import type { Construct } from 'constructs';
 // Internal imports
-import { IGatewayAuthorizerConfig } from './inbound-auth/authorizer';
+import type { IGatewayAuthorizerConfig } from './inbound-auth/authorizer';
 import { GATEWAY_GET_PERMS, GATEWAY_LIST_PERMS, GATEWAY_MANAGE_PERMS, GATEWAY_INVOKE_PERMS } from './perms';
-import { IGatewayProtocolConfig } from './protocol';
+import type { IGatewayProtocolConfig } from './protocol';
 
 /******************************************************************************
  *                                 Enums
  *****************************************************************************/
 /**
  * Exception levels for gateway
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export enum GatewayExceptionLevel {
   /**
@@ -28,8 +32,9 @@ export enum GatewayExceptionLevel {
  *****************************************************************************/
 /**
  * Interface for Gateway resources
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
-export interface IGateway extends IResource {
+export interface IGateway extends IResource, IGatewayRef {
   /**
    * The ARN of the gateway resource
    * @attribute
@@ -226,6 +231,11 @@ export interface IGateway extends IResource {
  *                                Base Class
  *****************************************************************************/
 
+/**
+ * Base class for Gateway constructs.
+ *
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export abstract class GatewayBase extends Resource implements IGateway {
   public abstract readonly gatewayArn: string;
   public abstract readonly gatewayId: string;
@@ -241,6 +251,16 @@ export abstract class GatewayBase extends Resource implements IGateway {
   public abstract readonly statusReason?: string[];
   public abstract readonly createdAt?: string;
   public abstract readonly updatedAt?: string;
+
+  /**
+   * A reference to a Gateway resource.
+   */
+  public get gatewayRef(): GatewayReference {
+    return {
+      gatewayIdentifier: this.gatewayId,
+      gatewayArn: this.gatewayArn,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
@@ -260,7 +280,7 @@ export abstract class GatewayBase extends Resource implements IGateway {
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: grantee,
-      resourceArns: [this.gatewayArn],
+      resourceArns: [this.gatewayRef.gatewayArn],
       actions: actions,
     });
   }
@@ -323,7 +343,7 @@ export abstract class GatewayBase extends Resource implements IGateway {
     const metricProps: MetricProps = {
       namespace: 'AWS/Bedrock-AgentCore',
       metricName,
-      dimensionsMap: { ...dimensions, Resource: this.gatewayArn },
+      dimensionsMap: { ...dimensions, Resource: this.gatewayRef.gatewayArn },
       ...props,
     };
     return this.configureMetric(metricProps);

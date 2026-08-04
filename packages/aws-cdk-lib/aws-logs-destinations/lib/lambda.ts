@@ -1,8 +1,8 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
-import * as logs from '../../aws-logs';
-import { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
+import type * as lambda from '../../aws-lambda';
+import type * as logs from '../../aws-logs';
+import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
  * Options that may be provided to LambdaDestination

@@ -1,11 +1,13 @@
-import { Construct } from 'constructs';
-import {
+import type { Construct } from 'constructs';
+import type {
   CfnDistribution,
   IOrigin,
-  OriginBase,
   OriginBindConfig,
   OriginBindOptions,
   OriginProps,
+} from '../lib';
+import {
+  OriginBase,
   OriginProtocolPolicy,
 } from '../lib';
 

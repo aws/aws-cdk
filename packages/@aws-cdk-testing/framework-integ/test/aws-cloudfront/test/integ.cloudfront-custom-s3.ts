@@ -1,6 +1,6 @@
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { App, Stack } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
@@ -9,15 +9,10 @@ class TestStack extends Stack {
     super(scope, id);
 
     const bucket = new s3.Bucket(this, 'Bucket', {
-      publicReadAccess: true,
-      blockPublicAccess: {
-        blockPublicPolicy: false,
-        blockPublicAcls: false,
-        ignorePublicAcls: false,
-        restrictPublicBuckets: false,
-      },
       websiteIndexDocument: 'index.html',
       websiteErrorDocument: '404.html',
+      removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
     });
 
     new cloudfront.CloudFrontWebDistribution(this, 'Distribution', {

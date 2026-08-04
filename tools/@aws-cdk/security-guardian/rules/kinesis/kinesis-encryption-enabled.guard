@@ -19,5 +19,6 @@ rule KINESIS_ENCRYPTION_ENABLED when %kinesis_streams !empty {
         Properties.StreamEncryption.EncryptionType exists
         Properties.StreamEncryption.EncryptionType == "KMS"
         Properties.StreamEncryption.KeyId exists
+            <<##ERROR:Kinesis stream must have encryption enabled. Set 'StreamEncryption.EncryptionType' to 'KMS' and provide a 'KeyId'.##>>
     }
 }

@@ -1,31 +1,31 @@
 {
-  "version": "48.0.0",
+  "version": "54.0.0",
   "files": {
-    "4041b90c06a8299e3cb54c0b0d1843864e545730c529352e77d161f57e6f8cbb": {
+    "28b62d4777a8bdb7a0cd3e372e619d17eca8b963320fa0c3c9960ecd4eb72f54": {
       "displayName": "CrossRegionRefConsumerInteg/Custom::CrossRegionExportReaderCustomResourceProvider Code",
       "source": {
-        "path": "asset.4041b90c06a8299e3cb54c0b0d1843864e545730c529352e77d161f57e6f8cbb",
+        "path": "asset.28b62d4777a8bdb7a0cd3e372e619d17eca8b963320fa0c3c9960ecd4eb72f54",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-us-east-2-67de92ca": {
+        "current_account-us-east-2-9e2c4e53": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2",
-          "objectKey": "4041b90c06a8299e3cb54c0b0d1843864e545730c529352e77d161f57e6f8cbb.zip",
+          "objectKey": "28b62d4777a8bdb7a0cd3e372e619d17eca8b963320fa0c3c9960ecd4eb72f54.zip",
           "region": "us-east-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-2"
         }
       }
     },
-    "46473aed964f6023a4e7f8647fb55f0cfd394b2c4d13f2366b73fbf8c19af195": {
+    "9b69e73a7dcfcee02fb2b01e6c71f04078eac4bee864f100f54e0368b711e483": {
       "displayName": "CrossRegionRefConsumerInteg Template",
       "source": {
         "path": "CrossRegionRefConsumerInteg.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-us-east-2-de3121a6": {
+        "current_account-us-east-2-99328398": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2",
-          "objectKey": "46473aed964f6023a4e7f8647fb55f0cfd394b2c4d13f2366b73fbf8c19af195.json",
+          "objectKey": "9b69e73a7dcfcee02fb2b01e6c71f04078eac4bee864f100f54e0368b711e483.json",
           "region": "us-east-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-2"
         }

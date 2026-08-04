@@ -2,7 +2,8 @@ import { capitalizePropertyNames } from './utils';
 import { Template } from '../../assertions';
 import { Role, ServicePrincipal } from '../../aws-iam';
 import { Stack } from '../../core';
-import { CfnComputeEnvironmentProps, UnmanagedComputeEnvironment } from '../lib/';
+import type { CfnComputeEnvironmentProps } from '../lib/';
+import { UnmanagedComputeEnvironment } from '../lib/';
 
 const defaultExpectedProps: CfnComputeEnvironmentProps = {
   type: 'unmanaged',

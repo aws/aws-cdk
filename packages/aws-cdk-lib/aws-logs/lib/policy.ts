@@ -1,6 +1,7 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnResourcePolicy } from './logs.generated';
-import { PolicyDocument, PolicyStatement } from '../../aws-iam';
+import type { PolicyStatement } from '../../aws-iam';
+import { PolicyDocument } from '../../aws-iam';
 import { Resource, Lazy, Names } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';

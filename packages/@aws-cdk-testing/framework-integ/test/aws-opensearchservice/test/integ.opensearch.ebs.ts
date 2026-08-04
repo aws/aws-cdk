@@ -1,5 +1,6 @@
-import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
@@ -31,4 +32,10 @@ class TestStack extends Stack {
 const app = new App();
 const stack = new TestStack(app, 'cdk-integ-opensearch-instance-store');
 
-new IntegTest(app, 'Integ', { testCases: [stack] });
+// These instance types (i4g, i4i, r7gd, r8gd) are not available in all regions.
+// Verified via: aws opensearch list-instance-type-details --engine-version OpenSearch_2.17 --region <region>
+// Regions with all 4 types: us-east-1, us-east-2, us-west-2, eu-west-1, ca-central-1
+new IntegTest(app, 'Integ', {
+  testCases: [stack],
+  regions: ['us-east-1', 'us-east-2', 'us-west-2', 'eu-west-1', 'ca-central-1'],
+});

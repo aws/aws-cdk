@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
-import * as lambda from '../../aws-lambda';
-import * as s3 from '../../aws-s3';
+import type { Construct } from 'constructs';
+import type * as lambda from '../../aws-lambda';
+import type * as s3 from '../../aws-s3';
 
 /**
  * Use a S3 bucket as a Lambda destination

@@ -1,5 +1,7 @@
-import { Property, RelationshipRef, Resource, RichProperty, SpecDatabase } from '@aws-cdk/service-spec-types';
-import { Module, SelectiveModuleImport, Type } from '@cdklabs/typewriter';
+import type { Property, RelationshipRef, Resource, SpecDatabase } from '@aws-cdk/service-spec-types';
+import { RichProperty } from '@aws-cdk/service-spec-types';
+import type { Module } from '@cdklabs/typewriter';
+import { SelectiveModuleImport, Type } from '@cdklabs/typewriter';
 import * as naming from '../naming';
 import { CDK_INTERFACES } from './cdk';
 import { ResourceReference } from './reference-props';

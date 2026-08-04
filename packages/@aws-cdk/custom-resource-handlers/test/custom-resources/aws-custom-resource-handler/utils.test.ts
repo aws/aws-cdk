@@ -1,4 +1,4 @@
-import { AwsSdkCall } from '../../../lib/custom-resources/aws-custom-resource-handler/construct-types';
+import type { AwsSdkCall } from '../../../lib/custom-resources/aws-custom-resource-handler/construct-types';
 import { getCredentials } from '../../../lib/custom-resources/aws-custom-resource-handler/utils';
 
 // Mock the @aws-sdk/credential-providers import

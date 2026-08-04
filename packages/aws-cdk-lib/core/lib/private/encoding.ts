@@ -1,10 +1,12 @@
 import { UnscopedValidationError } from '../errors';
-import { IFragmentConcatenator, IResolvable } from '../resolvable';
+import type { IFragmentConcatenator, IResolvable } from '../resolvable';
 import { TokenizedStringFragments } from '../string-fragments';
 import { isResolvableObject } from '../token';
+import { lit } from './literal-string';
 
 // Details for encoding and decoding Tokens into native types; should not be exported
 
+export const ANY_TOKEN_MARKER = 'Token[';
 export const BEGIN_STRING_TOKEN_MARKER = '${Token[';
 export const BEGIN_LIST_TOKEN_MARKER = '#{Token[';
 export const END_TOKEN_MARKER = ']}';
@@ -62,7 +64,7 @@ export class TokenString {
       m = this.re.exec(this.str);
     }
 
-    if (rest < this.str.length) {
+    if (rest < (this.str ?? '').length) {
       ret.addLiteral(this.str.substring(rest));
     }
 
@@ -109,7 +111,7 @@ export function containsListTokenElement(xs: any[]) {
  */
 export function unresolved(obj: any): boolean {
   if (typeof(obj) === 'string') {
-    return TokenString.forString(obj).test();
+    return obj.includes(ANY_TOKEN_MARKER) && TokenString.forString(obj).test();
   } else if (typeof obj === 'number') {
     return extractTokenDouble(obj) !== undefined;
   } else if (Array.isArray(obj) && obj.length === 1) {
@@ -167,10 +169,10 @@ const BITS32 = Math.pow(2, 32);
  */
 export function createTokenDouble(x: number) {
   if (Math.floor(x) !== x || x < 0) {
-    throw new UnscopedValidationError('Can only encode positive integers');
+    throw new UnscopedValidationError(lit`OnlyEncodePositiveIntegers`, 'Can only encode positive integers');
   }
   if (x > MAX_ENCODABLE_INTEGER) {
-    throw new UnscopedValidationError(`Got an index too large to encode: ${x}`);
+    throw new UnscopedValidationError(lit`IndexLargeEncode`, `Got an index too large to encode: ${x}`);
   }
 
   const buf = new ArrayBuffer(8);
