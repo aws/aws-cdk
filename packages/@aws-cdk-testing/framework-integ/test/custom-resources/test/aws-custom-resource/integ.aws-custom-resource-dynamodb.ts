@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import * as integ from '@aws-cdk/integ-tests-alpha';

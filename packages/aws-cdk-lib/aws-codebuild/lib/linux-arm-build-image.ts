@@ -1,12 +1,12 @@
-import { BuildSpec } from './build-spec';
+import type { BuildSpec } from './build-spec';
 import { ComputeType } from './compute-type';
 import { EnvironmentType } from './environment-type';
 import { ImagePullPrincipalType } from './image-pull-principal-type';
 import { isLambdaComputeType } from './is-lambda-compute-type';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
 import type { BuildEnvironment, IBuildImage, DockerImageOptions } from './project';
-import * as ecr from '../../aws-ecr';
-import * as secretsmanager from '../../aws-secretsmanager';
+import type * as ecr from '../../aws-ecr';
+import type * as secretsmanager from '../../aws-secretsmanager';
 
 /**
  * Construction properties of `LinuxArmBuildImage`.

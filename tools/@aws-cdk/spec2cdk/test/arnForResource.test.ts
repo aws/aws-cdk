@@ -1,6 +1,7 @@
 
-import { Resource, Service, SpecDatabase, StringType, emptyDatabase } from '@aws-cdk/service-spec-types';
-import { Plain } from '@cdklabs/tskb';
+import type { Resource, Service, SpecDatabase, StringType } from '@aws-cdk/service-spec-types';
+import { emptyDatabase } from '@aws-cdk/service-spec-types';
+import type { Plain } from '@cdklabs/tskb';
 import { ClassType } from '@cdklabs/typewriter';
 import { moduleForResource, TestRenderer } from './util';
 

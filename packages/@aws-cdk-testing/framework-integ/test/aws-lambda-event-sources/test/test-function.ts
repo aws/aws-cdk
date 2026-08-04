@@ -1,5 +1,5 @@
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 export class TestFunction extends lambda.Function {

@@ -1,13 +1,16 @@
-import { Resource, IResource } from 'aws-cdk-lib';
+import type { IResource } from 'aws-cdk-lib';
+import { Resource } from 'aws-cdk-lib';
+import type { GatewayTargetReference, IGatewayTargetRef } from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { IGateway } from '../gateway-base';
-import { ICredentialProviderConfig } from '../outbound-auth/credential-provider';
+import type { IGateway } from '../gateway-base';
+import type { ICredentialProviderConfig } from '../outbound-auth/credential-provider';
 
 /******************************************************************************
  *                                 ENUM
  *****************************************************************************/
 /**
  * Protocol types supported by gateway targets
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export enum GatewayTargetProtocolType {
   /** Model Context Protocol type */
@@ -16,6 +19,7 @@ export enum GatewayTargetProtocolType {
 
 /**
  * MCP target types
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export enum McpTargetType {
   /** OpenAPI schema target type */
@@ -26,6 +30,8 @@ export enum McpTargetType {
   LAMBDA = 'LAMBDA',
   /** MCP server target type */
   MCP_SERVER = 'MCP_SERVER',
+  /** API Gateway target type */
+  API_GATEWAY = 'API_GATEWAY',
 }
 
 /******************************************************************************
@@ -37,8 +43,9 @@ export enum McpTargetType {
  *
  * Represents a target that hosts tools for the gateway.
  * Targets can be Lambda functions, OpenAPI schemas, or Smithy models.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
-export interface IGatewayTarget extends IResource {
+export interface IGatewayTarget extends IResource, IGatewayTargetRef {
   /**
    * The ARN of the gateway target resource
    * @attribute
@@ -121,6 +128,7 @@ export interface IGatewayTarget extends IResource {
  *
  * Extends the base gateway target interface with MCP-specific properties.
  * MCP targets expose tools using the Model Context Protocol.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface IMcpGatewayTarget extends IGatewayTarget {
   /**
@@ -137,6 +145,7 @@ export interface IMcpGatewayTarget extends IGatewayTarget {
  *
  * Provides common functionality for all gateway target types including
  * permission management and property definitions.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export abstract class GatewayTargetBase extends Resource implements IGatewayTarget {
   public abstract readonly targetArn: string;
@@ -150,6 +159,16 @@ export abstract class GatewayTargetBase extends Resource implements IGatewayTarg
   public abstract readonly createdAt?: string;
   public abstract readonly updatedAt?: string;
   public abstract readonly targetProtocolType: GatewayTargetProtocolType;
+
+  /**
+   * A reference to a GatewayTarget resource.
+   */
+  public get gatewayTargetRef(): GatewayTargetReference {
+    return {
+      gatewayIdentifier: this.gateway.gatewayRef.gatewayIdentifier,
+      targetId: this.targetId,
+    };
+  }
 
   /**
    * Grants IAM actions to the IAM Principal

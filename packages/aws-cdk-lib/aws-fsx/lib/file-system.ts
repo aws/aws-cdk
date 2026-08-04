@@ -1,6 +1,7 @@
-import { Connections, IConnectable, ISecurityGroup, IVpc } from '../../aws-ec2';
-import { IKeyRef } from '../../aws-kms';
-import { RemovalPolicy, Resource } from '../../core';
+import type { Connections, IConnectable, ISecurityGroup, IVpc } from '../../aws-ec2';
+import type { IKeyRef } from '../../aws-kms';
+import type { RemovalPolicy } from '../../core';
+import { Resource } from '../../core';
 
 /**
  * The storage type for the file system.

@@ -1,12 +1,14 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { AcceleratorSecurityGroupPeer } from './_accelerator-security-group';
-import { IEndpoint } from './endpoint';
+import type { IEndpoint } from './endpoint';
 import * as ga from './globalaccelerator.generated';
-import * as ec2 from '../../aws-ec2';
+import type * as ec2 from '../../aws-ec2';
 import * as cdk from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IEndpointGroupRef, IListenerRef } from '../../interfaces/generated/aws-globalaccelerator-interfaces.generated';
+import type { IEndpointGroupRef, IListenerRef } from '../../interfaces/generated/aws-globalaccelerator-interfaces.generated';
 
 /**
  * The interface of the EndpointGroup
@@ -186,7 +188,11 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
   /**
    * The array of the endpoints in this endpoint group
    */
-  protected readonly endpoints = new Array<IEndpoint>();
+  private readonly _endpoints: IArrayBox<IEndpoint> = Box.fromArray([], { omitEmpty: false });
+
+  protected get endpoints(): IEndpoint[] {
+    return [...this._endpoints.get()];
+  }
 
   public get endpointGroupRef(): ga.EndpointGroupReference {
     return {
@@ -201,8 +207,12 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
 
     const resource = new ga.CfnEndpointGroup(this, 'Resource', {
       listenerArn: props.listener.listenerRef.listenerArn,
-      endpointGroupRegion: props.region ?? cdk.Lazy.string({ produce: () => this.firstEndpointRegion() }),
-      endpointConfigurations: cdk.Lazy.any({ produce: () => this.renderEndpoints() }, { omitEmptyArray: true }),
+      endpointGroupRegion: props.region ?? cdk.Token.asString(
+        this._endpoints.derive(_ => this.firstEndpointRegion()),
+      ),
+      endpointConfigurations: this._endpoints.derive(ep =>
+        ep.length === 0 ? undefined : ep.map(e => e.renderEndpointConfiguration()),
+      ),
       healthCheckIntervalSeconds: props.healthCheckInterval?.toSeconds({ integral: true }),
       healthCheckPath: props.healthCheckPath,
       healthCheckPort: props.healthCheckPort,
@@ -228,7 +238,7 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
    */
   @MethodMetadata()
   public addEndpoint(endpoint: IEndpoint) {
-    this.endpoints.push(endpoint);
+    this._endpoints.push(endpoint);
   }
 
   /**
@@ -249,15 +259,8 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
     return AcceleratorSecurityGroupPeer.fromVpc(this, id, vpc, this);
   }
 
-  private renderEndpoints() {
-    return this.endpoints.map(e => e.renderEndpointConfiguration());
-  }
-
-  /**
-   * Return the first (readable) region of the endpoints in this group
-   */
   private firstEndpointRegion() {
-    for (const endpoint of this.endpoints) {
+    for (const endpoint of this._endpoints) {
       if (endpoint.region) {
         return endpoint.region;
       }

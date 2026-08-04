@@ -1,20 +1,26 @@
-import { Construct } from 'constructs';
-import { DataProtectionPolicy } from './data-protection-policy';
-import { FieldIndexPolicy } from './field-index-policy';
+import type { Construct } from 'constructs';
+import type { DataProtectionPolicy } from './data-protection-policy';
+import type { FieldIndexPolicy } from './field-index-policy';
 import { LogStream } from './log-stream';
 import { LogGroupGrants } from './logs-grants.generated';
-import { CfnLogGroup, ILogGroupRef, LogGroupReference } from './logs.generated';
+import type { ILogGroupRef, LogGroupReference } from './logs.generated';
+import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
-import { FilterPattern, IFilterPattern } from './pattern';
+import type { IFilterPattern } from './pattern';
+import { FilterPattern } from './pattern';
 import { ResourcePolicy } from './policy';
-import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-filter';
-import { IProcessor, Transformer } from './transformer';
+import type { ILogSubscriptionDestination } from './subscription-filter';
+import { SubscriptionFilter } from './subscription-filter';
+import type { IProcessor } from './transformer';
+import { Transformer } from './transformer';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
+import type * as kms from '../../aws-kms';
+import type { RemovalPolicy } from '../../core';
+import { Arn, ArnFormat, Resource, Stack, Token, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface ILogGroup extends iam.IResourceWithPolicy, ILogGroupRef {
@@ -235,6 +241,9 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
   /**
    * Give permissions to create and write to streams in this log group
    *
+   *
+   * The use of this method is discouraged. Please use `grants.write()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantWrite(grantee: iam.IGrantable) {
@@ -243,6 +252,9 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
 
   /**
    * Give permissions to read and filter events from this log group
+   *
+   *
+   * The use of this method is discouraged. Please use `grants.read()` instead.
    *
    * [disable-awslint:no-grants]
    */
@@ -687,7 +699,7 @@ export class LogGroup extends LogGroupBase {
     if (retentionInDays === Infinity || retentionInDays === RetentionDays.INFINITE) { retentionInDays = undefined; }
 
     if (retentionInDays !== undefined && !Token.isUnresolved(retentionInDays) && retentionInDays <= 0) {
-      throw new ValidationError(`retentionInDays must be positive, got ${retentionInDays}`, this);
+      throw new ValidationError(lit`RetentionDaysPositive`, `retentionInDays must be positive, got ${retentionInDays}`, this);
     }
 
     let logGroupClass = props.logGroupClass;

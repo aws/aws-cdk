@@ -1,10 +1,12 @@
-import { Construct } from 'constructs';
-import { CfnSigningProfile, SigningProfileReference } from './signer.generated';
-import { Duration, FeatureFlags, IResource, Resource, Stack } from '../../core';
+import type { Construct } from 'constructs';
+import type { SigningProfileReference } from './signer.generated';
+import { CfnSigningProfile } from './signer.generated';
+import type { Duration, IResource } from '../../core';
+import { FeatureFlags, Resource, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
-import { aws_signer } from '../../interfaces';
+import type { aws_signer } from '../../interfaces';
 
 // Feature flag is defined in cx-api
 
@@ -26,12 +28,16 @@ export class Platform {
   /**
    * Specification of signature format and signing algorithms with
    * SHA1 hash and RSA encryption for Amazon FreeRTOS.
+   *
+   * @deprecated This signature platform has been discontinued.
    */
   public static readonly AMAZON_FREE_RTOS_TI_CC3220SF = Platform.of('AmazonFreeRTOS-TI-CC3220SF');
 
   /**
    * Specification of signature format and signing algorithms with
    * SHA256 hash and ECDSA encryption for Amazon FreeRTOS.
+   *
+   * @deprecated This signature platform has been discontinued.
    */
   public static readonly AMAZON_FREE_RTOS_DEFAULT = Platform.of('AmazonFreeRTOS-Default');
 

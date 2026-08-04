@@ -1,5 +1,5 @@
-import * as iam from '../../../aws-iam';
-import * as s3 from '../../../aws-s3';
+import type * as iam from '../../../aws-iam';
+import type * as s3 from '../../../aws-s3';
 import { Resource, Stack } from '../../../core';
 
 /**
@@ -22,6 +22,6 @@ import { Resource, Stack } from '../../../core';
  */
 export function forceSupportStackDependency(bucket: s3.IBucket, role: iam.IRole) {
   if (Resource.isOwnedResource(bucket) && Resource.isOwnedResource(role)) {
-    Stack.of(bucket).addDependency(Stack.of(role), `replication bucket {${bucket.node.path}} to action role {${role}}`);
+    Stack.of(bucket).addStackDependency(Stack.of(role), `replication bucket {${bucket.node.path}} to action role {${role}}`);
   }
 }

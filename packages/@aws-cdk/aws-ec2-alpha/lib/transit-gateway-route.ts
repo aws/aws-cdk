@@ -1,10 +1,11 @@
 import { CfnTransitGatewayRoute } from 'aws-cdk-lib/aws-ec2';
-import { IResource, Resource } from 'aws-cdk-lib/core';
+import type { IResource } from 'aws-cdk-lib/core';
+import { Resource } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { ITransitGatewayAttachment } from './transit-gateway-attachment';
-import { ITransitGatewayRouteTable } from './transit-gateway-route-table';
+import type { Construct } from 'constructs';
+import type { ITransitGatewayAttachment } from './transit-gateway-attachment';
+import type { ITransitGatewayRouteTable } from './transit-gateway-route-table';
 
 /**
  * Represents a Transit Gateway Route.

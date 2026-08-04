@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import * as cxschema from '../../../cloud-assembly-schema';
+import type * as cxschema from '../../../cloud-assembly-schema';
 import * as cxapi from '../../../cx-api';
 import { App, Aws, CfnResource, CliCredentialsStackSynthesizer, FileAssetPackaging, Stack } from '../../lib';
 import { evaluateCFN } from '../evaluate-cfn';

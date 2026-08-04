@@ -3,9 +3,9 @@ import * as cdk from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IFleet } from './fleet-base';
-import { IGameSessionQueueDestination } from './game-session-queue';
+import type { Construct } from 'constructs';
+import type { IFleet } from './fleet-base';
+import type { IGameSessionQueueDestination } from './game-session-queue';
 
 /**
  * Represents a Gamelift Alias for a Gamelift fleet destination.

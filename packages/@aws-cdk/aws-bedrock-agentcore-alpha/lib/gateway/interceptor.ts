@@ -1,6 +1,6 @@
-import { IFunction } from 'aws-cdk-lib/aws-lambda';
-import { Construct } from 'constructs';
-import { IGateway } from './gateway-base';
+import type { IFunction } from 'aws-cdk-lib/aws-lambda';
+import type { Construct } from 'constructs';
+import type { IGateway } from './gateway-base';
 
 /******************************************************************************
  *                                Enums
@@ -8,6 +8,7 @@ import { IGateway } from './gateway-base';
 
 /**
  * The interception point where the interceptor will be invoked
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export enum InterceptionPoint {
   /**
@@ -29,6 +30,7 @@ export enum InterceptionPoint {
 
 /**
  * Options for configuring an interceptor
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface InterceptorOptions {
   /**
@@ -48,6 +50,7 @@ export interface InterceptorOptions {
  * Represents an interceptor that can be bound to a Gateway
  *
  * Interceptors allow custom code execution at specific points in the gateway request/response flow.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface IInterceptor {
   /**
@@ -72,6 +75,7 @@ export interface IInterceptor {
 
 /**
  * Configuration returned from binding an interceptor to a Gateway
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface InterceptorBindConfig {
   /**
@@ -91,6 +95,7 @@ export interface InterceptorBindConfig {
  * - REQUEST interceptors execute before calling the target
  * - RESPONSE interceptors execute after the target responds
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-interceptors.html
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class LambdaInterceptor implements IInterceptor {
   /**

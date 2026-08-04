@@ -1,8 +1,11 @@
-import { Construct } from 'constructs';
-import { Bucket, IBucket } from './bucket';
-import { BucketPolicyReference, CfnBucket, CfnBucketPolicy, IBucketPolicyRef } from './s3.generated';
+import type { Construct } from 'constructs';
+import type { IBucket } from './bucket';
+import { Bucket } from './bucket';
+import type { BucketPolicyReference, IBucketPolicyRef } from './s3.generated';
+import { CfnBucket, CfnBucketPolicy } from './s3.generated';
 import { PolicyDocument } from '../../aws-iam';
-import { RemovalPolicy, Resource, Token, Tokenization } from '../../core';
+import type { RemovalPolicy } from '../../core';
+import { Resource, Token, Tokenization, Validations } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -94,6 +97,7 @@ export class BucketPolicy extends Resource implements IBucketPolicyRef {
       bucket,
       document: PolicyDocument.fromJson(cfnBucketPolicy.policyDocument),
     });
+    Validations.of(ret).acknowledge({ id: 'CloudFormation-Validate::E3019', reason: 'We are intentionally creating a duplicate resource' });
 
     // mark the Bucket as having this Policy
     bucket.policy = ret;

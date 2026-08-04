@@ -1,4 +1,5 @@
-import { IResolvable, ITokenMapper, StringConcat, Tokenization } from '../../core';
+import type { IResolvable, ITokenMapper } from '../../core';
+import { StringConcat, Tokenization } from '../../core';
 
 export interface Content {
   readonly text: string;

@@ -2,7 +2,8 @@
 /* eslint-disable no-console */
 import * as https from 'https';
 import * as url from 'url';
-import { SFN, StartExecutionInput } from '@aws-sdk/client-sfn';
+import type { StartExecutionInput } from '@aws-sdk/client-sfn';
+import { SFN } from '@aws-sdk/client-sfn';
 
 interface HandlerResponse {
   readonly status: 'SUCCESS' | 'FAILED';

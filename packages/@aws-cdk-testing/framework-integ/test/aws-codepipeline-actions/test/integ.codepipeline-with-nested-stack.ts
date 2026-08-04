@@ -5,7 +5,7 @@ import { Artifact, Pipeline } from 'aws-cdk-lib/aws-codepipeline';
 import { GitHubSourceAction, StateMachineInput, StepFunctionInvokeAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 /**
  * This test is to make sure the stack names are resolved when using in nested stacks with

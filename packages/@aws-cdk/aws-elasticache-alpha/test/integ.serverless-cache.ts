@@ -1,8 +1,9 @@
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { App, Duration, RemovalPolicy, Size, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Duration, RemovalPolicy, Size, Stack } from 'aws-cdk-lib';
 import { SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { AccessControl, CacheEngine, IamUser, ServerlessCache, UserGroup } from '../lib';
 
 const cacheName = 'serverlesscache';
@@ -85,8 +86,8 @@ cacheDescription.expect(ExpectedResult.objectLike({
   }],
 })).waitForAssertions(
   {
-    totalTimeout: Duration.minutes(2),
-    interval: Duration.seconds(5),
+    totalTimeout: Duration.minutes(15),
+    interval: Duration.seconds(30),
   },
 );
 

@@ -1,7 +1,7 @@
 /// !cdk-integ *
 import * as cdk from 'aws-cdk-lib';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
-import { IUsagePlan } from 'aws-cdk-lib/aws-apigateway';
+import type { IUsagePlan } from 'aws-cdk-lib/aws-apigateway';
 
 class Create extends cdk.Stack {
   public usagePlan: IUsagePlan;

@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
 import { Aws } from '../../../core';
 import { DetachedConstruct } from '../../../core/lib/private/detached-construct';
