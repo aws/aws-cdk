@@ -1226,6 +1226,71 @@ describe('McpGatewaySearchType.of() escape hatch', () => {
   });
 });
 
+describe('McpProtocolConfiguration session/streaming configuration', () => {
+  test('renders sessionTimeout and enableResponseStreaming in the template', () => {
+    const stack = new cdk.Stack();
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-session',
+      protocolConfiguration: GatewayProtocol.mcp({
+        sessionTimeout: cdk.Duration.hours(2),
+        enableResponseStreaming: true,
+      }),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      ProtocolConfiguration: Match.objectLike({
+        Mcp: Match.objectLike({
+          SessionConfiguration: { SessionTimeoutInSeconds: 7200 },
+          StreamingConfiguration: { EnableResponseStreaming: true },
+        }),
+      }),
+    });
+  });
+
+  test('renders enableResponseStreaming false explicitly (not omitted as falsy)', () => {
+    const stack = new cdk.Stack();
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-session-false',
+      protocolConfiguration: GatewayProtocol.mcp({
+        enableResponseStreaming: false,
+      }),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      ProtocolConfiguration: Match.objectLike({
+        Mcp: Match.objectLike({
+          StreamingConfiguration: { EnableResponseStreaming: false },
+        }),
+      }),
+    });
+  });
+
+  test('omits sessionConfiguration and streamingConfiguration when not specified', () => {
+    const stack = new cdk.Stack();
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-session-default',
+      protocolConfiguration: GatewayProtocol.mcp({}),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      ProtocolConfiguration: Match.objectLike({
+        Mcp: Match.objectLike({
+          SessionConfiguration: Match.absent(),
+          StreamingConfiguration: Match.absent(),
+        }),
+      }),
+    });
+  });
+
+  test.each([899, 28801])('fails when sessionTimeout is %d seconds (outside 900-28800 range)', (seconds) => {
+    expect(() => {
+      GatewayProtocol.mcp({
+        sessionTimeout: cdk.Duration.seconds(seconds),
+      });
+    }).toThrow(`sessionTimeout must be between 900 and 28800 seconds (15 minutes to 8 hours), got ${seconds} seconds`);
+  });
+});
+
 describe('GatewayExceptionLevel.of() escape hatch', () => {
   test('renders custom exception level in the template', () => {
     const stack = new cdk.Stack();
