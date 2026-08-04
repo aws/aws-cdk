@@ -556,7 +556,7 @@ export class Cluster extends Resource implements ICluster {
    */
   @MethodMetadata()
   public addExistingDefaultCloudMapNamespace(options: ExistingCloudMapNamespaceOptions): cloudmap.INamespace {
-    if (this._defaultCloudMapNamespace !== undefined) {
+    if (this.defaultCloudMapNamespace !== undefined) {
       throw new ValidationError(lit`OnlyDefaultNamespaceOnce`, 'Can only add default namespace once.', this);
     }
 
@@ -585,7 +585,7 @@ export class Cluster extends Resource implements ICluster {
         'same VPC as this ECS cluster for service discovery to function correctly.');
     }
 
-    this._defaultCloudMapNamespace = options.namespace;
+    setDefaultCloudMapNamespace(this, options.namespace);
     if (options.useForServiceConnect) {
       // Validate ARN is well-formed for imported namespaces
       const nsArn = options.namespace.namespaceArn;
