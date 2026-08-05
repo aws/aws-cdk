@@ -117,8 +117,8 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      const warnings = flattenMeta(app.synth().getStackByName('Stack').metadata)['/Stack/Ec2Service']['aws:cdk:warning'];
-      expect(warnings ?? []).not.toContainEqual(expect.stringContaining("Enable the 'circuitBreaker' property"));
+      const warnings = flattenMeta(app.synth().getStackByName('Stack').metadata)['/Stack/Ec2Service']?.['aws:cdk:warning'] ?? [];
+      expect(warnings).not.toContainEqual(expect.stringContaining("Enable the 'circuitBreaker' property"));
     });
 
     [false, undefined].forEach((value) => {
