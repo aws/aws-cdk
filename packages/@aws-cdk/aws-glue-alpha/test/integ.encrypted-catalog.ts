@@ -58,10 +58,10 @@ const integTest = new integ.IntegTest(app, 'aws-cdk-glue-table-integ', {
 // The partition index above is created at deploy time by the custom-resource
 // handlers, which call CreatePartitionIndex/UpdateTable against the encrypted
 // catalog. That write only succeeds if the handlers hold the KMS permissions
-// this construct grants them (kms:Decrypt/kms:GenerateDataKey* on the catalog
-// key) - otherwise the custom resource fails and the deploy fails. Asserting the
-// index reached ACTIVE confirms the grant let the handlers write the encrypted
-// metadata; a missing grant would surface here as a failed deployment.
+// this construct grants them (kms:Decrypt on the catalog key) - otherwise the
+// custom resource fails and the deployment fails. Asserting the index reached
+// ACTIVE confirms the grant let the handlers write the encrypted metadata; a
+// missing grant would surface here as a failed deployment.
 const indexes = integTest.assertions.awsApiCall('Glue', 'getPartitionIndexes', {
   CatalogId: stack.account,
   DatabaseName: database.databaseName,
