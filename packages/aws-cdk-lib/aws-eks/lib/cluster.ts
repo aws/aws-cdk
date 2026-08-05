@@ -37,7 +37,7 @@ import type * as kms from '../../aws-kms';
 import type * as lambda from '../../aws-lambda';
 import * as ssm from '../../aws-ssm';
 import type { IResource, Duration, Size, RemovalPolicy } from '../../core';
-import { Annotations, CfnOutput, CfnResource, Resource, Stack, Tags, Token, ValidationError, UnscopedValidationError, RemovalPolicies, FeatureFlags } from '../../core';
+import { Annotations, CfnOutput, CfnResource, Resource, Stack, Tags, Token, ValidationError, UnscopedValidationError, RemovalPolicies, FeatureFlags, Validations } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
@@ -757,6 +757,18 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default - deletion protection is disabled
    */
   readonly deletionProtection?: boolean;
+
+  /**
+   * The control plane scaling tier for EKS Provisioned Control Plane.
+   *
+   * Provisioned Control Plane allows you to select a scaling tier to ensure
+   * high and predictable performance for demanding workloads such as
+   * AI training/inference, high-performance computing, or large-scale data processing.
+   *
+   * @default - Standard control plane (no provisioned tier)
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/eks-provisioned-control-plane.html
+   */
+  readonly controlPlaneScalingTier?: ControlPlaneScalingTier;
 }
 
 /**
@@ -1101,6 +1113,15 @@ export class KubernetesVersion {
   public static readonly V1_35 = KubernetesVersion.of('1.35');
 
   /**
+   * Kubernetes version 1.36
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV36Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v36`.
+   */
+  public static readonly V1_36 = KubernetesVersion.of('1.36');
+
+  /**
    * Custom cluster version
    * @param version custom version number
    */
@@ -1169,6 +1190,38 @@ export enum AuthenticationMode {
    * Authenticates using the Kubernetes API server.
    */
   API = 'API',
+}
+
+/**
+ * Control plane scaling tier for EKS Provisioned Control Plane.
+ *
+ * Provisioned Control Plane allows cluster administrators to select from a set
+ * of scaling tiers to ensure high and predictable performance for demanding workloads
+ * such as AI training/inference, high-performance computing, or large-scale data processing.
+ *
+ * @see https://docs.aws.amazon.com/eks/latest/userguide/eks-provisioned-control-plane.html
+ */
+export enum ControlPlaneScalingTier {
+  /**
+   * Standard control plane (default, no additional cost).
+   */
+  STANDARD = 'standard',
+  /**
+   * Extra-large provisioned tier.
+   */
+  TIER_XL = 'tier-xl',
+  /**
+   * 2x extra-large provisioned tier.
+   */
+  TIER_2XL = 'tier-2xl',
+  /**
+   * 4x extra-large provisioned tier.
+   */
+  TIER_4XL = 'tier-4xl',
+  /**
+   * 8x extra-large provisioned tier.
+   */
+  TIER_8XL = 'tier-8xl',
 }
 
 abstract class ClusterBase extends Resource implements ICluster {
@@ -1870,6 +1923,9 @@ export class Cluster extends ClusterBase {
       logging: this.logging,
       bootstrapSelfManagedAddons: props.bootstrapSelfManagedAddons,
       deletionProtection: props.deletionProtection,
+      controlPlaneScalingConfig: props.controlPlaneScalingTier
+        ? { tier: props.controlPlaneScalingTier }
+        : undefined,
     });
 
     this.node.defaultChild = resource;
@@ -2874,6 +2930,10 @@ export class EksOptimizedImage implements ec2.IMachineImage {
    * Return the correct image
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
+    Validations.of(scope).acknowledge({
+      id: 'CloudFormation-Validate::W2506',
+      reason: 'SSM parameter is typed as String instead of AWS::SSM::Parameter::Value<AWS::EC2::Image::Id> for historical reasons.',
+    });
     const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
     return {
       imageId: ami,
