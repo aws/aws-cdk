@@ -27,6 +27,32 @@ export interface IAlarmMuteRule extends cdk.IResource, IAlarmMuteRuleRef {
 }
 
 /**
+ * Represents a calendar date and time.
+ */
+export interface CalendarDateTime {
+  /**
+   * The year of the date.
+   */
+  readonly year: number;
+  /**
+   * The month of the date. Valid range: 1-12
+   */
+  readonly month: number;
+  /**
+   * The day of the date. Valid range: 1-31
+   */
+  readonly day: number;
+  /**
+   * The hour of the time. Valid range: 0-23
+   */
+  readonly hour: number;
+  /**
+   * The minute of the time. Valid range: 0-59
+   */
+  readonly minute: number;
+}
+
+/**
  * Schedule expression for CloudWatch alarm mute rule
  *
  * You can choose from three schedule types when configuring your schedule: cron-based and one-time schedules.
@@ -41,7 +67,7 @@ export abstract class ScheduleExpression {
    * @param date The date and time to use. The millisecond part will be ignored.
    * @param timeZone The time zone to use for interpreting the date. Default: - UTC
    */
-  public static at(date: Date, timeZone?: cdk.TimeZone): ScheduleExpression {
+  public static at(date: CalendarDateTime, timeZone?: cdk.TimeZone): ScheduleExpression {
     const literal = formatDate(date);
     return new LiteralScheduleExpression(`at(${literal})`, timeZone);
   }
@@ -179,7 +205,7 @@ export interface AlarmMuteRuleOptions {
    *
    * @default - no configuration
    */
-  readonly start?: Date;
+  readonly start?: CalendarDateTime;
 
   /**
    * The date and time when the mute rule expires and is no longer evaluated.
@@ -189,7 +215,7 @@ export interface AlarmMuteRuleOptions {
    *
    * @default - no configuration
    */
-  readonly expire?: Date;
+  readonly expire?: CalendarDateTime;
 
   /**
    * A list of tags associated with the alarm mute rule.
@@ -343,10 +369,24 @@ export class AlarmMuteRule extends cdk.Resource implements IAlarmMuteRule {
 }
 
 /**
- * Formats a Date with local time zone.
+ * Validate and format a CalendarDateTime to 'yyyy-MM-ddThh:mm'
  * CFN error message: "At expressions must be a valid date in 'yyyy-MM-ddThh:mm' format"
  */
-function formatDate(date: Date): string {
+function formatDate(date: CalendarDateTime): string {
   const pad = (n: number) => String(n).padStart(2, '0');
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+
+  if (!cdk.Token.isUnresolved(date.month) && (date.month < 1 || date.month > 12)) {
+    throw new cdk.UnscopedValidationError(lit`InvalidDateTime`, 'The specified date is invalid. (month out of range: 1-12).');
+  }
+  if (!cdk.Token.isUnresolved(date.day) && (date.day < 1 || date.day > 31)) {
+    throw new cdk.UnscopedValidationError(lit`InvalidDateTime`, 'The specified date is invalid. (day out of range: 1-31).');
+  }
+  if (!cdk.Token.isUnresolved(date.hour) && (date.hour < 0 || date.hour > 23)) {
+    throw new cdk.UnscopedValidationError(lit`InvalidDateTime`, 'The specified date is invalid. (hour out of range: 0-23).');
+  }
+  if (!cdk.Token.isUnresolved(date.minute) && (date.minute < 0 || date.minute > 59)) {
+    throw new cdk.UnscopedValidationError(lit`InvalidDateTime`, 'The specified date is invalid. (minute out of range: 0-59).');
+  }
+
+  return `${date.year}-${pad(date.month)}-${pad(date.day)}T${pad(date.hour)}:${pad(date.minute)}`;
 }

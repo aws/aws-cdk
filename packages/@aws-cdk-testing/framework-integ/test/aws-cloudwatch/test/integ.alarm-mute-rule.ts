@@ -28,14 +28,14 @@ class AlarmMuteRuleIntegrationTest extends Stack {
       description: 'Alarm mute rule integration test',
       schedule: ScheduleExpression.cron({ minute: '0', hour: '0' }),
       duration: Duration.minutes(1),
-      start: new Date(2030, 0, 1),
-      expire: new Date(2030, 11, 31),
+      start: { year: 2030, month: 1, day: 1, hour: 0, minute: 0 },
+      expire: { year: 2030, month: 12, day: 31, hour: 0, minute: 0 },
     });
     muteRule1.addAlarm(alarm2);
 
     new AlarmMuteRule(this, 'MuteRule2', {
       alarms: [alarm1, alarm2],
-      schedule: ScheduleExpression.at(new Date(2030, 1, 1), TimeZone.ASIA_TOKYO),
+      schedule: ScheduleExpression.at({ year: 2030, month: 2, day: 1, hour: 0, minute: 0 }, TimeZone.ASIA_TOKYO),
       duration: Duration.days(15),
     });
   }

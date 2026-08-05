@@ -30,8 +30,8 @@ describe('Alarm mute rule', () => {
       alarms: [alarm],
       schedule: cloudwatch.ScheduleExpression.cron({ minute: '0', timeZone: cdk.TimeZone.ASIA_TOKYO }),
       duration: cdk.Duration.hours(1),
-      start: new Date(2026, 0, 1, 0, 0, 0),
-      expire: new Date(2026, 11, 31, 23, 59, 59),
+      start: { year: 2026, month: 1, day: 1, hour: 0, minute: 0 },
+      expire: { year: 2026, month: 12, day: 31, hour: 23, minute: 59 },
     });
 
     // THEN
@@ -196,7 +196,7 @@ describe('Alarm mute rule', () => {
     // WHEN
     new cloudwatch.AlarmMuteRule(stack, 'AlarmMuteRule', {
       alarms: [alarm],
-      schedule: cloudwatch.ScheduleExpression.at(new Date(2026, 0, 2, 3, 4)),
+      schedule: cloudwatch.ScheduleExpression.at({ year: 2026, month: 1, day: 2, hour: 3, minute: 4 }),
       duration: cdk.Duration.hours(1),
     });
 
@@ -215,7 +215,7 @@ describe('Alarm mute rule', () => {
     // WHEN
     new cloudwatch.AlarmMuteRule(stack, 'AlarmMuteRule', {
       alarms: [alarm],
-      schedule: cloudwatch.ScheduleExpression.at(new Date(2026, 0, 2, 3, 4), cdk.TimeZone.ASIA_TOKYO),
+      schedule: cloudwatch.ScheduleExpression.at({ year: 2026, month: 1, day: 2, hour: 3, minute: 4 }, cdk.TimeZone.ASIA_TOKYO),
       duration: cdk.Duration.hours(1),
     });
 
@@ -228,6 +228,19 @@ describe('Alarm mute rule', () => {
         },
       },
     });
+  });
+
+  test.each([
+    [{ year: 2026, month: 0, day: 1, hour: 0, minute: 0 }],
+    [{ year: 2026, month: 13, day: 1, hour: 0, minute: 0 }],
+    [{ year: 2026, month: 1, day: 0, hour: 0, minute: 0 }],
+    [{ year: 2026, month: 1, day: 32, hour: 0, minute: 0 }],
+    [{ year: 2026, month: 1, day: 1, hour: -1, minute: 0 }],
+    [{ year: 2026, month: 1, day: 1, hour: 24, minute: 0 }],
+    [{ year: 2026, month: 1, day: 1, hour: 0, minute: -1 }],
+    [{ year: 2026, month: 1, day: 1, hour: 0, minute: 60 }],
+  ])('at schedule throws from %s', (date) => {
+    expect(() => cloudwatch.ScheduleExpression.at(date)).toThrow('The specified date is invalid.');
   });
 
   test.each([
