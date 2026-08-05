@@ -315,8 +315,8 @@ export abstract class TableBase extends Resource implements ITable {
       const key = this.database.catalog.encryptionKey;
       if (key) {
         const grants = KeyGrants.fromKey(key);
-        grants.actions(provider.onEventHandler, 'kms:Decrypt');
-        grants.actions(provider.isCompleteHandler, 'kms:Decrypt');
+        grants.decrypt(provider.onEventHandler);
+        grants.decrypt(provider.isCompleteHandler);
       }
 
       // Both handlers create, delete, and inspect indexes: onEvent creates/deletes on

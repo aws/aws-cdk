@@ -191,7 +191,7 @@ export interface ICatalog extends IResource, ICatalogRef {
  * from the encryption options supplied at construction. Encryption is fixed at
  * construction, so a catalog either carries settings or it does not.
  */
-abstract class CatalogBase extends Resource implements ICatalog {
+export abstract class CatalogBase extends Resource implements ICatalog {
   public abstract readonly catalogId: string;
   public abstract readonly catalogArn: string;
 

@@ -13,8 +13,8 @@
         "App.synth (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
         "App.synth (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:217:27)",
         "process.<anonymous> (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:163:51)",
-        "Object.onceWrapper (node:events:623:26)",
-        "process.emit (node:events:508:28)"
+        "Object.onceWrapper (node:events:633:26)",
+        "process.emit (node:events:518:28)"
       ]
     }
   ],
