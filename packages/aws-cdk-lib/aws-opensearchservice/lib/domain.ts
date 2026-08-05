@@ -729,6 +729,17 @@ export interface DomainProps {
   readonly enableAutoSoftwareUpdate?: boolean;
 
   /**
+   * Specifies whether the domain should use the latest service software version during a blue/green deployment.
+   * If enabled, the domain will automatically use the latest available service software when a blue/green
+   * deployment is triggered.
+   *
+   * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/service-software.html
+   *
+   * @default - false
+   */
+  readonly useLatestServiceSoftwareForBlueGreen?: boolean;
+
+  /**
    * Specify either dual stack or IPv4 as your IP address type.
    * Dual stack allows you to share domain resources across IPv4 and IPv6 address types, and is the recommended option.
    *
@@ -2124,8 +2135,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
           },
         },
       } : undefined,
-      softwareUpdateOptions: props.enableAutoSoftwareUpdate !== undefined ? {
+      softwareUpdateOptions: (props.enableAutoSoftwareUpdate !== undefined || props.useLatestServiceSoftwareForBlueGreen !== undefined) ? {
         autoSoftwareUpdateEnabled: props.enableAutoSoftwareUpdate,
+        useLatestServiceSoftwareForBlueGreen: props.useLatestServiceSoftwareForBlueGreen,
       } : undefined,
       ipAddressType: props.ipAddressType,
       aimlOptions: props.s3VectorsEngineEnabled !== undefined ? {
