@@ -781,6 +781,23 @@ describe('Gateway metric methods tests', () => {
     });
   });
 
+  test('metricTargetType() retains TargetType when caller supplies extra dimensionsMap', () => {
+    alarmForMetric(stack, 'TargetTypeExtraDimAlarm', gateway.metricTargetType('Lambda', { dimensionsMap: { Foo: 'bar' } }));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'TargetType',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+      // CloudWatch renders dimensions alphabetically, so the ordered subsequence [Foo, TargetType]
+      // is intentional here (a future dimension rename could reorder this).
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Foo', Value: 'bar' }),
+        Match.objectLike({ Name: 'TargetType', Value: 'Lambda' }),
+      ]),
+    });
+  });
+
   test('custom statistic prop overrides the default', () => {
     alarmForMetric(stack, 'CustomStatAlarm', gateway.metricInvocations({ statistic: 'Average' }));
 
