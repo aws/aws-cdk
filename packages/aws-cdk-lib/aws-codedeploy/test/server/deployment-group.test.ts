@@ -209,7 +209,7 @@ describe('CodeDeploy Server Deployment Group', () => {
       expect(deploymentGroup.autoScalingGroups).toEqual([asg]);
     });
 
-    test('is a live view that reflects ASGs added after construction', () => {
+    test('reflects ASGs added after construction', () => {
       const stack = new cdk.Stack();
       const asg = newAsg(stack, 'ASG');
 
@@ -219,6 +219,20 @@ describe('CodeDeploy Server Deployment Group', () => {
       deploymentGroup.addAutoScalingGroup(asg);
 
       expect(deploymentGroup.autoScalingGroups).toEqual([asg]);
+    });
+
+    test('is a copy — mutating it does not affect the synthesized Deployment Group', () => {
+      const stack = new cdk.Stack();
+      const asg = newAsg(stack, 'ASG');
+      const deploymentGroup = new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+        autoScalingGroups: [asg],
+      });
+
+      deploymentGroup.autoScalingGroups!.push(newAsg(stack, 'SmuggledASG'));
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
+        AutoScalingGroups: [{ Ref: 'ASG46ED3070' }],
+      });
     });
 
     test('is undefined on an imported Deployment Group', () => {
