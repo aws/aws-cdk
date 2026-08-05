@@ -1029,6 +1029,10 @@ describe('ec2 service', () => {
         vpc,
       });
 
+      cdk.Validations.of(stack).acknowledge(
+        { id: 'CloudFormation-Validate::F3034', reason: 'failureThreshold intentionally exceeds the CloudFormation maximum of 10; the test asserts it is passed through to HealthCheckCustomConfig unmodified' },
+      );
+
       new ecs.Ec2Service(stack, 'Ec2Service', {
         cluster,
         taskDefinition,
@@ -1097,6 +1101,10 @@ describe('ec2 service', () => {
       });
 
       // WHEN
+      cdk.Validations.of(stack).acknowledge(
+        { id: 'CloudFormation-Validate::F3034', reason: 'failureThreshold intentionally exceeds the CloudFormation maximum of 10; this test exercises every property, not valid value ranges' },
+      );
+
       const service = new ecs.Ec2Service(stack, 'Ec2Service', {
         cluster,
         taskDefinition,
