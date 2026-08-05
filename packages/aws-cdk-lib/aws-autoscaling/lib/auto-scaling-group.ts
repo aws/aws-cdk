@@ -2999,7 +2999,18 @@ function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: Block
     }
 
     if (ebs) {
-      const { iops, volumeType, throughput } = ebs;
+      const { iops, volumeType, throughput, kmsKey } = ebs;
+
+      if (kmsKey) {
+        // AWS::AutoScaling::LaunchConfiguration block devices have no KmsKeyId property,
+        // so the key would be silently dropped and the volume encrypted with the default
+        // key instead of the one that was asked for.
+        throw new ValidationError(
+          lit`KmsKeyRequiresLaunchTemplate`,
+          "'kmsKey' is not supported for block devices of a launch configuration. Enable the '@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig' feature flag to use a launch template, or pass your own 'launchTemplate'",
+          construct,
+        );
+      }
 
       if (throughput) {
         const throughputRange = { Min: 125, Max: 2000 };
