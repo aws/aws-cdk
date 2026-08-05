@@ -1718,3 +1718,78 @@ describe('gRPC', () => {
     }).toThrow(msg);
   });
 });
+
+describe('cacheTagConfig', () => {
+  test('can configure cache tag config with a header name', () => {
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: { origin: defaultOrigin() },
+      cacheTagConfig: {
+        headerName: 'x-amz-meta-cache-tag',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        CacheTagConfig: {
+          HeaderName: 'x-amz-meta-cache-tag',
+        },
+      },
+    });
+  });
+
+  test('distribution without cacheTagConfig does not include CacheTagConfig', () => {
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: { origin: defaultOrigin() },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: Match.objectLike({
+        CacheTagConfig: Match.absent(),
+      }),
+    });
+  });
+
+  test('throws if headerName is empty', () => {
+    expect(() => {
+      new Distribution(stack, 'MyDist', {
+        defaultBehavior: { origin: defaultOrigin() },
+        cacheTagConfig: {
+          headerName: '',
+        },
+      });
+    }).toThrow(/must be a valid HTTP header name/);
+  });
+
+  test('throws if headerName contains invalid characters', () => {
+    expect(() => {
+      new Distribution(stack, 'MyDist', {
+        defaultBehavior: { origin: defaultOrigin() },
+        cacheTagConfig: {
+          headerName: 'invalid header name',
+        },
+      });
+    }).toThrow(/must be a valid HTTP header name/);
+  });
+
+  test('does not throw for valid header names', () => {
+    expect(() => {
+      new Distribution(stack, 'MyDist', {
+        defaultBehavior: { origin: defaultOrigin() },
+        cacheTagConfig: {
+          headerName: 'x-amz-meta-cache-tag',
+        },
+      });
+    }).not.toThrow();
+  });
+
+  test('does not validate unresolved token headerName', () => {
+    expect(() => {
+      new Distribution(stack, 'MyDist', {
+        defaultBehavior: { origin: defaultOrigin() },
+        cacheTagConfig: {
+          headerName: Token.asString({ Ref: 'MyParam' }),
+        },
+      });
+    }).not.toThrow();
+  });
+});
