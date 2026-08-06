@@ -2,22 +2,24 @@ import * as crypto from 'crypto';
 import * as path from 'path';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
+import { Annotations } from './annotations';
 import type { AssetOptions } from './assets';
 import { AssetHashType, FileAssetPackaging } from './assets';
 import type { BundlingOptions } from './bundling';
 import { BundlingFileAccess, BundlingOutput, PERF_BUNDLING_SRC_SYM } from './bundling';
 import { AssumptionError, ValidationError } from './errors';
 import type { FingerprintOptions } from './fs';
-import { FileSystem } from './fs';
+import { FileSystem, SymlinkFollowMode } from './fs';
 import { clearLargeFileFingerprintCache } from './fs/fingerprint';
+import { isInternalPath, resolveLinkTarget } from './fs/utils';
 import { Names } from './names';
 import { AssetBundlingVolumeCopy, AssetBundlingBindMount } from './private/asset-staging';
 import { Cache } from './private/cache';
 import { stackOf, stageOf } from './private/core-construct-finders';
-import type { Stack } from './stack';
-import * as cxapi from '../../cx-api';
 import { lit } from './private/literal-string';
 import { profileSpan } from './private/perf';
+import type { Stack } from './stack';
+import * as cxapi from '../../cx-api';
 
 const ARCHIVE_EXTENSIONS = ['.tar.gz', '.zip', '.jar', '.tar', '.tgz'];
 
@@ -355,7 +357,7 @@ export class AssetStaging extends Construct {
 
     // Check bundling output content and determine if we will need to archive
     const bundlingOutputType = bundling.outputType ?? BundlingOutput.AUTO_DISCOVER;
-    const bundledAsset = determineBundledAsset(this, bundleDir, bundlingOutputType);
+    const bundledAsset = determineBundledAsset(this, bundleDir, bundlingOutputType, this.fingerprintOptions.follow);
 
     // Calculate assetHash afterwards if we still must
     assetHash = assetHash ?? this.calculateHash(this.hashType, bundling, bundledAsset.path);
@@ -623,7 +625,7 @@ function sanitizeHashValue(key: string, value: any): any {
 /**
  * Returns the single archive file of a directory or undefined
  */
-function findSingleFile(scope: Construct, directory: string, archiveOnly: boolean): string | undefined {
+function findSingleFile(scope: Construct, directory: string, archiveOnly: boolean, follow?: SymlinkFollowMode): string | undefined {
   if (!fs.existsSync(directory)) {
     throw new ValidationError(lit`DirectoryDoesNotExist`, `Directory ${directory} does not exist.`, scope);
   }
@@ -636,12 +638,59 @@ function findSingleFile(scope: Construct, directory: string, archiveOnly: boolea
   if (content.length === 1) {
     const file = path.join(directory, content[0]);
     const extension = getExtension(content[0]).toLowerCase();
+
+    // Use lstat so we can detect a symbolic link. Depending on the follow mode
+    // a symlink must not be followed. Since it is the only entry in the bundling
+    // output directory, dropping it would leave no usable output, so we warn and
+    // fail rather than silently zipping a directory that only holds a link we
+    // were told not to follow.
+    const stat = fs.lstatSync(file);
+    if (stat.isSymbolicLink() && !shouldFollowBundledSymlink(directory, file, follow)) {
+      const mode = follow ?? SymlinkFollowMode.EXTERNAL;
+      Annotations.of(scope).addWarningV2(
+        '@aws-cdk/core:bundlingOutputExternalSymlink',
+        `Bundling output '${file}' is a symbolic link that is not followed under symlink follow mode '${mode}' and will not be used as a single-file asset.`,
+      );
+      throw new ValidationError(
+        lit`BundlingOutputUnfollowedSymlink`,
+        `bundling output ${JSON.stringify(file)} is a symbolic link that is not followed under symlink follow mode ${JSON.stringify(mode)}, leaving no usable bundling output; set \`follow\` to a mode that follows this link or emit a regular file`,
+        scope,
+      );
+    }
+
+    // `statSync` follows the link so symlinks that resolve to a regular file
+    // (internal links, or external links under ALWAYS/EXTERNAL) are still valid.
     if (fs.statSync(file).isFile() && (!archiveOnly || ARCHIVE_EXTENSIONS.includes(extension))) {
       return file;
     }
   }
 
   return undefined;
+}
+
+/**
+ * Whether a symbolic link produced as bundling output should be followed when
+ * classifying and staging it as a single-file asset.
+ *
+ * Mirrors the symlink follow semantics used elsewhere: ALWAYS follows everything,
+ * EXTERNAL and BLOCK_EXTERNAL depend on whether the target is inside the output
+ * directory, and NEVER follows nothing. A dangling or unresolvable link is never
+ * followed.
+ */
+function shouldFollowBundledSymlink(directory: string, file: string, follow?: SymlinkFollowMode): boolean {
+  const mode = follow ?? SymlinkFollowMode.EXTERNAL;
+  if (mode === SymlinkFollowMode.NEVER) {
+    return false;
+  }
+
+  const resolvedTarget = resolveLinkTarget(file, fs.readlinkSync(file));
+  if (mode === SymlinkFollowMode.ALWAYS) {
+    return true;
+  }
+
+  const internal = isInternalPath(path.resolve(directory), resolvedTarget);
+  // EXTERNAL follows only external links; BLOCK_EXTERNAL follows only internal links.
+  return mode === SymlinkFollowMode.EXTERNAL ? !internal : internal;
 }
 
 interface BundledAsset {
@@ -654,8 +703,8 @@ interface BundledAsset {
  * Returns the bundled asset to use based on the content of the bundle directory
  * and the type of output.
  */
-function determineBundledAsset(scope: Construct, bundleDir: string, outputType: BundlingOutput): BundledAsset {
-  const archiveFile = findSingleFile(scope, bundleDir, outputType !== BundlingOutput.SINGLE_FILE);
+function determineBundledAsset(scope: Construct, bundleDir: string, outputType: BundlingOutput, follow?: SymlinkFollowMode): BundledAsset {
+  const archiveFile = findSingleFile(scope, bundleDir, outputType !== BundlingOutput.SINGLE_FILE, follow);
 
   // auto-discover means that if there is an archive file, we take it as the
   // bundle, otherwise, we will archive here.

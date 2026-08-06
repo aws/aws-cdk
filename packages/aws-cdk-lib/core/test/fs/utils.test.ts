@@ -205,4 +205,32 @@ describe('utils', () => {
       expect(util.isInternalPath(root, path.resolve(path.join('source', 'elsewhere', 'file.txt')))).toEqual(false);
     });
   });
+
+  describe('resolveLinkTarget', () => {
+    test('an absolute link target is resolved as-is', () => {
+      const realPath = path.join('source', 'root', 'link');
+      const linkTarget = path.resolve(path.join('somewhere', 'else', 'referent'));
+
+      expect(util.resolveLinkTarget(realPath, linkTarget)).toEqual(path.resolve(linkTarget));
+    });
+
+    test('a relative link target is resolved against the directory of the link', () => {
+      const realPath = path.join('source', 'root', 'link');
+      const linkTarget = 'referent';
+
+      // Resolved relative to the link's directory ('source/root'), not the cwd.
+      expect(util.resolveLinkTarget(realPath, linkTarget)).toEqual(
+        path.resolve(path.join('source', 'root'), 'referent'),
+      );
+    });
+
+    test('a relative link target with parent segments is normalized', () => {
+      const realPath = path.join('source', 'root', 'nested', 'link');
+      const linkTarget = path.join('..', 'sibling', 'referent');
+
+      expect(util.resolveLinkTarget(realPath, linkTarget)).toEqual(
+        path.resolve(path.join('source', 'root', 'sibling', 'referent')),
+      );
+    });
+  });
 });
