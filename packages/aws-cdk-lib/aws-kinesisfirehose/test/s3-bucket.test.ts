@@ -957,8 +957,10 @@ describe('S3 destination', () => {
     test.each([
       cdk.TimeZone.EST,
       cdk.TimeZone.ETC_UTC,
+      cdk.TimeZone.ETC_GMT,
       cdk.TimeZone.EST5EDT,
       cdk.TimeZone.ETC_GMT_MINUS_1,
+      cdk.TimeZone.FACTORY,
       cdk.TimeZone.of(''),
     ])('throws when customTimeZone is not a standard IANA timezone: %s', (timezone: cdk.TimeZone) => {
       const destination = new firehose.S3Bucket(bucket, {
