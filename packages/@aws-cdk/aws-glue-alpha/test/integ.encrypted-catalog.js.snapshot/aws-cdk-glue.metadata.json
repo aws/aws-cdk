@@ -55,7 +55,8 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "encryption": "S3_MANAGED",
-        "encryptionKey": "*"
+        "encryptionKey": "*",
+        "enforceSSL": true
       }
     }
   ],
@@ -123,6 +124,14 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "MyTableBucketD51E7EDC"
+    }
+  ],
+  "/aws-cdk-glue/MyTable/Bucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
     }
   ],
   "/aws-cdk-glue/MyTable/partition-index-test/Default": [
@@ -379,6 +388,12 @@
           "*"
         ]
       }
+    }
+  ],
+  "/aws-cdk-glue/MyTable/Bucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyTableBucketPolicy0533EF50"
     }
   ],
   "/aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Handler/ServiceRole/Resource": [
