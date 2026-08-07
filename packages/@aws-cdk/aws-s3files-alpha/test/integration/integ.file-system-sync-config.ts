@@ -5,13 +5,13 @@ import * as core from 'aws-cdk-lib/core';
 import type { Construct } from 'constructs';
 import * as s3files from '../../lib';
 
-class BasicFileSystemStack extends core.Stack {
+class FileSystemWithSyncConfigStack extends core.Stack {
   public readonly fileSystem: s3files.FileSystem;
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 2 });
+    const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 1 });
     const bucket = new s3.Bucket(this, 'Bucket', {
       versioned: true,
       removalPolicy: core.RemovalPolicy.DESTROY,
@@ -24,6 +24,16 @@ class BasicFileSystemStack extends core.Stack {
         vpc,
         vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
       },
+      synchronizationConfiguration: {
+        importDataRules: [
+          {
+            prefix: '',
+            sizeLessThan: core.Size.gibibytes(1),
+            trigger: s3files.ImportDataRuleTrigger.ON_FILE_ACCESS,
+          },
+        ],
+        dataExpiration: core.Duration.days(7),
+      },
       removalPolicy: core.RemovalPolicy.DESTROY,
     });
   }
@@ -31,19 +41,22 @@ class BasicFileSystemStack extends core.Stack {
 
 const app = new core.App();
 
-const stack = new BasicFileSystemStack(app, 'S3FilesBasicStack');
+const stack = new FileSystemWithSyncConfigStack(app, 'S3FilesSyncConfigStack');
 
-const integ = new IntegTest(app, 'S3FilesFileSystemIntegTest', {
+const integ = new IntegTest(app, 'S3FilesSyncConfigIntegTest', {
   testCases: [stack],
 });
 
-// Assert the file system exists and is available
+// Assert the synchronization configuration was applied
 const describeFs = integ.assertions.awsApiCall('@aws-sdk/client-s3files', 'GetFileSystemCommand', {
   fileSystemId: stack.fileSystem.fileSystemId,
 });
 
 describeFs.expect(ExpectedResult.objectLike({
   status: 'available',
+  synchronizationConfiguration: {
+    expirationDataRules: [{ daysAfterLastAccess: 7 }],
+  },
 }));
 
 app.synth();
