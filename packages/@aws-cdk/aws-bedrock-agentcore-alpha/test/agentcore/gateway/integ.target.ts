@@ -24,7 +24,7 @@ const gateway = new agentcore.Gateway(stack, 'TestGateway', {
 // ===== Test 1: GatewayTarget.forLambda() Static Method =====
 const lambdaFunction1 = new lambda.Function(stack, 'Lambda1', {
   functionName: 'integ-test-target-lambda1',
-  runtime: lambda.Runtime.NODEJS_22_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
     exports.handler = async (event) => {
@@ -82,7 +82,7 @@ const smithyTarget = agentcore.GatewayTarget.forSmithy(stack, 'SmithyTarget', {
 // ===== Test 4: GatewayTarget Constructor with LambdaTargetConfiguration =====
 const lambdaFunction2 = new lambda.Function(stack, 'Lambda2', {
   functionName: 'integ-test-target-lambda2',
-  runtime: lambda.Runtime.NODEJS_22_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
     exports.handler = async (event) => {

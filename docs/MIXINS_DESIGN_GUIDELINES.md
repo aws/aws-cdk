@@ -13,16 +13,34 @@ For an overview of how Mixins relate to Facades and Traits, see the
 
 Mixins are appropriate when:
 
-- A feature can be expressed as a modification to an L1 resource (e.g.,
-  enabling versioning on a bucket).
+- The feature is *about* the target resource — it extends the resource's own
+  behavior or lifecycle.
+- The feature sets properties on the L1 resource (e.g., enabling versioning on
+  a bucket).
+- The feature creates auxiliary resources that serve the primary resource (e.g.,
+  custom resource handlers, delivery sources, policy resources).
 - The same feature should be applicable to both L1 and L2 constructs.
-- A feature involves creating auxiliary resources (e.g., custom resources,
-  policies) that support the primary resource.
 - You want to allow users to compose features independently of the L2
   construct's props.
 
+Mixins are _not_ appropriate when:
+
+- The feature serves an external consumer rather than the target resource (use
+  a Facade). For example, granting a role access to a bucket is about the
+  role's needs, not the bucket's behavior.
+- The feature advertises a capability to other constructs (use a Trait).
+- You need to change the optionality of construct properties or change construct defaults.
+- The feature should remain a normal construct property and the implementation
+  is primarily passing values through to the L1 resource. In that case, use
+  `CfnPropsMixin` in the L2 glue code instead of writing a standalone mixin.
+
 Mixins are _not_ a replacement for construct properties. They cannot change the
-optionality of properties or change defaults.
+optionality of construct properties or change construct defaults.
+Applying a mixin is an explicit user action. A mixin may, however, define
+its own inputs/props with default values that control the mixin's behavior
+once applied. For example, `BucketVersioning` defaults to enabling versioning
+when constructed without an explicit argument, but it does not change the
+`Bucket` construct's own default behavior.
 
 ## Base Class
 
@@ -129,6 +147,21 @@ supports(construct: IConstruct): construct is CfnBucket {
 
 When applied to an L2 construct via `.with()`, the mixin framework
 automatically delegates to the L1 default child.
+
+### Auxiliary Resources
+
+A mixin may create auxiliary resources when the feature requires additional
+infrastructure beyond directly configuring the target resource.
+An auxiliary resource is any construct created by the mixin whose sole purpose
+is to support the target resource's own behavior or lifecycle.
+
+Examples include:
+- Custom resource handlers (e.g., auto-delete objects handler in `BucketAutoDeleteObjects`)
+- Delivery sources and destinations (e.g., vended log delivery configuration in LogsDelivery Mixins)
+- Policy resources (e.g., bucket policy statements in `BucketPolicyStatements`)
+
+Auxiliary resources must serve the primary resource itself. If the additional
+resource primarily serves an external consumer, the feature belongs in a Facade, not a Mixin.
 
 ### Validation
 
@@ -298,4 +331,13 @@ Mixins are accessed through the `mixins` namespace export:
 ## README Documentation
 
 Each service module with mixins must include a `## Mixins` section in its
-README documenting each mixin with a brief description and usage example.
+README documenting each mixin with:
+
+- a brief description of what the mixin does
+- a usage code example
+- the behavioral impact of applying the mixin
+
+The documented impact must describe what changes occur when the
+mixin is applied, including any modified L1 properties, lifecycle
+or deletion behavior changes, validation constraints, and any
+permissions, policy, or deployment-time implications.

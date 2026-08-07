@@ -24,8 +24,13 @@ class HelmChartLoggingStack extends Stack {
     // Create a minimal EKS cluster
     const cluster = new eks.Cluster(this, 'Cluster', {
       vpc,
-      defaultCapacity: 1,
+      defaultCapacity: 0,
       ...getClusterVersionConfig(this),
+    });
+
+    cluster.addNodegroupCapacity('DefaultCapacity', {
+      minSize: 1,
+      amiType: eks.NodegroupAmiType.AL2023_X86_64_STANDARD,
     });
 
     // Install a simple Helm chart from a public repository

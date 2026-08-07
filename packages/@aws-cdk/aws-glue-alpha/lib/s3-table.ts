@@ -3,7 +3,7 @@ import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import type * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -130,7 +130,7 @@ export class S3Table extends TableBase {
     this.encryptionKey = encryptionKey;
 
     this.resource = new CfnTable(this, 'Table', {
-      catalogId: props.database.catalogId,
+      catalogId: props.database.catalog.catalogId,
 
       databaseName: props.database.databaseName,
 
@@ -158,7 +158,7 @@ export class S3Table extends TableBase {
           },
           parameters: props.storageParameters ? props.storageParameters.reduce((acc, param) => {
             if (param.key in acc) {
-              throw new ValidationError(`Duplicate storage parameter key: ${param.key}`, this);
+              throw new ValidationError(lit`DuplicateStorageParameterKey`, `Duplicate storage parameter key: ${param.key}`, this);
             }
             const key = param.key;
             acc[key] = param.value;
@@ -278,7 +278,7 @@ function createBucket(table: S3Table, props: S3TableProps) {
   let bucket = props.bucket;
 
   if (bucket && (props.encryption !== undefined && props.encryption !== TableEncryption.CLIENT_SIDE_KMS)) {
-    throw new UnscopedValidationError('you can not specify encryption settings if you also provide a bucket');
+    throw new UnscopedValidationError(lit`EncryptionWithProvidedBucket`, 'you can not specify encryption settings if you also provide a bucket');
   }
 
   const encryption = props.encryption || TableEncryption.S3_MANAGED;
@@ -295,11 +295,18 @@ function createBucket(table: S3Table, props: S3TableProps) {
   // create the bucket if none was provided
   if (!bucket) {
     if (encryption === TableEncryption.CLIENT_SIDE_KMS) {
-      bucket = new s3.Bucket(table, 'Bucket');
+      // The `encryptionKey` here is used for client-side encryption (granted to
+      // principals via the grant* methods), not for the bucket's SSE. The bucket
+      // still gets server-side encryption at rest as defense in depth.
+      bucket = new s3.Bucket(table, 'Bucket', {
+        encryption: encryptionMappings[encryption],
+        enforceSSL: true,
+      });
     } else {
       bucket = new s3.Bucket(table, 'Bucket', {
         encryption: encryptionMappings[encryption],
         encryptionKey,
+        enforceSSL: true,
       });
       encryptionKey = bucket.encryptionKey;
     }

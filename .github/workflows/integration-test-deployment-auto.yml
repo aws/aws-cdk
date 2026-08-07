@@ -26,13 +26,13 @@ jobs:
       pull-requests: read
     steps:
       - name: Checkout for path filtering
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: "lts/*"
 
@@ -59,7 +59,7 @@ jobs:
         id: check_team
         if: steps.check_snapshots.outputs.has_snapshots == 'true'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           APPROVER: ${{ github.event.review.user.login }}
         run: |
           # Use gh CLI to check team membership (pre-installed in GitHub Actions runners)
@@ -93,13 +93,13 @@ jobs:
 
     steps:
       - name: Checkout HEAD
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: "lts/*"
           cache: "yarn"
@@ -111,7 +111,7 @@ jobs:
 
       - name: Load Docker images
         id: docker-cache
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: |
             ~/.docker-images.tar
@@ -122,7 +122,7 @@ jobs:
         run: docker image load --input ~/.docker-images.tar
 
       - name: Cache build artifacts
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.s3buildcache
@@ -152,6 +152,6 @@ jobs:
           TARGET_BRANCH_COMMIT: ${{ github.event.pull_request.base.sha }}
           SOURCE_BRANCH_COMMIT: ${{ github.event.pull_request.head.sha }}
           # GitHub context for preflight check (validates CDK team membership)
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
