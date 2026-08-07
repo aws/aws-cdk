@@ -406,7 +406,7 @@ export class Distribution extends Resource implements IDistribution {
     if (props.sslSupportMethod && !props.certificate) {
       Annotations.of(this).addWarningV2(
         '@aws-cdk/aws-cloudfront:sslSupportMethodWithoutCertificate',
-        'Setting \'sslSupportMethod\' without a \'certificate\' has no effect. The distribution will use the CloudFront default certificate.',
+        'Ignoring 'sslSupportMethod': it has no effect without a custom 'certificate'. The distribution uses the CloudFront default certificate, which is served to all viewers.',
       );
     }
 
