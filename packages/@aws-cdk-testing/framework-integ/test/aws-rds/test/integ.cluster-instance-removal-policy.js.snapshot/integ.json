@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "rds-removal-policy-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-removal-policy-integ"
+      ],
+      "assertionStack": "rds-removal-policy-test/DefaultTest/DeployAssert",
+      "assertionStackName": "rdsremovalpolicytestDefaultTestDeployAssert1FBB219F"
+    }
+  },
+  "minimumCliVersion": "2.1123.0"
+}
