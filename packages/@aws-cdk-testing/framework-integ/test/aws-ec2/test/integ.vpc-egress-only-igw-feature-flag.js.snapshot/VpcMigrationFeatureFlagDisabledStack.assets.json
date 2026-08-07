@@ -1,5 +1,5 @@
 {
-  "version": "54.0.0",
+  "version": "53.0.0",
   "files": {
     "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f": {
       "displayName": "VpcMigrationFeatureFlagDisabledStack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "f5954743ed3f28aa4da6c576b80be4738aa8ad09fddd3a934c379e3d1e8cdb07": {
+    "264e2ef43678f76335e04154e80502e8cd4d5c55c63d880c92c77ce37452b6c8": {
       "displayName": "VpcMigrationFeatureFlagDisabledStack Template",
       "source": {
         "path": "VpcMigrationFeatureFlagDisabledStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d7c7871f": {
+        "current_account-current_region-b038911f": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f5954743ed3f28aa4da6c576b80be4738aa8ad09fddd3a934c379e3d1e8cdb07.json",
+          "objectKey": "264e2ef43678f76335e04154e80502e8cd4d5c55c63d880c92c77ce37452b6c8.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

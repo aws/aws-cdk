@@ -1,5 +1,5 @@
 {
-  "version": "54.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "VpcMigrationFeatureFlagEnabledStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/195d30889734c7f1e660f15b81a77b960237f4b71ca9b7d66eb686af145f9c6c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/90cf8bfd51f447b9e8af618174865d6f78bb1b36928f8930ab53a826049d7021.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -53,7 +53,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f5954743ed3f28aa4da6c576b80be4738aa8ad09fddd3a934c379e3d1e8cdb07.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/264e2ef43678f76335e04154e80502e8cd4d5c55c63d880c92c77ce37452b6c8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -607,12 +607,10 @@
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           },
           "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
           },
@@ -624,32 +622,23 @@
             }
           },
           "@aws-cdk/aws-batch:defaultToAL2023": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
-          },
-          "@aws-cdk/aws-eks:defaultToAL2023": {
-            "recommendedValue": true,
-            "explanation": "Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2"
           },
           "@aws-cdk/core:annotationsInValidationReport": {
             "recommendedValue": true,
             "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
           },
           "@aws-cdk/core:defaultCrossStackReferences": {
-            "recommendedValue": "weak",
+            "recommendedValue": "strong",
             "explanation": "Controls whether cross-region stack references are strong, weak, or both",
             "unconfiguredBehavesLike": {
               "v2": "strong"
             }
-          },
-          "@aws-cdk/core:validateAgainstDefaultRules": {
-            "recommendedValue": true,
-            "explanation": "Treat CloudFormation Validate findings as errors"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1131.0"
+  "minimumCliVersion": "2.1108.0"
 }

@@ -1,5 +1,5 @@
 {
-  "version": "54.0.0",
+  "version": "53.0.0",
   "testCases": {
     "vpc-dual-stack-ec2-test/DefaultTest": {
       "stacks": [
@@ -9,6 +9,5 @@
       "assertionStackName": "vpcdualstackec2testDefaultTestDeployAssertB4C8CEE8"
     }
   },
-  "enableLookups": true,
-  "minimumCliVersion": "2.1131.0"
+  "minimumCliVersion": "2.1123.0"
 }
