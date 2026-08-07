@@ -399,7 +399,7 @@ export class Distribution extends Resource implements IDistribution {
     if (props.minimumProtocolVersion && !props.certificate) {
       Annotations.of(this).addWarningV2(
         '@aws-cdk/aws-cloudfront:minimumProtocolVersionWithoutCertificate',
-        'Setting \'minimumProtocolVersion\' without a \'certificate\' has no effect. The distribution will use the CloudFront default certificate with a fixed security policy.',
+        'Ignoring 'minimumProtocolVersion': it has no effect without a custom 'certificate'. The distribution uses the CloudFront default certificate, whose security policy is fixed at TLSv1.,
       );
     }
 
