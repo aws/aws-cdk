@@ -600,6 +600,69 @@ const fleet = new codebuild.Fleet(this, 'MyFleet', {
 });
 ```
 
+### Fleet image
+
+You can specify a custom image for your fleet using the `imageId` property.
+This is useful for controlling the OS version on macOS fleets, for example:
+
+```ts
+const fleet = new codebuild.Fleet(this, 'MacFleet', {
+  computeType: codebuild.FleetComputeType.LARGE,
+  environmentType: codebuild.EnvironmentType.MAC_ARM,
+  baseCapacity: 1,
+  imageId: 'aws/codebuild/macos-arm-base:26',
+});
+```
+
+### Fleet auto-scaling
+
+You can configure auto-scaling for your fleet using the `scalingConfiguration` property.
+This allows the fleet to automatically scale up to handle increased build demand.
+
+For more information, see [Auto-scaling for reserved capacity fleets](https://docs.aws.amazon.com/codebuild/latest/userguide/fleets-autoscaling.html) in the CodeBuild documentation.
+
+```ts
+const fleet = new codebuild.Fleet(this, 'ScalingFleet', {
+  computeType: codebuild.FleetComputeType.MEDIUM,
+  environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+  baseCapacity: 1,
+  scalingConfiguration: {
+    maxCapacity: 5,
+    scalingType: codebuild.FleetScalingType.TARGET_TRACKING_SCALING,
+    targetTrackingScalingConfigs: [{
+      metricType: codebuild.FleetScalingMetricType.FLEET_UTILIZATION_RATE,
+      targetValue: 80,
+    }],
+  },
+});
+```
+
+### Fleet proxy configuration
+
+You can apply network access control to your fleet instances using the `proxyConfiguration` property.
+This requires the fleet to be connected to a VPC.
+
+For more information, see [Proxy configurations for reserved capacity fleets](https://docs.aws.amazon.com/codebuild/latest/userguide/fleets-proxy.html) in the CodeBuild documentation.
+
+```ts
+declare const myVpc: ec2.Vpc;
+
+const fleet = new codebuild.Fleet(this, 'ProxyFleet', {
+  computeType: codebuild.FleetComputeType.MEDIUM,
+  environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+  baseCapacity: 1,
+  vpc: myVpc,
+  proxyConfiguration: {
+    defaultBehavior: codebuild.FleetProxyRuleBehavior.DENY,
+    orderedProxyRules: [{
+      effect: codebuild.FleetProxyRuleEffect.ALLOW,
+      entities: ['*.amazonaws.com'],
+      type: codebuild.FleetProxyRuleType.DOMAIN,
+    }],
+  },
+});
+```
+
 ### Fleet overflow behavior
 
 When your builds exceed the capacity of your fleet, you can specify how CodeBuild should handle the overflow builds by setting the `overflowBehavior` property:

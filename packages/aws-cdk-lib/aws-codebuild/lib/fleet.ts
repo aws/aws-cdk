@@ -113,6 +113,181 @@ export interface FleetProps {
    * @default - A security group will be automatically created.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * The image identifier for the compute fleet.
+   *
+   * This can be a CodeBuild-managed image identifier
+   * (e.g., 'aws/codebuild/macos-arm-base:26') or a custom AMI ID.
+   *
+   * Only supported for EC2-based environment types
+   * (LINUX_EC2, ARM_EC2, WINDOWS_EC2, MAC_ARM).
+   *
+   * @default - no specific image, CodeBuild uses the default for the environment type
+   */
+  readonly imageId?: string;
+
+  /**
+   * The scaling configuration of the compute fleet.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets-autoscaling.html
+   * @default - no auto-scaling, fleet uses fixed baseCapacity
+   */
+  readonly scalingConfiguration?: FleetScalingConfiguration;
+
+  /**
+   * Proxy configuration that applies network access control to reserved
+   * capacity fleet instances.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets-proxy.html
+   * @default - no proxy configuration
+   */
+  readonly proxyConfiguration?: FleetProxyConfiguration;
+}
+
+/**
+ * The scaling type for a fleet.
+ */
+export enum FleetScalingType {
+  /**
+   * Target tracking scaling.
+   */
+  TARGET_TRACKING_SCALING = 'TARGET_TRACKING_SCALING',
+}
+
+/**
+ * The metric type used for target tracking scaling.
+ */
+export enum FleetScalingMetricType {
+  /**
+   * Fleet utilization rate.
+   */
+  FLEET_UTILIZATION_RATE = 'FLEET_UTILIZATION_RATE',
+}
+
+/**
+ * A target tracking scaling configuration for a fleet.
+ */
+export interface TargetTrackingScalingConfig {
+  /**
+   * The metric type to track.
+   */
+  readonly metricType: FleetScalingMetricType;
+
+  /**
+   * The target value for the metric.
+   */
+  readonly targetValue: number;
+}
+
+/**
+ * The scaling configuration for a fleet.
+ */
+export interface FleetScalingConfiguration {
+  /**
+   * The maximum number of instances in the fleet when auto-scaling.
+   */
+  readonly maxCapacity: number;
+
+  /**
+   * The scaling type.
+   */
+  readonly scalingType: FleetScalingType;
+
+  /**
+   * A list of target tracking scaling configurations.
+   *
+   * @default - no target tracking configurations
+   */
+  readonly targetTrackingScalingConfigs?: TargetTrackingScalingConfig[];
+}
+
+/**
+ * The default behavior for a fleet proxy when no ordered proxy rules match.
+ *
+ * This controls what happens to traffic that does not match any of the
+ * `orderedProxyRules` in the proxy configuration.
+ */
+export enum FleetProxyRuleBehavior {
+  /**
+   * Allow all traffic that does not match any proxy rule.
+   */
+  ALLOW = 'ALLOW',
+
+  /**
+   * Deny all traffic that does not match any proxy rule.
+   */
+  DENY = 'DENY',
+}
+
+/**
+ * The effect of an individual fleet proxy rule.
+ *
+ * This controls whether traffic matching a specific rule is allowed or denied.
+ * Rules are evaluated in order; the first matching rule's effect is applied.
+ */
+export enum FleetProxyRuleEffect {
+  /**
+   * Allow traffic matching this rule.
+   */
+  ALLOW = 'ALLOW',
+
+  /**
+   * Deny traffic matching this rule.
+   */
+  DENY = 'DENY',
+}
+
+/**
+ * The type of a fleet proxy rule.
+ */
+export enum FleetProxyRuleType {
+  /**
+   * Match by domain name.
+   */
+  DOMAIN = 'DOMAIN',
+
+  /**
+   * Match by IP address or CIDR.
+   */
+  IP = 'IP',
+}
+
+/**
+ * A proxy rule for a fleet.
+ */
+export interface FleetProxyRule {
+  /**
+   * The effect of this rule.
+   */
+  readonly effect: FleetProxyRuleEffect;
+
+  /**
+   * The entities to match (domains or IPs).
+   */
+  readonly entities: string[];
+
+  /**
+   * The type of rule.
+   */
+  readonly type: FleetProxyRuleType;
+}
+
+/**
+ * Proxy configuration for a fleet.
+ */
+export interface FleetProxyConfiguration {
+  /**
+   * The default behavior when no proxy rules match.
+   */
+  readonly defaultBehavior: FleetProxyRuleBehavior;
+
+  /**
+   * An ordered list of proxy rules.
+   *
+   * @default - no proxy rules
+   */
+  readonly orderedProxyRules?: FleetProxyRule[];
 }
 
 /**
@@ -398,6 +573,38 @@ export class Fleet extends Resource implements IFleet {
       throw new ValidationError(lit`ComputeConfigurationSpecifiedComputeType`, `computeConfiguration can only be specified if computeType is ATTRIBUTE_BASED or CUSTOM_INSTANCE_TYPE, got: ${props.computeType}`, this);
     }
 
+    if (props.scalingConfiguration) {
+      if (!Token.isUnresolved(props.scalingConfiguration.maxCapacity) && props.scalingConfiguration.maxCapacity < 1) {
+        throw new ValidationError(lit`ScalingMaxCapacityGreaterEqual`, 'scalingConfiguration.maxCapacity must be greater than or equal to 1', this);
+      }
+      if (!Token.isUnresolved(props.scalingConfiguration.maxCapacity)
+        && !Token.isUnresolved(props.baseCapacity)
+        && props.scalingConfiguration.maxCapacity < props.baseCapacity) {
+        throw new ValidationError(lit`ScalingMaxCapacityGreaterEqualBase`, 'scalingConfiguration.maxCapacity must be greater than or equal to baseCapacity', this);
+      }
+      if (props.scalingConfiguration.scalingType === FleetScalingType.TARGET_TRACKING_SCALING
+        && (!props.scalingConfiguration.targetTrackingScalingConfigs
+          || props.scalingConfiguration.targetTrackingScalingConfigs.length === 0)) {
+        throw new ValidationError(lit`TargetTrackingScalingConfigsRequired`, 'At least one targetTrackingScalingConfigs entry is required when scalingType is TARGET_TRACKING_SCALING', this);
+      }
+      for (const config of props.scalingConfiguration.targetTrackingScalingConfigs ?? []) {
+        if (!Token.isUnresolved(config.targetValue) && (config.targetValue <= 0 || config.targetValue > 100)) {
+          throw new ValidationError(lit`TargetValueOutOfRange`, `targetValue must be between 0 (exclusive) and 100 (inclusive), got: ${config.targetValue}`, this);
+        }
+      }
+    }
+
+    if (props.proxyConfiguration) {
+      if (!props.vpc) {
+        throw new ValidationError(lit`CannotConfigureProxyWithoutVpc`, 'Cannot configure proxyConfiguration without configuring a VPC', this);
+      }
+      for (const rule of props.proxyConfiguration.orderedProxyRules ?? []) {
+        if (rule.entities.length === 0) {
+          throw new ValidationError(lit`ProxyRuleEntitiesRequired`, 'Each proxy rule must have at least one entity', this);
+        }
+      }
+    }
+
     const vpcConfiguration = this.configureVpc(props);
     const resource = new CfnFleet(this, 'Resource', {
       name: props.fleetName,
@@ -408,6 +615,23 @@ export class Fleet extends Resource implements IFleet {
       computeConfiguration,
       fleetVpcConfig: vpcConfiguration?.fleetVpcConfig,
       fleetServiceRole: this.role?.roleArn,
+      imageId: props.imageId,
+      scalingConfiguration: props.scalingConfiguration ? {
+        maxCapacity: props.scalingConfiguration.maxCapacity,
+        scalingType: props.scalingConfiguration.scalingType,
+        targetTrackingScalingConfigs: props.scalingConfiguration.targetTrackingScalingConfigs?.map(config => ({
+          metricType: config.metricType,
+          targetValue: config.targetValue,
+        })),
+      } : undefined,
+      fleetProxyConfiguration: props.proxyConfiguration ? {
+        defaultBehavior: props.proxyConfiguration.defaultBehavior,
+        orderedProxyRules: props.proxyConfiguration.orderedProxyRules?.map(rule => ({
+          effect: rule.effect,
+          entities: rule.entities,
+          type: rule.type,
+        })),
+      } : undefined,
     });
 
     if (vpcConfiguration) {
