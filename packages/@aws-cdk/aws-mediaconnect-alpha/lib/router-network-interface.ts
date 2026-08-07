@@ -177,6 +177,8 @@ export class RouterNetworkConfiguration {
 export abstract class RouterNetworkInterfaceBase extends Resource implements IRouterNetworkInterface {
   public abstract readonly routerNetworkInterfaceArn: string;
   public abstract readonly routerNetworkInterfaceId: string;
+  public abstract readonly createdAt?: string;
+  public abstract readonly updatedAt?: string;
 
   public get routerNetworkInterfaceRef(): RouterNetworkInterfaceReference {
     return { routerNetworkInterfaceArn: this.routerNetworkInterfaceArn };
@@ -221,6 +223,8 @@ export class RouterNetworkInterface extends RouterNetworkInterfaceBase {
   ): IRouterNetworkInterface {
     class Import extends RouterNetworkInterfaceBase {
       public readonly routerNetworkInterfaceArn = attrs.routerNetworkInterfaceArn;
+      public readonly createdAt = undefined;
+      public readonly updatedAt = undefined;
 
       public get routerNetworkInterfaceId(): string {
         if (attrs.routerNetworkInterfaceId) return attrs.routerNetworkInterfaceId;
