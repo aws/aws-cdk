@@ -1,0 +1,394 @@
+{
+ "Resources": {
+  "WarehouseBucket0E783396": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "WarehouseBucketPolicy998829DC": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "WarehouseBucket0E783396"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:PutBucketPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "WarehouseBucket0E783396",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "WarehouseBucket0E783396",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "WarehouseBucketAutoDeleteObjectsCustomResource9FAA6F50": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "WarehouseBucket0E783396"
+    }
+   },
+   "DependsOn": [
+    "WarehouseBucketPolicy998829DC"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "WarehouseBucket0E783396"
+       },
+       " S3 bucket."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+   ]
+  },
+  "IcebergDatabase3C00FF7B": {
+   "Type": "AWS::Glue::Database",
+   "Properties": {
+    "CatalogId": {
+     "Ref": "AWS::AccountId"
+    },
+    "DatabaseInput": {
+     "Name": "iceberg_integ_db"
+    }
+   }
+  },
+  "OrdersTable315BB997": {
+   "Type": "AWS::Glue::Table",
+   "Properties": {
+    "CatalogId": {
+     "Ref": "AWS::AccountId"
+    },
+    "DatabaseName": {
+     "Ref": "IcebergDatabase3C00FF7B"
+    },
+    "Name": "orders",
+    "OpenTableFormatInput": {
+     "IcebergInput": {
+      "IcebergTableInput": {
+       "Location": {
+        "Fn::Join": [
+         "",
+         [
+          "s3://",
+          {
+           "Ref": "WarehouseBucket0E783396"
+          },
+          "/orders/"
+         ]
+        ]
+       },
+       "PartitionSpec": {
+        "Fields": [
+         {
+          "FieldId": 1000,
+          "Name": "placed_at_day",
+          "SourceId": 5,
+          "Transform": "day"
+         },
+         {
+          "FieldId": 1001,
+          "Name": "customer_id_bucket",
+          "SourceId": 2,
+          "Transform": "bucket[16]"
+         }
+        ],
+        "SpecId": 0
+       },
+       "Properties": {
+        "format-version": "2",
+        "write.format.default": "parquet",
+        "write.parquet.compression-codec": "zstd",
+        "write.delete.mode": "merge-on-read",
+        "write.update.mode": "merge-on-read",
+        "write.merge.mode": "merge-on-read",
+        "history.expire.min-snapshots-to-keep": "5",
+        "gc.enabled": "true",
+        "comment": "Iceberg integ-test orders table."
+       },
+       "Schema": {
+        "Fields": [
+         {
+          "Id": 1,
+          "Name": "order_id",
+          "Required": true,
+          "Type": "long"
+         },
+         {
+          "Id": 2,
+          "Name": "customer_id",
+          "Required": true,
+          "Type": "long"
+         },
+         {
+          "Id": 3,
+          "Name": "order_amount",
+          "Required": true,
+          "Type": "decimal(12,2)"
+         },
+         {
+          "Id": 4,
+          "Name": "currency",
+          "Required": true,
+          "Type": "string"
+         },
+         {
+          "Id": 5,
+          "Name": "placed_at",
+          "Required": true,
+          "Type": "timestamptz"
+         },
+         {
+          "Id": 6,
+          "Name": "tags",
+          "Required": false,
+          "Type": "{\"type\":\"list\",\"element-id\":9,\"element-required\":true,\"element\":\"string\"}"
+         },
+         {
+          "Id": 7,
+          "Name": "shipping_address",
+          "Required": false,
+          "Type": "{\"type\":\"struct\",\"fields\":[{\"id\":10,\"name\":\"city\",\"required\":true,\"type\":\"string\"},{\"id\":11,\"name\":\"country\",\"required\":true,\"type\":\"string\"}]}"
+         },
+         {
+          "Id": 8,
+          "Name": "metadata",
+          "Required": false,
+          "Type": "{\"type\":\"map\",\"key-id\":12,\"key\":\"string\",\"value-id\":13,\"value-required\":false,\"value\":\"string\"}"
+         }
+        ],
+        "IdentifierFieldIds": [
+         1
+        ],
+        "SchemaId": 0,
+        "Type": "struct"
+       },
+       "WriteOrder": {
+        "Fields": [
+         {
+          "Direction": "asc",
+          "NullOrder": "nulls-last",
+          "SourceId": 5,
+          "Transform": "identity"
+         }
+        ],
+        "OrderId": 1
+       }
+      },
+      "MetadataOperation": "CREATE",
+      "Version": "2"
+     }
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "EventsTableD24865E5": {
+   "Type": "AWS::Glue::Table",
+   "Properties": {
+    "CatalogId": {
+     "Ref": "AWS::AccountId"
+    },
+    "DatabaseName": {
+     "Ref": "IcebergDatabase3C00FF7B"
+    },
+    "Name": "events",
+    "OpenTableFormatInput": {
+     "IcebergInput": {
+      "IcebergTableInput": {
+       "Location": {
+        "Fn::Join": [
+         "",
+         [
+          "s3://",
+          {
+           "Ref": "WarehouseBucket0E783396"
+          },
+          "/events/"
+         ]
+        ]
+       },
+       "PartitionSpec": {
+        "Fields": [
+         {
+          "FieldId": 1000,
+          "Name": "occurred_at_hour",
+          "SourceId": 2,
+          "Transform": "hour"
+         }
+        ],
+        "SpecId": 0
+       },
+       "Properties": {
+        "format-version": "2",
+        "write.format.default": "parquet"
+       },
+       "Schema": {
+        "Fields": [
+         {
+          "Id": 1,
+          "Name": "event_id",
+          "Required": true,
+          "Type": "string"
+         },
+         {
+          "Id": 2,
+          "Name": "occurred_at",
+          "Required": true,
+          "Type": "timestamptz"
+         },
+         {
+          "Id": 3,
+          "Name": "attributes",
+          "Required": false,
+          "Type": "{\"type\":\"map\",\"key-id\":4,\"key\":\"string\",\"value-id\":5,\"value-required\":false,\"value\":\"string\"}"
+         }
+        ],
+        "SchemaId": 0,
+        "Type": "struct"
+       }
+      },
+      "MetadataOperation": "CREATE",
+      "Version": "2"
+     }
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

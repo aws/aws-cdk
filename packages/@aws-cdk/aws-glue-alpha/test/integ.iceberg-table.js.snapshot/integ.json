@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "aws-cdk-glue-iceberg-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-glue-iceberg"
+      ],
+      "assertionStack": "aws-cdk-glue-iceberg-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkglueicebergintegDefaultTestDeployAssertBAB55A3C"
+    }
+  },
+  "minimumCliVersion": "2.1123.0"
+}
