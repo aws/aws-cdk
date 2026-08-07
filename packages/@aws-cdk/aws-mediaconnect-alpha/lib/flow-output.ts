@@ -500,9 +500,8 @@ export class OutputConfiguration {
 
 /**
  * Shared base for both real and imported flow outputs.
- * @internal
  */
-abstract class FlowOutputBase extends Resource implements IFlowOutput {
+export abstract class FlowOutputBase extends Resource implements IFlowOutput {
   public abstract readonly flowOutputArn: string;
 
   public get flowOutputRef(): FlowOutputReference {

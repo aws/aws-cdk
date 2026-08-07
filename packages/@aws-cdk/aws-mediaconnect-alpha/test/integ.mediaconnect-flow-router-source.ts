@@ -92,9 +92,9 @@ const flow = new mediaconnect.Flow(stack, 'RouterSourceFlow', {
   flowName: 'router-source-flow',
   availabilityZone: stack.availabilityZones[0],
   vpcInterfaces: [outputVpcInterface],
-  maintenance: {
-    maintenanceDay: mediaconnect.MaintenanceDay.FRIDAY,
-    maintenanceStartHour: '02:00',
+  maintenanceConfiguration: {
+    day: mediaconnect.MaintenanceDay.FRIDAY,
+    time: '02:00',
   },
   source: mediaconnect.SourceConfiguration.router({
     routerOutput: sourceRouterOutput,

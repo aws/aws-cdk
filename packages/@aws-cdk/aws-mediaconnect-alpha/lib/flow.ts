@@ -232,17 +232,13 @@ export class FlowSize {
 }
 
 /**
- * Maintenance Window configuration for MediaConnect Flow.
+ * Configuration for scheduled maintenance windows.
  */
 export interface MaintenanceWindow {
-  /**
-   * A day of a week when the maintenance will happen.
-   */
-  readonly maintenanceDay: MaintenanceDay;
-  /**
-   * UTC time when the maintenance will happen. Use 24-hour HH:MM format. Minutes must be 00. Example: 13:00.
-   */
-  readonly maintenanceStartHour: string;
+  /** A day of a week when the maintenance will happen. */
+  readonly day: MaintenanceDay;
+  /** The maintenance start time in UTC, 24-hour HH:MM format. Minutes must be 00 (e.g., '02:00', '13:00'). */
+  readonly time: string;
 }
 
 /**
@@ -815,7 +811,7 @@ export interface FlowProps {
    *
    * @default - chosen by MediaConnect
    */
-  readonly maintenance?: MaintenanceWindow;
+  readonly maintenanceConfiguration?: MaintenanceWindow;
 
   /**
    * The media streams that are associated with the flow. After you associate a media stream with a source, you can also associate it with outputs on the flow.
@@ -1422,8 +1418,8 @@ export class Flow extends FlowBase implements IFlow {
     addConstructMetadata(this, props);
 
     // Validate maintenance start hour format
-    if (props.maintenance) {
-      validateMaintenanceTime(props.maintenance.maintenanceStartHour);
+    if (props.maintenanceConfiguration) {
+      validateMaintenanceTime(props.maintenanceConfiguration.time);
     }
 
     // Validate source monitoring thresholds and content-quality requirements
@@ -1477,9 +1473,9 @@ export class Flow extends FlowBase implements IFlow {
       source: sourceConfig,
       availabilityZone: props?.availabilityZone,
       flowSize: props?.flowSize?.value,
-      maintenance: props?.maintenance ? {
-        maintenanceDay: toTitleCase(props.maintenance.maintenanceDay),
-        maintenanceStartHour: props.maintenance.maintenanceStartHour,
+      maintenance: props?.maintenanceConfiguration ? {
+        maintenanceDay: toTitleCase(props.maintenanceConfiguration.day),
+        maintenanceStartHour: props.maintenanceConfiguration.time,
       } : undefined,
       mediaStreams: props.mediaStreams ? props.mediaStreams.map(stream => stream._bind()) : undefined,
       ndiConfig: props.ndiConfig ? {

@@ -1048,9 +1048,9 @@ test('Flow name validation - valid name', () => {
 test('Flow with maintenance window', () => {
   new Flow(stack, 'flow', {
     flowName: 'maintenance-flow',
-    maintenance: {
-      maintenanceDay: MaintenanceDay.MONDAY,
-      maintenanceStartHour: '02:00',
+    maintenanceConfiguration: {
+      day: MaintenanceDay.MONDAY,
+      time: '02:00',
     },
     source: SourceConfiguration.rtp({
       flowSourceName: 'source',
@@ -1070,9 +1070,9 @@ test('Flow with maintenance window', () => {
 test('Flow maintenance time validation - invalid format', () => {
   expect(() => {
     new Flow(stack, 'flow', {
-      maintenance: {
-        maintenanceDay: MaintenanceDay.TUESDAY,
-        maintenanceStartHour: '02:30',
+      maintenanceConfiguration: {
+        day: MaintenanceDay.TUESDAY,
+        time: '02:30',
       },
       source: SourceConfiguration.rtp({
         flowSourceName: 'source',

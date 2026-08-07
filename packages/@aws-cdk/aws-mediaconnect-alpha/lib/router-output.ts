@@ -462,6 +462,12 @@ export interface StandardOutputConfigurationProps {
   readonly networkInterface: IRouterNetworkInterface;
   /** Protocol configuration for the output */
   readonly protocol: RouterOutputProtocol;
+  /**
+   * The availability zone where the router output is located.
+   *
+   * @default - the stack's region default AZ
+   */
+  readonly availabilityZone?: string;
 }
 
 /**
@@ -664,6 +670,7 @@ class StandardRouterOutputConfig extends RouterOutputConfiguration {
           protocolConfiguration: protocol.config,
         },
       },
+      availabilityZone: this.props.availabilityZone,
       grant: protocol.grant,
     };
   }
@@ -968,7 +975,7 @@ export class RouterOutput extends RouterOutputBase implements IRouterOutput {
       maximumBitrate: props.maximumBitrate.toBps(),
       routingScope: props.routingScope.value,
       tier: (props.tier ?? RouterOutputTier.OUTPUT_20).value,
-      availabilityZone: configBind.availabilityZone, // Only specified for MediaConnect Flow and MediaLive inputs (with no connection).
+      availabilityZone: configBind.availabilityZone,
       maintenanceConfiguration: props.maintenanceConfiguration ? {
         preferredDayTime: props.maintenanceConfiguration,
       } : {

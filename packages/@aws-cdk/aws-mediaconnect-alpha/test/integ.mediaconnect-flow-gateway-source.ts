@@ -99,9 +99,9 @@ const flow = new mediaconnect.Flow(stack, 'GatewaySourceFlow', {
   flowName: 'gateway-source-flow',
   availabilityZone: stack.availabilityZones[0],
   vpcInterfaces: [outputVpcInterface],
-  maintenance: {
-    maintenanceDay: mediaconnect.MaintenanceDay.THURSDAY,
-    maintenanceStartHour: '05:00',
+  maintenanceConfiguration: {
+    day: mediaconnect.MaintenanceDay.THURSDAY,
+    time: '05:00',
   },
   source: mediaconnect.SourceConfiguration.gatewayBridge({
     bridge,
