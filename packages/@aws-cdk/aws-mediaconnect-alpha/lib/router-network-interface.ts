@@ -174,7 +174,7 @@ export class RouterNetworkConfiguration {
 /**
  * Shared base for both real and imported router network interfaces.
  */
-export abstract class RouterNetworkInterfaceBase extends Resource implements IRouterNetworkInterface {
+abstract class RouterNetworkInterfaceBase extends Resource implements IRouterNetworkInterface {
   public abstract readonly routerNetworkInterfaceArn: string;
   public abstract readonly routerNetworkInterfaceId: string;
   public abstract readonly createdAt?: string;
