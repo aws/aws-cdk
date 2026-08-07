@@ -2423,7 +2423,7 @@ export enum RouterType {
   EGRESS_ONLY_INTERNET_GATEWAY = 'EgressOnlyInternetGateway',
 
   /**
-   * Internet Gateway
+   * Internet Gateway or Virtual Private Gateway
    */
   GATEWAY = 'Gateway',
 
