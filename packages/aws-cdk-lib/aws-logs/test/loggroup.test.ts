@@ -100,6 +100,7 @@ describe('log group', () => {
   test('unresolved retention', () => {
     // GIVEN
     const stack = new Stack();
+
     const parameter = new CfnParameter(stack, 'RetentionInDays', { default: 30, type: 'Number' });
 
     // WHEN

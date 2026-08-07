@@ -807,6 +807,49 @@ const excludeCapacityProvider = new lambda.CapacityProvider(this, 'MyCapacityPro
 });
 ```
 
+### System Logging
+
+You can configure system logging to monitor capacity provider scaling activity:
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+const vpc = new ec2.Vpc(this, 'MyVpc');
+const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
+
+const capacityProvider = new lambda.CapacityProvider(this, 'MyCapacityProvider', {
+  subnets: vpc.privateSubnets,
+  securityGroups: [securityGroup],
+  logGroup: new logs.LogGroup(this, 'CpLogs', {
+    logGroupName: '/aws/lambda/capacity-provider/my-cp',
+  }),
+  systemLogLevel: lambda.SystemLogLevel.DEBUG,
+});
+```
+
+### Tag Propagation
+
+You can propagate explicit tags to managed resources (EC2 instances, ENIs, EBS volumes) launched by the capacity provider:
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+const vpc = new ec2.Vpc(this, 'MyVpc');
+const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
+
+const capacityProvider = new lambda.CapacityProvider(this, 'MyCapacityProvider', {
+  subnets: vpc.privateSubnets,
+  securityGroups: [securityGroup],
+  propagateTags: lambda.PropagateTags.explicit({
+    CostCenter: 'Engineering',
+    Project: 'MyProject',
+  }),
+});
+```
+
+Use `PropagateTags.none()` to explicitly disable propagation, or omit the prop entirely (defaults to no propagation). Up to 40 tags can be specified with `PropagateTags.explicit()`.
+
 ### Using a Capacity Provider with Lambda Functions
 
 Once you have a capacity provider, you can configure Lambda functions to use it:
@@ -922,6 +965,8 @@ const capacityProvider = new lambda.CapacityProvider(this, 'MyCapacityProvider',
 | maxVCpuCount | number | No | Maximum number of EC2 instances for scaling. |
 | scalingOptions | ScalingOptions | No | Scaling configuration including policies. |
 | kmsKey | IKey | No | KMS key for encrypting capacity provider data. |
+| logGroup | ILogGroup | No | CloudWatch log group for capacity provider system logs. |
+| systemLogLevel | SystemLogLevel | No | Level of detail for capacity provider system logs (DEBUG, INFO, WARN). |
 
 ## Lambda Insights
 
@@ -1271,9 +1316,50 @@ to learn more about AWS Lambda's X-Ray support.
 
 ## Lambda with AWS Distro for OpenTelemetry layer
 
-To have automatic integration with XRay without having to add dependencies or change your code, you can use the
-[AWS Distro for OpenTelemetry Lambda (ADOT) layer](https://aws-otel.github.io/docs/getting-started/lambda).
-Consuming the latest ADOT layer can be done with the following snippet:
+You can add [AWS Distro for OpenTelemetry (ADOT) Lambda layers](https://aws-otel.github.io/docs/getting-started/lambda)
+to automatically instrument your Lambda functions with OpenTelemetry.
+
+### Optimized ADOT Lambda layers (recommended)
+
+The recommended approach uses the optimized ADOT Lambda layers (the `AWSOpenTelemetryDistro*` layer family).
+These layers provide a plug-and-play experience with support for
+[CloudWatch Application Signals](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Application-Signals.html)
+and do not bundle an embedded collector, resulting in lower overhead.
+
+To use the optimized layers, add the layer ARN for your region and runtime from the
+[ADOT Lambda Layer ARNs](https://aws-otel.github.io/docs/getting-started/lambda#adot-lambda-layer-arns) table,
+set the `AWS_LAMBDA_EXEC_WRAPPER` environment variable to `/opt/otel-instrument`, and attach the
+`CloudWatchLambdaApplicationSignalsExecutionRolePolicy` managed IAM policy:
+
+```ts
+const fn = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_LATEST,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+  environment: {
+    AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-instrument',
+  },
+});
+
+fn.addLayers(lambda.LayerVersion.fromLayerVersionArn(this, 'AdotLayer',
+  // Replace with the actual ARN for your region and runtime from:
+  // https://aws-otel.github.io/docs/getting-started/lambda#adot-lambda-layer-arns
+  'arn:aws:lambda:us-east-1:615299751070:layer:AWSOpenTelemetryDistroJs:7',
+));
+
+fn.role?.addManagedPolicy(
+  iam.ManagedPolicy.fromAwsManagedPolicyName('CloudWatchLambdaApplicationSignalsExecutionRolePolicy'),
+);
+```
+
+### Legacy ADOT Lambda layers (using `adotInstrumentation`)
+
+> **Note:** The `adotInstrumentation` property and its associated helpers (`AdotLayerVersion`,
+> `AdotLambdaExecWrapper`, and the `AdotLambdaLayer*Version` classes) use the legacy ADOT Lambda
+> layers that bundle an embedded collector. The ADOT project considers these layers
+> [not recommended](https://aws-otel.github.io/docs/getting-started/lambda#not-recommended-using-the-legacy-adot-lambda-layers-with-embedded-collector)
+> for the standard CloudWatch/X-Ray path. They may still be useful if you need to export
+> telemetry to a non-CloudWatch endpoint via a custom collector configuration.
 
 ```ts
 import {
@@ -1293,7 +1379,7 @@ const fn = new lambda.Function(this, 'MyFunction', {
 });
 ```
 
-To use a different layer version, use one of the following helper functions for the `layerVersion` prop:
+The legacy helper functions for the `layerVersion` prop are:
 
 * `AdotLayerVersion.fromJavaScriptSdkLayerVersion`
 * `AdotLayerVersion.fromPythonSdkLayerVersion`
@@ -1311,7 +1397,7 @@ Each helper function expects a version value from a corresponding enum-like clas
 
 For more examples, see our [the integration test](test/integ.lambda-adot.ts).
 
-If you want to retrieve the ARN of the ADOT Lambda layer without enabling ADOT in a Lambda function:
+If you want to retrieve the ARN of a legacy ADOT Lambda layer without enabling ADOT in a Lambda function:
 
 ```ts
 declare const fn: lambda.Function;
@@ -1556,6 +1642,101 @@ const fn = new lambda.Function(this, 'MyLambda', {
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
   vpc,
+});
+```
+
+## S3 Files Filesystem
+
+[Amazon S3 Files](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-files.html) provides a fully managed NFS file system backed by an S3 bucket.
+Lambda functions can mount an S3 Files file system to read and write files using standard filesystem operations,
+which is useful for workloads that need POSIX-compatible file access to S3 data — such as ML inference, media processing, or legacy applications that expect a local mount path.
+
+> **Note:** S3 Files currently only has L1 (CloudFormation) constructs. The setup below
+> requires more manual wiring than the equivalent EFS integration. L2 constructs will
+> simplify this in a future release.
+
+S3 Files uses the same NFS infrastructure as Amazon EFS. To mount the file system in Lambda, you need:
+
+- **File system** (`CfnFileSystem`) — the NFS file system backed by your S3 bucket. The backing bucket must have [versioning enabled](https://docs.aws.amazon.com/AmazonS3/latest/userguide/Versioning.html), as S3 Files relies on object versions to maintain consistency between the file system and S3. The file system requires an IAM role with two sets of permissions:
+  - **S3 permissions** — read/write access to the bucket and its objects so S3 Files can synchronize data.
+  - **EventBridge permissions** — S3 Files creates and manages EventBridge rules (prefixed `DO-NOT-DELETE-S3-Files`) to detect S3 object changes and trigger data synchronization. The role needs permission to manage these rules, plus read-only access to list rules for monitoring.
+- **Mount targets** (`CfnMountTarget`) — ENIs placed in your VPC subnets that allow NFS clients (like Lambda) to connect. Each mount target needs a security group that permits inbound NFS traffic (TCP port 2049).
+- **Access point** (`CfnAccessPoint`) — defines the POSIX user identity and root directory path that Lambda uses when accessing the file system. This scopes and isolates the function's view of the file system.
+
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as s3files from 'aws-cdk-lib/aws-s3files';
+
+const vpc = new ec2.Vpc(this, 'Vpc');
+
+// Versioning is required — S3 Files relies on object versions for consistency.
+const bucket = new s3.Bucket(this, 'Bucket', { versioned: true });
+
+// S3 Files assumes this role to sync data between S3 and the file system.
+const role = new iam.Role(this, 'S3FilesRole', {
+  assumedBy: new iam.ServicePrincipal('elasticfilesystem.amazonaws.com'),
+});
+
+// S3 permissions: read/write access to the bucket and objects
+role.addToPolicy(new iam.PolicyStatement({
+  actions: ['s3:ListBucket*'],
+  resources: [bucket.bucketArn],
+}));
+role.addToPolicy(new iam.PolicyStatement({
+  actions: ['s3:AbortMultipartUpload', 's3:DeleteObject', 's3:GetObject*', 's3:List*', 's3:PutObject*'],
+  resources: [bucket.arnForObjects('*')],
+}));
+
+// EventBridge permissions: S3 Files creates rules prefixed "DO-NOT-DELETE-S3-Files"
+// to detect S3 object changes and trigger data synchronization.
+role.addToPolicy(new iam.PolicyStatement({
+  actions: [
+    'events:DeleteRule', 'events:DisableRule', 'events:EnableRule',
+    'events:PutRule', 'events:PutTargets', 'events:RemoveTargets',
+  ],
+  resources: [`arn:${cdk.Aws.PARTITION}:events:*:*:rule/DO-NOT-DELETE-S3-Files*`],
+  conditions: { StringEquals: { 'events:ManagedBy': 'elasticfilesystem.amazonaws.com' } },
+}));
+role.addToPolicy(new iam.PolicyStatement({
+  actions: ['events:DescribeRule', 'events:ListRuleNamesByTarget', 'events:ListRules', 'events:ListTargetsByRule'],
+  resources: [`arn:${cdk.Aws.PARTITION}:events:*:*:rule/*`],
+}));
+
+const fileSystem = new s3files.CfnFileSystem(this, 'S3FilesFs', {
+  bucket: bucket.bucketArn,
+  roleArn: role.roleArn,
+});
+
+const sg = new ec2.SecurityGroup(this, 'MountTargetSG', { vpc });
+
+// Create a mount target in each private subnet so Lambda can reach the file system via NFS.
+vpc.privateSubnets.forEach((subnet, i) =>
+  new s3files.CfnMountTarget(this, `MountTarget${i}`, {
+    fileSystemId: fileSystem.attrFileSystemId,
+    subnetId: subnet.subnetId,
+    securityGroups: [sg.securityGroupId],
+  }),
+);
+
+// The access point defines the POSIX identity and root path Lambda uses on the file system.
+const accessPoint = new s3files.CfnAccessPoint(this, 'AccessPoint', {
+  fileSystemId: fileSystem.attrFileSystemId,
+  rootDirectory: {
+    path: '/export/lambda',
+    creationPermissions: { ownerGid: '1001', ownerUid: '1001', permissions: '750' },
+  },
+  posixUser: { gid: '1001', uid: '1001' },
+});
+
+const fn = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_LATEST,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  vpc,
+  filesystem: lambda.FileSystem.fromS3FilesAccessPoint(accessPoint, '/mnt/s3files'),
 });
 ```
 

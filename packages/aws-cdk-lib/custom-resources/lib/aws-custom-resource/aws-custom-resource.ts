@@ -5,6 +5,7 @@ import * as iam from '../../../aws-iam';
 import type * as logs from '../../../aws-logs';
 import * as cdk from '../../../core';
 import { Annotations } from '../../../core';
+import { Box } from '../../../core/lib/helpers-internal';
 import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { AwsCustomResourceSingletonFunction } from '../../../custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated';
@@ -18,7 +19,7 @@ const PHYSICAL_RESOURCE_ID_REFERENCE = 'PHYSICAL:RESOURCEID:';
  * Reference to the physical resource id that can be passed to the AWS operation as a parameter.
  */
 export class PhysicalResourceIdReference implements cdk.IResolvable {
-  public readonly creationStack: string[] = cdk.captureStackTrace();
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
 
   /**
    * toJSON serialization to replace `PhysicalResourceIdReference` with a magic string.
@@ -656,7 +657,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
   }
 
   private encodeJson(obj: any) {
-    return cdk.Lazy.uncachedString({ produce: () => cdk.Stack.of(this).toJsonString(obj) });
+    return cdk.Token.asString(Box.fromValue(obj).derive((data) => cdk.Stack.of(this).toJsonString(data)));
   }
 }
 

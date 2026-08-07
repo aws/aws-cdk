@@ -67,6 +67,8 @@ export interface IResolvable {
    *
    * This may return an array with a single informational element indicating how
    * to get this property populated, if it was skipped for performance reasons.
+   *
+   * @deprecated creationStack has been deprecated for low usefulness and cost to capture
    */
   readonly creationStack: string[];
 
@@ -170,9 +172,6 @@ export class DefaultTokenResolver implements ITokenResolver {
       return resolved;
     } catch (e: any) {
       let message = `Resolution error: ${e.message}.`;
-      if (t.creationStack && t.creationStack.length > 0) {
-        message += `\nObject creation stack:\n  at ${t.creationStack.join('\n  at ')}`;
-      }
 
       e.message = message;
       throw e;

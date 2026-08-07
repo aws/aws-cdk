@@ -37,7 +37,7 @@ import type * as kms from '../../aws-kms';
 import type * as lambda from '../../aws-lambda';
 import * as ssm from '../../aws-ssm';
 import type { IResource, Duration, Size, RemovalPolicy } from '../../core';
-import { Annotations, CfnOutput, CfnResource, Resource, Stack, Tags, Token, ValidationError, UnscopedValidationError, RemovalPolicies, FeatureFlags } from '../../core';
+import { Annotations, CfnOutput, CfnResource, Resource, Stack, Tags, Token, ValidationError, UnscopedValidationError, RemovalPolicies, FeatureFlags, Validations } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
@@ -746,6 +746,29 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default - Resources will be deleted.
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * The current deletion protection setting for the cluster.
+   * When true, deletion protection is enabled and the cluster cannot be deleted until protection is disabled.
+   * When false, the cluster can be deleted normally. This setting only applies to clusters in an active state.
+   *
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/deletion-protection.html
+   *
+   * @default - deletion protection is disabled
+   */
+  readonly deletionProtection?: boolean;
+
+  /**
+   * The control plane scaling tier for EKS Provisioned Control Plane.
+   *
+   * Provisioned Control Plane allows you to select a scaling tier to ensure
+   * high and predictable performance for demanding workloads such as
+   * AI training/inference, high-performance computing, or large-scale data processing.
+   *
+   * @default - Standard control plane (no provisioned tier)
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/eks-provisioned-control-plane.html
+   */
+  readonly controlPlaneScalingTier?: ControlPlaneScalingTier;
 }
 
 /**
@@ -1090,6 +1113,15 @@ export class KubernetesVersion {
   public static readonly V1_35 = KubernetesVersion.of('1.35');
 
   /**
+   * Kubernetes version 1.36
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV36Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v36`.
+   */
+  public static readonly V1_36 = KubernetesVersion.of('1.36');
+
+  /**
    * Custom cluster version
    * @param version custom version number
    */
@@ -1158,6 +1190,38 @@ export enum AuthenticationMode {
    * Authenticates using the Kubernetes API server.
    */
   API = 'API',
+}
+
+/**
+ * Control plane scaling tier for EKS Provisioned Control Plane.
+ *
+ * Provisioned Control Plane allows cluster administrators to select from a set
+ * of scaling tiers to ensure high and predictable performance for demanding workloads
+ * such as AI training/inference, high-performance computing, or large-scale data processing.
+ *
+ * @see https://docs.aws.amazon.com/eks/latest/userguide/eks-provisioned-control-plane.html
+ */
+export enum ControlPlaneScalingTier {
+  /**
+   * Standard control plane (default, no additional cost).
+   */
+  STANDARD = 'standard',
+  /**
+   * Extra-large provisioned tier.
+   */
+  TIER_XL = 'tier-xl',
+  /**
+   * 2x extra-large provisioned tier.
+   */
+  TIER_2XL = 'tier-2xl',
+  /**
+   * 4x extra-large provisioned tier.
+   */
+  TIER_4XL = 'tier-4xl',
+  /**
+   * 8x extra-large provisioned tier.
+   */
+  TIER_8XL = 'tier-8xl',
 }
 
 abstract class ClusterBase extends Resource implements ICluster {
@@ -1858,7 +1922,13 @@ export class Cluster extends ClusterBase {
       tags: props.tags,
       logging: this.logging,
       bootstrapSelfManagedAddons: props.bootstrapSelfManagedAddons,
+      deletionProtection: props.deletionProtection,
+      controlPlaneScalingConfig: props.controlPlaneScalingTier
+        ? { tier: props.controlPlaneScalingTier }
+        : undefined,
     });
+
+    this.node.defaultChild = resource;
 
     if (this.endpointAccess._config.privateAccess && privateSubnets.length !== 0) {
       // when private access is enabled and the vpc has private subnets, lets connect
@@ -1880,13 +1950,11 @@ export class Cluster extends ClusterBase {
         const isolatedSubnetIds = new Set(this.vpc.isolatedSubnets.map(s => s.subnetId));
         const hasIsolatedSubnets = privateSubnets.some(s => isolatedSubnetIds.has(s.subnetId));
         if (hasIsolatedSubnets) {
-          throw new ValidationError(
-            lit`IsolatedKubectlSubnet`,
-            'Isolated subnets cannot be used for kubectl private subnets. Isolated subnets have no internet access, '
-            + 'which is required for the kubectl Lambda to reach the EKS API, STS, and other AWS service endpoints. '
-            + 'Use PRIVATE_WITH_EGRESS subnets with a NAT Gateway instead, or configure VPC endpoints for STS, EKS, ECR, S3 '
-            + 'and other AWS services detailed here https://docs.aws.amazon.com/eks/latest/userguide/private-clusters.html',
-            this,
+          Annotations.of(this).addWarningV2(
+            '@aws-cdk/aws-eks:isolatedSubnetsForKubectlPrivateSubnets',
+            'Isolated subnets are being used for kubectl private subnets. Isolated subnets have no internet access. '
+            + 'Ensure that VPC endpoints are configured for STS, EKS, ECR, S3 and other AWS services detailed here '
+            + 'https://docs.aws.amazon.com/eks/latest/userguide/private-clusters.html',
           );
         }
       }
@@ -2862,6 +2930,10 @@ export class EksOptimizedImage implements ec2.IMachineImage {
    * Return the correct image
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
+    Validations.of(scope).acknowledge({
+      id: 'CloudFormation-Validate::W2506',
+      reason: 'SSM parameter is typed as String instead of AWS::SSM::Parameter::Value<AWS::EC2::Image::Id> for historical reasons.',
+    });
     const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
     return {
       imageId: ami,

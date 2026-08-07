@@ -34,7 +34,7 @@ import type { ClusterReference, IClusterRef } from '../../aws-eks';
 import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
 import * as ssm from '../../aws-ssm';
-import { Annotations, CfnOutput, CfnResource, Resource, Tags, Token, Stack, UnscopedValidationError, FeatureFlags, RemovalPolicies } from '../../core';
+import { Annotations, CfnOutput, CfnResource, Resource, Tags, Token, Stack, UnscopedValidationError, FeatureFlags, RemovalPolicies, Validations } from '../../core';
 import type { IResource, Duration, ArnComponents, RemovalPolicy } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
@@ -780,6 +780,15 @@ export class KubernetesVersion {
   public static readonly V1_35 = KubernetesVersion.of('1.35');
 
   /**
+   * Kubernetes version 1.36
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV36Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v36`.
+   */
+  public static readonly V1_36 = KubernetesVersion.of('1.36');
+
+  /**
    * Custom cluster version
    * @param version custom version number
    */
@@ -1375,6 +1384,8 @@ export class Cluster extends ClusterBase {
       bootstrapSelfManagedAddons: props.bootstrapSelfManagedAddons,
     });
 
+    this.node.defaultChild = resource;
+
     let kubectlSubnets = this._kubectlProviderOptions?.privateSubnets;
 
     if (this.endpointAccess._config.privateAccess && privateSubnets.length !== 0) {
@@ -1397,13 +1408,11 @@ export class Cluster extends ClusterBase {
         const isolatedSubnetIds = new Set(this.vpc.isolatedSubnets.map(s => s.subnetId));
         const hasIsolatedSubnets = privateSubnets.some(s => isolatedSubnetIds.has(s.subnetId));
         if (hasIsolatedSubnets) {
-          throw new ValidationError(
-            lit`IsolatedKubectlSubnet`,
-            'Isolated subnets cannot be used for kubectl private subnets. Isolated subnets have no internet access, '
-            + 'which is required for the kubectl Lambda to reach the EKS API, STS, and other AWS service endpoints. '
-            + 'Use PRIVATE_WITH_EGRESS subnets with a NAT Gateway instead, or configure VPC endpoints for STS, EKS, ECR, S3 '
-            + 'and other AWS services detailed here https://docs.aws.amazon.com/eks/latest/userguide/private-clusters.html',
-            this,
+          Annotations.of(this).addWarningV2(
+            '@aws-cdk/aws-eks:isolatedSubnetsForKubectlPrivateSubnets',
+            'Isolated subnets are being used for kubectl private subnets. Isolated subnets have no internet access. '
+            + 'Ensure that VPC endpoints are configured for STS, EKS, ECR, S3 and other AWS services detailed here '
+            + 'https://docs.aws.amazon.com/eks/latest/userguide/private-clusters.html',
           );
         }
       }
@@ -1445,6 +1454,14 @@ export class Cluster extends ClusterBase {
     const commonCommandOptions = [`--region ${stack.region}`];
 
     if (props.kubectlProviderOptions) {
+      if (this._kubectlProviderOptions?.securityGroup !== undefined &&
+          this._kubectlProviderOptions?.securityGroups !== undefined) {
+        throw new ValidationError(
+          lit`SecurityGroupConflict`,
+          'Cannot specify both "securityGroup" and "securityGroups". Use "securityGroups" only.',
+          this,
+        );
+      }
       this._kubectlProvider = new KubectlProvider(this, 'KubectlProvider', {
         cluster: this,
         role: this._kubectlProviderOptions?.role,
@@ -1453,6 +1470,10 @@ export class Cluster extends ClusterBase {
         environment: this._kubectlProviderOptions?.environment,
         memory: this._kubectlProviderOptions?.memory,
         privateSubnets: kubectlSubnets,
+        securityGroups: this._kubectlProviderOptions?.securityGroups
+          ?? (this._kubectlProviderOptions?.securityGroup
+            ? [this._kubectlProviderOptions.securityGroup]
+            : undefined),
       });
 
       // give the handler role admin access to the cluster
@@ -1545,7 +1566,7 @@ export class Cluster extends ClusterBase {
    *
    * This method creates an `AccessEntry` construct that grants the specified IAM principal the cluster admin
    * access permissions. This allows the IAM principal to perform the actions permitted
-   * by the cluster admin acces.
+   * by the cluster admin access.
    * [disable-awslint:no-grants]
    *
    * @param id - The ID of the `AccessEntry` construct to be created.
@@ -2323,6 +2344,10 @@ export class EksOptimizedImage implements ec2.IMachineImage {
    * Return the correct image
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
+    Validations.of(scope).acknowledge({
+      id: 'CloudFormation-Validate::W2506',
+      reason: 'SSM parameter is typed as String instead of AWS::SSM::Parameter::Value<AWS::EC2::Image::Id> for historical reasons.',
+    });
     const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
     return {
       imageId: ami,

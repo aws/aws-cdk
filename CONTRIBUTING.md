@@ -474,7 +474,7 @@ In some cases, it is useful to seek feedback by iterating on a design document. 
 
 In many cases, the comments section of the relevant GitHub issue is sufficient for such discussion, and can be a good place to socialize and get feedback on what you plan to do. If the changes are significant in scope, require a longer form medium to communicate, or you just want to ensure that the core team agrees with your planned implementation before you submit it for review to avoid wasted work, there are a few different strategies you can pursue.
 
-When designing new features, consider whether the functionality is best implemented as a [Mixin, Facade, or Trait](./docs/DESIGN_GUIDELINES.md#mixins-facades-and-traits) rather than as a traditional L2 property or method. New features must prefer these composable building blocks, which work across L1 and L2 constructs. See the [Mixins Design Guidelines](./docs/MIXINS_DESIGN_GUIDELINES.md) for implementation details.
+When designing new features, consider whether the functionality is best implemented as a [Mixin, Facade, or Trait](./docs/DESIGN_GUIDELINES.md#mixins-facades-and-traits) rather than as a traditional L2 property or method. New features must prefer these composable building blocks, which work across L1 and L2 constructs. See the [Mixins Design Guidelines](./docs/MIXINS_DESIGN_GUIDELINES.md) and [Facades and Traits Design Guidelines](./docs/FACADES_AND_TRAITS_DESIGN_GUIDELINES.md) for implementation details.
 
 1. README driven development - This is the core team's preferred method for reviewing new APIs. Submit a draft PR with updates to the README for the package that you intend to change that clearly describes how the functionality will be used. For new L2s, include usage examples that cover common use cases and showcase the features of the API you're designing. The most important thing to consider for any feature is the public API and this will help to give a clear picture of what changes users can expect.
 1. Write an [RFC](https://github.com/aws/aws-cdk-rfcs) - This is a process for discussing new functionality that is large in scope, may incur breaking changes, or may otherwise warrant discussion from multiple stakeholders on the core team or within the community. Specifically, it is a good place to discuss new features in the core CDK framework or the CLI that are unable to be decoupled from the core cdk codebase.
@@ -495,7 +495,8 @@ Work your magic. Here are some guidelines:
     Watch out for their error messages and adjust your code accordingly.
 * For new features, prefer implementing as a [Mixin, Facade, or Trait](./docs/DESIGN_GUIDELINES.md#mixins-facades-and-traits)
   over adding properties or methods directly to L2 constructs. This makes the feature available to both L1 and L2 users.
-  See the [Mixins Design Guidelines](./docs/MIXINS_DESIGN_GUIDELINES.md) for how to implement Mixins.
+  See the [Mixins Design Guidelines](./docs/MIXINS_DESIGN_GUIDELINES.md) for how to implement Mixins and the
+  [Facades and Traits Design Guidelines](./docs/FACADES_AND_TRAITS_DESIGN_GUIDELINES.md) for how to implement Facades and Traits.
 * Every change requires a unit test
 * If you change APIs, make sure to update the module's README file
   * When you add new examples to the module's README file, you must also ensure they compile - the PR build will fail
