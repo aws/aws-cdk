@@ -518,6 +518,45 @@ interface DatabaseClusterBaseProps {
    * @default undefined - AWS RDS default is to remove automated backups immediately after the DB cluster is deleted, unless the AWS Backup policy specifies a point-in-time restore rule.
    */
   readonly deleteAutomatedBackups?: boolean;
+
+  /**
+   * The authentication type for the master user of the DB cluster.
+   *
+   * When set to `MasterUserAuthenticationType.IAM`, no password is generated or stored in Secrets Manager,
+   * and `MasterUserPassword` is not set in the CloudFormation template. The `iamAuthentication` prop
+   * must be `true` when using this option; if it is not provided, it is automatically set to `true`.
+   *
+   * Note: `credentials.password` or `credentials.secret` cannot be set alongside
+   * `MasterUserAuthenticationType.IAM`.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.IAMDBAuth.html
+   *
+   * @default - password-based authentication; a Secrets Manager secret is generated automatically
+   */
+  readonly masterUserAuthenticationType?: MasterUserAuthenticationType;
+}
+
+/**
+ * The authentication type for the master user of an Aurora DB cluster.
+ *
+ * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.IAMDBAuth.html
+ */
+export enum MasterUserAuthenticationType {
+  /**
+   * IAM database authentication. No password is generated or stored in Secrets Manager.
+   *
+   * Requires `iamAuthentication: true` on the cluster. If `iamAuthentication` is not set,
+   * it is automatically enabled when this option is chosen.
+   */
+  IAM = 'iam-db-auth',
+
+  /**
+   * Password-based authentication (default behavior).
+   *
+   * A password is generated and stored in AWS Secrets Manager unless
+   * explicit credentials are provided.
+   */
+  PASSWORD = 'password',
 }
 
 /**
@@ -950,6 +989,28 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       throw new ValidationError(lit`InvalidMonitoringInterval`, `'monitoringInterval' must be one of 0, 1, 5, 10, 15, 30, or 60 seconds, got: ${props.monitoringInterval.toSeconds()} seconds.`, this);
     }
 
+    // IAM master user authentication: validate and derive the effective IAM database auth flag
+    const isIamMasterAuth = props.masterUserAuthenticationType === MasterUserAuthenticationType.IAM;
+    let effectiveIamAuthentication = props.iamAuthentication;
+    if (isIamMasterAuth) {
+      if (!Token.isUnresolved(props.iamAuthentication) && props.iamAuthentication === false) {
+        throw new ValidationError(
+          lit`IamAuthRequiredForIamMasterAuth`,
+          '`iamAuthentication` must be `true` when `masterUserAuthenticationType` is IAM. Set `iamAuthentication: true`',
+          this,
+        );
+      }
+      if (!Token.isUnresolved(props.iamAuthentication) && props.iamAuthentication !== true) {
+        Annotations.of(this).addWarningV2(
+          '@aws-cdk/aws-rds:iamAuthRequiredForIamMasterAuth',
+          '`iamAuthentication` is not set to `true`. It has been automatically enabled because ' +
+          '`masterUserAuthenticationType` is IAM. Acknowledge this warning by calling ' +
+          "`cluster.acknowledgeWarning('@aws-cdk/aws-rds:iamAuthRequiredForIamMasterAuth')`.",
+        );
+      }
+      effectiveIamAuthentication = true;
+    }
+
     this.newCfnProps = {
       // Basic
       engine: props.engine.engineType,
@@ -961,7 +1022,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
       associatedRoles: clusterAssociatedRoles.length > 0 ? clusterAssociatedRoles : undefined,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
-      enableIamDatabaseAuthentication: props.iamAuthentication,
+      enableIamDatabaseAuthentication: effectiveIamAuthentication,
       enableHttpEndpoint: Lazy.any({ produce: () => this.enableDataApi }),
       networkType: props.networkType,
       serverlessV2ScalingConfiguration: Lazy.any({
@@ -1550,6 +1611,12 @@ export class DatabaseCluster extends DatabaseClusterNew {
       replicationSourceIdentifier: props.replicationSourceIdentifier,
     });
 
+    // MasterUserAuthenticationType is not yet in the generated CfnDBCluster type;
+    // use addPropertyOverride so it reaches the CloudFormation template.
+    if (props.masterUserAuthenticationType !== undefined) {
+      cluster.addPropertyOverride('MasterUserAuthenticationType', props.masterUserAuthenticationType);
+    }
+
     this.clusterIdentifier = cluster.ref;
     this.clusterResourceIdentifier = cluster.attrDbClusterResourceId;
 
@@ -1747,6 +1814,16 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    const useIamMasterAuthForSnapshot = props.masterUserAuthenticationType === MasterUserAuthenticationType.IAM;
+    if (useIamMasterAuthForSnapshot && props.snapshotCredentials !== undefined) {
+      throw new ValidationError(
+        lit`CredentialsMutuallyExclusiveWithIamMasterAuth`,
+        '`snapshotCredentials` cannot be set when `masterUserAuthenticationType` is IAM. ' +
+        'Remove `snapshotCredentials` or change `masterUserAuthenticationType`.',
+        this,
+      );
+    }
+
     if (props.credentials && !props.credentials.password && !props.credentials.secret) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-rds:useSnapshotCredentials', 'Use `snapshotCredentials` to modify password of a cluster created from a snapshot.');
     }
@@ -1781,6 +1858,12 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
         ? { kmsKeyId: props.snapshotCredentials.encryptionKey.keyArn }
         : undefined,
     });
+
+    // MasterUserAuthenticationType is not yet in the generated CfnDBCluster type;
+    // use addPropertyOverride so it reaches the CloudFormation template.
+    if (props.masterUserAuthenticationType !== undefined) {
+      cluster.addPropertyOverride('MasterUserAuthenticationType', props.masterUserAuthenticationType);
+    }
 
     this.clusterIdentifier = cluster.ref;
     this.clusterResourceIdentifier = cluster.attrDbClusterResourceId;
