@@ -178,6 +178,13 @@
       }
     ]
   },
+  "aws-artifact": {
+    "scopes": [
+      {
+        "namespace": "AWS::Artifact"
+      }
+    ]
+  },
   "aws-athena": {
     "scopes": [
       {
@@ -206,6 +213,13 @@
       }
     ]
   },
+  "aws-awsexternalanthropic": {
+    "scopes": [
+      {
+        "namespace": "AWS::AWSExternalAnthropic"
+      }
+    ]
+  },
   "aws-b2bi": {
     "scopes": [
       {
@@ -227,6 +241,13 @@
       }
     ]
   },
+  "aws-backupsearch": {
+    "scopes": [
+      {
+        "namespace": "AWS::BackupSearch"
+      }
+    ]
+  },
   "aws-batch": {
     "scopes": [
       {
@@ -234,10 +255,24 @@
       }
     ]
   },
+  "aws-bcm": {
+    "scopes": [
+      {
+        "namespace": "AWS::BCM"
+      }
+    ]
+  },
   "aws-bcmdataexports": {
     "scopes": [
       {
         "namespace": "AWS::BCMDataExports"
+      }
+    ]
+  },
+  "aws-bcmpricingcalculator": {
+    "scopes": [
+      {
+        "namespace": "AWS::BcmPricingCalculator"
       }
     ]
   },
@@ -273,6 +308,13 @@
     "scopes": [
       {
         "namespace": "AWS::BillingConductor"
+      }
+    ]
+  },
+  "aws-braket": {
+    "scopes": [
+      {
+        "namespace": "AWS::Braket"
       }
     ]
   },
@@ -315,6 +357,13 @@
     "scopes": [
       {
         "namespace": "AWS::Chatbot"
+      }
+    ]
+  },
+  "aws-chime": {
+    "scopes": [
+      {
+        "namespace": "AWS::Chime"
       }
     ]
   },
@@ -456,6 +505,13 @@
       }
     ]
   },
+  "aws-cognitosync": {
+    "scopes": [
+      {
+        "namespace": "AWS::CognitoSync"
+      }
+    ]
+  },
   "aws-comprehend": {
     "scopes": [
       {
@@ -495,6 +551,13 @@
     "scopes": [
       {
         "namespace": "AWS::ConnectCampaignsV2"
+      }
+    ]
+  },
+  "aws-controlcatalog": {
+    "scopes": [
+      {
+        "namespace": "AWS::ControlCatalog"
       }
     ]
   },
@@ -932,6 +995,13 @@
       }
     ]
   },
+  "aws-interconnect": {
+    "scopes": [
+      {
+        "namespace": "AWS::Interconnect"
+      }
+    ]
+  },
   "aws-internetmonitor": {
     "scopes": [
       {
@@ -1306,6 +1376,13 @@
       }
     ]
   },
+  "aws-networkflowmonitor": {
+    "scopes": [
+      {
+        "namespace": "AWS::NetworkFlowMonitor"
+      }
+    ]
+  },
   "aws-networkmanager": {
     "scopes": [
       {
@@ -1331,6 +1408,13 @@
     "scopes": [
       {
         "namespace": "AWS::NotificationsContacts"
+      }
+    ]
+  },
+  "aws-novaact": {
+    "scopes": [
+      {
+        "namespace": "AWS::NovaAct"
       }
     ]
   },
@@ -1401,6 +1485,13 @@
     "scopes": [
       {
         "namespace": "AWS::OSIS"
+      }
+    ]
+  },
+  "aws-outposts": {
+    "scopes": [
+      {
+        "namespace": "AWS::Outposts"
       }
     ]
   },
@@ -1551,6 +1642,13 @@
       }
     ]
   },
+  "aws-resiliencehubv2": {
+    "scopes": [
+      {
+        "namespace": "AWS::ResilienceHubV2"
+      }
+    ]
+  },
   "aws-resourceexplorer2": {
     "scopes": [
       {
@@ -1649,6 +1747,13 @@
       }
     ]
   },
+  "aws-s3files": {
+    "scopes": [
+      {
+        "namespace": "AWS::S3Files"
+      }
+    ]
+  },
   "aws-s3objectlambda": {
     "scopes": [
       {
@@ -1703,6 +1808,13 @@
       }
     ]
   },
+  "aws-scn": {
+    "scopes": [
+      {
+        "namespace": "AWS::SCN"
+      }
+    ]
+  },
   "aws-sdb": {
     "scopes": [
       {
@@ -1714,6 +1826,13 @@
     "scopes": [
       {
         "namespace": "AWS::SecretsManager"
+      }
+    ]
+  },
+  "aws-securityagent": {
+    "scopes": [
+      {
+        "namespace": "AWS::SecurityAgent"
       }
     ]
   },
@@ -1853,10 +1972,24 @@
       }
     ]
   },
+  "aws-states": {
+    "scopes": [
+      {
+        "namespace": "AWS::States"
+      }
+    ]
+  },
   "aws-stepfunctions": {
     "scopes": [
       {
         "namespace": "AWS::StepFunctions"
+      }
+    ]
+  },
+  "aws-storagegateway": {
+    "scopes": [
+      {
+        "namespace": "AWS::StorageGateway"
       }
     ]
   },
@@ -1881,6 +2014,13 @@
       }
     ]
   },
+  "aws-thinclient": {
+    "scopes": [
+      {
+        "namespace": "AWS::ThinClient"
+      }
+    ]
+  },
   "aws-timestream": {
     "scopes": [
       {
@@ -1888,10 +2028,31 @@
       }
     ]
   },
+  "aws-transcribe": {
+    "scopes": [
+      {
+        "namespace": "AWS::Transcribe"
+      }
+    ]
+  },
   "aws-transfer": {
     "scopes": [
       {
         "namespace": "AWS::Transfer"
+      }
+    ]
+  },
+  "aws-usernotifications": {
+    "scopes": [
+      {
+        "namespace": "AWS::UserNotifications"
+      }
+    ]
+  },
+  "aws-uxc": {
+    "scopes": [
+      {
+        "namespace": "AWS::UXC"
       }
     ]
   },
@@ -1939,6 +2100,13 @@
     "scopes": [
       {
         "namespace": "AWS::WAFv2"
+      }
+    ]
+  },
+  "aws-wellarchitected": {
+    "scopes": [
+      {
+        "namespace": "AWS::WellArchitected"
       }
     ]
   },
