@@ -1,0 +1,14 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "SnsSqsOptInRegionTest/DefaultTest": {
+      "stacks": [
+        "TopicStack",
+        "QueueStack"
+      ],
+      "assertionStack": "SnsSqsOptInRegionTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SnsSqsOptInRegionTestDefaultTestDeployAssert015E495C"
+    }
+  },
+  "minimumCliVersion": "2.1121.0"
+}

@@ -1,0 +1,21 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "6a1af0480de5c033acc885e9ef2c86fecf0526b7806e84aeb287e8451e4fa128": {
+      "displayName": "TopicStack Template",
+      "source": {
+        "path": "TopicStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "12345678-ap-east-1-19e4078c": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-ap-east-1",
+          "objectKey": "6a1af0480de5c033acc885e9ef2c86fecf0526b7806e84aeb287e8451e4fa128.json",
+          "region": "ap-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-ap-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

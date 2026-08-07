@@ -1,0 +1,56 @@
+{
+  "/SnsSqsOptInRegionTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:38:38)",
+        "new IntegTestCase (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns-subscriptions/test/integ.sns-sqs-opt-in-region.lit.js:45:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SnsSqsOptInRegionTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "visit (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "visit (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)"
+      ]
+    }
+  ],
+  "/SnsSqsOptInRegionTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "visit (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "visit (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/Users/dantonuc/aws-cdk-tmp/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)"
+      ]
+    }
+  ]
+}

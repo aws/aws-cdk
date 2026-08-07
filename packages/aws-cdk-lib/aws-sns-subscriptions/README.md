@@ -174,3 +174,50 @@ myTopic.addSubscription(new subscriptions.FirehoseSubscription(stream, {
   rawMessageDelivery: true,
 }));
 ```
+
+### Cross-region delivery from opt-in regions
+
+Amazon SNS supports cross-region delivery to Lambda functions and SQS queues, but
+when one of the regions involved is an [opt-in region][opt-in-regions]
+(`ap-east-1`, `me-south-1`, `eu-south-1`, `af-south-1`, `il-central-1`, etc.),
+the subscriber's resource policy must trust a regionalized SNS service principal
+(`sns.<region>.amazonaws.com`) instead of the default `sns.amazonaws.com`.
+
+Configure this with the `additionalServicePrincipalRegions` prop on
+`LambdaSubscription` or `SqsSubscription`:
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
+declare const myFunction: lambda.Function;
+
+// Topic in an opt-in region (ap-east-1) delivering to a Lambda in a
+// default-enabled region: the Lambda permission needs to trust
+// `sns.ap-east-1.amazonaws.com` in addition to the default principal.
+const myTopic = new sns.Topic(this, 'MyTopic');
+myTopic.addSubscription(new subscriptions.LambdaSubscription(myFunction, {
+  additionalServicePrincipalRegions: ['ap-east-1'],
+}));
+```
+
+The same prop is available on `SqsSubscription`. To grant only the regionalized
+principal (for example, when the topic is in an opt-in region and the subscriber
+should not accept invocations from default-enabled regions at all), set
+`includeDefaultServicePrincipal` to `false`:
+
+```ts
+declare const myQueue: sqs.Queue;
+const myTopic = new sns.Topic(this, 'MyTopic');
+
+myTopic.addSubscription(new subscriptions.SqsSubscription(myQueue, {
+  includeDefaultServicePrincipal: false,
+  additionalServicePrincipalRegions: ['ap-east-1'],
+}));
+```
+
+See the AWS docs on [cross-region SNS delivery][cross-region-delivery] for the
+full set of supported scenarios and the rules for which region's principal must
+be granted.
+
+[opt-in-regions]: https://docs.aws.amazon.com/sns/latest/dg/sns-cross-region-delivery.html#opt-in-regions
+[cross-region-delivery]: https://docs.aws.amazon.com/sns/latest/dg/sns-cross-region-delivery.html

@@ -4,6 +4,7 @@ import { CfnSubscription } from './sns.generated';
 import type { SubscriptionFilter } from './subscription-filter';
 import type { ITopic } from './topic-base';
 import { PolicyStatement, ServicePrincipal } from '../../aws-iam';
+import type { IPrincipal } from '../../aws-iam';
 import type { IQueue } from '../../aws-sqs';
 import { Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
@@ -65,6 +66,17 @@ export interface SubscriptionOptions {
    * @default - No dead letter queue enabled.
    */
   readonly deadLetterQueue?: IQueue;
+
+  /**
+   * IAM principals that should be granted permission to send messages to the
+   * dead-letter queue when one is configured. Use this to allow regionalized
+   * SNS service principals (`sns.<region>.amazonaws.com`) for cross-region
+   * delivery from opt-in regions.
+   *
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-cross-region-delivery.html
+   * @default - the default SNS service principal (`sns.amazonaws.com`) is granted permission
+   */
+  readonly deadLetterQueueServicePrincipals?: IPrincipal[];
 
   /**
    * Arn of role allowing access to firehose delivery stream.
@@ -259,7 +271,7 @@ export class Subscription extends Resource {
     deadLetterQueue.addToResourcePolicy(new PolicyStatement({
       resources: [deadLetterQueue.queueArn],
       actions: ['sqs:SendMessage'],
-      principals: [new ServicePrincipal('sns.amazonaws.com')],
+      principals: props.deadLetterQueueServicePrincipals ?? [new ServicePrincipal('sns.amazonaws.com')],
       conditions: {
         ArnEquals: { 'aws:SourceArn': props.topic.topicArn },
       },

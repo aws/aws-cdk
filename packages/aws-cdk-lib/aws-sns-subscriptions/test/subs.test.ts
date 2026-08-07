@@ -1,4 +1,4 @@
-import { Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as sns from '../../aws-sns';
@@ -2134,5 +2134,261 @@ test('sms subscription with unresolved', () => {
         },
       },
     },
+  });
+});
+
+describe('opt-in region SNS service principals', () => {
+  function newFunction() {
+    return new lambda.Function(stack, 'MyFunc', {
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
+    });
+  }
+
+  test('lambda subscription with additional opt-in region grants both default and regional principals', () => {
+    const func = newFunction();
+
+    topic.addSubscription(new subs.LambdaSubscription(func, {
+      additionalServicePrincipalRegions: ['ap-east-1'],
+    }));
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Lambda::Permission', 2);
+    // Default-principal permission keeps the original logical ID for backwards compatibility.
+    template.hasResource('AWS::Lambda::Permission', {
+      Properties: Match.objectLike({
+        Principal: 'sns.amazonaws.com',
+        SourceArn: { Ref: 'MyTopic86869434' },
+      }),
+    });
+    template.hasResource('AWS::Lambda::Permission', {
+      Properties: Match.objectLike({
+        Principal: 'sns.ap-east-1.amazonaws.com',
+        SourceArn: { Ref: 'MyTopic86869434' },
+      }),
+    });
+  });
+
+  test('lambda subscription with includeDefaultServicePrincipal disabled grants only regional principals', () => {
+    const func = newFunction();
+
+    topic.addSubscription(new subs.LambdaSubscription(func, {
+      includeDefaultServicePrincipal: false,
+      additionalServicePrincipalRegions: ['ap-east-1'],
+    }));
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Lambda::Permission', 1);
+    template.hasResource('AWS::Lambda::Permission', {
+      Properties: Match.objectLike({
+        Principal: 'sns.ap-east-1.amazonaws.com',
+        SourceArn: { Ref: 'MyTopic86869434' },
+      }),
+    });
+  });
+
+  test('lambda subscription rejects a tokenized region', () => {
+    const func = newFunction();
+    const region = Token.asString({ Ref: 'OptInRegionParam' });
+
+    expect(() => topic.addSubscription(new subs.LambdaSubscription(func, {
+      additionalServicePrincipalRegions: [region],
+    }))).toThrow(/does not support tokenized region values/);
+  });
+
+  test('lambda subscription default behavior is unchanged', () => {
+    const func = newFunction();
+
+    topic.addSubscription(new subs.LambdaSubscription(func));
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Lambda::Permission', 1);
+    template.hasResource('AWS::Lambda::Permission', {
+      Properties: Match.objectLike({
+        Principal: 'sns.amazonaws.com',
+      }),
+    });
+  });
+
+  test('queue subscription with additional opt-in region grants both default and regional principals', () => {
+    const queue = new sqs.Queue(stack, 'MyQueue');
+
+    topic.addSubscription(new subs.SqsSubscription(queue, {
+      additionalServicePrincipalRegions: ['ap-east-1'],
+    }));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+      PolicyDocument: {
+        Statement: [
+          Match.objectLike({
+            Action: 'sqs:SendMessage',
+            Principal: {
+              Service: ['sns.amazonaws.com', 'sns.ap-east-1.amazonaws.com'],
+            },
+          }),
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('queue subscription with includeDefaultServicePrincipal disabled grants only regional principals', () => {
+    const queue = new sqs.Queue(stack, 'MyQueue');
+
+    topic.addSubscription(new subs.SqsSubscription(queue, {
+      includeDefaultServicePrincipal: false,
+      additionalServicePrincipalRegions: ['ap-east-1'],
+    }));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+      PolicyDocument: {
+        Statement: [
+          Match.objectLike({
+            Action: 'sqs:SendMessage',
+            Principal: { Service: 'sns.ap-east-1.amazonaws.com' },
+          }),
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('encrypted queue subscription propagates regional principals to the KMS key policy', () => {
+    const key = new kms.Key(stack, 'MyKey', { removalPolicy: RemovalPolicy.DESTROY });
+    const queue = new sqs.Queue(stack, 'MyQueue', {
+      encryption: sqs.QueueEncryption.KMS,
+      encryptionMasterKey: key,
+    });
+
+    topic.addSubscription(new subs.SqsSubscription(queue, {
+      additionalServicePrincipalRegions: ['ap-east-1'],
+    }));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: Match.objectLike({
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: ['kms:Decrypt', 'kms:GenerateDataKey'],
+            Principal: {
+              Service: ['sns.amazonaws.com', 'sns.ap-east-1.amazonaws.com'],
+            },
+          }),
+        ]),
+      }),
+    });
+  });
+
+  test('lambda subscription with DLQ and opt-in region grants regional principal on DLQ', () => {
+    const func = newFunction();
+    const dlq = new sqs.Queue(stack, 'DLQ');
+
+    topic.addSubscription(new subs.LambdaSubscription(func, {
+      additionalServicePrincipalRegions: ['ap-east-1'],
+      deadLetterQueue: dlq,
+    }));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+      PolicyDocument: {
+        Statement: [
+          Match.objectLike({
+            Action: 'sqs:SendMessage',
+            Principal: {
+              Service: ['sns.amazonaws.com', 'sns.ap-east-1.amazonaws.com'],
+            },
+            Resource: { 'Fn::GetAtt': ['DLQ581697C4', 'Arn'] },
+          }),
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('queue subscription with DLQ and opt-in region grants regional principal on DLQ', () => {
+    const queue = new sqs.Queue(stack, 'MyQueue');
+    const dlq = new sqs.Queue(stack, 'DLQ');
+
+    topic.addSubscription(new subs.SqsSubscription(queue, {
+      additionalServicePrincipalRegions: ['ap-east-1'],
+      deadLetterQueue: dlq,
+    }));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+      PolicyDocument: {
+        Statement: [
+          Match.objectLike({
+            Action: 'sqs:SendMessage',
+            Principal: {
+              Service: ['sns.amazonaws.com', 'sns.ap-east-1.amazonaws.com'],
+            },
+            Resource: { 'Fn::GetAtt': ['DLQ581697C4', 'Arn'] },
+          }),
+        ],
+        Version: '2012-10-17',
+      },
+      Queues: [{ Ref: 'DLQ581697C4' }],
+    });
+  });
+
+  test('DLQ policy honors includeDefaultServicePrincipal=false', () => {
+    const func = newFunction();
+    const dlq = new sqs.Queue(stack, 'DLQ');
+
+    topic.addSubscription(new subs.LambdaSubscription(func, {
+      includeDefaultServicePrincipal: false,
+      additionalServicePrincipalRegions: ['ap-east-1'],
+      deadLetterQueue: dlq,
+    }));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+      PolicyDocument: {
+        Statement: [
+          Match.objectLike({
+            Action: 'sqs:SendMessage',
+            Principal: { Service: 'sns.ap-east-1.amazonaws.com' },
+            Resource: { 'Fn::GetAtt': ['DLQ581697C4', 'Arn'] },
+          }),
+        ],
+        Version: '2012-10-17',
+      },
+      Queues: [{ Ref: 'DLQ581697C4' }],
+    });
+  });
+
+  test('fails when no SNS service principals are configured', () => {
+    const func = newFunction();
+
+    expect(() => topic.addSubscription(new subs.LambdaSubscription(func, {
+      includeDefaultServicePrincipal: false,
+    }))).toThrow(/at least one SNS service principal must be configured/);
+  });
+
+  test('fails when additionalServicePrincipalRegions contains a default-enabled region', () => {
+    const func = newFunction();
+
+    expect(() => topic.addSubscription(new subs.LambdaSubscription(func, {
+      additionalServicePrincipalRegions: ['us-east-1'],
+    }))).toThrow(/is not an opt-in region/);
+  });
+
+  test('fails when additionalServicePrincipalRegions contains a non-public-partition region', () => {
+    const func = newFunction();
+
+    expect(() => topic.addSubscription(new subs.LambdaSubscription(func, {
+      additionalServicePrincipalRegions: ['us-gov-west-1'],
+    }))).toThrow(/is not an opt-in region/);
+  });
+
+  test('warns when additionalServicePrincipalRegions contains a region not known to region-info', () => {
+    const func = newFunction();
+
+    topic.addSubscription(new subs.LambdaSubscription(func, {
+      additionalServicePrincipalRegions: ['xx-fake-1'],
+    }));
+
+    Annotations.fromStack(stack).hasWarning(
+      '*',
+      Match.stringLikeRegexp('"xx-fake-1" in additionalServicePrincipalRegions is not recognized'),
+    );
   });
 });
