@@ -391,8 +391,52 @@
     }
    }
   },
+  "KmsKey46693ADD": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "ClusterEB0386A7": {
-   "Type": "AWS::ECS::Cluster"
+   "Type": "AWS::ECS::Cluster",
+   "Properties": {
+    "Configuration": {
+     "ManagedStorageConfiguration": {
+      "KmsKeyId": {
+       "Ref": "KmsKey46693ADD"
+      }
+     }
+    }
+   }
   },
   "Cluster3DA9CCBA": {
    "Type": "AWS::ECS::ClusterCapacityProviderAssociations",
