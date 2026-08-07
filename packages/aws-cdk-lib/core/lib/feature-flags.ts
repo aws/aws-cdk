@@ -2,6 +2,7 @@ import type { IConstruct } from 'constructs';
 import { Node } from 'constructs';
 import { UnscopedValidationError } from './errors';
 import * as cxapi from '../../cx-api';
+import { lit } from './private/literal-string';
 
 /**
  * Features that are implemented behind a flag in order to preserve backwards
@@ -29,7 +30,7 @@ export class FeatureFlags {
     const context = Node.of(this.construct).tryGetContext(featureFlag);
     if (cxapi.CURRENT_VERSION_EXPIRED_FLAGS.includes(featureFlag)) {
       if (context !== undefined) {
-        throw new UnscopedValidationError('UnsupportedFeatureFlag', `Unsupported feature flag '${featureFlag}'. This flag existed on CDKv1 but has been removed in CDKv2.`
+        throw new UnscopedValidationError(lit`UnsupportedFeatureFlag`, `Unsupported feature flag '${featureFlag}'. This flag existed on CDKv1 but has been removed in CDKv2.`
           + ' CDK will now behave as the same as when the flag is enabled.');
       }
       return true;

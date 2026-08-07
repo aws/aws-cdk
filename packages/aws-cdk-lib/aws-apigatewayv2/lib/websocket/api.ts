@@ -7,6 +7,7 @@ import { Grant } from '../../../aws-iam';
 import { ArnFormat, Stack, Token } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import type { ApiReference, IApiRef } from '../apigatewayv2.generated';
 import type { IApi, IpAddressType } from '../common/api';
@@ -156,7 +157,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
 
       public get apiEndpoint(): string {
         if (!this._apiEndpoint) {
-          throw new ValidationError('ApiEndpointConfiguredImportedWeb', 'apiEndpoint is not configured on the imported WebSocketApi.', scope);
+          throw new ValidationError(lit`ApiEndpointConfiguredImportedWeb`, 'apiEndpoint is not configured on the imported WebSocketApi.', scope);
         }
         return this._apiEndpoint;
       }
@@ -244,7 +245,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
   @MethodMetadata()
   public arnForExecuteApi(method?: string, path?: string, stage?: string): string {
     if (path && !Token.isUnresolved(path) && !path.startsWith('/')) {
-      throw new UnscopedValidationError('PathStart', `Path must start with '/': ${path}`);
+      throw new UnscopedValidationError(lit`PathStart`, `Path must start with '/': ${path}`);
     }
 
     if (method && method.toUpperCase() === 'ANY') {

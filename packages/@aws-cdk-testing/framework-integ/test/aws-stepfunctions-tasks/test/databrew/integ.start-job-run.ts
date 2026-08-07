@@ -109,7 +109,7 @@ class GlueDataBrewJobStack extends cdk.Stack {
     const chain = sfn.Chain.start(startGlueDataBrewJob);
 
     const sm = new sfn.StateMachine(this, 'StateMachine', {
-      definition: chain,
+      definitionBody: sfn.DefinitionBody.fromChainable(chain),
       timeout: cdk.Duration.seconds(30),
     });
 

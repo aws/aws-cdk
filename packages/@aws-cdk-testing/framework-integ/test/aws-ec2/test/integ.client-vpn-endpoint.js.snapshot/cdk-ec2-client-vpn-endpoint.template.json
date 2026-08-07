@@ -96,7 +96,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "CustomACMImportCertificatesCustomResourceProviderRole2CE46D14"

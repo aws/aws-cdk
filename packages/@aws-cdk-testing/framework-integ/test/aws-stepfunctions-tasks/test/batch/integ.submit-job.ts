@@ -66,7 +66,7 @@ class RunBatchStack extends cdk.Stack {
     }).next(submitJob);
 
     const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-      definition,
+      definitionBody: sfn.DefinitionBody.fromChainable(definition),
     });
 
     new cdk.CfnOutput(this, 'JobQueueArn', {

@@ -1,5 +1,6 @@
 import type * as bedrock from 'aws-cdk-lib/aws-bedrock';
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Properties for creating a prompt inference configuration.
@@ -68,17 +69,17 @@ class TextInferenceConfiguration extends PromptInferenceConfiguration {
 
     // Validate maxTokens if provided
     if (props.maxTokens !== undefined && props.maxTokens <= 0) {
-      throw new UnscopedValidationError('MaxTokensNotPositive', 'maxTokens must be a positive number');
+      throw new UnscopedValidationError(lit`MaxTokensNotPositive`, 'maxTokens must be a positive number');
     }
 
     // Validate temperature range if provided
     if (props.temperature !== undefined && (props.temperature < 0.0 || props.temperature > 1.0)) {
-      throw new UnscopedValidationError('TemperatureOutOfRange', 'temperature must be between 0.0 and 1.0');
+      throw new UnscopedValidationError(lit`TemperatureOutOfRange`, 'temperature must be between 0.0 and 1.0');
     }
 
     // Validate topP range if provided
     if (props.topP !== undefined && (props.topP < 0.0 || props.topP > 1.0)) {
-      throw new UnscopedValidationError('TopPOutOfRange', 'topP must be between 0.0 and 1.0');
+      throw new UnscopedValidationError(lit`TopPOutOfRange`, 'topP must be between 0.0 and 1.0');
     }
   }
 

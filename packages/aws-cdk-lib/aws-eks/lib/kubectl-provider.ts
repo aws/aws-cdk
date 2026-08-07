@@ -5,6 +5,7 @@ import { Cluster } from './cluster';
 import * as iam from '../../aws-iam';
 import type { RemovalPolicy } from '../../core';
 import { Duration, Stack, NestedStack, Names, CfnCondition, Fn, Aws, ValidationError, RemovalPolicies } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 import { KubectlFunction } from '../../custom-resource-handlers/dist/aws-eks/kubectl-provider.generated';
 import * as cr from '../../custom-resources';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
@@ -138,11 +139,11 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
     const cluster = props.cluster;
 
     if (!cluster.kubectlRole) {
-      throw new ValidationError('KubectlroleDefined', '"kubectlRole" is not defined, cannot issue kubectl commands against this cluster', this);
+      throw new ValidationError(lit`KubectlroleDefined`, '"kubectlRole" is not defined, cannot issue kubectl commands against this cluster', this);
     }
 
     if (cluster.kubectlPrivateSubnets && !cluster.kubectlSecurityGroup) {
-      throw new ValidationError('KubectlSecurityGroupRequiredKubectl', '"kubectlSecurityGroup" is required if "kubectlSubnets" is specified', this);
+      throw new ValidationError(lit`KubectlSecurityGroupRequiredKubectl`, '"kubectlSecurityGroup" is required if "kubectlSubnets" is specified', this);
     }
 
     const memorySize = cluster.kubectlMemory ? cluster.kubectlMemory.toMebibytes() : 1024;

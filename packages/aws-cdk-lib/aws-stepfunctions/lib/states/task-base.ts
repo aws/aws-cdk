@@ -4,6 +4,7 @@ import { renderJsonPath, State } from './state';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import type { StateGraph } from '../state-graph';
@@ -324,7 +325,7 @@ export abstract class TaskStateBase extends State implements INextable {
 
   private taskMetric(prefix: string | undefined, suffix: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (prefix === undefined) {
-      throw new cdk.UnscopedValidationError('TaskDoesNotExposeMetrics', 'Task does not expose metrics. Use the \'metric()\' function to add metrics.');
+      throw new cdk.UnscopedValidationError(lit`TaskDoesNotExposeMetrics`, 'Task does not expose metrics. Use the \'metric()\' function to add metrics.');
     }
     return this.metric(prefix + suffix, props);
   }

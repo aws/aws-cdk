@@ -10,6 +10,7 @@ import type { IResource } from '../../core';
 import { ArnFormat, Names, PhysicalName, Resource, Stack, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IExtensionRef, ExtensionReference } from '../../interfaces/generated/aws-appconfig-interfaces.generated';
 
@@ -408,12 +409,12 @@ export class Extension extends Resource implements IExtension {
   public static fromExtensionArn(scope: Construct, id: string, extensionArn: string): IExtension {
     const parsedArn = Stack.of(scope).splitArn(extensionArn, ArnFormat.SLASH_RESOURCE_NAME);
     if (!parsedArn.resourceName) {
-      throw new ValidationError('InvalidExtensionArnFormat', `Missing required /$/{extensionId}//$/{extensionVersionNumber} from configuration profile ARN: ${parsedArn.resourceName}`, scope);
+      throw new ValidationError(lit`InvalidExtensionArnFormat`, `Missing required /$/{extensionId}//$/{extensionVersionNumber} from configuration profile ARN: ${parsedArn.resourceName}`, scope);
     }
 
     const resourceName = parsedArn.resourceName.split('/');
     if (resourceName.length != 2 || !resourceName[0] || !resourceName[1]) {
-      throw new ValidationError('MissingExtensionArnParameters', 'Missing required parameters for extension ARN: format should be /$/{extensionId}//$/{extensionVersionNumber}', scope);
+      throw new ValidationError(lit`MissingExtensionArnParameters`, 'Missing required parameters for extension ARN: format should be /$/{extensionId}//$/{extensionVersionNumber}', scope);
     }
 
     const extensionId = resourceName[0];

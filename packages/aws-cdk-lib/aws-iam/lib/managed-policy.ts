@@ -13,13 +13,15 @@ import { PolicyDocument } from './policy-document';
 import type { PolicyStatement } from './policy-statement';
 import type { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { ArnPrincipal } from './principals';
-import { undefinedIfEmpty } from './private/util';
 import type { IRole } from './role';
 import type { IUser } from './user';
-import { Arn, ArnFormat, Aws, Resource, Stack, ValidationError, Lazy } from '../../core';
-import { getCustomizeRolesConfig, memoizedGetter, PolicySynthesizer } from '../../core/lib/helpers-internal';
+import { Arn, ArnFormat, Aws, Resource, Stack, ValidationError, Lazy, Token } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, getCustomizeRolesConfig, memoizedGetter, PolicySynthesizer } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { DetachedConstruct } from '../../core/lib/private/detached-construct';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -114,6 +116,7 @@ export interface ManagedPolicyProps {
  *
  */
 @propertyInjectable
+@noBoxStackTraces
 export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantable {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.ManagedPolicy';
@@ -220,7 +223,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
       return this._precreatedPolicy.managedPolicyArn;
     }
     if (!this._resource) {
-      throw new ValidationError('CannotAccessManagedPolicyArn', 'Cannot access managedPolicyArn when synthesis is prevented', this);
+      throw new ValidationError(lit`CannotAccessManagedPolicyArn`, 'Cannot access managedPolicyArn when synthesis is prevented', this);
     }
     return this.getResourceArnAttribute(this._resource.ref, {
       region: '', // IAM is global in each partition
@@ -246,7 +249,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
       return this.node.id;
     }
     if (!this._resource) {
-      throw new ValidationError('CannotAccessManagedPolicyName', 'Cannot access managedPolicyName when synthesis is prevented', this);
+      throw new ValidationError(lit`CannotAccessManagedPolicyName`, 'Cannot access managedPolicyName when synthesis is prevented', this);
     }
     return this.getResourceNameAttribute(Stack.of(this).splitArn(this._resource.ref, ArnFormat.SLASH_RESOURCE_NAME).resourceName!);
   }
@@ -267,9 +270,9 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
 
   public readonly grantPrincipal: IPrincipal;
 
-  private readonly roles = new Array<IRoleRef>();
-  private readonly users = new Array<IUserRef>();
-  private readonly groups = new Array<IGroupRef>();
+  private readonly roles: IArrayBox<IRoleRef> = Box.fromArray();
+  private readonly users: IArrayBox<IUserRef> = Box.fromArray();
+  private readonly groups: IArrayBox<IGroupRef> = Box.fromArray();
   private readonly _precreatedPolicy?: IManagedPolicy;
 
   constructor(scope: Construct, id: string, props: ManagedPolicyProps = {}) {
@@ -296,9 +299,9 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
         managedPolicyName: this.physicalName,
         description: this.description,
         path: this.path,
-        roles: undefinedIfEmpty(() => this.roles.map(r => r.roleRef.roleName)),
-        users: undefinedIfEmpty(() => this.users.map(u => u.userRef.userName)),
-        groups: undefinedIfEmpty(() => this.groups.map(g => g.groupRef.groupName)),
+        roles: Token.asList(this.roles.map(r => r.roleRef.roleName)),
+        users: Token.asList(this.users.map(u => u.userRef.userName)),
+        groups: Token.asList(this.groups.map(g => g.groupRef.groupName)),
       });
     }
 
@@ -377,7 +380,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
     if (result.length === 0 && this._precreatedPolicy) {
       PolicySynthesizer.getOrCreate(this).addManagedPolicy(this.node.path, {
         policyStatements: this.document.toJSON()?.Statement,
-        roles: this.roles.map(role => role.node.path),
+        roles: this.roles.get().map(role => role.node.path),
       });
     }
     return result;
@@ -396,7 +399,7 @@ class ManagedPolicyGrantPrincipal implements IPrincipal {
     // cf. https://github.com/aws/aws-cdk/issues/32980
     const arn = Lazy.string({
       produce: () => {
-        throw new ValidationError('GrantOperationNeedsAddResource', 'This grant operation needs to add a resource policy so needs access to a principal. Grant permissions to a Role or User, instead of a ManagedPolicy.', _managedPolicy);
+        throw new ValidationError(lit`GrantOperationNeedsAddResource`, 'This grant operation needs to add a resource policy so needs access to a principal. Grant permissions to a Role or User, instead of a ManagedPolicy.', _managedPolicy);
       },
     });
     this.policyFragment = new ArnPrincipal(arn).policyFragment;
@@ -407,7 +410,7 @@ class ManagedPolicyGrantPrincipal implements IPrincipal {
     // This property is referenced to add policy statements as a trust policy.
     // We should fail because a managed policy cannot be used as a principal of a policy document.
     // cf. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html#Principal_specifying
-    throw new ValidationError('GrantOperationNeedsAddResource', 'This grant operation needs to add a resource policy so needs access to a principal. Grant permissions to a Role or User, instead of a ManagedPolicy.', this._managedPolicy);
+    throw new ValidationError(lit`GrantOperationNeedsAddResource`, 'This grant operation needs to add a resource policy so needs access to a principal. Grant permissions to a Role or User, instead of a ManagedPolicy.', this._managedPolicy);
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
