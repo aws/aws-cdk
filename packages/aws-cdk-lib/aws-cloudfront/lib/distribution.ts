@@ -385,7 +385,7 @@ export class Distribution extends Resource implements IDistribution {
     addConstructMetadata(this, props);
 
     if (props.certificate) {
-      const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateRef.certificateId, ArnFormat.SLASH_RESOURCE_NAME).region;
+      const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateRef.certificateArn, ArnFormat.SLASH_RESOURCE_NAME).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
         throw new ValidationError(lit`DistributionCertificateMustBeInUsEast1`, `Distribution certificates must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`, this);
       }
@@ -393,6 +393,20 @@ export class Distribution extends Resource implements IDistribution {
       if ((props.domainNames ?? []).length === 0) {
         Annotations.of(this).addWarningV2('@aws-cdk/aws-cloudfront:emptyDomainNames', 'No domain names are specified. You will need to specify it after running associate-alias CLI command manually. See the "Moving an alternate domain name to a different distribution" section of module\'s README for more info.');
       }
+    }
+
+    if (props.minimumProtocolVersion && !props.certificate) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-cloudfront:minimumProtocolVersionWithoutCertificate',
+        "Ignoring 'minimumProtocolVersion': it has no effect without a custom 'certificate'. The distribution uses the CloudFront default certificate, whose security policy is fixed at TLSv1.",
+      );
+    }
+
+    if (props.sslSupportMethod && !props.certificate) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-cloudfront:sslSupportMethodWithoutCertificate',
+        "Ignoring 'sslSupportMethod': it has no effect without a custom 'certificate'. The distribution uses the CloudFront default certificate, which is served to all viewers.",
+      );
     }
 
     this.httpVersion = props.httpVersion ?? HttpVersion.HTTP2;
@@ -870,7 +884,7 @@ export class Distribution extends Resource implements IDistribution {
     const sslSupportMethod = sslSupportMethodProp ?? SSLMethod.SNI;
 
     return {
-      acmCertificateArn: certificate.certificateRef.certificateId,
+      acmCertificateArn: certificate.certificateRef.certificateArn,
       minimumProtocolVersion: minimumProtocolVersion,
       sslSupportMethod: sslSupportMethod,
     };
