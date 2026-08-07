@@ -114,10 +114,10 @@ export interface SynchronizationConfiguration {
   readonly importDataRules: ImportDataRule[];
 
   /**
-   * Number of days after last access before cached data expires.
+   * How long after last access before cached data expires.
    * Must be a whole number of days between 1 and 365.
    */
-  readonly daysAfterLastAccess: Duration;
+  readonly dataExpiration: Duration;
 }
 
 /**
@@ -499,10 +499,10 @@ export class FileSystem extends FileSystemBase {
       importDataRules: config.importDataRules.map(rule => ({
         prefix: rule.prefix,
         sizeLessThan: rule.sizeLessThan.toBytes(),
-        trigger: rule.trigger ?? ImportDataRuleTrigger.ON_FILE_ACCESS,
+        trigger: rule.trigger ?? ImportDataRuleTrigger.ON_DIRECTORY_FIRST_ACCESS,
       })),
       expirationDataRules: [{
-        daysAfterLastAccess: config.daysAfterLastAccess.toDays(),
+        daysAfterLastAccess: config.dataExpiration.toDays(),
       }],
     };
   }
@@ -610,7 +610,7 @@ export class FileSystem extends FileSystemBase {
       'S3 Files requires bucket versioning to be enabled. Ensure versioning is enabled on the bucket before deploying.');
 
     if (props.synchronizationConfiguration) {
-      const { importDataRules, daysAfterLastAccess } = props.synchronizationConfiguration;
+      const { importDataRules, dataExpiration } = props.synchronizationConfiguration;
 
       if (importDataRules.length < 1 || importDataRules.length > 10) {
         throw new UnscopedValidationError(lit`ImportDataRulesCountInvalid`, 'importDataRules must contain between 1 and 10 rules');
@@ -622,9 +622,9 @@ export class FileSystem extends FileSystemBase {
         }
       }
 
-      const days = daysAfterLastAccess.toDays();
+      const days = dataExpiration.toDays();
       if (days < 1 || days > 365 || !Number.isInteger(days)) {
-        throw new UnscopedValidationError(lit`DaysAfterLastAccessInvalid`, 'daysAfterLastAccess must be a whole number of days between 1 and 365');
+        throw new UnscopedValidationError(lit`DataExpirationInvalid`, 'dataExpiration must be a whole number of days between 1 and 365');
       }
     }
   }

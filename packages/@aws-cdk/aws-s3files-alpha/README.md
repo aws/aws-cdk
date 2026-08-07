@@ -87,7 +87,7 @@ const fileSystem = new s3files.FileSystem(this, 'MyFileSystem', {
       sizeLessThan: Size.gibibytes(1),
       trigger: s3files.ImportDataRuleTrigger.ON_FILE_ACCESS,
     }],
-    daysAfterLastAccess: Duration.days(30),
+    dataExpiration: Duration.days(30),
   },
 });
 ```

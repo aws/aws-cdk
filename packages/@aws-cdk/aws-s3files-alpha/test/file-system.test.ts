@@ -151,7 +151,7 @@ describe('FileSystem', () => {
         },
         synchronizationConfiguration: {
           importDataRules: [],
-          daysAfterLastAccess: Duration.days(30),
+          dataExpiration: Duration.days(30),
         },
       });
     }).toThrow(/importDataRules must contain between 1 and 10 rules/);
@@ -171,13 +171,13 @@ describe('FileSystem', () => {
         },
         synchronizationConfiguration: {
           importDataRules: [{ prefix: 'data', sizeLessThan: Size.gibibytes(1) }],
-          daysAfterLastAccess: Duration.days(30),
+          dataExpiration: Duration.days(30),
         },
       });
     }).toThrow(/importDataRule prefix must be empty or end with/);
   });
 
-  test('validates daysAfterLastAccess range', () => {
+  test('validates dataExpiration range', () => {
     const stack = new Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const bucket = new s3.Bucket(stack, 'Bucket', { versioned: true });
@@ -191,10 +191,10 @@ describe('FileSystem', () => {
         },
         synchronizationConfiguration: {
           importDataRules: [{ prefix: '', sizeLessThan: Size.gibibytes(1) }],
-          daysAfterLastAccess: Duration.days(400),
+          dataExpiration: Duration.days(400),
         },
       });
-    }).toThrow(/daysAfterLastAccess must be a whole number of days between 1 and 365/);
+    }).toThrow(/dataExpiration must be a whole number of days between 1 and 365/);
   });
 
   test('imports from fileSystemArn', () => {
@@ -372,7 +372,7 @@ describe('FileSystem', () => {
           sizeLessThan: Size.gibibytes(1),
           trigger: ImportDataRuleTrigger.ON_FILE_ACCESS,
         }],
-        daysAfterLastAccess: Duration.days(30),
+        dataExpiration: Duration.days(30),
       },
     });
 
@@ -385,6 +385,36 @@ describe('FileSystem', () => {
           Trigger: 'ON_FILE_ACCESS',
         }],
         ExpirationDataRules: [{ DaysAfterLastAccess: 30 }],
+      },
+    });
+  });
+
+  test('importDataRule trigger defaults to ON_DIRECTORY_FIRST_ACCESS', () => {
+    const stack = new Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+    const bucket = new s3.Bucket(stack, 'Bucket', { versioned: true });
+
+    new FileSystem(stack, 'FileSystem', {
+      bucket,
+      vpcConfiguration: {
+        vpc,
+        vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+      },
+      synchronizationConfiguration: {
+        importDataRules: [{
+          prefix: '',
+          sizeLessThan: Size.gibibytes(1),
+        }],
+        dataExpiration: Duration.days(30),
+      },
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::S3Files::FileSystem', {
+      SynchronizationConfiguration: {
+        ImportDataRules: [{
+          Trigger: 'ON_DIRECTORY_FIRST_ACCESS',
+        }],
       },
     });
   });
