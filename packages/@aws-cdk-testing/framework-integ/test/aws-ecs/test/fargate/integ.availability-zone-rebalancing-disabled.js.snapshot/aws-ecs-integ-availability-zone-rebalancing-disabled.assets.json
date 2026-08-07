@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "fb04eba93198d91c189d10c37e83b31352e6df3ebe642551b66552a14a2cd311": {
+      "displayName": "aws-ecs-integ-availability-zone-rebalancing-disabled Template",
+      "source": {
+        "path": "aws-ecs-integ-availability-zone-rebalancing-disabled.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-180a9947": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "fb04eba93198d91c189d10c37e83b31352e6df3ebe642551b66552a14a2cd311.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
