@@ -234,7 +234,10 @@ const IGNORE_RULES = new Set([
   'W9013',
 
   // WHAT: value type tracking (parameter default should be a string)
-  // WHY: When the value is imported, it is considered not a string.
+  // WHY: This is a valid finding, but CDK can synthesize Fn::ImportValue as a parameter default when resolving
+  // a cross-stack reference. CloudFormation does not support intrinsic functions in the Parameters section.
+  // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
+  // https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/intrinsic-function-reference.html
   // <https://github.com/aws-cloudformation/cloudformation-validate/issues/194>
   'E2001',
 ]);
