@@ -2,12 +2,11 @@ import * as crypto from 'crypto';
 import * as path from 'path';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
-import { Annotations } from './annotations';
 import type { AssetOptions } from './assets';
 import { AssetHashType, FileAssetPackaging } from './assets';
 import type { BundlingOptions } from './bundling';
 import { BundlingFileAccess, BundlingOutput, PERF_BUNDLING_SRC_SYM } from './bundling';
-import { AssumptionError, ValidationError } from './errors';
+import { AssumptionError, UnscopedValidationError, ValidationError } from './errors';
 import type { FingerprintOptions } from './fs';
 import { FileSystem, SymlinkFollowMode } from './fs';
 import { clearLargeFileFingerprintCache } from './fs/fingerprint';
@@ -639,27 +638,17 @@ function findSingleFile(scope: Construct, directory: string, archiveOnly: boolea
     const file = path.join(directory, content[0]);
     const extension = getExtension(content[0]).toLowerCase();
 
-    // Use lstat so we can detect a symbolic link. Depending on the follow mode
-    // a symlink must not be followed. Since it is the only entry in the bundling
-    // output directory, dropping it would leave no usable output, so we warn and
-    // fail rather than silently zipping a directory that only holds a link we
-    // were told not to follow.
+    // Depending on the follow mode a symlink must not be followed. Throw an
+    // error if we cannot follow the symlink because we are using a mode
+    // that blocks certain symlinks from being followed.
     const stat = fs.lstatSync(file);
     if (stat.isSymbolicLink() && !shouldFollowBundledSymlink(directory, file, follow)) {
-      const mode = follow ?? SymlinkFollowMode.EXTERNAL;
-      Annotations.of(scope).addWarningV2(
-        '@aws-cdk/core:bundlingOutputExternalSymlink',
-        `Bundling output '${file}' is a symbolic link that is not followed under symlink follow mode '${mode}' and will not be used as a single-file asset.`,
-      );
-      throw new ValidationError(
-        lit`BundlingOutputUnfollowedSymlink`,
-        `bundling output ${JSON.stringify(file)} is a symbolic link that is not followed under symlink follow mode ${JSON.stringify(mode)}, leaving no usable bundling output; set \`follow\` to a mode that follows this link or emit a regular file`,
-        scope,
+      throw new UnscopedValidationError(
+        lit`BundlingOutputSymlinkForbidden`,
+        `bundling output ${JSON.stringify(file)} is a symbolic link that is forbidden due to follow mode ${JSON.stringify(follow ?? SymlinkFollowMode.EXTERNAL)}. Set \`follow\` to a mode that will follow symlinks (ALWAYS or EXTERNAL) or emit a regular file`,
       );
     }
 
-    // `statSync` follows the link so symlinks that resolve to a regular file
-    // (internal links, or external links under ALWAYS/EXTERNAL) are still valid.
     if (fs.statSync(file).isFile() && (!archiveOnly || ARCHIVE_EXTENSIONS.includes(extension))) {
       return file;
     }
@@ -669,28 +658,20 @@ function findSingleFile(scope: Construct, directory: string, archiveOnly: boolea
 }
 
 /**
- * Whether a symbolic link produced as bundling output should be followed when
- * classifying and staging it as a single-file asset.
+ * Whether a symbolic link produced as bundling output should be followed
+ * and staging it as a single-file asset.
  *
- * Mirrors the symlink follow semantics used elsewhere: ALWAYS follows everything,
- * EXTERNAL and BLOCK_EXTERNAL depend on whether the target is inside the output
- * directory, and NEVER follows nothing. A dangling or unresolvable link is never
- * followed.
+ * Currently we only reject a symlink as something we should not follow
+ * when using BLOCK_EXTERNAL and the symlink is not an internal path
  */
 function shouldFollowBundledSymlink(directory: string, file: string, follow?: SymlinkFollowMode): boolean {
   const mode = follow ?? SymlinkFollowMode.EXTERNAL;
-  if (mode === SymlinkFollowMode.NEVER) {
+  const resolvedTarget = resolveLinkTarget(file, fs.readlinkSync(file));
+  const internal = isInternalPath(path.resolve(directory), resolvedTarget);
+  if (mode == SymlinkFollowMode.BLOCK_EXTERNAL && !internal) {
     return false;
   }
-
-  const resolvedTarget = resolveLinkTarget(file, fs.readlinkSync(file));
-  if (mode === SymlinkFollowMode.ALWAYS) {
-    return true;
-  }
-
-  const internal = isInternalPath(path.resolve(directory), resolvedTarget);
-  // EXTERNAL follows only external links; BLOCK_EXTERNAL follows only internal links.
-  return mode === SymlinkFollowMode.EXTERNAL ? !internal : internal;
+  return true;
 }
 
 interface BundledAsset {

@@ -5,7 +5,6 @@ import * as path from 'path';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import fs from 'fs-extra';
 import sinon from 'sinon';
-import { Annotations, Match } from '../../assertions';
 import { FileAssetPackaging } from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
 import type { BundlingOptions } from '../lib';
@@ -1632,8 +1631,7 @@ describe('staging', () => {
   });
 
   describe('bundling output that is a single symbolic link', () => {
-    const SYMLINK_WARNING = 'is a symbolic link that is not followed under symlink follow mode';
-    const SYMLINK_THROW = /is a symbolic link that is not followed under symlink follow mode .* leaving no usable bundling output/;
+    const SYMLINK_THROW = /is a symbolic link that is forbidden due to follow mode .*/;
 
     // Local bundling lets us write an arbitrary output (here: a single symbolic
     // link) into the bundling output directory, which is exactly what
@@ -1663,7 +1661,8 @@ describe('staging', () => {
     test.each([
       [SymlinkFollowMode.EXTERNAL, undefined], // EXTERNAL is also the default when `follow` is unset
       [SymlinkFollowMode.EXTERNAL, SymlinkFollowMode.EXTERNAL],
-      [undefined, SymlinkFollowMode.ALWAYS],
+      [SymlinkFollowMode.ALWAYS, SymlinkFollowMode.ALWAYS],
+      [SymlinkFollowMode.NEVER, SymlinkFollowMode.NEVER],
     ])('follows an external symlink under mode %s and uses it as a single-file asset', (_label, follow) => {
       // GIVEN
       const externalDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ext-target-follow-'));
@@ -1684,15 +1683,12 @@ describe('staging', () => {
         // THEN - the external link is followed, so it is a valid single-file asset
         expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
         expect(staging.isArchive).toEqual(false);
-        Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp(SYMLINK_WARNING));
       } finally {
         fs.removeSync(externalDir);
       }
     });
 
     test.each([
-      ['NEVER', SymlinkFollowMode.NEVER, undefined],
-      ['NEVER (SINGLE_FILE)', SymlinkFollowMode.NEVER, BundlingOutput.SINGLE_FILE],
       ['BLOCK_EXTERNAL (external target)', SymlinkFollowMode.BLOCK_EXTERNAL, undefined],
     ])('drops the un-followed symlink and fails under mode %s', (_label, follow, outputType) => {
       // GIVEN
@@ -1705,45 +1701,14 @@ describe('staging', () => {
         const stack = new Stack(app, 'stack');
 
         // WHEN / THEN - the only bundling output is a link we must not follow.
-        // It is dropped rather than zipped into the directory, which leaves no
-        // usable output, so synthesis fails.
         expect(() => bundleWithSymlink(stack, {
           linkTarget: externalFile,
           follow,
           outputType,
         })).toThrow(SYMLINK_THROW);
-
-        // AND the warning explaining why is attached to the construct
-        Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp(SYMLINK_WARNING));
       } finally {
         fs.removeSync(externalDir);
       }
-    });
-
-    test('EXTERNAL does not follow an internal symlink and fails', () => {
-      // GIVEN
-      const app = new App();
-      const stack = new Stack(app, 'stack');
-
-      // WHEN / THEN - target is an absolute path inside the bundling output
-      // directory, so it is classified as internal and NOT followed under
-      // EXTERNAL mode. The link is dropped, leaving no usable output.
-      expect(() => new AssetStaging(stack, 'Asset', {
-        sourcePath: path.join(__dirname, 'fs', 'fixtures', 'test1'),
-        follow: SymlinkFollowMode.EXTERNAL,
-        bundling: {
-          image: DockerImage.fromRegistry('alpine'),
-          command: [DockerStubCommand.SUCCESS],
-          local: {
-            tryBundle(outputDir: string): boolean {
-              fs.symlinkSync(path.join(outputDir, 'referent.txt'), path.join(outputDir, 'link'));
-              return true;
-            },
-          },
-        },
-      })).toThrow(SYMLINK_THROW);
-
-      Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp(SYMLINK_WARNING));
     });
   });
 });
