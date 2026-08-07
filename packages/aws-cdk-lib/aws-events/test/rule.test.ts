@@ -1220,6 +1220,157 @@ describe('rule', () => {
   });
 });
 
+describe('rule tagging', () => {
+  test('tags applied via Tags.of(rule).add() appear in synthesized template', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const rule = new Rule(stack, 'MyRule', {
+      schedule: Schedule.rate(cdk.Duration.minutes(5)),
+    });
+    cdk.Tags.of(rule).add('Environment', 'Production');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      Tags: Match.arrayWith([
+        Match.objectLike({ Key: 'Environment', Value: 'Production' }),
+      ]),
+    });
+  });
+
+  test('multiple tags can be applied to a rule', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const rule = new Rule(stack, 'MyRule', {
+      schedule: Schedule.rate(cdk.Duration.minutes(5)),
+    });
+    cdk.Tags.of(rule).add('Environment', 'Production');
+    cdk.Tags.of(rule).add('Team', 'Platform');
+    cdk.Tags.of(rule).add('CostCenter', '12345');
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Events::Rule', {
+      Tags: Match.arrayWith([
+        Match.objectLike({ Key: 'Environment', Value: 'Production' }),
+      ]),
+    });
+    template.hasResourceProperties('AWS::Events::Rule', {
+      Tags: Match.arrayWith([
+        Match.objectLike({ Key: 'Team', Value: 'Platform' }),
+      ]),
+    });
+    template.hasResourceProperties('AWS::Events::Rule', {
+      Tags: Match.arrayWith([
+        Match.objectLike({ Key: 'CostCenter', Value: '12345' }),
+      ]),
+    });
+  });
+
+  test('tags are inherited from parent constructs', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+
+    // WHEN
+    cdk.Tags.of(stack).add('StackTag', 'StackValue');
+    const rule = new Rule(stack, 'MyRule', {
+      schedule: Schedule.rate(cdk.Duration.minutes(5)),
+    });
+    cdk.Tags.of(rule).add('RuleTag', 'RuleValue');
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Events::Rule', {
+      Tags: Match.arrayWith([
+        Match.objectLike({ Key: 'StackTag', Value: 'StackValue' }),
+      ]),
+    });
+    template.hasResourceProperties('AWS::Events::Rule', {
+      Tags: Match.arrayWith([
+        Match.objectLike({ Key: 'RuleTag', Value: 'RuleValue' }),
+      ]),
+    });
+  });
+
+  test('tags can be removed via Tags.of(rule).remove()', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+
+    // WHEN
+    cdk.Tags.of(stack).add('InheritedTag', 'InheritedValue');
+    cdk.Tags.of(stack).add('KeepTag', 'KeepValue');
+    const rule = new Rule(stack, 'MyRule', {
+      schedule: Schedule.rate(cdk.Duration.minutes(5)),
+    });
+    cdk.Tags.of(rule).remove('InheritedTag');
+
+    // THEN - InheritedTag should be removed, but KeepTag should still be present
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Events::Rule', {
+      Tags: Match.arrayWith([
+        Match.objectLike({ Key: 'KeepTag', Value: 'KeepValue' }),
+      ]),
+    });
+    // Verify InheritedTag is not present
+    template.hasResourceProperties('AWS::Events::Rule', {
+      Tags: Match.not(Match.arrayWith([
+        Match.objectLike({ Key: 'InheritedTag' }),
+      ])),
+    });
+  });
+
+  test('rule with event pattern can be tagged', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const rule = new Rule(stack, 'MyRule', {
+      eventPattern: {
+        source: ['aws.ec2'],
+      },
+    });
+    cdk.Tags.of(rule).add('Environment', 'Production');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      EventPattern: {
+        source: ['aws.ec2'],
+      },
+      Tags: Match.arrayWith([
+        Match.objectLike({ Key: 'Environment', Value: 'Production' }),
+      ]),
+    });
+  });
+
+  test('rule with targets can be tagged', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const resource = new Construct(stack, 'Resource');
+
+    // WHEN
+    const rule = new Rule(stack, 'MyRule', {
+      schedule: Schedule.rate(cdk.Duration.minutes(5)),
+      targets: [new SomeTarget('T1', resource)],
+    });
+    cdk.Tags.of(rule).add('Environment', 'Production');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      Targets: Match.arrayWith([
+        Match.objectLike({ Id: 'T1' }),
+      ]),
+      Tags: Match.arrayWith([
+        Match.objectLike({ Key: 'Environment', Value: 'Production' }),
+      ]),
+    });
+  });
+});
+
 class SomeTarget implements IRuleTarget {
   public constructor(private readonly id?: string, private readonly resource?: IConstruct) {
   }
