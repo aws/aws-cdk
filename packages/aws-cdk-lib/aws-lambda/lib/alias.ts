@@ -12,7 +12,7 @@ import type { AutoScalingOptions, IScalableFunctionAttribute } from './scalable-
 import * as appscaling from '../../aws-applicationautoscaling';
 import type * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import { ArnFormat } from '../../core';
+import { ArnFormat, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -318,7 +318,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       return undefined;
     }
 
-    if (props.provisionedConcurrentExecutions <= 0) {
+    if (!Token.isUnresolved(props.provisionedConcurrentExecutions) && props.provisionedConcurrentExecutions <= 0) {
       throw new ValidationError(lit`ProvisionedConcurrentExecutionsValueGreater`, 'provisionedConcurrentExecutions must have value greater than or equal to 1', this);
     }
 
