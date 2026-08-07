@@ -117,8 +117,24 @@ async function onDelete(bucketName?: string) {
  * If the Custom Resource is ever deleted before the bucket, it must be because
  * `autoDeleteObjects` has been switched to false, in which case the tag would have
  * been removed before we get to this Delete event.
+ *
+ * If we get an AccessDenied error, it means the bucket policy (which grants s3:GetBucket*)
+ * has already been removed during the CFN update phase. This only happens when
+ * `autoDeleteObjects` was disabled, confirming the bucket should not be emptied.
  */
 async function isBucketTaggedForDeletion(bucketName: string) {
-  const response = await s3.getBucketTagging({ Bucket: bucketName });
-  return response.TagSet?.some(tag => tag.Key === AUTO_DELETE_OBJECTS_TAG && tag.Value === 'true');
+  try {
+    const response = await s3.getBucketTagging({ Bucket: bucketName });
+    return response.TagSet?.some(tag => tag.Key === AUTO_DELETE_OBJECTS_TAG && tag.Value === 'true');
+  } catch (error: any) {
+    // If we cannot read the tags due to a permissions error, the bucket policy
+    // (which grants s3:GetBucket*) has already been removed. This only happens
+    // when autoDeleteObjects was disabled – meaning the tag was already removed too.
+    // Treat as "not tagged for deletion" to skip the bucket empty operation.
+    if (error.name === 'AccessDenied' || error.name === 'AccessControlListNotSupported') {
+      console.log(`Could not check tags for bucket '${bucketName}' due to ${error.name}, assuming not tagged for deletion.`);
+      return false;
+    }
+    throw error;
+  }
 }
