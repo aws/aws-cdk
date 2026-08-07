@@ -65,6 +65,7 @@ class ParentStack extends cdk.Stack {
 interface ChildStackProps extends cdk.StackProps {
   readonly subZoneName: string;
   readonly assumeRoleRegion?: string;
+  readonly useIntermediateRole?: boolean;
 }
 
 class ChildStack extends cdk.Stack {
@@ -84,10 +85,28 @@ class ChildStack extends cdk.Stack {
     });
     const delegationRole = iam.Role.fromRoleArn(this, 'DelegationRole', delegationRoleArn);
 
+    let intermediateRole: iam.IRole | undefined;
+    if (props.useIntermediateRole) {
+      intermediateRole = new iam.Role(this, 'IntermediateRole', {
+        assumedBy: new iam.AccountPrincipal(crossAccount),
+        inlinePolicies: {
+          AssumeDelegationRole: new iam.PolicyDocument({
+            statements: [
+              new iam.PolicyStatement({
+                actions: ['sts:AssumeRole'],
+                resources: [delegationRoleArn],
+              }),
+            ],
+          }),
+        },
+      });
+    }
+
     new route53.CrossAccountZoneDelegationRecord(this, 'delegate', {
       delegatedZone: subZone,
       parentHostedZoneName: parentZoneName,
       delegationRole,
+      intermediateRole,
       assumeRoleRegion: props.assumeRoleRegion,
     });
   }
@@ -125,11 +144,21 @@ const childOptInStackWithAssumeRoleRegion = new ChildStack(app, 'child-opt-in-st
   subZoneName: 'sub3.uniqueexample.com',
 });
 
+const childStackWithIntermediateRole = new ChildStack(app, 'child-stack-with-intermediate-role', {
+  env: {
+    account: crossAccount,
+    region: 'us-east-1',
+  },
+  subZoneName: 'sub4.uniqueexample.com',
+  useIntermediateRole: true,
+});
+
 childStack.addDependency(parentStack);
 childOptInStack.addDependency(parentStack);
 childOptInStackWithAssumeRoleRegion.addDependency(parentStack);
+childStackWithIntermediateRole.addDependency(parentStack);
 
 new IntegTest(app, 'Route53CrossAccountInteg', {
-  testCases: [childStack, childOptInStack, childOptInStackWithAssumeRoleRegion],
+  testCases: [childStack, childOptInStack, childOptInStackWithAssumeRoleRegion, childStackWithIntermediateRole],
   diffAssets: true,
 });
