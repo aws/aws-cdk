@@ -465,7 +465,7 @@ export interface StandardOutputConfigurationProps {
   /**
    * The availability zone where the router output is located.
    *
-   * @default - the stack's region default AZ
+   * @default - assigned by the MediaConnect service
    */
   readonly availabilityZone?: string;
 }

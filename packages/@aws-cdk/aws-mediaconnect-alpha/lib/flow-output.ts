@@ -374,7 +374,7 @@ export class OutputConfiguration {
       destination: input.destination,
       port: input.port,
       smoothingLatency: input.smoothingLatency?.toMilliseconds(),
-      vpcInterfaceAttachment: input.vpcInterfaceAttachmentName ? { vpcInterfaceName: input.vpcInterfaceAttachmentName } : undefined,
+      vpcInterfaceAttachment: toVpcInterfaceAttachment(input.vpcInterfaceAttachmentName),
     });
   }
 
@@ -387,7 +387,7 @@ export class OutputConfiguration {
       destination: input.destination,
       port: input.port,
       smoothingLatency: input.smoothingLatency?.toMilliseconds(),
-      vpcInterfaceAttachment: input.vpcInterfaceAttachmentName ? { vpcInterfaceName: input.vpcInterfaceAttachmentName } : undefined,
+      vpcInterfaceAttachment: toVpcInterfaceAttachment(input.vpcInterfaceAttachmentName),
     });
   }
 
@@ -400,7 +400,7 @@ export class OutputConfiguration {
       destination: input.destination,
       port: input.port,
       smoothingLatency: input.smoothingLatency?.toMilliseconds(),
-      vpcInterfaceAttachment: input.vpcInterfaceAttachmentName ? { vpcInterfaceName: input.vpcInterfaceAttachmentName } : undefined,
+      vpcInterfaceAttachment: toVpcInterfaceAttachment(input.vpcInterfaceAttachmentName),
     });
   }
 
@@ -416,7 +416,7 @@ export class OutputConfiguration {
       maxLatency: input.maxLatency.toMilliseconds(),
       cidrAllowList: input.cidrAllowList,
       staticKeyEncryption: input.encryption,
-      vpcInterfaceAttachment: input.vpcInterfaceAttachmentName ? { vpcInterfaceName: input.vpcInterfaceAttachmentName } : undefined,
+      vpcInterfaceAttachment: toVpcInterfaceAttachment(input.vpcInterfaceAttachmentName),
     });
   }
 
@@ -431,7 +431,7 @@ export class OutputConfiguration {
       maxLatency: input.maxLatency.toMilliseconds(),
       cidrAllowList: input.cidrAllowList,
       staticKeyEncryption: input.encryption,
-      vpcInterfaceAttachment: input.vpcInterfaceAttachmentName ? { vpcInterfaceName: input.vpcInterfaceAttachmentName } : undefined,
+      vpcInterfaceAttachment: toVpcInterfaceAttachment(input.vpcInterfaceAttachmentName),
     });
   }
 
@@ -446,7 +446,7 @@ export class OutputConfiguration {
       minLatency: input.minLatency?.toMilliseconds(),
       streamId: input.streamId,
       srtPasswordEncryption: input.encryption,
-      vpcInterfaceAttachment: input.vpcInterfaceAttachmentName ? { vpcInterfaceName: input.vpcInterfaceAttachmentName } : undefined,
+      vpcInterfaceAttachment: toVpcInterfaceAttachment(input.vpcInterfaceAttachmentName),
     });
   }
 
@@ -460,7 +460,7 @@ export class OutputConfiguration {
       minLatency: input.minLatency?.toMilliseconds(),
       cidrAllowList: input.cidrAllowList,
       srtPasswordEncryption: input.encryption,
-      vpcInterfaceAttachment: input.vpcInterfaceAttachmentName ? { vpcInterfaceName: input.vpcInterfaceAttachmentName } : undefined,
+      vpcInterfaceAttachment: toVpcInterfaceAttachment(input.vpcInterfaceAttachmentName),
     });
   }
 
@@ -578,6 +578,13 @@ export class FlowOutput extends FlowOutputBase {
 
     this.flowOutputArn = resource.attrOutputArn;
   }
+}
+
+/**
+ * Convert an optional VPC interface name to the CFN attachment property shape.
+ */
+function toVpcInterfaceAttachment(name?: string): CfnFlowOutput.VpcInterfaceAttachmentProperty | undefined {
+  return name ? { vpcInterfaceName: name } : undefined;
 }
 
 /**

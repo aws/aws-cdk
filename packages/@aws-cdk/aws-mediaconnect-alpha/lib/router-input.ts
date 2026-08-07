@@ -713,7 +713,7 @@ export interface StandardConfigurationProps {
   /**
    * The availability zone where the router input is located.
    *
-   * @default - the stack's region default AZ
+   * @default - assigned by the MediaConnect service
    */
   readonly availabilityZone?: string;
 }
@@ -735,7 +735,7 @@ export interface FailoverConfigurationProps {
   /**
    * The availability zone where the router input is located.
    *
-   * @default - the stack's region default AZ
+   * @default - assigned by the MediaConnect service
    */
   readonly availabilityZone?: string;
 }
@@ -753,7 +753,7 @@ export interface MergeConfigurationProps {
   /**
    * The availability zone where the router input is located.
    *
-   * @default - the stack's region default AZ
+   * @default - assigned by the MediaConnect service
    */
   readonly availabilityZone?: string;
 }
@@ -1470,4 +1470,3 @@ export class RouterInput extends RouterInputBase implements IRouterInput {
     this.grants = RouterInputGrants.fromRouterInput(this);
   }
 }
-
