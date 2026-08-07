@@ -19,7 +19,9 @@ const logConfig: appsync.LogConfig = {
 
 const api = new appsync.GraphqlApi(stack, 'JsResolverApi', {
   name: 'JsResolverApi',
-  schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.js-resolver.graphql')),
+  definition: {
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.js-resolver.graphql')),
+  },
   logConfig,
 });
 

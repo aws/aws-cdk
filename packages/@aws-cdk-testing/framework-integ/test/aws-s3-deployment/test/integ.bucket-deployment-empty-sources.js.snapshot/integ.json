@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "integ-test-bucket-deployment-empty-sources/DefaultTest": {
+      "stacks": [
+        "test-bucket-deployment-empty-sources"
+      ],
+      "assertionStack": "integ-test-bucket-deployment-empty-sources/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestbucketdeploymentemptysourcesDefaultTestDeployAssertC4C02C78"
+    }
+  },
+  "minimumCliVersion": "2.1123.0"
+}
