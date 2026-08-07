@@ -1,0 +1,417 @@
+{
+ "Resources": {
+  "SharedGatewayServiceRole279B0EC3": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":bedrock-agentcore:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":gateway/policy-integ-gateway*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Service role for Bedrock AgentCore Gateway policy-integ-gateway"
+   }
+  },
+  "SharedGatewayA02A06B9": {
+   "Type": "AWS::BedrockAgentCore::Gateway",
+   "Properties": {
+    "AuthorizerType": "NONE",
+    "Description": "Shared gateway referenced by policies in this stack",
+    "Name": "policy-integ-gateway",
+    "ProtocolConfiguration": {
+     "Mcp": {
+      "Instructions": "Default gateway to connect to external MCP tools",
+      "SearchType": "SEMANTIC",
+      "SupportedVersions": [
+       "2025-03-26"
+      ]
+     }
+    },
+    "ProtocolType": "MCP",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "SharedGatewayServiceRole279B0EC3",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "BasicPolicyEngine05C42F5C": {
+   "Type": "AWS::BedrockAgentCore::PolicyEngine",
+   "Properties": {
+    "Description": "Basic policy engine for integration testing",
+    "Name": "basic_engine"
+   }
+  },
+  "RawCedarPolicy334AC182": {
+   "Type": "AWS::BedrockAgentCore::Policy",
+   "Properties": {
+    "Definition": {
+     "Cedar": {
+      "Statement": {
+       "Fn::Join": [
+        "",
+        [
+         "permit(\n  principal == AgentCore::IamEntity::\"arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":iam::",
+         {
+          "Ref": "AWS::AccountId"
+         },
+         ":role/TestAgentRole\",\n  action,\n  resource is AgentCore::Gateway\n);"
+        ]
+       ]
+      }
+     }
+    },
+    "Description": "Raw Cedar definition with constrained principal",
+    "Name": "raw_cedar_policy",
+    "PolicyEngineId": {
+     "Fn::GetAtt": [
+      "BasicPolicyEngine05C42F5C",
+      "PolicyEngineId"
+     ]
+    },
+    "ValidationMode": "FAIL_ON_ANY_FINDINGS"
+   },
+   "DependsOn": [
+    "BasicPolicyEngine05C42F5C"
+   ]
+  },
+  "PolicyEngineKeyF386A3BD": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "Description": "Encryption key for PolicyEngine",
+    "EnableKeyRotation": true,
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "EncryptedPolicyEngineBC14AF35": {
+   "Type": "AWS::BedrockAgentCore::PolicyEngine",
+   "Properties": {
+    "Description": "PolicyEngine with custom KMS encryption",
+    "EncryptionKeyArn": {
+     "Fn::GetAtt": [
+      "PolicyEngineKeyF386A3BD",
+      "Arn"
+     ]
+    },
+    "Name": "encrypted_engine",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "Test"
+     },
+     {
+      "Key": "Purpose",
+      "Value": "Integration"
+     }
+    ]
+   }
+  },
+  "BuilderSpecificPolicyCDF7CA29": {
+   "Type": "AWS::BedrockAgentCore::Policy",
+   "Properties": {
+    "Definition": {
+     "Cedar": {
+      "Statement": {
+       "Fn::Join": [
+        "",
+        [
+         "permit(\n  principal == AgentCore::OAuthUser::\"user123\",\n  action,\n  resource == AgentCore::Gateway::\"",
+         {
+          "Fn::GetAtt": [
+           "SharedGatewayA02A06B9",
+           "GatewayArn"
+          ]
+         },
+         "\"\n);"
+        ]
+       ]
+      }
+     }
+    },
+    "Description": "Permit a specific OAuth user to use the shared gateway",
+    "Name": "builder_specific",
+    "PolicyEngineId": {
+     "Fn::GetAtt": [
+      "EncryptedPolicyEngineBC14AF35",
+      "PolicyEngineId"
+     ]
+    },
+    "ValidationMode": "FAIL_ON_ANY_FINDINGS"
+   },
+   "DependsOn": [
+    "EncryptedPolicyEngineBC14AF35"
+   ]
+  },
+  "BuilderIamPrincipalPolicyF07300E4": {
+   "Type": "AWS::BedrockAgentCore::Policy",
+   "Properties": {
+    "Definition": {
+     "Cedar": {
+      "Statement": {
+       "Fn::Join": [
+        "",
+        [
+         "permit(\n  principal == AgentCore::IamEntity::\"arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":iam::",
+         {
+          "Ref": "AWS::AccountId"
+         },
+         ":role/AnotherTestAgentRole\",\n  action,\n  resource is AgentCore::Gateway\n);"
+        ]
+       ]
+      }
+     }
+    },
+    "Description": "Permit a specific IAM role to use any gateway",
+    "Name": "builder_iam_principal",
+    "PolicyEngineId": {
+     "Fn::GetAtt": [
+      "EncryptedPolicyEngineBC14AF35",
+      "PolicyEngineId"
+     ]
+    },
+    "ValidationMode": "FAIL_ON_ANY_FINDINGS"
+   },
+   "DependsOn": [
+    "EncryptedPolicyEngineBC14AF35"
+   ]
+  },
+  "ForbidPolicyC7EF841B": {
+   "Type": "AWS::BedrockAgentCore::Policy",
+   "Properties": {
+    "Definition": {
+     "Cedar": {
+      "Statement": {
+       "Fn::Join": [
+        "",
+        [
+         "forbid(\n  principal == AgentCore::OAuthUser::\"banned-user\",\n  action,\n  resource == AgentCore::Gateway::\"",
+         {
+          "Fn::GetAtt": [
+           "SharedGatewayA02A06B9",
+           "GatewayArn"
+          ]
+         },
+         "\"\n);"
+        ]
+       ]
+      }
+     }
+    },
+    "Description": "Forbid a specific OAuth user from using the shared gateway",
+    "Name": "forbid_on_gateway",
+    "PolicyEngineId": {
+     "Fn::GetAtt": [
+      "EncryptedPolicyEngineBC14AF35",
+      "PolicyEngineId"
+     ]
+    },
+    "ValidationMode": "FAIL_ON_ANY_FINDINGS"
+   },
+   "DependsOn": [
+    "EncryptedPolicyEngineBC14AF35"
+   ]
+  },
+  "IgnoreFindingsPolicyBF4464E3": {
+   "Type": "AWS::BedrockAgentCore::Policy",
+   "Properties": {
+    "Definition": {
+     "Cedar": {
+      "Statement": "permit(\n  principal == AgentCore::OAuthUser::\"admin\",\n  action,\n  resource is AgentCore::Gateway\n);"
+     }
+    },
+    "Description": "Policy that opts out of validation findings",
+    "Name": "ignore_findings",
+    "PolicyEngineId": {
+     "Fn::GetAtt": [
+      "EncryptedPolicyEngineBC14AF35",
+      "PolicyEngineId"
+     ]
+    },
+    "ValidationMode": "IGNORE_ALL_FINDINGS"
+   },
+   "DependsOn": [
+    "EncryptedPolicyEngineBC14AF35"
+   ]
+  },
+  "AutoNamedEngine3770C869": {
+   "Type": "AWS::BedrockAgentCore::PolicyEngine",
+   "Properties": {
+    "Description": "PolicyEngine with auto-generated name",
+    "Name": "PolicyIntegTestStackAutoNamedEngine7605637D"
+   }
+  },
+  "AutoNamedEngineAutoPolicy1FA031607": {
+   "Type": "AWS::BedrockAgentCore::Policy",
+   "Properties": {
+    "Definition": {
+     "Cedar": {
+      "Statement": "permit(\n  principal == AgentCore::OAuthUser::\"reader\",\n  action,\n  resource is AgentCore::Gateway\n);"
+     }
+    },
+    "Description": "First policy added via addPolicy()",
+    "Name": "PolicyIntegTestStackmedEngineAutoPolicy1A8824D45",
+    "PolicyEngineId": {
+     "Fn::GetAtt": [
+      "AutoNamedEngine3770C869",
+      "PolicyEngineId"
+     ]
+    },
+    "ValidationMode": "FAIL_ON_ANY_FINDINGS"
+   },
+   "DependsOn": [
+    "AutoNamedEngine3770C869"
+   ]
+  },
+  "AutoNamedEngineAutoPolicy23A360CE1": {
+   "Type": "AWS::BedrockAgentCore::Policy",
+   "Properties": {
+    "Definition": {
+     "Cedar": {
+      "Statement": {
+       "Fn::Join": [
+        "",
+        [
+         "forbid(\n  principal == AgentCore::OAuthUser::\"auto-banned-user\",\n  action,\n  resource == AgentCore::Gateway::\"",
+         {
+          "Fn::GetAtt": [
+           "SharedGatewayA02A06B9",
+           "GatewayArn"
+          ]
+         },
+         "\"\n);"
+        ]
+       ]
+      }
+     }
+    },
+    "Description": "Second policy added via addPolicy() (forbid)",
+    "Name": "PolicyIntegTestStackmedEngineAutoPolicy2C10D7246",
+    "PolicyEngineId": {
+     "Fn::GetAtt": [
+      "AutoNamedEngine3770C869",
+      "PolicyEngineId"
+     ]
+    },
+    "ValidationMode": "FAIL_ON_ANY_FINDINGS"
+   },
+   "DependsOn": [
+    "AutoNamedEngineAutoPolicy1FA031607",
+    "AutoNamedEngine3770C869"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
