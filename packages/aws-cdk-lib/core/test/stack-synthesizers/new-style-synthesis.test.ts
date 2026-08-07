@@ -105,6 +105,31 @@ describe('new style synthesis', () => {
     expect(template?.Rules?.CheckBootstrapVersion).toEqual(undefined);
   });
 
+  test('version check is not added to manifest if disabled', () => {
+    // GIVEN - use a separate app to avoid interference from beforeEach's Stack
+    const myapp = new App({
+      context: {
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
+      },
+    });
+    const mystack = new Stack(myapp, 'Stack3', {
+      synthesizer: new DefaultStackSynthesizer({
+        generateBootstrapVersionRule: false,
+      }),
+    });
+    new CfnResource(mystack, 'Resource', {
+      type: 'Some::Resource',
+    });
+
+    // THEN
+    const asm = myapp.synth();
+    const stackArtifact = asm.getStackArtifact('Stack3');
+    expect(stackArtifact.requiresBootstrapStackVersion).toEqual(undefined);
+
+    const manifestArtifact = getAssetManifest(asm);
+    expect(manifestArtifact.requiresBootstrapStackVersion).toEqual(undefined);
+  });
+
   test('can set role additional options tags on default stack synthesizer', () => {
     // GIVEN
     stack = new Stack(app, 'SessionTagsStack', {
