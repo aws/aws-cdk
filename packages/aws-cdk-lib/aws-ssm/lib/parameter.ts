@@ -493,6 +493,13 @@ export interface StringParameterLookupOptions {
    * @default - no additional cache key
    */
   readonly additionalCacheKey?: string;
+
+  /**
+   * The region where the parameter store value should be looked up.
+   *
+   * @default - the region of the stack
+   */
+  readonly region?: string;
 }
 
 /**
@@ -628,6 +635,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       provider: cxschema.ContextProvider.SSM_PARAMETER_PROVIDER,
       props: {
         parameterName,
+        ...(options?.region !== undefined ? { region: options.region } : {}),
       },
       dummyValue: defaultValue || `dummy-value-for-${parameterName}`,
       mustExist: defaultValue === undefined,
