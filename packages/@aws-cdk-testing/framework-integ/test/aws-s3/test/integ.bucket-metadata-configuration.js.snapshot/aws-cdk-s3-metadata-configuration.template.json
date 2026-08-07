@@ -140,13 +140,7 @@
      "InventoryTableConfiguration": {
       "ConfigurationState": "ENABLED",
       "EncryptionConfiguration": {
-       "KmsKeyArn": {
-        "Fn::GetAtt": [
-         "MetadataKey159764F6",
-         "Arn"
-        ]
-       },
-       "SseAlgorithm": "aws:kms"
+       "SseAlgorithm": "AES256"
       }
      },
      "JournalTableConfiguration": {

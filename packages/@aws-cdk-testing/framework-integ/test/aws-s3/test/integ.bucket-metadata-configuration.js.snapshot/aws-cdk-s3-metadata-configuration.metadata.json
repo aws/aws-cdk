@@ -88,6 +88,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "DefaultsBucketB310ECDE"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketMetadataConfiguration"
+      }
     }
   ],
   "/aws-cdk-s3-metadata-configuration/AnnotationRole/Resource": [
@@ -130,6 +136,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "FullBucket05AD2891"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketMetadataConfiguration"
+      }
     }
   ],
   "/aws-cdk-s3-metadata-configuration/Exports/Output{\"Ref\":\"DefaultsBucketB310ECDE\"}": [

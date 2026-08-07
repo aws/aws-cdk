@@ -190,11 +190,11 @@ describe('S3 Mixins', () => {
       });
       const mixin = new BucketMetadataConfiguration({
         journalTable: {
-          recordExpiration: s3.MetadataRecordExpiration.ENABLED,
+          recordExpiration: true,
           recordExpirationAfter: cdk.Duration.days(7),
         },
-        inventoryTable: { configurationState: s3.MetadataConfigurationState.ENABLED },
-        annotationTable: { configurationState: s3.MetadataConfigurationState.ENABLED, role },
+        inventoryTable: { enabled: true },
+        annotationTable: { enabled: true, role },
       });
 
       mixin.applyTo(bucket);
@@ -208,10 +208,10 @@ describe('S3 Mixins', () => {
     test('fails when the annotation table is enabled without a role', () => {
       const bucket = new s3.CfnBucket(stack, 'Bucket');
       const mixin = new BucketMetadataConfiguration({
-        annotationTable: { configurationState: s3.MetadataConfigurationState.ENABLED },
+        annotationTable: { enabled: true },
       });
 
-      expect(() => mixin.applyTo(bucket)).toThrow(/'role' must be specified when the annotation table 'configurationState' is ENABLED/);
+      expect(() => mixin.applyTo(bucket)).toThrow(/'role' must be specified when the annotation table is enabled/);
     });
 
     test('does not support non-S3 constructs', () => {

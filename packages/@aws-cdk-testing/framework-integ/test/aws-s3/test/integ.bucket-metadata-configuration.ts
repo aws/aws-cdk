@@ -58,16 +58,16 @@ annotationRole.addToPolicy(new iam.PolicyStatement({
 const fullBucket = new s3.Bucket(stack, 'FullBucket', {
   metadataConfiguration: {
     journalTable: {
-      recordExpiration: s3.MetadataRecordExpiration.ENABLED,
+      recordExpiration: true,
       recordExpirationAfter: cdk.Duration.days(7),
       encryption: s3.MetadataTableEncryption.kms(key),
     },
+    // Deliberately SSE-S3 while the other two tables use SSE-KMS, so both
+    // encryption modes are covered by a single deployment.
     inventoryTable: {
-      configurationState: s3.MetadataConfigurationState.ENABLED,
-      encryption: s3.MetadataTableEncryption.kms(key),
+      encryption: s3.MetadataTableEncryption.s3Managed(),
     },
     annotationTable: {
-      configurationState: s3.MetadataConfigurationState.ENABLED,
       encryption: s3.MetadataTableEncryption.kms(key),
       role: annotationRole,
     },

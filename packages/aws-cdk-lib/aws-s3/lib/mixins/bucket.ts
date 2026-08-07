@@ -6,7 +6,7 @@ import { ConstructReflection } from '../../../core/lib/helpers-internal';
 import { Mixin } from '../../../core/lib/mixins';
 import { lit } from '../../../core/lib/private/literal-string';
 import { AutoDeleteObjectsProvider } from '../../../custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated';
-import { BlockPublicAccess, type BlockPublicAccessOptions, type MetadataConfiguration, MetadataConfigurationState, MetadataRecordExpiration } from '../bucket';
+import { BlockPublicAccess, type BlockPublicAccessOptions, type MetadataConfiguration } from '../bucket';
 import * as perms from '../perms';
 import { CfnBucket } from '../s3.generated';
 
@@ -169,43 +169,58 @@ export class BucketMetadataConfiguration extends Mixin {
     if (!this.supports(construct)) return;
 
     const journalTable = this.metadataConfiguration.journalTable ?? {};
-    const recordExpiration = journalTable.recordExpiration ?? MetadataRecordExpiration.DISABLED;
-    const expirationEnabled = recordExpiration === MetadataRecordExpiration.ENABLED;
+    const expirationEnabled = journalTable.recordExpiration ?? false;
     const days = journalTable.recordExpirationAfter?.toDays();
 
     if (expirationEnabled && days === undefined) {
-      throw new ValidationError(lit`JournalTableRecordExpirationAfterRequired`, "'recordExpirationAfter' must be specified when 'recordExpiration' is ENABLED", construct);
+      throw new ValidationError(lit`JournalTableRecordExpirationAfterRequired`, "'recordExpirationAfter' must be specified when 'recordExpiration' is enabled", construct);
     }
     if (!expirationEnabled && days !== undefined) {
-      throw new ValidationError(lit`JournalTableRecordExpirationDisabled`, "'recordExpirationAfter' can only be specified when 'recordExpiration' is ENABLED", construct);
+      throw new ValidationError(lit`JournalTableRecordExpirationDisabled`, "'recordExpirationAfter' can only be specified when 'recordExpiration' is enabled", construct);
     }
-    if (days !== undefined && !Token.isUnresolved(days) && (days < 1 || days > 2147483647)) {
-      throw new ValidationError(lit`JournalTableRecordExpirationAfterOutOfRange`, `'recordExpirationAfter' must be between 1 and 2147483647 days, got ${days}`, construct);
+    // S3 retains journal table records for a minimum of 7 days.
+    if (days !== undefined && !Token.isUnresolved(days) && (days < 7 || days > 2147483647)) {
+      throw new ValidationError(lit`JournalTableRecordExpirationAfterOutOfRange`, `'recordExpirationAfter' must be between 7 and 2147483647 days, got ${days}`, construct);
     }
 
     // S3 rejects an enabled annotation table without a role at deploy time, even though
     // CloudFormation marks the property as optional.
     const annotationTable = this.metadataConfiguration.annotationTable;
-    if (annotationTable?.configurationState === MetadataConfigurationState.ENABLED && annotationTable.role === undefined) {
-      throw new ValidationError(lit`AnnotationTableRoleRequired`, "'role' must be specified when the annotation table 'configurationState' is ENABLED", construct);
+    const annotationEnabled = annotationTable?.enabled ?? true;
+    if (annotationTable && annotationEnabled && annotationTable.role === undefined) {
+      throw new ValidationError(lit`AnnotationTableRoleRequired`, "'role' must be specified when the annotation table is enabled", construct);
     }
+
+    const inventoryTable = this.metadataConfiguration.inventoryTable;
+    const destination = this.metadataConfiguration.destination;
 
     construct.metadataConfiguration = {
       journalTableConfiguration: {
         recordExpiration: {
-          expiration: recordExpiration,
+          expiration: expirationEnabled ? 'ENABLED' : 'DISABLED',
           days,
         },
         encryptionConfiguration: journalTable.encryption?._render(),
+        tableArn: journalTable.tableArn,
+        tableName: journalTable.tableName,
       },
-      inventoryTableConfiguration: this.metadataConfiguration.inventoryTable ? {
-        configurationState: this.metadataConfiguration.inventoryTable.configurationState,
-        encryptionConfiguration: this.metadataConfiguration.inventoryTable.encryption?._render(),
+      inventoryTableConfiguration: inventoryTable ? {
+        configurationState: (inventoryTable.enabled ?? true) ? 'ENABLED' : 'DISABLED',
+        encryptionConfiguration: inventoryTable.encryption?._render(),
+        tableArn: inventoryTable.tableArn,
+        tableName: inventoryTable.tableName,
       } : undefined,
       annotationTableConfiguration: annotationTable ? {
-        configurationState: annotationTable.configurationState,
+        configurationState: annotationEnabled ? 'ENABLED' : 'DISABLED',
         encryptionConfiguration: annotationTable.encryption?._render(),
         role: annotationTable.role?.roleRef.roleArn,
+        tableArn: annotationTable.tableArn,
+        tableName: annotationTable.tableName,
+      } : undefined,
+      destination: destination ? {
+        tableBucketType: destination.tableBucketType,
+        tableBucketArn: destination.tableBucket?.tableBucketRef.tableBucketArn,
+        tableNamespace: destination.tableNamespace,
       } : undefined,
     };
   }
