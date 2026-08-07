@@ -112,7 +112,7 @@ new mediaconnect.FlowSource(stack, 'SecondarySource', {
 });
 
 // Output 1: Router Output (flow → router)
-const routerFlowOutput = flow.addOutput('RouterFlowOutput', mediaconnect.OutputConfiguration.router());
+const routerFlowOutput = flow.addOutput('RouterFlowOutput', { output: mediaconnect.OutputConfiguration.router() });
 
 const routerNetworkInterface = new mediaconnect.RouterNetworkInterface(stack, 'RouterNI', {
   routerNetworkInterfaceName: 'dual-source-router-ni',
@@ -165,7 +165,7 @@ new mediaconnect.FlowOutput(stack, 'VpcOutput', {
   output: mediaconnect.OutputConfiguration.rist({
     destination: '10.0.1.100',
     port: 6000,
-    vpcInterfaceAttachment: outputVpcInterface,
+    vpcInterfaceAttachmentName: outputVpcInterface.name,
   }),
 });
 

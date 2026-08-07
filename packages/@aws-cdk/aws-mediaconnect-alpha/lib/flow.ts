@@ -163,7 +163,32 @@ export interface IFlow extends IResource, IFlowRef {
   /**
    * Add an output to this flow
    */
-  addOutput(id: string, outputConfig: OutputConfiguration): IFlowOutput;
+  addOutput(id: string, options: AddFlowOutputOptions): IFlowOutput;
+}
+
+/**
+ * Options for adding an output to a flow.
+ */
+export interface AddFlowOutputOptions {
+  /**
+   * The output configuration.
+   */
+  readonly output: OutputConfiguration;
+  /**
+   * The name of the flow output.
+   * @default - auto-generated
+   */
+  readonly flowOutputName?: string;
+  /**
+   * A description of the output.
+   * @default - no description
+   */
+  readonly description?: string;
+  /**
+   * Whether the output is enabled.
+   * @default State.ENABLED
+   */
+  readonly outputStatus?: State;
 }
 
 /**
@@ -1088,8 +1113,8 @@ abstract class FlowBase extends Resource implements IFlow {
   /**
    * Add an output to this flow
    */
-  public addOutput(id: string, outputConfig: OutputConfiguration): IFlowOutput {
-    const protocol = outputConfig._bind().protocol;
+  public addOutput(id: string, options: AddFlowOutputOptions): IFlowOutput {
+    const protocol = options.output._bind().protocol;
 
     if (protocol === 'ndi-speed-hq') {
       if (this._ndiState !== undefined && this._ndiState !== State.ENABLED) {
@@ -1125,7 +1150,10 @@ abstract class FlowBase extends Resource implements IFlow {
 
     return new FlowOutput(this, id, {
       flow: this,
-      output: outputConfig,
+      output: options.output,
+      flowOutputName: options.flowOutputName,
+      description: options.description,
+      outputStatus: options.outputStatus,
     });
   }
 
