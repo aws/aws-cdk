@@ -966,7 +966,8 @@ export class RouterOutput extends RouterOutputBase implements IRouterOutput {
     const configBind = props.configuration._bind(this, routerOutputArn);
 
     // Check to see if region specified is also compatible with AZ configured for some of the Router Outputs configurations
-    if (configBind.availabilityZone && !configBind.availabilityZone.startsWith(targetRegion)) {
+    if (configBind.availabilityZone && !Token.isUnresolved(configBind.availabilityZone) && !Token.isUnresolved(targetRegion)
+      && !configBind.availabilityZone.startsWith(targetRegion)) {
       throw new ValidationError(lit`RouterOutputAzRegionMismatch`, `Availability zone '${configBind.availabilityZone}' must be within region '${targetRegion}'`, this);
     }
 

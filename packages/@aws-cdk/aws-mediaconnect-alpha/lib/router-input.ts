@@ -1427,7 +1427,8 @@ export class RouterInput extends RouterInputBase implements IRouterInput {
     const configBind = props.configuration._bind(this, routerInputArn);
 
     // Validate AZ matches region if provided
-    if (configBind.availabilityZone && !configBind.availabilityZone.startsWith(targetRegion)) {
+    if (configBind.availabilityZone && !Token.isUnresolved(configBind.availabilityZone) && !Token.isUnresolved(targetRegion)
+      && !configBind.availabilityZone.startsWith(targetRegion)) {
       throw new ValidationError(lit`RouterInputAzRegionMismatch`, `Availability zone '${configBind.availabilityZone}' must be within region '${targetRegion}'`, this);
     }
 
