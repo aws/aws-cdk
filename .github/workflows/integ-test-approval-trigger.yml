@@ -1,0 +1,26 @@
+# Stage 1: Trigger signal for automated integration tests on PR approval.
+#
+# This workflow does NOTHING except complete successfully when a PR review
+# is submitted with an "approved" state. Its completion triggers the
+# privileged Stage 2 workflow via `workflow_run`.
+#
+# SECURITY: This workflow runs the fork's code (pull_request_review uses
+# the merge commit). It MUST NOT upload artifacts, set outputs, or pass
+# any data to Stage 2. Stage 2 derives all context from GitHub-controlled
+# metadata (workflow_run.head_sha) and API lookups.
+name: Integration Test Approval Trigger
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+permissions:
+  contents: read
+
+jobs:
+  trigger-signal:
+    runs-on: ubuntu-latest
+    if: github.event.review.state == 'approved'
+    steps:
+      - name: Signal only
+        run: echo "Approval review submitted — triggering Stage 2 via workflow_run"
