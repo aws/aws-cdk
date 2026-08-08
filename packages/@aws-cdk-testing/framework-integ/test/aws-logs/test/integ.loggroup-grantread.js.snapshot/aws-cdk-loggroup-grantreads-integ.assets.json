@@ -1,15 +1,16 @@
 {
-  "version": "22.0.0",
+  "version": "53.0.0",
   "files": {
-    "f5ee43894e543af0834d9c1eaa47e8ac9913473f9a8fd8203c3743cad0db8b34": {
+    "cf2e00e1a46ddbd96d47c6c646a50cca85f0c6126877a01fd13bf93b37932faf": {
+      "displayName": "aws-cdk-loggroup-grantreads-integ Template",
       "source": {
         "path": "aws-cdk-loggroup-grantreads-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-1a09adf9": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f5ee43894e543af0834d9c1eaa47e8ac9913473f9a8fd8203c3743cad0db8b34.json",
+          "objectKey": "cf2e00e1a46ddbd96d47c6c646a50cca85f0c6126877a01fd13bf93b37932faf.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
