@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Template } from '../../../assertions';
+import { Template, Match } from '../../../assertions';
 import * as batch from '../../../aws-batch';
 import * as ec2 from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
@@ -586,6 +586,61 @@ test('supports passing jobQueueArn as JsonPath or JSONata', () => {
           },
         },
       ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('scopes down permissions to job definition', () => {
+  const submitJob = new BatchSubmitJob(stack, 'Submit', {
+    jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
+    jobName: 'my-job',
+    jobQueueArn: batchJobQueue.jobQueueArn,
+  });
+
+  new sfn.StateMachine(stack, 'SM', {
+    definitionBody: sfn.DefinitionBody.fromChainable(submitJob),
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([
+        {
+          Action: 'batch:SubmitJob',
+          Effect: 'Allow',
+          Resource: [
+            {
+              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':batch:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':job-definition/', {
+                'Fn::Select': [
+                  1,
+                  {
+                    'Fn::Split': [
+                      '/',
+                      {
+                        'Fn::Select': [
+                          5,
+                          {
+                            'Fn::Split': [
+                              ':',
+                              { Ref: 'JobDefinition24FFE3ED' },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              }, ':*']],
+            },
+            {
+              'Fn::GetAtt': [
+                'JobQueueEE3AD499',
+                'JobQueueArn',
+              ],
+            },
+          ],
+        },
+      ]),
       Version: '2012-10-17',
     },
   });
