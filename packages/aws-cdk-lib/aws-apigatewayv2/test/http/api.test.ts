@@ -51,6 +51,7 @@ describe('HttpApi', () => {
 
     Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Stage', 0);
     expect(api.url).toBeUndefined();
+    expect(api.defaultStage).toBeUndefined();
   });
 
   test('default integration', () => {
