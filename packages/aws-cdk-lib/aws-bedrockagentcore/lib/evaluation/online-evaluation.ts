@@ -269,6 +269,7 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
         ? Object.entries(props.tags).map(([key, value]) => ({ key, value }))
         : undefined,
     });
+    this.node.defaultChild = resource;
 
     // Ensure the execution role's policies are created before the L1 resource,
     // because BedrockAgentCore validates role permissions at create time.
