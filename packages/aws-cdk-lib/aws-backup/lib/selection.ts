@@ -1,7 +1,7 @@
 import type { Construct } from 'constructs';
 import { CfnBackupSelection } from './backup.generated';
 import { BackupableResourcesCollector } from './backupable-resources-collector';
-import type { BackupResource } from './resource';
+import type { BackupResource, TagCondition } from './resource';
 import { TagOperation } from './resource';
 import * as iam from '../../aws-iam';
 import { Resource, Aspects, Token } from '../../core';
@@ -58,6 +58,17 @@ export interface BackupSelectionOptions {
    * @default false
    */
   readonly allowRestores?: boolean;
+
+  /**
+   * Tag conditions that apply to all resources in this selection.
+   * All conditions use AND logic — a resource must satisfy every condition to be selected.
+   *
+   * This is the preferred way to add tag-based filtering. Unlike `BackupResource.fromTag()`,
+   * it makes clear that tag conditions are selection-wide and not scoped to a single ARN.
+   *
+   * @default - no tag conditions
+   */
+  readonly tagConditions?: TagCondition[];
 }
 
 /**
@@ -97,7 +108,10 @@ export class BackupSelection extends Resource implements iam.IGrantable {
    */
   public readonly grantPrincipal: iam.IPrincipal;
 
-  private readonly listOfTags: IArrayBox<CfnBackupSelection.ConditionResourceTypeProperty> = Box.fromArray();
+  private readonly stringEquals: IArrayBox<CfnBackupSelection.ConditionParameterProperty> = Box.fromArray([]);
+  private readonly stringLike: IArrayBox<CfnBackupSelection.ConditionParameterProperty> = Box.fromArray([]);
+  private readonly stringNotEquals: IArrayBox<CfnBackupSelection.ConditionParameterProperty> = Box.fromArray([]);
+  private readonly stringNotLike: IArrayBox<CfnBackupSelection.ConditionParameterProperty> = Box.fromArray([]);
   private readonly resources: IArrayBox<string> = Box.fromArray([], { omitEmpty: false });
   private readonly backupableResourcesCollector = new BackupableResourcesCollector();
 
@@ -122,7 +136,24 @@ export class BackupSelection extends Resource implements iam.IGrantable {
       backupSelection: {
         iamRoleArn: role.roleArn,
         selectionName: props.backupSelectionName || this.node.id,
-        listOfTags: this.listOfTags,
+        // `conditions` is typed as `any` in the generated layer so CDK uses identity serialization
+        // (no camelCase→PascalCase key transformation). PascalCase keys are used here explicitly.
+        conditions: Box.combine(
+          {
+            se: this.stringEquals,
+            sl: this.stringLike,
+            sne: this.stringNotEquals,
+            snl: this.stringNotLike,
+          },
+          ({ se, sl, sne, snl }) => {
+            const conds: Record<string, Array<{ ConditionKey: string; ConditionValue: string }>> = {};
+            if (se.length > 0) conds.StringEquals = se.map(p => ({ ConditionKey: p.conditionKey!, ConditionValue: p.conditionValue! }));
+            if (sl.length > 0) conds.StringLike = sl.map(p => ({ ConditionKey: p.conditionKey!, ConditionValue: p.conditionValue! }));
+            if (sne.length > 0) conds.StringNotEquals = sne.map(p => ({ ConditionKey: p.conditionKey!, ConditionValue: p.conditionValue! }));
+            if (snl.length > 0) conds.StringNotLike = snl.map(p => ({ ConditionKey: p.conditionKey!, ConditionValue: p.conditionValue! }));
+            return Object.keys(conds).length > 0 ? conds : undefined;
+          },
+        ),
         resources: Token.asList(
           this.resources.derive(r => {
             const all = [...r, ...this.backupableResourcesCollector.resources];
@@ -139,15 +170,35 @@ export class BackupSelection extends Resource implements iam.IGrantable {
     for (const resource of props.resources) {
       this.addResource(resource);
     }
+    for (const condition of props.tagConditions ?? []) {
+      this.addTagCondition(condition);
+    }
+  }
+
+  private addTagCondition(condition: TagCondition) {
+    const param: CfnBackupSelection.ConditionParameterProperty = {
+      conditionKey: condition.key,
+      conditionValue: condition.value,
+    };
+    switch (condition.operation ?? TagOperation.STRING_EQUALS) {
+      case TagOperation.STRING_EQUALS:
+        this.stringEquals.push(param);
+        break;
+      case TagOperation.STRING_LIKE:
+        this.stringLike.push(param);
+        break;
+      case TagOperation.STRING_NOT_EQUALS:
+        this.stringNotEquals.push(param);
+        break;
+      case TagOperation.STRING_NOT_LIKE:
+        this.stringNotLike.push(param);
+        break;
+    }
   }
 
   private addResource(resource: BackupResource) {
     if (resource.tagCondition) {
-      this.listOfTags.push({
-        conditionKey: resource.tagCondition.key,
-        conditionType: resource.tagCondition.operation || TagOperation.STRING_EQUALS,
-        conditionValue: resource.tagCondition.value,
-      });
+      this.addTagCondition(resource.tagCondition);
     }
 
     if (resource.resource) {
@@ -160,7 +211,7 @@ export class BackupSelection extends Resource implements iam.IGrantable {
       });
       // Cannot push `this.backupableResourcesCollector.resources` to
       // `this.resources` here because it has not been evaluated yet.
-      // Will be concatenated to `this.resources` in a `Lazy.list`
+      // Will be concatenated to `this.resources` in the derive() call
       // in the constructor instead.
     }
   }
