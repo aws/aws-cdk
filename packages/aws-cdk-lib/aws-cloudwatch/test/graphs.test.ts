@@ -756,6 +756,19 @@ describe('Graphs', () => {
     }]);
   });
 
+  test('add liveData to singleValueWidget', () => {
+    const widget = new SingleValueWidget({
+      metrics: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+      liveData: true,
+    });
+
+    expect(widget.toJson()).toEqual([expect.objectContaining({
+      properties: expect.objectContaining({
+        liveData: true,
+      }),
+    })]);
+  });
+
   test('throws if setPeriodToTimeRange and sparkline is set on singleValueWidget', () => {
     // GIVEN
     new Stack();
