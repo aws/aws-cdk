@@ -374,6 +374,10 @@ export class Runtime extends RuntimeBase {
     }
 
     this.runtimeResource = new bedrockagentcore.CfnRuntime(this, 'Resource', cfnProps as bedrockagentcore.CfnRuntimeProps);
+    // Explicitly set the default child: the construct also creates an ExecutionRole
+    // child, so CDK does not auto-assign the Cfn resource as the default child, which
+    // breaks applyRemovalPolicy().
+    this.node.defaultChild = this.runtimeResource;
 
     // Add dependency on the role (for both custom and auto-created roles)
     // This ensures the Runtime waits for the role and all its policies (including ECR permissions) to be created

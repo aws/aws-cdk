@@ -580,5 +580,53 @@
         "...node internals..."
       ]
     }
-  ]
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime/RuntimeWithRemovalPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:info",
+      "data": "Container URI validation skipped as it contains unresolved CDK tokens. The URI will be validated at deployment time.",
+      "trace": [
+        "Annotations.addMessage (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:203:29)",
+        "Annotations.addInfo (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:139:14)",
+        "WrappedClass.validateContainerUri (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:619:47)",
+        "WrappedClass.renderAgentRuntimeArtifact (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:409:26)",
+        "Object.produce (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:289:79)",
+        "LazyAny.resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/lazy.js:278:66)",
+        "LazyAny.resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/lazy.js:323:32)",
+        "RememberingTokenResolver.resolveToken (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/resolvable.js:66:30)",
+        "RememberingTokenResolver.resolveToken (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:235:22)",
+        "resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:136:55)",
+        "Object.resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:57:48)",
+        "resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:151:51)",
+        "Object.resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:57:48)",
+        "RememberingTokenResolver.resolveToken (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/resolvable.js:68:32)",
+        "RememberingTokenResolver.resolveToken (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:235:22)",
+        "resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:136:55)",
+        "Object.resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:57:48)",
+        "resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:151:51)",
+        "Object.resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:57:48)",
+        "RememberingTokenResolver.resolveToken (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/resolvable.js:68:32)",
+        "RememberingTokenResolver.resolveToken (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:235:22)",
+        "resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:136:55)",
+        "Object.resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:57:48)",
+        "resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:151:51)",
+        "Object.resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:57:48)",
+        "resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:151:51)",
+        "findTokens (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:187:5)",
+        "findAllReferences (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:202:55)",
+        "resolveReferences (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:47:19)",
+        "prepareApp (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:44:36)",
+        "App.synth (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "Object.onceWrapper (node:events:634:26)",
+        "process.emit (node:events:519:28)"
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime/RuntimeWithRemovalPolicy/CfnRuntime": null
 }
