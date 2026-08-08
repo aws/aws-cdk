@@ -307,7 +307,7 @@ describe('function', () => {
     test('applies source arn condition if principal has conditions', () => {
       const stack = new cdk.Stack();
       const fn = newTestLambda(stack);
-      const sourceArn = 'arn:aws:s3:::my-bucket';
+      const sourceArn = 'arn:aws:sqs:us-east-1:111111111111:MyQueue';
       const service = 'my-service';
       const principal = new iam.PrincipalWithConditions(new iam.ServicePrincipal(service), {
         ArnLike: {
@@ -2431,6 +2431,32 @@ describe('function', () => {
     });
   });
 
+  test('event invoke config accepts tokens for maxEventAge and retryAttempts', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const maxEventAge = new cdk.CfnParameter(stack, 'MaxEventAge', { type: 'Number' });
+    const retryAttempts = new cdk.CfnParameter(stack, 'RetryAttempts', { type: 'Number' });
+
+    // WHEN
+    new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      maxEventAge: cdk.Duration.seconds(maxEventAge.valueAsNumber),
+      retryAttempts: retryAttempts.valueAsNumber,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
+      FunctionName: {
+        Ref: 'fn5FF616E3',
+      },
+      Qualifier: '$LATEST',
+      MaximumEventAgeInSeconds: { Ref: 'MaxEventAge' },
+      MaximumRetryAttempts: { Ref: 'RetryAttempts' },
+    });
+  });
+
   test('throws when calling configureAsyncInvoke on already configured function', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -4470,10 +4496,9 @@ test('test 2.87.0 version hash stability', () => {
       '@aws-cdk/aws-lambda:recognizeLayerVersion': true,
     },
   });
-  cdk.Validations.of(app).acknowledge({
-    id: 'CloudFormation-Validate::E3071',
-    reason: 'Node 99.x supports inline code',
-  });
+  cdk.Validations.of(app).acknowledge(
+    { id: 'CloudFormation-Validate::W3030', reason: 'Node 99.x is not valid, sure' },
+  );
   const stack = new cdk.Stack(app, 'Stack');
 
   // WHEN
