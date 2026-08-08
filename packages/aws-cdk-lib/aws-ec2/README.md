@@ -1115,6 +1115,17 @@ new ec2.InterfaceVpcEndpoint(this, 'VPC Endpoint', {
 });
 ```
 
+A Route 53 endpoint can be created the same way:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new ec2.InterfaceVpcEndpoint(this, 'Route53 VPC Endpoint', {
+  vpc,
+  service: ec2.InterfaceVpcEndpointAwsService.ROUTE53,
+});
+```
+
 For cross-region VPC endpoints, specify the `serviceRegion` parameter:
 
 ```ts

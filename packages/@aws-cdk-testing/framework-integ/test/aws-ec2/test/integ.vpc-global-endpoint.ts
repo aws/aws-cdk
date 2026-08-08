@@ -35,6 +35,10 @@ class Test extends cdk.Stack {
       service: ec2.InterfaceVpcEndpointAwsService.S3_MULTI_REGION_ACCESS_POINTS,
     });
 
+    vpc.addInterfaceEndpoint('Route53Endpoint', {
+      service: ec2.InterfaceVpcEndpointAwsService.ROUTE53,
+    });
+
     // Create an instance to test the endpoint
     /* const securityGroup = new ec2.SecurityGroup(this, 'MySecurityGroup', {
       vpc,

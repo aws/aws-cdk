@@ -1143,6 +1143,9 @@ describe('vpc endpoint', () => {
       vpc.addInterfaceEndpoint('Global CodeCatalyst API Endpoint', {
         service: InterfaceVpcEndpointAwsService.CODECATALYST,
       });
+      vpc.addInterfaceEndpoint('Global Route53 API Endpoint', {
+        service: InterfaceVpcEndpointAwsService.ROUTE53,
+      });
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
@@ -1150,6 +1153,9 @@ describe('vpc endpoint', () => {
       });
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         ServiceName: 'aws.api.global.codecatalyst',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.route53',
       });
     });
 
