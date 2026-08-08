@@ -1,17 +1,17 @@
 {
-  "/eks-cluster-removal-policy-integ/DefaultTest/DeployAssert": [
+  "/aws-cdk-eks-access-entry-iam-principal-integ/DefaultTest/DeployAssert": [
     {
       "type": "aws:cdk:creationStack",
       "data": [
         "new DeployAssert (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:39:38)",
         "new IntegTestCase (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
         "new IntegTest (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:158:1)",
+        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-access-entry-iam-principal.js:106:1)",
         "...node internals..."
       ]
     }
   ],
-  "/eks-cluster-removal-policy-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+  "/aws-cdk-eks-access-entry-iam-principal-integ/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
@@ -32,7 +32,7 @@
       ]
     }
   ],
-  "/eks-cluster-removal-policy-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+  "/aws-cdk-eks-access-entry-iam-principal-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
