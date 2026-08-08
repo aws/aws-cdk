@@ -3,7 +3,7 @@ import type { DomainNameReference, IDomainNameRef, IRestApiRef, IStageRef } from
 import { CfnDomainName } from './apigateway.generated';
 import type { BasePathMappingOptions } from './base-path-mapping';
 import { BasePathMapping } from './base-path-mapping';
-import type { IRestApi } from './restapi';
+import type { IpAddressType, IRestApi } from './restapi';
 import { EndpointType } from './restapi';
 import * as apigwv2 from '../../aws-apigatewayv2';
 import type { IBucket } from '../../aws-s3';
@@ -131,6 +131,12 @@ export interface DomainNameOptions {
   readonly endpointType?: EndpointType;
 
   /**
+   * The endpoint configuration for this domain name
+   * @default - see default values of nested attributes
+   */
+  readonly endpointConfiguration?: DomainNameEndpointConfiguration;
+
+  /**
    * The Transport Layer Security (TLS) version + cipher suite for this domain name.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-domainname.html
    * @default SecurityPolicy.TLS_1_2
@@ -198,6 +204,24 @@ export interface IDomainName extends IResource, IDomainNameRef {
    * @attribute DistributionHostedZoneId,RegionalHostedZoneId
    */
   readonly domainNameAliasHostedZoneId: string;
+}
+
+/**
+ * The endpoint configuration of an API's custom domain name.
+ *
+ * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-domainname-endpointconfiguration.html
+ */
+export interface DomainNameEndpointConfiguration {
+  /**
+   * The IP address types that can invoke this DomainName.
+   *
+   * Use ipv4 to allow only IPv4 addresses to invoke this DomainName, or use dualstack to allow both IPv4 and IPv6 addresses to invoke this DomainName. For the PRIVATE endpoint type, only dualstack is supported.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-ip-address-type.html
+   *
+   * @default DUAL_STACK for PRIVATE endpoint type; IPV4 otherwise.
+   */
+  readonly ipAddressType?: IpAddressType;
 }
 
 @propertyInjectable
@@ -318,12 +342,13 @@ export class DomainName extends Resource implements IDomainName {
       this.validateSecurityPolicyEndpointType(this.securityPolicy, this.endpointType);
     }
 
+    const endpointConfiguration = props.endpointConfiguration ?? {};
     const mtlsConfig = this.configureMTLS(props.mtls);
     const resource = new CfnDomainName(this, 'Resource', {
       domainName: props.domainName,
       certificateArn: edge ? props.certificate.certificateRef.certificateArn : undefined,
       regionalCertificateArn: edge ? undefined : props.certificate.certificateRef.certificateArn,
-      endpointConfiguration: { types: [this.endpointType] },
+      endpointConfiguration: { ...endpointConfiguration, types: [this.endpointType] },
       mutualTlsAuthentication: mtlsConfig,
       securityPolicy: props.securityPolicy,
       endpointAccessMode: props.endpointAccessMode,
