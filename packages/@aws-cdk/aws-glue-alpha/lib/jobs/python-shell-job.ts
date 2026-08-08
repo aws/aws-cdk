@@ -7,7 +7,7 @@ import type { Construct } from 'constructs';
 import type { JobProps } from './job';
 import { Job } from './job';
 import type { Code } from '../code';
-import { JobType, GlueVersion, PythonVersion, MaxCapacity, JobLanguage } from '../constants';
+import { JobType, GlueVersion, PythonVersion, MaxCapacity, JobLanguage, LibrarySet } from '../constants';
 
 /**
  * Properties for creating a Python Shell job
@@ -26,6 +26,18 @@ export interface PythonShellJobProps extends JobProps {
    * @default 0.0625
    */
   readonly maxCapacity?: MaxCapacity;
+
+  /**
+   * The set of pre-installed Python libraries to make available to the job.
+   *
+   * Only applies to jobs running Python 3.9. Set to `LibrarySet.NONE` when your libraries are
+   * custom or conflict with the pre-installed ones.
+   *
+   * @default LibrarySet.ANALYTICS when running Python 3.9, otherwise no library set is configured
+   *
+   * @see https://docs.aws.amazon.com/glue/latest/dg/add-job-python.html#python-shell-supported-library
+   */
+  readonly librarySet?: LibrarySet;
 
   /**
    * Additional Python files that AWS Glue adds to the Python path before executing your script.
@@ -78,10 +90,13 @@ export class PythonShellJob extends Job {
     this.role = props.role;
     this.grantPrincipal = this.role;
 
-    // Enable CloudWatch metrics and continuous logging by default as a best practice
-    const continuousLoggingArgs = this.setupContinuousLogging(this.role, props.continuousLogging);
-    const profilingMetricsArgs = { '--enable-metrics': '' };
-    const observabilityMetricsArgs = { '--enable-observability-metrics': 'true' };
+    // Enable continuous logging by default as a best practice. Note: the --enable-metrics and
+    // --enable-observability-metrics arguments are intentionally NOT set here. Those profiling
+    // metrics require the Spark/GlueContext instrumentation that Python shell jobs do not have, so
+    // Glue accepts but ignores them for the pythonshell command (verified: a pythonshell run with
+    // --enable-metrics emits no JobName-dimensioned CloudWatch metrics). See SparkJob/RayJob for
+    // the job types where these metrics apply.
+    const continuousLoggingArgs = this.setupContinuousLogging(this.role, props.continuousLogging, props.securityConfiguration);
 
     // Gather executable arguments
     const executableArgs = this.executableArguments(props);
@@ -93,14 +108,12 @@ export class PythonShellJob extends Job {
     }
 
     // Combine command line arguments into a single line item
-    const defaultArguments = {
+    const managedArguments = {
       ...executableArgs,
       ...extraPythonFilesArgs,
       ...continuousLoggingArgs,
-      ...profilingMetricsArgs,
-      ...observabilityMetricsArgs,
-      ...this.checkNoReservedArgs(props.defaultArguments),
     };
+    const defaultArguments = this.mergeManagedArguments(managedArguments, props.defaultArguments);
 
     this.resource = new CfnJob(this, 'Resource', {
       name: props.jobName,
@@ -143,10 +156,11 @@ export class PythonShellJob extends Job {
     const args: { [key: string]: string } = {};
     args['--job-language'] = JobLanguage.PYTHON;
 
-    // If no Python version set (default 3.9) or the version is set to 3.9 then set library-set argument
+    // The library-set option only applies to Python 3.9 (the default version). Default to the
+    // common analytics libraries, but let the caller override it (e.g. LibrarySet.NONE) via the
+    // typed prop. Note: Glue names this argument `library-set`, without the `--` prefix.
     if (!props.pythonVersion || props.pythonVersion == PythonVersion.THREE_NINE) {
-      // Selecting this option includes common libraries for Python 3.9
-      args['library-set'] = 'analytics';
+      args['library-set'] = props.librarySet ?? LibrarySet.ANALYTICS;
     }
 
     return args;

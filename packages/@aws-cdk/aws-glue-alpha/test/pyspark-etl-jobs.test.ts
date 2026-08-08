@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { Template, Match } from 'aws-cdk-lib/assertions';
+import { Annotations, Template, Match } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -144,6 +144,53 @@ describe('Job', () => {
           '--job-language': 'python',
         },
       });
+    });
+  });
+
+  describe('Continuous logging encryption warning', () => {
+    const warningId = 'aws-cdk/aws-glue-alpha:unencryptedContinuousLogging';
+
+    test('warns when continuous logging is enabled by default and no security configuration is attached', () => {
+      new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
+        role,
+        script,
+        jobName: 'PySparkETLJob',
+      });
+
+      Annotations.fromStack(stack).hasWarning('/Default/PySparkETLJob', Match.stringLikeRegexp('Continuous CloudWatch logging is enabled but no SecurityConfiguration'));
+    });
+
+    test('warns when continuous logging is explicitly enabled and no security configuration is attached', () => {
+      new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
+        role,
+        script,
+        jobName: 'PySparkETLJob',
+        continuousLogging: { enabled: true },
+      });
+
+      Annotations.fromStack(stack).hasWarning('/Default/PySparkETLJob', Match.stringLikeRegexp('Continuous CloudWatch logging is enabled but no SecurityConfiguration'));
+    });
+
+    test('does not warn when a security configuration is attached', () => {
+      new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
+        role,
+        script,
+        jobName: 'PySparkETLJob',
+        securityConfiguration: glue.SecurityConfiguration.fromSecurityConfigurationName(stack, 'SecurityConfig', 'securityConfigName'),
+      });
+
+      Annotations.fromStack(stack).hasNoWarning('/Default/PySparkETLJob', Match.stringLikeRegexp(warningId));
+    });
+
+    test('does not warn when continuous logging is explicitly disabled', () => {
+      new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
+        role,
+        script,
+        jobName: 'PySparkETLJob',
+        continuousLogging: { enabled: false },
+      });
+
+      Annotations.fromStack(stack).hasNoWarning('/Default/PySparkETLJob', Match.stringLikeRegexp(warningId));
     });
   });
 

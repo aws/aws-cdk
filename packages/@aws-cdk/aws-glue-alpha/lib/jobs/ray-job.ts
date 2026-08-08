@@ -90,19 +90,19 @@ export class RayJob extends Job {
     this.grantPrincipal = this.role;
 
     // Enable CloudWatch metrics and continuous logging by default as a best practice
-    const continuousLoggingArgs = this.setupContinuousLogging(this.role, props.continuousLogging);
+    const continuousLoggingArgs = this.setupContinuousLogging(this.role, props.continuousLogging, props.securityConfiguration);
 
     // Conditionally include metrics arguments (default to enabled for backward compatibility)
     const profilingMetricsArgs = (props.enableMetrics ?? true) ? { '--enable-metrics': '' } : {};
     const observabilityMetricsArgs = (props.enableObservabilityMetrics ?? true) ? { '--enable-observability-metrics': 'true' } : {};
 
     // Combine command line arguments into a single line item
-    const defaultArguments = {
-      ...this.checkNoReservedArgs(props.defaultArguments),
+    const managedArguments = {
       ...continuousLoggingArgs,
       ...profilingMetricsArgs,
       ...observabilityMetricsArgs,
     };
+    const defaultArguments = this.mergeManagedArguments(managedArguments, props.defaultArguments);
 
     if (props.workerType && props.workerType !== WorkerType.Z_2X) {
       throw new ValidationError(lit`RayJobsOnlySupportZ2XWorkerType`, 'Ray jobs only support Z.2X worker type', this);
