@@ -277,6 +277,24 @@ export enum PredefinedMetric {
    */
   ECS_SERVICE_AVERAGE_MEMORY_UTILIZATION = 'ECSServiceAverageMemoryUtilization',
   /**
+   * Average CPU utilization of an ECS service, sampled at 20-second intervals.
+   *
+   * This metric uses high-resolution (20-second) reporting, which enables faster
+   * auto scaling response times compared to the standard 60-second interval.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/target-tracking-faster-auto-scaling.html
+   */
+  ECS_SERVICE_AVERAGE_CPU_UTILIZATION_HIGH_RESOLUTION = 'ECSServiceAverageCPUUtilizationHighResolution',
+  /**
+   * Average memory utilization of an ECS service, sampled at 20-second intervals.
+   *
+   * This metric uses high-resolution (20-second) reporting, which enables faster
+   * auto scaling response times compared to the standard 60-second interval.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/target-tracking-faster-auto-scaling.html
+   */
+  ECS_SERVICE_AVERAGE_MEMORY_UTILIZATION_HIGH_RESOLUTION = 'ECSServiceAverageMemoryUtilizationHighResolution',
+  /**
    * LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION
    * @see https://docs.aws.amazon.com/lambda/latest/dg/monitoring-metrics.html#monitoring-metrics-concurrency
    */
