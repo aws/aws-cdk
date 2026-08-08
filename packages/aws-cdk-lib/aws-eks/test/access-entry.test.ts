@@ -68,7 +68,7 @@ describe('AccessEntry', () => {
     'creates a new AccessEntry for AccessEntryType %s',
     (accessEntryType) => {
       // Determine if this type should have access policies
-      const restrictedTypes = [AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX];
+      const restrictedTypes = [AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX];
       const accessPolicies = restrictedTypes.includes(accessEntryType) ? [] : mockAccessPolicies;
 
       // WHEN
@@ -158,7 +158,7 @@ describe('AccessEntry', () => {
   });
 
   describe('validation', () => {
-    test.each([AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX])(
+    test.each([AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX])(
       'throws error when %s type has access policies',
       (accessEntryType) => {
         // WHEN & THEN
@@ -174,7 +174,7 @@ describe('AccessEntry', () => {
     );
 
     test.each([AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX])(
-      'allows %s type with empty access policies',
+      'allows %s type with empty access policies (EC2 also supports non-empty access policies)',
       (accessEntryType) => {
         // WHEN
         new AccessEntry(stack, `AccessEntry-${accessEntryType}`, {
@@ -194,7 +194,7 @@ describe('AccessEntry', () => {
       },
     );
 
-    test.each([AccessEntryType.STANDARD, AccessEntryType.FARGATE_LINUX, AccessEntryType.EC2_LINUX, AccessEntryType.EC2_WINDOWS])(
+    test.each([AccessEntryType.STANDARD, AccessEntryType.FARGATE_LINUX, AccessEntryType.EC2_LINUX, AccessEntryType.EC2_WINDOWS, AccessEntryType.EC2])(
       'allows %s type with access policies',
       (accessEntryType) => {
         // WHEN
@@ -214,7 +214,7 @@ describe('AccessEntry', () => {
       },
     );
 
-    test.each([AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX])(
+    test.each([AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX])(
       'throws error when adding policies to %s type via addAccessPolicies()',
       (accessEntryType) => {
         // GIVEN
@@ -236,7 +236,7 @@ describe('AccessEntry', () => {
       },
     );
 
-    test.each([AccessEntryType.STANDARD, AccessEntryType.FARGATE_LINUX, AccessEntryType.EC2_LINUX, AccessEntryType.EC2_WINDOWS])(
+    test.each([AccessEntryType.STANDARD, AccessEntryType.FARGATE_LINUX, AccessEntryType.EC2_LINUX, AccessEntryType.EC2_WINDOWS, AccessEntryType.EC2])(
       'allows adding policies to %s type via addAccessPolicies()',
       (accessEntryType) => {
         // GIVEN
