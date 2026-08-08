@@ -242,10 +242,11 @@ class XRayResourcePolicy extends Construct {
 
     this.document = new PolicyDocument();
 
-    new xray.CfnResourcePolicy(this, 'ResourcePolicy', {
+    const resourcePolicy = new xray.CfnResourcePolicy(this, 'ResourcePolicy', {
       policyName: Lazy.string({ produce: () => Names.uniqueResourceName(this, { maxLength: 128 }) }),
       policyDocument: Lazy.string({ produce: () => JSON.stringify(this.document.toJSON()) }),
     });
+    this.node.defaultChild = resourcePolicy;
   }
 }
 
