@@ -10,7 +10,6 @@ import { AssumptionError, UnscopedValidationError, ValidationError } from './err
 import type { FingerprintOptions } from './fs';
 import { FileSystem, SymlinkFollowMode } from './fs';
 import { clearLargeFileFingerprintCache } from './fs/fingerprint';
-import { isInternalPath, resolveLinkTarget } from './fs/utils';
 import { Names } from './names';
 import { AssetBundlingVolumeCopy, AssetBundlingBindMount } from './private/asset-staging';
 import { Cache } from './private/cache';
@@ -19,6 +18,7 @@ import { lit } from './private/literal-string';
 import { profileSpan } from './private/perf';
 import type { Stack } from './stack';
 import * as cxapi from '../../cx-api';
+import { isInternalPath, resolveLinkTarget } from './fs/utils';
 
 const ARCHIVE_EXTENSIONS = ['.tar.gz', '.zip', '.jar', '.tar', '.tgz'];
 
@@ -180,6 +180,11 @@ export class AssetStaging extends Construct {
 
     if (!fs.existsSync(this.sourcePath)) {
       throw new ValidationError(lit`CannotFindAsset`, `Cannot find asset at ${this.sourcePath}`, this);
+    }
+
+    // look for invalid (external symlinks)
+    if (props.follow == SymlinkFollowMode.BLOCK_EXTERNAL) {
+      findInvalidSymlinks(this.sourcePath);
     }
 
     this._sourceStats = fs.statSync(this.sourcePath);
@@ -356,7 +361,7 @@ export class AssetStaging extends Construct {
 
     // Check bundling output content and determine if we will need to archive
     const bundlingOutputType = bundling.outputType ?? BundlingOutput.AUTO_DISCOVER;
-    const bundledAsset = determineBundledAsset(this, bundleDir, bundlingOutputType, this.fingerprintOptions.follow);
+    const bundledAsset = determineBundledAsset(this, bundleDir, bundlingOutputType);
 
     // Calculate assetHash afterwards if we still must
     assetHash = assetHash ?? this.calculateHash(this.hashType, bundling, bundledAsset.path);
@@ -575,6 +580,31 @@ function determineHashType(scope: Construct, assetHashType?: AssetHashType, cust
 }
 
 /**
+ * Walk the directory tree, throw if we find external symlinks
+ * @param root true root of the directory
+ * @param subRoot used for walking subdirectories
+ */
+function findInvalidSymlinks(root: string, subRoot: string = root) {
+  const entries = fs.readdirSync(root, { withFileTypes: true });
+  for (const entry of entries) {
+    const childPath = path.join(subRoot, entry.name);
+    if (entry.isSymbolicLink()) {
+      // we check whether this is internal or external, throw on external
+      const linkPath = fs.readlinkSync(childPath);
+      const resolvedPath = resolveLinkTarget(childPath, linkPath);
+      if (!isInternalPath(root, resolvedPath)) {
+        throw new UnscopedValidationError(
+          lit`BundlingFileSymlinkForbidden`,
+          `The file ${resolvedPath} is a symbolic link that is forbidden due to follow mode internal-only. Set \`follow\` to a mode that will follow symlinks (ALWAYS or EXTERNAL) or emit a regular file`,
+        );
+      }
+    } else if (entry.isDirectory()) {
+      findInvalidSymlinks(root, childPath);
+    }
+  }
+}
+
+/**
  * Calculates a cache key from the props. Normalize by sorting keys.
  */
 function calculateCacheKey<A extends object>(props: A): string {
@@ -624,7 +654,7 @@ function sanitizeHashValue(key: string, value: any): any {
 /**
  * Returns the single archive file of a directory or undefined
  */
-function findSingleFile(scope: Construct, directory: string, archiveOnly: boolean, follow?: SymlinkFollowMode): string | undefined {
+function findSingleFile(scope: Construct, directory: string, archiveOnly: boolean): string | undefined {
   if (!fs.existsSync(directory)) {
     throw new ValidationError(lit`DirectoryDoesNotExist`, `Directory ${directory} does not exist.`, scope);
   }
@@ -638,40 +668,12 @@ function findSingleFile(scope: Construct, directory: string, archiveOnly: boolea
     const file = path.join(directory, content[0]);
     const extension = getExtension(content[0]).toLowerCase();
 
-    // Depending on the follow mode a symlink must not be followed. Throw an
-    // error if we cannot follow the symlink because we are using a mode
-    // that blocks certain symlinks from being followed.
-    const stat = fs.lstatSync(file);
-    if (stat.isSymbolicLink() && !shouldFollowBundledSymlink(directory, file, follow)) {
-      throw new UnscopedValidationError(
-        lit`BundlingOutputSymlinkForbidden`,
-        `bundling output ${JSON.stringify(file)} is a symbolic link that is forbidden due to follow mode ${JSON.stringify(follow ?? SymlinkFollowMode.EXTERNAL)}. Set \`follow\` to a mode that will follow symlinks (ALWAYS or EXTERNAL) or emit a regular file`,
-      );
-    }
-
     if (fs.statSync(file).isFile() && (!archiveOnly || ARCHIVE_EXTENSIONS.includes(extension))) {
       return file;
     }
   }
 
   return undefined;
-}
-
-/**
- * Whether a symbolic link produced as bundling output should be followed
- * and staging it as a single-file asset.
- *
- * Currently we only reject a symlink as something we should not follow
- * when using BLOCK_EXTERNAL and the symlink is not an internal path
- */
-function shouldFollowBundledSymlink(directory: string, file: string, follow?: SymlinkFollowMode): boolean {
-  const mode = follow ?? SymlinkFollowMode.EXTERNAL;
-  const resolvedTarget = resolveLinkTarget(file, fs.readlinkSync(file));
-  const internal = isInternalPath(path.resolve(directory), resolvedTarget);
-  if (mode == SymlinkFollowMode.BLOCK_EXTERNAL && !internal) {
-    return false;
-  }
-  return true;
 }
 
 interface BundledAsset {
@@ -684,8 +686,8 @@ interface BundledAsset {
  * Returns the bundled asset to use based on the content of the bundle directory
  * and the type of output.
  */
-function determineBundledAsset(scope: Construct, bundleDir: string, outputType: BundlingOutput, follow?: SymlinkFollowMode): BundledAsset {
-  const archiveFile = findSingleFile(scope, bundleDir, outputType !== BundlingOutput.SINGLE_FILE, follow);
+function determineBundledAsset(scope: Construct, bundleDir: string, outputType: BundlingOutput): BundledAsset {
+  const archiveFile = findSingleFile(scope, bundleDir, outputType !== BundlingOutput.SINGLE_FILE);
 
   // auto-discover means that if there is an archive file, we take it as the
   // bundle, otherwise, we will archive here.
