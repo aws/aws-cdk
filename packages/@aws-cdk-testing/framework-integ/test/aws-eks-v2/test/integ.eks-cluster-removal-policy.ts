@@ -132,7 +132,7 @@ class EksClusterRemovalPolicyStack extends Stack {
 
 const app = new App({
   postCliContext: {
-    [EKS_USE_NATIVE_OIDC_PROVIDER]: false,
+    [EKS_USE_NATIVE_OIDC_PROVIDER]: true,
   },
 });
 
