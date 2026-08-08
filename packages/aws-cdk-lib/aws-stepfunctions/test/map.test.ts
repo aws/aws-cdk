@@ -376,7 +376,9 @@ describe('Map State', () => {
         bar: '{% $bar %}',
       },
       assign: {},
-    }).addCatch(
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+    map.addCatch(
       stepfunctions.Fail.jsonPath(stack, 'failed', {
         error: 'ErrorHappened',
         cause: 'We got stuck',
@@ -385,7 +387,6 @@ describe('Map State', () => {
         outputs: '$states.errorOutput',
       },
     );
-    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
     // THEN
     expect(render(map)).toStrictEqual({
