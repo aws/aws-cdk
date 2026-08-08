@@ -19,6 +19,7 @@ import type { FirelensLogRouterDefinitionOptions } from '../firelens-log-router'
 import { FirelensLogRouter, FirelensLogRouterType, obtainDefaultFluentBitECRImage } from '../firelens-log-router';
 import { AwsLogDriver } from '../log-drivers/aws-log-driver';
 import type { PlacementConstraint } from '../placement';
+import type { Writeable } from '../private/writeable';
 import type { ProxyConfiguration } from '../proxy-configuration/proxy-configuration';
 import type { RuntimePlatform } from '../runtime-platform';
 
@@ -349,6 +350,18 @@ abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
 }
 
 /**
+ * Assigns the execution role of a task definition.
+ *
+ * `executionRole` is a `readonly` property declared optional (to match
+ * `ITaskDefinition`), so it is populated through this helper rather than a
+ * public setter. The role may be supplied at construction or created lazily
+ * by `obtainExecutionRole`; the helper is only ever called with a defined role.
+ */
+function setExecutionRole(taskDefinition: TaskDefinition, executionRole: iam.IRole): void {
+  (taskDefinition as Writeable<TaskDefinition>).executionRole = executionRole;
+}
+
+/**
  * The base class for all task definitions.
  */
 @propertyInjectable
@@ -396,6 +409,14 @@ export class TaskDefinition extends TaskDefinitionBase {
    * The name of the IAM role that grants containers in the task permission to call AWS APIs on your behalf.
    */
   public readonly taskRole: iam.IRole;
+
+  /**
+   * Execution role for this task definition.
+   *
+   * `undefined` if no execution role is set, either explicitly or implicitly
+   * (e.g. via `obtainExecutionRole`).
+   */
+  public readonly executionRole?: iam.IRole;
 
   /**
    * The networking mode to use for the containers in the task.
@@ -460,8 +481,6 @@ export class TaskDefinition extends TaskDefinitionBase {
    * Inference accelerators for task instances
    */
   private readonly _inferenceAccelerators: InferenceAccelerator[] = [];
-
-  private _executionRole?: iam.IRole;
 
   private _passRoleStatement?: iam.PolicyStatement;
 
@@ -552,7 +571,9 @@ export class TaskDefinition extends TaskDefinitionBase {
       throw new ValidationError(lit`OnlyAwsVpcHostNetwork`, `Only AWS_VPC and HOST Network Modes are supported for enabling Fault Injection, got ${this.networkMode} mode.`, this);
     }
 
-    this._executionRole = props.executionRole;
+    if (props.executionRole !== undefined) {
+      setExecutionRole(this, props.executionRole);
+    }
 
     this.taskRole = props.taskRole || new iam.Role(this, 'TaskRole', {
       assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
@@ -626,10 +647,6 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     this.taskDefinitionArn = taskDef.ref;
     this.node.addValidation({ validate: () => this.validateTaskDefinition() });
-  }
-
-  public get executionRole(): iam.IRole | undefined {
-    return this._executionRole;
   }
 
   /**
@@ -832,15 +849,17 @@ export class TaskDefinition extends TaskDefinitionBase {
    */
   @MethodMetadata()
   public obtainExecutionRole(): iam.IRole {
-    if (!this._executionRole) {
-      this._executionRole = new iam.Role(this, 'ExecutionRole', {
-        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
-        // needed for cross-account access with TagParameterContainerImage
-        roleName: PhysicalName.GENERATE_IF_NEEDED,
-      });
-      this.passRoleStatement.addResources(this._executionRole.roleArn);
+    if (this.executionRole) {
+      return this.executionRole;
     }
-    return this._executionRole;
+    const executionRole = new iam.Role(this, 'ExecutionRole', {
+      assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      // needed for cross-account access with TagParameterContainerImage
+      roleName: PhysicalName.GENERATE_IF_NEEDED,
+    });
+    setExecutionRole(this, executionRole);
+    this.passRoleStatement.addResources(executionRole.roleArn);
+    return executionRole;
   }
 
   /**
