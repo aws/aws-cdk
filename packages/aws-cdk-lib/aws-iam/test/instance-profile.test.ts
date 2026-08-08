@@ -1,5 +1,6 @@
 import { Template } from '../../assertions';
 import { Stack, Token, App, CfnResource } from '../../core';
+import type { IInstanceProfile } from '../lib';
 import { InstanceProfile, Role, ServicePrincipal } from '../lib';
 
 describe('IAM instance profiles', () => {
@@ -331,5 +332,47 @@ describe('IAM instance profiles', () => {
 
     // THEN
     expect(stack.resolve(instanceProfile.instanceProfileName)).toStrictEqual(instanceProfileName);
+  });
+
+  describe('role / IInstanceProfile assignability', () => {
+    // Regression coverage for issue #37996: under `exactOptionalPropertyTypes`,
+    // `InstanceProfile` must stay assignable to the optional `IInstanceProfile.role`.
+    // The `IInstanceProfile` annotations below are the type-level guard; the runtime
+    // expectations confirm the getter -> readonly-field refactor preserves behavior.
+    test('a concrete InstanceProfile is assignable to IInstanceProfile and auto-creates a role', () => {
+      const stack = new Stack();
+      const instanceProfile = new InstanceProfile(stack, 'InstanceProfile');
+
+      const asInterface: IInstanceProfile = instanceProfile;
+
+      expect(asInterface.role).toBeDefined();
+    });
+
+    test('role reflects the role passed in props', () => {
+      const stack = new Stack();
+      const role = new Role(stack, 'Role', { assumedBy: new ServicePrincipal('ec2.amazonaws.com') });
+      const instanceProfile: IInstanceProfile = new InstanceProfile(stack, 'InstanceProfile', { role });
+
+      expect(instanceProfile.role).toBe(role);
+    });
+
+    test('role is undefined when imported without one', () => {
+      const stack = new Stack();
+      const instanceProfile: IInstanceProfile = InstanceProfile.fromInstanceProfileArn(
+        stack, 'Imported', 'arn:aws:iam::account-id:instance-profile/MyInstanceProfile');
+
+      expect(instanceProfile.role).toBeUndefined();
+    });
+
+    test('role is carried through fromInstanceProfileAttributes', () => {
+      const stack = new Stack();
+      const role = new Role(stack, 'Role', { assumedBy: new ServicePrincipal('ec2.amazonaws.com') });
+      const instanceProfile: IInstanceProfile = InstanceProfile.fromInstanceProfileAttributes(stack, 'Imported', {
+        instanceProfileArn: 'arn:aws:iam::account-id:instance-profile/MyInstanceProfile',
+        role,
+      });
+
+      expect(instanceProfile.role).toBe(role);
+    });
   });
 });
