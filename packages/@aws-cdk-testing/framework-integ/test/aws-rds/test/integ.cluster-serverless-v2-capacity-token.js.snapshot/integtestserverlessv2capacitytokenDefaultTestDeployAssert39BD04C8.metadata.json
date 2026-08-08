@@ -1,0 +1,56 @@
+{
+  "/integ-test-serverless-v2-capacity-token/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:38:38)",
+        "new IntegTestCase (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-serverless-v2-capacity-token.js:30:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-test-serverless-v2-capacity-token/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "visit (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "visit (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)"
+      ]
+    }
+  ],
+  "/integ-test-serverless-v2-capacity-token/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "visit (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "visit (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)"
+      ]
+    }
+  ]
+}

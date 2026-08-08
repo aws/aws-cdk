@@ -1,0 +1,34 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f": {
+      "displayName": "integ-aurora-serverlessv2-cluster-capacity-token/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
+      "source": {
+        "path": "asset.55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-65a3ca72": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "6f9379c0b2fe52a72e1ee2d0425f9ea4b40cc157001880e633a399e41c0baf27": {
+      "displayName": "integ-aurora-serverlessv2-cluster-capacity-token Template",
+      "source": {
+        "path": "integ-aurora-serverlessv2-cluster-capacity-token.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-6da517cc": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6f9379c0b2fe52a72e1ee2d0425f9ea4b40cc157001880e633a399e41c0baf27.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
