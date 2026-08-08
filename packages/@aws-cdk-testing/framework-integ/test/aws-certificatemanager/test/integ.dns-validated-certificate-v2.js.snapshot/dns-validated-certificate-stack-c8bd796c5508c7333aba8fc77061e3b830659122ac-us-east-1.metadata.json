@@ -1,0 +1,103 @@
+{
+  "/dns-validated-certificate-stack-c8bd796c5508c7333aba8fc77061e3b830659122ac-us-east-1": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.certificateStack (/home/user/github/aws-cdk/packages/aws-cdk-lib/aws-certificatemanager/lib/dns-validated-certificate-v2.js:219:20)",
+        "new DnsValidatedCertificateV2 (/home/user/github/aws-cdk/packages/aws-cdk-lib/aws-certificatemanager/lib/dns-validated-certificate-v2.js:179:24)",
+        "new DnsValidatedCertificateV2 (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/user/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-certificatemanager/test/integ.dns-validated-certificate-v2.js:70:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/dns-validated-certificate-stack-c8bd796c5508c7333aba8fc77061e3b830659122ac-us-east-1/integdnsvalidatedcertificatev2CertificateC03E0B04": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "domainName": "*",
+        "certificateName": "*",
+        "validation": "*"
+      }
+    }
+  ],
+  "/dns-validated-certificate-stack-c8bd796c5508c7333aba8fc77061e3b830659122ac-us-east-1/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/dns-validated-certificate-stack-c8bd796c5508c7333aba8fc77061e3b830659122ac-us-east-1/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/dns-validated-certificate-stack-c8bd796c5508c7333aba8fc77061e3b830659122ac-us-east-1/integdnsvalidatedcertificatev2CertificateC03E0B04/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "integdnsvalidatedcertificatev2CertificateC03E0B04B16F533F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Certificate (/home/user/github/aws-cdk/packages/aws-cdk-lib/aws-certificatemanager/lib/certificate.js:261:26)",
+        "new Certificate (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DnsValidatedCertificateV2 (/home/user/github/aws-cdk/packages/aws-cdk-lib/aws-certificatemanager/lib/dns-validated-certificate-v2.js:182:32)",
+        "new DnsValidatedCertificateV2 (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/user/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-certificatemanager/test/integ.dns-validated-certificate-v2.js:70:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/dns-validated-certificate-stack-c8bd796c5508c7333aba8fc77061e3b830659122ac-us-east-1/Publish/Output{\"Ref\":\"integdnsvalidatedcertificatev2CertificateC03E0B04B16F533F\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputRefintegdnsvalidatedcertificatev2CertificateC03E0B04B16F533FF731B313"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "createGetStackOutput (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:477:18)",
+        "resolveValue (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:16)",
+        "resolveReferences (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:133:26)",
+        "prepareApp (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:83:36)",
+        "App.synth (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "process.<anonymous> (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:157:51)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
