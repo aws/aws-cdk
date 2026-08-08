@@ -84,6 +84,31 @@ Amazon Data Firehose supports multiple AWS and third-party services as destinati
 
 Currently in the AWS CDK, only S3 is implemented as an L2 construct destination. Other destinations can still be configured using L1 constructs.
 
+### HTTP
+
+Defining a delivery stream with an HTTP destination:
+
+```ts
+declare const endpointConfig: firehose.HTTPEndpointConfig;
+const httpDestination = new firehose.HTTPEndpoint({
+  endpointConfig,
+});
+```
+
+### Datadog
+
+Defining a delivery stream with a Datadog destination:
+
+```ts
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+
+declare const apiKey: secretsmanager.Secret;
+const datadogDestination = new firehose.Datadog({
+  apiKey,
+  url: firehose.DatadogLogsEndpointUrl.DATADOG_LOGS_US1,
+});
+```
+
 ### S3
 
 Defining a delivery stream with an S3 bucket destination:
