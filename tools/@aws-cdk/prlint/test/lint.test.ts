@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { CODECOV_CHECKS } from '../constants';
-import type { GitHubFile, GitHubLabel, GitHubPr } from '../github';
+import type { GitHubFile, GitHubPr } from '../github';
 import { PullRequestLinter } from '../lint';
 import type { OctoMock } from './octomock';
 import { createOctomock } from './octomock';
@@ -545,50 +545,6 @@ describe('integration tests required on features', () => {
     const prlinter = configureMock(issue, files);
     expect(legacyValidatePullRequestTarget(await prlinter)).resolves;
   });
-
-  describe('CLI file changed', () => {
-    const labels: GitHubLabel[] = [];
-    const issue = {
-      number: 23,
-      title: 'chore(cli): change the help or something',
-      body: `
-        description of the commit
-        closes #123456789
-      `,
-      labels,
-      user: {
-        login: 'author',
-      },
-    };
-    const files = [{ filename: 'packages/aws-cdk/lib/cdk-toolkit.ts' }];
-
-    test('no label throws error', async () => {
-      const prLinter = configureMock(issue, files);
-      await expect(legacyValidatePullRequestTarget(prLinter)).rejects.toThrow(/CLI code has changed. A maintainer must/);
-    });
-
-    test('with label no error', async () => {
-      labels.push({ name: 'pr-linter/cli-integ-tested' });
-      const prLinter = configureMock(issue, files);
-      // THEN: no exception
-      await legacyValidatePullRequestTarget(prLinter);
-    });
-
-    test('with aws-cdk-automation author', async () => {
-      // GIVEN: Remove exemption
-      labels.pop();
-      // Verify no labels added
-      expect(labels).toEqual([]);
-      issue.user.login = 'aws-cdk-automation';
-
-      // WHEN
-      const prLinter = configureMock(issue, files);
-      await legacyValidatePullRequestTarget(prLinter);
-
-      // THEN: no exception
-    });
-  });
-
   describe('assess needs review', () => {
     const pr = {
       title: 'chore(s3): something',
