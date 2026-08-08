@@ -1707,6 +1707,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     return {
       executionTimeout: config.executionTimeout.toSeconds(),
       retentionPeriodInDays: retentionDays,
+      kmsKeyArn: config.kmsKey?.keyRef.keyArn,
     };
   }
 
