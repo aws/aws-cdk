@@ -1,0 +1,21 @@
+{
+  "resources": {
+    "FileSystem": {
+      "hasResourcePolicy": true,
+      "grants": {
+        "read": {
+          "actions": ["s3files:ClientMount"],
+          "docSummary": "Grant read-only NFS mount access to the file system"
+        },
+        "readWrite": {
+          "actions": ["s3files:ClientMount", "s3files:ClientWrite"],
+          "docSummary": "Grant read and write NFS access to the file system"
+        },
+        "rootAccess": {
+          "actions": ["s3files:ClientMount", "s3files:ClientWrite", "s3files:ClientRootAccess"],
+          "docSummary": "Grant root NFS access to the file system"
+        }
+      }
+    }
+  }
+}
