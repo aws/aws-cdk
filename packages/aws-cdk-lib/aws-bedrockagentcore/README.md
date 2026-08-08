@@ -101,6 +101,7 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
       - [Memory with Custom Execution Role](#memory-with-custom-execution-role)
     - [Memory with self-managed Strategies](#memory-with-self-managed-strategies)
     - [Memory Strategy Methods](#memory-strategy-methods)
+    - [Memory Record Metadata Schema](#memory-record-metadata-schema)
   - [Online Evaluation](#online-evaluation)
     - [Online Evaluation Properties](#online-evaluation-properties)
     - [Basic Online Evaluation Creation](#basic-online-evaluation-creation)
@@ -2725,6 +2726,80 @@ const memory = new agentcore.Memory(this, "test-memory", {
 // Add strategies after instantiation
 memory.addMemoryStrategy(agentcore.MemoryStrategy.usingBuiltInSummarization());
 memory.addMemoryStrategy(agentcore.MemoryStrategy.usingBuiltInSemantic());
+```
+
+### Memory Record Metadata Schema
+
+You can declare a metadata schema on any strategy. The service populates these metadata
+fields when extracting memory records, and indexed keys can later be used to filter
+retrieval results.
+
+The schema accepts between 1 and 20 entries. Each entry has a `key` (1-128 characters,
+matching `^[a-zA-Z0-9\s._:/=+@-]*$`), an optional `type` (`STRING`, `STRING_LIST`, or
+`NUMBER`), and an optional `extractionConfig` describing how the value should be
+extracted by the LLM.
+
+```typescript fixture=default
+new agentcore.Memory(this, 'MemoryWithMetadata', {
+  memoryName: 'memory_with_metadata',
+  memoryStrategies: [
+    agentcore.MemoryStrategy.usingSemantic({
+      strategyName: 'semantic_with_metadata',
+      namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
+      metadataSchema: [
+        {
+          key: 'topic',
+          type: agentcore.MetadataValueType.STRING,
+          extractionConfig: {
+            llmExtractionConfig: {
+              definition: 'The main subject of the conversation',
+              llmExtractionInstruction: 'Identify the topic of the conversation',
+              validation: {
+                stringValidation: { allowedValues: ['billing', 'support', 'sales'] },
+              },
+            },
+          },
+        },
+        {
+          key: 'priority',
+          type: agentcore.MetadataValueType.NUMBER,
+          extractionConfig: {
+            llmExtractionConfig: {
+              definition: 'The priority on a 0-10 scale',
+              validation: { numberValidation: { minValue: 0, maxValue: 10 } },
+            },
+          },
+        },
+      ],
+    }),
+  ],
+});
+```
+
+For episodic strategies, you can configure a separate metadata schema for memories
+extracted from raw events versus memories produced by reflection:
+
+```typescript fixture=default
+new agentcore.Memory(this, 'EpisodicMemoryWithMetadata', {
+  memoryName: 'episodic_with_metadata',
+  memoryStrategies: [
+    agentcore.MemoryStrategy.usingEpisodic({
+      strategyName: 'episodic_dual_schema',
+      namespaces: ['/strategy/{memoryStrategyId}/actor/{actorId}/session/{sessionId}'],
+      // Schema for memories extracted from raw events
+      metadataSchema: [
+        { key: 'event_kind', type: agentcore.MetadataValueType.STRING },
+      ],
+      reflectionConfiguration: {
+        namespaces: ['/strategy/{memoryStrategyId}/actor/{actorId}'],
+        // Independent schema for memories produced by reflection
+        metadataSchema: [
+          { key: 'reflection_topic', type: agentcore.MetadataValueType.STRING_LIST },
+        ],
+      },
+    }),
+  ],
+});
 ```
 
 ## Online Evaluation
