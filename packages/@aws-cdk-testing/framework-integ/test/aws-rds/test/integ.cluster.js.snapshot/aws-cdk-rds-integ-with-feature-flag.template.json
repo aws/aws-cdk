@@ -441,7 +441,7 @@
    "Type": "AWS::RDS::DBClusterParameterGroup",
    "Properties": {
     "Description": "A nice parameter group",
-    "Family": "aurora-mysql8.0",
+    "Family": "aurora-mysql8.4",
     "Parameters": {
      "character_set_database": "utf8mb4"
     }
@@ -559,7 +559,7 @@
     },
     "DeleteAutomatedBackups": false,
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.12.0",
+    "EngineVersion": "8.4.mysql_aurora.8.4.7",
     "KmsKeyId": {
      "Fn::GetAtt": [
       "DbSecurity381C2C15",
@@ -607,8 +607,8 @@
   "DatabaseInstance2WrapperInstanceParameterGroup61FBD67B": {
    "Type": "AWS::RDS::DBParameterGroup",
    "Properties": {
-    "Description": "Parameter group for aurora-mysql8.0",
-    "Family": "aurora-mysql8.0",
+    "Description": "Parameter group for aurora-mysql8.4",
+    "Family": "aurora-mysql8.4",
     "Parameters": {}
    },
    "UpdateReplacePolicy": "Delete",
@@ -643,8 +643,8 @@
   "DatabaseInstance3WrapperInstanceParameterGroup00CB9DB5": {
    "Type": "AWS::RDS::DBParameterGroup",
    "Properties": {
-    "Description": "Parameter group for aurora-mysql8.0",
-    "Family": "aurora-mysql8.0",
+    "Description": "Parameter group for aurora-mysql8.4",
+    "Family": "aurora-mysql8.4",
     "Parameters": {}
    },
    "UpdateReplacePolicy": "Delete",
