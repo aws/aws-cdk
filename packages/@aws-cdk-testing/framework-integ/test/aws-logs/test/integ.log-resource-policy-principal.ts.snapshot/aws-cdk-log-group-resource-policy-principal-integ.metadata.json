@@ -1,0 +1,38 @@
+{
+  "/aws-cdk-log-group-resource-policy-principal-integ/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-log-group-resource-policy-principal-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-log-group-resource-policy-principal-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-log-group-resource-policy-principal-integ/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogGroupF5B46931"
+    }
+  ],
+  "/aws-cdk-log-group-resource-policy-principal-integ/LogGroup/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-log-group-resource-policy-principal-integ/LogGroup/Policy/ResourcePolicy": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogGroupPolicyResourcePolicy6FA18555"
+    }
+  ]
+}

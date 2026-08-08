@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "LogGroupResourcePolicyPrincipalInteg/DefaultTest": {
+      "stacks": [
+        "aws-cdk-log-group-resource-policy-principal-integ"
+      ],
+      "assertionStack": "LogGroupResourcePolicyPrincipalInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "LogGroupResourcePolicyPrincipalIntegDefaultTestDeployAssertF878ACF1"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
