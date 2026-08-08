@@ -35,3 +35,9 @@ export function shouldFollow(mode: SymlinkFollowMode, sourceRoot: string, realPa
 export function isInternalPath(rootPath: string, targetPath: string): boolean {
   return rootPath === targetPath || targetPath.startsWith(rootPath + path.sep);
 }
+
+export function resolveLinkTarget(realPath: string, linkTarget: string): string {
+  return path.isAbsolute(linkTarget)
+    ? path.resolve(linkTarget)
+    : path.resolve(path.dirname(realPath), linkTarget);
+}
