@@ -1,4 +1,5 @@
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
+// Trigger integration test update for PR linter
 import * as path from 'path';
 import type { StackProps } from 'aws-cdk-lib';
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
