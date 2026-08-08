@@ -1,0 +1,386 @@
+{
+  "/codebuild-project-host-kernel/Kernel6Project": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "buildSpec": "*",
+        "environment": {
+          "buildImage": {
+            "type": "*",
+            "defaultComputeType": "BUILD_GENERAL1_SMALL",
+            "imageId": "*",
+            "imagePullPrincipalType": "CODEBUILD",
+            "secretsManagerCredentials": "*",
+            "repository": "*"
+          }
+        }
+      }
+    }
+  ],
+  "/codebuild-project-host-kernel/Kernel4Project": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "buildSpec": "*",
+        "environment": {
+          "buildImage": {
+            "type": "*",
+            "defaultComputeType": "BUILD_GENERAL1_SMALL",
+            "imageId": "*",
+            "imagePullPrincipalType": "CODEBUILD",
+            "secretsManagerCredentials": "*",
+            "repository": "*"
+          }
+        }
+      }
+    }
+  ],
+  "/codebuild-project-host-kernel/LatestKernelArmProject": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "buildSpec": "*",
+        "environment": {
+          "buildImage": {
+            "type": "*",
+            "defaultComputeType": "BUILD_GENERAL1_LARGE",
+            "imageId": "*",
+            "imagePullPrincipalType": "CODEBUILD",
+            "secretsManagerCredentials": "*",
+            "repository": "*"
+          }
+        }
+      }
+    }
+  ],
+  "/codebuild-project-host-kernel/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/codebuild-project-host-kernel/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/codebuild-project-host-kernel/Kernel6Project/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/codebuild-project-host-kernel/Kernel6Project/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Kernel6Project2BB05833"
+    }
+  ],
+  "/codebuild-project-host-kernel/Kernel4Project/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/codebuild-project-host-kernel/Kernel4Project/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Kernel4ProjectDA9BAB02"
+    }
+  ],
+  "/codebuild-project-host-kernel/LatestKernelArmProject/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/codebuild-project-host-kernel/LatestKernelArmProject/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LatestKernelArmProjectCDC09240"
+    }
+  ],
+  "/codebuild-project-host-kernel/Exports/Output{\"Ref\":\"Kernel6Project2BB05833\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefKernel6Project2BB0583380C665FF"
+    }
+  ],
+  "/codebuild-project-host-kernel/Exports/Output{\"Ref\":\"Kernel4ProjectDA9BAB02\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefKernel4ProjectDA9BAB02D7B8E477"
+    }
+  ],
+  "/codebuild-project-host-kernel/Exports/Output{\"Ref\":\"LatestKernelArmProjectCDC09240\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefLatestKernelArmProjectCDC0924090AEA991"
+    }
+  ],
+  "/codebuild-project-host-kernel/Kernel6Project/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Kernel6ProjectRole3D15F78E"
+    }
+  ],
+  "/codebuild-project-host-kernel/Kernel6Project/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/codebuild-project-host-kernel/Kernel4Project/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Kernel4ProjectRole7D47ABAD"
+    }
+  ],
+  "/codebuild-project-host-kernel/Kernel4Project/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/codebuild-project-host-kernel/LatestKernelArmProject/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LatestKernelArmProjectRole1B290786"
+    }
+  ],
+  "/codebuild-project-host-kernel/LatestKernelArmProject/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/codebuild-project-host-kernel/Kernel6Project/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Kernel6ProjectRoleDefaultPolicy0EBDB1A2"
+    }
+  ],
+  "/codebuild-project-host-kernel/Kernel4Project/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Kernel4ProjectRoleDefaultPolicyA8975221"
+    }
+  ],
+  "/codebuild-project-host-kernel/LatestKernelArmProject/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LatestKernelArmProjectRoleDefaultPolicy7281ED86"
+    }
+  ]
+}
