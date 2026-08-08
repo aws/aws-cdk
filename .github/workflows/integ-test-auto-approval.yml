@@ -1,0 +1,251 @@
+# Stage 2: Privileged integration test runner triggered by approval.
+#
+# Triggered when the "Integration Test Approval Trigger" (Stage 1) completes.
+# This workflow:
+#   1. Finds the PR from workflow_run.head_sha (GitHub-controlled, fork cannot spoof)
+#   2. Verifies a CDK team member approved (API lookup, not artifact trust)
+#   3. Checks for snapshot changes in the PR
+#   4. Runs integration tests if all checks pass
+#   5. Posts commit status on the PR's head SHA
+#
+# SECURITY: No data from Stage 1 artifacts is used. All routing information
+# is derived from GitHub-controlled metadata and verified via API calls.
+# This avoids the attack vector from the reverted PR #37333.
+name: Integration Tests (Auto-Approval)
+
+on:
+  workflow_run:
+    workflows: ["Integration Test Approval Trigger"]
+    types: [completed]
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: read
+  statuses: write
+
+jobs:
+  run-integ-tests:
+    runs-on: codebuild-aws-cdk-github-actions-deployment-integ-runner-${{ github.run_id }}-${{ github.run_attempt }}
+    if: github.event.workflow_run.conclusion == 'success'
+    steps:
+      - name: Find PR from head SHA
+        id: find-pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const headSha = context.payload.workflow_run.head_sha;
+            core.info(`Looking up PR for head SHA: ${headSha}`);
+
+            const pulls = await github.paginate(github.rest.pulls.list, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100,
+            });
+
+            const matchingPrs = pulls.filter(p => p.head.sha === headSha);
+
+            if (matchingPrs.length === 0) {
+              core.setFailed(`No open PR found for SHA ${headSha}`);
+              return;
+            }
+            if (matchingPrs.length > 1) {
+              core.setFailed(`Multiple PRs found for SHA ${headSha}, aborting for safety`);
+              return;
+            }
+
+            const pr = matchingPrs[0];
+            core.info(`Found PR #${pr.number}: ${pr.title}`);
+            core.setOutput('pr_number', pr.number);
+            core.setOutput('head_sha', pr.head.sha);
+            core.setOutput('base_sha', pr.base.sha);
+
+      - name: Verify CDK team member approved
+        id: verify-approval
+        uses: actions/github-script@v7
+        env:
+          TEAM_TOKEN: ${{ secrets.PROJEN_GITHUB_TOKEN }}
+        with:
+          script: |
+            const prNumber = ${{ steps.find-pr.outputs.pr_number }};
+            core.info(`Checking reviews for PR #${prNumber}`);
+
+            const reviews = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+            });
+
+            const approvals = reviews.data.filter(r => r.state === 'APPROVED');
+            if (approvals.length === 0) {
+              core.setFailed('No approval found on this PR');
+              return;
+            }
+
+            // Use PROJEN_GITHUB_TOKEN for team membership check (needs read:org)
+            const { Octokit } = require('@octokit/rest');
+            const teamOctokit = new Octokit({ auth: process.env.TEAM_TOKEN });
+
+            for (const review of approvals) {
+              try {
+                await teamOctokit.request('GET /orgs/{org}/teams/{team_slug}/memberships/{username}', {
+                  org: 'aws',
+                  team_slug: 'aws-cdk-team',
+                  username: review.user.login,
+                });
+                core.info(`Approved by CDK team member: ${review.user.login}`);
+                core.setOutput('approved', 'true');
+                core.setOutput('approver', review.user.login);
+                return;
+              } catch (e) {
+                core.info(`${review.user.login} is not a CDK team member, checking next approver...`);
+              }
+            }
+
+            core.setFailed('No CDK team member approval found');
+
+      - name: Check for snapshot changes
+        id: check-snapshots
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = ${{ steps.find-pr.outputs.pr_number }};
+            core.info(`Checking PR #${prNumber} for snapshot changes`);
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+              per_page: 100,
+            });
+
+            const snapshotFiles = files.filter(f => f.filename.includes('.js.snapshot'));
+            core.info(`Found ${snapshotFiles.length} snapshot file(s) changed`);
+
+            if (snapshotFiles.length === 0) {
+              core.info('No snapshot changes detected — skipping integration tests');
+              core.setOutput('has_snapshots', 'false');
+            } else {
+              core.info('Snapshot changes detected — integration tests will run');
+              for (const f of snapshotFiles.slice(0, 10)) {
+                core.info(`  - ${f.filename}`);
+              }
+              if (snapshotFiles.length > 10) {
+                core.info(`  ... and ${snapshotFiles.length - 10} more`);
+              }
+              core.setOutput('has_snapshots', 'true');
+            }
+
+      - name: Post pending status
+        if: steps.check-snapshots.outputs.has_snapshots == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const sha = '${{ steps.find-pr.outputs.head_sha }}';
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: sha,
+              state: 'pending',
+              context: 'Integration Tests (Auto-Approval)',
+              description: 'Integration tests are running...',
+              target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+            });
+
+      - name: Checkout PR code at verified SHA
+        if: steps.check-snapshots.outputs.has_snapshots == 'true'
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.find-pr.outputs.head_sha }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        if: steps.check-snapshots.outputs.has_snapshots == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version: "lts/*"
+          cache: "yarn"
+          cache-dependency-path: yarn.lock
+
+      - name: Set up Docker
+        if: steps.check-snapshots.outputs.has_snapshots == 'true'
+        uses: docker/setup-buildx-action@v3
+
+      - name: Configure system settings
+        if: steps.check-snapshots.outputs.has_snapshots == 'true'
+        run: |
+          (command -v sysctl || sudo apt-get update && sudo apt-get install -y procps) && \
+          sudo sysctl -w vm.max_map_count=2251954
+
+      - name: Install dependencies
+        if: steps.check-snapshots.outputs.has_snapshots == 'true'
+        run: yarn install --frozen-lockfile
+
+      - name: Build deployment-integ
+        if: steps.check-snapshots.outputs.has_snapshots == 'true'
+        run: yarn --cwd tools/@aws-cdk/integration-test-deployment build
+
+      - name: Build integration test packages
+        if: steps.check-snapshots.outputs.has_snapshots == 'true'
+        run: npx lerna run build --scope="{@aws-cdk/*,@aws-cdk-testing/framework-integ}"
+
+      - name: Run integration tests
+        id: run-tests
+        if: steps.check-snapshots.outputs.has_snapshots == 'true'
+        run: yarn run atmosphere-integ-test
+        env:
+          CDK_ATMOSPHERE_ENDPOINT: ${{ vars.CDK_ATMOSPHERE_ENDPOINT }}
+          CDK_ATMOSPHERE_POOL: ${{ vars.CDK_ATMOSPHERE_POOL }}
+          CDK_ATMOSPHERE_OIDC_ROLE: ${{ vars.CDK_ATMOSPHERE_OIDC_ROLE }}
+          CDK_ATMOSPHERE_BATCH_SIZE: ${{ vars.CDK_ATMOSPHERE_BATCH_SIZE }}
+          TARGET_BRANCH_COMMIT: ${{ steps.find-pr.outputs.base_sha }}
+          SOURCE_BRANCH_COMMIT: ${{ steps.find-pr.outputs.head_sha }}
+
+      - name: Post success status
+        if: steps.check-snapshots.outputs.has_snapshots == 'true' && success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const sha = '${{ steps.find-pr.outputs.head_sha }}';
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: sha,
+              state: 'success',
+              context: 'Integration Tests (Auto-Approval)',
+              description: 'Integration tests passed',
+              target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+            });
+
+      - name: Post failure status
+        if: steps.check-snapshots.outputs.has_snapshots == 'true' && failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const sha = '${{ steps.find-pr.outputs.head_sha }}';
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: sha,
+              state: 'failure',
+              context: 'Integration Tests (Auto-Approval)',
+              description: 'Integration tests failed',
+              target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+            });
+
+      - name: Post skipped status
+        if: steps.check-snapshots.outputs.has_snapshots == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const sha = '${{ steps.find-pr.outputs.head_sha }}';
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: sha,
+              state: 'success',
+              context: 'Integration Tests (Auto-Approval)',
+              description: 'Skipped — no snapshot changes detected',
+              target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+            });
