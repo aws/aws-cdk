@@ -220,6 +220,48 @@ export enum LaunchTemplateHttpTokens {
 }
 
 /**
+ * The CPU options for the instance.
+ *
+ * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-optimize-cpu.html
+ */
+export interface LaunchTemplateCpuOptions {
+  /**
+   * Indicates whether to enable the instance for AMD SEV-SNP.
+   *
+   * AMD SEV-SNP is supported with M6a, R6a, and C6a instance types only.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/sev-snp.html
+   *
+   * @default - AMD SEV-SNP is not specified in the launch template.
+   */
+  readonly amdSevSnp?: boolean;
+
+  /**
+   * The number of CPU cores for the instance.
+   *
+   * @default - The number of CPU cores is not specified in the launch template.
+   */
+  readonly coreCount?: number;
+
+  /**
+   * Indicates whether the instance is enabled for nested virtualization.
+   *
+   * @default - Nested virtualization is not specified in the launch template.
+   */
+  readonly nestedVirtualization?: boolean;
+
+  /**
+   * The number of threads per CPU core.
+   *
+   * To disable multithreading for the instance, specify a value of 1.
+   * Otherwise, specify the default value of 2.
+   *
+   * @default - The number of threads per CPU core is not specified in the launch template.
+   */
+  readonly threadsPerCore?: number;
+}
+
+/**
  * Properties of a LaunchTemplate.
  */
 export interface LaunchTemplateProps {
@@ -300,6 +342,15 @@ export interface LaunchTemplateProps {
    * @default - No credit type is specified in the Launch Template.
    */
   readonly cpuCredits?: CpuCredits;
+
+  /**
+   * The CPU options for the instance.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-optimize-cpu.html
+   *
+   * @default - The CPU options are not specified in the launch template.
+   */
+  readonly cpuOptions?: LaunchTemplateCpuOptions;
 
   /**
    * If you set this parameter to true, you cannot terminate the instances launched with this launch template
@@ -793,6 +844,16 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         creditSpecification: props?.cpuCredits !== undefined ? {
           cpuCredits: props.cpuCredits,
         } : undefined,
+        cpuOptions: props?.cpuOptions !== undefined ? {
+          amdSevSnp: props.cpuOptions.amdSevSnp !== undefined
+            ? (props.cpuOptions.amdSevSnp ? 'enabled' : 'disabled')
+            : undefined,
+          coreCount: props.cpuOptions.coreCount,
+          nestedVirtualization: props.cpuOptions.nestedVirtualization !== undefined
+            ? (props.cpuOptions.nestedVirtualization ? 'enabled' : 'disabled')
+            : undefined,
+          threadsPerCore: props.cpuOptions.threadsPerCore,
+        } : undefined,
         disableApiTermination: props?.disableApiTermination,
         ebsOptimized: props?.ebsOptimized,
         enclaveOptions: props?.nitroEnclaveEnabled !== undefined ? {
@@ -824,9 +885,6 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-capacityreservationspecification.html
         // Will require creating an L2 for AWS::EC2::CapacityReservation
         // capacityReservationSpecification: undefined,
-
-        // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-cpuoptions.html
-        // cpuOptions: undefined,
 
         // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-elasticgpuspecification.html
         // elasticGpuSpecifications: undefined,
