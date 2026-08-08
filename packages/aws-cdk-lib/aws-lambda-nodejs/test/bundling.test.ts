@@ -1605,6 +1605,50 @@ test('Local bundling on Windows uses powershell for spawn steps', () => {
   expect(cmdString).toContain("'--bundle'");
   expect(cmdString).toContain("'--platform=node'");
 
+  // The executable is resolved to an Application so PowerShell cannot select the
+  // .ps1 shim, which the AllSigned execution policy refuses. See issue #38439.
+  expect(cmdString).toMatch(/^& \(Get-Command '[^']+' -CommandType Application\)\[0\]\.Source /);
+
+  spawnSyncMock.mockRestore();
+  osPlatformMock.mockRestore();
+});
+
+test('Local bundling on Windows resolves the spawned executable to an Application', () => {
+  // A bare command name passed to the PowerShell call operator can resolve to the
+  // .ps1 shim (e.g. npm.ps1), which is blocked under an AllSigned execution policy.
+  // Resolving with -CommandType Application only matches npm.cmd / npm.exe.
+  // See https://github.com/aws/aws-cdk/issues/38439
+  const osPlatformMock = jest.spyOn(os, 'platform').mockReturnValue('win32');
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue(spawnSyncMockReturnValue);
+  jest.spyOn(fs, 'copyFileSync').mockReturnValue();
+  jest.spyOn(fs, 'writeFileSync').mockReturnValue();
+
+  const packageLock = path.join(__dirname, '..', 'package-lock.json');
+  const bundler = new Bundling(stack, {
+    entry: __filename,
+    projectRoot: path.dirname(packageLock),
+    depsLockFilePath: packageLock,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    nodeModules: ['delay'],
+  });
+
+  bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+
+  const psCommands = spawnSyncMock.mock.calls
+    .filter(c => c[0] === 'powershell.exe')
+    .map(c => (c[1] as string[])[2]);
+  expect(psCommands.length).toBeGreaterThan(0);
+
+  for (const command of psCommands) {
+    // Every spawn resolves its executable rather than invoking a bare name.
+    expect(command).toMatch(/^& \(Get-Command '[^']+' -CommandType Application\)\[0\]\.Source/);
+    expect(command).not.toMatch(/^& '/);
+  }
+
+  // The npm install step is present and goes through the resolved form.
+  expect(psCommands.some(c => c.includes('-CommandType Application') && c.includes("'ci'"))).toEqual(true);
+
   spawnSyncMock.mockRestore();
   osPlatformMock.mockRestore();
 });
