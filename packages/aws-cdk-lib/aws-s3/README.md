@@ -764,6 +764,76 @@ However, if you use an imported bucket (i.e `Bucket.fromXXX()`), you'll have to 
 }
 ```
 
+## S3 Metadata
+
+[S3 Metadata](https://docs.aws.amazon.com/AmazonS3/latest/userguide/metadata-tables-overview.html) captures the metadata of the objects in a bucket as queryable Apache Iceberg tables, stored in an AWS managed table bucket. Three tables are available:
+
+- a **journal table**, which records every change made to the objects in the bucket. This table is always created.
+- an **inventory table**, which records the current state of the objects in the bucket.
+- an **annotation table**, which stores the custom business context attached to the objects.
+
+Enabling the annotation table requires an IAM role that S3 Metadata can assume to write to it:
+
+```ts
+const annotationRole = new iam.Role(this, 'AnnotationRole', {
+  assumedBy: new iam.ServicePrincipal('metadata.s3.amazonaws.com'),
+});
+
+new s3.Bucket(this, 'DataBucket', {
+  metadataConfiguration: {
+    inventoryTable: { enabled: true },
+    annotationTable: { role: annotationRole },
+  },
+});
+```
+
+By default, journal table records are kept forever. To expire them, enable record expiration and specify how long records are retained:
+
+```ts
+new s3.Bucket(this, 'DataBucket', {
+  metadataConfiguration: {
+    journalTable: {
+      recordExpiration: true,
+      recordExpirationAfter: Duration.days(10),
+    },
+  },
+});
+```
+
+Each table can be encrypted with Amazon S3 managed keys (SSE-S3) or with a customer managed KMS key (SSE-KMS). The KMS key must be in the same Region as the bucket:
+
+```ts
+declare const key: kms.Key;
+
+new s3.Bucket(this, 'DataBucket', {
+  metadataConfiguration: {
+    journalTable: {
+      encryption: s3.MetadataTableEncryption.kms(key),
+    },
+    inventoryTable: {
+      encryption: s3.MetadataTableEncryption.s3Managed(),
+    },
+  },
+});
+```
+
+The same configuration can be applied to an L1 bucket with the [`BucketMetadataConfiguration`](#bucketmetadataconfiguration) mixin.
+
+When a customer managed key is used, its key policy must allow the S3 Metadata service principals to use it:
+
+```ts
+const key = new kms.Key(this, 'MetadataKey');
+
+key.addToResourcePolicy(new iam.PolicyStatement({
+  principals: [
+    new iam.ServicePrincipal('metadata.s3.amazonaws.com'),
+    new iam.ServicePrincipal('maintenance.s3tables.amazonaws.com'),
+  ],
+  actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
+  resources: ['*'],
+}));
+```
+
 ## Website redirection
 
 You can use the two following properties to specify the bucket [redirection policy]. Please note that these methods cannot both be applied to the same bucket.
@@ -1190,6 +1260,17 @@ Enables or suspends versioning on an S3 bucket:
 ```ts
 new s3.CfnBucket(this, 'Bucket')
   .with(new s3.mixins.BucketVersioning());
+```
+
+### BucketMetadataConfiguration
+
+Configures [S3 Metadata](#s3-metadata) on an S3 bucket:
+
+```ts
+new s3.CfnBucket(this, 'Bucket')
+  .with(new s3.mixins.BucketMetadataConfiguration({
+    inventoryTable: { enabled: true },
+  }));
 ```
 
 ### BucketBlockPublicAccess

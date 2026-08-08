@@ -1,10 +1,12 @@
 import type { IConstruct } from 'constructs';
 import * as iam from '../../../aws-iam';
-import { CfnDeletionPolicy, CustomResource, Tags } from '../../../core';
+import { CfnDeletionPolicy, CustomResource, Tags, Token } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
 import { ConstructReflection } from '../../../core/lib/helpers-internal';
 import { Mixin } from '../../../core/lib/mixins';
+import { lit } from '../../../core/lib/private/literal-string';
 import { AutoDeleteObjectsProvider } from '../../../custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated';
-import { BlockPublicAccess, type BlockPublicAccessOptions } from '../bucket';
+import { BlockPublicAccess, type BlockPublicAccessOptions, type MetadataConfiguration } from '../bucket';
 import * as perms from '../perms';
 import { CfnBucket } from '../s3.generated';
 
@@ -141,6 +143,85 @@ export class BucketBlockPublicAccess extends Mixin {
       blockPublicPolicy: this.configOptions.blockPublicPolicy ?? true,
       ignorePublicAcls: this.configOptions.ignorePublicAcls ?? true,
       restrictPublicBuckets: this.configOptions.restrictPublicBuckets ?? true,
+    };
+  }
+}
+
+/**
+ * S3-specific mixin for configuring S3 Metadata.
+ *
+ * S3 Metadata captures the metadata of the objects in a bucket as queryable Apache
+ * Iceberg tables. A journal table is always created; the inventory and annotation
+ * tables are opt-in.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/metadata-tables-overview.html
+ */
+export class BucketMetadataConfiguration extends Mixin {
+  constructor(private readonly metadataConfiguration: MetadataConfiguration = {}) {
+    super();
+  }
+
+  public supports(construct: IConstruct): construct is CfnBucket {
+    return CfnBucket.isCfnBucket(construct);
+  }
+
+  public applyTo(construct: IConstruct): void {
+    if (!this.supports(construct)) return;
+
+    const journalTable = this.metadataConfiguration.journalTable ?? {};
+    const expirationEnabled = journalTable.recordExpiration ?? false;
+    const days = journalTable.recordExpirationAfter?.toDays();
+
+    if (expirationEnabled && days === undefined) {
+      throw new ValidationError(lit`JournalTableRecordExpirationAfterRequired`, "'recordExpirationAfter' must be specified when 'recordExpiration' is enabled", construct);
+    }
+    if (!expirationEnabled && days !== undefined) {
+      throw new ValidationError(lit`JournalTableRecordExpirationDisabled`, "'recordExpirationAfter' can only be specified when 'recordExpiration' is enabled", construct);
+    }
+    // S3 retains journal table records for a minimum of 7 days.
+    if (days !== undefined && !Token.isUnresolved(days) && (days < 7 || days > 2147483647)) {
+      throw new ValidationError(lit`JournalTableRecordExpirationAfterOutOfRange`, `'recordExpirationAfter' must be between 7 and 2147483647 days, got ${days}`, construct);
+    }
+
+    // S3 rejects an enabled annotation table without a role at deploy time, even though
+    // CloudFormation marks the property as optional.
+    const annotationTable = this.metadataConfiguration.annotationTable;
+    const annotationEnabled = annotationTable?.enabled ?? true;
+    if (annotationTable && annotationEnabled && annotationTable.role === undefined) {
+      throw new ValidationError(lit`AnnotationTableRoleRequired`, "'role' must be specified when the annotation table is enabled", construct);
+    }
+
+    const inventoryTable = this.metadataConfiguration.inventoryTable;
+    const destination = this.metadataConfiguration.destination;
+
+    construct.metadataConfiguration = {
+      journalTableConfiguration: {
+        recordExpiration: {
+          expiration: expirationEnabled ? 'ENABLED' : 'DISABLED',
+          days,
+        },
+        encryptionConfiguration: journalTable.encryption?._render(),
+        tableArn: journalTable.tableArn,
+        tableName: journalTable.tableName,
+      },
+      inventoryTableConfiguration: inventoryTable ? {
+        configurationState: (inventoryTable.enabled ?? true) ? 'ENABLED' : 'DISABLED',
+        encryptionConfiguration: inventoryTable.encryption?._render(),
+        tableArn: inventoryTable.tableArn,
+        tableName: inventoryTable.tableName,
+      } : undefined,
+      annotationTableConfiguration: annotationTable ? {
+        configurationState: annotationEnabled ? 'ENABLED' : 'DISABLED',
+        encryptionConfiguration: annotationTable.encryption?._render(),
+        role: annotationTable.role?.roleRef.roleArn,
+        tableArn: annotationTable.tableArn,
+        tableName: annotationTable.tableName,
+      } : undefined,
+      destination: destination ? {
+        tableBucketType: destination.tableBucketType,
+        tableBucketArn: destination.tableBucket?.tableBucketRef.tableBucketArn,
+        tableNamespace: destination.tableNamespace,
+      } : undefined,
     };
   }
 }

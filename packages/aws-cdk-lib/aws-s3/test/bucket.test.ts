@@ -4,6 +4,7 @@ import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { CfnKey } from '../../aws-kms';
+import * as s3tables from '../../aws-s3tables';
 import * as cdk from '../../core';
 import { Tags } from '../../core';
 import * as cxapi from '../../cx-api';
@@ -3894,6 +3895,279 @@ describe('bucket', () => {
     });
 
     expect(() => Template.fromStack(stack)).toThrow(/inventoryId should not exceed 64 characters and should not contain special characters except . and -, got InvalidId&123/);
+  });
+
+  describe('metadata configuration', () => {
+    test('is absent by default', () => {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'MyBucket');
+
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataConfiguration: Match.absent(),
+      });
+    });
+
+    test('an empty configuration creates a journal table with expiration disabled', () => {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'MyBucket', {
+        metadataConfiguration: {},
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataConfiguration: {
+          JournalTableConfiguration: {
+            RecordExpiration: { Expiration: 'DISABLED' },
+          },
+          InventoryTableConfiguration: Match.absent(),
+          AnnotationTableConfiguration: Match.absent(),
+        },
+      });
+    });
+
+    test('journal table record expiration', () => {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'MyBucket', {
+        metadataConfiguration: {
+          journalTable: {
+            recordExpiration: true,
+            recordExpirationAfter: cdk.Duration.days(10),
+          },
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataConfiguration: {
+          JournalTableConfiguration: {
+            RecordExpiration: { Expiration: 'ENABLED', Days: 10 },
+          },
+        },
+      });
+    });
+
+    test('inventory and annotation tables', () => {
+      const stack = new cdk.Stack();
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('metadata.s3.amazonaws.com'),
+      });
+
+      new s3.Bucket(stack, 'MyBucket', {
+        metadataConfiguration: {
+          inventoryTable: { enabled: false },
+          annotationTable: { role },
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataConfiguration: {
+          InventoryTableConfiguration: { ConfigurationState: 'DISABLED' },
+          AnnotationTableConfiguration: {
+            ConfigurationState: 'ENABLED',
+            Role: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
+          },
+        },
+      });
+    });
+
+    test('S3 managed encryption renders AES256', () => {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'MyBucket', {
+        metadataConfiguration: {
+          journalTable: { encryption: s3.MetadataTableEncryption.s3Managed() },
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataConfiguration: {
+          JournalTableConfiguration: {
+            EncryptionConfiguration: { SseAlgorithm: 'AES256' },
+          },
+        },
+      });
+    });
+
+    test('KMS encryption renders the key ARN', () => {
+      const stack = new cdk.Stack();
+      const key = new kms.Key(stack, 'Key');
+
+      new s3.Bucket(stack, 'MyBucket', {
+        metadataConfiguration: {
+          journalTable: { encryption: s3.MetadataTableEncryption.kms(key) },
+          inventoryTable: {
+            encryption: s3.MetadataTableEncryption.kms(key),
+          },
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataConfiguration: {
+          JournalTableConfiguration: {
+            EncryptionConfiguration: {
+              SseAlgorithm: 'aws:kms',
+              KmsKeyArn: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+            },
+          },
+          InventoryTableConfiguration: {
+            EncryptionConfiguration: {
+              SseAlgorithm: 'aws:kms',
+              KmsKeyArn: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+            },
+          },
+        },
+      });
+    });
+
+    test('fails when record expiration is enabled without a duration', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new s3.Bucket(stack, 'MyBucket', {
+        metadataConfiguration: {
+          journalTable: { recordExpiration: true },
+        },
+      })).toThrow(/'recordExpirationAfter' must be specified when 'recordExpiration' is enabled/);
+    });
+
+    test('fails when a duration is given but record expiration is disabled', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new s3.Bucket(stack, 'MyBucket', {
+        metadataConfiguration: {
+          journalTable: { recordExpirationAfter: cdk.Duration.days(10) },
+        },
+      })).toThrow(/'recordExpirationAfter' can only be specified when 'recordExpiration' is enabled/);
+    });
+
+    test.each([0, 1, 6, 2147483648])('fails for an out of range record expiration of %d days', (days) => {
+      const stack = new cdk.Stack();
+
+      expect(() => new s3.Bucket(stack, 'MyBucket', {
+        metadataConfiguration: {
+          journalTable: {
+            recordExpiration: true,
+            recordExpirationAfter: cdk.Duration.days(days),
+          },
+        },
+      })).toThrow(new RegExp(`'recordExpirationAfter' must be between 7 and 2147483647 days, got ${days}`));
+    });
+
+    test('accepts the minimum record expiration of 7 days', () => {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'MyBucket', {
+        metadataConfiguration: {
+          journalTable: {
+            recordExpiration: true,
+            recordExpirationAfter: cdk.Duration.days(7),
+          },
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataConfiguration: {
+          JournalTableConfiguration: {
+            RecordExpiration: { Expiration: 'ENABLED', Days: 7 },
+          },
+        },
+      });
+    });
+
+    test('renders explicit table names and ARNs', () => {
+      const stack = new cdk.Stack();
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('metadata.s3.amazonaws.com'),
+      });
+
+      new s3.Bucket(stack, 'MyBucket', {
+        metadataConfiguration: {
+          journalTable: { tableName: 'my-journal' },
+          inventoryTable: { tableName: 'my-inventory' },
+          annotationTable: { tableName: 'my-annotations', role },
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataConfiguration: {
+          JournalTableConfiguration: { TableName: 'my-journal' },
+          InventoryTableConfiguration: { TableName: 'my-inventory' },
+          AnnotationTableConfiguration: { TableName: 'my-annotations' },
+        },
+      });
+    });
+
+    test('renders a customer-managed destination', () => {
+      const stack = new cdk.Stack();
+      const tableBucket = new s3tables.CfnTableBucket(stack, 'TableBucket', {
+        tableBucketName: 'my-table-bucket',
+      });
+
+      new s3.Bucket(stack, 'MyBucket', {
+        metadataConfiguration: {
+          destination: {
+            tableBucketType: s3.MetadataTableBucketType.CUSTOMER_MANAGED,
+            tableBucket,
+            tableNamespace: 'my_namespace',
+          },
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataConfiguration: {
+          Destination: {
+            TableBucketType: 'customer',
+            TableBucketArn: { Ref: 'TableBucket' },
+            TableNamespace: 'my_namespace',
+          },
+        },
+      });
+    });
+
+    test('fails when the annotation table is enabled without a role', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new s3.Bucket(stack, 'MyBucket', {
+        metadataConfiguration: {
+          annotationTable: { enabled: true },
+        },
+      })).toThrow(/'role' must be specified when the annotation table is enabled/);
+    });
+
+    test('a disabled annotation table does not require a role', () => {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'MyBucket', {
+        metadataConfiguration: {
+          annotationTable: { enabled: false },
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataConfiguration: {
+          AnnotationTableConfiguration: {
+            ConfigurationState: 'DISABLED',
+            Role: Match.absent(),
+          },
+        },
+      });
+    });
+
+    test('accepts a tokenized record expiration', () => {
+      const stack = new cdk.Stack();
+      const days = new cdk.CfnParameter(stack, 'Days', { type: 'Number' });
+
+      new s3.Bucket(stack, 'MyBucket', {
+        metadataConfiguration: {
+          journalTable: {
+            recordExpiration: true,
+            recordExpirationAfter: cdk.Duration.days(days.valueAsNumber),
+          },
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataConfiguration: {
+          JournalTableConfiguration: {
+            RecordExpiration: { Expiration: 'ENABLED', Days: { Ref: 'Days' } },
+          },
+        },
+      });
+    });
   });
 
   test('Bucket with objectOwnership set to BUCKET_OWNER_ENFORCED', () => {
