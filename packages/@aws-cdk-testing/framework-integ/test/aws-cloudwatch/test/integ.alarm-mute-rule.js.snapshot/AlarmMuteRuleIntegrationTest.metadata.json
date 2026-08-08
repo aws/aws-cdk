@@ -1,0 +1,86 @@
+{
+  "/AlarmMuteRuleIntegrationTest/Alarm1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/AlarmMuteRuleIntegrationTest/Alarm2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/AlarmMuteRuleIntegrationTest/CompositeAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/AlarmMuteRuleIntegrationTest/RecurringMuteRule": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/AlarmMuteRuleIntegrationTest/OneTimeMuteRule": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/AlarmMuteRuleIntegrationTest/MuteRuleWithDates": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/AlarmMuteRuleIntegrationTest/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/AlarmMuteRuleIntegrationTest/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/AlarmMuteRuleIntegrationTest/Alarm1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Alarm1F9009D71"
+    }
+  ],
+  "/AlarmMuteRuleIntegrationTest/Alarm2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Alarm2A7122E13"
+    }
+  ],
+  "/AlarmMuteRuleIntegrationTest/CompositeAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CompositeAlarmF4C3D082"
+    }
+  ],
+  "/AlarmMuteRuleIntegrationTest/RecurringMuteRule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RecurringMuteRuleB5AEE146"
+    }
+  ],
+  "/AlarmMuteRuleIntegrationTest/OneTimeMuteRule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OneTimeMuteRuleF5B3927B"
+    }
+  ],
+  "/AlarmMuteRuleIntegrationTest/MuteRuleWithDates/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MuteRuleWithDates2761A66E"
+    }
+  ]
+}
