@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_autoscaling_common"
+    },
+    "ruby": {
+      "module": "AWSCDK::AutoScalingCommon"
     }
   }
 }

@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.assertions"
+    },
+    "ruby": {
+      "module": "AWSCDK::Assertions"
     }
   }
 }

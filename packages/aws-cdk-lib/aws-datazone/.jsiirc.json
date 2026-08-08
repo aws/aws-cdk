@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_datazone"
+    },
+    "ruby": {
+      "module": "AWSCDK::DataZone"
     }
   }
 }
