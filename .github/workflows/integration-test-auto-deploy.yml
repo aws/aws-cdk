@@ -1,0 +1,144 @@
+# Stage 2: Privileged integration test deployment triggered by maintainer approval.
+#
+# This workflow runs in the context of the base branch (via workflow_run) after
+# a review is submitted on a PR. It uses two scripts to validate:
+#   1. find-pr-from-sha.js - finds the PR from the workflow_run head SHA
+#   2. verify-approval.js - checks the PR has a non-stale approval from a CDK team member
+#
+# If both pass, it runs the integration tests via Atmosphere.
+
+name: Integration Test Auto Deploy
+
+on:
+  workflow_run:
+    workflows: ['Integration Test Trigger']
+    types: [completed]
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: read
+  statuses: write
+
+concurrency:
+  group: integ-test-review-${{ github.event.workflow_run.head_sha }}
+  cancel-in-progress: true
+
+jobs:
+  validate-and-deploy:
+    runs-on: codebuild-aws-cdk-github-actions-deployment-integ-runner-${{ github.run_id }}-${{ github.run_attempt }}
+    if: github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Find PR from head SHA
+        id: find-pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // workflow_run.pull_requests[] is empty for forks, and the
+            // associated-commits API does not index a fork's head commit against
+            // the base repo. So resolve the PR by scanning open PRs for the one
+            // whose head commit matches the SHA GitHub reported.
+            // Every value here comes from the trusted event payload, never from
+            // a downloaded artifact, so a fork cannot redirect this.
+            const headSha = context.payload.workflow_run.head_sha;
+            const prs = await github.paginate(github.rest.pulls.list, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100,
+            });
+            const matching = prs.filter(p => p.head.sha === headSha);
+            if (matching.length === 0) {
+              core.setFailed(`No open PR found with head ${headSha}`);
+              return;
+            }
+            if (matching.length > 1) {
+              core.setFailed(`Multiple PRs (${matching.length}) found for SHA ${headSha}, aborting`);
+              return;
+            }
+            core.setOutput('number', String(matching[0].number));
+            core.setOutput('head_sha', matching[0].head.sha);
+            core.setOutput('base_sha', matching[0].base.sha);
+
+      - name: Verify maintainer approval (non-stale)
+        id: verify
+        run: |
+          node scripts/verify-approval.js "${{ steps.find-pr.outputs.number }}"
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TEAM_TOKEN: ${{ secrets.PROJEN_GITHUB_TOKEN }}
+
+      - name: Post pending status
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ steps.find-pr.outputs.head_sha }}',
+              state: 'pending',
+              context: 'Integration Tests (Auto)',
+              description: 'Running integration tests...',
+            });
+
+      - name: Checkout PR head for test execution
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.find-pr.outputs.head_sha }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "lts/*"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build integration test tooling
+        run: yarn --cwd tools/@aws-cdk/integration-test-deployment build
+
+      - name: Run integration tests
+        run: yarn run atmosphere-integ-test
+        env:
+          CDK_ATMOSPHERE_ENDPOINT: ${{ vars.CDK_ATMOSPHERE_ENDPOINT }}
+          CDK_ATMOSPHERE_POOL: ${{ vars.CDK_ATMOSPHERE_POOL }}
+          CDK_ATMOSPHERE_OIDC_ROLE: ${{ vars.CDK_ATMOSPHERE_OIDC_ROLE }}
+          CDK_ATMOSPHERE_BATCH_SIZE: ${{ vars.CDK_ATMOSPHERE_BATCH_SIZE }}
+          TARGET_BRANCH_COMMIT: ${{ steps.find-pr.outputs.base_sha }}
+          SOURCE_BRANCH_COMMIT: ${{ steps.find-pr.outputs.head_sha }}
+
+      - name: Post success status
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ steps.find-pr.outputs.head_sha }}',
+              state: 'success',
+              context: 'Integration Tests (Auto)',
+              description: 'Integration tests passed',
+            });
+
+      - name: Post failure status
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ steps.find-pr.outputs.head_sha }}',
+              state: 'failure',
+              context: 'Integration Tests (Auto)',
+              description: 'Integration tests failed',
+            });

@@ -1,0 +1,24 @@
+# Stage 1: Unprivileged trigger signal for integration test deployment.
+#
+# This workflow fires on PR review submission and simply completes, signaling
+# the privileged Stage 2 workflow (integration-test-deployment-review.yml)
+# via the workflow_run event.
+#
+# Security note: This workflow runs in the context of the PR (pull_request_review)
+# and has minimal permissions. The privileged work happens in Stage 2.
+
+name: Integration Test Trigger
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+permissions:
+  contents: read
+
+jobs:
+  signal:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Signal complete
+        run: echo "Review submitted. Signaling Stage 2 workflow."
