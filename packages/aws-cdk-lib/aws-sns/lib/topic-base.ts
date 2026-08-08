@@ -71,12 +71,17 @@ export interface ITopic extends IResource, notifications.INotificationRuleTarget
   addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
-   * Grant topic publishing permissions to the given identity
+   * Grant topic publishing permissions to the given identity.
+   *
+   * This grants the `sns:Publish` action on this topic's ARN.
+   * If the topic is encrypted with a KMS key, `kms:Decrypt` and `kms:GenerateDataKey*` are also granted.
    */
   grantPublish(identity: iam.IGrantable): iam.Grant;
 
   /**
-   * Grant topic subscribing permissions to the given identity
+   * Grant topic subscribing permissions to the given identity.
+   *
+   * This grants the `sns:Subscribe` action on this topic's ARN.
    */
   grantSubscribe(identity: iam.IGrantable): iam.Grant;
 }
