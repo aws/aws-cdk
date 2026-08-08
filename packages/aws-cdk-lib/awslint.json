@@ -1498,6 +1498,7 @@
     "prefer-ref-interface:aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationLoadBalancerAttributes.vpc",
     "prefer-ref-interface:aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationLoadBalancer.addSecurityGroup.securityGroup",
     "prefer-ref-interface:aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationLoadBalancer.logConnectionLogs.bucket",
+    "prefer-ref-interface:aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationLoadBalancer.logHealthCheckLogs.bucket",
     "prefer-ref-interface:aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationLoadBalancerProps.vpc",
     "prefer-ref-interface:aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationLoadBalancerProps.securityGroup",
     "prefer-ref-interface:aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationTargetGroupProps.vpc",
