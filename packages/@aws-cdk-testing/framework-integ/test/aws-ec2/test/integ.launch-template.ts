@@ -50,6 +50,17 @@ new ec2.LaunchTemplate(stack, 'LTWithPlacementGroup', {
   placementGroup: pg,
 });
 
+// Integration test case focusing on volumeInitializationRate with a snapshot-backed EBS volume
+new ec2.LaunchTemplate(stack, 'LTWithVolumeInitRate', {
+  blockDevices: [{
+    deviceName: '/dev/xvda',
+    volume: ec2.BlockDeviceVolume.ebsFromSnapshot('snap-0123456789abcdef0', {
+      volumeType: ec2.EbsDeviceVolumeType.GP3,
+      volumeInitializationRate: 300,
+    }),
+  }],
+});
+
 new integ.IntegTest(app, 'LambdaTest', {
   testCases: [stack],
   diffAssets: true,

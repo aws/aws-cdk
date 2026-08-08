@@ -368,6 +368,37 @@ describe('instance', () => {
       Annotations.fromStack(stack).hasWarning('/Default/Instance', Match.stringLikeRegexp('The throughput property is not supported on EC2 instances. Use a Launch Template instead'));
     });
 
+    test('warns if volumeInitializationRate is specified for an EBS volume', () => {
+      // WHEN
+      new Instance(stack, 'Instance', {
+        vpc,
+        machineImage: new AmazonLinuxImage(),
+        instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+        blockDevices: [{
+          deviceName: 'ebs',
+          volume: BlockDeviceVolume.ebs(15, {
+            deleteOnTermination: true,
+            encrypted: true,
+            volumeType: EbsDeviceVolumeType.GP3,
+            volumeInitializationRate: 300,
+          }),
+        }],
+      });
+      // THEN
+      Annotations.fromStack(stack).hasWarning('/Default/Instance', Match.stringLikeRegexp('The volumeInitializationRate is not supported on EC2 instances. Use a Launch Template instead.'));
+
+      // Assert VolumeInitializationRate is absent from the synthesized template
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+        BlockDeviceMappings: Match.arrayWith([
+          Match.objectLike({
+            Ebs: Match.not(Match.objectLike({
+              VolumeInitializationRate: Match.anyValue(),
+            })),
+          }),
+        ]),
+      });
+    });
+
     test('throws if ephemeral volumeIndex < 0', () => {
       // THEN
       expect(() => {
