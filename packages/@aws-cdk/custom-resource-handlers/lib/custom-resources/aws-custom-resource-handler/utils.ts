@@ -70,11 +70,11 @@ export function respond(
     console.log('Responding', JSON.stringify(filteredResponseObject));
   }
 
-  const parsedUrl = require('url').parse(event.ResponseURL);
+  const parsedUrl = new URL(event.ResponseURL);
   const responseBody = JSON.stringify(responseObject);
   const requestOptions = {
     hostname: parsedUrl.hostname,
-    path: parsedUrl.path,
+    path: parsedUrl.pathname + parsedUrl.search,
     method: 'PUT',
     headers: {
       'content-type': '',
