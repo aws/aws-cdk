@@ -141,7 +141,6 @@ const stack = new EksClusterRemovalPolicyStack(app, 'EksClusterV2RemovalPolicySt
 new integ.IntegTest(app, 'eks-cluster-removal-policy-integ', {
   testCases: [stack],
   diffAssets: false,
-  stackUpdateWorkflow: false,
 });
 
 app.synth();
