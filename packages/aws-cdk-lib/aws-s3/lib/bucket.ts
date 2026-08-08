@@ -1615,9 +1615,12 @@ export interface ReplicationRule {
   readonly replicationTimeControl?: ReplicationTimeValue;
 
   /**
-   * A container specifying replication metrics-related settings enabling replication metrics and events.
+   * A container specifying replication metrics-related settings to configure `Status` of replication metrics and `EventThreshold` .
    *
-   * When a value is set, metrics will be output to indicate whether the replication took longer than the specified time.
+   * The specified eventThreshold duration takes effect only when `replicationTimeControl` is enabled .
+   * Otherwise, the duration is ignored and replication metrics are enabled without an event threshold.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/repl-metrics.html
    *
    * @default - Replication metrics are not enabled
    */
@@ -3249,10 +3252,12 @@ export class Bucket extends BucketBase {
             } : undefined,
             metrics: rule.metrics !== undefined ? {
               status: 'Enabled',
-              eventThreshold: {
-                minutes: rule.metrics.minutes,
-              },
-            } : undefined,
+              ...(rule.replicationTimeControl !== undefined ? {
+                eventThreshold: {
+                  minutes: rule.metrics.minutes,
+                },
+              } : {}),
+            }:undefined,
           },
           filter,
           // To avoid deploy error when there are multiple replication rules with undefined deleteMarkerReplication,

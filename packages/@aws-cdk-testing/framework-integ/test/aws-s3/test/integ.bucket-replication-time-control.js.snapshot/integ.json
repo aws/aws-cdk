@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "s3-rtc-replication-metrics-integ-test/DefaultTest": {
+      "stacks": [
+        "S3-RTC-TestStack"
+      ],
+      "assertionStack": "s3-rtc-replication-metrics-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "s3rtcreplicationmetricsintegtestDefaultTestDeployAssert5183473A"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}
