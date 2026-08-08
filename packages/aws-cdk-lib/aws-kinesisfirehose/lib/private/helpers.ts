@@ -7,7 +7,7 @@ import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 import { undefinedIfAllValuesAreEmpty } from '../../../core/lib/util';
-import type { CommonDestinationProps, DestinationS3BackupProps } from '../common';
+import type { CommonDestinationProps, DestinationS3BackupProps, SecretsManagerProps } from '../common';
 import type { CfnDeliveryStream } from '../kinesisfirehose.generated';
 import type { ILoggingConfig } from '../logging-config';
 import type { DataProcessorBindOptions, IDataProcessor } from '../processor';
@@ -233,6 +233,25 @@ export function createBackupConfig(scope: Construct, role: iam.IRole, props?: De
       cloudWatchLoggingOptions: loggingOptions,
     },
     dependables: [bucketGrant, ...(loggingDependables ?? [])],
+  };
+}
+
+export function createSecretsManagerConfiguration(
+  role: iam.IRole, props?: SecretsManagerProps,
+): CfnDeliveryStream.SecretsManagerConfigurationProperty | undefined {
+  if (!props) {
+    return {
+      enabled: false,
+    };
+  }
+
+  if (!props.role) {
+    props.secret.grantRead(role);
+  }
+  return {
+    enabled: true,
+    roleArn: props.role?.roleRef.roleArn,
+    secretArn: props.secret.secretArn,
   };
 }
 
