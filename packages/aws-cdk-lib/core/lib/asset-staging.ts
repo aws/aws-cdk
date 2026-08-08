@@ -182,7 +182,7 @@ export class AssetStaging extends Construct {
       throw new ValidationError(lit`CannotFindAsset`, `Cannot find asset at ${this.sourcePath}`, this);
     }
 
-    // look for invalid (external symlinks)
+    // look for invalid (external) symlinks
     if (props.follow == SymlinkFollowMode.BLOCK_EXTERNAL) {
       findInvalidSymlinks(this.sourcePath);
     }
