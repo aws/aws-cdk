@@ -228,6 +228,92 @@ describe('AgentRuntimeArtifact tests', () => {
     }).toThrow(/There is already a Construct with name 'AgentRuntimeArtifact'/);
   });
 
+  test('fromAsset : If TWO or more Runtimes reference same artifact , then bind ECR permissions once per each of the Runtime role', () => {
+    const testArtifactPath = path.join(__dirname, 'testArtifact');
+    const artifact = AgentRuntimeArtifact.fromAsset(testArtifactPath);
+
+    new Runtime(stack, 'Runtime_1', { runtimeName: 'runtime_1', agentRuntimeArtifact: artifact });
+    new Runtime(stack, 'Runtime_2', { runtimeName: 'runtime_2', agentRuntimeArtifact: artifact });
+
+    const template = Template.fromStack(stack);
+
+    const ecrStatement = Match.arrayWith([
+      Match.objectLike({
+        Action: Match.arrayWith([
+          'ecr:BatchGetImage',
+        ]),
+        Effect: 'Allow',
+      }),
+    ]);
+
+    // Both policies must contain ECR pull statements — one per runtime role
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: { Statement: ecrStatement },
+      Roles: [{ Ref: Match.stringLikeRegexp('Runtime1ExecutionRole') }],
+    });
+
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: { Statement: ecrStatement },
+      Roles: [{ Ref: Match.stringLikeRegexp('Runtime2ExecutionRole') }],
+    });
+  });
+
+  test('fromEcrRepository : If TWO or more Runtimes reference same artifact , then bind ECR permissions once per each of the Runtime role', () => {
+    const artifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+
+    new Runtime(stack, 'Runtime_1', { runtimeName: 'runtime_1', agentRuntimeArtifact: artifact });
+    new Runtime(stack, 'Runtime_2', { runtimeName: 'runtime_2', agentRuntimeArtifact: artifact });
+
+    const template = Template.fromStack(stack);
+
+    const ecrStatement = Match.arrayWith([
+      Match.objectLike({
+        Action: Match.arrayWith(['ecr:BatchGetImage']),
+        Effect: 'Allow',
+      }),
+    ]);
+
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: { Statement: ecrStatement },
+      Roles: [{ Ref: Match.stringLikeRegexp('Runtime1ExecutionRole') }],
+    });
+
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: { Statement: ecrStatement },
+      Roles: [{ Ref: Match.stringLikeRegexp('Runtime2ExecutionRole') }],
+    });
+  });
+
+  test('fromS3 : If TWO or more Runtimes reference same artifact , then bind S3 permissions once per each of the Runtime role', () => {
+    const artifact = AgentRuntimeArtifact.fromS3(
+      { bucketName: 'my-code-bucket', objectKey: 'agent/code.zip' },
+      AgentCoreRuntime.PYTHON_3_12,
+      ['main.py'],
+    );
+
+    new Runtime(stack, 'Runtime_1', { runtimeName: 'runtime_1', agentRuntimeArtifact: artifact });
+    new Runtime(stack, 'Runtime_2', { runtimeName: 'runtime_2', agentRuntimeArtifact: artifact });
+
+    const template = Template.fromStack(stack);
+
+    const s3Statement = Match.arrayWith([
+      Match.objectLike({
+        Action: Match.arrayWith(['s3:GetObject*']),
+        Effect: 'Allow',
+      }),
+    ]);
+
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: { Statement: s3Statement },
+      Roles: [{ Ref: Match.stringLikeRegexp('Runtime1ExecutionRole') }],
+    });
+
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: { Statement: s3Statement },
+      Roles: [{ Ref: Match.stringLikeRegexp('Runtime2ExecutionRole') }],
+    });
+  });
+
   describe('fromCodeAsset', () => {
     test('Should create artifact from code asset', () => {
       const artifact = AgentRuntimeArtifact.fromCodeAsset({
@@ -315,6 +401,36 @@ describe('AgentRuntimeArtifact tests', () => {
             }),
           ]),
         },
+      });
+    });
+
+    test('Should grant S3/ECR read permissions only once per each Runtime role If TWO or more Runtimes reference same artifact', () => {
+      const artifact = AgentRuntimeArtifact.fromCodeAsset({
+        path: path.join(__dirname, 'testArtifact'),
+        runtime: AgentCoreRuntime.PYTHON_3_12,
+        entrypoint: ['main.py'],
+      });
+
+      new Runtime(stack, 'Runtime_1', { runtimeName: 'runtime_1', agentRuntimeArtifact: artifact });
+      new Runtime(stack, 'Runtime_2', { runtimeName: 'runtime_2', agentRuntimeArtifact: artifact });
+
+      const template = Template.fromStack(stack);
+
+      const s3Statement = Match.arrayWith([
+        Match.objectLike({
+          Action: Match.arrayWith(['s3:GetObject*']),
+          Effect: 'Allow',
+        }),
+      ]);
+
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: { Statement: s3Statement },
+        Roles: [{ Ref: Match.stringLikeRegexp('Runtime1ExecutionRole') }],
+      });
+
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: { Statement: s3Statement },
+        Roles: [{ Ref: Match.stringLikeRegexp('Runtime2ExecutionRole') }],
       });
     });
   });
