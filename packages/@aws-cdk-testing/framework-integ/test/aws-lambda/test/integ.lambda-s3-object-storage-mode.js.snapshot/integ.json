@@ -1,0 +1,13 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "LambdaS3ObjectStorageMode/DefaultTest": {
+      "stacks": [
+        "LambdaS3ObjectStorageModeStack"
+      ],
+      "assertionStack": "LambdaS3ObjectStorageMode/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaS3ObjectStorageModeDefaultTestDeployAssert1436D810"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}

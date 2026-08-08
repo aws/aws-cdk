@@ -705,6 +705,24 @@ describe('code', () => {
         '[ack: @aws-cdk/aws-lambda:codeFromBucketObjectVersionNotSpecified]',
       );
     });
+
+    test('fails when fromBucketV2 REFERENCE is set without objectVersion', () => {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'Bucket');
+
+      expect(() => lambda.Code.fromBucketV2(bucket, 'Object', {
+        s3ObjectStorageMode: lambda.S3ObjectStorageMode.REFERENCE,
+      })).toThrow(/set objectVersion when using s3ObjectStorageMode REFERENCE because Lambda requires a versioned S3 object/);
+    });
+
+    test('fails when S3CodeV2 REFERENCE is set without objectVersion', () => {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'Bucket');
+
+      expect(() => new lambda.S3CodeV2(bucket, 'Object', {
+        s3ObjectStorageMode: lambda.S3ObjectStorageMode.REFERENCE,
+      })).toThrow(/set objectVersion when using s3ObjectStorageMode REFERENCE because Lambda requires a versioned S3 object/);
+    });
   });
 });
 
