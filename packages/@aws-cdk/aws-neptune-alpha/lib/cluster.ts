@@ -11,6 +11,7 @@ import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import { Endpoint } from './endpoint';
+import type { IGlobalCluster } from './global-cluster';
 import { InstanceType } from './instance';
 import type { IClusterParameterGroup, IParameterGroup } from './parameter-group';
 import type { ISubnetGroup } from './subnet-group';
@@ -403,6 +404,18 @@ export interface DatabaseClusterProps {
    * @default 8182
    */
   readonly port?: number;
+
+  /**
+   * The Neptune global database cluster to attach this cluster to as a member.
+   *
+   * Use this to create a cluster within an existing global database. The
+   * cluster's engine version must match the global database cluster.
+   *
+   * @see https://docs.aws.amazon.com/neptune/latest/userguide/neptune-global-database.html
+   *
+   * @default - the cluster is not part of a global database.
+   */
+  readonly globalCluster?: IGlobalCluster;
 }
 
 /**
@@ -698,6 +711,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       associatedRoles: props.associatedRoles ? props.associatedRoles.map(role => ({ roleArn: role.roleArn })) : undefined,
       iamAuthEnabled: Lazy.any({ produce: () => this.enableIamAuthentication }),
       dbPort: props.port,
+      globalClusterIdentifier: props.globalCluster?.globalClusterIdentifier,
       // Backup
       backupRetentionPeriod: props.backupRetention?.toDays(),
       preferredBackupWindow: props.preferredBackupWindow,

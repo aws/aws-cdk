@@ -1,0 +1,58 @@
+{
+ "Resources": {
+  "GlobalClusterD272DED1": {
+   "Type": "AWS::Neptune::GlobalCluster",
+   "Properties": {
+    "DeletionProtection": false,
+    "Engine": "neptune",
+    "EngineVersion": "1.3.0.0",
+    "GlobalClusterIdentifier": "my-global-cluster",
+    "StorageEncrypted": true
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefGlobalClusterD272DED1CACDDCED": {
+   "Value": {
+    "Ref": "GlobalClusterD272DED1"
+   },
+   "Export": {
+    "Name": "aws-cdk-neptune-global-cluster-integ:ExportsOutputRefGlobalClusterD272DED1CACDDCED"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
