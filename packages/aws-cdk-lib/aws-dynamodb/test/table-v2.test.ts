@@ -4244,7 +4244,16 @@ test('TableV2MultiAccountReplica with custom encryption', () => {
     encryption: TableEncryptionV2.customerManagedKey(key),
   });
 
-  Template.fromStack(replicaStack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+  const template = Template.fromStack(replicaStack);
+
+  // Top-level SSESpecification must be present so DynamoDB does not treat the table
+  // as unencrypted and reject the replica-level KMSMasterKeyId with
+  // "ReplicaSSESpecification and SSEType must be null when SSE is set to default".
+  template.hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    SSESpecification: { SSEEnabled: true, SSEType: 'KMS' },
+  });
+
+  template.hasResourceProperties('AWS::DynamoDB::GlobalTable', {
     Replicas: [
       Match.objectLike({
         SSESpecification: {
@@ -4254,6 +4263,25 @@ test('TableV2MultiAccountReplica with custom encryption', () => {
         },
       }),
     ],
+  });
+});
+
+test('TableV2MultiAccountReplica with AWS managed key sets top-level SSESpecification', () => {
+  const app = new App();
+  const sourceStack = new Stack(app, 'SourceStack', { env: { account: '111111111111', region: 'us-east-2' } });
+  const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+
+  const sourceTable = new TableV2(sourceStack, 'SourceTable', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+    replicaSourceTable: sourceTable,
+    encryption: TableEncryptionV2.awsManagedKey(),
+  });
+
+  Template.fromStack(replicaStack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    SSESpecification: { SSEEnabled: true, SSEType: 'KMS' },
   });
 });
 
