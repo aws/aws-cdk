@@ -1,4 +1,5 @@
 {
+ "Metadata": { "Test": "test" },
  "Resources": {
   "VPCB9E5F0B4": {
    "Type": "AWS::EC2::VPC",

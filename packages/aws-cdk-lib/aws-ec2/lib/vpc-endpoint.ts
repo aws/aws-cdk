@@ -537,6 +537,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly ECS_TELEMETRY = new InterfaceVpcEndpointAwsService('ecs-telemetry');
   public static readonly EKS = new InterfaceVpcEndpointAwsService('eks');
   public static readonly EKS_AUTH = new InterfaceVpcEndpointAwsService('eks-auth');
+  public static readonly EKS_PROXY = new InterfaceVpcEndpointAwsService('eks-proxy');
   public static readonly ELASTIC_BEANSTALK = new InterfaceVpcEndpointAwsService('elasticbeanstalk');
   public static readonly ELASTIC_BEANSTALK_HEALTH = new InterfaceVpcEndpointAwsService('elasticbeanstalk-health');
   public static readonly ELASTIC_DISASTER_RECOVERY = new InterfaceVpcEndpointAwsService('drs');
