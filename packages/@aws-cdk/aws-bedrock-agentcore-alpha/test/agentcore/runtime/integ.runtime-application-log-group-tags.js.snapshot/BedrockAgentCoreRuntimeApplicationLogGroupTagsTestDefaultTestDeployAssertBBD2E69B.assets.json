@@ -1,0 +1,33 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "b6a9aabb6e059e23b0e513037ef456995993a6dacbad62bfa90fd0e44f558615": {
+      "source": {
+        "path": "asset.b6a9aabb6e059e23b0e513037ef456995993a6dacbad62bfa90fd0e44f558615.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-23766ab2": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b6a9aabb6e059e23b0e513037ef456995993a6dacbad62bfa90fd0e44f558615.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "e90a58dccdf42bfe94f30d261bd67b8c2680b739ba4cf7a8d01b54beeb5184b2": {
+      "displayName": "BedrockAgentCoreRuntimeApplicationLogGroupTagsTestDefaultTestDeployAssertBBD2E69B Template",
+      "source": {
+        "path": "BedrockAgentCoreRuntimeApplicationLogGroupTagsTestDefaultTestDeployAssertBBD2E69B.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-7cab3ec7": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e90a58dccdf42bfe94f30d261bd67b8c2680b739ba4cf7a8d01b54beeb5184b2.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
