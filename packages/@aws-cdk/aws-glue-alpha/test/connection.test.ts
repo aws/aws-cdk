@@ -156,3 +156,18 @@ test('fromConnectionArn', () => {
   expect(connection.connectionName).toEqual('name');
   expect(connection.connectionArn).toEqual(connectionArn);
 });
+
+test('SNOWFLAKE connection type', () => {
+  const stack = new cdk.Stack();
+  new glue.Connection(stack, 'Connection', {
+    connectionName: 'snowflake-connection',
+    type: glue.ConnectionType.SNOWFLAKE,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Connection', {
+    ConnectionInput: {
+      ConnectionType: 'SNOWFLAKE',
+      Name: 'snowflake-connection',
+    },
+  });
+});

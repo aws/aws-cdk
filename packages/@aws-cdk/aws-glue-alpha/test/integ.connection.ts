@@ -18,3 +18,9 @@ new glue.Connection(stack, 'NetworkConnection', {
   subnet: vpc.privateSubnets[0],
   securityGroups: [sg],
 });
+
+// Snowflake connection
+new glue.Connection(stack, 'SnowflakeConnection', {
+  type: glue.ConnectionType.SNOWFLAKE,
+  connectionName: 'snowflake-connection',
+});
