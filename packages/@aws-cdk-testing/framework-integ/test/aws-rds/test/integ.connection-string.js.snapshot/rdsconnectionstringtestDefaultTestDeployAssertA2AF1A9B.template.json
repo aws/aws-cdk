@@ -1,0 +1,233 @@
+{
+ "Resources": {
+  "AwsApiCallSSMgetParameter6aa215fc3b5d83066b1d88df88d38f7a": {
+   "Type": "Custom::DeployAssert@SdkCallSSMgetParameter",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "SSM",
+    "api": "getParameter",
+    "expected": "{\"$StringLike\":\".*\\\\.rds\\\\.amazonaws\\\\.com.*\"}",
+    "actualPath": "Parameter.Value",
+    "parameters": {
+     "Name": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-rds-connection-string-integ:ExportsOutputRefValidationParameter18D3A2B5CC9FD89D"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Parameter.Value",
+     "Parameter.Value"
+    ],
+    "salt": "1769027714751"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "ssm:GetParameter"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "cloudformation:DescribeStacks"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "ecs:DescribeTaskDefinition"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs22.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallCloudFormationdescribeStacksf7a5fad387b59328448805f8570faac9": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFormationdescribeStacks",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudFormation",
+    "api": "describeStacks",
+    "expected": "{\"$ObjectLike\":{\"Stacks\":[{\"Outputs\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"OutputKey\":\"ConnectionStringOutput\",\"Description\":\"MySQL connection string using Fn::Sub with dynamic references\",\"OutputValue\":{\"$StringLike\":\"^mysql://.*\"}}},{\"$ObjectLike\":{\"OutputKey\":\"CustomConnectionStringOutput\",\"Description\":\"Custom MySQL connection string with query parameters\",\"OutputValue\":{\"$StringLike\":\"\\\\?ssl-mode=REQUIRED&connect_timeout=10\"}}},{\"$ObjectLike\":{\"OutputKey\":\"ClusterEndpoint\",\"Description\":\"RDS cluster endpoint\",\"OutputValue\":{\"$StringLike\":\".*\\\\.rds\\\\.amazonaws\\\\.com\"}}}]}}]}}",
+    "parameters": {
+     "StackName": "\"aws-cdk-rds-connection-string-integ\""
+    },
+    "flattenResponse": "false",
+    "salt": "1769027714751"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallECSdescribeTaskDefinitionb77d7704b88385b5fb0cab4efa40c3b9": {
+   "Type": "Custom::DeployAssert@SdkCallECSdescribeTaskDefinition",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "ECS",
+    "api": "describeTaskDefinition",
+    "expected": "{\"$ObjectLike\":{\"taskDefinition\":{\"containerDefinitions\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"name\":\"app\",\"environment\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"name\":\"DATABASE_URL\",\"value\":{\"$StringLike\":\"^mysql://.*\"}}},{\"$ObjectLike\":{\"name\":\"DATABASE_URL_CUSTOM\",\"value\":{\"$StringLike\":\"\\\\?ssl-mode=REQUIRED&connect_timeout=10\"}}}]}}}]}}}}",
+    "parameters": {
+     "taskDefinition": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-rds-connection-string-integ:ExportsOutputRefTaskDef546945703E5E1544"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1769027714752"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallSSMgetParameter6aa215fc3b5d83066b1d88df88d38f7a": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallSSMgetParameter6aa215fc3b5d83066b1d88df88d38f7a",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCloudFormationdescribeStacksf7a5fad387b59328448805f8570faac9": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudFormationdescribeStacksf7a5fad387b59328448805f8570faac9",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallECSdescribeTaskDefinitionb77d7704b88385b5fb0cab4efa40c3b9": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallECSdescribeTaskDefinitionb77d7704b88385b5fb0cab4efa40c3b9",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
