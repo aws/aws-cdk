@@ -878,8 +878,6 @@ export class TableV2 extends TableBaseV2 {
       table: this,
       regions: Array.from(this.replicaTables.keys()),
       hasIndex: this.hasIndex,
-      encryptedResource: this.encryptionKey ? this : undefined,
-      policyResource: this,
     });
 
     if (props.tableName) {
@@ -1532,8 +1530,6 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
     this.grants = new TableGrants({
       table: this,
       regions: [],
-      encryptedResource: this.encryptionKey ? this : undefined,
-      policyResource: this,
     });
 
     this.grants.multiAccountReplicationFrom(props.replicaSourceTable.tableArn);

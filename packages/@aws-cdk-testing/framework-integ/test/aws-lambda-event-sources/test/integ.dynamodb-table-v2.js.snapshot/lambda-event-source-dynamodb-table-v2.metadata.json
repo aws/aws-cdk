@@ -1,0 +1,280 @@
+{
+  "/lambda-event-source-dynamodb-table-v2": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/home/josemfcheo/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/integ.dynamodb-table-v2.js:51:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-event-source-dynamodb-table-v2/F": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "handler": "*",
+        "code": "*",
+        "runtime": "*"
+      }
+    }
+  ],
+  "/lambda-event-source-dynamodb-table-v2/T": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "partitionKey": {
+          "name": "*",
+          "type": "S"
+        },
+        "dynamoStream": "NEW_IMAGE",
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/lambda-event-source-dynamodb-table-v2/OutputEventSourceMappingArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OutputEventSourceMappingArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/home/josemfcheo/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/integ.dynamodb-table-v2.js:67:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-event-source-dynamodb-table-v2/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
+        "App.synth (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/lambda-event-source-dynamodb-table-v2/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
+        "App.synth (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/lambda-event-source-dynamodb-table-v2/F/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/lambda-event-source-dynamodb-table-v2/F/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FC4345940"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new TestFunction (/home/josemfcheo/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/test-function.js:41:9)",
+        "<anonymous> (/home/josemfcheo/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/integ.dynamodb-table-v2.js:52:12)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-event-source-dynamodb-table-v2/F/DynamoDBEventSource:lambdaeventsourcedynamodbtablev2T13CB2892": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "target": "*",
+        "eventSourceArn": "*",
+        "metricsConfig": "*",
+        "supportS3OnFailureDestination": true,
+        "batchSize": "*",
+        "bisectBatchOnError": "*",
+        "startingPosition": "TRIM_HORIZON",
+        "reportBatchItemFailures": "*",
+        "maxBatchingWindow": "*",
+        "maxRecordAge": "*",
+        "retryAttempts": "*",
+        "parallelizationFactor": "*",
+        "onFailure": "*",
+        "tumblingWindow": "*",
+        "enabled": "*",
+        "filters": "*",
+        "filterEncryption": "*"
+      }
+    }
+  ],
+  "/lambda-event-source-dynamodb-table-v2/T/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TD925BC7E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TableV2 (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table-v2.js:379:29)",
+        "<anonymous> (/home/josemfcheo/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/integ.dynamodb-table-v2.js:53:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-event-source-dynamodb-table-v2/F/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FServiceRole3AC82EE1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new TestFunction (/home/josemfcheo/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/test-function.js:41:9)",
+        "<anonymous> (/home/josemfcheo/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/integ.dynamodb-table-v2.js:52:12)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-event-source-dynamodb-table-v2/F/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/lambda-event-source-dynamodb-table-v2/F/DynamoDBEventSource:lambdaeventsourcedynamodbtablev2T13CB2892/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FDynamoDBEventSourcelambdaeventsourcedynamodbtablev2T13CB28926F335083"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EventSourceMapping (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/event-source-mapping.js:394:43)",
+        "TestFunction.addEventSourceMapping (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:298:16)",
+        "DynamoEventSource.bind (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/aws-lambda-event-sources/lib/dynamodb.js:49:43)",
+        "TestFunction.addEventSource (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:460:16)",
+        "<anonymous> (/home/josemfcheo/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/integ.dynamodb-table-v2.js:66:4)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-event-source-dynamodb-table-v2/F/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FServiceRoleDefaultPolicy17A19BFA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "WrappedClass.addToPrincipalPolicy (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
+        "WrappedClass.<anonymous> (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:202:65)",
+        "WrappedClass.grantTableListStreams (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table-v2-base.js:181:34)",
+        "WrappedClass.grantStreamRead (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table-v2-base.js:156:14)",
+        "DynamoEventSource.bind (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/aws-lambda-event-sources/lib/dynamodb.js:56:20)",
+        "TestFunction.addEventSource (/home/josemfcheo/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:460:16)"
+      ]
+    }
+  ]
+}
