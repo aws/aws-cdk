@@ -42,3 +42,18 @@ describe.each([
     Template.fromStack(stack).resourceCountIs('AWS::SecretsManager::ResourcePolicy', expectedResourcePolicyCount);
   });
 });
+
+test('passes blockPublicPolicy to the L1 resource policy', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app);
+  const secret = new secretsmanager.Secret(stack, 'Secret');
+
+  new secretsmanager.ResourcePolicy(stack, 'Policy', {
+    secret,
+    blockPublicPolicy: true,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::ResourcePolicy', {
+    BlockPublicPolicy: true,
+  });
+});
