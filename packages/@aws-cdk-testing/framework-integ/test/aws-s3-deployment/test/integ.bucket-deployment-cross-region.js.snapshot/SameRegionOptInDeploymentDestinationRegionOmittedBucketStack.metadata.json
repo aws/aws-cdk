@@ -1,0 +1,188 @@
+{
+  "/SameRegionOptInDeploymentDestinationRegionOmittedBucketStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "createTestCase (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-cross-region.js:96:25)",
+        "<anonymous> (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-cross-region.js:138:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SameRegionOptInDeploymentDestinationRegionOmittedBucketStack/TestBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucketName": "*",
+        "removalPolicy": "destroy",
+        "autoDeleteObjects": true
+      }
+    }
+  ],
+  "/SameRegionOptInDeploymentDestinationRegionOmittedBucketStack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/SameRegionOptInDeploymentDestinationRegionOmittedBucketStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
+        "App.synth (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/SameRegionOptInDeploymentDestinationRegionOmittedBucketStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
+        "App.synth (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/SameRegionOptInDeploymentDestinationRegionOmittedBucketStack/TestBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestBucket560B80BC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1447:30)",
+        "new BucketStack (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-cross-region.js:55:23)",
+        "createTestCase (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-cross-region.js:96:25)",
+        "<anonymous> (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-cross-region.js:138:15)",
+        "...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/SameRegionOptInDeploymentDestinationRegionOmittedBucketStack/TestBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/SameRegionOptInDeploymentDestinationRegionOmittedBucketStack/TestBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/SameRegionOptInDeploymentDestinationRegionOmittedBucketStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:131:25)",
+        "new AutoDeleteObjectsProvider (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:57:9)",
+        "AutoDeleteObjectsProvider.getOrCreateProvider (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:54:28)",
+        "BucketAutoDeleteObjects.applyTo (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:90:95)",
+        "applyMixin (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "WrappedClass.enableAutoDeleteObjects (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2204:22)",
+        "new Bucket (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1521:22)"
+      ]
+    }
+  ],
+  "/SameRegionOptInDeploymentDestinationRegionOmittedBucketStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:153:24)",
+        "new AutoDeleteObjectsProvider (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:57:9)",
+        "AutoDeleteObjectsProvider.getOrCreateProvider (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:54:28)",
+        "BucketAutoDeleteObjects.applyTo (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:90:95)",
+        "applyMixin (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "WrappedClass.enableAutoDeleteObjects (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2204:22)",
+        "new Bucket (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1521:22)"
+      ]
+    }
+  ],
+  "/SameRegionOptInDeploymentDestinationRegionOmittedBucketStack/TestBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestBucketPolicyBA12ED38"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BucketPolicy (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:177:29)",
+        "WrappedClass.maybeAutoCreatePolicy (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:329:31)",
+        "WrappedClass.enableAutoDeleteObjects (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2203:18)",
+        "new Bucket (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1521:22)",
+        "new BucketStack (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-cross-region.js:55:23)",
+        "createTestCase (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-cross-region.js:96:25)",
+        "<anonymous> (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-cross-region.js:138:15)"
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/SameRegionOptInDeploymentDestinationRegionOmittedBucketStack/TestBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestBucketAutoDeleteObjectsCustomResource8FEAABD5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "BucketAutoDeleteObjects.applyTo (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:110:32)",
+        "applyMixin (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "WrappedClass.enableAutoDeleteObjects (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2204:22)",
+        "new Bucket (/Users/bentorb/Projects/OpenSource/CDK/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1521:22)"
+      ]
+    }
+  ]
+}
