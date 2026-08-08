@@ -24,6 +24,7 @@
   "@aws-cdk/aws-route53-patters:useCertificate": true,
   "@aws-cdk/customresources:installLatestAwsSdkDefault": false,
   "@aws-cdk/aws-rds:databaseProxyUniqueResourceName": true,
+  "@aws-cdk/aws-rds:databaseProxyLowercaseDerivedName": true,
   "@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup": true,
   "@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId": true,
   "@aws-cdk/aws-ec2:launchTemplateDefaultUserData": true,
