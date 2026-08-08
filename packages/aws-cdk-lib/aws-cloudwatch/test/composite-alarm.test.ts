@@ -1,6 +1,6 @@
 import { Template } from '../../assertions';
 import { Duration, Stack } from '../../core';
-import { Alarm, AlarmRule, AlarmState, CompositeAlarm, Metric } from '../lib';
+import { Alarm, AlarmRule, AlarmState, AtLeastThreshold, CompositeAlarm, Metric } from '../lib';
 
 describe('CompositeAlarm', () => {
   test('test alarm rule expression builder', () => {
@@ -51,6 +51,14 @@ describe('CompositeAlarm', () => {
           alarm5,
         ),
         AlarmRule.not(AlarmRule.fromAlarm(alarm4, AlarmState.INSUFFICIENT_DATA)),
+        AlarmRule.atLeast(AlarmState.ALARM, {
+          operands: [alarm1, alarm2, alarm3],
+          threshold: AtLeastThreshold.count(2),
+        }),
+        AlarmRule.atLeastNot(AlarmState.OK, {
+          operands: [alarm1, alarm2, alarm3],
+          threshold: AtLeastThreshold.percentage(60),
+        }),
       ),
       AlarmRule.fromBoolean(false),
     );
@@ -66,41 +74,28 @@ describe('CompositeAlarm', () => {
           '',
           [
             '(((ALARM("',
-            {
-              'Fn::GetAtt': [
-                'Alarm1F9009D71',
-                'Arn',
-              ],
-            },
+            { 'Fn::GetAtt': ['Alarm1F9009D71', 'Arn'] },
             '") OR OK("',
-            {
-              'Fn::GetAtt': [
-                'Alarm2A7122E13',
-                'Arn',
-              ],
-            },
+            { 'Fn::GetAtt': ['Alarm2A7122E13', 'Arn'] },
             '") OR ALARM("',
-            {
-              'Fn::GetAtt': [
-                'Alarm32341D8D9',
-                'Arn',
-              ],
-            },
+            { 'Fn::GetAtt': ['Alarm32341D8D9', 'Arn'] },
             '") OR ALARM("',
-            {
-              'Fn::GetAtt': [
-                'Alarm548383B2F',
-                'Arn',
-              ],
-            },
+            { 'Fn::GetAtt': ['Alarm548383B2F', 'Arn'] },
             '")) AND (NOT (INSUFFICIENT_DATA("',
-            {
-              'Fn::GetAtt': [
-                'Alarm4671832C8',
-                'Arn',
-              ],
-            },
-            '")))) OR FALSE)',
+            { 'Fn::GetAtt': ['Alarm4671832C8', 'Arn'] },
+            '"))) AND AT_LEAST(2, ALARM, (',
+            { 'Fn::GetAtt': ['Alarm1F9009D71', 'Arn'] },
+            ', ',
+            { 'Fn::GetAtt': ['Alarm2A7122E13', 'Arn'] },
+            ', ',
+            { 'Fn::GetAtt': ['Alarm32341D8D9', 'Arn'] },
+            ')) AND AT_LEAST(60%, NOT OK, (',
+            { 'Fn::GetAtt': ['Alarm1F9009D71', 'Arn'] },
+            ', ',
+            { 'Fn::GetAtt': ['Alarm2A7122E13', 'Arn'] },
+            ', ',
+            { 'Fn::GetAtt': ['Alarm32341D8D9', 'Arn'] },
+            '))) OR FALSE)',
           ],
         ],
       },
@@ -215,5 +210,63 @@ describe('CompositeAlarm', () => {
     expect(() => new CompositeAlarm(new Stack(), 'alarm', {
       alarmRule: AlarmRule.allOf(),
     })).toThrow('Did not detect any operands for AlarmRule.allOf');
+  });
+
+  test('empty operands for atLeast', () => {
+    expect(() => new CompositeAlarm(new Stack(), 'alarm', {
+      alarmRule: AlarmRule.atLeast(AlarmState.ALARM, {
+        operands: [],
+        threshold: AtLeastThreshold.count(1),
+      }),
+    })).toThrow('Did not detect any operands for AT_LEAST ALARM');
+  });
+
+  test('empty operands for atLeastNot', () => {
+    expect(() => new CompositeAlarm(new Stack(), 'alarm', {
+      alarmRule: AlarmRule.atLeastNot(AlarmState.OK, {
+        operands: [],
+        threshold: AtLeastThreshold.count(1),
+      }),
+    })).toThrow('Did not detect any operands for AT_LEAST NOT OK');
+  });
+
+  test.each([0, -1, 3, 1.5])('invalid count for atLeast: %s', (count: number) => {
+    const stack = new Stack();
+    const testMetric = new Metric({
+      namespace: 'CDK/Test',
+      metricName: 'Metric',
+    });
+    const alarm = new Alarm(stack, 'Alarm1', {
+      metric: testMetric,
+      threshold: 100,
+      evaluationPeriods: 3,
+    });
+
+    expect(() => new CompositeAlarm(new Stack(), 'alarm', {
+      alarmRule: AlarmRule.atLeast(AlarmState.OK, {
+        operands: [alarm],
+        threshold: AtLeastThreshold.count(count),
+      }),
+    })).toThrow(`count must be an integer between 1 and the number of operands (1), got ${count}`);
+  });
+
+  test.each([0, -1, 101, 1.5])('invalid percentage for atLeast: %s%%', (percentage: number) => {
+    const stack = new Stack();
+    const testMetric = new Metric({
+      namespace: 'CDK/Test',
+      metricName: 'Metric',
+    });
+    const alarm = new Alarm(stack, 'Alarm1', {
+      metric: testMetric,
+      threshold: 100,
+      evaluationPeriods: 3,
+    });
+
+    expect(() => new CompositeAlarm(new Stack(), 'alarm', {
+      alarmRule: AlarmRule.atLeast(AlarmState.OK, {
+        operands: [alarm],
+        threshold: AtLeastThreshold.percentage(percentage),
+      }),
+    })).toThrow(`percentage must be an integer between 1 and 100, got ${percentage}`);
   });
 });

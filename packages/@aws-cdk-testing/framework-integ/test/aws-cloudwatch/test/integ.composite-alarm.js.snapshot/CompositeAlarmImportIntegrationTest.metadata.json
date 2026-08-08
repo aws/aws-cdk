@@ -1,0 +1,83 @@
+{
+  "/CompositeAlarmImportIntegrationTest": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudwatch/test/integ.composite-alarm.js:64:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/CompositeAlarmImportIntegrationTest/AlarmName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AlarmName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CompositeAlarmImportIntegrationTest (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudwatch/test/integ.composite-alarm.js:56:9)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudwatch/test/integ.composite-alarm.js:64:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/CompositeAlarmImportIntegrationTest/AlarmArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AlarmArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CompositeAlarmImportIntegrationTest (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudwatch/test/integ.composite-alarm.js:57:9)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudwatch/test/integ.composite-alarm.js:64:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/CompositeAlarmImportIntegrationTest/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:258:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/CompositeAlarmImportIntegrationTest/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:266:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
