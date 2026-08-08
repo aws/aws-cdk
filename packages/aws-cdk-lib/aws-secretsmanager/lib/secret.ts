@@ -347,6 +347,23 @@ export interface SecretAttributes {
   readonly secretPartialArn?: string;
 }
 
+type Writeable<T> = { -readonly [P in keyof T]: T[P] };
+
+/**
+ * Assigns the `secretFullArn` on a `SecretBase`.
+ *
+ * `secretFullArn` is declared `readonly` (to match the `ISecret` contract under
+ * `exactOptionalPropertyTypes`) but is resolved after construction, so the write
+ * goes through a `Writeable` cast. The `undefined` check keeps the property
+ * absent rather than set to `undefined`, which `exactOptionalPropertyTypes`
+ * forbids — it is absent for secrets imported by name or by partial ARN.
+ */
+function setSecretFullArn(secret: SecretBase, secretFullArn: string | undefined): void {
+  if (secretFullArn !== undefined) {
+    (secret as Writeable<SecretBase>).secretFullArn = secretFullArn;
+  }
+}
+
 /**
  * The common behavior of Secrets. Users should not use this class directly, and instead use ``Secret``.
  */
@@ -354,6 +371,13 @@ abstract class SecretBase extends Resource implements ISecret {
   public abstract readonly encryptionKey?: kms.IKey;
   public abstract readonly secretArn: string;
   public abstract readonly secretName: string;
+
+  /**
+   * The full ARN of the secret in AWS Secrets Manager, which is the ARN including the Secrets Manager-supplied 6-character suffix.
+   *
+   * This is equal to `secretArn` in most cases, but is `undefined` when a full ARN is not available (e.g., secrets imported by name).
+   */
+  public readonly secretFullArn?: string;
 
   protected abstract readonly autoCreatePolicy: boolean;
 
@@ -396,8 +420,6 @@ abstract class SecretBase extends Resource implements ISecret {
   cfnDynamicReferenceKey(options: SecretsManagerSecretOptions = {}): string {
     return SecretValue.cfnDynamicReferenceKey(this.secretArn, options);
   }
-
-  public get secretFullArn(): string | undefined { return this.secretArn; }
 
   /**
    * [disable-awslint:no-grants]
@@ -579,7 +601,6 @@ export class Secret extends SecretBase {
       public readonly secretArn = secretName;
       public readonly secretName = secretName;
       protected readonly autoCreatePolicy = false;
-      public get secretFullArn() { return undefined; }
       // Overrides the secretArn for grant* methods, where the secretArn must be in ARN format.
       // Also adds a wildcard to the resource name to support the SecretsManager-provided suffix.
       protected get arnForPolicies() {
@@ -608,7 +629,6 @@ export class Secret extends SecretBase {
       public readonly secretName = secretName;
       public readonly secretArn = this.partialArn;
       protected readonly autoCreatePolicy = false;
-      public get secretFullArn() { return undefined; }
       // Creates a "partial" ARN from the secret name. The "full" ARN would include the SecretsManager-provided suffix.
       private get partialArn(): string {
         return Stack.of(this).formatArn({
@@ -654,9 +674,15 @@ export class Secret extends SecretBase {
       public readonly secretArn = secretArn;
       public readonly secretName = parseSecretName(scope, secretArn);
       protected readonly autoCreatePolicy = false;
-      public get secretFullArn() { return secretArnIsPartial ? undefined : secretArn; }
       protected get arnForPolicies() { return secretArnIsPartial ? `${secretArn}-??????` : secretArn; }
-    }(scope, id, { environmentFromArn: secretArn });
+
+      constructor() {
+        super(scope, id, { environmentFromArn: secretArn });
+        if (!secretArnIsPartial) {
+          setSecretFullArn(this, secretArn);
+        }
+      }
+    }();
   }
 
   public readonly encryptionKey?: kms.IKey;
@@ -727,6 +753,7 @@ export class Secret extends SecretBase {
     this.secretName = parseOwnedSecretName
       ? parseSecretNameForOwnedSecret(this, this.secretArn, props.secretName)
       : parseSecretName(this, this.secretArn);
+    setSecretFullArn(this, this.secretArn);
 
     // @see https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html#asm-authz
     const principal =
@@ -897,11 +924,16 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
 
   public static fromSecretTargetAttachmentSecretArn(scope: Construct, id: string, secretTargetAttachmentSecretArn: string): ISecretTargetAttachment {
     class Import extends SecretBase implements ISecretTargetAttachment {
-      public encryptionKey?: kms.IKey | undefined;
+      public encryptionKey?: kms.IKey;
       public secretArn = secretTargetAttachmentSecretArn;
       public secretTargetAttachmentSecretArn = secretTargetAttachmentSecretArn;
       public secretName = parseSecretName(scope, secretTargetAttachmentSecretArn);
       protected readonly autoCreatePolicy = false;
+
+      constructor(s: Construct, i: string) {
+        super(s, i);
+        setSecretFullArn(this, this.secretArn);
+      }
 
       public get secretTargetAttachmentRef(): SecretTargetAttachmentReference {
         return {
@@ -944,6 +976,7 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
     // This allows you to reference the secret after attachment (dependency).
     this.secretArn = attachment.ref;
     this.secretTargetAttachmentSecretArn = attachment.ref;
+    setSecretFullArn(this, this.secretArn);
   }
 
   public get secretTargetAttachmentRef(): SecretTargetAttachmentReference {
