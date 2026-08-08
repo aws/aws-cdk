@@ -10,6 +10,8 @@
     "duration-prop-type:aws-cdk-lib.NestedStackProps.timeout",
     "docs-public-apis:aws-cdk-lib.Arn",
     "docs-public-apis:aws-cdk-lib.Aws.*",
+    "docs-public-apis:aws-cdk-lib.ContextTrustSource.*",
+    "mixin-namespace:aws-cdk-lib.MetadataContextMixin",
     "docs-public-apis:aws-cdk-lib.ContextProvider.getKey",
     "docs-public-apis:aws-cdk-lib.ContextProvider.getValue",
     "docs-public-apis:aws-cdk-lib.Reference.displayName",
