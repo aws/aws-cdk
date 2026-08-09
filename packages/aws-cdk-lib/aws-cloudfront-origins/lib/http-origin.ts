@@ -1,7 +1,8 @@
 import { validateSecondsInRangeOrUndefined } from './private/utils';
 import * as cloudfront from '../../aws-cloudfront';
 import type * as cdk from '../../core';
-import { UnscopedValidationError } from '../../core';
+import { Token, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Properties for an Origin backed by an S3 website-configured bucket, load balancer, or custom HTTP server.
@@ -90,10 +91,12 @@ export class HttpOrigin extends cloudfront.OriginBase {
 
     if (props.originMtlsConfig && props.protocolPolicy === cloudfront.OriginProtocolPolicy.HTTP_ONLY) {
       throw new UnscopedValidationError(
-        'OriginMtlsConfigRequiresHttps',
+        lit`OriginMtlsConfigRequiresHttps`,
         'originMtlsConfig requires a TLS connection to the origin, but protocolPolicy is set to HTTP_ONLY. Use HTTPS_ONLY or MATCH_VIEWER instead.',
       );
     }
+    this.validatePortNumber('httpPort', props.httpPort);
+    this.validatePortNumber('httpsPort', props.httpsPort);
   }
 
   protected renderCustomOriginConfig(): cloudfront.CfnDistribution.CustomOriginConfigProperty | undefined {
@@ -110,5 +113,13 @@ export class HttpOrigin extends cloudfront.OriginBase {
         ? { clientCertificateArn: this.props.originMtlsConfig.clientCertificate.certificateRef.certificateId }
         : undefined,
     };
+  }
+
+  private validatePortNumber(name: string, port: number | undefined) {
+    if (port === undefined || Token.isUnresolved(port)) { return; }
+    const isValid = Number.isInteger(port) && (port === 80 || port === 443 || (port >= 1024 && port <= 65535));
+    if (!isValid) {
+      throw new UnscopedValidationError(lit`InvalidPortValue`, `'${name}' must be 80, 443, or an integer between 1024 and 65535; received ${port}.`);
+    }
   }
 }

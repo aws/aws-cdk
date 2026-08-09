@@ -491,6 +491,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly CODE_CONNECTIONS = new InterfaceVpcEndpointAwsService('codeconnections.api');
   public static readonly COGNITO_IDP = new InterfaceVpcEndpointAwsService('cognito-idp');
   public static readonly COGNITO_IDP_FIPS = new InterfaceVpcEndpointAwsService('cognito-idp-fips');
+  public static readonly COGNITO_IDENTITY = new InterfaceVpcEndpointAwsService('cognito-identity');
+  public static readonly COGNITO_IDENTITY_FIPS = new InterfaceVpcEndpointAwsService('cognito-identity-fips');
   public static readonly COMPREHEND = new InterfaceVpcEndpointAwsService('comprehend');
   public static readonly COMPREHEND_MEDICAL = new InterfaceVpcEndpointAwsService('comprehendmedical');
   public static readonly COMPUTE_OPTIMIZER = new InterfaceVpcEndpointAwsService('compute-optimizer');
@@ -827,16 +829,16 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
     port?: number,
     props?: InterfaceVpcEndpointAwsServiceProps,
   ) {
-    const regionPrefix = props?.global ? '' : (Lazy.uncachedString({
+    const regionPrefix = props?.global ? '' : (Lazy.uncachedString({ // eslint-disable-line no-restricted-syntax
       produce: (context) => Stack.of(context.scope).region,
     }) + '.');
-    const defaultEndpointPrefix = Lazy.uncachedString({
+    const defaultEndpointPrefix = Lazy.uncachedString({ // eslint-disable-line no-restricted-syntax
       produce: (context) => {
         const regionName = Stack.of(context.scope).region;
         return this.getDefaultEndpointPrefix(name, regionName);
       },
     });
-    const defaultEndpointSuffix = Lazy.uncachedString({
+    const defaultEndpointSuffix = Lazy.uncachedString({ // eslint-disable-line no-restricted-syntax
       produce: (context) => {
         const regionName = Stack.of(context.scope).region;
         return this.getDefaultEndpointSuffix(name, regionName);
