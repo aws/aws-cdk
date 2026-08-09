@@ -604,7 +604,7 @@ describe('originMtlsConfig', () => {
     const fnUrl = fn.addFunctionUrl({
       authType: lambda.FunctionUrlAuthType.NONE,
     });
-    const cert = acm.CfnCertificate.fromCertificateId(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/test-cert-id');
+    const cert = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/test-cert-id');
     const origin = new FunctionUrlOrigin(fnUrl, {
       originMtlsConfig: {
         clientCertificate: cert,
@@ -630,7 +630,7 @@ describe('originMtlsConfig', () => {
     const fnUrl = fn.addFunctionUrl({
       authType: lambda.FunctionUrlAuthType.AWS_IAM,
     });
-    const cert = acm.CfnCertificate.fromCertificateId(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/test-cert-id');
+    const cert = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/test-cert-id');
 
     new cloudfront.Distribution(stack, 'MyDistribution', {
       defaultBehavior: {

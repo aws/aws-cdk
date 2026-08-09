@@ -64,9 +64,8 @@ export class RestApiOrigin extends cloudfront.OriginBase {
       originProtocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
       originReadTimeout: this.props.readTimeout?.toSeconds(),
       originKeepaliveTimeout: this.props.keepaliveTimeout?.toSeconds(),
-      // certificateRef.certificateId returns the certificate ARN via CertificateBase
       originMtlsConfig: this.props.originMtlsConfig
-        ? { clientCertificateArn: this.props.originMtlsConfig.clientCertificate.certificateRef.certificateId }
+        ? { clientCertificateArn: this.props.originMtlsConfig.clientCertificate.certificateRef.certificateArn }
         : undefined,
     };
   }

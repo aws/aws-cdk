@@ -99,9 +99,8 @@ export class FunctionUrlOrigin extends cloudfront.OriginBase {
       originReadTimeout: this.props.readTimeout?.toSeconds(),
       originKeepaliveTimeout: this.props.keepaliveTimeout?.toSeconds(),
       ipAddressType: this.props.ipAddressType,
-      // certificateRef.certificateId returns the certificate ARN via CertificateBase
       originMtlsConfig: this.props.originMtlsConfig
-        ? { clientCertificateArn: this.props.originMtlsConfig.clientCertificate.certificateRef.certificateId }
+        ? { clientCertificateArn: this.props.originMtlsConfig.clientCertificate.certificateRef.certificateArn }
         : undefined,
     };
   }
@@ -134,9 +133,8 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
       originReadTimeout: this.props.readTimeout?.toSeconds(),
       originKeepaliveTimeout: this.props.keepaliveTimeout?.toSeconds(),
       ipAddressType: this.props.ipAddressType,
-      // certificateRef.certificateId returns the certificate ARN via CertificateBase
       originMtlsConfig: this.props.originMtlsConfig
-        ? { clientCertificateArn: this.props.originMtlsConfig.clientCertificate.certificateRef.certificateId }
+        ? { clientCertificateArn: this.props.originMtlsConfig.clientCertificate.certificateRef.certificateArn }
         : undefined,
     };
   }

@@ -191,7 +191,7 @@ test('renders with originMtlsConfig', () => {
   const api = new apigateway.RestApi(stack, 'RestApi');
   api.root.addMethod('GET');
 
-  const cert = acm.CfnCertificate.fromCertificateId(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/test-cert-id');
+  const cert = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/test-cert-id');
   const origin = new RestApiOrigin(api, {
     originMtlsConfig: {
       clientCertificate: cert,
