@@ -1631,7 +1631,7 @@ describe('staging', () => {
   });
 
   describe('bundling output that is a single symbolic link', () => {
-    const SYMLINK_THROW = /is a symbolic link that is forbidden due to follow mode .*/;
+    const SYMLINK_THROW = /is an external symbolic link which is forbidden due to follow mode .*/;
 
     test.each([
       [undefined], // EXTERNAL is also the default when `follow` is unset
