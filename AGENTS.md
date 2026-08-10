@@ -104,7 +104,8 @@ Standard constructor: `constructor(scope: Construct, id: string, props: FooProps
 
 ### Static Type Check (never use `instanceof`)
 
-All L1 (`Cfn*`) constructs and some core constructs have this auto-generated.
+L1 `Cfn*` constructs have it auto-generated (via `spec2cdk`); some core classes, such as `App`,
+`Stack` and `Stage`, implement the same pattern by hand.
 
 ```ts
 public static isFoo(x: any): x is Foo {
@@ -285,6 +286,8 @@ if (FeatureFlags.of(this).isEnabled(cxapi.MY_NEW_FLAG)) { ... }
   });
   ```
 - Other `Match` helpers: `Match.objectEquals`, `Match.arrayWith`, `Match.stringLikeRegexp`, `Match.absent()`
+- Avoid `Match.anyValue()` — it weakens assertions and hides regressions; assert the specific value, using `Match.stringLikeRegexp()` for non-deterministic values (asset hashes, generated IDs)
+- Avoid `app.synth()` — `Template.fromStack()` synthesizes the stack internally, so an explicit synth is redundant
 - `test.each` for boundary conditions: `test.each([0, -1, 256])('fails for invalid value %d', (val) => { ... })`
 - Error tests: assert on specific error message, prefix test name with "fails"
 - Test utility functions separately from constructs (e.g. `util.test.ts`)

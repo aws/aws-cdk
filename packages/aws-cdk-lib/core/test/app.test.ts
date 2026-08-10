@@ -354,9 +354,9 @@ describe('app', () => {
       // A ->
       //      C -> D
       // B ->
-      stackC.addDependency(stackA);
-      stackC.addDependency(stackB);
-      stackD.addDependency(stackC);
+      stackC.addStackDependency(stackA);
+      stackC.addStackDependency(stackB);
+      stackD.addStackDependency(stackC);
     });
 
     // THEN

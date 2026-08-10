@@ -1,0 +1,235 @@
+{
+  "/aws-cdk-mediaconnect-router-output-encryption/MediaConnectRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-encryption/SrtEncryptionSecret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-encryption/TransitEncryptionSecret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-encryption/EncryptedTestFlow": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-encryption/MediaLiveInput": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MediaLiveInput"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-encryption/encryptionNetwork": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-encryption/srtCallerEncrypted": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-encryption/mediaLiveEncrypted": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-encryption/flowEncrypted": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-encryption/ristOutput": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-encryption/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-encryption/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-encryption/MediaConnectRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MediaConnectRoleD7F4E63E"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-encryption/MediaConnectRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-encryption/SrtEncryptionSecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrtEncryptionSecretBC8A9FA1"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-encryption/TransitEncryptionSecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TransitEncryptionSecret7265F4DF"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-encryption/EncryptedTestFlow/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EncryptedTestFlow3A9F0DF5"
+    },
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W9009": "cfn-validate false positive: MediaConnect Flow.Source is required and not deprecated (see cloudformation-validate#144)"
+      },
+      "trace": [
+        "Validations.recordAcknowledgment (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:129:25)",
+        "Validations.acknowledge (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:122:18)",
+        "new Flow (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow.js:908:48)",
+        "new Flow (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-router-output-encryption.js:65:27)",
+        "Module._compile (node:internal/modules/cjs/loader:1761:14)",
+        "Object..js (node:internal/modules/cjs/loader:1893:10)",
+        "Module.load (node:internal/modules/cjs/loader:1481:32)",
+        "Module._load (node:internal/modules/cjs/loader:1300:12)",
+        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:245:24)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-encryption/encryptionNetwork/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "encryptionNetwork4EB98F34"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-encryption/srtCallerEncrypted/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "srtCallerEncryptedBFE4265B"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-encryption/mediaLiveEncrypted/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "mediaLiveEncrypted72A8C6AC"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-encryption/flowEncrypted/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "flowEncrypted84D7F963"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-encryption/ristOutput/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ristOutputC041C676"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-encryption/MediaConnectRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MediaConnectRoleDefaultPolicy23BF4000"
+    }
+  ]
+}
