@@ -2,6 +2,57 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.264.0](https://github.com/aws/aws-cdk/compare/v2.263.0...v2.264.0) (2026-08-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bedrockagentcore:** `Gateway` metric helpers now emit corrected CloudWatch dimensions per-gateway
+ metrics use `{ Operation, Protocol, Resource }` (was `{ Resource }`). Alarms/dashboards built on the
+ old dimensions must be updated.
+* **bedrockagentcore:** `RuntimeBase` metric helpers now emit corrected CloudWatch dimensions per-resource metrics use `{ Operation, Name, Resource }` (was `{ Resource }`) and aggregated metrics use `{ AggregateOperation }` (was `{ Resource: 'All' }`). Alarms/dashboards built on the old dimensions must be updated.
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#38526](https://github.com/aws/aws-cdk/issues/38526)) ([b5693cb](https://github.com/aws/aws-cdk/commit/b5693cbaea1e54ab027d18ca09c2c154dfc1fef1))
+* **cloudwatch:** support alarm mute rules ([#37504](https://github.com/aws/aws-cdk/issues/37504)) ([c3540bb](https://github.com/aws/aws-cdk/commit/c3540bbe3fc10467be331c82494abe46ecfd61fd)), closes [#37502](https://github.com/aws/aws-cdk/issues/37502)
+* update L1 CloudFormation resource definitions ([#38479](https://github.com/aws/aws-cdk/issues/38479)) ([279340d](https://github.com/aws/aws-cdk/commit/279340df42d2a9e5609b2f441eb341252448ed24))
+
+
+### Bug Fixes
+
+* **bedrockagentcore:** gateway metrics emit correct CloudWatch dimension ([#38487](https://github.com/aws/aws-cdk/issues/38487)) ([5a7d360](https://github.com/aws/aws-cdk/commit/5a7d360215479b345759a0aed77e003c9d2b5cbe))
+* **bedrockagentcore:** runtime metrics emit correct CloudWatch dimensions ([#38486](https://github.com/aws/aws-cdk/issues/38486)) ([4e44f24](https://github.com/aws/aws-cdk/commit/4e44f244f9079527923ee079f1dca9d3c5f01679))
+* **cloudfront:** warn when minimumProtocolVersion is set without a certificate ([#37250](https://github.com/aws/aws-cdk/issues/37250)) ([52ec5f7](https://github.com/aws/aws-cdk/commit/52ec5f76f1fd2cc3fa39f29a67cc32dc95074a03)), closes [#35404](https://github.com/aws/aws-cdk/issues/35404)
+* **ec2:** allow EBS gp3 and io2 volumes up to 64 TiB ([#37049](https://github.com/aws/aws-cdk/issues/37049)) ([10711ba](https://github.com/aws/aws-cdk/commit/10711bae19a620543d32a6f2d413815bb3f7c485)), closes [#37045](https://github.com/aws/aws-cdk/issues/37045)
+* **stepfunctions-tasks:** call-rest-api `CallApiGatewayRestApiEndpoint` does not support `JsonATA` for api_path ([#37738](https://github.com/aws/aws-cdk/issues/37738)) ([9f0afdc](https://github.com/aws/aws-cdk/commit/9f0afdc2ba501862c1097d7ad2938b7563b66c46)), closes [#37728](https://github.com/aws/aws-cdk/issues/37728) [/github.com/aws/aws-cdk/blob/e207b76cc2503701b3c4e2c87023617b485b2fde/packages/aws-cdk-lib/aws-stepfunctions/lib/private/jsonata.ts#L1](https://github.com/aws//github.com/aws/aws-cdk/blob/e207b76cc2503701b3c4e2c87023617b485b2fde/packages/aws-cdk-lib/aws-stepfunctions/lib/private/jsonata.ts/issues/L1)
+
+## [2.263.0](https://github.com/aws/aws-cdk/compare/v2.262.2...v2.263.0) (2026-07-31)
+
+### Features
+
+* **autoscaling:** add support for AutoScalingInstanceRefresh UpdatePolicy ([#38277](https://github.com/aws/aws-cdk/issues/38277)) ([434157f](https://github.com/aws/aws-cdk/commit/434157f1259bfec093996829b0e5e0a1aa47721b)), closes [#38276](https://github.com/aws/aws-cdk/issues/38276)
+* **docdb:** support per-instance maintenance window on DatabaseCluster ([#38315](https://github.com/aws/aws-cdk/issues/38315)) ([5390624](https://github.com/aws/aws-cdk/commit/5390624e527abaa8ccca0f8bcdaae3520ce47683)), closes [#30391](https://github.com/aws/aws-cdk/issues/30391)
+* **ecs:** add support for using existing Cloud Map namespaces in ECS clusters ([#36812](https://github.com/aws/aws-cdk/issues/36812)) ([bda00bf](https://github.com/aws/aws-cdk/commit/bda00bf12b8fb730c93f236fe0f39e90e18164f1)), closes [#26698](https://github.com/aws/aws-cdk/issues/26698)
+* **eks:** add Provisioned Control Plane support with controlPlaneScalingTier property ([#36651](https://github.com/aws/aws-cdk/issues/36651)) ([5ea1054](https://github.com/aws/aws-cdk/commit/5ea1054ebf45c77980bb11093ae1917cf9ce1927)), closes [#36650](https://github.com/aws/aws-cdk/issues/36650)
+* **eks:** add support for Kubernetes version 1.36 ([#38441](https://github.com/aws/aws-cdk/issues/38441)) ([da27b6c](https://github.com/aws/aws-cdk/commit/da27b6cab6f2d263cf3f163546281daec22a06f8)), closes [#38411](https://github.com/aws/aws-cdk/issues/38411)
+* **lambda:** add Java8AL2023, Java11AL2023 and Java17AL2023 runtime for Lambda [#38418](https://github.com/aws/aws-cdk/issues/38418) ([#38419](https://github.com/aws/aws-cdk/issues/38419)) ([1e55176](https://github.com/aws/aws-cdk/commit/1e55176a458afc9f6e653c92b7044b0c5ec9292b))
+* **lambda:** add logGroup and systemLogLevel to CapacityProvider ([#38183](https://github.com/aws/aws-cdk/issues/38183)) ([61a2e2d](https://github.com/aws/aws-cdk/commit/61a2e2d0caf49874652301c01c293b180baf617f)), closes [#38182](https://github.com/aws/aws-cdk/issues/38182)
+* **lambda:** add PropagateTags to CapacityProvider for tag propagation ([#38180](https://github.com/aws/aws-cdk/issues/38180)) ([6f86f97](https://github.com/aws/aws-cdk/commit/6f86f9778b5dbd461962fbcd7e063e10b8582469)), closes [#38181](https://github.com/aws/aws-cdk/issues/38181)
+
+
+### Bug Fixes
+
+* **core:** upgrade cloudformation-validate library ([#38444](https://github.com/aws/aws-cdk/issues/38444)) ([d26e507](https://github.com/aws/aws-cdk/commit/d26e5075987e2054bc014048efa36cb1bc07a9c6)), closes [#38412](https://github.com/aws/aws-cdk/issues/38412)
+* bump brace-expansion to 5.0.8 to address CVE-2026-14257 ([#38410](https://github.com/aws/aws-cdk/issues/38410)) ([5aaa395](https://github.com/aws/aws-cdk/commit/5aaa3950a2c69dfbd46e7eecc130b5ce5cc72df7)), closes [#38409](https://github.com/aws/aws-cdk/issues/38409) [#38063](https://github.com/aws/aws-cdk/issues/38063)
+
+## [2.262.2](https://github.com/aws/aws-cdk/compare/v2.262.1...v2.262.2) (2026-07-29)
+
+
+### Bug Fixes
+
+* revert "fix(core): stack.node.addDependency gets slower as stacks grow ([#38314](https://github.com/aws/aws-cdk/issues/38314))" ([#38417](https://github.com/aws/aws-cdk/issues/38417)) ([d97dd8d](https://github.com/aws/aws-cdk/commit/d97dd8d5aae1bcddee95fc02ba723c1e8157487e)), closes [#38406](https://github.com/aws/aws-cdk/issues/38406) [#38406](https://github.com/aws/aws-cdk/issues/38406)
+
 ## [2.262.1](https://github.com/aws/aws-cdk/compare/v2.262.0...v2.262.1) (2026-07-23)
 
 
