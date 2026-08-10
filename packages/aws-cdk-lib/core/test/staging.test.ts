@@ -1704,7 +1704,7 @@ describe('staging', () => {
       const stack = new Stack(app, 'stack');
       const directory = path.join(__dirname, 'fs', 'fixtures', 'symlinks');
 
-      // WHEN - we should throw no matter the Asset Hash Type
+      // WHEN - throw no matter where the external symlink is
       expect(() => new AssetStaging(stack, 'Asset', {
         sourcePath: directory,
         assetHashType: AssetHashType.OUTPUT,
@@ -1723,7 +1723,7 @@ describe('staging', () => {
       const stack = new Stack(app, 'stack');
       const directory = path.join(__dirname, 'fs', 'fixtures', 'test1', 'subdir4');
 
-      // WHEN - we should throw no matter the Asset Hash Type
+      // WHEN - should be successful if we are dealing with a local symlink
       const staging = new AssetStaging(stack, 'Asset', {
         sourcePath: directory,
         assetHashType: AssetHashType.OUTPUT,
