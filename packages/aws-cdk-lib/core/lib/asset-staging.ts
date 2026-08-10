@@ -6,7 +6,7 @@ import type { AssetOptions } from './assets';
 import { AssetHashType, FileAssetPackaging } from './assets';
 import type { BundlingOptions } from './bundling';
 import { BundlingFileAccess, BundlingOutput, PERF_BUNDLING_SRC_SYM } from './bundling';
-import { AssumptionError, UnscopedValidationError, ValidationError } from './errors';
+import { AssumptionError, ValidationError } from './errors';
 import type { FingerprintOptions } from './fs';
 import { FileSystem, SymlinkFollowMode } from './fs';
 import { clearLargeFileFingerprintCache } from './fs/fingerprint';
@@ -184,7 +184,7 @@ export class AssetStaging extends Construct {
 
     // look for invalid (external) symlinks
     if (props.follow == SymlinkFollowMode.BLOCK_EXTERNAL) {
-      findInvalidSymlinks(this.sourcePath);
+      validateSymlinks(this.sourcePath, props.follow, scope);
     }
 
     this._sourceStats = fs.statSync(this.sourcePath);
@@ -584,22 +584,31 @@ function determineHashType(scope: Construct, assetHashType?: AssetHashType, cust
  * @param root true root of the directory
  * @param subRoot used for walking subdirectories
  */
-function findInvalidSymlinks(root: string, subRoot: string = root) {
+function validateSymlinks(root: string, followMode: SymlinkFollowMode, scope: Construct, subRoot: string = root) {
   const entries = fs.readdirSync(root, { withFileTypes: true });
   for (const entry of entries) {
     const childPath = path.join(subRoot, entry.name);
-    if (entry.isSymbolicLink()) {
-      // we check whether this is internal or external, throw on external
+    if (entry.isDirectory()) {
+      validateSymlinks(root, followMode, scope, childPath);
+    } else if (!entry.isSymbolicLink()) {
+      continue;
+    } else { // we have a symlink
+      // check whether this is internal or external
       const linkPath = fs.readlinkSync(childPath);
       const resolvedPath = resolveLinkTarget(childPath, linkPath);
-      if (!isInternalPath(root, resolvedPath)) {
-        throw new UnscopedValidationError(
-          lit`BundlingFileSymlinkForbidden`,
-          `The file ${resolvedPath} is a symbolic link that is forbidden due to follow mode internal-only. Set \`follow\` to a mode that will follow symlinks (ALWAYS or EXTERNAL) or emit a regular file`,
-        );
+      switch (followMode) {
+        case SymlinkFollowMode.BLOCK_EXTERNAL:
+          if (!isInternalPath(root, resolvedPath)) {
+            throw new ValidationError(
+              lit`BundlingFileSymlinkForbidden`,
+              `The file ${resolvedPath} is a symbolic link that is forbidden due to follow mode ${followMode}. Set \`follow\` to a mode that will follow symlinks (ALWAYS or EXTERNAL) or emit a regular file`,
+              scope,
+            );
+          }
+          continue;
+        default:
+          continue;
       }
-    } else if (entry.isDirectory()) {
-      findInvalidSymlinks(root, childPath);
     }
   }
 }
