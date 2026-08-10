@@ -2634,13 +2634,10 @@ const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
   blockDevices: [
     {
       deviceName: 'deviceName',
-      volume: {
-        ebsDevice: {
-          volumeSize: 150,
-          snapshotId: 'snap-1234567890abcdef0',
-          volumeInitializationRate: 200,
-        },
-      },
+      volume: ec2.BlockDeviceVolume.ebsFromSnapshot('snap-1234567890abcdef0', {
+        volumeSize: 150,
+        volumeInitializationRate: 200,
+      }),
     },
   ],
 });

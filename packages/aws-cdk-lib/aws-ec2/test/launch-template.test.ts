@@ -11,6 +11,7 @@ import {
   App,
   Duration,
   Expiration,
+  Size,
   Stack,
   Tags,
 } from '../../core';
@@ -344,8 +345,9 @@ describe('LaunchTemplate', () => {
         }),
       }, {
         deviceName: 'volumeInitializationRate',
-        volume: BlockDeviceVolume.ebs(15, {
-          volumeInitializationRate: 300,
+        volume: BlockDeviceVolume.ebsFromSnapshot('snapshot-id', {
+          volumeInitializationRate: Size.mebibytes(300),
+          volumeSize: 15,
         }),
       },
     ];
@@ -412,6 +414,7 @@ describe('LaunchTemplate', () => {
             Ebs: {
               VolumeSize: 15,
               VolumeInitializationRate: 300,
+              SnapshotId: 'snapshot-id',
             },
           },
         ],
@@ -474,7 +477,7 @@ describe('LaunchTemplate', () => {
     }).toThrow('Throughput (MiBps) to iops ratio of 0.25033333333333335 is too high; maximum is 0.25 MiBps per iops');
   });
 
-  test.each([99, 301])('throws if volumeInitializationRate is set less than 100 or more than 300', (volumeInitializationRate) => {
+  test.each([Size.mebibytes(99), Size.mebibytes(301)])('throws if volumeInitializationRate is set less than 100 or more than 300', (volumeInitializationRate) => {
     expect(() => {
       new LaunchTemplate(stack, 'LaunchTemplate', {
         blockDevices: [{
@@ -485,20 +488,7 @@ describe('LaunchTemplate', () => {
           }),
         }],
       });
-    }).toThrow(/'volumeInitializationRate' must be between 100 and 300, got/);
-  });
-  test('throws if volumeInitializationRate is not an integer', () => {
-    expect(() => {
-      new LaunchTemplate(stack, 'LaunchTemplate', {
-        blockDevices: [{
-          deviceName: 'ebs',
-          volume: BlockDeviceVolume.ebs(15, {
-            volumeType: EbsDeviceVolumeType.GP3,
-            volumeInitializationRate: 234.56,
-          }),
-        }],
-      });
-    }).toThrow("'volumeInitializationRate' must be an integer, got: 234.56.");
+    }).toThrow(`volumeInitializationRate must be between 100 and 300 MiB/s, got: ${volumeInitializationRate.toMebibytes()} MiB/s`);
   });
 
   test('Given instance profile', () => {

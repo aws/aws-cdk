@@ -4,7 +4,7 @@ import { InstanceProfile, Role, ServicePrincipal } from '../../aws-iam';
 import { Key } from '../../aws-kms';
 import { Asset } from '../../aws-s3-assets';
 import { StringParameter } from '../../aws-ssm';
-import { App, Stack, Duration, Validations } from '../../core';
+import { App, Stack, Duration, Validations, Size } from '../../core';
 import * as cxapi from '../../cx-api';
 import type { LaunchTemplate } from '../lib';
 import {
@@ -368,7 +368,7 @@ describe('instance', () => {
       Annotations.fromStack(stack).hasWarning('/Default/Instance', Match.stringLikeRegexp('The throughput property is not supported on EC2 instances. Use a Launch Template instead'));
     });
 
-    test('warns if volumeInitializationRate is specified for an EBS volume', () => {
+    test('warns if volumeInitializationRate is specified for an EBS volume on an EC2 instance', () => {
       // WHEN
       new Instance(stack, 'Instance', {
         vpc,
@@ -380,7 +380,7 @@ describe('instance', () => {
             deleteOnTermination: true,
             encrypted: true,
             volumeType: EbsDeviceVolumeType.GP3,
-            volumeInitializationRate: 300,
+            volumeInitializationRate: Size.mebibytes(300),
           }),
         }],
       });

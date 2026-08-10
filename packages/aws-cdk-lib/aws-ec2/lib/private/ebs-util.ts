@@ -1,5 +1,5 @@
 import type { Construct } from 'constructs';
-import { Annotations, Token, ValidationError } from '../../../core';
+import { Annotations, SizeRoundingBehavior, ValidationError } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 import type { CfnInstance, CfnLaunchTemplate } from '../ec2.generated';
 import type { BlockDevice } from '../volume';
@@ -63,13 +63,10 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
         }
       }
 
-      if (volumeInitializationRate !== undefined && !Token.isUnresolved(volumeInitializationRate)) {
-        if (!Number.isInteger(volumeInitializationRate)) {
-          throw new ValidationError(lit `volumeInitializationRate`, `'volumeInitializationRate' must be an integer, got: ${volumeInitializationRate}.`, construct);
-        }
-
-        if (volumeInitializationRate < 100 || volumeInitializationRate > 300) {
-          throw new ValidationError(lit `volumeInitializationRate`, `'volumeInitializationRate' must be between 100 and 300, got ${volumeInitializationRate}.`, construct);
+      if (volumeInitializationRate !== undefined && !volumeInitializationRate.isUnresolved()) {
+        const rateMiBs = volumeInitializationRate.toMebibytes({ rounding: SizeRoundingBehavior.NONE });
+        if (rateMiBs < 100 || rateMiBs > 300) {
+          throw new ValidationError(lit`VolumeInitializationRateOutOfRange`, `volumeInitializationRate must be between 100 and 300 MiB/s, got: ${rateMiBs} MiB/s`, construct);
         }
       }
 
@@ -90,7 +87,7 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
         ...rest,
         iops,
         throughput,
-        volumeInitializationRate,
+        volumeInitializationRate: volumeInitializationRate?.toMebibytes(),
         volumeType,
         kmsKeyId: kmsKey?.keyArn,
       };

@@ -3034,8 +3034,8 @@ function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: Block
       }
 
       if (volumeInitializationRate) {
-        Annotations.of(construct).addWarningV2('@aws-cdk/aws-autoscaling-group:volumeInitializationRateNotSupported',
-          'The volumeInitializationRate is not supported on Autoscaling Group LaunchCofigurations. Use a Launch Template instead.',
+        Annotations.of(construct).addWarningV2('@aws-cdk/aws-autoscaling:volumeInitializationRateNotSupported',
+          'The volumeInitializationRate is not supported on Autoscaling Group LaunchConfigurations. Use a Launch Template instead.',
         );
       }
     }

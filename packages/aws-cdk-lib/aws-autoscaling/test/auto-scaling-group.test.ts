@@ -1393,13 +1393,13 @@ describe('auto scaling group', () => {
           deleteOnTermination: true,
           encrypted: true,
           volumeType: autoscaling.EbsDeviceVolumeType.GP3,
-          volumeInitializationRate: 300,
+          volumeInitializationRate: cdk.Size.mebibytes(300),
         }),
       }],
     });
 
     // THEN
-    Annotations.fromStack(stack).hasWarning('/Default/MyStack', 'The volumeInitializationRate is not supported on Autoscaling Group LaunchCofigurations. Use a Launch Template instead. [ack: @aws-cdk/aws-autoscaling-group:volumeInitializationRateNotSupported]');
+    Annotations.fromStack(stack).hasWarning('/Default/MyStack', 'The volumeInitializationRate is not supported on Autoscaling Group LaunchConfigurations. Use a Launch Template instead. [ack: @aws-cdk/aws-autoscaling:volumeInitializationRateNotSupported]');
   });
 
   test('test if volumeInitilizationRate is set on LaunchTemplate', () => {
@@ -1411,7 +1411,7 @@ describe('auto scaling group', () => {
       deviceName: 'ebs-snapshot',
       volume: autoscaling.BlockDeviceVolume.ebsFromSnapshot('snapshot-id', {
         volumeType: autoscaling.EbsDeviceVolumeType.GP3,
-        volumeInitializationRate: 300,
+        volumeInitializationRate: cdk.Size.mebibytes(300),
       }),
     }];
 
