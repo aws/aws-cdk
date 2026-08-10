@@ -8,7 +8,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-firehose-delivery-stream-s3-all-properties');
 
 const deliveryStream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
-  destination: new firehose.HTTPEndpoint({
+  destination: new firehose.HttpEndpoint({
     endpointConfig: {
       url: 'https://postman-echo.com/post',
     },

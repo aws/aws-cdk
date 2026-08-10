@@ -89,8 +89,8 @@ Currently in the AWS CDK, only S3 is implemented as an L2 construct destination.
 Defining a delivery stream with an HTTP destination:
 
 ```ts
-declare const endpointConfig: firehose.HTTPEndpointConfig;
-const httpDestination = new firehose.HTTPEndpoint({
+declare const endpointConfig: firehose.HttpEndpointConfig;
+const httpDestination = new firehose.HttpEndpoint({
   endpointConfig,
 });
 ```
@@ -105,7 +105,7 @@ import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 declare const apiKey: secretsmanager.Secret;
 const datadogDestination = new firehose.Datadog({
   apiKey,
-  url: firehose.DatadogLogsEndpointUrl.DATADOG_LOGS_US1,
+  endpoint: firehose.DatadogEndpoint.LOGS_US1,
 });
 ```
 

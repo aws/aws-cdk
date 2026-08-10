@@ -32,7 +32,7 @@ export class DatadogEndpoint {
   /**
    * Logs — AP1 (Japan)
    */
-  public static readonly LOGS_AP1 = new DatadogEndpoint('https://aws-kinesis-http-intake.logs.ap1.datadoqhq.com/api/v2/logs?dd-protocol=aws-kinesis-firehose');
+  public static readonly LOGS_AP1 = new DatadogEndpoint('https://aws-kinesis-http-intake.logs.ap1.datadoghq.com/api/v2/logs?dd-protocol=aws-kinesis-firehose');
   /**
    * Logs — EU
    */
