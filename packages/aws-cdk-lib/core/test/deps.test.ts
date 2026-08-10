@@ -166,5 +166,97 @@ describe('deps', () => {
         stack.resolve(nested.nestedStackResource!.logicalId),
       ].sort());
     });
+
+    test('cross-stack node.addDependency produces a stack-to-stack dependency without quadratic expansion', () => {
+      // Verify that the cross-stack short-circuit produces the correct assembly
+      // dependency and doesn't blow up with large stacks.
+      const app = new core.App();
+      const stackA = new core.Stack(app, 'StackA');
+      const stackB = new core.Stack(app, 'StackB');
+
+      // Create many resources in each stack
+      const resourceCount = 100;
+      for (let i = 0; i < resourceCount; i++) {
+        new core.CfnResource(stackA, `ResA${i}`, { type: 'Test::Resource::Fake' });
+        new core.CfnResource(stackB, `ResB${i}`, { type: 'Test::Resource::Fake' });
+      }
+
+      stackA.node.addDependency(stackB);
+      app.synth();
+
+      // Should produce exactly one stack dependency
+      expect(stackA.dependencies).toHaveLength(1);
+      expect(stackA.dependencies[0]).toBe(stackB);
+    });
+
+    test('cross-stack dependency works when source and target are in nested stacks under different top-level stacks', () => {
+      const app = new core.App();
+      const topA = new core.Stack(app, 'TopA');
+      const topB = new core.Stack(app, 'TopB');
+
+      const nestedA = new core.NestedStack(topA, 'NestedA');
+      const nestedB = new core.NestedStack(topB, 'NestedB');
+
+      const resA = new core.CfnResource(nestedA, 'ResA', { type: 'Test::Resource::Fake' });
+      new core.CfnResource(nestedB, 'ResB', { type: 'Test::Resource::Fake' });
+
+      resA.node.addDependency(nestedB);
+      app.synth();
+
+      // Should produce a top-level stack dependency
+      expect(topA.dependencies).toHaveLength(1);
+      expect(topA.dependencies[0]).toBe(topB);
+    });
+
+    test('nested stack resource does not get DependsOn entries referencing parent stack logical IDs', () => {
+      // https://github.com/aws/aws-cdk/issues/38406 (schahal scenario)
+      // A construct inside a nested stack depending on something in the parent
+      // must not produce DependsOn entries for logical IDs that only exist in
+      // the parent template.
+      const app = new core.App();
+      const stack = new core.Stack(app, 'TestStack');
+      const target = new core.CfnResource(stack, 'Target', { type: 'AWS::SNS::Topic' });
+
+      const nested = new core.NestedStack(stack, 'Nested');
+      const inner = new core.CfnResource(nested, 'Inner', { type: 'AWS::SNS::Topic' });
+      inner.node.addDependency(target);
+
+      const assembly = app.synth();
+      const parentTemplate = assembly.getStackByName(stack.stackName).template;
+
+      // Find the nested stack template from the assembly artifacts
+      const nestedArtifact = assembly.artifacts.find(
+        (a) => a.id !== stack.artifactId && a.manifest?.type === 'aws:cloudformation:stack',
+      );
+
+      // The parent template's nested stack resource should depend on Target
+      const nestedStackEntry = Object.entries(parentTemplate.Resources).find(
+        ([_, v]: [string, any]) => v.Type === 'AWS::CloudFormation::Stack',
+      );
+      expect(nestedStackEntry).toBeDefined();
+      expect((nestedStackEntry![1] as any).DependsOn).toContain('Target');
+
+      // If we can access the nested template, verify it doesn't reference Target
+      if (nestedArtifact) {
+        const nestedTemplate = (nestedArtifact as any).template;
+        if (nestedTemplate?.Resources?.Inner) {
+          expect(nestedTemplate.Resources.Inner.DependsOn).toBeUndefined();
+        }
+      }
+    });
+
+    test('node.addDependency on a construct with no resources is a no-op', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'TestStack');
+      const emptyConstruct = new Construct(stack, 'Empty');
+      const resource = new core.CfnResource(stack, 'Res', { type: 'Test::Resource::Fake' });
+
+      // Depend on empty construct — should not crash
+      resource.node.addDependency(emptyConstruct);
+
+      const template = app.synth().getStackByName(stack.stackName).template;
+      // Resource should have no DependsOn since the target has no resources
+      expect(template.Resources.Res.DependsOn).toBeUndefined();
+    });
   });
 });

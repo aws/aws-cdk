@@ -2,11 +2,12 @@ import type { IConstruct } from 'constructs';
 import { Dependable } from 'constructs';
 import { resolveReferences } from './refs';
 import { CfnResource } from '../cfn-resource';
-import type { Stack } from '../stack';
+import { Stack } from '../stack';
 import { iterateDfsPostorder, iterateDfsPreorder } from './construct-iteration';
 import { writePropertyAssignmentMetadataForConstruct } from './resolve';
 import { debugModeEnabled } from '../debug';
 import { STACK_TYPE, stageOf } from './core-construct-finders';
+import { addDependency } from '../deps';
 
 function writePropertyAssignmentMetadata(root: IConstruct) {
   if (!debugModeEnabled()) return;
@@ -35,6 +36,25 @@ function writePropertyAssignmentMetadata(root: IConstruct) {
 export function prepareApp(root: IConstruct) {
   // apply dependencies between resources in depending subtrees
   for (const dependency of findTransitiveDeps(root)) {
+    const sourceTopLevelStack = topLevelStackOf(dependency.source);
+    const targetTopLevelStack = topLevelStackOf(dependency.target);
+
+    // Optimization: if source and target are under different top-level stacks,
+    // every resource pair in the Cartesian product will resolve to the same
+    // single assembly-level (stack-to-stack) dependency. Avoid the O(n*m)
+    // expansion and apply the dependency once using representative elements.
+    if (sourceTopLevelStack && targetTopLevelStack && sourceTopLevelStack !== targetTopLevelStack) {
+      const sourceRep = findFirstCfnResource(dependency.source);
+      const targetRep = findFirstCfnResource(dependency.target);
+      if (sourceRep && targetRep) {
+        addDependency(sourceRep, targetRep, `{${dependency.source.node.path}}.addDependency({${dependency.target.node.path}})`);
+      }
+      continue;
+    }
+
+    // Same top-level stack (or no stack found): expand to the Cartesian product
+    // of resources. addResourceDependency handles nested stack boundaries
+    // correctly via deps.ts (resourceInCommonStackFor).
     const targetCfnResources = findCfnResources(dependency.target);
 
     // Gets iterated multiple times so make the iterator concrete
@@ -121,6 +141,36 @@ function* findCfnResources(root: IConstruct): IterableIterator<CfnResource> {
     if (CfnResource.isCfnResource(node)) {
       yield node;
     }
+  }
+}
+
+/**
+ * Find the first CfnResource under a construct (used as a representative
+ * for cross-stack dependency resolution where all resources resolve to the
+ * same stack dependency).
+ */
+function findFirstCfnResource(root: IConstruct): CfnResource | undefined {
+  for (const node of iterateDfsPreorder(root)) {
+    if (CfnResource.isCfnResource(node)) {
+      return node;
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Return the top-level (non-nested) stack containing the given construct,
+ * or undefined if the construct is not in a stack.
+ */
+function topLevelStackOf(construct: IConstruct): Stack | undefined {
+  try {
+    let stack = Stack.of(construct);
+    while (stack.nestedStackParent) {
+      stack = stack.nestedStackParent;
+    }
+    return stack;
+  } catch {
+    return undefined;
   }
 }
 
