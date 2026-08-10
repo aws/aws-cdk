@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "DeliveryStreamHTTPDestinationRoleD8ECD827": {
+  "DeliveryStreamHttpDestinationRole56341A2A": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -17,7 +17,7 @@
     }
    }
   },
-  "DeliveryStreamHTTPDestinationRoleDefaultPolicyA43D7E57": {
+  "DeliveryStreamHttpDestinationRoleDefaultPolicy9B8736EB": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -102,10 +102,10 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "DeliveryStreamHTTPDestinationRoleDefaultPolicyA43D7E57",
+    "PolicyName": "DeliveryStreamHttpDestinationRoleDefaultPolicy9B8736EB",
     "Roles": [
      {
-      "Ref": "DeliveryStreamHTTPDestinationRoleD8ECD827"
+      "Ref": "DeliveryStreamHttpDestinationRole56341A2A"
      }
     ]
    }
@@ -118,7 +118,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "DeliveryStreamLogGroupHTTPDestination3F0523B8": {
+  "DeliveryStreamLogGroupHttpDestinationD1DCA6F4": {
    "Type": "AWS::Logs::LogStream",
    "Properties": {
     "LogGroupName": {
@@ -158,7 +158,7 @@
        "Ref": "DeliveryStreamLogGroupA92E8EA0"
       },
       "LogStreamName": {
-       "Ref": "DeliveryStreamLogGroupHTTPDestination3F0523B8"
+       "Ref": "DeliveryStreamLogGroupHttpDestinationD1DCA6F4"
       }
      },
      "EndpointConfiguration": {
@@ -173,7 +173,7 @@
      },
      "RoleARN": {
       "Fn::GetAtt": [
-       "DeliveryStreamHTTPDestinationRoleD8ECD827",
+       "DeliveryStreamHttpDestinationRole56341A2A",
        "Arn"
       ]
      },
@@ -196,7 +196,7 @@
       },
       "RoleARN": {
        "Fn::GetAtt": [
-        "DeliveryStreamHTTPDestinationRoleD8ECD827",
+        "DeliveryStreamHttpDestinationRole56341A2A",
         "Arn"
        ]
       }
@@ -205,7 +205,7 @@
       "Enabled": true,
       "RoleARN": {
        "Fn::GetAtt": [
-        "DeliveryStreamHTTPDestinationRoleD8ECD827",
+        "DeliveryStreamHttpDestinationRole56341A2A",
         "Arn"
        ]
       },
@@ -233,7 +233,7 @@
     }
    },
    "DependsOn": [
-    "DeliveryStreamHTTPDestinationRoleDefaultPolicyA43D7E57"
+    "DeliveryStreamHttpDestinationRoleDefaultPolicy9B8736EB"
    ]
   }
  },
@@ -244,6 +244,9 @@
    },
    "ap-east-1": {
     "FirehoseCidrBlock": "18.162.221.32/27"
+   },
+   "ap-east-2": {
+    "FirehoseCidrBlock": "43.212.53.160/27"
    },
    "ap-northeast-1": {
     "FirehoseCidrBlock": "13.113.196.224/27"
@@ -274,6 +277,9 @@
    },
    "ap-southeast-5": {
     "FirehoseCidrBlock": "43.216.58.0/27"
+   },
+   "ap-southeast-7": {
+    "FirehoseCidrBlock": "43.208.112.96/27"
    },
    "ca-central-1": {
     "FirehoseCidrBlock": "35.183.92.128/27"
