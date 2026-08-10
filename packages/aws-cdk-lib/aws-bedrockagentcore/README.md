@@ -2731,22 +2731,32 @@ memory.addMemoryStrategy(agentcore.MemoryStrategy.usingBuiltInSemantic());
 
 You can configure stream delivery resources to enable real-time push-based streaming of memory record lifecycle events (created, updated, deleted) to Amazon Kinesis Data Streams. This allows you to react to memory changes in real-time, build event-driven architectures, or feed memory events into downstream analytics pipelines.
 
+Delivery targets are created with the static factory methods on `StreamDeliveryResource`, one per target type. Kinesis Data Streams is currently the only supported target:
+
 ```typescript fixture=default
 // Create a Kinesis Data Stream
 const stream = new kinesis.Stream(this, 'MemoryEventStream', {
   streamName: 'memory-events',
 });
 
-// Create a memory with stream delivery (defaults to MEMORY_RECORDS + FULL_CONTENT)
 const memory = new agentcore.Memory(this, 'MemoryWithStreamDelivery', {
   memoryName: 'memory_with_stream',
   description: 'Memory with Kinesis stream delivery',
   expirationDuration: cdk.Duration.days(90),
-  streamDeliveryResources: [{ stream }],
+  streamDeliveryResources: [
+    agentcore.StreamDeliveryResource.kinesis(stream, {
+      contentConfigurations: [
+        {
+          type: agentcore.StreamDeliveryContentType.MEMORY_RECORDS,
+          level: agentcore.StreamDeliveryContentLevel.METADATA_ONLY,
+        },
+      ],
+    }),
+  ],
 });
 ```
 
-To customize the content level, specify `contentConfigurations` explicitly:
+There is no default content level — you must choose one explicitly. `METADATA_ONLY` delivers only the record ID, timestamps, and event type. `FULL_CONTENT` delivers the complete memory record body, which can contain personally identifiable information and other sensitive conversation content, so make sure the destination stream and its consumers are an appropriate place for that data:
 
 ```typescript fixture=default
 const stream = new kinesis.Stream(this, 'MemoryEventStream');
@@ -2754,15 +2764,15 @@ const stream = new kinesis.Stream(this, 'MemoryEventStream');
 const memory = new agentcore.Memory(this, 'MemoryWithStreamDelivery', {
   memoryName: 'memory_with_stream',
   streamDeliveryResources: [
-    {
-      stream,
+    agentcore.StreamDeliveryResource.kinesis(stream, {
       contentConfigurations: [
         {
           type: agentcore.StreamDeliveryContentType.MEMORY_RECORDS,
-          level: agentcore.StreamDeliveryContentLevel.METADATA_ONLY,
+          // Streams complete memory record bodies, which may include sensitive data
+          level: agentcore.StreamDeliveryContentLevel.FULL_CONTENT,
         },
       ],
-    },
+    }),
   ],
 });
 ```
@@ -2776,16 +2786,17 @@ const memory = new agentcore.Memory(this, 'MyMemory', {
 
 const stream = new kinesis.Stream(this, 'EventStream');
 
-memory.addStreamDeliveryResource({
-  stream: stream,
+memory.addStreamDeliveryResource(agentcore.StreamDeliveryResource.kinesis(stream, {
   contentConfigurations: [
     {
       type: agentcore.StreamDeliveryContentType.MEMORY_RECORDS,
       level: agentcore.StreamDeliveryContentLevel.METADATA_ONLY,
     },
   ],
-});
+}));
 ```
+
+Only one stream delivery resource is currently supported (a CloudFormation maximum); providing more than one fails at synth with `TooManyStreamDeliveryResources`.
 
 The memory execution role is automatically granted write permissions (`kinesis:PutRecord`, `kinesis:PutRecords`, `kinesis:ListShards`, `kinesis:DescribeStream`) to each configured Kinesis stream. If the stream uses a customer-managed KMS key, encryption permissions are also granted automatically.
 

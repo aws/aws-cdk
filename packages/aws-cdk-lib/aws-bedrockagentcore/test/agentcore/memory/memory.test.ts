@@ -12,6 +12,7 @@ import {
   Memory,
   StreamDeliveryContentType,
   StreamDeliveryContentLevel,
+  StreamDeliveryResource,
 } from '../../../lib/memory/memory';
 import { MemoryStrategy } from '../../../lib/memory/memory-strategy';
 
@@ -2740,15 +2741,14 @@ describe('Memory with stream delivery resources tests', () => {
       description: 'A test memory with stream delivery',
       expirationDuration: Duration.days(30),
       streamDeliveryResources: [
-        {
-          stream,
+        StreamDeliveryResource.kinesis(stream, {
           contentConfigurations: [
             {
               type: StreamDeliveryContentType.MEMORY_RECORDS,
               level: StreamDeliveryContentLevel.FULL_CONTENT,
             },
           ],
-        },
+        }),
       ],
     });
 
@@ -2831,15 +2831,14 @@ describe('Memory with addStreamDeliveryResource method tests', () => {
       memoryName: 'test_memory_add_stream',
     });
 
-    memory.addStreamDeliveryResource({
-      stream,
+    memory.addStreamDeliveryResource(StreamDeliveryResource.kinesis(stream, {
       contentConfigurations: [
         {
           type: StreamDeliveryContentType.MEMORY_RECORDS,
           level: StreamDeliveryContentLevel.METADATA_ONLY,
         },
       ],
-    });
+    }));
 
     app.synth();
     template = Template.fromStack(stack);
@@ -2900,35 +2899,6 @@ describe('Memory stream delivery validation tests', () => {
     });
   });
 
-  test('Should use default contentConfigurations when not specified', () => {
-    const stream = new kinesis.Stream(stack, 'DefaultConfigStream');
-
-    new Memory(stack, 'default-config-memory', {
-      memoryName: 'default_config_memory',
-      streamDeliveryResources: [{ stream }],
-    });
-
-    app.synth();
-    const template = Template.fromStack(stack);
-
-    template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
-      StreamDeliveryResources: {
-        Resources: [
-          {
-            Kinesis: {
-              ContentConfigurations: [
-                {
-                  Type: 'MEMORY_RECORDS',
-                  Level: 'FULL_CONTENT',
-                },
-              ],
-            },
-          },
-        ],
-      },
-    });
-  });
-
   test('Should throw error for more than one content configuration', () => {
     const stream = new kinesis.Stream(stack, 'TooManyConfigStream');
 
@@ -2936,32 +2906,45 @@ describe('Memory stream delivery validation tests', () => {
       new Memory(stack, 'invalid-memory', {
         memoryName: 'invalid_stream_memory',
         streamDeliveryResources: [
-          {
-            stream,
+          StreamDeliveryResource.kinesis(stream, {
             contentConfigurations: [
               { type: StreamDeliveryContentType.MEMORY_RECORDS, level: StreamDeliveryContentLevel.FULL_CONTENT },
               { type: StreamDeliveryContentType.MEMORY_RECORDS, level: StreamDeliveryContentLevel.METADATA_ONLY },
             ],
-          },
+          }),
         ],
       });
     }).toThrow('Stream delivery resource currently supports at most one content configuration');
   });
 
-  test('Should throw error for empty content configurations array', () => {
+  test('fails for empty content configurations array', () => {
     const stream = new kinesis.Stream(stack, 'EmptyConfigStream');
 
     expect(() => {
       new Memory(stack, 'empty-config-memory', {
         memoryName: 'empty_config_memory',
         streamDeliveryResources: [
-          {
-            stream,
+          StreamDeliveryResource.kinesis(stream, {
             contentConfigurations: [],
-          },
+          }),
         ],
       });
-    }).toThrow('Stream delivery resource contentConfigurations must not be an empty array');
+    }).toThrow('contentConfigurations must be specified');
+  });
+
+  test('fails for missing content configurations', () => {
+    const stream = new kinesis.Stream(stack, 'MissingConfigStream');
+
+    expect(() => {
+      new Memory(stack, 'missing-config-memory', {
+        memoryName: 'missing_config_memory',
+        streamDeliveryResources: [
+          // A JavaScript or jsii caller can bypass the required type, so this must
+          // still surface a ValidationError rather than a TypeError
+          StreamDeliveryResource.kinesis(stream, {} as any),
+        ],
+      });
+    }).toThrow('contentConfigurations must be specified');
   });
 
   test('Should throw error when adding more than one stream delivery resource', () => {
@@ -2971,22 +2954,20 @@ describe('Memory stream delivery validation tests', () => {
     const memory = new Memory(stack, 'test-memory', {
       memoryName: 'test_memory',
       streamDeliveryResources: [
-        {
-          stream: stream1,
+        StreamDeliveryResource.kinesis(stream1, {
           contentConfigurations: [
-            { type: StreamDeliveryContentType.MEMORY_RECORDS },
+            { type: StreamDeliveryContentType.MEMORY_RECORDS, level: StreamDeliveryContentLevel.METADATA_ONLY },
           ],
-        },
+        }),
       ],
     });
 
     expect(() => {
-      memory.addStreamDeliveryResource({
-        stream: stream2,
+      memory.addStreamDeliveryResource(StreamDeliveryResource.kinesis(stream2, {
         contentConfigurations: [
-          { type: StreamDeliveryContentType.MEMORY_RECORDS },
+          { type: StreamDeliveryContentType.MEMORY_RECORDS, level: StreamDeliveryContentLevel.METADATA_ONLY },
         ],
-      });
+      }));
     }).toThrow('Memory currently supports at most one stream delivery resource');
   });
 
@@ -3003,18 +2984,20 @@ describe('Memory stream delivery validation tests', () => {
     expect(memoryResource.Properties.StreamDeliveryResources).toBeUndefined();
   });
 
-  test('Should handle content configuration without level (optional)', () => {
-    const stream = new kinesis.Stream(stack, 'NoLevelStream');
+  test.each([
+    [StreamDeliveryContentLevel.METADATA_ONLY, 'METADATA_ONLY'],
+    [StreamDeliveryContentLevel.FULL_CONTENT, 'FULL_CONTENT'],
+  ])('Should always render the explicitly configured level %s', (level, expected) => {
+    const stream = new kinesis.Stream(stack, `LevelStream${expected}`);
 
-    new Memory(stack, 'no-level-memory', {
-      memoryName: 'no_level_memory',
+    new Memory(stack, 'level-memory', {
+      memoryName: 'level_memory',
       streamDeliveryResources: [
-        {
-          stream,
+        StreamDeliveryResource.kinesis(stream, {
           contentConfigurations: [
-            { type: StreamDeliveryContentType.MEMORY_RECORDS },
+            { type: StreamDeliveryContentType.MEMORY_RECORDS, level },
           ],
-        },
+        }),
       ],
     });
 
@@ -3029,6 +3012,7 @@ describe('Memory stream delivery validation tests', () => {
               ContentConfigurations: [
                 {
                   Type: 'MEMORY_RECORDS',
+                  Level: expected,
                 },
               ],
             },
@@ -3036,6 +3020,56 @@ describe('Memory stream delivery validation tests', () => {
         ],
       },
     });
+  });
+});
+
+describe('StreamDeliveryResource factory tests', () => {
+  test('kinesis() exposes the stream and content configurations it was created with', () => {
+    const stack = new cdk.Stack(new cdk.App(), 'factory-stack');
+    const stream = new kinesis.Stream(stack, 'FactoryStream');
+
+    const resource = StreamDeliveryResource.kinesis(stream, {
+      contentConfigurations: [
+        { type: StreamDeliveryContentType.MEMORY_RECORDS, level: StreamDeliveryContentLevel.METADATA_ONLY },
+      ],
+    });
+
+    expect(resource.stream).toBe(stream);
+    expect(resource.contentConfigurations).toEqual([
+      { type: StreamDeliveryContentType.MEMORY_RECORDS, level: StreamDeliveryContentLevel.METADATA_ONLY },
+    ]);
+  });
+
+  test('kinesis() accepts an imported stream', () => {
+    const stack = new cdk.Stack(new cdk.App(), 'imported-stack');
+    const stream = kinesis.Stream.fromStreamArn(stack, 'ImportedStream', 'arn:aws:kinesis:us-east-1:123456789012:stream/imported');
+
+    const memory = new Memory(stack, 'imported-stream-memory', {
+      memoryName: 'imported_stream_memory',
+      streamDeliveryResources: [
+        StreamDeliveryResource.kinesis(stream, {
+          contentConfigurations: [
+            { type: StreamDeliveryContentType.MEMORY_RECORDS, level: StreamDeliveryContentLevel.METADATA_ONLY },
+          ],
+        }),
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      StreamDeliveryResources: {
+        Resources: [
+          {
+            Kinesis: {
+              DataStreamArn: 'arn:aws:kinesis:us-east-1:123456789012:stream/imported',
+              ContentConfigurations: [
+                { Type: 'MEMORY_RECORDS', Level: 'METADATA_ONLY' },
+              ],
+            },
+          },
+        ],
+      },
+    });
+    expect(memory.streamDeliveryResources).toHaveLength(1);
   });
 });
 
@@ -3061,12 +3095,11 @@ describe('Memory with KMS-encrypted Kinesis stream tests', () => {
     new Memory(stack, 'test-memory', {
       memoryName: 'test_memory_kms_stream',
       streamDeliveryResources: [
-        {
-          stream,
+        StreamDeliveryResource.kinesis(stream, {
           contentConfigurations: [
             { type: StreamDeliveryContentType.MEMORY_RECORDS, level: StreamDeliveryContentLevel.FULL_CONTENT },
           ],
-        },
+        }),
       ],
     });
 
