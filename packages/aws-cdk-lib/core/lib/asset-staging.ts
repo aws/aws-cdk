@@ -184,7 +184,7 @@ export class AssetStaging extends Construct {
 
     // look for invalid (external) symlinks
     if (props.follow == SymlinkFollowMode.BLOCK_EXTERNAL) {
-      validateInternalSymlinks(this.sourcePath, props.follow, scope);
+      validateInternalSymlinks(this.sourcePath, scope, props.follow);
     }
 
     this._sourceStats = fs.statSync(this.sourcePath);
@@ -207,7 +207,7 @@ export class AssetStaging extends Construct {
       // Check if we actually have to bundle for this stack
       skip = !stackOf(this).bundlingRequired;
       const bundling = props.bundling;
-      stageThisAsset = () => this.stageByBundling(bundling, skip);
+      stageThisAsset = () => this.stageByBundling(bundling, skip, props.follow);
     } else {
       stageThisAsset = () => this.stageByCopying();
     }
@@ -329,7 +329,7 @@ export class AssetStaging extends Construct {
    *
    * Optionally skip, in which case we pretend we did something but we don't really.
    */
-  private stageByBundling(bundling: BundlingOptions, skip: boolean): StagedAsset {
+  private stageByBundling(bundling: BundlingOptions, skip: boolean, follow?: SymlinkFollowMode): StagedAsset {
     if (!this.sourceStats.isDirectory()) {
       throw new ValidationError(lit`AssetExpectedDirectoryForBundling`, `Asset ${this.sourcePath} is expected to be a directory when bundling`, this);
     }
@@ -358,6 +358,10 @@ export class AssetStaging extends Construct {
 
     const bundleDir = this.determineBundleDir(this.assetOutdir, assetHash);
     this.bundle(bundling, bundleDir);
+
+    if (follow === SymlinkFollowMode.BLOCK_EXTERNAL) {
+      validateInternalSymlinks(bundleDir, this, follow);
+    }
 
     // Check bundling output content and determine if we will need to archive
     const bundlingOutputType = bundling.outputType ?? BundlingOutput.AUTO_DISCOVER;
@@ -584,12 +588,12 @@ function determineHashType(scope: Construct, assetHashType?: AssetHashType, cust
  * @param root true root of the directory
  * @param subRoot used for walking subdirectories
  */
-function validateInternalSymlinks(root: string, followMode: SymlinkFollowMode, scope: Construct, subRoot: string = root) {
+function validateInternalSymlinks(root: string, scope: Construct, followMode: SymlinkFollowMode, subRoot: string = root) {
   const entries = fs.readdirSync(root, { withFileTypes: true });
   for (const entry of entries) {
     const childPath = path.join(subRoot, entry.name);
     if (entry.isDirectory()) {
-      validateInternalSymlinks(root, followMode, scope, childPath);
+      validateInternalSymlinks(root, scope, followMode, childPath);
     } else if (!entry.isSymbolicLink()) {
       continue;
     } else { // we have a symlink
