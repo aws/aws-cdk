@@ -39,10 +39,10 @@ export function prepareApp(root: IConstruct) {
     const sourceTopLevelStack = topLevelStackOf(dependency.source);
     const targetTopLevelStack = topLevelStackOf(dependency.target);
 
-    // Optimization: if source and target are under different top-level stacks,
+    // If source and target are under different top-level stacks,
     // every resource pair in the Cartesian product will resolve to the same
-    // single assembly-level (stack-to-stack) dependency. Avoid the O(n*m)
-    // expansion and apply the dependency once using representative elements.
+    // single assembly-level (stack-to-stack) dependency. We avoid the O(n*m)
+    // expansion and apply the dependency once using representative elements in this case.
     if (sourceTopLevelStack && targetTopLevelStack && sourceTopLevelStack !== targetTopLevelStack) {
       const sourceRep = findFirstCfnResource(dependency.source);
       const targetRep = findFirstCfnResource(dependency.target);
