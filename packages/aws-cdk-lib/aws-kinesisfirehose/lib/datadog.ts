@@ -87,6 +87,12 @@ export class DatadogEndpoint {
   /**
    * Use a custom Datadog endpoint URL.
    *
+   * This is an escape hatch for endpoints not covered by the predefined members (for
+   * example a new region or a proxy in front of Datadog). The value is passed through
+   * as-is and is not validated by CDK. It must be a valid HTTPS Datadog intake URL: the
+   * Firehose API requires the endpoint URL to match `https://`, so an invalid value fails
+   * at deployment. The caller is responsible for providing a correct URL.
+   *
    * @param url The full HTTPS endpoint URL.
    */
   public static of(url: string): DatadogEndpoint {
@@ -106,7 +112,10 @@ export class DatadogEndpoint {
  */
 export interface DatadogProps extends CommonDestinationProps {
   /**
-   * The API key required to enable data delivery from Amazon Data Firehose.
+   * The API key used to authenticate with Datadog.
+   *
+   * Delivered to Firehose through AWS Secrets Manager (Firehose retrieves it at runtime rather
+   * than embedding it in the template).
    */
   readonly apiKey: ISecret;
   /**

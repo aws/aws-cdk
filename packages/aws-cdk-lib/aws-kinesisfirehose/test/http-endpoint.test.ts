@@ -51,6 +51,25 @@ describe('HTTP destination', () => {
       });
     });
 
+    it('scopes the role trust policy to Firehose in this account (confused-deputy protection)', () => {
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destination: new firehose.HttpEndpoint({ endpointConfig: baseEndpointConfig }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [Match.objectLike({
+            Principal: { Service: 'firehose.amazonaws.com' },
+            Action: 'sts:AssumeRole',
+            Condition: {
+              StringEquals: { 'aws:SourceAccount': { Ref: 'AWS::AccountId' } },
+              ArnLike: { 'aws:SourceArn': Match.anyValue() },
+            },
+          })],
+        },
+      });
+    });
+
     it('uses the provided role', () => {
       const role = new iam.Role(stack, 'Role', {
         assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),

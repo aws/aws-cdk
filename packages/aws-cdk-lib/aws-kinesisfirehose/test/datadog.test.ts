@@ -114,6 +114,7 @@ describe('Datadog destination', () => {
       ['LOGS_US1', firehose.DatadogEndpoint.LOGS_US1, 'https://aws-kinesis-http-intake.logs.datadoghq.com/v1/input'],
       ['LOGS_US3', firehose.DatadogEndpoint.LOGS_US3, 'https://aws-kinesis-http-intake.logs.us3.datadoghq.com/api/v2/logs?dd-protocol=aws-kinesis-firehose'],
       ['LOGS_US5', firehose.DatadogEndpoint.LOGS_US5, 'https://aws-kinesis-http-intake.logs.us5.datadoghq.com/api/v2/logs?dd-protocol=aws-kinesis-firehose'],
+      ['LOGS_AP1', firehose.DatadogEndpoint.LOGS_AP1, 'https://aws-kinesis-http-intake.logs.ap1.datadoghq.com/api/v2/logs?dd-protocol=aws-kinesis-firehose'],
       ['LOGS_EU', firehose.DatadogEndpoint.LOGS_EU, 'https://aws-kinesis-http-intake.logs.datadoghq.eu/v1/input'],
       ['LOGS_GOV', firehose.DatadogEndpoint.LOGS_GOV, 'https://aws-kinesis-http-intake.logs.ddog-gov.com/v1/input'],
       ['METRICS_US', firehose.DatadogEndpoint.METRICS_US, 'https://awsmetrics-intake.datadoghq.com/v1/input'],
@@ -122,6 +123,8 @@ describe('Datadog destination', () => {
       ['METRICS_EU', firehose.DatadogEndpoint.METRICS_EU, 'https://awsmetrics-intake.datadoghq.eu/v1/input'],
       ['CONFIGURATION_US1', firehose.DatadogEndpoint.CONFIGURATION_US1, 'https://cloudplatform-intake.datadoghq.com/api/v2/cloudchanges?dd-protocol=aws-kinesis-firehose'],
       ['CONFIGURATION_US3', firehose.DatadogEndpoint.CONFIGURATION_US3, 'https://cloudplatform-intake.us3.datadoghq.com/api/v2/cloudchanges?dd-protocol=aws-kinesis-firehose'],
+      ['CONFIGURATION_US5', firehose.DatadogEndpoint.CONFIGURATION_US5, 'https://cloudplatform-intake.us5.datadoghq.com/api/v2/cloudchanges?dd-protocol=aws-kinesis-firehose'],
+      ['CONFIGURATION_AP1', firehose.DatadogEndpoint.CONFIGURATION_AP1, 'https://cloudplatform-intake.ap1.datadoghq.com/api/v2/cloudchanges?dd-protocol=aws-kinesis-firehose'],
       ['CONFIGURATION_EU', firehose.DatadogEndpoint.CONFIGURATION_EU, 'https://cloudplatform-intake.datadoghq.eu/api/v2/cloudchanges?dd-protocol=aws-kinesis-firehose'],
       ['CONFIGURATION_US_GOV', firehose.DatadogEndpoint.CONFIGURATION_US_GOV, 'https://cloudplatform-intake.ddog-gov.com/api/v2/cloudchanges?dd-protocol=aws-kinesis-firehose'],
     ])('%s maps to the correct URL', (_name, endpoint, expectedUrl) => {

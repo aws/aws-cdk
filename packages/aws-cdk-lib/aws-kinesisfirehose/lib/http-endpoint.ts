@@ -53,12 +53,12 @@ export enum HttpBackupMode {
 export interface HttpBufferingHints {
   /**
    * The higher interval allows more time to collect data and the size of data may be bigger. The lower interval sends the data more frequently and may be more advantageous when looking at shorter cycles of data activity.
-   * @default 60 seconds
+   * @default 300 seconds
    */
   readonly interval?: cdk.Duration;
   /**
    * The higher buffer size may be lower in cost with higher latency. The lower buffer size will be faster in delivery with higher cost and less latency.
-   * @default 4 MiB
+   * @default 5 MiB
    */
   readonly size?: cdk.Size;
 }
@@ -82,13 +82,22 @@ export interface HttpEndpointConfig {
    */
   readonly url: string;
   /**
-   * The access key required for Kinesis Firehose to authenticate with the Http endpoint selected as the destination.
-   * @default - None
+   * The access key used to authenticate with the Http endpoint.
+   *
+   * Used only when `secret` is not set. If both `accessKey` and `secret` are provided,
+   * `secret` (AWS Secrets Manager) takes precedence and this value is ignored. The access
+   * key is rendered into the CloudFormation template.
+   *
+   * @default - none; authentication uses `secret` if provided, otherwise no access key
    */
   readonly accessKey?: cdk.SecretValue;
   /**
-   * The secret required for Kinesis Firehose to authenticate with the Http endpoint selected as the destination.
-   * @default - None
+   * A Secrets Manager secret used to authenticate with the Http endpoint.
+   *
+   * When set, Firehose retrieves the credential from AWS Secrets Manager, and this takes
+   * precedence over `accessKey`.
+   *
+   * @default - none; `accessKey` is used if provided
    */
   readonly secret?: ISecret;
   /**
@@ -155,9 +164,22 @@ export class HttpEndpoint implements IDestination {
   bind(scope: Construct, _options: DestinationBindOptions): DestinationConfig {
     const role =
       this.props.role ??
-			new iam.Role(scope, 'Http Destination Role', {
-			  assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
-			});
+      new iam.Role(scope, 'Http Destination Role', {
+        assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com', {
+          conditions: {
+            StringEquals: {
+              'aws:SourceAccount': cdk.Stack.of(scope).account,
+            },
+            ArnLike: {
+              'aws:SourceArn': cdk.Stack.of(scope).formatArn({
+                service: 'firehose',
+                resource: 'deliverystream',
+                resourceName: '*',
+              }),
+            },
+          },
+        }),
+      });
 
     const { loggingOptions, dependables: loggingDependables } =
       createLoggingOptions(scope, {
