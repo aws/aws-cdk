@@ -1628,6 +1628,11 @@ invariants, change-safety, provenance and operational hints — so that humans
 and automated tools working with the deployed template later can act on the
 author's intent instead of guessing it.
 
+**Precedence:** A manually added `com.aws.cloudformation.Context` value is
+preserved unless `MetadataContext`, `MetadataContextMixin`, or `addToTemplate()`
+also emits Context for that location. In that case, the API-produced block
+replaces the manual block in full. Sibling metadata keys are unaffected.
+
 Add resource-level context on any construct scope. It is rendered onto the
 scope's *primary* resources (the `defaultChild` chain of each construct),
 skipping incidental helper resources like auto-created IAM policies:
