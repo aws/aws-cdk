@@ -3,7 +3,6 @@ import type { AspectOptions, IAspect } from './aspect';
 import { Aspects, AspectPriority } from './aspect';
 import { CfnResource } from './cfn-resource';
 import {
-  METADATA_CONTEXT_KEY,
   RESOURCE_CONTEXT_METADATA_TYPE,
   dedupe,
   mergeResourceContext,
@@ -13,6 +12,11 @@ import {
   validateTemplateContext,
   withResourceContextTrustDefaults,
 } from './private/metadata-context-internal';
+import {
+  getTemplateMetadataContext,
+  setResourceMetadataContext,
+  setTemplateMetadataContext,
+} from './private/metadata-context-metadata';
 import { Stack } from './stack';
 
 /**
@@ -418,7 +422,7 @@ export class MetadataContext {
     validateTemplateContext(context);
 
     const stack = Stack.of(this.scope);
-    const existing = (stack.templateOptions.metadata?.[METADATA_CONTEXT_KEY] ?? {}) as Record<string, any>;
+    const existing = getTemplateMetadataContext(stack) ?? {};
     const merged: Record<string, any> = { ...existing };
 
     if (context.arch !== undefined) {
@@ -439,10 +443,7 @@ export class MetadataContext {
       return;
     }
 
-    stack.templateOptions.metadata = {
-      ...stack.templateOptions.metadata,
-      [METADATA_CONTEXT_KEY]: merged,
-    };
+    setTemplateMetadataContext(stack, merged);
   }
 }
 
@@ -491,14 +492,7 @@ class MetadataContextAspect implements IAspect {
       return;
     }
 
-    // Merge with any pre-existing Metadata["com.aws.cloudformation.Context"] (e.g. written via
-    // cfnResource.addMetadata()): explicit resource metadata wins.
-    const existing = node.getMetadata(METADATA_CONTEXT_KEY);
-    if (existing !== undefined && typeof existing === 'object') {
-      merged = mergeResourceContext(merged, existing);
-    }
-
-    node.addMetadata(METADATA_CONTEXT_KEY, withResourceContextTrustDefaults(merged));
+    setResourceMetadataContext(node, withResourceContextTrustDefaults(merged));
   }
 
   private applies(resource: CfnResource, appliedScope: IConstruct, staged: StagedEntry): boolean {

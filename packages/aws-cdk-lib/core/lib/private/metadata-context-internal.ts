@@ -3,12 +3,6 @@ import type { ResourceContextProps, TemplateContextProps, ContextRef } from '../
 import { lit } from './literal-string';
 
 /**
- * The key under which context is stored in the CloudFormation `Metadata`
- * section, both at template level and at resource level.
- */
-export const METADATA_CONTEXT_KEY = 'com.aws.cloudformation.Context';
-
-/**
  * The construct-node metadata type used to stage resource context entries
  * until the rendering aspect writes them onto CloudFormation resources.
  */
@@ -66,12 +60,6 @@ export function renderResourceContext(context: ResourceContextProps): Record<str
  * Add advisory-schema trust defaults to a fully merged resource context.
  */
 export function withResourceContextTrustDefaults(context: Record<string, any>): Record<string, any> {
-  if (context.trust !== undefined && (!isRecord(context.trust) || Array.isArray(context.trust))) {
-    // Explicit resource metadata is an escape hatch. Preserve an invalid
-    // user-supplied trust value rather than silently rewriting it.
-    return context;
-  }
-
   const explicitTrust = (context.trust ?? {}) as Record<string, any>;
   const { src, conf, ...additionalTrust } = explicitTrust;
   const hasPopulatedWhy = typeof context.why === 'string' && context.why.trim().length > 0;
@@ -87,10 +75,6 @@ export function withResourceContextTrustDefaults(context: Record<string, any>): 
       ...additionalTrust,
     },
   };
-}
-
-function isRecord(value: unknown): value is Record<string, any> {
-  return value !== null && typeof value === 'object';
 }
 
 /**
