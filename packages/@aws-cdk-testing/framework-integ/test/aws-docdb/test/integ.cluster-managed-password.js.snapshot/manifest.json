@@ -1,28 +1,28 @@
 {
   "version": "54.0.0",
   "artifacts": {
-    "aws-cdk-mediaconnect-bridge.assets": {
+    "aws-cdk-docdb-cluster-managed-password.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-mediaconnect-bridge.assets.json",
+        "file": "aws-cdk-docdb-cluster-managed-password.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-mediaconnect-bridge": {
+    "aws-cdk-docdb-cluster-managed-password": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-mediaconnect-bridge.template.json",
+        "templateFile": "aws-cdk-docdb-cluster-managed-password.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5e5aa2713a0506f94d161de37fb973215ff6e4a350c3376966994deb94dfc095.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/98e35ffcece73eed7d2448bbfff61753e7cb421be6b381c793ff0c40da2e2258.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-mediaconnect-bridge.assets"
+          "aws-cdk-docdb-cluster-managed-password.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,33 +31,33 @@
         }
       },
       "dependencies": [
-        "aws-cdk-mediaconnect-bridge.assets"
+        "aws-cdk-docdb-cluster-managed-password.assets"
       ],
-      "additionalMetadataFile": "aws-cdk-mediaconnect-bridge.metadata.json",
-      "displayName": "aws-cdk-mediaconnect-bridge"
+      "additionalMetadataFile": "aws-cdk-docdb-cluster-managed-password.metadata.json",
+      "displayName": "aws-cdk-docdb-cluster-managed-password"
     },
-    "cdkintegemxbridgeDefaultTestDeployAssertFB3B244D.assets": {
+    "awscdkdocdbclustermanagedpasswordintegDefaultTestDeployAssert234F4A4F.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cdkintegemxbridgeDefaultTestDeployAssertFB3B244D.assets.json",
+        "file": "awscdkdocdbclustermanagedpasswordintegDefaultTestDeployAssert234F4A4F.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cdkintegemxbridgeDefaultTestDeployAssertFB3B244D": {
+    "awscdkdocdbclustermanagedpasswordintegDefaultTestDeployAssert234F4A4F": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "cdkintegemxbridgeDefaultTestDeployAssertFB3B244D.template.json",
+        "templateFile": "awscdkdocdbclustermanagedpasswordintegDefaultTestDeployAssert234F4A4F.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9dfdb961e296baa16bd9210eaafca587b76639c378d21dbfa67d42beaacd78d6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cdkintegemxbridgeDefaultTestDeployAssertFB3B244D.assets"
+          "awscdkdocdbclustermanagedpasswordintegDefaultTestDeployAssert234F4A4F.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -66,10 +66,11 @@
         }
       },
       "dependencies": [
-        "cdkintegemxbridgeDefaultTestDeployAssertFB3B244D.assets"
+        "aws-cdk-docdb-cluster-managed-password",
+        "awscdkdocdbclustermanagedpasswordintegDefaultTestDeployAssert234F4A4F.assets"
       ],
-      "additionalMetadataFile": "cdkintegemxbridgeDefaultTestDeployAssertFB3B244D.metadata.json",
-      "displayName": "cdk-integ-emx-bridge/DefaultTest/DeployAssert"
+      "additionalMetadataFile": "awscdkdocdbclustermanagedpasswordintegDefaultTestDeployAssert234F4A4F.metadata.json",
+      "displayName": "aws-cdk-docdb-cluster-managed-password-integ/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
