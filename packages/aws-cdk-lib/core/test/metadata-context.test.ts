@@ -82,14 +82,15 @@ describe('metadata context', () => {
       });
     });
 
-    test('auto-populates medium confidence when why and must contain only blank values', () => {
+    test('auto-populates medium confidence when why and must are not populated', () => {
       const stack = new Stack();
       const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
 
-      // Direct resource metadata is an unvalidated escape hatch. Blank values
-      // must not raise generated confidence even though they are preserved.
-      res.addMetadata(CONTEXT_METADATA_KEY, { why: '  ', must: ['  '] });
-      MetadataContext.of(res).add({ ops: 'check queue depth before changing' });
+      MetadataContext.of(res).add({
+        why: '  ',
+        must: [],
+        ops: 'check queue depth before changing',
+      });
 
       const template = toCloudFormation(stack);
       expect(template.Resources.Res.Metadata[CONTEXT_METADATA_KEY].trust).toEqual({
@@ -299,18 +300,30 @@ describe('metadata context', () => {
       expect(template.Resources[topicId].Metadata[CONTEXT_METADATA_KEY]).toMatchObject({ ops: 'watch everything except queues' });
     });
 
-    test('explicit addMetadata Context on the resource wins over aspect-provided context', () => {
+    test('preserves manually added Context when MetadataContext is not used', () => {
       const stack = new Stack();
       const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
-      res.addMetadata(CONTEXT_METADATA_KEY, { why: 'hand-written why', must: ['hand-written rule'] });
+      const manualContext = { why: 'manual user value' };
 
-      MetadataContext.of(res).add({ why: 'aspect why', ops: 'aspect ops' });
+      res.addMetadata(CONTEXT_METADATA_KEY, manualContext);
 
       const template = toCloudFormation(stack);
-      expect(template.Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toMatchObject({
-        why: 'hand-written why',
-        must: ['hand-written rule'],
-        ops: 'aspect ops',
+      expect(template.Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toEqual(manualContext);
+      expect(res.getMetadata(CONTEXT_METADATA_KEY)).toEqual(manualContext);
+    });
+
+    test('MetadataContext replaces manually added resource Context', () => {
+      const stack = new Stack();
+      const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
+      res.addMetadata(CONTEXT_METADATA_KEY, { why: 'manual user value', must: ['manual user rule'] });
+
+      MetadataContext.of(res).add({ why: 'managed rationale', ops: 'managed operational hint' });
+
+      const template = toCloudFormation(stack);
+      expect(template.Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toEqual({
+        why: 'managed rationale',
+        trust: { src: 'authored', conf: 'high' },
+        ops: 'managed operational hint',
       });
     });
 
@@ -453,6 +466,26 @@ describe('metadata context', () => {
 
       expect(nestedTemplate.Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toMatchObject({
         must: ['all data encrypted w/ CMK'],
+      });
+    });
+
+    test('preserves manually added template Context when addToTemplate is not used', () => {
+      const stack = new Stack();
+      const manualContext = { arch: 'manual user value' };
+
+      stack.addMetadata(CONTEXT_METADATA_KEY, manualContext);
+
+      expect(toCloudFormation(stack).Metadata[CONTEXT_METADATA_KEY]).toEqual(manualContext);
+    });
+
+    test('addToTemplate replaces manually added template Context', () => {
+      const stack = new Stack();
+      stack.addMetadata(CONTEXT_METADATA_KEY, { arch: 'manual user value', must: ['manual user rule'] });
+
+      MetadataContext.of(stack).addToTemplate({ arch: 'managed architecture' });
+
+      expect(toCloudFormation(stack).Metadata[CONTEXT_METADATA_KEY]).toEqual({
+        arch: 'managed architecture',
       });
     });
 
