@@ -154,8 +154,6 @@ export interface ActionLogsConfiguration {
 
 /**
  * The resolved destination configuration returned by ActionLogsDestination.bind().
- *
- * @internal
  */
 export interface ActionLogsDestinationConfig {
   /**

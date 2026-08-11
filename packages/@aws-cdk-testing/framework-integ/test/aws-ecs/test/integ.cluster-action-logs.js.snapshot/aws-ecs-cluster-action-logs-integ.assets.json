@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "59d59f2ed7617005e514aa084b5870a45037f05590a9544475b52f94a0f5c8bb": {
+      "displayName": "aws-ecs-cluster-action-logs-integ Template",
+      "source": {
+        "path": "aws-ecs-cluster-action-logs-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-8d3159a9": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "59d59f2ed7617005e514aa084b5870a45037f05590a9544475b52f94a0f5c8bb.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
