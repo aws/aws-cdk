@@ -2,6 +2,8 @@ import { Construct } from 'constructs';
 import { App, CfnResource, ContextMutability, MetadataContext, MetadataContextMixin, Mixins, Stack } from '../../lib';
 import { toCloudFormation } from '../util';
 
+const CONTEXT_METADATA_KEY = 'com.aws.cloudformation.Context';
+
 describe('MetadataContextMixin', () => {
   let app: App;
   let stack: Stack;
@@ -11,7 +13,7 @@ describe('MetadataContextMixin', () => {
     stack = new Stack(app, 'TestStack');
   });
 
-  test('with() renders a Metadata.Context block on a CfnResource', () => {
+  test('with() renders a namespaced Context metadata block on a CfnResource', () => {
     const res = new CfnResource(stack, 'Queue', { type: 'AWS::SQS::Queue' });
 
     res.with(new MetadataContextMixin({
@@ -21,10 +23,11 @@ describe('MetadataContextMixin', () => {
     }));
 
     const template = toCloudFormation(stack);
-    expect(template.Resources.Queue.Metadata.Context).toEqual({
+    expect(template.Resources.Queue.Metadata[CONTEXT_METADATA_KEY]).toMatchObject({
       why: 'buffers webhook events',
       must: ['VisTimeout >= 6x fn timeout'],
       mutable: 'change-with-constraints',
+      trust: { src: 'authored', conf: 'high' },
     });
   });
 
@@ -46,7 +49,7 @@ describe('MetadataContextMixin', () => {
     res.with(new MetadataContextMixin({ why: 'second', must: ['rule 2'] }));
 
     const template = toCloudFormation(stack);
-    expect(template.Resources.Res.Metadata.Context).toEqual({
+    expect(template.Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toMatchObject({
       why: 'second',
       must: ['rule 1', 'rule 2'],
     });
@@ -61,7 +64,7 @@ describe('MetadataContextMixin', () => {
 
     const resources = Object.values<any>(toCloudFormation(stack).Resources);
     expect(resources).toHaveLength(1);
-    expect(resources[0].Metadata.Context).toEqual({
+    expect(resources[0].Metadata[CONTEXT_METADATA_KEY]).toMatchObject({
       why: 'mixin rationale',
       must: ['cascaded rule', 'mixin rule'],
     });
@@ -77,7 +80,7 @@ describe('MetadataContextMixin', () => {
     const resources = Object.values<any>(toCloudFormation(stack).Resources);
     expect(resources).toHaveLength(2);
     for (const resource of resources) {
-      expect(resource.Metadata.Context).toEqual({ deps: ['NetworkStack'] });
+      expect(resource.Metadata[CONTEXT_METADATA_KEY]).toMatchObject({ deps: ['NetworkStack'] });
     }
   });
 
