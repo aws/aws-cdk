@@ -2636,7 +2636,7 @@ const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
       deviceName: 'deviceName',
       volume: ec2.BlockDeviceVolume.ebsFromSnapshot('snap-1234567890abcdef0', {
         volumeSize: 150,
-        volumeInitializationRate: 200,
+        volumeInitializationRate: Size.mebibytes(200),
       }),
     },
   ],
