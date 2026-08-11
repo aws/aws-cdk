@@ -137,6 +137,52 @@ function resolveValue(consumer: Stack, reference: CfnReference, strengthOverride
     return reference;
   }
 
+  // unsupported: stacks from different apps
+  if (producer.node.root !== consumer.node.root) {
+    throw new UnscopedValidationError(lit`CannotReferenceAcrossApps`, 'Cannot reference across apps. Consuming and producing stacks must be defined within the same CDK app.');
+  }
+
+  // ----------------------------------------------------------------------
+  // consumer is nested in the producer (directly or indirectly)
+  // ----------------------------------------------------------------------
+
+  // if the consumer is nested within the producer (directly or indirectly),
+  // wire through a CloudFormation parameter and then resolve the reference with
+  // the parent stack as the consumer.
+  if (consumer.nestedStackParent && isNested(consumer, producer)) {
+    const parameterValue = resolveValue(consumer.nestedStackParent, reference);
+    return createNestedStackParameter(consumer, reference, parameterValue);
+  }
+
+  // ----------------------------------------------------------------------
+  // producer is a nested stack
+  // ----------------------------------------------------------------------
+
+  // if the producer is nested, always publish the value through a
+  // cloudformation output and resolve recursively with the Fn::GetAtt
+  // of the output in the parent stack.
+
+  // one might ask, if the consumer is not a parent of the producer,
+  // why not just use export/import? the reason is that we cannot
+  // generate an "export name" from a nested stack because the export
+  // name must contain the stack name to ensure uniqueness, and we
+  // don't know the stack name of a nested stack before we deploy it.
+  // therefore, we can only export from a top-level stack.
+  if (producer.nested) {
+    const outputValue = createNestedStackOutput(producer, reference);
+    const resolvedValue = resolveValue(consumer, outputValue);
+
+    if (reference.typeHint === ResolutionTypeHint.STRING_LIST) {
+      return Tokenization.reverseList(Fn.split(STRING_LIST_REFERENCE_DELIMITER, Token.asString(resolvedValue))) as IResolvable;
+    } else {
+      return resolvedValue;
+    }
+  }
+
+  // ----------------------------------------------------------------------
+  // export/import
+  // ----------------------------------------------------------------------
+
   // Emit a once-per-app warning nudging users toward weak references
   const appRoot = consumer.node.root;
   if (!(appRoot as any)[WEAK_REFS_WARNING_EMITTED]) {
@@ -156,11 +202,6 @@ function resolveValue(consumer: Stack, reference: CfnReference, strengthOverride
         '(See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength)',
       );
     }
-  }
-
-  // unsupported: stacks from different apps
-  if (producer.node.root !== consumer.node.root) {
-    throw new UnscopedValidationError(lit`CannotReferenceAcrossApps`, 'Cannot reference across apps. Consuming and producing stacks must be defined within the same CDK app.');
   }
 
   // stacks are not in the same account
@@ -205,47 +246,6 @@ function resolveValue(consumer: Stack, reference: CfnReference, strengthOverride
       producerStackArn,
     });
   }
-
-  // ----------------------------------------------------------------------
-  // consumer is nested in the producer (directly or indirectly)
-  // ----------------------------------------------------------------------
-
-  // if the consumer is nested within the producer (directly or indirectly),
-  // wire through a CloudFormation parameter and then resolve the reference with
-  // the parent stack as the consumer.
-  if (consumer.nestedStackParent && isNested(consumer, producer)) {
-    const parameterValue = resolveValue(consumer.nestedStackParent, reference);
-    return createNestedStackParameter(consumer, reference, parameterValue);
-  }
-
-  // ----------------------------------------------------------------------
-  // producer is a nested stack
-  // ----------------------------------------------------------------------
-
-  // if the producer is nested, always publish the value through a
-  // cloudformation output and resolve recursively with the Fn::GetAtt
-  // of the output in the parent stack.
-
-  // one might ask, if the consumer is not a parent of the producer,
-  // why not just use export/import? the reason is that we cannot
-  // generate an "export name" from a nested stack because the export
-  // name must contain the stack name to ensure uniqueness, and we
-  // don't know the stack name of a nested stack before we deploy it.
-  // therefore, we can only export from a top-level stack.
-  if (producer.nested) {
-    const outputValue = createNestedStackOutput(producer, reference);
-    const resolvedValue = resolveValue(consumer, outputValue);
-
-    if (reference.typeHint === ResolutionTypeHint.STRING_LIST) {
-      return Tokenization.reverseList(Fn.split(STRING_LIST_REFERENCE_DELIMITER, Token.asString(resolvedValue))) as IResolvable;
-    } else {
-      return resolvedValue;
-    }
-  }
-
-  // ----------------------------------------------------------------------
-  // export/import
-  // ----------------------------------------------------------------------
 
   // Stacks are in the same account, but different regions
   if (producerRegion !== consumerRegion) {

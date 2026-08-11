@@ -46,14 +46,14 @@ export class RouterOutputProtocolOptions {
 }
 
 /**
- * Routing tier that determines the maximum number of outputs for the Router Output
+ * Routing tier that determines the maximum bitrate (in Mbps) for a Router Output.
  */
 export class RouterOutputTier {
-  /** Supports up to 100 outputs */
+  /** Up to 100 Mbps */
   public static readonly OUTPUT_100 = new RouterOutputTier('OUTPUT_100');
-  /** Supports up to 50 outputs */
+  /** Up to 50 Mbps */
   public static readonly OUTPUT_50 = new RouterOutputTier('OUTPUT_50');
-  /** Supports up to 20 outputs */
+  /** Up to 20 Mbps */
   public static readonly OUTPUT_20 = new RouterOutputTier('OUTPUT_20');
 
   /**
@@ -164,13 +164,12 @@ export interface RouterOutputProps {
    * @default - Generated automatically
    */
   readonly routerOutputName?: string;
-  /** Maximum bitrate in bits per second that the Router Output can handle */
+  /** The maximum bitrate for the router output. */
   readonly maximumBitrate: Bitrate;
-  /** Routing scope for the Router Output */
+  /** Indicates whether the router output is configured for Regional or global routing. */
   readonly routingScope: RoutingScope;
   /**
-   * Routing tier that determines the maximum number of outputs.
-   *
+   * Select a tier based on your maximum bitrate requirements.
    * @default RouterOutputTier.OUTPUT_20
    */
   readonly tier?: RouterOutputTier;
@@ -182,7 +181,7 @@ export interface RouterOutputProps {
    */
   readonly maintenanceConfiguration?: MaintenanceConfiguration;
   /**
-   * AWS region where the Router Output will be created
+   * The AWS Region where the router output is located.
    * @default - Defaults to the same region as stack
    */
   readonly regionName?: string;
@@ -340,8 +339,6 @@ export class RouterOutputProtocol {
    *
    * @example
    *
-   *    import { Duration } from 'aws-cdk-lib';
-   *
    *    RouterOutputProtocol.srtListener({
    *      port: 5000,
    *      minimumLatency: Duration.millis(125),
@@ -364,8 +361,6 @@ export class RouterOutputProtocol {
    * Create an SRT Caller protocol configuration
    *
    * @example
-   *
-   *    import { Duration } from 'aws-cdk-lib';
    *
    *    RouterOutputProtocol.srtCaller({
    *      destinationAddress: '10.0.0.1',
@@ -467,6 +462,12 @@ export interface StandardOutputConfigurationProps {
   readonly networkInterface: IRouterNetworkInterface;
   /** Protocol configuration for the output */
   readonly protocol: RouterOutputProtocol;
+  /**
+   * The availability zone where the router output is located.
+   *
+   * @default - assigned by the MediaConnect service
+   */
+  readonly availabilityZone?: string;
 }
 
 /**
@@ -669,6 +670,7 @@ class StandardRouterOutputConfig extends RouterOutputConfiguration {
           protocolConfiguration: protocol.config,
         },
       },
+      availabilityZone: this.props.availabilityZone,
       grant: protocol.grant,
     };
   }
@@ -701,7 +703,7 @@ class MediaLiveInputRouterOutputConfig extends RouterOutputConfiguration {
 }
 
 /**
- * Internal options for {@link MediaLiveInputRouterOutputConfig}. Not exported; jsii never sees this.
+ * Internal options for {@link MediaLiveInputRouterOutputConfig}.
  */
 interface MediaLiveInputRouterOutputOptions {
   readonly mediaLiveInputArn?: string;
@@ -736,7 +738,7 @@ class MediaConnectFlowRouterOutputConfig extends RouterOutputConfiguration {
 }
 
 /**
- * Internal options for {@link MediaConnectFlowRouterOutputConfig}. Not exported; jsii never sees this.
+ * Internal options for {@link MediaConnectFlowRouterOutputConfig}.
  */
 interface MediaConnectFlowRouterOutputOptions {
   readonly flow?: IFlow;
@@ -964,7 +966,8 @@ export class RouterOutput extends RouterOutputBase implements IRouterOutput {
     const configBind = props.configuration._bind(this, routerOutputArn);
 
     // Check to see if region specified is also compatible with AZ configured for some of the Router Outputs configurations
-    if (configBind.availabilityZone && !configBind.availabilityZone.startsWith(targetRegion)) {
+    if (configBind.availabilityZone && !Token.isUnresolved(configBind.availabilityZone) && !Token.isUnresolved(targetRegion)
+      && !configBind.availabilityZone.startsWith(targetRegion)) {
       throw new ValidationError(lit`RouterOutputAzRegionMismatch`, `Availability zone '${configBind.availabilityZone}' must be within region '${targetRegion}'`, this);
     }
 
@@ -973,7 +976,7 @@ export class RouterOutput extends RouterOutputBase implements IRouterOutput {
       maximumBitrate: props.maximumBitrate.toBps(),
       routingScope: props.routingScope.value,
       tier: (props.tier ?? RouterOutputTier.OUTPUT_20).value,
-      availabilityZone: configBind.availabilityZone, // Only specified for MediaConnect Flow and MediaLive inputs (with no connection).
+      availabilityZone: configBind.availabilityZone,
       maintenanceConfiguration: props.maintenanceConfiguration ? {
         preferredDayTime: props.maintenanceConfiguration,
       } : {
