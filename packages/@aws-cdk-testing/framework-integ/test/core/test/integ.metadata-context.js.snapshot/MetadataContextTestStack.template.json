@@ -1,7 +1,7 @@
 {
  "Description": "integ test stack for MetadataContext; exercises resource + template level context",
  "Metadata": {
-  "Context": {
+  "com.aws.cloudformation.Context": {
    "arch": "SQS buffer -> consumer; DLQ for poison msgs",
    "must": [
     "all queues encrypted w/ SSE"
@@ -22,7 +22,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
    "Metadata": {
-    "Context": {
+    "com.aws.cloudformation.Context": {
      "why": "buffer order events async; std queue (throughput > ordering)",
      "must": [
       "VisTimeout >= 6x consumer timeout, else dup on retry"
@@ -45,8 +45,12 @@
   "NotificationsAlertsTopicDFE3487E": {
    "Type": "AWS::SNS::Topic",
    "Metadata": {
-    "Context": {
+    "com.aws.cloudformation.Context": {
      "why": "fan-out of alert events to oncall channels",
+     "trust": {
+      "src": "authored",
+      "conf": "high"
+     },
      "gaps": [
       "delivery retry policy never validated under load"
      ]

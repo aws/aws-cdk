@@ -6,7 +6,7 @@ import { lit } from './literal-string';
  * The key under which context is stored in the CloudFormation `Metadata`
  * section, both at template level and at resource level.
  */
-export const METADATA_CONTEXT_KEY = 'Context';
+export const METADATA_CONTEXT_KEY = 'com.aws.cloudformation.Context';
 
 /**
  * The construct-node metadata type used to stage resource context entries
@@ -15,7 +15,7 @@ export const METADATA_CONTEXT_KEY = 'Context';
 export const RESOURCE_CONTEXT_METADATA_TYPE = 'aws:cdk:metadata-context';
 
 /**
- * Render authored props into the v1 wire format.
+ * Render explicitly authored props into the advisory schema.
  */
 export function renderResourceContext(context: ResourceContextProps): Record<string, any> {
   const out: Record<string, any> = {};
@@ -32,14 +32,13 @@ export function renderResourceContext(context: ResourceContextProps): Record<str
     out.mutability = { ...context.mutability };
   }
   if (context.trust !== undefined) {
-    const trust: Record<string, any> = {
-      // The v1 wire format requires src and conf; apply meaningful defaults
-      // for context declared in CDK code (ContextTrustSource.AUTHORED and
-      // ContextTrustConfidence.MEDIUM, as wire literals to keep this module
-      // free of runtime imports from the public module).
-      src: context.trust.source ?? 'authored',
-      conf: context.trust.confidence ?? 'medium',
-    };
+    const trust: Record<string, any> = {};
+    if (context.trust.source !== undefined) {
+      trust.src = context.trust.source;
+    }
+    if (context.trust.confidence !== undefined) {
+      trust.conf = context.trust.confidence;
+    }
     if (context.trust.citation !== undefined) {
       trust.cite = context.trust.citation;
     }
@@ -61,6 +60,37 @@ export function renderResourceContext(context: ResourceContextProps): Record<str
     out.failureModes = [...context.failureModes];
   }
   return out;
+}
+
+/**
+ * Add advisory-schema trust defaults to a fully merged resource context.
+ */
+export function withResourceContextTrustDefaults(context: Record<string, any>): Record<string, any> {
+  if (context.trust !== undefined && (!isRecord(context.trust) || Array.isArray(context.trust))) {
+    // Explicit resource metadata is an escape hatch. Preserve an invalid
+    // user-supplied trust value rather than silently rewriting it.
+    return context;
+  }
+
+  const explicitTrust = (context.trust ?? {}) as Record<string, any>;
+  const { src, conf, ...additionalTrust } = explicitTrust;
+  const hasPopulatedWhy = typeof context.why === 'string' && context.why.trim().length > 0;
+  const hasPopulatedMust = Array.isArray(context.must)
+    && context.must.some((entry: unknown) => typeof entry === 'string' && entry.trim().length > 0);
+  const hasPopulatedWhyOrMust = hasPopulatedWhy || hasPopulatedMust;
+
+  return {
+    ...context,
+    trust: {
+      src: src ?? 'authored',
+      conf: conf ?? (hasPopulatedWhyOrMust ? 'high' : 'medium'),
+      ...additionalTrust,
+    },
+  };
+}
+
+function isRecord(value: unknown): value is Record<string, any> {
+  return value !== null && typeof value === 'object';
 }
 
 /**
