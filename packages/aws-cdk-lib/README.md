@@ -1622,7 +1622,7 @@ Similarly, to do this for a specific nested stack, add a `suppressTemplateIndent
 ## Metadata Context
 
 The `MetadataContext` class embeds structured, advisory context into the
-`Metadata.Context` sections of synthesized CloudFormation templates.
+`Metadata["com.aws.cloudformation.Context"]` sections of synthesized CloudFormation templates.
 It captures the *why* behind your infrastructure — rationale, hard
 invariants, change-safety, provenance and operational hints — so that humans
 and automated tools working with the deployed template later can act on the
@@ -1647,17 +1647,18 @@ MetadataContext.of(queue).add({
 });
 ```
 
-This renders a `Metadata.Context` block on the `AWS::SQS::Queue` resource:
+This renders a `Metadata["com.aws.cloudformation.Context"]` block on the `AWS::SQS::Queue` resource:
 
 ```json
 {
   "Type": "AWS::SQS::Queue",
   "Metadata": {
-    "Context": {
+    "com.aws.cloudformation.Context": {
       "why": "buffer order events async; 14d retention = compliance window",
       "must": ["VisTimeout >= 6x fn timeout, else dup on retry"],
       "mutable": "change-with-constraints",
       "mutability": { "QueueName": "must-never-change" },
+      "trust": { "src": "authored", "conf": "high" },
       "ops": "check ApproxAgeOfOldestMsg before cutting VisTimeout",
       "failureModes": ["retry 3x w/ exp backoff before DLQ"]
     }
@@ -1708,10 +1709,11 @@ MetadataContext.of(stack).add({
 });
 ```
 
-Record where context came from and how much to trust it with the `trust`
-field — useful when context is produced by tooling rather than authored by
-the resource owner. When omitted, `source` defaults to `AUTHORED` and
-`confidence` to `MEDIUM`:
+Every resource context block records where it came from and how much to trust it.
+When `trust` is omitted, CDK emits `source: AUTHORED` and defaults confidence to
+`MEDIUM`. CDK promotes confidence to `HIGH` only when the final merged block contains
+a non-blank `why` or at least one non-blank string in `must`. Producers that infer
+context should provide the corresponding source and confidence:
 
 ```typescript
 declare const queue: sqs.Queue;
@@ -1726,6 +1728,13 @@ MetadataContext.of(queue).add({
   },
 });
 ```
+
+The Context advisory schema owns only `com.aws.cloudformation.Context` and does
+not define extension fields for custom dimensions. Tools that consume Context can
+publish independently defined structured data under their own sibling reverse-DNS
+metadata keys using `CfnResource.addMetadata()`. Any custom ordered dimensions belong
+to those tool schemas, not to Context, and remain independent from context rendering
+and merging.
 
 Context can also be applied as a Mixin. `MetadataContextMixin` attaches a
 context block imperatively to exactly the constructs you target — via

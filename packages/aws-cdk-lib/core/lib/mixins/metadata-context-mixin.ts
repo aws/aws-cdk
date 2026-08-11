@@ -5,7 +5,7 @@ import type { ResourceContextProps } from '../metadata-context';
 import { MetadataContext } from '../metadata-context';
 
 /**
- * A Mixin that attaches a resource-level `Metadata.Context` block to a
+ * A Mixin that attaches a resource-level `Metadata["com.aws.cloudformation.Context"]` block to a
  * CloudFormation resource.
  *
  * Use this form to attach context imperatively to exactly one resource via

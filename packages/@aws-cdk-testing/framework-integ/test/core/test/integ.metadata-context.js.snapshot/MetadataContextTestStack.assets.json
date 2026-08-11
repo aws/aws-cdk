@@ -1,16 +1,16 @@
 {
   "version": "54.0.0",
   "files": {
-    "95eb766d61d318ddd6a940f2f4f2e79cf7d317e132ff5ccf973e088095b82063": {
+    "84b9eec363434b9b78b4b2f24e7aee6c2438df15f8aa49fc8c41f001554666c9": {
       "displayName": "MetadataContextTestStack Template",
       "source": {
         "path": "MetadataContextTestStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-9574024e": {
+        "current_account-current_region-77d0ea64": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "95eb766d61d318ddd6a940f2f4f2e79cf7d317e132ff5ccf973e088095b82063.json",
+          "objectKey": "84b9eec363434b9b78b4b2f24e7aee6c2438df15f8aa49fc8c41f001554666c9.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

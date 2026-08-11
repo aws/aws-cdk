@@ -11,13 +11,14 @@ import {
   renderResourceContext,
   validateResourceContext,
   validateTemplateContext,
+  withResourceContextTrustDefaults,
 } from './private/metadata-context-internal';
 import { Stack } from './stack';
 
 /**
  * Change-safety level for a resource or an individual resource property.
  *
- * Part of the CloudFormation `Metadata.Context` v1 vocabulary. The levels
+ * Part of the CloudFormation Context advisory schema. The levels
  * communicate to human and machine template consumers how safe it is to
  * modify a resource (or one of its properties).
  */
@@ -96,7 +97,7 @@ export interface ContextTrust {
   /**
    * Confidence in the context's accuracy.
    *
-   * @default ContextTrustConfidence.MEDIUM
+   * @default ContextTrustConfidence.MEDIUM, promoted to ContextTrustConfidence.HIGH when `why` or `must` is populated
    */
   readonly confidence?: ContextTrustConfidence;
 
@@ -148,7 +149,7 @@ export interface ContextRef {
 }
 
 /**
- * Resource-level context, rendered as a `Metadata.Context` block on a
+ * Resource-level context, rendered as a `Metadata["com.aws.cloudformation.Context"]` block on a
  * CloudFormation resource.
  *
  * All fields are optional; only present fields are emitted. Free-text values
@@ -199,7 +200,7 @@ export interface ResourceContextProps {
   /**
    * Provenance and confidence metadata for this context block.
    *
-   * @default - no trust metadata; consumers treat authorship as unknown
+   * @default - authored source and medium confidence, promoted to high when `why` or `must` is populated
    */
   readonly trust?: ContextTrust;
 
@@ -242,7 +243,7 @@ export interface ResourceContextProps {
 }
 
 /**
- * Template-level context, rendered as a top-level `Metadata.Context` block
+ * Template-level context, rendered as a top-level `Metadata["com.aws.cloudformation.Context"]` block
  * in the CloudFormation template.
  *
  * Holds system-wide, cross-cutting context stated once (DRY). Per-resource
@@ -337,10 +338,10 @@ export interface MetadataContextOptions {
 }
 
 /**
- * Manages `Metadata.Context` blocks for all resources within a construct
+ * Manages `Metadata["com.aws.cloudformation.Context"]` blocks for all resources within a construct
  * scope.
  *
- * `Metadata.Context` is structured, advisory context embedded in
+ * `Metadata["com.aws.cloudformation.Context"]` is structured, advisory context embedded in
  * CloudFormation templates. It carries the *why* behind infrastructure —
  * rationale, invariants, change-safety, provenance, operational hints — so
  * that humans and automated tools modifying the deployed template later can
@@ -458,7 +459,7 @@ interface StagedEntry {
 }
 
 /**
- * The aspect that renders staged context entries into `Metadata.Context`
+ * The aspect that renders staged context entries into `Metadata["com.aws.cloudformation.Context"]`
  * blocks on CloudFormation resources.
  *
  * This is an internal implementation detail of `MetadataContext`; it is
@@ -490,14 +491,14 @@ class MetadataContextAspect implements IAspect {
       return;
     }
 
-    // Merge with any pre-existing Metadata.Context (e.g. written via
+    // Merge with any pre-existing Metadata["com.aws.cloudformation.Context"] (e.g. written via
     // cfnResource.addMetadata()): explicit resource metadata wins.
     const existing = node.getMetadata(METADATA_CONTEXT_KEY);
     if (existing !== undefined && typeof existing === 'object') {
       merged = mergeResourceContext(merged, existing);
     }
 
-    node.addMetadata(METADATA_CONTEXT_KEY, merged);
+    node.addMetadata(METADATA_CONTEXT_KEY, withResourceContextTrustDefaults(merged));
   }
 
   private applies(resource: CfnResource, appliedScope: IConstruct, staged: StagedEntry): boolean {

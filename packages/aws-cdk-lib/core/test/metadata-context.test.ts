@@ -14,9 +14,11 @@ import {
   UnscopedValidationError,
 } from '../lib';
 
+const CONTEXT_METADATA_KEY = 'com.aws.cloudformation.Context';
+
 describe('metadata context', () => {
   describe('resource-level context', () => {
-    test('renders a Metadata.Context block on a CfnResource', () => {
+    test('renders a namespaced Context metadata block on a CfnResource', () => {
       const stack = new Stack();
       const res = new CfnResource(stack, 'Queue', { type: 'AWS::SQS::Queue' });
 
@@ -32,7 +34,7 @@ describe('metadata context', () => {
       });
 
       const template = toCloudFormation(stack);
-      expect(template.Resources.Queue.Metadata.Context).toEqual({
+      expect(template.Resources.Queue.Metadata[CONTEXT_METADATA_KEY]).toMatchObject({
         why: 'buffer order events async; 14d retention = compliance window',
         must: ['VisTimeout >= 6x fn timeout, else dup on retry'],
         mutable: 'change-with-constraints',
@@ -59,7 +61,7 @@ describe('metadata context', () => {
       });
 
       const template = toCloudFormation(stack);
-      expect(template.Resources.Res.Metadata.Context.trust).toEqual({
+      expect(template.Resources.Res.Metadata[CONTEXT_METADATA_KEY].trust).toEqual({
         src: 'infer',
         conf: 'low',
         cite: 'api/handler.ts:87',
@@ -67,30 +69,67 @@ describe('metadata context', () => {
       });
     });
 
-    test('trust defaults to authored source with medium confidence', () => {
+    test('auto-populates authored trust with medium confidence when why and must are absent', () => {
       const stack = new Stack();
       const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
 
-      MetadataContext.of(res).add({
-        why: 'authored rationale',
-        trust: {},
-      });
+      MetadataContext.of(res).add({ ops: 'check queue depth before changing' });
 
       const template = toCloudFormation(stack);
-      expect(template.Resources.Res.Metadata.Context.trust).toEqual({
+      expect(template.Resources.Res.Metadata[CONTEXT_METADATA_KEY].trust).toEqual({
         src: 'authored',
         conf: 'medium',
       });
     });
 
-    test('omits absent fields entirely', () => {
+    test('auto-populates medium confidence when why and must contain only blank values', () => {
       const stack = new Stack();
       const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
 
-      MetadataContext.of(res).add({ why: 'only rationale' });
+      // Direct resource metadata is an unvalidated escape hatch. Blank values
+      // must not raise generated confidence even though they are preserved.
+      res.addMetadata(CONTEXT_METADATA_KEY, { why: '  ', must: ['  '] });
+      MetadataContext.of(res).add({ ops: 'check queue depth before changing' });
 
       const template = toCloudFormation(stack);
-      expect(template.Resources.Res.Metadata.Context).toEqual({ why: 'only rationale' });
+      expect(template.Resources.Res.Metadata[CONTEXT_METADATA_KEY].trust).toEqual({
+        src: 'authored',
+        conf: 'medium',
+      });
+    });
+
+    test('auto-populates authored trust with high confidence when why or must is populated', () => {
+      const stack = new Stack();
+      const withWhy = new CfnResource(stack, 'WithWhy', { type: 'AWS::Fake::Thing' });
+      const withMust = new CfnResource(stack, 'WithMust', { type: 'AWS::Fake::Thing' });
+
+      MetadataContext.of(withWhy).add({ why: 'only rationale' });
+      MetadataContext.of(withMust).add({ must: ['hard constraint'] });
+
+      const template = toCloudFormation(stack);
+      expect(template.Resources.WithWhy.Metadata[CONTEXT_METADATA_KEY]).toEqual({
+        why: 'only rationale',
+        trust: { src: 'authored', conf: 'high' },
+      });
+      expect(template.Resources.WithMust.Metadata[CONTEXT_METADATA_KEY]).toEqual({
+        must: ['hard constraint'],
+        trust: { src: 'authored', conf: 'high' },
+      });
+    });
+
+    test('derives default confidence from the final merged context', () => {
+      const stack = new Stack();
+      const scope = new Construct(stack, 'SubSystem');
+      const res = new CfnResource(scope, 'Res', { type: 'AWS::Fake::Thing' });
+
+      MetadataContext.of(scope).add({ why: 'outer rationale' });
+      MetadataContext.of(res).add({ ops: 'inner operational hint' });
+
+      const template = toCloudFormation(stack);
+      expect(template.Resources[stack.getLogicalId(res)].Metadata[CONTEXT_METADATA_KEY].trust).toEqual({
+        src: 'authored',
+        conf: 'high',
+      });
     });
 
     test('context added on a scope cascades to resources in that scope', () => {
@@ -102,7 +141,7 @@ describe('metadata context', () => {
 
       const template = toCloudFormation(stack);
       const logicalId = stack.getLogicalId(res);
-      expect(template.Resources[logicalId].Metadata.Context).toEqual({
+      expect(template.Resources[logicalId].Metadata[CONTEXT_METADATA_KEY]).toMatchObject({
         why: 'part of ingest subsystem',
       });
     });
@@ -124,7 +163,7 @@ describe('metadata context', () => {
 
       const template = toCloudFormation(stack);
       const logicalId = stack.getLogicalId(res);
-      expect(template.Resources[logicalId].Metadata.Context).toEqual({
+      expect(template.Resources[logicalId].Metadata[CONTEXT_METADATA_KEY]).toMatchObject({
         why: 'inner rationale',
         mutable: 'free-to-tune',
         must: ['outer invariant', 'inner invariant'],
@@ -141,7 +180,7 @@ describe('metadata context', () => {
 
       const template = toCloudFormation(stack);
       const logicalId = stack.getLogicalId(res);
-      expect(template.Resources[logicalId].Metadata.Context.must).toEqual([
+      expect(template.Resources[logicalId].Metadata[CONTEXT_METADATA_KEY].must).toEqual([
         'shared rule',
         'outer rule',
         'inner rule',
@@ -165,7 +204,7 @@ describe('metadata context', () => {
 
       const template = toCloudFormation(stack);
       const logicalId = stack.getLogicalId(res);
-      expect(template.Resources[logicalId].Metadata.Context.mutability).toEqual({
+      expect(template.Resources[logicalId].Metadata[CONTEXT_METADATA_KEY].mutability).toEqual({
         QueueName: 'must-never-change',
         VisibilityTimeout: 'change-with-constraints',
       });
@@ -179,7 +218,7 @@ describe('metadata context', () => {
       MetadataContext.of(res).add({ why: 'second rationale', must: ['rule 2'] });
 
       const template = toCloudFormation(stack);
-      expect(template.Resources.Res.Metadata.Context).toEqual({
+      expect(template.Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toMatchObject({
         why: 'second rationale',
         must: ['rule 1', 'rule 2'],
       });
@@ -200,8 +239,8 @@ describe('metadata context', () => {
       const template = toCloudFormation(stack);
       const primaryId = stack.getLogicalId(primary);
       const helperId = stack.getLogicalId(helper);
-      expect(template.Resources[primaryId].Metadata.Context).toEqual({ why: 'buffers events' });
-      expect(template.Resources[helperId].Metadata?.Context).toBeUndefined();
+      expect(template.Resources[primaryId].Metadata[CONTEXT_METADATA_KEY]).toMatchObject({ why: 'buffers events' });
+      expect(template.Resources[helperId].Metadata?.[CONTEXT_METADATA_KEY]).toBeUndefined();
     });
 
     test('cascades through grouping constructs to nested L2 primaries', () => {
@@ -220,8 +259,8 @@ describe('metadata context', () => {
       const template = toCloudFormation(stack);
       const primaryId = stack.getLogicalId(primary);
       const helperId = stack.getLogicalId(helper);
-      expect(template.Resources[primaryId].Metadata.Context).toEqual({ why: 'alert fan-out' });
-      expect(template.Resources[helperId].Metadata?.Context).toBeUndefined();
+      expect(template.Resources[primaryId].Metadata[CONTEXT_METADATA_KEY]).toMatchObject({ why: 'alert fan-out' });
+      expect(template.Resources[helperId].Metadata?.[CONTEXT_METADATA_KEY]).toBeUndefined();
     });
 
     test('applyToAllResources renders onto helper resources too', () => {
@@ -235,7 +274,7 @@ describe('metadata context', () => {
 
       const template = toCloudFormation(stack);
       const helperId = stack.getLogicalId(helper);
-      expect(template.Resources[helperId].Metadata.Context).toEqual({ why: 'buffers events' });
+      expect(template.Resources[helperId].Metadata[CONTEXT_METADATA_KEY]).toMatchObject({ why: 'buffers events' });
     });
 
     test('include/exclude resource type filters', () => {
@@ -256,26 +295,40 @@ describe('metadata context', () => {
       const template = toCloudFormation(stack);
       const queueId = stack.getLogicalId(queue);
       const topicId = stack.getLogicalId(topic);
-      expect(template.Resources[queueId].Metadata.Context).toEqual({ why: 'queue-specific context' });
-      expect(template.Resources[topicId].Metadata.Context).toEqual({ ops: 'watch everything except queues' });
+      expect(template.Resources[queueId].Metadata[CONTEXT_METADATA_KEY]).toMatchObject({ why: 'queue-specific context' });
+      expect(template.Resources[topicId].Metadata[CONTEXT_METADATA_KEY]).toMatchObject({ ops: 'watch everything except queues' });
     });
 
     test('explicit addMetadata Context on the resource wins over aspect-provided context', () => {
       const stack = new Stack();
       const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
-      res.addMetadata('Context', { why: 'hand-written why', must: ['hand-written rule'] });
+      res.addMetadata(CONTEXT_METADATA_KEY, { why: 'hand-written why', must: ['hand-written rule'] });
 
       MetadataContext.of(res).add({ why: 'aspect why', ops: 'aspect ops' });
 
       const template = toCloudFormation(stack);
-      expect(template.Resources.Res.Metadata.Context).toEqual({
+      expect(template.Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toMatchObject({
         why: 'hand-written why',
         must: ['hand-written rule'],
         ops: 'aspect ops',
       });
     });
 
-    test('no Metadata.Context emitted for resources with no applicable context', () => {
+    test('preserves independently defined tool metadata on a resource', () => {
+      const stack = new Stack();
+      const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
+      res.addMetadata('com.example.ToolMetadata', { toolSpecificField: 'tool-specific-value' });
+
+      MetadataContext.of(res).add({ why: 'routes events to external storage' });
+
+      const template = toCloudFormation(stack);
+      expect(template.Resources.Res.Metadata['com.example.ToolMetadata']).toEqual({
+        toolSpecificField: 'tool-specific-value',
+      });
+      expect(template.Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toBeDefined();
+    });
+
+    test('no namespaced Context metadata emitted for resources with no applicable context', () => {
       const stack = new Stack();
       const withContext = new CfnResource(stack, 'A', { type: 'AWS::Fake::Thing' });
       new CfnResource(stack, 'B', { type: 'AWS::Fake::Thing' });
@@ -283,8 +336,8 @@ describe('metadata context', () => {
       MetadataContext.of(withContext).add({ why: 'has context' });
 
       const template = toCloudFormation(stack);
-      expect(template.Resources.A.Metadata.Context).toBeDefined();
-      expect(template.Resources.B.Metadata?.Context).toBeUndefined();
+      expect(template.Resources.A.Metadata[CONTEXT_METADATA_KEY]).toBeDefined();
+      expect(template.Resources.B.Metadata?.[CONTEXT_METADATA_KEY]).toBeUndefined();
     });
 
     test('throws on empty context block', () => {
@@ -304,7 +357,7 @@ describe('metadata context', () => {
   });
 
   describe('template-level context', () => {
-    test('renders a top-level Metadata.Context block', () => {
+    test('renders a top-level namespaced Context metadata block', () => {
       const stack = new Stack();
 
       MetadataContext.of(stack).addToTemplate({
@@ -314,7 +367,7 @@ describe('metadata context', () => {
       });
 
       const template = toCloudFormation(stack);
-      expect(template.Metadata.Context).toEqual({
+      expect(template.Metadata[CONTEXT_METADATA_KEY]).toMatchObject({
         arch: 'SQS buffer -> Lambda -> DynamoDB; DLQ for poison msgs',
         must: ['all data encrypted w/ security-team CMK'],
         owner: 'order-processing@',
@@ -332,7 +385,7 @@ describe('metadata context', () => {
       });
 
       const template = toCloudFormation(stack);
-      expect(template.Metadata.Context.ref).toEqual([
+      expect(template.Metadata[CONTEXT_METADATA_KEY].ref).toEqual([
         's3://org-iac-ctx/shared/net.ctx.yaml',
         { at: 's3://org-iac-ctx/shared/encryption.ctx.yaml', has: 'org CMK + tagging rules', scope: 'shared' },
       ]);
@@ -345,7 +398,7 @@ describe('metadata context', () => {
       MetadataContext.of(stack).addToTemplate({ arch: 'second arch', must: ['rule 2'], owner: 'team@' });
 
       const template = toCloudFormation(stack);
-      expect(template.Metadata.Context).toEqual({
+      expect(template.Metadata[CONTEXT_METADATA_KEY]).toMatchObject({
         arch: 'second arch',
         must: ['rule 1', 'rule 2'],
         owner: 'team@',
@@ -361,7 +414,7 @@ describe('metadata context', () => {
       MetadataContext.of(scope).addToTemplate({ arch: 'nested-declared arch' });
 
       const template = toCloudFormation(stack);
-      expect(template.Metadata.Context.arch).toEqual('nested-declared arch');
+      expect(template.Metadata[CONTEXT_METADATA_KEY].arch).toEqual('nested-declared arch');
     });
 
     test('addToTemplate inside a NestedStack targets the nested stack template, not the parent', () => {
@@ -380,9 +433,9 @@ describe('metadata context', () => {
         fs.readFileSync(path.join(assembly.directory, nested.templateFile), 'utf-8'),
       );
 
-      expect(nestedTemplate.Metadata.Context).toEqual({ arch: 'child-stack arch' });
-      expect(nestedTemplate.Resources.Res.Metadata.Context).toEqual({ why: 'nested resource rationale' });
-      expect(parentTemplate.Metadata?.Context).toBeUndefined();
+      expect(nestedTemplate.Metadata[CONTEXT_METADATA_KEY]).toMatchObject({ arch: 'child-stack arch' });
+      expect(nestedTemplate.Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toMatchObject({ why: 'nested resource rationale' });
+      expect(parentTemplate.Metadata?.[CONTEXT_METADATA_KEY]).toBeUndefined();
     });
 
     test('context added on the parent stack cascades into nested stack resources', () => {
@@ -398,7 +451,7 @@ describe('metadata context', () => {
         fs.readFileSync(path.join(assembly.directory, nested.templateFile), 'utf-8'),
       );
 
-      expect(nestedTemplate.Resources.Res.Metadata.Context).toEqual({
+      expect(nestedTemplate.Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toMatchObject({
         must: ['all data encrypted w/ CMK'],
       });
     });
@@ -411,7 +464,7 @@ describe('metadata context', () => {
 
       const template = toCloudFormation(stack);
       expect(template.Metadata.SomeOtherKey).toEqual('value');
-      expect(template.Metadata.Context.arch).toEqual('the arch');
+      expect(template.Metadata[CONTEXT_METADATA_KEY].arch).toEqual('the arch');
     });
 
     test('throws on empty template context', () => {
@@ -426,7 +479,7 @@ describe('metadata context', () => {
   });
 
   describe('schema conformance', () => {
-    test('emitted resource block uses only v1 schema fields', () => {
+    test('emitted resource block uses only advisory schema fields', () => {
       const stack = new Stack();
       const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
 
@@ -443,16 +496,16 @@ describe('metadata context', () => {
       });
 
       const template = toCloudFormation(stack);
-      const context = template.Resources.Res.Metadata.Context;
-      const v1ResourceFields = ['why', 'must', 'mutable', 'mutability', 'trust', 'ops', 'gaps', 'deps', 'failureModes'];
-      expect(Object.keys(context).sort()).toEqual([...v1ResourceFields].sort());
-      // Enum wire values are the frozen v1 tokens
+      const context = template.Resources.Res.Metadata[CONTEXT_METADATA_KEY];
+      const resourceFields = ['why', 'must', 'mutable', 'mutability', 'trust', 'ops', 'gaps', 'deps', 'failureModes'];
+      expect(Object.keys(context).sort()).toEqual([...resourceFields].sort());
+      // Enum values are frozen advisory-schema tokens
       expect(context.mutable).toEqual('free-to-tune');
       expect(context.mutability.Prop).toEqual('review-required');
       expect(context.trust).toEqual({ src: 'authored', conf: 'high' });
     });
 
-    test('emitted template block uses only v1 schema fields', () => {
+    test('emitted template block uses only advisory schema fields', () => {
       const stack = new Stack();
 
       MetadataContext.of(stack).addToTemplate({
@@ -463,13 +516,13 @@ describe('metadata context', () => {
       });
 
       const template = toCloudFormation(stack);
-      expect(Object.keys(template.Metadata.Context).sort()).toEqual(['arch', 'must', 'owner', 'ref']);
+      expect(Object.keys(template.Metadata[CONTEXT_METADATA_KEY]).sort()).toEqual(['arch', 'must', 'owner', 'ref']);
     });
 
-    test('enum wire values match the frozen v1 schema vocabulary', () => {
+    test('enum wire values match the advisory schema vocabulary', () => {
       // Drift check per the schema's consumer-update strategy: these string
-      // values are FROZEN for schema v1. If this test fails, the emitted
-      // wire format no longer matches the pinned schema version.
+      // values are FROZEN for the advisory schema. If this test fails, the emitted
+      // wire format no longer matches the schema.
       expect(Object.values(ContextMutability).sort()).toEqual([
         'change-with-constraints',
         'free-to-tune',
