@@ -84,7 +84,7 @@ export interface DataQualityRulesetProps {
   /**
    * Policy to apply when the ruleset is removed from the stack.
    *
-   * @default RemovalPolicy.RETAIN
+   * @default - resource will be destroyed
    */
   readonly removalPolicy?: RemovalPolicy;
 }

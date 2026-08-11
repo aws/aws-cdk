@@ -144,7 +144,7 @@ export interface SecurityConfigurationProps {
   /**
    * Policy to apply when the security configuration is removed from the stack.
    *
-   * @default RemovalPolicy.RETAIN
+   * @default - resource will be destroyed
    */
   readonly removalPolicy?: cdk.RemovalPolicy;
 }
