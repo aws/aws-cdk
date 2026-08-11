@@ -31,6 +31,21 @@ describe('MetadataContextMixin', () => {
     });
   });
 
+  test('mixin replaces manually added Context', () => {
+    const res = new CfnResource(stack, 'Queue', { type: 'AWS::SQS::Queue' });
+    res.addMetadata(CONTEXT_METADATA_KEY, {
+      why: 'manual rationale',
+      must: ['manual constraint'],
+    });
+
+    res.with(new MetadataContextMixin({ why: 'mixin rationale' }));
+
+    expect(toCloudFormation(stack).Resources.Queue.Metadata[CONTEXT_METADATA_KEY]).toEqual({
+      why: 'mixin rationale',
+      trust: { src: 'authored', conf: 'high' },
+    });
+  });
+
   test('supports() rejects non-CfnResource constructs and applyTo no-ops', () => {
     const plain = new Construct(stack, 'Plain');
     const mixin = new MetadataContextMixin({ why: 'x' });
