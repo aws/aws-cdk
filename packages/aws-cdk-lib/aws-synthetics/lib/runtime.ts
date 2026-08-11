@@ -418,6 +418,98 @@ export class Runtime {
   public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_6_0 = new Runtime('syn-nodejs-playwright-6.0', RuntimeFamily.NODEJS);
 
   /**
+   * `syn-nodejs-playwright-6.1` includes the following:
+   * - Lambda runtime Node.js 22.x
+   * - Playwright version 1.59.1
+   * - Chromium version 147.0.7727.15
+   * - Firefox version 148.0.2
+   *
+   * New Features:
+   * - Updated Playwright and browser versions.
+   * - Upgrade fast-xml-parser to 5.5.7 to address the following CVEs:
+   *   - CVE-2026-27942
+   *   - CVE-2026-33036
+   * - Upgrade Chromium to 147.0.7727.15 to address the following CVEs:
+   *   - CVE-2026-3909
+   *   - CVE-2026-3910
+   *   - CVE-2026-5281
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_playwright.html#Synthetics_runtimeversion-syn-nodejs-playwright-6.1
+   */
+  public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_6_1 = new Runtime('syn-nodejs-playwright-6.1', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-playwright-7.0` includes the following:
+   * - Lambda runtime Node.js 22.x
+   * - Playwright version 1.59.1
+   * - Chromium version 147.0.7727.15
+   * - Firefox version 148.0.2
+   *
+   * New Features:
+   * - Multilocation canaries – Run the same canary across multiple AWS Regions from a single point of management.
+   * - Upgrade ImageMagick to 7.1.2-15 to address the following CVEs:
+   *   - CVE-2023-34152
+   *   - CVE-2025-53014
+   *   - CVE-2025-53101
+   *   - CVE-2025-57807
+   *   - CVE-2026-22770
+   *   - CVE-2026-23876
+   *   - CVE-2026-25897
+   *   - CVE-2026-25898
+   *   - CVE-2026-25968
+   *   - CVE-2026-25971
+   *   - CVE-2026-25983
+   *   - CVE-2026-25986
+   *   - CVE-2026-25987
+   *   - CVE-2026-26284
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_playwright.html#Synthetics_runtimeversion-syn-nodejs-playwright-7.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_7_0 = new Runtime('syn-nodejs-playwright-7.0', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-playwright-7.1` includes the following:
+   * - Lambda runtime Node.js 22.x
+   * - Playwright version 1.59.1
+   * - Chromium version 147.0.7727.15
+   * - Firefox version 148.0.2
+   *
+   * New Features:
+   * - Fix bug where HTTP headers with array values were not being captured properly.
+   * - Upgrade ws to 8.20.1 to address the following CVEs:
+   *   - CVE-2026-45736
+   * - Upgrade fast-xml-parser to 5.7.2 to address the following CVEs:
+   *   - CVE-2026-41650
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_playwright.html#Synthetics_runtimeversion-syn-nodejs-playwright-7.1
+   */
+  public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_7_1 = new Runtime('syn-nodejs-playwright-7.1', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-playwright-8.0` includes the following:
+   * - Lambda runtime Node.js 22.x
+   * - Playwright version 1.61.1
+   * - Chromium version 150.0.7871.24
+   * - Firefox version 151.0
+   *
+   * New Features:
+   * - Upgrade Chromium to 150.0.7871.24 to address the following CVEs:
+   *   - CVE-2026-11645
+   * - Upgrade ImageMagick to 7.1.2-27 to address the following CVEs:
+   *   - CVE-2026-28494
+   *   - CVE-2026-28691
+   *   - CVE-2026-28693
+   *   - CVE-2026-30883
+   *   - CVE-2026-30929
+   *   - CVE-2026-30931
+   *   - CVE-2026-32636
+   *   - CVE-2026-33900
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_playwright.html#Synthetics_runtimeversion-syn-nodejs-playwright-8.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_8_0 = new Runtime('syn-nodejs-playwright-8.0', RuntimeFamily.NODEJS);
+
+  /**
    * `syn-nodejs-3.0` includes the following:
    * - Lambda runtime Node.js 20.x
    *
