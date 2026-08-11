@@ -1,0 +1,220 @@
+{
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/my-rest-api": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/StateMachine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "definitionBody": "*",
+        "stateMachineType": "EXPRESS"
+      }
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/my-rest-api/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myrestapiBAC2BF45"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/my-rest-api/Deployment": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "api": "*",
+        "retainDeployments": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/my-rest-api/DeploymentStage.prod": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "deployment": "*"
+      }
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/my-rest-api/Endpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myrestapiEndpoint0DE8A5DE"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/my-rest-api/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/StateMachine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/StateMachine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachine2E01A3A5"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/my-rest-api/Deployment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myrestapiDeployment010A9D4Fd081db3194c4c5fd27c31d3877c7a8dc"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/my-rest-api/DeploymentStage.prod/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myrestapiDeploymentStageprod3140E1BE"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/my-rest-api/Default/GET": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "resource": "*",
+        "httpMethod": "*",
+        "integration": "*",
+        "options": {
+          "methodResponses": [
+            {
+              "statusCode": "*",
+              "responseParameters": "*"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMethodResponse": [
+          {
+            "statusCode": "*",
+            "responseParameters": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/StateMachine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRoleB840431D"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/my-rest-api/Default/GET/StartSyncExecutionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/my-rest-api/Default/GET/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myrestapiGET3A49A218"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/my-rest-api/Default/GET/StartSyncExecutionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myrestapiGETStartSyncExecutionRoleC284C05B"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/my-rest-api/Default/GET/StartSyncExecutionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/my-rest-api/Default/GET/StartSyncExecutionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myrestapiGETStartSyncExecutionRoleDefaultPolicy8B2F6ADF"
+    }
+  ]
+}

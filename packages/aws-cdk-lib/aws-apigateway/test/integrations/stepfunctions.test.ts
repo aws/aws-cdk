@@ -52,11 +52,11 @@ describe('StepFunctionsIntegration', () => {
               'Fn::Join': [
                 '',
                 [
-                  "## Velocity Template used for API Gateway request mapping template\n##\n## This template forwards the request body, header, path, and querystring\n## to the execution input of the state machine.\n##\n## \"@@\" is used here as a placeholder for '\"' to avoid using escape characters.\n\n#set($inputString = '')\n#set($includeHeaders = false)\n#set($includeQueryString = true)\n#set($includePath = true)\n#set($includeAuthorizer = false)\n#set($allParams = $input.params())\n{\n    \"stateMachineArn\": \"",
+                  "## Velocity Template used for API Gateway request mapping template\n##\n## This template forwards the request body, header, path, and querystring\n## to the execution input of the state machine.\n##\n## \"@@\" is used here as a placeholder for '\"' to avoid using escape characters.\n\n#set($inputString = '')\n#set($includeHeaders = false)\n#set($headerNames = [])\n#set($includeQueryString = true)\n#set($includePath = true)\n#set($includeAuthorizer = false)\n#set($allParams = $input.params())\n{\n    \"stateMachineArn\": \"",
                   {
                     Ref: 'StateMachine2E01A3A5',
                   },
-                  "\",\n\n    #set($inputString = \"$inputString,@@body@@: $input.body\")\n\n    #if ($includeHeaders)\n        #set($inputString = \"$inputString, @@header@@:{\")\n        #foreach($paramName in $allParams.header.keySet())\n            #set($inputString = \"$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.header.get($paramName))@@\")\n            #if($foreach.hasNext)\n                #set($inputString = \"$inputString,\")\n            #end\n        #end\n        #set($inputString = \"$inputString }\")\n        \n    #end\n\n    #if ($includeQueryString)\n        #set($inputString = \"$inputString, @@querystring@@:{\")\n        #foreach($paramName in $allParams.querystring.keySet())\n            #set($inputString = \"$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.querystring.get($paramName))@@\")\n            #if($foreach.hasNext)\n                #set($inputString = \"$inputString,\")\n            #end\n        #end\n        #set($inputString = \"$inputString }\")\n    #end\n\n    #if ($includePath)\n        #set($inputString = \"$inputString, @@path@@:{\")\n        #foreach($paramName in $allParams.path.keySet())\n            #set($inputString = \"$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.path.get($paramName))@@\")\n            #if($foreach.hasNext)\n                #set($inputString = \"$inputString,\")\n            #end\n        #end\n        #set($inputString = \"$inputString }\")\n    #end\n    \n    #if ($includeAuthorizer)\n        #set($inputString = \"$inputString, @@authorizer@@:{\")\n        #foreach($paramName in $context.authorizer.keySet())\n            #set($inputString = \"$inputString @@$paramName@@: @@$util.escapeJavaScript($context.authorizer.get($paramName))@@\")\n            #if($foreach.hasNext)\n                #set($inputString = \"$inputString,\")\n            #end\n        #end\n        #set($inputString = \"$inputString }\")\n    #end\n\n    #set($requestContext = \"\")\n    ## Check if the request context should be included as part of the execution input\n    #if($requestContext && !$requestContext.empty)\n        #set($inputString = \"$inputString,\")\n        #set($inputString = \"$inputString @@requestContext@@: $requestContext\")\n    #end\n\n    #set($inputString = \"$inputString}\")\n    #set($inputString = $inputString.replaceAll(\"@@\",'\"'))\n    #set($len = $inputString.length() - 1)\n    \"input\": \"{$util.escapeJavaScript($inputString.substring(1,$len)).replaceAll(\"\\\\'\",\"'\")}\"\n}\n",
+                  "\",\n\n    #set($inputString = \"$inputString,@@body@@: $input.body\")\n\n    #if ($includeHeaders)\n        #set($inputString = \"$inputString, @@header@@:{\")\n        ## When $headerNames is non-empty, only forward headers whose lowercased\n        ## name is in the list. The comma is emitted before every entry except the\n        ## first, because $foreach.hasNext does not account for skipped headers.\n        #set($firstHeader = true)\n        #foreach($paramName in $allParams.header.keySet())\n            #if($headerNames.isEmpty() || $headerNames.contains($paramName.toLowerCase()))\n                #if(!$firstHeader)\n                    #set($inputString = \"$inputString,\")\n                #end\n                #set($inputString = \"$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.header.get($paramName))@@\")\n                #set($firstHeader = false)\n            #end\n        #end\n        #set($inputString = \"$inputString }\")\n\n    #end\n\n    #if ($includeQueryString)\n        #set($inputString = \"$inputString, @@querystring@@:{\")\n        #foreach($paramName in $allParams.querystring.keySet())\n            #set($inputString = \"$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.querystring.get($paramName))@@\")\n            #if($foreach.hasNext)\n                #set($inputString = \"$inputString,\")\n            #end\n        #end\n        #set($inputString = \"$inputString }\")\n    #end\n\n    #if ($includePath)\n        #set($inputString = \"$inputString, @@path@@:{\")\n        #foreach($paramName in $allParams.path.keySet())\n            #set($inputString = \"$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.path.get($paramName))@@\")\n            #if($foreach.hasNext)\n                #set($inputString = \"$inputString,\")\n            #end\n        #end\n        #set($inputString = \"$inputString }\")\n    #end\n    \n    #if ($includeAuthorizer)\n        #set($inputString = \"$inputString, @@authorizer@@:{\")\n        #foreach($paramName in $context.authorizer.keySet())\n            #set($inputString = \"$inputString @@$paramName@@: @@$util.escapeJavaScript($context.authorizer.get($paramName))@@\")\n            #if($foreach.hasNext)\n                #set($inputString = \"$inputString,\")\n            #end\n        #end\n        #set($inputString = \"$inputString }\")\n    #end\n\n    #set($requestContext = \"\")\n    ## Check if the request context should be included as part of the execution input\n    #if($requestContext && !$requestContext.empty)\n        #set($inputString = \"$inputString,\")\n        #set($inputString = \"$inputString @@requestContext@@: $requestContext\")\n    #end\n\n    #set($inputString = \"$inputString}\")\n    #set($inputString = $inputString.replaceAll(\"@@\",'\"'))\n    #set($len = $inputString.length() - 1)\n    \"input\": \"{$util.escapeJavaScript($inputString.substring(1,$len)).replaceAll(\"\\\\'\",\"'\")}\"\n}\n",
                 ],
               ],
             },
@@ -117,6 +117,140 @@ describe('StepFunctionsIntegration', () => {
           },
         },
       });
+    });
+
+    test('headerNames renders a lowercased allowlist and enables header forwarding', () => {
+      // GIVEN
+      const { stack, api, stateMachine } = givenSetup();
+
+      // WHEN
+      const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine, {
+        headerNames: ['User-Id', 'x-correlation-id'],
+      });
+      api.root.addMethod('GET', integ);
+
+      // THEN - names are lowercased for case-insensitive matching in the template
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+        Integration: {
+          RequestTemplates: {
+            'application/json': {
+              'Fn::Join': [
+                '',
+                [
+                  Match.stringLikeRegexp("#set\\(\\$headerNames = \\['user-id', 'x-correlation-id'\\]\\)"),
+                  { Ref: 'StateMachine2E01A3A5' },
+                  Match.anyValue(),
+                ],
+              ],
+            },
+          },
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+        Integration: {
+          RequestTemplates: {
+            'application/json': {
+              'Fn::Join': [
+                '',
+                [
+                  Match.stringLikeRegexp('#set\\(\\$includeHeaders = true\\)'),
+                  { Ref: 'StateMachine2E01A3A5' },
+                  Match.anyValue(),
+                ],
+              ],
+            },
+          },
+        },
+      });
+    });
+
+    test('headers true renders an empty allowlist so all headers are forwarded', () => {
+      // GIVEN
+      const { stack, api, stateMachine } = givenSetup();
+
+      // WHEN
+      const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine, {
+        headers: true,
+      });
+      api.root.addMethod('GET', integ);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+        Integration: {
+          RequestTemplates: {
+            'application/json': {
+              'Fn::Join': [
+                '',
+                [
+                  Match.stringLikeRegexp('#set\\(\\$headerNames = \\[\\]\\)'),
+                  { Ref: 'StateMachine2E01A3A5' },
+                  Match.anyValue(),
+                ],
+              ],
+            },
+          },
+        },
+      });
+    });
+
+    test('empty headerNames behaves like headers false', () => {
+      // GIVEN
+      const { stack, api, stateMachine } = givenSetup();
+
+      // WHEN
+      const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine, {
+        headerNames: [],
+      });
+      api.root.addMethod('GET', integ);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+        Integration: {
+          RequestTemplates: {
+            'application/json': {
+              'Fn::Join': [
+                '',
+                [
+                  Match.stringLikeRegexp('#set\\(\\$includeHeaders = false\\)'),
+                  { Ref: 'StateMachine2E01A3A5' },
+                  Match.anyValue(),
+                ],
+              ],
+            },
+          },
+        },
+      });
+    });
+
+    test('fails when headerNames is combined with headers true', () => {
+      // GIVEN
+      const { stateMachine } = givenSetup();
+
+      // WHEN / THEN
+      expect(() => apigw.StepFunctionsIntegration.startExecution(stateMachine, {
+        headers: true,
+        headerNames: ['user-id'],
+      })).toThrow(/cannot use 'headerNames' together with 'headers: true'/);
+    });
+
+    test('fails when a header name contains a single quote', () => {
+      // GIVEN
+      const { stateMachine } = givenSetup();
+
+      // WHEN / THEN
+      expect(() => apigw.StepFunctionsIntegration.startExecution(stateMachine, {
+        headerNames: ["user'-id"],
+      })).toThrow(/'headerNames' must not contain single quotes/);
+    });
+
+    test('fails when headerNames contains a token', () => {
+      // GIVEN
+      const { stateMachine } = givenSetup();
+
+      // WHEN / THEN
+      expect(() => apigw.StepFunctionsIntegration.startExecution(stateMachine, {
+        headerNames: [cdk.Lazy.string({ produce: () => 'user-id' }), 'other'],
+      })).toThrow(/'headerNames' must be literal strings/);
     });
 
     test('querystring and path are included by default', () => {

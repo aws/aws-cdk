@@ -5,7 +5,7 @@ import { AwsIntegration } from './aws';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { Token } from '../../../core';
-import { ValidationError } from '../../../core/lib/errors';
+import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import { lit } from '../../../core/lib/private/literal-string';
 import type { IntegrationConfig, IntegrationOptions } from '../integration';
 import { PassthroughBehavior } from '../integration';
@@ -72,6 +72,22 @@ export interface StepFunctionsExecutionIntegrationOptions extends IntegrationOpt
    * @default false
    */
   readonly headers?: boolean;
+
+  /**
+   * Include only the named request headers in the execution input, instead of
+   * forwarding all of them. Matching is case-insensitive. The execution input
+   * will include a new key `headers` containing only the matched headers.
+   *
+   * Use this to avoid forwarding sensitive headers, such as `Authorization` or
+   * `Cookie`, into the state machine execution input, where they would be
+   * visible in the execution history.
+   *
+   * Cannot be used together with `headers: true`. An empty list behaves the
+   * same as not including headers at all.
+   *
+   * @default - all headers are forwarded if `headers` is true, none otherwise
+   */
+  readonly headerNames?: string[];
 
   /**
    * If the whole authorizer object, including custom context values should be in the execution input. The execution input will include a new key `authorizer`:
@@ -274,7 +290,8 @@ function templateString(
 
   let requestContextStr = '';
 
-  const includeHeader = options.headers?? false;
+  const headerNames = headerNamesList(options);
+  const includeHeader = (options.headers ?? false) || headerNames.length > 0;
   const includeQueryString = options.querystring?? true;
   const includePath = options.path?? true;
   const includeAuthorizer = options.authorizer ?? false;
@@ -286,12 +303,39 @@ function templateString(
   templateStr = fs.readFileSync(path.join(__dirname, 'stepfunctions.vtl'), { encoding: 'utf-8' });
   templateStr = templateStr.replace('%STATEMACHINE%', stateMachine.stateMachineArn);
   templateStr = templateStr.replace('%INCLUDE_HEADERS%', String(includeHeader));
+  // Rendered as a VTL list literal of lowercased names; the template matches header
+  // keys case-insensitively against it. An empty list means "no filtering".
+  templateStr = templateStr.replace('%HEADER_NAMES%', headerNames.map(name => `'${name.toLowerCase()}'`).join(', '));
   templateStr = templateStr.replace('%INCLUDE_QUERYSTRING%', String(includeQueryString));
   templateStr = templateStr.replace('%INCLUDE_PATH%', String(includePath));
   templateStr = templateStr.replace('%INCLUDE_AUTHORIZER%', String(includeAuthorizer));
   templateStr = templateStr.replace('%REQUESTCONTEXT%', requestContextStr);
 
   return templateStr;
+}
+
+/**
+ * Validates and returns the header allowlist from the options.
+ *
+ * `headerNames` is rendered into the request mapping template, so the names must be
+ * literal strings (no tokens) and must not contain single quotes, which delimit the
+ * rendered VTL list literal.
+ */
+function headerNamesList(options: StepFunctionsExecutionIntegrationOptions): string[] {
+  if (options.headerNames === undefined) {
+    return [];
+  }
+  if (Token.isUnresolved(options.headerNames) || options.headerNames.some(name => Token.isUnresolved(name))) {
+    throw new UnscopedValidationError(lit`HeaderNamesMustBeLiteral`, '\'headerNames\' must be literal strings, tokens are not supported');
+  }
+  if (options.headers && options.headerNames.length > 0) {
+    throw new UnscopedValidationError(lit`HeadersAndHeaderNamesMutuallyExclusive`, `cannot use 'headerNames' together with 'headers: true', received headerNames: ${JSON.stringify(options.headerNames)}; use 'headerNames' alone to forward only those headers, or 'headers: true' alone to forward all headers`);
+  }
+  const invalid = options.headerNames.filter(name => name.includes("'"));
+  if (invalid.length > 0) {
+    throw new UnscopedValidationError(lit`HeaderNamesInvalidCharacter`, `'headerNames' must not contain single quotes, received: ${JSON.stringify(invalid)}`);
+  }
+  return options.headerNames;
 }
 
 function requestContext(requestContextObj: RequestContext | undefined): string {
