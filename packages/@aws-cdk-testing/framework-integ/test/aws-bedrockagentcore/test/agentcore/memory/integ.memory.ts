@@ -96,6 +96,14 @@ new agentcore.Memory(stack, 'MemoryWithBuiltinEpisodicEx', {
   ],
 });
 
+// Create a memory with a removal policy applied via the L2. This exercises
+// applyRemovalPolicy(), which requires the CfnMemory to be set as the
+// construct's default child (see #38262)
+const memoryWithRemovalPolicy = new agentcore.Memory(stack, 'MemoryWithRemovalPolicy', {
+  memoryName: 'memory_with_removal_policy',
+});
+memoryWithRemovalPolicy.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+
 new integ.IntegTest(app, 'BedrockAgentCoreMemory', {
   testCases: [stack],
   regions: ['us-east-1', 'us-east-2', 'us-west-2', 'ca-central-1', 'eu-central-1', 'eu-north-1', 'eu-west-1', 'eu-west-2', 'eu-west-3', 'ap-northeast-1', 'ap-northeast-2', 'ap-south-1', 'ap-southeast-1', 'ap-southeast-2'], // Bedrock Agent Core is only available in these regions
