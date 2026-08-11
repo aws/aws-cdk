@@ -1,0 +1,23 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "BucketDeploymentCrossRegionTest/DefaultTest": {
+      "stacks": [
+        "CrossRegionStandardToOptInDeploymentDestinationRegionOmittedStack",
+        "CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedStack",
+        "SameRegionOptInDeploymentDestinationRegionOmittedStack",
+        "SameRegionOptInDeploymentDestinationRegionSpecifiedStack",
+        "CrossRegionStandardDeploymentDestinationRegionOmittedStack",
+        "CrossRegionStandardDeploymentDestinationRegionSpecifiedStack",
+        "SameRegionStandardDeploymentDestinationRegionOmittedStack",
+        "SameRegionStandardDeploymentDestinationRegionSpecifiedStack",
+        "CrossRegionOptInToStandardDestinationRegionOmittedStack",
+        "CrossRegionOptInToStandardDestinationRegionSpecifiedStack"
+      ],
+      "diffAssets": true,
+      "assertionStack": "BucketDeploymentCrossRegionTest/DefaultTest/DeployAssert",
+      "assertionStackName": "BucketDeploymentCrossRegionTestDefaultTestDeployAssert3A98935C"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}
