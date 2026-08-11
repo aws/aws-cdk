@@ -184,7 +184,9 @@ export class AssetStaging extends Construct {
 
     // look for invalid (external) symlinks
     if (props.follow == SymlinkFollowMode.BLOCK_EXTERNAL) {
-      validateInternalSymlinks(this.sourcePath, scope, props.follow);
+      if (fs.statSync(this.sourcePath).isDirectory()) {
+        validateInternalSymlinks(this.sourcePath, scope, props.follow);
+      }
     }
 
     this._sourceStats = fs.statSync(this.sourcePath);
@@ -585,7 +587,7 @@ function determineHashType(scope: Construct, assetHashType?: AssetHashType, cust
  * @param subRoot used for walking subdirectories
  */
 function validateInternalSymlinks(root: string, scope: Construct, followMode: SymlinkFollowMode, subRoot: string = root) {
-  const entries = fs.readdirSync(root, { withFileTypes: true });
+  const entries = fs.readdirSync(subRoot, { withFileTypes: true });
   for (const entry of entries) {
     const childPath = path.join(subRoot, entry.name);
     if (entry.isDirectory()) {
