@@ -2999,7 +2999,7 @@ function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: Block
     }
 
     if (ebs) {
-      const { iops, volumeType, throughput, kmsKey } = ebs;
+      const { iops, volumeType, throughput, volumeInitializationRate, kmsKey } = ebs;
 
       if (kmsKey) {
         // AWS::AutoScaling::LaunchConfiguration block devices have no KmsKeyId property,
@@ -3042,6 +3042,12 @@ function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: Block
         }
       } else if (volumeType !== EbsDeviceVolumeType.IO1) {
         Annotations.of(construct).addWarningV2('@aws-cdk/aws-autoscaling:iopsIgnored', 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+      }
+
+      if (volumeInitializationRate) {
+        Annotations.of(construct).addWarningV2('@aws-cdk/aws-autoscaling:volumeInitializationRateNotSupported',
+          'The volumeInitializationRate is not supported on Autoscaling Group LaunchConfigurations. Use a Launch Template instead.',
+        );
       }
     }
 
