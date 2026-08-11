@@ -936,15 +936,15 @@ export class Memory extends MemoryBase {
 
     // Grant Kinesis write permissions to the execution role
     // stream.grantWrite() grants: kinesis:ListShards, kinesis:PutRecord, kinesis:PutRecords
-    // It also handles KMS encryption key permissions automatically if the stream is encrypted
+    // stream.grantWrite() also grants KMS permissions when the stream's key is known
+    // (owned streams, or streams imported via fromStreamAttributes with an encryptionKey).
+    // Streams imported via fromStreamArn carry no key, so grant KMS manually in that case.
     const grant = resource.stream.grantWrite(this.executionRole as iam.IRole);
 
-    // AgentCore also requires kinesis:DescribeStream which is not included in grantWrite()
-    const describeGrant = iam.Grant.addToPrincipal({
-      grantee: this.executionRole as iam.IRole,
-      actions: ['kinesis:DescribeStream'],
-      resourceArns: [resource.stream.streamArn],
-    });
+    // AgentCore also requires kinesis:DescribeStream which is not included in grantWrite().
+    // Route it through the stream's own grant so that, like the write grant, a
+    // cross-account stream also gets the matching resource policy statement.
+    const describeGrant = resource.stream.grant(this.executionRole as iam.IRole, 'kinesis:DescribeStream');
 
     grant.applyBefore(this.__resource);
     describeGrant.applyBefore(this.__resource);
