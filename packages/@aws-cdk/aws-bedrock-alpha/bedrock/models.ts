@@ -442,6 +442,21 @@ export class BedrockFoundationModel implements IBedrockInvokable {
   );
 
   /**
+   * Anthropic's Claude Sonnet 5 model, the first Sonnet of the Claude 5 family.
+   * Strong performance across coding, agentic workflows, and enterprise applications.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   * - Best for: Coding, agentic workflows, enterprise applications
+   */
+  public static readonly ANTHROPIC_CLAUDE_SONNET_5 = new BedrockFoundationModel(
+    'anthropic.claude-sonnet-5',
+    { supportsAgents: true, supportsCrossRegion: true, optimizedForAgents: true },
+  );
+
+  /**
    * Anthropic's Claude Opus 4.5 model, the flagship model released November 2025.
    * Excels at real-world programming tasks, scoring highest on SWE-bench Verified benchmarks.
    * Demonstrates superior performance in long-horizon, goal-directed agentic work with fewer dead-ends.
