@@ -1709,8 +1709,16 @@ and authorized during Inbound Auth.
 
 AgentCore Gateway supports the following types of outbound authorization:
 
-**IAM-based outbound authorization** – The gateway uses its execution role to authenticate with AWS services. This is the default
- and most common approach for Lambda targets and AWS service integrations.
+**IAM-based outbound authorization** – The gateway uses its execution role to authenticate with AWS services. This is the default and most common approach for Lambda targets and AWS service integrations. Use `GatewayCredentialProvider.fromIamRole()`; by default the gateway infers the SigV4 signing service and region from the target endpoint. For **MCP Server** and **OpenAPI** targets, you can override the service, and optionally the region too — useful for cross-region calls or when the service can't be inferred from the URL:
+
+```typescript fixture=default
+agentcore.GatewayCredentialProvider.fromIamRole({
+  service: 'bedrock-runtime', // SigV4 signing name (typically the endpoint prefix); see the AWS service authorization reference
+  region: 'us-east-1',         // defaults to the gateway's region
+});
+```
+
+The Bedrock AgentCore service only accepts `IamCredentialProvider` with explicit `service` / `region` for MCP Server and OpenAPI targets. Lambda, API Gateway and Smithy targets must use the bare `GatewayCredentialProvider.fromIamRole()` (with no arguments); the CDK enforces this with a synth-time validation.
 
 **2-legged OAuth (OAuth 2LO)** – Use OAuth 2.0 two-legged flow (2LO) for targets that require OAuth authentication.
 The gateway authenticates on its own behalf, not on behalf of a user.
@@ -2718,6 +2726,81 @@ const memory = new agentcore.Memory(this, "test-memory", {
 memory.addMemoryStrategy(agentcore.MemoryStrategy.usingBuiltInSummarization());
 memory.addMemoryStrategy(agentcore.MemoryStrategy.usingBuiltInSemantic());
 ```
+
+### Memory with Stream Delivery
+
+You can configure stream delivery resources to enable real-time push-based streaming of memory record lifecycle events (created, updated, deleted) to Amazon Kinesis Data Streams. This allows you to react to memory changes in real-time, build event-driven architectures, or feed memory events into downstream analytics pipelines.
+
+Delivery targets are created with the static factory methods on `StreamDeliveryResource`, one per target type. Kinesis Data Streams is currently the only supported target:
+
+```typescript fixture=default
+// Create a Kinesis Data Stream
+const stream = new kinesis.Stream(this, 'MemoryEventStream', {
+  streamName: 'memory-events',
+});
+
+const memory = new agentcore.Memory(this, 'MemoryWithStreamDelivery', {
+  memoryName: 'memory_with_stream',
+  description: 'Memory with Kinesis stream delivery',
+  expirationDuration: cdk.Duration.days(90),
+  streamDeliveryResources: [
+    agentcore.StreamDeliveryResource.kinesis(stream, {
+      contentConfigurations: [
+        {
+          type: agentcore.StreamDeliveryContentType.MEMORY_RECORDS,
+          level: agentcore.StreamDeliveryContentLevel.METADATA_ONLY,
+        },
+      ],
+    }),
+  ],
+});
+```
+
+There is no default content level — you must choose one explicitly. `METADATA_ONLY` delivers only the record ID, timestamps, and event type. `FULL_CONTENT` delivers the complete memory record body, which can contain personally identifiable information and other sensitive conversation content, so make sure the destination stream and its consumers are an appropriate place for that data:
+
+```typescript fixture=default
+const stream = new kinesis.Stream(this, 'MemoryEventStream');
+
+const memory = new agentcore.Memory(this, 'MemoryWithStreamDelivery', {
+  memoryName: 'memory_with_stream',
+  streamDeliveryResources: [
+    agentcore.StreamDeliveryResource.kinesis(stream, {
+      contentConfigurations: [
+        {
+          type: agentcore.StreamDeliveryContentType.MEMORY_RECORDS,
+          // Streams complete memory record bodies, which may include sensitive data
+          level: agentcore.StreamDeliveryContentLevel.FULL_CONTENT,
+        },
+      ],
+    }),
+  ],
+});
+```
+
+You can also add stream delivery resources after instantiation using the `addStreamDeliveryResource()` method:
+
+```typescript fixture=default
+const memory = new agentcore.Memory(this, 'MyMemory', {
+  memoryName: 'my_memory',
+});
+
+const stream = new kinesis.Stream(this, 'EventStream');
+
+memory.addStreamDeliveryResource(agentcore.StreamDeliveryResource.kinesis(stream, {
+  contentConfigurations: [
+    {
+      type: agentcore.StreamDeliveryContentType.MEMORY_RECORDS,
+      level: agentcore.StreamDeliveryContentLevel.METADATA_ONLY,
+    },
+  ],
+}));
+```
+
+Only one stream delivery resource is currently supported (a CloudFormation maximum); providing more than one fails at synth with `TooManyStreamDeliveryResources`.
+
+The memory execution role is automatically granted write permissions (`kinesis:PutRecord`, `kinesis:PutRecords`, `kinesis:ListShards`, `kinesis:DescribeStream`) to each configured Kinesis stream. If the stream uses a customer-managed KMS key, encryption permissions are also granted automatically.
+
+Encryption permissions can only be granted when the stream's key is known to CDK — that is, for streams you create and for streams imported with `Stream.fromStreamAttributes({ encryptionKey })`. A stream imported with `Stream.fromStreamArn()` carries no key reference, so grant the key permissions yourself in that case.
 
 ## Online Evaluation
 
