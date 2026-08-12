@@ -118,6 +118,7 @@ Flags come in three types:
 | [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-region stack references are strong, weak, or both | 2.254.0 | config |
 | [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | 2.259.0 | new default |
 | [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | 2.262.0 | config |
+| [@aws-cdk/core:scopedValidationPluginAcknowledgments](#aws-cdkcorescopedvalidationpluginacknowledgments) | Scope validation plugin acknowledgments to the construct where they are declared | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -209,6 +210,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/core:enablePartitionLiterals": true,
     "@aws-cdk/core:explicitStackTags": true,
     "@aws-cdk/core:includePrefixInUniqueNameGeneration": true,
+    "@aws-cdk/core:scopedValidationPluginAcknowledgments": true,
     "@aws-cdk/core:target-partitions": [
       "aws",
       "aws-cn"
@@ -2551,6 +2553,27 @@ fail synthesis. When unconfigured, violations are reported as warnings only.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.262.0 | `false` | `true` |
+
+
+### @aws-cdk/core:scopedValidationPluginAcknowledgments
+
+*Scope validation plugin acknowledgments to the construct where they are declared*
+
+Flag type: Backwards incompatible bugfix
+
+When enabled, validation plugin violations are suppressed only when every violating resource
+is the acknowledged construct or one of its descendants. Acknowledging a rule on one construct
+no longer suppresses violations of the same rule on unrelated constructs or stacks.
+
+When disabled, acknowledgments continue to suppress matching rule IDs across the entire app.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Disable this feature flag to suppress validation plugin violations by rule ID across the entire app.
 
 
 <!-- END details -->
