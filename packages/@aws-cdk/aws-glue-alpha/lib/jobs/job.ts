@@ -9,6 +9,7 @@ import type { Code } from '../code';
 import type { IConnection } from '../connection';
 import type { MetricType, WorkerType, GlueVersion } from '../constants';
 import { JobState } from '../constants';
+import { warnOnPlaintextSecrets } from '../private/secret-detection';
 import type { ISecurityConfiguration } from '../security-configuration';
 
 /**
@@ -384,6 +385,11 @@ export interface JobProps {
    * `--job-language`) or a Glue-reserved argument (`--debug`, `--mode`, `--JOB_NAME`) here throws
    * at synthesis time, so there is exactly one way to express each intent.
    *
+   * Also note that these are emitted verbatim into the CloudFormation template, so avoid
+   * placing secrets here in plaintext. Pass secrets to the job at runtime
+   * through AWS Secrets Manager instead. A synthesis-time warning is emitted
+   * when an argument key looks like a credential and holds a plaintext literal.
+   *
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    * for a list of reserved parameters
    * @default - no arguments
@@ -548,6 +554,12 @@ export abstract class Job extends JobBase {
         );
       }
     }
+    warnOnPlaintextSecrets(
+      this,
+      defaultArguments,
+      '@aws-cdk/aws-glue-alpha:plaintextJobArgumentSecret',
+      'Pass secrets to the job at runtime through AWS Secrets Manager instead of embedding them in `defaultArguments`.',
+    );
     return { ...defaultArguments, ...managedArguments };
   }
 
