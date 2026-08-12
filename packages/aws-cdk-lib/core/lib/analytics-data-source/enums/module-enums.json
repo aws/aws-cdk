@@ -422,6 +422,13 @@
       "UDP"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/catalog.ts": {
+    "CatalogEncryptionMode": [
+      "DISABLED",
+      "SSE-KMS",
+      "SSE-KMS-WITH-SERVICE-ROLE"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/constants.ts": {
     "WorkerType": [
       "Standard",
@@ -974,6 +981,76 @@
       "Esri",
       "Grab",
       "Here"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow-entitlement.ts": {
+    "EntitlementStatus": [
+      "ENABLED",
+      "DISABLED"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow-output.ts": {
+    "FlowOutputProtocol": [
+      "zixi-push",
+      "rtp-fec",
+      "rtp",
+      "zixi-pull",
+      "rist",
+      "srt-listener",
+      "srt-caller",
+      "ndi-speed-hq"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow.ts": {
+    "EncodingProfile": [
+      "CONTRIBUTION_H264_DEFAULT",
+      "DISTRIBUTION_H264_DEFAULT"
+    ],
+    "MediaStreamType": [
+      "video",
+      "audio",
+      "ancillary-data"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/router-input.ts": {
+    "ForwardErrorCorrection": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "PrimarySource": [
+      0,
+      1
+    ],
+    "SourcePriorityMode": [
+      "NO_PRIORITY",
+      "PRIMARY_SECONDARY"
+    ],
+    "ProtocolConfigType": [
+      "failover",
+      "merge"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/shared.ts": {
+    "State": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "MaintenanceDay": [
+      "MONDAY",
+      "TUESDAY",
+      "WEDNESDAY",
+      "THURSDAY",
+      "FRIDAY",
+      "SATURDAY",
+      "SUNDAY"
+    ],
+    "MediaLivePipeline": [
+      "PIPELINE_0",
+      "PIPELINE_1"
+    ],
+    "EncryptionKeyType": [
+      "SECRETS_MANAGER",
+      "AUTOMATIC"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/lib/channel.ts": {
@@ -1935,6 +2012,20 @@
       "capacity-optimized",
       "capacity-optimized-prioritized",
       "price-capacity-optimized"
+    ],
+    "InstanceRefreshStrategy": [
+      "Rolling",
+      "ReplaceRootVolume"
+    ],
+    "ScaleInProtectedInstances": [
+      "Refresh",
+      "Ignore",
+      "Wait"
+    ],
+    "StandbyInstances": [
+      "Terminate",
+      "Ignore",
+      "Wait"
     ],
     "CapacityDistributionStrategy": [
       "balanced-only",
@@ -3413,6 +3504,8 @@
       "g6",
       "graphics6-efficient",
       "g6e",
+      "graphics7-efficient",
+      "g7e",
       "graphics-ram-6",
       "gr6",
       "parallel2",
@@ -4834,6 +4927,13 @@
       "CONFIG_MAP",
       "API_AND_CONFIG_MAP",
       "API"
+    ],
+    "ControlPlaneScalingTier": [
+      "standard",
+      "tier-xl",
+      "tier-2xl",
+      "tier-4xl",
+      "tier-8xl"
     ],
     "NodeType": [
       "Standard",
@@ -6498,7 +6598,8 @@
       "nodejs16.x",
       "nodejs18.x",
       "nodejs20.x",
-      "nodejs22.x"
+      "nodejs22.x",
+      "nodejs24.x"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/core/lib/deps.ts": {
@@ -6638,7 +6739,8 @@
     "Runtime": [
       "nodejs18.x",
       "nodejs20.x",
-      "nodejs22.x"
+      "nodejs22.x",
+      "nodejs24.x"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/triggers/lib/trigger.ts": {
