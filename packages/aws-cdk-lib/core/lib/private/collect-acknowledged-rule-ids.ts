@@ -9,19 +9,21 @@ export interface AcknowledgedRule {
 
 /**
  * Collect all acknowledged rule IDs from construct metadata across the tree.
- * Returns a map from rule ID to acknowledgement details (reason, construct path, and stack trace).
+ * Returns a map from rule ID to all acknowledgement details (reason, construct path, and stack trace).
  */
-export function collectAcknowledgedRuleIds(root: IConstruct): Map<string, AcknowledgedRule> {
-  const rules = new Map<string, AcknowledgedRule>();
+export function collectAcknowledgedRuleIds(root: IConstruct): Map<string, AcknowledgedRule[]> {
+  const rules = new Map<string, AcknowledgedRule[]>();
   for (const construct of iterateDfsPreorder(root)) {
     for (const entry of construct.node.metadata) {
       if (entry.type === 'aws:cdk:acknowledged-rules' && entry.data) {
         for (const [id, reason] of Object.entries(entry.data as Record<string, string>)) {
-          rules.set(id, {
+          const acknowledgements = rules.get(id) ?? [];
+          acknowledgements.push({
             reason,
             constructPath: construct.node.path,
             stackTrace: entry.trace?.join('\n'),
           });
+          rules.set(id, acknowledgements);
         }
       }
     }
