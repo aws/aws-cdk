@@ -47,16 +47,19 @@ const integ = new IntegTest(app, 'S3FilesSyncConfigIntegTest', {
   testCases: [stack],
 });
 
-// Assert the synchronization configuration was applied
-const describeFs = integ.assertions.awsApiCall('@aws-sdk/client-s3files', 'GetFileSystemCommand', {
+const describeSyncConfig = integ.assertions.awsApiCall('@aws-sdk/client-s3files', 'GetSynchronizationConfigurationCommand', {
   fileSystemId: stack.fileSystem.fileSystemId,
 });
 
-describeFs.expect(ExpectedResult.objectLike({
-  status: 'available',
-  synchronizationConfiguration: {
-    expirationDataRules: [{ daysAfterLastAccess: 7 }],
-  },
+describeSyncConfig.expect(ExpectedResult.objectLike({
+  importDataRules: [{
+    prefix: '',
+    trigger: 'ON_FILE_ACCESS',
+    sizeLessThan: 1073741824,
+  }],
+  expirationDataRules: [{
+    daysAfterLastAccess: 7,
+  }],
 }));
 
 app.synth();

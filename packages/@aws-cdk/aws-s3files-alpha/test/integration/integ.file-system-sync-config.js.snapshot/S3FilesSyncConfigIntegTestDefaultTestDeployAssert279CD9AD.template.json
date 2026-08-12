@@ -1,7 +1,7 @@
 {
  "Resources": {
-  "AwsApiCallawssdkclients3filesGetFileSystemCommand1d2fd830daca9400e914351c11584999": {
-   "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-s3filesGetFileSy",
+  "AwsApiCallawssdkclients3filesGetSynchronizationConfigurationCommand1d2fd830daca9400e914351c11584999": {
+   "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-s3filesGetSynchr",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -10,8 +10,8 @@
      ]
     },
     "service": "@aws-sdk/client-s3files",
-    "api": "GetFileSystemCommand",
-    "expected": "{\"$ObjectLike\":{\"status\":\"available\"}}",
+    "api": "GetSynchronizationConfigurationCommand",
+    "expected": "{\"$ObjectLike\":{\"importDataRules\":[{\"prefix\":\"\",\"trigger\":\"ON_FILE_ACCESS\",\"sizeLessThan\":1073741824}],\"expirationDataRules\":[{\"daysAfterLastAccess\":7}]}}",
     "parameters": {
      "fileSystemId": {
       "Fn::Join": [
@@ -19,7 +19,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "S3FilesBasicStack:ExportsOutputFnGetAttFileSystem8A8E25C0FileSystemId8EC1E37B"
+         "Fn::ImportValue": "S3FilesSyncConfigStack:ExportsOutputFnGetAttFileSystem8A8E25C0FileSystemId8EC1E37B"
         },
         "\""
        ]
@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1785773120276"
+    "salt": "1786557029631"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -60,16 +60,7 @@
        "Statement": [
         {
          "Action": [
-          "s3files:GetFileSystem"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
-        },
-        {
-         "Action": [
-          "s3files:GetAccessPoint"
+          "s3files:GetSynchronizationConfiguration"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -90,7 +81,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6ffc47b88143a52aa50e26c31da776854b28dff0e45b1a97d7c1e530d59590ad.zip"
+     "S3Key": "428190d5eeaafd22b80e5da36f1e1d5c9f7f8b38cca6acc34e1d86135fe817c4.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -105,53 +96,13 @@
      "ApplicationLogLevel": "FATAL"
     }
    }
-  },
-  "AwsApiCallawssdkclients3filesGetAccessPointCommand5b47c53bc569277031d4a57503476324": {
-   "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-s3filesGetAccess",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "@aws-sdk/client-s3files",
-    "api": "GetAccessPointCommand",
-    "expected": "{\"$ObjectLike\":{\"rootDirectory\":{\"path\":\"/data\"}}}",
-    "parameters": {
-     "accessPointId": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "S3FilesAccessPointStack:ExportsOutputRefFileSystemAccessPointF8178182DF8BC44C"
-        },
-        "\""
-       ]
-      ]
-     }
-    },
-    "flattenResponse": "false",
-    "salt": "1785773120276"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallawssdkclients3filesGetFileSystemCommand1d2fd830daca9400e914351c11584999": {
+  "AssertionResultsAwsApiCallawssdkclients3filesGetSynchronizationConfigurationCommand1d2fd830daca9400e914351c11584999": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallawssdkclients3filesGetFileSystemCommand1d2fd830daca9400e914351c11584999",
-     "assertion"
-    ]
-   }
-  },
-  "AssertionResultsAwsApiCallawssdkclients3filesGetAccessPointCommand5b47c53bc569277031d4a57503476324": {
-   "Value": {
-    "Fn::GetAtt": [
-     "AwsApiCallawssdkclients3filesGetAccessPointCommand5b47c53bc569277031d4a57503476324",
+     "AwsApiCallawssdkclients3filesGetSynchronizationConfigurationCommand1d2fd830daca9400e914351c11584999",
      "assertion"
     ]
    }
