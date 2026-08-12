@@ -162,12 +162,47 @@ export interface ChannelGroupAttributes {
    * @default - not available on imported channel groups
    */
   readonly egressDomain?: string;
+
+  /**
+   * The AWS region where the channel group lives.
+   *
+   * Required for cross-region imports to construct the correct ARN.
+   *
+   * @default - the importing stack's region
+   */
+  readonly region?: string;
 }
 
 /**
  * A new or imported Channel Group.
  */
 abstract class ChannelGroupBase extends Resource implements IChannelGroup {
+  /**
+   * Creates a Channel Group construct that represents an external (imported) Channel Group from its ARN.
+   */
+  public static fromChannelGroupArn(scope: Construct, id: string, channelGroupArn: string): IChannelGroup {
+    if (Token.isUnresolved(channelGroupArn)) {
+      throw new ValidationError(
+        lit`TokenArnNotSupported`,
+        'Cannot parse a token ARN. Use ChannelGroup.fromChannelGroupAttributes() with explicit channelGroupName and region values instead.',
+        scope,
+      );
+    }
+    const parsedArn = Stack.of(scope).splitArn(channelGroupArn, ArnFormat.SLASH_RESOURCE_NAME);
+    const channelGroupName = parsedArn.resourceName;
+    if (!channelGroupName) {
+      throw new ValidationError(
+        lit`InvalidChannelGroupArn`,
+        `Could not parse channel group name from ARN: ${channelGroupArn}`,
+        scope,
+      );
+    }
+    return ChannelGroupBase.fromChannelGroupAttributes(scope, id, {
+      channelGroupName,
+      region: parsedArn.region,
+    });
+  }
+
   /**
    * Creates a Channel Group construct that represents an external (imported) Channel Group.
    */
@@ -189,6 +224,7 @@ abstract class ChannelGroupBase extends Resource implements IChannelGroup {
         resource: 'channelGroup',
         arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
         resourceName: attrs.channelGroupName,
+        region: attrs.region,
       });
 
       public get egressDomain(): string {

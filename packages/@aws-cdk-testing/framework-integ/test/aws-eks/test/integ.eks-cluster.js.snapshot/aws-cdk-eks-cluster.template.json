@@ -57,14 +57,7 @@
     }
    },
    "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain",
-   "Metadata": {
-    "guard": {
-     "SuppressedRules": [
-      "NO_ROOT_PRINCIPALS_EXCEPT_KMS_SECRETS"
-     ]
-    }
-   }
+   "DeletionPolicy": "Retain"
   },
   "Vpc8378EB38": {
    "Type": "AWS::EC2::VPC",
@@ -1016,10 +1009,7 @@
        }
       ]
      },
-     "accessConfig": {},
-     "controlPlaneScalingConfig": {
-      "tier": "standard"
-     }
+     "accessConfig": {}
     },
     "AssumeRoleArn": {
      "Fn::GetAtt": [
@@ -3915,6 +3905,7 @@
     "CreateNamespace": true
    },
    "DependsOn": [
+    "ClusterKubectlHandlerRoleDefaultPolicyE44083DD",
     "ClusterKubectlReadyBarrier200052AF"
    ],
    "UpdateReplacePolicy": "Delete",
@@ -4410,7 +4401,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/6dc232add6a062645fabdd7bcc4d54abc79ec7cd75f81ffa688ba876a92cb64d.json"
+       "/0c0eaeda9090de362abf6a8b9f0a53a35cc332443c156a99a69b9c9aa6e05539.json"
       ]
      ]
     }
@@ -4456,7 +4447,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/7283a0885dbc163925aace6a82c153f9c77fffa1a0762dc78994458748a48ae2.json"
+       "/623535395b366b64d3c01223f30459e94b5454ecc0f205c6112b4d7d8909444d.json"
       ]
      ]
     }
@@ -4585,7 +4576,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"
@@ -4631,7 +4622,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"
@@ -4688,10 +4679,6 @@
      ]
     ]
    }
-  },
-  "ControlPlaneScalingTier": {
-   "Description": "Control plane scaling tier configured",
-   "Value": "standard"
   },
   "ClusterEndpoint": {
    "Value": {

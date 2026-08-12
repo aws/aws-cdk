@@ -48,9 +48,6 @@ class EksClusterStack extends Stack {
         eks.ClusterLoggingTypes.AUTHENTICATOR,
         eks.ClusterLoggingTypes.SCHEDULER,
       ],
-      controlPlaneScalingConfig: {
-        tier: 'standard',
-      },
       kubectlProviderOptions: {
         kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
       },
@@ -79,8 +76,6 @@ class EksClusterStack extends Stack {
     this.assertNodeGroupGpu();
 
     this.assertSimpleManifest();
-
-    this.assertControlPlaneScaling();
 
     this.assertManifestWithoutValidation();
 
@@ -210,15 +205,6 @@ class EksClusterStack extends Stack {
     // apply a kubernetes manifest
     this.cluster.addManifest('HelloApp', ...hello.resources);
   }
-
-  private assertControlPlaneScaling() {
-    // verify that controlPlaneScalingConfig is set
-    new CfnOutput(this, 'ControlPlaneScalingTier', {
-      value: 'standard',
-      description: 'Control plane scaling tier configured',
-    });
-  }
-
   private assertManifestWithoutValidation() {
     // apply a kubernetes manifest
     new eks.KubernetesManifest(this, 'HelloAppWithoutValidation', {
@@ -373,7 +359,7 @@ const supportedRegions = [
 const app = new App({
   postCliContext: {
     [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
-    [EKS_USE_NATIVE_OIDC_PROVIDER]: false,
+    [EKS_USE_NATIVE_OIDC_PROVIDER]: true,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

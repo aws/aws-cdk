@@ -34,7 +34,7 @@ import type { ClusterReference, IClusterRef } from '../../aws-eks';
 import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
 import * as ssm from '../../aws-ssm';
-import { Annotations, CfnOutput, CfnResource, Resource, Tags, Token, Stack, UnscopedValidationError, FeatureFlags, RemovalPolicies } from '../../core';
+import { Annotations, CfnOutput, CfnResource, Resource, Tags, Token, Stack, UnscopedValidationError, FeatureFlags, RemovalPolicies, Validations } from '../../core';
 import type { IResource, Duration, ArnComponents, RemovalPolicy } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
@@ -295,15 +295,57 @@ export interface ClusterAttributes {
 }
 
 /**
- * Configuration for provisioned control plane scaling.
+ * The scaling tier for the EKS cluster provisioned control plane.
+ *
+ * Amazon EKS Provisioned Control Plane lets you select a scaling tier to ensure high and
+ * predictable control plane performance for demanding workloads such as AI training/inference,
+ * high-performance computing, or large-scale data processing.
+ *
+ * @see https://docs.aws.amazon.com/eks/latest/userguide/eks-provisioned-control-plane.html
  */
-export interface ControlPlaneScalingConfig {
+export class ControlPlaneScalingTier {
   /**
-   * The tier for the control plane scaling configuration.
-   *
-   * @default "standard"
+   * Standard control plane. This is the EKS service default and incurs no additional cost.
    */
-  readonly tier?: string;
+  public static readonly STANDARD = new ControlPlaneScalingTier('standard');
+
+  /**
+   * Extra-large provisioned control plane tier.
+   */
+  public static readonly TIER_XL = new ControlPlaneScalingTier('tier-xl');
+
+  /**
+   * 2x extra-large provisioned control plane tier.
+   */
+  public static readonly TIER_2XL = new ControlPlaneScalingTier('tier-2xl');
+
+  /**
+   * 4x extra-large provisioned control plane tier.
+   */
+  public static readonly TIER_4XL = new ControlPlaneScalingTier('tier-4xl');
+
+  /**
+   * 8x extra-large provisioned control plane tier.
+   */
+  public static readonly TIER_8XL = new ControlPlaneScalingTier('tier-8xl');
+
+  /**
+   * A custom scaling tier, for values not yet available as a static member.
+   *
+   * @param tier the scaling tier value as expected by the EKS API (for example `tier-16xl`)
+   */
+  public static of(tier: string): ControlPlaneScalingTier {
+    return new ControlPlaneScalingTier(tier);
+  }
+
+  /**
+   * The string value of the scaling tier as expected by the EKS API.
+   */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -463,11 +505,16 @@ export interface ClusterCommonOptions {
   readonly remotePodNetworks?: RemotePodNetwork[];
 
   /**
-   * Configuration for provisioned control plane scaling.
+   * The scaling tier for the cluster's provisioned control plane.
    *
-   * @default - No control plane scaling configuration
+   * Provisioned Control Plane allows you to select a scaling tier to ensure
+   * high and predictable performance for demanding workloads such as
+   * AI training/inference, high-performance computing, or large-scale data processing.
+   *
+   * @default - Standard control plane (no provisioned tier)
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/eks-provisioned-control-plane.html
    */
-  readonly controlPlaneScalingConfig?: ControlPlaneScalingConfig;
+  readonly controlPlaneScalingTier?: ControlPlaneScalingTier;
 
   /**
    * The removal policy applied to all CloudFormation resources created by this construct
@@ -797,6 +844,15 @@ export class KubernetesVersion {
    * `@aws-cdk/lambda-layer-kubectl-v35`.
    */
   public static readonly V1_35 = KubernetesVersion.of('1.35');
+
+  /**
+   * Kubernetes version 1.36
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV36Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v36`.
+   */
+  public static readonly V1_36 = KubernetesVersion.of('1.36');
 
   /**
    * Custom cluster version
@@ -1392,12 +1448,12 @@ export class Cluster extends ClusterBase {
       tags: Object.keys(props.tags ?? {}).map(k => ({ key: k, value: props.tags![k] })),
       logging: this.logging,
       bootstrapSelfManagedAddons: props.bootstrapSelfManagedAddons,
-      ...(props.controlPlaneScalingConfig ? {
-        controlPlaneScalingConfig: {
-          tier: props.controlPlaneScalingConfig.tier,
-        },
-      } : {}),
+      controlPlaneScalingConfig: props.controlPlaneScalingTier
+        ? { tier: props.controlPlaneScalingTier.value }
+        : undefined,
     });
+
+    this.node.defaultChild = resource;
 
     let kubectlSubnets = this._kubectlProviderOptions?.privateSubnets;
 
@@ -1467,6 +1523,14 @@ export class Cluster extends ClusterBase {
     const commonCommandOptions = [`--region ${stack.region}`];
 
     if (props.kubectlProviderOptions) {
+      if (this._kubectlProviderOptions?.securityGroup !== undefined &&
+          this._kubectlProviderOptions?.securityGroups !== undefined) {
+        throw new ValidationError(
+          lit`SecurityGroupConflict`,
+          'Cannot specify both "securityGroup" and "securityGroups". Use "securityGroups" only.',
+          this,
+        );
+      }
       this._kubectlProvider = new KubectlProvider(this, 'KubectlProvider', {
         cluster: this,
         role: this._kubectlProviderOptions?.role,
@@ -1475,6 +1539,10 @@ export class Cluster extends ClusterBase {
         environment: this._kubectlProviderOptions?.environment,
         memory: this._kubectlProviderOptions?.memory,
         privateSubnets: kubectlSubnets,
+        securityGroups: this._kubectlProviderOptions?.securityGroups
+          ?? (this._kubectlProviderOptions?.securityGroup
+            ? [this._kubectlProviderOptions.securityGroup]
+            : undefined),
       });
 
       // give the handler role admin access to the cluster
@@ -1567,7 +1635,7 @@ export class Cluster extends ClusterBase {
    *
    * This method creates an `AccessEntry` construct that grants the specified IAM principal the cluster admin
    * access permissions. This allows the IAM principal to perform the actions permitted
-   * by the cluster admin acces.
+   * by the cluster admin access.
    * [disable-awslint:no-grants]
    *
    * @param id - The ID of the `AccessEntry` construct to be created.
@@ -2345,6 +2413,10 @@ export class EksOptimizedImage implements ec2.IMachineImage {
    * Return the correct image
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
+    Validations.of(scope).acknowledge({
+      id: 'CloudFormation-Validate::W2506',
+      reason: 'SSM parameter is typed as String instead of AWS::SSM::Parameter::Value<AWS::EC2::Image::Id> for historical reasons.',
+    });
     const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
     return {
       imageId: ami,
