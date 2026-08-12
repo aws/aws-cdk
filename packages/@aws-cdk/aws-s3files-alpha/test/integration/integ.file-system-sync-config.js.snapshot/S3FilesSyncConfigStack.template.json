@@ -685,6 +685,19 @@
    }
   }
  },
+ "Outputs": {
+  "ExportsOutputFnGetAttFileSystem8A8E25C0FileSystemId8EC1E37B": {
+   "Value": {
+    "Fn::GetAtt": [
+     "FileSystem8A8E25C0",
+     "FileSystemId"
+    ]
+   },
+   "Export": {
+    "Name": "S3FilesSyncConfigStack:ExportsOutputFnGetAttFileSystem8A8E25C0FileSystemId8EC1E37B"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

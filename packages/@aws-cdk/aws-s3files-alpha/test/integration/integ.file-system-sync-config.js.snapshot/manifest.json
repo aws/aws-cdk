@@ -1,28 +1,28 @@
 {
   "version": "54.0.0",
   "artifacts": {
-    "S3FilesBasicStack.assets": {
+    "S3FilesSyncConfigStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "S3FilesBasicStack.assets.json",
+        "file": "S3FilesSyncConfigStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "S3FilesBasicStack": {
+    "S3FilesSyncConfigStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "S3FilesBasicStack.template.json",
+        "templateFile": "S3FilesSyncConfigStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/677183e85e856a2638d67dc480937a44e19a1dbcd60c93173117e421df3285a9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/43c35bdcfbc13f1c1a2f6c70b4622b387b31f6a167b3ab9019c7277dcf206b22.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "S3FilesBasicStack.assets"
+          "S3FilesSyncConfigStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,33 +31,33 @@
         }
       },
       "dependencies": [
-        "S3FilesBasicStack.assets"
+        "S3FilesSyncConfigStack.assets"
       ],
-      "additionalMetadataFile": "S3FilesBasicStack.metadata.json",
-      "displayName": "S3FilesBasicStack"
+      "additionalMetadataFile": "S3FilesSyncConfigStack.metadata.json",
+      "displayName": "S3FilesSyncConfigStack"
     },
-    "S3FilesFileSystemIntegTestDefaultTestDeployAssert75F375F8.assets": {
+    "S3FilesSyncConfigIntegTestDefaultTestDeployAssert279CD9AD.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "S3FilesFileSystemIntegTestDefaultTestDeployAssert75F375F8.assets.json",
+        "file": "S3FilesSyncConfigIntegTestDefaultTestDeployAssert279CD9AD.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "S3FilesFileSystemIntegTestDefaultTestDeployAssert75F375F8": {
+    "S3FilesSyncConfigIntegTestDefaultTestDeployAssert279CD9AD": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "S3FilesFileSystemIntegTestDefaultTestDeployAssert75F375F8.template.json",
+        "templateFile": "S3FilesSyncConfigIntegTestDefaultTestDeployAssert279CD9AD.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/02c5a009ff30d7c21e2ae8d02641ed47a15cbc3aff90f6ad1b44c4f3817b8055.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/abe5fec62a821e9424dae4b25a0ef6a215b1560dadde60db78b89274cd929b8d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "S3FilesFileSystemIntegTestDefaultTestDeployAssert75F375F8.assets"
+          "S3FilesSyncConfigIntegTestDefaultTestDeployAssert279CD9AD.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -66,11 +66,11 @@
         }
       },
       "dependencies": [
-        "S3FilesBasicStack",
-        "S3FilesFileSystemIntegTestDefaultTestDeployAssert75F375F8.assets"
+        "S3FilesSyncConfigStack",
+        "S3FilesSyncConfigIntegTestDefaultTestDeployAssert279CD9AD.assets"
       ],
-      "additionalMetadataFile": "S3FilesFileSystemIntegTestDefaultTestDeployAssert75F375F8.metadata.json",
-      "displayName": "S3FilesFileSystemIntegTest/DefaultTest/DeployAssert"
+      "additionalMetadataFile": "S3FilesSyncConfigIntegTestDefaultTestDeployAssert279CD9AD.metadata.json",
+      "displayName": "S3FilesSyncConfigIntegTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
