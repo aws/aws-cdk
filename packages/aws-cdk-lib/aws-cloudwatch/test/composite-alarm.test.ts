@@ -83,19 +83,19 @@ describe('CompositeAlarm', () => {
             { 'Fn::GetAtt': ['Alarm548383B2F', 'Arn'] },
             '")) AND (NOT (INSUFFICIENT_DATA("',
             { 'Fn::GetAtt': ['Alarm4671832C8', 'Arn'] },
-            '"))) AND AT_LEAST(2, ALARM, (',
+            '"))) AND AT_LEAST(2, ALARM, ("',
             { 'Fn::GetAtt': ['Alarm1F9009D71', 'Arn'] },
-            ', ',
+            '", "',
             { 'Fn::GetAtt': ['Alarm2A7122E13', 'Arn'] },
-            ', ',
+            '", "',
             { 'Fn::GetAtt': ['Alarm32341D8D9', 'Arn'] },
-            ')) AND AT_LEAST(60%, NOT OK, (',
+            '")) AND AT_LEAST(60%, NOT OK, ("',
             { 'Fn::GetAtt': ['Alarm1F9009D71', 'Arn'] },
-            ', ',
+            '", "',
             { 'Fn::GetAtt': ['Alarm2A7122E13', 'Arn'] },
-            ', ',
+            '", "',
             { 'Fn::GetAtt': ['Alarm32341D8D9', 'Arn'] },
-            '))) OR FALSE)',
+            '"))) OR FALSE)',
           ],
         ],
       },
@@ -210,6 +210,129 @@ describe('CompositeAlarm', () => {
     expect(() => new CompositeAlarm(new Stack(), 'alarm', {
       alarmRule: AlarmRule.allOf(),
     })).toThrow('Did not detect any operands for AlarmRule.allOf');
+  });
+
+
+  test('atLeast renders alarm ARNs with quotes', () => {
+    const stack = new Stack();
+    const testMetric = new Metric({
+      namespace: 'CDK/Test',
+      metricName: 'Metric',
+    });
+
+    const alarm1 = new Alarm(stack, 'Alarm1', {
+      metric: testMetric,
+      threshold: 100,
+      evaluationPeriods: 3,
+    });
+
+    const alarm2 = new Alarm(stack, 'Alarm2', {
+      metric: testMetric,
+      threshold: 1000,
+      evaluationPeriods: 3,
+    });
+
+    new CompositeAlarm(stack, 'CompositeAlarm', {
+      alarmRule: AlarmRule.atLeast(AlarmState.ALARM, {
+        operands: [alarm1, alarm2],
+        threshold: AtLeastThreshold.count(1),
+      }),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::CompositeAlarm', {
+      AlarmRule: {
+        'Fn::Join': [
+          '',
+          [
+            'AT_LEAST(1, ALARM, ("',
+            { 'Fn::GetAtt': ['Alarm1F9009D71', 'Arn'] },
+            '", "',
+            { 'Fn::GetAtt': ['Alarm2A7122E13', 'Arn'] },
+            '"))',
+          ],
+        ],
+      },
+    });
+  });
+
+  test('atLeast renders single operand with quotes', () => {
+    const stack = new Stack();
+    const testMetric = new Metric({
+      namespace: 'CDK/Test',
+      metricName: 'Metric',
+    });
+
+    const alarm1 = new Alarm(stack, 'Alarm1', {
+      metric: testMetric,
+      threshold: 100,
+      evaluationPeriods: 3,
+    });
+
+    new CompositeAlarm(stack, 'CompositeAlarm', {
+      alarmRule: AlarmRule.atLeast(AlarmState.ALARM, {
+        operands: [alarm1],
+        threshold: AtLeastThreshold.count(1),
+      }),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::CompositeAlarm', {
+      AlarmRule: {
+        'Fn::Join': [
+          '',
+          [
+            'AT_LEAST(1, ALARM, ("',
+            { 'Fn::GetAtt': ['Alarm1F9009D71', 'Arn'] },
+            '"))',
+          ],
+        ],
+      },
+    });
+  });
+
+  test('atLeast quotes alarm ARNs that contain spaces in alarm name', () => {
+    const stack = new Stack();
+    const testMetric = new Metric({
+      namespace: 'CDK/Test',
+      metricName: 'Metric',
+    });
+
+    const alarm1 = new Alarm(stack, 'Alarm1', {
+      alarmName: 'My Web Server CPU',
+      metric: testMetric,
+      threshold: 100,
+      evaluationPeriods: 3,
+    });
+
+    const alarm2 = new Alarm(stack, 'Alarm2', {
+      alarmName: 'My DB Connection',
+      metric: testMetric,
+      threshold: 1000,
+      evaluationPeriods: 3,
+    });
+
+    new CompositeAlarm(stack, 'CompositeAlarm', {
+      alarmRule: AlarmRule.atLeast(AlarmState.ALARM, {
+        operands: [alarm1, alarm2],
+        threshold: AtLeastThreshold.count(1),
+      }),
+    });
+
+    // ARNs contain the alarm name (which has spaces), so quotes are required
+    // ARN format: arn:aws:cloudwatch:<region>:<account>:alarm:My Web Server CPU
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::CompositeAlarm', {
+      AlarmRule: {
+        'Fn::Join': [
+          '',
+          [
+            'AT_LEAST(1, ALARM, ("',
+            { 'Fn::GetAtt': ['Alarm1F9009D71', 'Arn'] },
+            '", "',
+            { 'Fn::GetAtt': ['Alarm2A7122E13', 'Arn'] },
+            '"))',
+          ],
+        ],
+      },
+    });
   });
 
   test('empty operands for atLeast', () => {

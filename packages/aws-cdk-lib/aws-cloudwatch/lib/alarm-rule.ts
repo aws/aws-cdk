@@ -277,7 +277,7 @@ export class AlarmRule {
 
         const thresholdConfig = props.threshold._bind(props.operands);
         const concatAlarms = props.operands
-          .map(operand => `${operand.alarmArn}`)
+          .map(operand => `"${operand.alarmArn}"`)
           .join(', ');
 
         return `AT_LEAST(${thresholdConfig.threshold}, ${stateExpression}, (${concatAlarms}))`;
