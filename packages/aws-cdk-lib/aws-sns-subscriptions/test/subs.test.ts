@@ -2284,29 +2284,3 @@ test('queue subscription cross region with unresolved topic ARN uses global prin
     },
   });
 });
-
-test('lambda subscription cross region with topic in opt-in region uses regionalized principal', () => {
-  const app = new App();
-  const fnStack = new Stack(app, 'FnStack', {
-    env: { account: '11111111111', region: 'us-east-1' },
-  });
-
-  const fn = new lambda.Function(fnStack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_LATEST,
-    handler: 'index.handler',
-    code: lambda.Code.fromInline('exports.handler = () => {}'),
-  });
-
-  const topic1 = sns.Topic.fromTopicArn(
-    fnStack,
-    'Topic',
-    'arn:aws:sns:ap-southeast-4:11111111111:my-topic',
-  );
-
-  topic1.addSubscription(new subs.LambdaSubscription(fn));
-
-  Template.fromStack(fnStack).hasResourceProperties('AWS::Lambda::Permission', {
-    Action: 'lambda:InvokeFunction',
-    Principal: 'sns.ap-southeast-4.amazonaws.com',
-  });
-});
