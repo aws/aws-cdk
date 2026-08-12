@@ -1,0 +1,77 @@
+{
+  "/S3FilesFileSystemIntegTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/local/home/caradoni/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:236:29)",
+        "Annotations.addWarningV2 (/local/home/caradoni/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:105:18)",
+        "resolveValue (/local/home/caradoni/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:196:52)",
+        "resolveReferences (/local/home/caradoni/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:120:30)",
+        "prepareApp (/local/home/caradoni/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:45:34)",
+        "synthesize (/local/home/caradoni/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:64:34)",
+        "App.synth (/local/home/caradoni/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:222:92)",
+        "App.synth (/local/home/caradoni/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:209:27)",
+        "Object.<anonymous> (/local/home/caradoni/workspaces/aws-cdk/packages/@aws-cdk/aws-s3files-alpha/test/integration/integ.file-system.js:73:5)",
+        "Module._compile (node:internal/modules/cjs/loader:1760:14)",
+        "Object..js (node:internal/modules/cjs/loader:1892:10)",
+        "Module.load (node:internal/modules/cjs/loader:1480:32)",
+        "Module._load (node:internal/modules/cjs/loader:1299:12)",
+        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:245:24)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    }
+  ],
+  "/S3FilesFileSystemIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/S3FilesFileSystemIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/S3FilesFileSystemIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3filesGetFileSystemCommand1d2fd830daca9400e914351c11584999/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/S3FilesFileSystemIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3filesGetFileSystemCommand1d2fd830daca9400e914351c11584999/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallawssdkclients3filesGetFileSystemCommand1d2fd830daca9400e914351c11584999"
+    }
+  ],
+  "/S3FilesFileSystemIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/S3FilesFileSystemIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/S3FilesFileSystemIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3filesGetFileSystemCommand1d2fd830daca9400e914351c11584999/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3filesGetFileSystemCommand1d2fd830daca9400e914351c11584999"
+    }
+  ]
+}
