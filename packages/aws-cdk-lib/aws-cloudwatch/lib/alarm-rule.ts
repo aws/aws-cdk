@@ -1,5 +1,5 @@
 import type { IAlarm, IAlarmRule } from './alarm-base';
-import { Token, UnscopedValidationError } from '../../core';
+import { Token, Tokenization, UnscopedValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
 import type { IAlarmRef } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 
@@ -112,7 +112,7 @@ class AtLeastThresholdCount extends AtLeastThreshold {
    */
   public _bind(operands: IAlarm[]): AtLeastThresholdConfig {
     if (Token.isUnresolved(this.count)) {
-      return { threshold: `${this.count}` };
+      return { threshold: Tokenization.stringifyNumber(this.count) };
     }
 
     if (this.count < 1 || operands.length < this.count || !Number.isInteger(this.count)) {
@@ -137,7 +137,7 @@ class AtLeastThresholdPercentage extends AtLeastThreshold {
    */
   public _bind(_operands: IAlarm[]): AtLeastThresholdConfig {
     if (Token.isUnresolved(this.percentage)) {
-      return { threshold: `${this.percentage}%` };
+      return { threshold: `${Tokenization.stringifyNumber(this.percentage)}%` };
     }
 
     if (this.percentage < 1 || 100 < this.percentage || !Number.isInteger(this.percentage)) {
