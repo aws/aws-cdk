@@ -9,7 +9,7 @@ import { InstanceType, InstanceArchitecture, InstanceClass, InstanceSize } from 
 import type { IRole } from '../../aws-iam';
 import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import type { IResource, RemovalPolicy } from '../../core';
-import { Resource, Annotations, withResolved, FeatureFlags, ValidationError, RemovalPolicies } from '../../core';
+import { Resource, Annotations, withResolved, FeatureFlags, ValidationError, RemovalPolicies, Stack, ArnFormat } from '../../core';
 import * as cxapi from '../../cx-api';
 import { isGpuInstanceType } from './private/nodegroup';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
@@ -542,8 +542,14 @@ export class Nodegroup extends Resource implements INodegroup {
       // https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html
       if (props.cluster.ipFamily == IpFamily.IP_V6) {
         ngRole.addToPrincipalPolicy(new PolicyStatement({
-          // eslint-disable-next-line @cdklabs/no-literal-partition
-          resources: ['arn:aws:ec2:*:*:network-interface/*'],
+          resources: [Stack.of(this).formatArn({
+            service: 'ec2',
+            region: '*',
+            account: '*',
+            resource: 'network-interface',
+            resourceName: '*',
+            arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+          })],
           actions: [
             'ec2:AssignIpv6Addresses',
             'ec2:UnassignIpv6Addresses',

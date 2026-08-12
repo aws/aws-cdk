@@ -1757,6 +1757,80 @@ describe('node group', () => {
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailablePercentage: 101 })).toThrow(/maxUnavailablePercentage must be between 1 and 100/);
   });
+
+  test('IPv6 cluster grants IPv6 address permissions scoped to the stack partition', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      ...commonProps,
+      ipFamily: eks.IpFamily.IP_V6,
+    });
+
+    // WHEN
+    cluster.addNodegroupCapacity('ng', {});
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([{
+          Action: ['ec2:AssignIpv6Addresses', 'ec2:UnassignIpv6Addresses'],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ec2:*:*:network-interface/*']],
+          },
+        }]),
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('IPv6 address permissions use the deployment partition outside aws', () => {
+    // GIVEN — partition literals enabled, so the partition is resolved at synth time
+    const app = new cdk.App({ context: { [cxapi.ENABLE_PARTITION_LITERALS]: true } });
+    const stack = new cdk.Stack(app, 'Stack', { env: { account: '123456789012', region: 'us-gov-west-1' } });
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      ...commonProps,
+      ipFamily: eks.IpFamily.IP_V6,
+    });
+
+    // WHEN
+    cluster.addNodegroupCapacity('ng', {});
+
+    // THEN — an 'aws' partition ARN would never match a resource in aws-us-gov
+    const policies = Template.fromStack(stack).findResources('AWS::IAM::Policy');
+    const statements = Object.values(policies)
+      .flatMap((policy: any) => policy.Properties.PolicyDocument.Statement)
+      .filter((statement: any) => JSON.stringify(statement).includes('AssignIpv6Addresses'));
+
+    expect(statements).toEqual([{
+      Action: ['ec2:AssignIpv6Addresses', 'ec2:UnassignIpv6Addresses'],
+      Effect: 'Allow',
+      Resource: 'arn:aws-us-gov:ec2:*:*:network-interface/*',
+    }]);
+  });
+
+  test('IPv4 cluster does not grant IPv6 address permissions', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      ...commonProps,
+    });
+
+    // WHEN
+    cluster.addNodegroupCapacity('ng', {});
+
+    // THEN
+    const policies = Template.fromStack(stack).findResources('AWS::IAM::Policy');
+    const statements = Object.values(policies)
+      .flatMap((policy: any) => policy.Properties.PolicyDocument.Statement)
+      .filter((statement: any) => JSON.stringify(statement).includes('AssignIpv6Addresses'));
+
+    expect(statements).toEqual([]);
+  });
 });
 
 describe('isGpuInstanceType', () => {
