@@ -239,7 +239,7 @@ export interface LaunchTemplateCpuOptions {
   /**
    * The number of CPU cores for the instance.
    *
-   * @default - The number of CPU cores is not specified in the launch template.
+   * @default - The default number of CPU cores for the selected instance type.
    */
   readonly coreCount?: number;
 
@@ -256,7 +256,7 @@ export interface LaunchTemplateCpuOptions {
    * To disable multithreading for the instance, specify a value of 1.
    * Otherwise, specify the default value of 2.
    *
-   * @default - The number of threads per CPU core is not specified in the launch template.
+   * @default - The default number of threads per core for the selected instance type.
    */
   readonly threadsPerCore?: number;
 }
@@ -844,16 +844,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         creditSpecification: props?.cpuCredits !== undefined ? {
           cpuCredits: props.cpuCredits,
         } : undefined,
-        cpuOptions: props?.cpuOptions !== undefined ? {
-          amdSevSnp: props.cpuOptions.amdSevSnp !== undefined
-            ? (props.cpuOptions.amdSevSnp ? 'enabled' : 'disabled')
-            : undefined,
-          coreCount: props.cpuOptions.coreCount,
-          nestedVirtualization: props.cpuOptions.nestedVirtualization !== undefined
-            ? (props.cpuOptions.nestedVirtualization ? 'enabled' : 'disabled')
-            : undefined,
-          threadsPerCore: props.cpuOptions.threadsPerCore,
-        } : undefined,
+        cpuOptions: this.renderCpuOptions(props?.cpuOptions),
         disableApiTermination: props?.disableApiTermination,
         ebsOptimized: props?.ebsOptimized,
         enclaveOptions: props?.nitroEnclaveEnabled !== undefined ? {
@@ -936,6 +927,27 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
   public get launchTemplateRef(): LaunchTemplateReference {
     return {
       launchTemplateId: this.launchTemplateId!,
+    };
+  }
+
+  private renderCpuOptions(cpuOptions?: LaunchTemplateCpuOptions): CfnLaunchTemplate.CpuOptionsProperty | undefined {
+    if (cpuOptions === undefined || (
+      cpuOptions.amdSevSnp === undefined &&
+      cpuOptions.coreCount === undefined &&
+      cpuOptions.nestedVirtualization === undefined &&
+      cpuOptions.threadsPerCore === undefined
+    )) {
+      return undefined;
+    }
+    return {
+      amdSevSnp: cpuOptions.amdSevSnp !== undefined
+        ? (cpuOptions.amdSevSnp ? 'enabled' : 'disabled')
+        : undefined,
+      coreCount: cpuOptions.coreCount,
+      nestedVirtualization: cpuOptions.nestedVirtualization !== undefined
+        ? (cpuOptions.nestedVirtualization ? 'enabled' : 'disabled')
+        : undefined,
+      threadsPerCore: cpuOptions.threadsPerCore,
     };
   }
 

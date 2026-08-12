@@ -715,6 +715,20 @@ describe('LaunchTemplate', () => {
     });
   });
 
+  test('Given empty cpuOptions does not render CpuOptions', () => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      cpuOptions: {},
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        CpuOptions: Match.absent(),
+      },
+    });
+  });
+
   test.each([
     [true, true],
     [false, false],
