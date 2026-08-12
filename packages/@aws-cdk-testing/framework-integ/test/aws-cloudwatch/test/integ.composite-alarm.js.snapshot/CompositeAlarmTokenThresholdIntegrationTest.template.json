@@ -48,28 +48,28 @@
        {
         "Ref": "AtLeastCount"
        },
-       ", ALARM, (",
+       ", ALARM, (\"",
        {
         "Fn::GetAtt": [
          "Alarm1F9009D71",
          "Arn"
         ]
        },
-       ", ",
+       "\", \"",
        {
         "Fn::GetAtt": [
          "Alarm2A7122E13",
          "Arn"
         ]
        },
-       ", ",
+       "\", \"",
        {
         "Fn::GetAtt": [
          "Alarm32341D8D9",
          "Arn"
         ]
        },
-       "))"
+       "\"))"
       ]
      ]
     }
