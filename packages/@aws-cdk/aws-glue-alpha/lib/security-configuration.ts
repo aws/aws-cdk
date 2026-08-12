@@ -140,6 +140,13 @@ export interface SecurityConfigurationProps {
    * @default no s3 encryption.
    */
   readonly s3Encryption?: S3Encryption;
+
+  /**
+   * Policy to apply when the security configuration is removed from the stack.
+   *
+   * @default - resource will be destroyed
+   */
+  readonly removalPolicy?: cdk.RemovalPolicy;
 }
 
 /**
@@ -206,7 +213,7 @@ export class SecurityConfiguration extends cdk.Resource implements ISecurityConf
       (props.s3Encryption && props.s3Encryption.mode === S3EncryptionMode.KMS && !props.s3Encryption.kmsKey) ||
       (props.cloudWatchEncryption && !props.cloudWatchEncryption.kmsKey) ||
       (props.jobBookmarksEncryption && !props.jobBookmarksEncryption.kmsKey);
-    const autoCreatedKmsKey = kmsKeyCreationRequired ? new kms.Key(this, 'Key') : undefined;
+    const autoCreatedKmsKey = kmsKeyCreationRequired ? new kms.Key(this, 'Key', { enableKeyRotation: true }) : undefined;
 
     let cloudWatchEncryption;
     if (props.cloudWatchEncryption) {
@@ -248,6 +255,8 @@ export class SecurityConfiguration extends cdk.Resource implements ISecurityConf
     });
 
     this.resource = resource;
+
+    this.resource.applyRemovalPolicy(props.removalPolicy);
   }
 
   @memoizedGetter
