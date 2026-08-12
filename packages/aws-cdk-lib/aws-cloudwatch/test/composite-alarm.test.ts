@@ -212,7 +212,6 @@ describe('CompositeAlarm', () => {
     })).toThrow('Did not detect any operands for AlarmRule.allOf');
   });
 
-
   test('atLeast renders alarm ARNs with quotes', () => {
     const stack = new Stack();
     const testMetric = new Metric({
