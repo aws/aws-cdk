@@ -849,7 +849,7 @@ describe('proxyConfiguration', () => {
       environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
       vpc,
       proxyConfiguration: {
-        defaultBehavior: codebuild.FleetProxyRuleBehavior.DENY,
+        defaultBehavior: codebuild.FleetProxyRuleBehavior.DENY_ALL,
         orderedProxyRules: [{
           effect: codebuild.FleetProxyRuleEffect.ALLOW,
           entities: ['*.amazonaws.com'],
@@ -861,7 +861,7 @@ describe('proxyConfiguration', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
       FleetProxyConfiguration: {
-        DefaultBehavior: 'DENY',
+        DefaultBehavior: 'DENY_ALL',
         OrderedProxyRules: [{
           Effect: 'ALLOW',
           Entities: ['*.amazonaws.com'],
@@ -899,7 +899,7 @@ describe('proxyConfiguration', () => {
         computeType: codebuild.FleetComputeType.SMALL,
         environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
         proxyConfiguration: {
-          defaultBehavior: codebuild.FleetProxyRuleBehavior.DENY,
+          defaultBehavior: codebuild.FleetProxyRuleBehavior.DENY_ALL,
         },
       });
     }).toThrow(/Cannot configure proxyConfiguration without configuring a VPC/);
@@ -918,7 +918,7 @@ describe('proxyConfiguration', () => {
         environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
         vpc,
         proxyConfiguration: {
-          defaultBehavior: codebuild.FleetProxyRuleBehavior.DENY,
+          defaultBehavior: codebuild.FleetProxyRuleBehavior.DENY_ALL,
           orderedProxyRules: [{
             effect: codebuild.FleetProxyRuleEffect.ALLOW,
             entities: [],
@@ -952,7 +952,7 @@ describe('combined properties', () => {
         }],
       },
       proxyConfiguration: {
-        defaultBehavior: codebuild.FleetProxyRuleBehavior.DENY,
+        defaultBehavior: codebuild.FleetProxyRuleBehavior.DENY_ALL,
         orderedProxyRules: [
           {
             effect: codebuild.FleetProxyRuleEffect.ALLOW,
@@ -983,7 +983,7 @@ describe('combined properties', () => {
         }],
       },
       FleetProxyConfiguration: {
-        DefaultBehavior: 'DENY',
+        DefaultBehavior: 'DENY_ALL',
         OrderedProxyRules: [
           {
             Effect: 'ALLOW',

@@ -212,12 +212,12 @@ export enum FleetProxyRuleBehavior {
   /**
    * Allow all traffic that does not match any proxy rule.
    */
-  ALLOW = 'ALLOW',
+  ALLOW_ALL = 'ALLOW_ALL',
 
   /**
    * Deny all traffic that does not match any proxy rule.
    */
-  DENY = 'DENY',
+  DENY_ALL = 'DENY_ALL',
 }
 
 /**

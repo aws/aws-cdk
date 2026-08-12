@@ -653,7 +653,7 @@ const fleet = new codebuild.Fleet(this, 'ProxyFleet', {
   baseCapacity: 1,
   vpc: myVpc,
   proxyConfiguration: {
-    defaultBehavior: codebuild.FleetProxyRuleBehavior.DENY,
+    defaultBehavior: codebuild.FleetProxyRuleBehavior.DENY_ALL,
     orderedProxyRules: [{
       effect: codebuild.FleetProxyRuleEffect.ALLOW,
       entities: ['*.amazonaws.com'],
