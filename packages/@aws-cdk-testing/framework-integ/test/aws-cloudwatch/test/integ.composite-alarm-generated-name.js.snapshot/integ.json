@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "cdk-integ-composite-alarm-generated-name/DefaultTest": {
+      "stacks": [
+        "CompositeAlarmGeneratedNameStack"
+      ],
+      "assertionStack": "cdk-integ-composite-alarm-generated-name/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegcompositealarmgeneratednameDefaultTestDeployAssertD6B84A60"
+    }
+  },
+  "minimumCliVersion": "2.1125.0"
+}

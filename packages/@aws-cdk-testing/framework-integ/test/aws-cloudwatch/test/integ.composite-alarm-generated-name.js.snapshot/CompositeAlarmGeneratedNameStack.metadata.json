@@ -1,0 +1,104 @@
+{
+  "/CompositeAlarmGeneratedNameStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudwatch/test/integ.composite-alarm-generated-name.js:16:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/CompositeAlarmGeneratedNameStack/Alarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "threshold": "*",
+        "evaluationPeriods": "*"
+      }
+    }
+  ],
+  "/CompositeAlarmGeneratedNameStack/CompositeAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "alarmRule": "*"
+      }
+    }
+  ],
+  "/CompositeAlarmGeneratedNameStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/CompositeAlarmGeneratedNameStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/CompositeAlarmGeneratedNameStack/Alarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Alarm7103F465"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:273:26)",
+        "new Alarm (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudwatch/test/integ.composite-alarm-generated-name.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/CompositeAlarmGeneratedNameStack/CompositeAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CompositeAlarmF4C3D082"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CompositeAlarm (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/composite-alarm.js:178:27)",
+        "new CompositeAlarm (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudwatch/test/integ.composite-alarm-generated-name.js:22:1)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
