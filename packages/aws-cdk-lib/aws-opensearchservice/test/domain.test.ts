@@ -50,6 +50,7 @@ const testedOpenSearchVersions = [
   EngineVersion.OPENSEARCH_3_1,
   EngineVersion.OPENSEARCH_3_3,
   EngineVersion.OPENSEARCH_3_5,
+  EngineVersion.OPENSEARCH_3_7,
 ];
 
 each(testedOpenSearchVersions).test('connections throws if domain is not placed inside a vpc', (engineVersion) => {
@@ -2832,11 +2833,11 @@ describe('EBS Options Configurations', () => {
         ebs: {
           volumeSize: 30,
           volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
-          throughput: 1024,
+          throughput: 2048,
         },
       };
       new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow('throughput property takes a minimum of 125 and a maximum of 1000.');
+    }).toThrow('throughput property takes a minimum of 125 and a maximum of 2000.');
 
     expect(() => {
       const domainProps: DomainProps = {
@@ -2848,7 +2849,7 @@ describe('EBS Options Configurations', () => {
         },
       };
       new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow('throughput property takes a minimum of 125 and a maximum of 1000.');
+    }).toThrow('throughput property takes a minimum of 125 and a maximum of 2000.');
   });
 });
 
