@@ -1,16 +1,16 @@
 {
   "version": "54.0.0",
   "files": {
-    "a29bbb21cb63cde6a2d31ed4212e73dab8bfd786cf26aab0156b74490595c0a6": {
-      "displayName": "CompositeAlarmImportIntegrationTest Template",
+    "0efc6880008da13c1302fa3cbfc8537b03cb9873c394803d66e110787426dc03": {
+      "displayName": "CompositeAlarmTokenThresholdIntegrationTest Template",
       "source": {
-        "path": "CompositeAlarmImportIntegrationTest.template.json",
+        "path": "CompositeAlarmTokenThresholdIntegrationTest.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-972e9596": {
+        "current_account-current_region-189abcea": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "a29bbb21cb63cde6a2d31ed4212e73dab8bfd786cf26aab0156b74490595c0a6.json",
+          "objectKey": "0efc6880008da13c1302fa3cbfc8537b03cb9873c394803d66e110787426dc03.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
