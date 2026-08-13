@@ -119,6 +119,30 @@ test('fails when vpcSubnets is specified without vpc', () => {
   })).toThrow(/`vpcSubnets` can only be specified together with `vpc`/);
 });
 
+test('fails with a clear message when vpcSubnets selects no subnets', () => {
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+
+  expect(() => new glue.Connection(stack, 'Connection', {
+    type: glue.ConnectionType.NETWORK,
+    vpc,
+    vpcSubnets: { subnets: [] },
+  })).toThrow(/`vpcSubnets` selected no subnets from the provided `vpc`/);
+});
+
+test('does not fail on an empty selection while the vpc lookup is pending', () => {
+  const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '1234', region: 'us-east-1' } });
+  // Before the context lookup resolves, `selectSubnets` returns an empty set
+  // with `isPendingLookup: true`; this is expected and must not throw.
+  const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', { vpcId: 'vpc-1234' });
+
+  expect(() => new glue.Connection(stack, 'Connection', {
+    type: glue.ConnectionType.NETWORK,
+    vpc,
+    vpcSubnets: { subnetGroupName: 'DoesNotExist' },
+  })).not.toThrow();
+});
+
 test('a connection with a name and description', () => {
   const stack = new cdk.Stack();
   new glue.Connection(stack, 'Connection', {

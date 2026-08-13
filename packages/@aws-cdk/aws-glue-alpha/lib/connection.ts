@@ -442,7 +442,14 @@ export class Connection extends cdk.Resource implements IConnection {
 
     if (props.vpc) {
       // A Glue connection targets a single subnet, so use the first subnet of the selection.
-      return props.vpc.selectSubnets(props.vpcSubnets).subnets[0];
+      const selected = props.vpc.selectSubnets(props.vpcSubnets);
+      // `isPendingLookup` is true for imported VPCs whose subnets are not yet
+      // resolved (e.g. `fromLookup`), where an empty selection is expected and
+      // will materialize on a later synth. Only fail on a genuinely empty selection.
+      if (!selected.isPendingLookup && selected.subnets.length === 0) {
+        throw new cdk.ValidationError(lit`ConnectionNoSubnetsSelected`, '`vpcSubnets` selected no subnets from the provided `vpc`; adjust the selection or use `subnet` to target a specific subnet', this);
+      }
+      return selected.subnets[0];
     }
 
     return undefined;
