@@ -2,10 +2,10 @@ import { CfnSecurityConfiguration } from 'aws-cdk-lib/aws-glue';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as cdk from 'aws-cdk-lib/core';
 import { Lazy, Names } from 'aws-cdk-lib/core';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 
 /**
  * Interface representing a created or an imported `SecurityConfiguration`.
@@ -140,6 +140,13 @@ export interface SecurityConfigurationProps {
    * @default no s3 encryption.
    */
   readonly s3Encryption?: S3Encryption;
+
+  /**
+   * Policy to apply when the security configuration is removed from the stack.
+   *
+   * @default - resource will be destroyed
+   */
+  readonly removalPolicy?: cdk.RemovalPolicy;
 }
 
 /**
@@ -199,14 +206,14 @@ export class SecurityConfiguration extends cdk.Resource implements ISecurityConf
     addConstructMetadata(this, props);
 
     if (!props.s3Encryption && !props.cloudWatchEncryption && !props.jobBookmarksEncryption) {
-      throw new cdk.ValidationError('One of cloudWatchEncryption, jobBookmarksEncryption or s3Encryption must be defined', this);
+      throw new cdk.ValidationError(lit`EncryptionRequired`, 'One of cloudWatchEncryption, jobBookmarksEncryption or s3Encryption must be defined', this);
     }
 
     const kmsKeyCreationRequired =
       (props.s3Encryption && props.s3Encryption.mode === S3EncryptionMode.KMS && !props.s3Encryption.kmsKey) ||
       (props.cloudWatchEncryption && !props.cloudWatchEncryption.kmsKey) ||
       (props.jobBookmarksEncryption && !props.jobBookmarksEncryption.kmsKey);
-    const autoCreatedKmsKey = kmsKeyCreationRequired ? new kms.Key(this, 'Key') : undefined;
+    const autoCreatedKmsKey = kmsKeyCreationRequired ? new kms.Key(this, 'Key', { enableKeyRotation: true }) : undefined;
 
     let cloudWatchEncryption;
     if (props.cloudWatchEncryption) {
@@ -248,6 +255,8 @@ export class SecurityConfiguration extends cdk.Resource implements ISecurityConf
     });
 
     this.resource = resource;
+
+    this.resource.applyRemovalPolicy(props.removalPolicy);
   }
 
   @memoizedGetter

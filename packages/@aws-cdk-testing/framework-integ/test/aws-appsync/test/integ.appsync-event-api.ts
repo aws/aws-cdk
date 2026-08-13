@@ -8,7 +8,7 @@ import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 import { CfnWebACL, CfnWebACLAssociation } from 'aws-cdk-lib/aws-wafv2';
 import * as path from 'path';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 interface EventApiStackProps extends cdk.StackProps {

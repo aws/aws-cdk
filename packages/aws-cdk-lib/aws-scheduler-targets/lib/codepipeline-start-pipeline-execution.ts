@@ -1,8 +1,11 @@
-import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
-import { CfnPipeline, IPipeline } from '../../aws-codepipeline';
-import { IRole, PolicyStatement } from '../../aws-iam';
-import { IScheduleTarget } from '../../aws-scheduler';
-import { IPipelineRef } from '../../interfaces/generated/aws-codepipeline-interfaces.generated';
+import type { ScheduleTargetBaseProps } from './target';
+import { ScheduleTargetBase } from './target';
+import type { IPipeline } from '../../aws-codepipeline';
+import { CfnPipeline } from '../../aws-codepipeline';
+import type { IRole } from '../../aws-iam';
+import { PolicyStatement } from '../../aws-iam';
+import type { IScheduleTarget } from '../../aws-scheduler';
+import type { IPipelineRef } from '../../interfaces/generated/aws-codepipeline-interfaces.generated';
 
 /**
  * Use an AWS CodePipeline pipeline as a target for AWS EventBridge Scheduler.

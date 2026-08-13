@@ -1,13 +1,16 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as logs from 'aws-cdk-lib/aws-logs';
+import type * as logs from 'aws-cdk-lib/aws-logs';
 import * as cdk from 'aws-cdk-lib/core';
-import * as constructs from 'constructs';
-import { Code } from '../code';
-import { IConnection } from '../connection';
-import { MetricType, JobState, WorkerType, GlueVersion } from '../constants';
-import { ISecurityConfiguration } from '../security-configuration';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+import type * as constructs from 'constructs';
+import type { Code } from '../code';
+import type { IConnection } from '../connection';
+import type { MetricType, WorkerType, GlueVersion } from '../constants';
+import { JobState } from '../constants';
+import { warnOnPlaintextSecrets } from '../private/secret-detection';
+import type { ISecurityConfiguration } from '../security-configuration';
 
 /**
  * Interface representing a new or an imported Glue Job
@@ -373,6 +376,11 @@ export interface JobProps {
    * The default arguments for every run of this Glue job,
    * specified as name-value pairs.
    *
+   * These are emitted verbatim into the CloudFormation template, so avoid
+   * placing secrets here in plaintext. Pass secrets to the job at runtime
+   * through AWS Secrets Manager instead. A synthesis-time warning is emitted
+   * when an argument key looks like a credential and holds a plaintext literal.
+   *
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    * for a list of reserved parameters
    * @default - no arguments
@@ -488,10 +496,16 @@ export abstract class Job extends JobBase {
       const reservedArgs = new Set(['--debug', '--mode', '--JOB_NAME']);
       Object.keys(defaultArguments).forEach((arg) => {
         if (reservedArgs.has(arg)) {
-          throw new cdk.ValidationError(`The ${arg} argument is reserved by Glue. Don't set it`, this);
+          throw new cdk.ValidationError(lit`ReservedArgumentUsed`, `The ${arg} argument is reserved by Glue. Don't set it`, this);
         }
       });
     }
+    warnOnPlaintextSecrets(
+      this,
+      defaultArguments,
+      '@aws-cdk/aws-glue-alpha:plaintextJobArgumentSecret',
+      'Pass secrets to the job at runtime through AWS Secrets Manager instead of embedding them in `defaultArguments`.',
+    );
     return defaultArguments;
   }
 

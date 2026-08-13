@@ -1,7 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
-import { StackProps, Stack } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { Stack } from 'aws-cdk-lib';
 import {
   AdotLambdaLayerPythonSdkVersion,
   AdotLambdaLayerJavaSdkVersion,

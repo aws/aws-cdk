@@ -10,7 +10,7 @@ describe('durable config', () => {
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       durableConfig: { executionTimeout: cdk.Duration.hours(1) },
     });
     // WHEN
@@ -28,7 +28,7 @@ describe('durable config', () => {
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       durableConfig: { executionTimeout: cdk.Duration.hours(2), retentionPeriod: cdk.Duration.days(60) },
     });
     // WHEN
@@ -47,14 +47,14 @@ describe('durable config', () => {
     expect(() => new lambda.Function(stack, 'Lambda1', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       durableConfig: { executionTimeout: cdk.Duration.seconds(0) },
     })).toThrow(/executionTimeout must be between 1 and 31622400 seconds/);
 
     expect(() => new lambda.Function(stack, 'Lambda2', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       durableConfig: { executionTimeout: cdk.Duration.seconds(31622401) },
     })).toThrow(/executionTimeout must be between 1 and 31622400 seconds/);
   });
@@ -66,14 +66,14 @@ describe('durable config', () => {
     expect(() => new lambda.Function(stack, 'Lambda1', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       durableConfig: { executionTimeout: cdk.Duration.hours(1), retentionPeriod: cdk.Duration.days(0) },
     })).toThrow(/retentionPeriodInDays must be between 1 and 90 days/);
 
     expect(() => new lambda.Function(stack, 'Lambda2', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       durableConfig: { executionTimeout: cdk.Duration.hours(1), retentionPeriod: cdk.Duration.days(91) },
     })).toThrow(/retentionPeriodInDays must be between 1 and 90 days/);
   });
@@ -86,28 +86,28 @@ describe('durable config', () => {
     expect(() => new lambda.Function(stack, 'Lambda1', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       durableConfig: { executionTimeout: cdk.Duration.seconds(1) },
     })).not.toThrow();
 
     expect(() => new lambda.Function(stack, 'Lambda2', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       durableConfig: { executionTimeout: cdk.Duration.seconds(31622400) },
     })).not.toThrow();
 
     expect(() => new lambda.Function(stack, 'Lambda3', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       durableConfig: { executionTimeout: cdk.Duration.hours(1), retentionPeriod: cdk.Duration.days(1) },
     })).not.toThrow();
 
     expect(() => new lambda.Function(stack, 'Lambda4', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       durableConfig: { executionTimeout: cdk.Duration.hours(1), retentionPeriod: cdk.Duration.days(90) },
     })).not.toThrow();
   });
@@ -119,7 +119,7 @@ describe('durable config', () => {
     expect(() => new lambda.Function(stack, 'Lambda1', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       durableConfig: { executionTimeout: cdk.Duration.hours(1), retentionPeriod: cdk.Duration.hours(25) },
     })).toThrow(/'25 hours' cannot be converted into a whole number of days/);
   });
@@ -130,7 +130,7 @@ describe('durable config', () => {
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       durableConfig: { executionTimeout: cdk.Duration.hours(1) },
     });
 
@@ -147,7 +147,7 @@ describe('durable config', () => {
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {

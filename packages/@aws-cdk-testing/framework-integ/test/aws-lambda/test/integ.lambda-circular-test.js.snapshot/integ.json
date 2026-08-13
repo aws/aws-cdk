@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "52.0.0",
   "testCases": {
     "lambda-circular/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "lambda-circular/DefaultTest/DeployAssert",
       "assertionStackName": "lambdacircularDefaultTestDeployAssertEAADF4F8"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

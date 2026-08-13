@@ -1,22 +1,33 @@
-import { Construct } from 'constructs';
-import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
+import type { Construct } from 'constructs';
+import type { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './docdb.generated';
 import { Endpoint } from './endpoint';
-import { BackupProps, Login, RotationMultiUserOptions } from './props';
+import type { BackupProps, Login, RotationMultiUserOptions } from './props';
 import * as ec2 from '../../aws-ec2';
-import { IRole } from '../../aws-iam';
-import * as kms from '../../aws-kms';
+import type { IRole } from '../../aws-iam';
+import type * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
-import { CaCertificate } from '../../aws-rds';
+import type { CaCertificate } from '../../aws-rds';
 import * as secretsmanager from '../../aws-secretsmanager';
-import { CfnResource, Duration, RemovalPolicy, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
+import type { CfnResource, Duration } from '../../core';
+import { RemovalPolicy, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { DBClusterReference, IDBClusterParameterGroupRef } from '../../interfaces/generated/aws-docdb-interfaces.generated';
+import type { DBClusterReference, IDBClusterParameterGroupRef } from '../../interfaces/generated/aws-docdb-interfaces.generated';
 
 const MIN_ENGINE_VERSION_FOR_IO_OPTIMIZED_STORAGE = 5;
 const MIN_ENGINE_VERSION_FOR_SERVERLESS = 5;
+
+/**
+ * Matches the DocumentDB maintenance window format `ddd:hh24:mi-ddd:hh24:mi`
+ * Days: mon | tue | wed | thu | fri | sat | sun (case-insensitive).
+ * Time: 00-23 hour, 00-59 minute.
+ *
+ * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/db-instance-maintain.html#maintenance-window
+ */
+const MAINTENANCE_WINDOW_REGEX = /^(mon|tue|wed|thu|fri|sat|sun):(2[0-3]|[01]\d):[0-5]\d-(mon|tue|wed|thu|fri|sat|sun):(2[0-3]|[01]\d):[0-5]\d$/i;
 
 /**
  * ServerlessV2 scaling configuration for DocumentDB clusters
@@ -188,6 +199,25 @@ export interface DatabaseClusterProps {
   readonly preferredMaintenanceWindow?: string;
 
   /**
+   * The weekly time range during which system maintenance can occur on the cluster's instances.
+   *
+   * The cluster-level `preferredMaintenanceWindow` applies to cluster-wide maintenance events; this prop
+   * applies to each auto-created instance independently. To use the same window for both, set this prop
+   * to the same value as `preferredMaintenanceWindow`.
+   *
+   * Format: `ddd:hh24:mi-ddd:hh24:mi`. Must be at least 30 minutes long.
+   * Example: 'sat:09:00-sat:09:30'
+   *
+   * Only applicable to provisioned clusters; has no effect on serverless clusters because they do not
+   * create instances.
+   *
+   * @default - a 30-minute window selected at random from an 8-hour block of time for each AWS Region,
+   * occurring on a random day of the week.
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/db-instance-maintain.html#maintenance-window
+   */
+  readonly instanceMaintenanceWindow?: string;
+
+  /**
    * The removal policy to apply when the cluster and its instances are removed
    * or replaced during a stack update, or when the stack is deleted. This
    * removal policy also applies to the implicit security group created for the
@@ -293,6 +323,34 @@ export interface DatabaseClusterProps {
    * @default StorageType.STANDARD
    */
   readonly storageType?: StorageType;
+
+  /**
+   * Specifies whether to manage the master user password with AWS Secrets Manager.
+   *
+   * When set to true, Amazon DocumentDB will automatically generate and manage the master user password in AWS Secrets Manager.
+   * This provides enhanced security and automatic password rotation capabilities.
+   *
+   * Constraint: You can't manage the master user password with AWS Secrets Manager if `masterUser.password` is specified.
+   *
+   * The `secret` property of the cluster is not set when using this option. See the
+   * module README for how to access the managed secret.
+   *
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/docdb-secrets-manager.html
+   * @default false
+   */
+  readonly manageMasterUserPassword?: boolean;
+
+  /**
+   * The AWS KMS key to encrypt a secret that is automatically generated and managed in AWS Secrets Manager.
+   *
+   * This setting is valid only if the master user password is managed by Amazon DocumentDB in AWS Secrets Manager
+   * for the DB cluster (i.e. when `manageMasterUserPassword` is true).
+   * If you don't specify this property, then the `aws/secretsmanager` KMS key is used to encrypt the secret.
+   *
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/docdb-secrets-manager.html
+   * @default - default AWS managed key `aws/secretsmanager`
+   */
+  readonly masterUserSecretKmsKey?: kms.IKey;
 }
 
 /**
@@ -398,35 +456,35 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
       public get instanceIdentifiers(): string[] {
         if (!this._instanceIdentifiers) {
-          throw new UnscopedValidationError('Cannot access `instanceIdentifiers` of an imported cluster without provided instanceIdentifiers');
+          throw new UnscopedValidationError(lit`CannotAccessInstanceIdentifiersOfImportedCluster`, 'Cannot access `instanceIdentifiers` of an imported cluster without provided instanceIdentifiers');
         }
         return this._instanceIdentifiers;
       }
 
       public get clusterEndpoint(): Endpoint {
         if (!this._clusterEndpoint) {
-          throw new UnscopedValidationError('Cannot access `clusterEndpoint` of an imported cluster without an endpoint address and port');
+          throw new UnscopedValidationError(lit`CannotAccessClusterEndpointOfImportedCluster`, 'Cannot access `clusterEndpoint` of an imported cluster without an endpoint address and port');
         }
         return this._clusterEndpoint;
       }
 
       public get clusterReadEndpoint(): Endpoint {
         if (!this._clusterReadEndpoint) {
-          throw new UnscopedValidationError('Cannot access `clusterReadEndpoint` of an imported cluster without a readerEndpointAddress and port');
+          throw new UnscopedValidationError(lit`CannotAccessClusterReadEndpointOfImportedCluster`, 'Cannot access `clusterReadEndpoint` of an imported cluster without a readerEndpointAddress and port');
         }
         return this._clusterReadEndpoint;
       }
 
       public get instanceEndpoints(): Endpoint[] {
         if (!this._instanceEndpoints) {
-          throw new UnscopedValidationError('Cannot access `instanceEndpoints` of an imported cluster without instanceEndpointAddresses and port');
+          throw new UnscopedValidationError(lit`CannotAccessInstanceEndpointsOfImportedCluster`, 'Cannot access `instanceEndpoints` of an imported cluster without instanceEndpointAddresses and port');
         }
         return this._instanceEndpoints;
       }
 
       public get securityGroupId(): string {
         if (!this._securityGroupId) {
-          throw new UnscopedValidationError('Cannot access `securityGroupId` of an imported cluster without securityGroupId');
+          throw new UnscopedValidationError(lit`CannotAccessSecurityGroupIdOfImportedCluster`, 'Cannot access `securityGroupId` of an imported cluster without securityGroupId');
         }
         return this._securityGroupId;
       }
@@ -498,6 +556,11 @@ export class DatabaseCluster extends DatabaseClusterBase {
   private readonly cluster: CfnDBCluster;
 
   /**
+   * Whether the master user password is managed by Amazon DocumentDB in AWS Secrets Manager.
+   */
+  private readonly manageMasterUserPassword?: boolean;
+
+  /**
    * The VPC where the DB subnet group is created.
    */
   private readonly vpc: ec2.IVpc;
@@ -514,11 +577,22 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
     // Validate exactly one of instanceType or serverlessV2ScalingConfiguration is provided
     if (!props.instanceType && !props.serverlessV2ScalingConfiguration) {
-      throw new ValidationError('Either instanceType (for provisioned clusters) or serverlessV2ScalingConfiguration (for serverless clusters) must be specified', this);
+      throw new ValidationError(lit`InstanceTypeOrServerlessConfigurationRequired`, 'Either instanceType (for provisioned clusters) or serverlessV2ScalingConfiguration (for serverless clusters) must be specified', this);
     }
+
+    if (props.preferredMaintenanceWindow !== undefined && !Token.isUnresolved(props.preferredMaintenanceWindow)
+          && !MAINTENANCE_WINDOW_REGEX.test(props.preferredMaintenanceWindow)) {
+      throw new ValidationError(lit`InvalidClusterMaintenanceWindowFormat`, 'preferredMaintenanceWindow must be in the format ddd:hh24:mi-ddd:hh24:mi, e.g. sat:09:00-sat:09:30', this);
+    }
+
+    if (props.instanceMaintenanceWindow !== undefined && !Token.isUnresolved(props.instanceMaintenanceWindow)
+          && !MAINTENANCE_WINDOW_REGEX.test(props.instanceMaintenanceWindow)) {
+      throw new ValidationError(lit`InvalidInstanceMaintenanceWindowFormat`, 'instanceMaintenanceWindow must be in the format ddd:hh24:mi-ddd:hh24:mi, e.g. sat:09:00-sat:09:30', this);
+    }
+
     const isServerless = !!props.serverlessV2ScalingConfiguration;
     if (isServerless && props.instanceType) {
-      throw new ValidationError('Cannot specify both instanceType and serverlessV2ScalingConfiguration', this);
+      throw new ValidationError(lit`CannotSpecifyBothInstanceTypeAndServerlessConfiguration`, 'Cannot specify both instanceType and serverlessV2ScalingConfiguration', this);
     }
 
     this.vpc = props.vpc;
@@ -531,7 +605,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     // We cannot test whether the subnets are in different AZs, but at least we can test the amount.
     // See https://docs.aws.amazon.com/documentdb/latest/developerguide/replication.html#replication.high-availability
     if (subnetIds.length < 2) {
-      throw new ValidationError(`Cluster requires at least 2 subnets, got ${subnetIds.length}`, this);
+      throw new ValidationError(lit`ClusterRequiresAtLeastTwoSubnets`, `Cluster requires at least 2 subnets, got ${subnetIds.length}`, this);
     }
 
     const subnetGroup = new CfnDBSubnetGroup(this, 'Subnets', {
@@ -566,9 +640,20 @@ export class DatabaseCluster extends DatabaseClusterBase {
       enableCloudwatchLogsExports.push('profiler');
     }
 
-    // Create the secret manager secret if no password is specified
+    // Validate manageMasterUserPassword constraints
+    if (props.manageMasterUserPassword && props.masterUser.password) {
+      throw new ValidationError(lit`ManageMasterUserPasswordConflictsWithPassword`, 'You can\'t manage the master user password with AWS Secrets Manager if masterUser.password is specified', this);
+    }
+
+    if (props.masterUserSecretKmsKey && !props.manageMasterUserPassword) {
+      throw new ValidationError(lit`MasterUserSecretKmsKeyRequiresManagedPassword`, 'masterUserSecretKmsKey is valid only if manageMasterUserPassword is true', this);
+    }
+
+    this.manageMasterUserPassword = props.manageMasterUserPassword;
+
+    // Create the secret manager secret if no password is specified and manageMasterUserPassword is false
     let secret: DatabaseSecret | undefined;
-    if (!props.masterUser.password) {
+    if (!props.manageMasterUserPassword && !props.masterUser.password) {
       secret = new DatabaseSecret(this, 'Secret', {
         username: props.masterUser.username,
         encryptionKey: props.masterUser.kmsKey,
@@ -581,12 +666,12 @@ export class DatabaseCluster extends DatabaseClusterBase {
     const storageEncrypted = props.storageEncrypted ?? true;
 
     if (props.kmsKey && !storageEncrypted) {
-      throw new ValidationError('KMS key supplied but storageEncrypted is false', this);
+      throw new ValidationError(lit`KmsKeySuppliedButStorageEncryptionDisabled`, 'KMS key supplied but storageEncrypted is false', this);
     }
 
     const validEngineVersionRegex = /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/;
     if (props.engineVersion !== undefined && !validEngineVersionRegex.test(props.engineVersion)) {
-      throw new ValidationError(`Invalid engine version: '${props.engineVersion}'. Engine version must be in the format x.y.z`, this);
+      throw new ValidationError(lit`InvalidEngineVersionFormat`, `Invalid engine version: '${props.engineVersion}'. Engine version must be in the format x.y.z`, this);
     }
 
     if (
@@ -594,12 +679,12 @@ export class DatabaseCluster extends DatabaseClusterBase {
       && props.engineVersion !== undefined
       && Number(props.engineVersion.split('.')[0]) < MIN_ENGINE_VERSION_FOR_IO_OPTIMIZED_STORAGE
     ) {
-      throw new ValidationError(`I/O-optimized storage is supported starting with engine version 5.0.0, got '${props.engineVersion}'`, this);
+      throw new ValidationError(lit`IoOptimizedStorageRequiresMinimumEngineVersion`, `I/O-optimized storage is supported starting with engine version 5.0.0, got '${props.engineVersion}'`, this);
     }
 
     // Validate engine version for serverless clusters: https://docs.aws.amazon.com/documentdb/latest/developerguide/docdb-serverless-limitations.html
     if (isServerless && props.engineVersion !== undefined && Number(props.engineVersion.split('.')[0]) < MIN_ENGINE_VERSION_FOR_SERVERLESS) {
-      throw new ValidationError(`DocumentDB serverless requires engine version 5.0.0 or higher, got '${props.engineVersion}'`, this);
+      throw new ValidationError(lit`ServerlessRequiresMinimumEngineVersion`, `DocumentDB serverless requires engine version 5.0.0 or higher, got '${props.engineVersion}'`, this);
     }
 
     // Create the DocDB cluster
@@ -613,10 +698,13 @@ export class DatabaseCluster extends DatabaseClusterBase {
       dbClusterParameterGroupName: props.parameterGroup?.dbClusterParameterGroupRef.dbClusterParameterGroupId,
       deletionProtection: props.deletionProtection,
       // Admin
-      masterUsername: secret ? secret.secretValueFromJson('username').unsafeUnwrap() : props.masterUser.username,
-      masterUserPassword: secret
-        ? secret.secretValueFromJson('password').unsafeUnwrap()
-        : props.masterUser.password!.unsafeUnwrap(), // Safe usage
+      masterUsername: props.manageMasterUserPassword ? props.masterUser.username :
+        (secret ? secret.secretValueFromJson('username').unsafeUnwrap() : props.masterUser.username),
+      masterUserPassword: props.manageMasterUserPassword ? undefined :
+        (secret ? secret.secretValueFromJson('password').unsafeUnwrap() : props.masterUser.password!.unsafeUnwrap()),
+      // ManageMasterUserPassword
+      manageMasterUserPassword: props.manageMasterUserPassword,
+      masterUserSecretKmsKeyId: props.masterUserSecretKmsKey?.keyArn,
       // Backup
       backupRetentionPeriod: props.backup?.retention?.toDays(),
       preferredBackupWindow: props.backup?.preferredWindow,
@@ -654,7 +742,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     if (!isServerless) {
       const instanceCount = props.instances ?? DatabaseCluster.DEFAULT_NUM_INSTANCES;
       if (instanceCount < 1) {
-        throw new ValidationError('At least one instance is required for provisioned clusters', this);
+        throw new ValidationError(lit`AtLeastOneInstanceRequiredForProvisionedClusters`, 'At least one instance is required for provisioned clusters', this);
       }
 
       const instanceRemovalPolicy = this.getInstanceRemovalPolicy(props);
@@ -674,6 +762,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
           dbInstanceClass: databaseInstanceType(props.instanceType!),
           enablePerformanceInsights: props.enablePerformanceInsights,
           caCertificateIdentifier: caCertificateIdentifier,
+          preferredMaintenanceWindow: props.instanceMaintenanceWindow,
         });
 
         instance.applyRemovalPolicy(instanceRemovalPolicy, {
@@ -712,7 +801,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
   private getInstanceRemovalPolicy(props: DatabaseClusterProps) {
     if (props.instanceRemovalPolicy === RemovalPolicy.SNAPSHOT) {
-      throw new ValidationError('AWS::DocDB::DBInstance does not support the SNAPSHOT removal policy', this);
+      throw new ValidationError(lit`DbInstanceDoesNotSupportSnapshotRemovalPolicy`, 'AWS::DocDB::DBInstance does not support the SNAPSHOT removal policy', this);
     }
     if (props.instanceRemovalPolicy) return props.instanceRemovalPolicy;
     return !props.removalPolicy || props.removalPolicy !== RemovalPolicy.SNAPSHOT ?
@@ -721,7 +810,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
   private getSecurityGroupRemovalPolicy(props: DatabaseClusterProps) {
     if (props.securityGroupRemovalPolicy === RemovalPolicy.SNAPSHOT) {
-      throw new ValidationError('AWS::EC2::SecurityGroup does not support the SNAPSHOT removal policy', this);
+      throw new ValidationError(lit`SecurityGroupDoesNotSupportSnapshotRemovalPolicy`, 'AWS::EC2::SecurityGroup does not support the SNAPSHOT removal policy', this);
     }
     if (props.securityGroupRemovalPolicy) return props.securityGroupRemovalPolicy;
     return !props.removalPolicy || props.removalPolicy !== RemovalPolicy.SNAPSHOT ?
@@ -736,14 +825,17 @@ export class DatabaseCluster extends DatabaseClusterBase {
    */
   @MethodMetadata()
   public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
+    if (this.manageMasterUserPassword) {
+      throw new ValidationError(lit`CannotAddRotationWithManageMasterUserPassword`, 'Cannot add rotation when `manageMasterUserPassword` is enabled. Amazon DocumentDB automatically rotates the master password when it manages the secret.', this);
+    }
     if (!this.secret) {
-      throw new ValidationError('Cannot add single user rotation for a cluster without secret.', this);
+      throw new ValidationError(lit`CannotAddSingleUserRotationWithoutSecret`, 'Cannot add single user rotation for a cluster without secret.', this);
     }
 
     const id = 'RotationSingleUser';
     const existing = this.node.tryFindChild(id);
     if (existing) {
-      throw new ValidationError('A single user rotation was already added to this cluster.', this);
+      throw new ValidationError(lit`SingleUserRotationAlreadyAdded`, 'A single user rotation was already added to this cluster.', this);
     }
 
     return new secretsmanager.SecretRotation(this, id, {
@@ -762,8 +854,11 @@ export class DatabaseCluster extends DatabaseClusterBase {
    */
   @MethodMetadata()
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
+    if (this.manageMasterUserPassword) {
+      throw new ValidationError(lit`CannotAddRotationWithManageMasterUserPassword`, 'Cannot add rotation when `manageMasterUserPassword` is enabled. Amazon DocumentDB automatically rotates the master password when it manages the secret.', this);
+    }
     if (!this.secret) {
-      throw new ValidationError('Cannot add multi user rotation for a cluster without secret.', this);
+      throw new ValidationError(lit`CannotAddMultiUserRotationWithoutSecret`, 'Cannot add multi user rotation for a cluster without secret.', this);
     }
     return new secretsmanager.SecretRotation(this, id, {
       secret: options.secret,

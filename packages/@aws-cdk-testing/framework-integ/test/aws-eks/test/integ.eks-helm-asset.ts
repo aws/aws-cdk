@@ -4,15 +4,16 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { App, Stack } from 'aws-cdk-lib';
+import { EKS_USE_NATIVE_OIDC_PROVIDER } from 'aws-cdk-lib/cx-api';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
+import { getClusterVersionConfig, getLatestVersions } from './integ-tests-kubernetes-version';
 import * as eks from 'aws-cdk-lib/aws-eks';
 
 class EksClusterStack extends Stack {
   private cluster: eks.Cluster;
   private vpc: ec2.IVpc;
 
-  constructor(scope: App, id: string) {
+  constructor(scope: App, id: string, version?: eks.KubernetesVersion) {
     super(scope, id);
 
     // allow all account users to assume this role in order to admin the cluster
@@ -23,12 +24,11 @@ class EksClusterStack extends Stack {
     // just need one nat gateway to simplify the test
     this.vpc = new ec2.Vpc(this, 'Vpc', { natGateways: 1, restrictDefaultSecurityGroup: false });
 
-    // create the cluster with a default nodegroup capacity
     this.cluster = new eks.Cluster(this, 'Cluster', {
       vpc: this.vpc,
       mastersRole,
-      defaultCapacity: 2,
-      ...getClusterVersionConfig(this),
+      defaultCapacity: 0,
+      ...getClusterVersionConfig(this, version),
       tags: {
         foo: 'bar',
       },
@@ -37,6 +37,11 @@ class EksClusterStack extends Stack {
         eks.ClusterLoggingTypes.AUTHENTICATOR,
         eks.ClusterLoggingTypes.SCHEDULER,
       ],
+    });
+
+    this.cluster.addNodegroupCapacity('DefaultCapacity', {
+      minSize: 2,
+      amiType: eks.NodegroupAmiType.AL2023_X86_64_STANDARD,
     });
 
     this.assertHelmChartAsset();
@@ -83,7 +88,7 @@ class EksClusterStack extends Stack {
 
     // testing the disable mechanism of the installation of CRDs
     // https://gallery.ecr.aws/aws-controllers-k8s/rds-chart
-    this.cluster.addHelmChart('test-skip-crd-installation', {
+    const rdsChart = this.cluster.addHelmChart('test-skip-crd-installation', {
       chart: 'rds-chart',
       release: 'rds-chart-release',
       repository: 'oci://public.ecr.aws/aws-controllers-k8s/rds-chart',
@@ -95,7 +100,19 @@ class EksClusterStack extends Stack {
     });
 
     // testing installation with atomic flag set to true
-    // https://gallery.ecr.aws/aws-controllers-k8s/sns-chart
+    // https://gallery.ecr.aws/aws-controllers-k8s/ec2-chart
+    // this service account has to be created in `ack-system`
+    // we need to ensure that the namespace is created before the service account
+    const sa = this.cluster.addServiceAccount('ec2-controller-sa', {
+      namespace: 'ack-system',
+    });
+
+    // rdsChart should create the namespace `ack-system` if not available
+    // adding the dependency ensures that the namespace is created before the service account
+    sa.node.addDependency(rdsChart);
+
+    sa.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2FullAccess'));
+
     this.cluster.addHelmChart('test-atomic-installation', {
       chart: 'ec2-chart',
       release: 'ec2-chart-release',
@@ -105,7 +122,16 @@ class EksClusterStack extends Stack {
       createNamespace: true,
       skipCrds: true,
       atomic: true,
-      values: { aws: { region: this.region } },
+      values: {
+        aws: { region: this.region },
+        serviceAccount: {
+          name: sa.serviceAccountName,
+          create: false,
+          annotations: {
+            'eks.amazonaws.com/role-arn': sa.role.roleArn,
+          },
+        },
+      },
     });
 
     // https://github.com/orgs/grafana-operator/packages/container/package/helm-charts%2Fgrafana-operator
@@ -117,19 +143,32 @@ class EksClusterStack extends Stack {
       namespace: 'ack-system',
       createNamespace: true,
     });
+
+    // non-OCI chart from a standard HTTPS Helm repository
+    // https://kubernetes-sigs.github.io/headlamp/
+    this.cluster.addHelmChart('test-non-oci-chart', {
+      chart: 'headlamp',
+      release: 'headlamp',
+      repository: 'https://kubernetes-sigs.github.io/headlamp/',
+      version: '0.39.0',
+    });
   }
 }
 
 const app = new App({
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    [EKS_USE_NATIVE_OIDC_PROVIDER]: false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
 
-const stack = new EksClusterStack(app, 'aws-cdk-eks-helm-test');
+const [previousVersion, latestVersion] = getLatestVersions(2);
+
+const stackLatest = new EksClusterStack(app, 'aws-cdk-eks-helm-test', eks.KubernetesVersion.of(latestVersion));
+const stackPrevious = new EksClusterStack(app, 'aws-cdk-eks-helm-test-prev', eks.KubernetesVersion.of(previousVersion));
 new integ.IntegTest(app, 'aws-cdk-eks-helm', {
-  testCases: [stack],
+  testCases: [stackLatest, stackPrevious],
   // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
   diffAssets: false,
 });

@@ -1,9 +1,10 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Match, Template, Annotations } from '../../assertions';
 import { Ec2Action, Ec2InstanceAction } from '../../aws-cloudwatch-actions/lib';
 import { Duration, Stack, App } from '../../core';
 import { ENABLE_PARTITION_LITERALS } from '../../cx-api';
-import { Alarm, IAlarm, IAlarmAction, Metric, MathExpression, IMetric, Stats, ComparisonOperator } from '../lib';
+import type { IAlarm, IAlarmAction, IMetric } from '../lib';
+import { Alarm, Metric, MathExpression, Stats, ComparisonOperator } from '../lib';
 
 const testMetric = new Metric({
   namespace: 'CDK/Test',
@@ -87,6 +88,25 @@ describe('Alarm', () => {
       Period: 300,
       Statistic: 'Average',
       Threshold: 1000,
+    });
+  });
+
+  test('alarm without actions omits action properties', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Alarm(stack, 'Alarm', {
+      metric: testMetric,
+      threshold: 1000,
+      evaluationPeriods: 3,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      AlarmActions: Match.absent(),
+      InsufficientDataActions: Match.absent(),
+      OKActions: Match.absent(),
     });
   });
 

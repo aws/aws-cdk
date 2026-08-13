@@ -1,10 +1,11 @@
 import * as cdk from 'aws-cdk-lib';
 import { CfnDataQualityRuleset } from 'aws-cdk-lib/aws-glue';
-import { IResource, Resource } from 'aws-cdk-lib/core';
+import type { IResource, RemovalPolicy } from 'aws-cdk-lib/core';
+import { Resource } from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 
 /**
  * Properties of a DataQualityTargetTable.
@@ -79,6 +80,13 @@ export interface DataQualityRulesetProps {
    * @attribute
    */
   readonly targetTable: DataQualityTargetTable;
+
+  /**
+   * Policy to apply when the ruleset is removed from the stack.
+   *
+   * @default - resource will be destroyed
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -132,6 +140,8 @@ export class DataQualityRuleset extends Resource implements IDataQualityRuleset 
       tags: props.tags,
       targetTable: props.targetTable,
     });
+
+    this.resource.applyRemovalPolicy(props.removalPolicy);
   }
 
   /**

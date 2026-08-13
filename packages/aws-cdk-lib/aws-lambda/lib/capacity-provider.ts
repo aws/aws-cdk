@@ -1,15 +1,20 @@
-import { Construct } from 'constructs';
-import { Architecture } from './architecture';
-import { IFunction } from './function-base';
-import { CfnCapacityProvider, CfnFunction } from './lambda.generated';
-import * as ec2 from '../../aws-ec2';
+import type { Construct } from 'constructs';
+import type { Architecture } from './architecture';
+import type { SystemLogLevel } from './function';
+import type { IFunction } from './function-base';
+import type { CfnFunction } from './lambda.generated';
+import { CfnCapacityProvider } from './lambda.generated';
+import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { Annotations, Arn, ArnFormat, IResource, Resource, Stack, Token, ValidationError } from '../../core';
+import type * as kms from '../../aws-kms';
+import type * as logs from '../../aws-logs';
+import type { IResource } from '../../core';
+import { Annotations, Arn, ArnFormat, Resource, Stack, Token, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { CapacityProviderReference, ICapacityProviderRef } from '../../interfaces/generated/aws-lambda-interfaces.generated';
+import type { CapacityProviderReference, ICapacityProviderRef } from '../../interfaces/generated/aws-lambda-interfaces.generated';
 
 /**
  * Represents a Lambda capacity provider.
@@ -96,6 +101,72 @@ export interface CapacityProviderProps {
    * @default - No KMS key specified, uses an AWS-managed key instead
    */
   readonly kmsKey?: kms.IKey;
+
+  /**
+   * Configuration for tag propagation to managed resources (EC2 instances, ENIs, EBS volumes).
+   *
+   * Use the static factory methods on `PropagateTags` to create:
+   * - `PropagateTags.none()` - Explicitly disable tag propagation
+   * - `PropagateTags.explicit(tags)` - Propagate specified tags
+   *
+   * @default - No tag propagation; tags are not propagated to managed resources.
+   */
+  readonly propagateTags?: PropagateTags;
+
+  /**
+   * The CloudWatch log group for capacity provider system logs.
+   *
+   * @default - Service creates a default log group at /aws/lambda/capacity-provider/<name>
+   */
+  readonly logGroup?: logs.ILogGroupRef;
+
+  /**
+   * The level of detail for capacity provider system logs.
+   *
+   * @default - Service default applies (INFO)
+   */
+  readonly systemLogLevel?: SystemLogLevel;
+}
+
+/**
+ * Configuration for propagating tags to managed resources created by a capacity provider.
+ *
+ * Use static factory methods to create instances:
+ * ```
+ * propagateTags: lambda.PropagateTags.explicit({ env: 'prod', team: 'platform' })
+ * ```
+ */
+export class PropagateTags {
+  /**
+   * No tag propagation to managed resources.
+   */
+  public static none(): PropagateTags {
+    return new PropagateTags('None');
+  }
+
+  /**
+   * Propagate the specified tags to all managed resources.
+   *
+   * @param tags A map of tag keys to values to propagate. Maximum 40 tags.
+   */
+  public static explicit(tags: { [key: string]: string }): PropagateTags {
+    return new PropagateTags('Explicit', tags);
+  }
+
+  /**
+   * The propagation mode.
+   */
+  public readonly mode: string;
+
+  /**
+   * The explicit tags to propagate (only for Explicit mode).
+   */
+  public readonly explicitTags?: { [key: string]: string };
+
+  private constructor(mode: string, explicitTags?: { [key: string]: string }) {
+    this.mode = mode;
+    this.explicitTags = explicitTags;
+  }
 }
 
 /**
@@ -452,6 +523,18 @@ export class CapacityProvider extends CapacityProviderBase {
       instanceRequirements,
       capacityProviderScalingConfig,
       kmsKeyArn: props.kmsKey?.keyArn,
+      propagateTags: props.propagateTags ? {
+        mode: props.propagateTags.mode,
+        explicitTags: props.propagateTags.explicitTags
+          ? Object.entries(props.propagateTags.explicitTags).map(([key, value]) => ({ key, value }))
+          : undefined,
+      } : undefined,
+      telemetryConfig: props.logGroup || props.systemLogLevel ? {
+        loggingConfig: {
+          logGroup: props.logGroup?.logGroupRef.logGroupName,
+          systemLogLevel: props.systemLogLevel,
+        },
+      } : undefined,
     });
   }
 
@@ -459,15 +542,15 @@ export class CapacityProvider extends CapacityProviderBase {
     const validationErrorCPName = props.capacityProviderName || 'your capacity provider';
 
     if (props.maxVCpuCount !== undefined && !Token.isUnresolved(props.maxVCpuCount) && (props.maxVCpuCount < 12 || props.maxVCpuCount > 15000)) {
-      throw new ValidationError(`maxVCpuCount must be between 12 and 15000, but ${validationErrorCPName} has ${props.maxVCpuCount}.`, this);
+      throw new ValidationError(lit`MaxCpuCount`, `maxVCpuCount must be between 12 and 15000, but ${validationErrorCPName} has ${props.maxVCpuCount}.`, this);
     }
 
     if (!Token.isUnresolved(props.subnets) && (props.subnets.length < 1 || props.subnets.length > 16)) {
-      throw new ValidationError(`subnets must contain between 1 and 16 items but ${validationErrorCPName} has ${props.subnets.length} items.`, this);
+      throw new ValidationError(lit`SubnetsContainItems`, `subnets must contain between 1 and 16 items but ${validationErrorCPName} has ${props.subnets.length} items.`, this);
     }
 
     if (!Token.isUnresolved(props.securityGroups) && (props.securityGroups.length < 1 || props.securityGroups.length > 5)) {
-      throw new ValidationError(`securityGroups must contain between 1 and 5 items but ${validationErrorCPName} has ${props.securityGroups.length} items.`, this);
+      throw new ValidationError(lit`SecurityGroupsContainItems`, `securityGroups must contain between 1 and 5 items but ${validationErrorCPName} has ${props.securityGroups.length} items.`, this);
     }
 
     if (props.capacityProviderName) {
@@ -481,6 +564,16 @@ export class CapacityProvider extends CapacityProviderBase {
     if (props.scalingOptions) {
       this.validateScalingPolicies(props.scalingOptions, validationErrorCPName);
     }
+
+    if (props.propagateTags?.explicitTags && !Token.isUnresolved(props.propagateTags.explicitTags)
+      && Object.keys(props.propagateTags.explicitTags).length > 40) {
+      const tagCount = Object.keys(props.propagateTags.explicitTags).length;
+      throw new ValidationError(
+        lit`PropagateTagsExplicitTagsMaximum`,
+        `propagateTags explicit tags can have at most 40 tags, but ${validationErrorCPName} has ${tagCount}.`,
+        this,
+      );
+    }
   }
 
   private validateCapacityProviderName(name: string) {
@@ -488,32 +581,32 @@ export class CapacityProvider extends CapacityProviderBase {
       return;
     }
     if (!/^([a-zA-Z0-9-_]+|arn:aws[a-zA-Z-]*:lambda:capacity-provider:[a-zA-Z0-9-_]+)$/.test(name)) {
-      throw new ValidationError(`capacityProviderName must be an arn or have only alphanumeric characters, but did not: ${name}`, this);
+      throw new ValidationError(lit`CapacityProviderNameArnAlphanumeric`, `capacityProviderName must be an arn or have only alphanumeric characters, but did not: ${name}`, this);
     }
     if (name.length > 140) {
-      throw new ValidationError(`Capacity provider name can not be longer than 140 characters but ${name} has ${name.length} characters.`, this);
+      throw new ValidationError(lit`CapacityProviderNameLongerCharacters`, `Capacity provider name can not be longer than 140 characters but ${name} has ${name.length} characters.`, this);
     }
   }
 
   private validateScalingPolicies(scalingOptions: ScalingOptions, validationErrorCPName: string) {
     if (scalingOptions?.scalingPolicies && !Token.isUnresolved(scalingOptions.scalingPolicies)) {
       if (scalingOptions.scalingPolicies.length < 1) {
-        throw new ValidationError(`scalingOptions must have at least one policy when scalingMode is 'Manual', but ${validationErrorCPName} has ${scalingOptions.scalingPolicies.length} items.`, this);
+        throw new ValidationError(lit`ScalingoptionsLeastPolicyScalingmode`, `scalingOptions must have at least one policy when scalingMode is 'Manual', but ${validationErrorCPName} has ${scalingOptions.scalingPolicies.length} items.`, this);
       }
 
       if (scalingOptions.scalingPolicies.length > 10) {
-        throw new ValidationError(`scalingOptions can have at most ten policies when scalingMode is 'Manual', but ${validationErrorCPName} has ${scalingOptions.scalingPolicies.length} items.`, this);
+        throw new ValidationError(lit`ScalingoptionsMostPoliciesScalingmode`, `scalingOptions can have at most ten policies when scalingMode is 'Manual', but ${validationErrorCPName} has ${scalingOptions.scalingPolicies.length} items.`, this);
       }
     }
   }
 
   private validateInstanceTypeFilter(instanceTypeFilter: InstanceTypeFilter, validationErrorCPName: string) {
     if (instanceTypeFilter?.allowedInstanceTypes && instanceTypeFilter.allowedInstanceTypes.length < 1) {
-      throw new ValidationError(`instanceTypeFilter must have at least one instanceType when configured, but ${validationErrorCPName} has ${instanceTypeFilter.allowedInstanceTypes.length} items.`, this);
+      throw new ValidationError(lit`InstanceTypeFilterLeastOne`, `instanceTypeFilter must have at least one instanceType when configured, but ${validationErrorCPName} has ${instanceTypeFilter.allowedInstanceTypes.length} items.`, this);
     }
 
     if (instanceTypeFilter?.excludedInstanceTypes && instanceTypeFilter.excludedInstanceTypes.length < 1) {
-      throw new ValidationError(`instanceTypeFilter must have at least one instanceType when configured, but ${validationErrorCPName} has ${instanceTypeFilter.excludedInstanceTypes.length} items.`, this);
+      throw new ValidationError(lit`InstanceTypeFilterLeastOne`, `instanceTypeFilter must have at least one instanceType when configured, but ${validationErrorCPName} has ${instanceTypeFilter.excludedInstanceTypes.length} items.`, this);
     }
   }
 
@@ -558,15 +651,15 @@ export class CapacityProvider extends CapacityProviderBase {
     const maxDefined = maxExecutionEnvironments !== undefined && !Token.isUnresolved(maxExecutionEnvironments);
 
     if (minDefined && (minExecutionEnvironments < 0 || minExecutionEnvironments > 15000)) {
-      throw new ValidationError(`minExecutionEnvironments must be between 0 and 15000, but was ${minExecutionEnvironments}.`, this);
+      throw new ValidationError(lit`MinExecutionEnvironments`, `minExecutionEnvironments must be between 0 and 15000, but was ${minExecutionEnvironments}.`, this);
     }
 
     if (maxDefined && (maxExecutionEnvironments < 0 || maxExecutionEnvironments > 15000)) {
-      throw new ValidationError(`maxExecutionEnvironments must be between 0 and 15000, but was ${maxExecutionEnvironments}.`, this);
+      throw new ValidationError(lit`MaxExecutionEnvironments`, `maxExecutionEnvironments must be between 0 and 15000, but was ${maxExecutionEnvironments}.`, this);
     }
 
     if (minDefined && maxDefined && minExecutionEnvironments > maxExecutionEnvironments) {
-      throw new ValidationError('minExecutionEnvironments must be less than or equal to maxExecutionEnvironments.', this);
+      throw new ValidationError(lit`MinExecutionEnvironmentsLessEqual`, 'minExecutionEnvironments must be less than or equal to maxExecutionEnvironments.', this);
     }
   }
 }

@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Match, Template } from '../../../assertions';
-import { Metric } from '../../../aws-cloudwatch';
+import type { Metric } from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import { Key } from '../../../aws-kms';
 import * as s3 from '../../../aws-s3';
@@ -1517,6 +1517,53 @@ describe('tests', () => {
           ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
         });
       }).toThrow('dual-stack without public IPv4 address can only be used with internet-facing scheme.');
+    });
+  });
+
+  describe('Drop Invalid Header Fields', () => {
+    test.each([true, false])('sets dropInvalidHeaderFields to %s', (dropInvalidHeaderFields) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        dropInvalidHeaderFields,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: Match.arrayWith([
+          {
+            Key: 'routing.http.drop_invalid_header_fields.enabled',
+            Value: String(dropInvalidHeaderFields),
+          },
+        ]),
+      });
+    });
+
+    test('dropInvalidHeaderFields is not set when undefined', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: Match.not(
+          Match.arrayWith([
+            {
+              Key: 'routing.http.drop_invalid_header_fields.enabled',
+              Value: Match.anyValue(),
+            },
+          ]),
+        ),
+      });
     });
   });
 });

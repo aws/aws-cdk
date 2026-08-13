@@ -4,7 +4,7 @@ import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { ListenerAction } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 
 class ElbV2AsgStack extends cdk.Stack {
@@ -19,7 +19,7 @@ class ElbV2AsgStack extends cdk.Stack {
     const asg = new autoscaling.AutoScalingGroup(this, 'Fleet', {
       vpc,
       instanceType: ec2.InstanceType.of(
-        ec2.InstanceClass.BURSTABLE2,
+        ec2.InstanceClass.BURSTABLE3,
         ec2.InstanceSize.MICRO,
       ),
       machineImage: new ec2.AmazonLinuxImage(),

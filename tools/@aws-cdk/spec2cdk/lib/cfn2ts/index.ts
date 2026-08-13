@@ -1,5 +1,6 @@
 import { generate as generateModules, loadPatchedSpec } from '../generate';
-import { ModuleMap, ModuleMapScope, readModuleMap } from '../module-topology';
+import type { ModuleMap, ModuleMapScope } from '../module-topology';
+import { readModuleMap } from '../module-topology';
 import * as naming from '../naming';
 import { jsii } from '../util';
 import { getAllScopes } from '../util/db';

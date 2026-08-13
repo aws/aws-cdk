@@ -1,6 +1,6 @@
-import * as sfn from '../../aws-stepfunctions';
-import { Duration } from '../../core';
-import { IActivityRef } from '../../interfaces/generated/aws-stepfunctions-interfaces.generated';
+import type * as sfn from '../../aws-stepfunctions';
+import type { Duration } from '../../core';
+import type { IActivityRef } from '../../interfaces/generated/aws-stepfunctions-interfaces.generated';
 
 /**
  * Properties for FunctionTask

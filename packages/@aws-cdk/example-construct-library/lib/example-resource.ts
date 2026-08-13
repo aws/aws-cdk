@@ -10,13 +10,14 @@ import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as s3 from 'aws-cdk-lib/aws-s3';
+import type * as s3 from 'aws-cdk-lib/aws-s3';
 // for files that are part of this package or part of core, we do import individual classes or functions
-import { CfnWaitCondition, CfnWaitConditionHandle, Fn, IResource, IWaitConditionHandleRef, RemovalPolicy, Resource, Stack, Token, ValidationError, WaitConditionHandleReference } from 'aws-cdk-lib/core';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import type { IResource, IWaitConditionHandleRef, WaitConditionHandleReference } from 'aws-cdk-lib/core';
+import { CfnWaitCondition, CfnWaitConditionHandle, Fn, RemovalPolicy, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
+import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { exampleResourceArnComponents } from './private/example-resource-common';
 
 /**
@@ -171,7 +172,7 @@ abstract class ExampleResourceBase extends Resource implements IExampleResource 
   /** Implement the ec2.IConnectable interface, using the _connections field. */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new ValidationError('An imported ExampleResource cannot manage its security groups', this);
+      throw new ValidationError(lit`ImportedResourceCannotManageSecurityGroups`, 'An imported ExampleResource cannot manage its security groups', this);
     }
     return this._connections;
   }
@@ -438,7 +439,7 @@ export class ExampleResource extends ExampleResourceBase {
     if (props.waitConditionHandleName !== undefined &&
         !Token.isUnresolved(props.waitConditionHandleName) &&
         !/^[_a-zA-Z]+$/.test(props.waitConditionHandleName)) {
-      throw new ValidationError('waitConditionHandleName must be non-empty and contain only letters and underscores, ' +
+      throw new ValidationError(lit`InvalidWaitConditionHandleName`, 'waitConditionHandleName must be non-empty and contain only letters and underscores, ' +
         `got: '${props.waitConditionHandleName}'`, this);
     }
 

@@ -1,5 +1,5 @@
-import * as lambda from '../../aws-lambda';
-import * as sns from '../../aws-sns';
+import type * as lambda from '../../aws-lambda';
+import type * as sns from '../../aws-sns';
 import * as subs from '../../aws-sns-subscriptions';
 
 /**

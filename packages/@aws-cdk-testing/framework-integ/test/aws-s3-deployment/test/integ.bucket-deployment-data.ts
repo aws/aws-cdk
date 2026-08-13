@@ -1,11 +1,12 @@
 import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { App, CfnOutput, RemovalPolicy, Stack, StackProps, Token } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, CfnOutput, RemovalPolicy, Stack, Token } from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as path from 'path';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 /**
  * Integration test for bucket deployment with various data source types:

@@ -11,11 +11,13 @@
  *  and limitations under the License.
  */
 
-import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
-import * as iam from 'aws-cdk-lib/aws-iam';
+import type * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
+import type * as iam from 'aws-cdk-lib/aws-iam';
 // Internal libs
-import { ManagedMemoryStrategy, ManagedStrategyProps } from './strategies/managed-strategy';
-import { SelfManagedMemoryStrategy, SelfManagedStrategyProps } from './strategies/self-managed-strategy';
+import type { ManagedStrategyProps } from './strategies/managed-strategy';
+import { ManagedMemoryStrategy } from './strategies/managed-strategy';
+import type { SelfManagedStrategyProps } from './strategies/self-managed-strategy';
+import { SelfManagedMemoryStrategy } from './strategies/self-managed-strategy';
 
 /******************************************************************************
  *                              CONSTANTS
@@ -23,16 +25,19 @@ import { SelfManagedMemoryStrategy, SelfManagedStrategyProps } from './strategie
 /**
  * Minimum length for memory strategy name
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const MEMORY_NAME_MIN_LENGTH = 1;
 /**
  * Maximum length for memory strategy name
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const MEMORY_NAME_MAX_LENGTH = 48;
 
 /**
  * Long-term memory extraction strategy types.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export enum MemoryStrategyType {
   /**
@@ -63,6 +68,7 @@ export enum MemoryStrategyType {
  *****************************************************************************/
 /**
  * Configuration parameters common for any memory strategy
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface MemoryStrategyCommonProps {
   /**
@@ -81,6 +87,7 @@ export interface MemoryStrategyCommonProps {
  *****************************************************************************/
 /**
  * Interface for Memory strategies
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface IMemoryStrategy {
   /**
@@ -116,6 +123,7 @@ export interface IMemoryStrategy {
  * Use built-in strategies for quick setup, use built-in strategies with override to specify models and prompt templates.
  *
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/memory-strategies.html
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class MemoryStrategy {
   /**

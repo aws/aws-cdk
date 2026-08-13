@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "files": {
     "89daf989c1a5b6678c997dfb9b8a83d4aa2192bda969d774d194ee8c0b995310": {
       "displayName": "aws-cdk-route53-health-check Template",

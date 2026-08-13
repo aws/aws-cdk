@@ -1,10 +1,11 @@
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import type * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { CfnConnection } from 'aws-cdk-lib/aws-glue';
 import * as cdk from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
+import { warnOnPlaintextSecrets } from './private/secret-detection';
 
 /**
  * The type of the glue connection
@@ -156,6 +157,66 @@ export class ConnectionType {
    * Designates a connection to Zoho CRM.
    */
   public static readonly ZOHOCRM = new ConnectionType('ZOHOCRM');
+
+  /**
+   * Designates a connection to Google BigQuery.
+   */
+  public static readonly BIGQUERY = new ConnectionType('BIGQUERY');
+
+  /**
+   * Designates a connection to Azure SQL Database.
+   */
+  public static readonly AZURESQL = new ConnectionType('AZURESQL');
+
+  /**
+   * Designates a connection to Azure Cosmos DB.
+   */
+  public static readonly AZURECOSMOS = new ConnectionType('AZURECOSMOS');
+
+  /**
+   * Designates a connection to Amazon OpenSearch Service.
+   */
+  public static readonly OPENSEARCH = new ConnectionType('OPENSEARCH');
+
+  /**
+   * Designates a connection to MySQL.
+   */
+  public static readonly MYSQL = new ConnectionType('MYSQL');
+
+  /**
+   * Designates a connection to PostgreSQL.
+   */
+  public static readonly POSTGRESQL = new ConnectionType('POSTGRESQL');
+
+  /**
+   * Designates a connection to Oracle Database.
+   */
+  public static readonly ORACLE = new ConnectionType('ORACLE');
+
+  /**
+   * Designates a connection to Microsoft SQL Server.
+   */
+  public static readonly SQLSERVER = new ConnectionType('SQLSERVER');
+
+  /**
+   * Designates a connection to SAP HANA.
+   */
+  public static readonly SAPHANA = new ConnectionType('SAPHANA');
+
+  /**
+   * Designates a connection to Teradata.
+   */
+  public static readonly TERADATA = new ConnectionType('TERADATA');
+
+  /**
+   * Designates a connection to Vertica.
+   */
+  public static readonly VERTICA = new ConnectionType('VERTICA');
+
+  /**
+   * Designates a connection to Amazon DynamoDB.
+   */
+  public static readonly DYNAMODB = new ConnectionType('DYNAMODB');
 
   /**
    * The name of this ConnectionType, as expected by Connection resource.
@@ -313,7 +374,19 @@ export class Connection extends cdk.Resource implements IConnection {
     this.resource = new CfnConnection(this, 'Resource', {
       catalogId: cdk.Stack.of(this).account,
       connectionInput: {
-        connectionProperties: cdk.Lazy.any({ produce: () => Object.keys(this.properties).length > 0 ? this.properties : undefined }),
+        connectionProperties: cdk.Lazy.any({
+          produce: () => {
+            // Inspect the final property set at synthesis time so properties
+            // added via `addProperty` are covered as well.
+            warnOnPlaintextSecrets(
+              this,
+              this.properties,
+              '@aws-cdk/aws-glue-alpha:plaintextConnectionSecret',
+              'Reference a Secrets Manager secret through the connection\'s `SECRET_ID` property instead.',
+            );
+            return Object.keys(this.properties).length > 0 ? this.properties : undefined;
+          },
+        }),
         connectionType: props.type.name,
         description: props.description,
         matchCriteria: props.matchCriteria,
