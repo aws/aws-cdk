@@ -1,4 +1,4 @@
-import { UnscopedValidationError, ValidationError } from 'aws-cdk-lib';
+import { Annotations, UnscopedValidationError, ValidationError } from 'aws-cdk-lib';
 import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import type * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
@@ -54,6 +54,10 @@ export interface S3TableProps extends TableBaseProps {
 
   /**
    * S3 prefix under which table objects are stored.
+   *
+   * When the table shares a bucket with other tables or consumers, set this so
+   * that the `grant*` methods scope S3 access to this table's data. Without a
+   * prefix, those grants cover the entire bucket.
    *
    * @default - No prefix. The data will be stored under the root of the bucket.
    */
@@ -119,18 +123,26 @@ export class S3Table extends TableBase {
 
   protected readonly tableResource: CfnTable;
 
+  /**
+   * Whether the data bucket was supplied by the user (as opposed to created by
+   * this construct). A user-supplied bucket may hold data for other tables, so
+   * granting access to the whole bucket can over-grant.
+   */
+  private readonly userProvidedBucket: boolean;
+
   constructor(scope: Construct, id: string, props: S3TableProps) {
     super(scope, id, props);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
     this.s3Prefix = props.s3Prefix ?? '';
+    this.userProvidedBucket = props.bucket !== undefined;
     const { bucket, encryption, encryptionKey } = createBucket(this, props);
     this.bucket = bucket;
     this.encryption = encryption;
     this.encryptionKey = encryptionKey;
 
     this.resource = new CfnTable(this, 'Table', {
-      catalogId: props.database.catalogId,
+      catalogId: props.database.catalog.catalogId,
 
       databaseName: props.database.databaseName,
 
@@ -142,9 +154,11 @@ export class S3Table extends TableBase {
 
         parameters: {
           'classification': props.dataFormat.classificationString?.value,
-          'has_encrypted_data': true,
           'partition_filtering.enabled': props.enablePartitionFiltering,
           ...this.parameters,
+          // Managed keys are emitted last so free-form `parameters` cannot
+          // silently override them. Conflicts are rejected in `TableBase`.
+          'has_encrypted_data': this.hasEncryptedData,
         },
         storageDescriptor: {
           location: `s3://${this.bucket.bucketName}/${this.s3Prefix}`,
@@ -243,6 +257,17 @@ export class S3Table extends TableBase {
   }
 
   protected generateS3PrefixForGrant() {
+    // When the user supplied their own bucket and did not scope the table to a
+    // prefix, the grant covers every object in the bucket - which may include
+    // data owned by other tables or consumers sharing that bucket. Warn so the
+    // over-grant is a deliberate choice rather than a silent surprise.
+    if (this.userProvidedBucket && this.s3Prefix === '') {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-glue-alpha:grantScopedToWholeBucket',
+        'granting access to the entire data bucket because `s3Prefix` is empty and a shared bucket was provided; ' +
+          'set `s3Prefix` to scope grants to this table\'s data and avoid granting access to other tables sharing the bucket.',
+      );
+    }
     return this.s3Prefix + '*';
   }
 }
@@ -295,11 +320,18 @@ function createBucket(table: S3Table, props: S3TableProps) {
   // create the bucket if none was provided
   if (!bucket) {
     if (encryption === TableEncryption.CLIENT_SIDE_KMS) {
-      bucket = new s3.Bucket(table, 'Bucket');
+      // The `encryptionKey` here is used for client-side encryption (granted to
+      // principals via the grant* methods), not for the bucket's SSE. The bucket
+      // still gets server-side encryption at rest as defense in depth.
+      bucket = new s3.Bucket(table, 'Bucket', {
+        encryption: encryptionMappings[encryption],
+        enforceSSL: true,
+      });
     } else {
       bucket = new s3.Bucket(table, 'Bucket', {
         encryption: encryptionMappings[encryption],
         encryptionKey,
+        enforceSSL: true,
       });
       encryptionKey = bucket.encryptionKey;
     }
