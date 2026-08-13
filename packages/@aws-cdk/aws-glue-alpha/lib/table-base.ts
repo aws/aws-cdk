@@ -434,7 +434,7 @@ export abstract class TableBase extends Resource implements ITable {
       throw new ValidationError(
         lit`HasEncryptedDataConflict`,
         `the \`${key}\` table parameter is managed by the \`hasEncryptedData\` property; ` +
-          `remove it from \`parameters\` (got ${JSON.stringify(supplied)}, expected ${JSON.stringify(managed)})`,
+          `remove it from \`parameters\` and use the boolean \`hasEncryptedData\` property instead (got ${JSON.stringify(supplied)}, expected ${JSON.stringify(managed)})`,
         this,
       );
     }
