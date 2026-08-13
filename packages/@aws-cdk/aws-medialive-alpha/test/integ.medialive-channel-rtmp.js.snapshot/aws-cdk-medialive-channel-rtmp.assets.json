@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "5345a5be82308f33a55fb436c9fae73c0073c48dc2d7af7701e90f4d4b6ddb4f": {
+      "displayName": "aws-cdk-medialive-channel-rtmp Template",
+      "source": {
+        "path": "aws-cdk-medialive-channel-rtmp.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-8ace7ee6": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "5345a5be82308f33a55fb436c9fae73c0073c48dc2d7af7701e90f4d4b6ddb4f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
