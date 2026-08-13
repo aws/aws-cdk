@@ -1,7 +1,7 @@
 import { ValidationError } from 'aws-cdk-lib';
 import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import type * as iam from 'aws-cdk-lib/aws-iam';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -57,7 +57,7 @@ export class ExternalTable extends TableBase {
     addConstructMetadata(this, props);
     this.connection = props.connection;
     this.resource = new CfnTable(this, 'Table', {
-      catalogId: props.database.catalogId,
+      catalogId: props.database.catalog.catalogId,
 
       databaseName: props.database.databaseName,
 
@@ -69,10 +69,12 @@ export class ExternalTable extends TableBase {
 
         parameters: {
           'classification': props.dataFormat.classificationString?.value,
-          'has_encrypted_data': true,
           'partition_filtering.enabled': props.enablePartitionFiltering,
           'connectionName': props.connection.connectionName,
-          ...props.parameters,
+          ...this.parameters,
+          // Managed keys are emitted last so free-form `parameters` cannot
+          // silently override them. Conflicts are rejected in `TableBase`.
+          'has_encrypted_data': this.hasEncryptedData,
         },
         storageDescriptor: {
           location: props.externalDataLocation,
@@ -86,7 +88,7 @@ export class ExternalTable extends TableBase {
           },
           parameters: props.storageParameters ? props.storageParameters.reduce((acc, param) => {
             if (param.key in acc) {
-              throw new ValidationError('DuplicateStorageParameterKey', `Duplicate storage parameter key: ${param.key}`, this);
+              throw new ValidationError(lit`DuplicateStorageParameterKey`, `Duplicate storage parameter key: ${param.key}`, this);
             }
             const key = param.key;
             acc[key] = param.value;

@@ -3,7 +3,7 @@ import { Manifest } from 'aws-cdk-lib/cloud-assembly-schema';
 import type { ISynthesisSession, StackProps } from 'aws-cdk-lib/core';
 import { attachCustomSynthesis, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
-import type { IDeployAssert } from './assertions';
+import type { IDeployAssert, ProviderOptions } from './assertions';
 import { DeployAssert } from './assertions/private/deploy-assert';
 import { IntegManifestSynthesizer } from './manifest-synthesizer';
 
@@ -12,7 +12,7 @@ const TEST_CASE_STACK_SYMBOL = Symbol.for('@aws-cdk/integ-tests.IntegTestCaseSta
 /**
  * Properties of an integration test case
  */
-export interface IntegTestCaseProps extends TestOptions {
+export interface IntegTestCaseProps extends TestOptions, ProviderOptions {
   /**
    * Stacks to be deployed during the test
    */
@@ -44,7 +44,7 @@ export class IntegTestCase extends Construct {
   constructor(scope: Construct, id: string, private readonly props: IntegTestCaseProps) {
     super(scope, id);
 
-    this._assert = new DeployAssert(this, { stack: props.assertionStack });
+    this._assert = new DeployAssert(this, { stack: props.assertionStack, providerLogLevel: props.providerLogLevel });
     this.assertions = this._assert;
   }
 
@@ -118,7 +118,7 @@ export class IntegTestCaseStack extends Stack {
 /**
  * Integration test properties
  */
-export interface IntegTestProps extends TestOptions {
+export interface IntegTestProps extends TestOptions, ProviderOptions {
   /**
    * List of test cases that make up this test
    */
@@ -166,6 +166,7 @@ export class IntegTest extends Construct {
       cdkCommandOptions: props.cdkCommandOptions,
       stackUpdateWorkflow: props.stackUpdateWorkflow,
       assertionStack: props.assertionStack,
+      providerLogLevel: props.providerLogLevel,
     });
     this.assertions = defaultTestCase.assertions;
 

@@ -500,7 +500,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
    },
    "DependsOn": [
@@ -1087,7 +1087,8 @@
      "Ref": "myServiceWithTlsLB43A9E2DA"
     },
     "Port": 443,
-    "Protocol": "TLS"
+    "Protocol": "TLS",
+    "SslPolicy": "ELBSecurityPolicy-TLS13-1-2-PQ-2025-09"
    }
   },
   "myServiceWithTlsLBPublicListenerECSGroup39AE2653": {

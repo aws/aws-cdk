@@ -6,6 +6,7 @@ import type * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IReportGroupRef, ReportGroupReference } from '../../interfaces/generated/aws-codebuild-interfaces.generated';
 
@@ -205,7 +206,7 @@ export class ReportGroup extends ReportGroupBase {
     this.exportBucket = props.exportBucket;
 
     if (props.deleteReports && props.removalPolicy !== cdk.RemovalPolicy.DESTROY) {
-      throw new cdk.ValidationError('DeleteReportsRequiresDestroyPolicy', 'Cannot use \'deleteReports\' property on a report group without setting removal policy to \'DESTROY\'.', this);
+      throw new cdk.ValidationError(lit`DeleteReportsRequiresDestroyPolicy`, 'Cannot use \'deleteReports\' property on a report group without setting removal policy to \'DESTROY\'.', this);
     }
   }
 

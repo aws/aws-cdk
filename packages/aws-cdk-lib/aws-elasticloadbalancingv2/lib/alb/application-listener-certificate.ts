@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { ValidationError } from '../../../core/lib/errors';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { aws_elasticloadbalancingv2 as elbv2 } from '../../../interfaces';
 import { CfnListenerCertificate } from '../elasticloadbalancingv2.generated';
 import type { IListenerCertificate } from '../shared/listener-certificate';
@@ -41,7 +42,7 @@ export class ApplicationListenerCertificate extends Construct {
     super(scope, id);
 
     if (!props.certificateArns && !props.certificates) {
-      throw new ValidationError('IsRequiredLeastCertificatearnsCertificates', 'At least one of \'certificateArns\' or \'certificates\' is required', this);
+      throw new ValidationError(lit`IsRequiredLeastCertificatearnsCertificates`, 'At least one of \'certificateArns\' or \'certificates\' is required', this);
     }
 
     const certificates = [

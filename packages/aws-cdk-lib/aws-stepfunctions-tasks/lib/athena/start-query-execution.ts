@@ -5,6 +5,7 @@ import type * as s3 from '../../../aws-s3';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 interface AthenaStartQueryExecutionOptions {
@@ -118,11 +119,11 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
   private validateExecutionParameters(executionParameters?: string[]) {
     if (executionParameters === undefined || cdk.Token.isUnresolved(executionParameters)) return;
     if (executionParameters.length == 0) {
-      throw new ValidationError('ExecutionParametersNonEmptyList', '\'executionParameters\' must be a non-empty list', this);
+      throw new ValidationError(lit`ExecutionParametersNonEmptyList`, '\'executionParameters\' must be a non-empty list', this);
     }
     const invalidExecutionParameters = executionParameters.some(p => p.length < 1 || p.length > 1024);
     if (invalidExecutionParameters) {
-      throw new ValidationError('ExecutionParametersItemsLengthCharacters', '\'executionParameters\' items\'s length must be between 1 and 1024 characters', this);
+      throw new ValidationError(lit`ExecutionParametersItemsLengthCharacters`, '\'executionParameters\' items\'s length must be between 1 and 1024 characters', this);
     }
   }
 
@@ -130,11 +131,11 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
     if (resultReuseConfigurationMaxAge === undefined || cdk.Token.isUnresolved(resultReuseConfigurationMaxAge)) return;
     const maxAgeInMillis = resultReuseConfigurationMaxAge.toMilliseconds();
     if (maxAgeInMillis > 0 && maxAgeInMillis < cdk.Duration.minutes(1).toMilliseconds()) {
-      throw new ValidationError('ResultReuseConfigurationMaxAge', `resultReuseConfigurationMaxAge must be greater than or equal to 1 minute or be equal to 0, got ${maxAgeInMillis} ms`, this);
+      throw new ValidationError(lit`ResultReuseConfigurationMaxAge`, `resultReuseConfigurationMaxAge must be greater than or equal to 1 minute or be equal to 0, got ${maxAgeInMillis} ms`, this);
     }
     const maxAgeInMinutes = resultReuseConfigurationMaxAge.toMinutes();
     if (maxAgeInMinutes > 10080) {
-      throw new ValidationError('ResultReuseConfigurationMaxAge', `resultReuseConfigurationMaxAge must either be 0 or between 1 and 10080 minutes, got ${maxAgeInMinutes}`, this);
+      throw new ValidationError(lit`ResultReuseConfigurationMaxAge`, `resultReuseConfigurationMaxAge must either be 0 or between 1 and 10080 minutes, got ${maxAgeInMinutes}`, this);
     }
   }
 

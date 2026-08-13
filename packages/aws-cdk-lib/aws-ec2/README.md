@@ -415,7 +415,7 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
       // group of the same type.
       name: 'Ingress',
 
-      // 'cidrMask' specifies the IP addresses in the range of of individual
+      // 'cidrMask' specifies the IP addresses in the range of individual
       // subnets in the group. Each of the subnets in this group will contain
       // `2^(32 address bits - 24 subnet bits) - 2 reserved addresses = 254`
       // usable IP addresses.
@@ -619,7 +619,7 @@ instance around:
 ### Importing an existing VPC
 
 If your VPC is created outside your CDK app, you can use `Vpc.fromLookup()`.
-The CDK CLI will search for the specified VPC in the the stack's region and
+The CDK CLI will search for the specified VPC in the stack's region and
 account, and import the subnet configuration. Looking up can be done by VPC
 ID, but more flexibly by searching for a specific tag on the VPC.
 
@@ -796,6 +796,17 @@ const prefixList = new ec2.PrefixList(this, 'PrefixList', { maxEntries: 10 });
 appFleet.connections.allowFrom(prefixList, ec2.Port.HTTPS);
 ```
 
+#### Rule Configuration Interfaces
+
+The `IPeer` interface provides type-safe methods for generating security group rule configurations.
+The `toIngressRuleConfig()` and `toEgressRuleConfig()` methods return strongly-typed interfaces
+instead of `any`, enabling better IDE autocompletion and compile-time type checking:
+
+- `IngressRuleConfig`: Configuration for ingress rules with properties like `cidrIp`, `cidrIpv6`,
+  `sourcePrefixListId`, `sourceSecurityGroupId`, and `sourceSecurityGroupOwnerId`
+- `EgressRuleConfig`: Configuration for egress rules with properties like `cidrIp`, `cidrIpv6`,
+  `destinationPrefixListId`, and `destinationSecurityGroupId`
+
 ### Port Ranges
 
 The connections that are allowed are specified by port ranges. A number of classes provide
@@ -883,7 +894,7 @@ const sg = ec2.SecurityGroup.fromLookupById(this, 'SecurityGroupLookup', 'sg-123
 ```
 
 The result of `SecurityGroup.fromLookupByName` and `SecurityGroup.fromLookupById` operations will be
-written to a file called `cdk.context.json`. 
+written to a file called `cdk.context.json`.
 You must commit this file to source control so that the lookup values are available in non-privileged
 environments such as CI build steps, and to ensure your template builds are repeatable.
 
@@ -972,7 +983,7 @@ examples of images you might want to use:
 > `cdk.context.json`, or use the `cdk context` command. For more information, see
 > [Runtime Context](https://docs.aws.amazon.com/cdk/latest/guide/context.html) in the CDK
 > developer guide.
-> 
+>
 > To customize the cache key, use the `additionalCacheKey` parameter.
 > This allows you to have multiple lookups with the same parameters
 > cache their values separately. This can be useful if you want to
@@ -1134,15 +1145,24 @@ Alternatively, existing security groups can be used by specifying the `securityG
 
 As IPv4 addresses are running out, many AWS services are adding support for IPv6 or Dualstack (IPv4 and IPv6 support) for their VPC Endpoints.
 
-IPv6 and Dualstack address types can be configured by using:
+IPv6 and Dualstack address types can be configured for both interface and gateway endpoints using `ipAddressType` and `dnsRecordIpType`:
 
 ```ts fixture=with-vpc
+// Interface endpoint with IPv6
 vpc.addInterfaceEndpoint('ExampleEndpoint', {
   service: ec2.InterfaceVpcEndpointAwsService.ECR,
   ipAddressType: ec2.VpcEndpointIpAddressType.IPV6,
   dnsRecordIpType: ec2.VpcEndpointDnsRecordIpType.IPV6,
 });
+
+// Gateway endpoint with dualstack
+vpc.addGatewayEndpoint('S3DualstackEndpoint', {
+  service: ec2.GatewayVpcEndpointAwsService.S3,
+  ipAddressType: ec2.VpcEndpointIpAddressType.DUALSTACK,
+  dnsRecordIpType: ec2.VpcEndpointDnsRecordIpType.DUALSTACK,
+});
 ```
+
 The possible values for `ipAddressType` are:
 * `IPV4` This option is supported only if all selected subnets have IPv4 address ranges and the endpoint service accepts IPv4 requests.
 * `IPV6` This option is supported only if all selected subnets are IPv6 only subnets and the endpoint service accepts IPv6 requests.
@@ -2616,6 +2636,23 @@ const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
 });
 ```
 
+To specify the EBS Provisioned Rate for Volume Initialization for a snapshot-backed EBS volume in a launch template, use the `volumeInitializationRate` property. The snapshot can be specified explicitly with `BlockDeviceVolume.ebsFromSnapshot(...)` or inherited from the AMI block device mapping when overriding an existing AMI device such as the root volume.
+
+```ts
+const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+  blockDevices: [
+    {
+      deviceName: 'deviceName',
+      volume: ec2.BlockDeviceVolume.ebsFromSnapshot('snap-1234567890abcdef0', {
+        volumeSize: 150,
+        volumeInitializationRate: Size.mebibytes(200),
+      }),
+    },
+  ],
+});
+
+```
+
 ### Placement Group
 
 Specify `placementGroup` to enable the placement group support:
@@ -2638,7 +2675,7 @@ Please note this feature does not support Launch Configurations.
 
 ## Detailed Monitoring
 
-The following demonstrates how to enable [Detailed Monitoring](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-cloudwatch-new.html) for an EC2 instance. Keep in mind that Detailed Monitoring results in [additional charges](http://aws.amazon.com/cloudwatch/pricing/).
+The following demonstrates how to enable [Detailed Monitoring](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-cloudwatch-new.html) for an EC2 instance. Keep in mind that Detailed Monitoring results in [additional charges](https://aws.amazon.com/cloudwatch/pricing/).
 
 ```ts
 declare const vpc: ec2.Vpc;

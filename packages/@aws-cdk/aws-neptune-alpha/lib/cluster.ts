@@ -6,6 +6,7 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import { CfnDBCluster, CfnDBInstance } from 'aws-cdk-lib/aws-neptune';
 import type { Duration, IResource } from 'aws-cdk-lib/core';
 import { Aws, Lazy, RemovalPolicy, Resource, Token, ValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -545,7 +546,7 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     if (this.enableIamAuthentication === false) {
-      throw new ValidationError('IamAuthenticationDisabled', 'Cannot grant permissions when IAM authentication is disabled', this);
+      throw new ValidationError(lit`IamAuthenticationDisabled`, 'Cannot grant permissions when IAM authentication is disabled', this);
     }
 
     this.enableIamAuthentication = true;
@@ -651,7 +652,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
 
     // Cannot test whether the subnets are in different AZs, but at least we can test the amount.
     if (subnetIds.length < 2) {
-      throw new ValidationError('InsufficientSubnets', `Cluster requires at least 2 subnets, got ${subnetIds.length}`, this);
+      throw new ValidationError(lit`InsufficientSubnets`, `Cluster requires at least 2 subnets, got ${subnetIds.length}`, this);
     }
 
     this.subnetGroup = props.subnetGroup ?? new SubnetGroup(this, 'Subnets', {
@@ -672,7 +673,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
     const storageEncrypted = props.storageEncrypted ?? true;
 
     if (props.kmsKey && !storageEncrypted) {
-      throw new ValidationError('KmsKeyWithoutEncryption', 'KMS key supplied but storageEncrypted is false', this);
+      throw new ValidationError(lit`KmsKeyWithoutEncryption`, 'KMS key supplied but storageEncrypted is false', this);
     }
 
     const deletionProtection = props.deletionProtection ?? (props.removalPolicy === RemovalPolicy.RETAIN ? true : undefined);
@@ -680,7 +681,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
     this.enableIamAuthentication = props.iamAuthentication;
 
     if (props.instanceType === InstanceType.SERVERLESS && !props.serverlessScalingConfiguration) {
-      throw new ValidationError('ServerlessConfigurationRequired', 'You need to specify a serverless scaling configuration with a db.serverless instance type.', this);
+      throw new ValidationError(lit`ServerlessConfigurationRequired`, 'You need to specify a serverless scaling configuration with a db.serverless instance type.', this);
     }
 
     this.validateServerlessScalingConfiguration(props.serverlessScalingConfiguration);
@@ -737,7 +738,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
     // Create the instances
     const instanceCount = props.instances ?? DatabaseCluster.DEFAULT_NUM_INSTANCES;
     if (instanceCount < 1) {
-      throw new ValidationError('InsufficientInstances', 'At least one instance is required', this);
+      throw new ValidationError(lit`InsufficientInstances`, 'At least one instance is required', this);
     }
 
     for (let i = 0; i < instanceCount; i++) {
@@ -777,13 +778,13 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
   private validateServerlessScalingConfiguration(serverlessScalingConfiguration?: ServerlessScalingConfiguration) {
     if (!serverlessScalingConfiguration) return;
     if (serverlessScalingConfiguration.minCapacity < 1) {
-      throw new ValidationError('InvalidMinCapacity', `ServerlessScalingConfiguration minCapacity must be greater or equal than 1, received ${serverlessScalingConfiguration.minCapacity}`, this);
+      throw new ValidationError(lit`InvalidMinCapacity`, `ServerlessScalingConfiguration minCapacity must be greater or equal than 1, received ${serverlessScalingConfiguration.minCapacity}`, this);
     }
     if (serverlessScalingConfiguration.maxCapacity < 2.5 || serverlessScalingConfiguration.maxCapacity > 128) {
-      throw new ValidationError('InvalidMaxCapacity', `ServerlessScalingConfiguration maxCapacity must be between 2.5 and 128, received ${serverlessScalingConfiguration.maxCapacity}`, this);
+      throw new ValidationError(lit`InvalidMaxCapacity`, `ServerlessScalingConfiguration maxCapacity must be between 2.5 and 128, received ${serverlessScalingConfiguration.maxCapacity}`, this);
     }
     if (serverlessScalingConfiguration.minCapacity >= serverlessScalingConfiguration.maxCapacity) {
-      throw new ValidationError('InvalidCapacityRange', `ServerlessScalingConfiguration minCapacity ${serverlessScalingConfiguration.minCapacity} ` +
+      throw new ValidationError(lit`InvalidCapacityRange`, `ServerlessScalingConfiguration minCapacity ${serverlessScalingConfiguration.minCapacity} ` +
         `must be less than serverlessScalingConfiguration maxCapacity ${serverlessScalingConfiguration.maxCapacity}`, this);
     }
   }

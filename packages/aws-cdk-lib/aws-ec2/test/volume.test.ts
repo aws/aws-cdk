@@ -45,6 +45,24 @@ describe('volume', () => {
     });
   });
 
+  test('DeletionPolicy snapshot', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new Volume(stack, 'Volume', {
+      availabilityZone: 'us-east-1a',
+      size: cdk.Size.gibibytes(8),
+      volumeName: 'MyVolume',
+      removalPolicy: cdk.RemovalPolicy.SNAPSHOT,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::EC2::Volume', {
+      DeletionPolicy: 'Snapshot',
+    });
+  });
+
   test('fromVolumeAttributes', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1416,9 +1434,9 @@ describe('volume', () => {
     // THEN
     for (const testData of [
       [EbsDeviceVolumeType.GENERAL_PURPOSE_SSD, 1, 16384],
-      [EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3, 1, 16384],
+      [EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3, 1, 65536],
       [EbsDeviceVolumeType.PROVISIONED_IOPS_SSD, 4, 16384],
-      [EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2, 4, 16384],
+      [EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2, 4, 65536],
       [EbsDeviceVolumeType.THROUGHPUT_OPTIMIZED_HDD, 125, 16384],
       [EbsDeviceVolumeType.COLD_HDD, 125, 16384],
       [EbsDeviceVolumeType.MAGNETIC, 1, 1024],
