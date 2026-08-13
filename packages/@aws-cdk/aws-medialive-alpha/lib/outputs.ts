@@ -26,9 +26,8 @@ import { VideoCodecType } from './video-codec-settings';
 export function toDestinationId(outputName: string): string {
   if (Token.isUnresolved(outputName)) return outputName;
   return outputName
-    .replace(/[^a-zA-Z0-9-]/g, '-')
-    .replace(/-{2,}/g, '-')
-    .replace(/^-+|-+$/g, '');
+    .replace(/[^a-zA-Z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
 }
 
 /** @internal */
