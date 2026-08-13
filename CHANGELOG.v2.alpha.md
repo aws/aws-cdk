@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.264.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.263.0-alpha.0...v2.264.0-alpha.0) (2026-08-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* **glue-alpha:** `IDatabase.catalogArn` and `IDatabase.catalogId` were removed in factor of a type
+safe `ICatalog`, which has  `catalogArn` and `catalogId`. Consumers and implementations were updated
+accordingly.
+
+### Features
+
+* **glue-alpha:** new `Catalog` L2 ([#38443](https://github.com/aws/aws-cdk/issues/38443)) ([6a8ba8e](https://github.com/aws/aws-cdk/commit/6a8ba8e6597dd73ab2e92ac2dbb688006bbb481b))
+* **glue-alpha:** strengthen data encryption for `S3Table` ([#38501](https://github.com/aws/aws-cdk/issues/38501)) ([eb81d5e](https://github.com/aws/aws-cdk/commit/eb81d5e68c429d33417a8609ddc1204e39102687)), closes [/docs.aws.amazon.com/securityhub/latest/userguide/s3-controls.html#s3-5](https://github.com/aws//docs.aws.amazon.com/securityhub/latest/userguide/s3-controls.html/issues/s3-5)
+
+
+### Bug Fixes
+
+* **glue-alpha:** enable key rotation for security configuration encryption ([#38512](https://github.com/aws/aws-cdk/issues/38512)) ([18560e0](https://github.com/aws/aws-cdk/commit/18560e001cffa882ac498b363fc3edc047fea118))
+* **mediaconnect-alpha:** addOutput options and simplified VPC interface referencing ([#38515](https://github.com/aws/aws-cdk/issues/38515)) ([3c71466](https://github.com/aws/aws-cdk/commit/3c7146693547b05e048ac93f60bf6ace845270fc)), closes [#38517](https://github.com/aws/aws-cdk/issues/38517)
+
+## [2.263.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.262.2-alpha.0...v2.263.0-alpha.0) (2026-07-31)
+
+### ⚠ BREAKING CHANGES
+
+* **mediaconnect:** `removalPolicy` prop removed from `FlowProps`, `GatewayProps`, and `BridgeProps`. These resources now follow CloudFormation's default deletion behaviour (Delete).
+
+### Bug Fixes
+
+* **glue-alpha:** race condition when creating mutiple indices ([#38016](https://github.com/aws/aws-cdk/issues/38016)) ([18b1947](https://github.com/aws/aws-cdk/commit/18b1947a9db0e695ec85888faf24939261ffbe30)), closes [#24813](https://github.com/aws/aws-cdk/issues/24813) [#34](https://github.com/aws/aws-cdk/issues/34) [#34](https://github.com/aws/aws-cdk/issues/34)
+* **mediaconnect:** jsdoc typo ([#38434](https://github.com/aws/aws-cdk/issues/38434)) ([7fe6d3d](https://github.com/aws/aws-cdk/commit/7fe6d3df03720b381bb989f289855557f2cd47ac))
+* **mediaconnect:** remove default removal policy ([#38437](https://github.com/aws/aws-cdk/issues/38437)) ([238193d](https://github.com/aws/aws-cdk/commit/238193de50910ac1da8fb9f31f01776863998989))
+
+## [2.262.2-alpha.0](https://github.com/aws/aws-cdk/compare/v2.262.1-alpha.0...v2.262.2-alpha.0) (2026-07-29)
+
+## [2.262.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.262.0-alpha.0...v2.262.1-alpha.0) (2026-07-23)
+
 ## [2.262.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.261.0-alpha.0...v2.262.0-alpha.0) (2026-07-22)
 
 

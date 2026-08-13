@@ -190,7 +190,7 @@ new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
 
 The flexible execution class is appropriate for non-urgent jobs such as
 pre-production jobs, testing, and one-time data loads. Flexible jobs default
-to Glue version 3.0 and worker type `G_2X`. The following best practice
+to Glue version 5.0 and worker type `G_2X`. The following best practice
 features are enabled by default:
 `—enable-metrics, —enable-spark-ui, —enable-continuous-cloudwatch-log`
 
@@ -458,6 +458,13 @@ new glue.Connection(this, "RdsConnection", {
 });
 ```
 
+Connection `properties` are emitted verbatim into the CloudFormation template, so
+any credential placed there in plaintext is stored in plaintext in the template,
+`cdk.out`, and source control. Reference a Secrets Manager secret through
+`SECRET_ID` (as above) instead. If a property key looks like a credential (for
+example `PASSWORD`, `SECRET`, or `TOKEN`) and holds a plaintext literal, the
+construct emits a synthesis-time warning.
+
 If you need to use a connection type that doesn't exist as a static member on `ConnectionType`, you can instantiate a `ConnectionType` object, e.g: `new glue.ConnectionType('NEW_TYPE')`.
 
 See [Adding a Connection to Your Data Store](https://docs.aws.amazon.com/glue/latest/dg/populate-add-connection.html) and [Connection Structure](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-catalog-connections.html#aws-glue-api-catalog-connections-Connection) documentation for more information on the supported data stores and their configurations.
@@ -494,6 +501,158 @@ new glue.SecurityConfiguration(this, 'MySecurityConfiguration', {
 
 See [documentation](https://docs.aws.amazon.com/glue/latest/dg/encryption-security-configuration.html) for more info for Glue encrypting data written by Crawlers, Jobs, and Development Endpoints.
 
+## Catalog
+
+The Glue Data Catalog is a persistent metadata store for your data assets. Every
+account has an implicit, account-wide catalog that always exists, and you can also
+create additional catalogs as `AWS::Glue::Catalog` resources (for example, to
+federate to another metastore).
+
+A catalog's encryption is fixed when the catalog is created: a catalog either
+carries encryption settings or it does not. This keeps its configuration easy to
+reason about — there are no mutation methods that change encryption after the fact.
+
+### The account-wide catalog
+
+Use `Catalog.forAccount(scope)` to obtain the implicit account catalog. It is not
+a CloudFormation resource — it always exists. Repeated calls within the same stack
+return the same instance:
+
+```ts
+const catalog = glue.Catalog.forAccount(this);
+```
+
+To configure Data Catalog encryption for the account, use
+`Catalog.encryptAccount(scope, options)`:
+
+```ts
+declare const key: kms.Key;
+glue.Catalog.encryptAccount(this, {
+  encryptionAtRest: glue.DataCatalogEncryptionAtRest.kms(key),
+});
+```
+
+Because encryption is fixed at construction, `encryptAccount` must be called
+*before* the account catalog is first used in the stack — before any
+`Catalog.forAccount(this)` call, and before any `Database` that uses the account
+catalog. Calling it after the account catalog has been materialized throws.
+
+The account catalog's encryption is an account- and region-wide setting, managed
+through the singleton `PutDataCatalogEncryptionSettings` API. Configure it in
+exactly one stack. Configuring it from multiple stacks in the same account and
+region makes those stacks overwrite one another at deploy time, and the result is
+order-dependent. Unlike duplicate settings within a single stack (which
+CloudFormation rejects), this cross-stack conflict is not caught at synthesis
+time, because each stack synthesizes to its own template.
+
+### Creating a catalog
+
+To create a new catalog resource, use the `Catalog` constructor. Encryption is
+configured through the `encryptionAtRest` and `connectionPasswordEncryption` props:
+
+```ts
+new glue.Catalog(this, 'MyCatalog', {
+  catalogName: 'my-catalog',
+  description: 'my catalog description',
+});
+```
+
+### Encryption at rest
+
+Configure Data Catalog encryption at rest through the `encryptionAtRest` option
+(on `Catalog.encryptAccount`, the `Catalog` constructor, or the import factories).
+It accepts a `DataCatalogEncryptionAtRest` describing the mode:
+
+```ts
+declare const key: kms.Key;
+
+// SSE-KMS with a customer-managed key
+glue.Catalog.encryptAccount(this, {
+  encryptionAtRest: glue.DataCatalogEncryptionAtRest.kms(key),
+});
+
+// SSE-KMS with an AWS-managed key (omit the key)
+new glue.Catalog(this, 'ManagedKeyCatalog', {
+  catalogName: 'managed-key-catalog',
+  encryptionAtRest: glue.DataCatalogEncryptionAtRest.kms(),
+});
+
+// Disable encryption at rest
+new glue.Catalog(this, 'PlaintextCatalog', {
+  catalogName: 'plaintext-catalog',
+  encryptionAtRest: glue.DataCatalogEncryptionAtRest.disabled(),
+});
+```
+
+When you use `SSE-KMS-WITH-SERVICE-ROLE`, AWS Glue accesses the KMS key through a
+service role you provide. If you pass a customer-managed key, the role is
+automatically granted the permissions it needs to encrypt and decrypt catalog data:
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const key: kms.Key;
+declare const role: iam.IRole;
+glue.Catalog.encryptAccount(this, {
+  encryptionAtRest: glue.DataCatalogEncryptionAtRest.kmsWithServiceRole(role, key),
+});
+```
+
+The customer-managed key, when configured, is exposed on the catalog as
+`encryptionKey` (and the connection-password key as `connectionPasswordKey`), so
+you can reference it to grant additional access. It is undefined when encryption is
+disabled or an AWS-managed key is used.
+
+### Connection password encryption
+
+Independently from encryption at rest, the Data Catalog can encrypt the passwords
+stored in connection properties. Configure it through the
+`connectionPasswordEncryption` option:
+
+```ts
+declare const key: kms.Key;
+glue.Catalog.encryptAccount(this, {
+  connectionPasswordEncryption: {
+    kmsKey: key,
+    // Whether GetConnection/GetConnections return the password encrypted (default: true)
+    returnConnectionPasswordEncrypted: true,
+  },
+});
+```
+
+The two encryption blocks are independent: enabling one does not require the other,
+and each may use a different KMS key. The customer-managed key for connection
+passwords is exposed as `connectionPasswordKey`.
+
+### Importing a catalog
+
+You can import an existing catalog by ARN or by id. An imported catalog is a pure
+identity handle — it emits no resources and does not manage the catalog's
+encryption:
+
+```ts
+const byId = glue.Catalog.fromCatalogId(this, 'ById', 'my-catalog-id');
+const byArn = glue.Catalog.fromCatalogArn(this, 'ByArn', 'arn:aws:glue:us-east-1:123456789012:catalog/my-catalog-id');
+```
+
+To manage the Data Catalog encryption of a catalog you did not create in this
+stack, add a `CfnDataCatalogEncryptionSettings` resource targeting its id
+directly. Do this from exactly one stack: like the account catalog, a catalog has
+a single encryption configuration, so two settings resources targeting the same id
+race to overwrite one another at deploy time. Within a single stack this is caught
+by CloudFormation template validation (E3019, duplicate primary identifiers);
+across stacks it is not, since each stack synthesizes to its own template.
+
+```ts
+import { CfnDataCatalogEncryptionSettings } from 'aws-cdk-lib/aws-glue';
+
+new CfnDataCatalogEncryptionSettings(this, 'Encryption', {
+  catalogId: 'my-catalog-id',
+  dataCatalogEncryptionSettings: {
+    encryptionAtRest: { catalogEncryptionMode: 'SSE-KMS' },
+  },
+});
+```
+
 ## Database
 
 A `Database` is a logical grouping of `Tables` in the Glue Catalog.
@@ -502,6 +661,19 @@ A `Database` is a logical grouping of `Tables` in the Glue Catalog.
 new glue.Database(this, 'MyDatabase', {
   databaseName: 'my_database',
   description: 'my_database_description',
+});
+```
+
+Because a database is a container for tables and their metadata, it is retained
+by default when removed from the stack, to avoid accidental data loss. Set
+`removalPolicy` to `RemovalPolicy.DESTROY` to have it deleted instead:
+
+```ts
+import { RemovalPolicy } from 'aws-cdk-lib';
+
+new glue.Database(this, 'MyDatabase', {
+  databaseName: 'my_database',
+  removalPolicy: RemovalPolicy.DESTROY,
 });
 ```
 
@@ -877,6 +1049,8 @@ new glue.ExternalTable(this, 'MyTable', {
 
 ## [Encryption](https://docs.aws.amazon.com/athena/latest/ug/encryption.html)
 
+When the table creates its own S3 bucket (i.e. you do not pass an explicit `bucket`), that bucket enforces SSL: a bucket policy denies any request made over plain HTTP. If you provide your own bucket, enabling `enforceSSL` on it is your responsibility.
+
 You can enable encryption on a Table's data:
 
 * [S3Managed](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html) - (default) Server side encryption (`SSE-S3`) with an Amazon S3-managed key.
@@ -972,6 +1146,28 @@ new glue.S3Table(this, 'MyTable', {
 ```
 
 *Note: you cannot provide a `Bucket` when creating the `S3Table` if you wish to use server-side encryption (`KMS`, `KMS_MANAGED` or `S3_MANAGED`)*.
+
+### Marking table data as encrypted
+
+Both `S3Table` and `ExternalTable` set the `has_encrypted_data` table parameter, which
+Athena reads when querying client-side (`CSE-KMS`) encrypted datasets. It defaults to `true`.
+Set `hasEncryptedData` to `false` when the underlying data is not encrypted:
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.S3Table(this, 'MyTable', {
+  hasEncryptedData: false,
+  database: myDatabase,
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+});
+```
+
+Do not set `has_encrypted_data` through the free-form `parameters` map as well - a value
+there that conflicts with `hasEncryptedData` is rejected at synthesis time.
 
 ## Types
 
