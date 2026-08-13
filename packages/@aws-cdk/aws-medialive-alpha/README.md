@@ -1090,7 +1090,7 @@ new medialive.Channel(stack, 'Channel', {
 
 ## Auto-Created Role and Grants
 
-When no `role` is provided, the channel auto-creates an IAM role with the `medialive.amazonaws.com` service principal and grants it only the permissions your configuration actually needs. This is narrower than the AWS-managed `MediaLiveAccessRole`, which grants broad access across the service surface (see [trusted entity requirements](https://docs.aws.amazon.com/medialive/latest/ug/trusted-entity-requirements.html)).
+When no `role` is provided, the channel auto-creates an IAM role with the `medialive.amazonaws.com` service principal and grants it only the permissions your configuration actually needs.
 
 **Channel role grants** — wired based on what you configure:
 
@@ -1209,15 +1209,30 @@ const cluster = new medialive.Cluster(stack, 'Cluster', {
 
 ### Channel Placement Group
 
-A channel placement group assigns channels to specific nodes within a cluster:
+A channel placement group assigns channels to specific nodes within a cluster. Associate it with a channel via `anywhereSettings`:
 
 ```ts
 declare const stack: Stack;
 declare const cluster: medialive.ICluster;
+declare const input: medialive.IInput;
+declare const video: medialive.EncodeConfiguration;
+declare const bucket: s3.IBucket;
 
 const cpg = new medialive.ChannelPlacementGroup(stack, 'CPG', {
   channelPlacementGroupName: 'my-cpg',
   cluster,
+});
+
+new medialive.Channel(stack, 'AnywhereChannel', {
+  inputs: [{ input }],
+  anywhereSettings: { cluster, channelPlacementGroup: cpg },
+  outputGroups: [
+    medialive.OutputGroupConfiguration.hls({
+      name: 'hls',
+      destinations: [medialive.OutputDestination.toBucket(bucket, 'live/stream')],
+      outputs: [{ encodes: [video], outputName: 'hls_out' }],
+    }),
+  ],
 });
 ```
 
