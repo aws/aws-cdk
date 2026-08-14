@@ -61,7 +61,7 @@ Router resources work together in a pipeline:
 
 A typical camera-to-cloud workflow looks like:
 
-```ts
+```text
 Camera → RouterNetworkInterface → RouterInput (SRT) → [Router] → RouterOutput (MediaLive) → MediaLive Channel
 ```
 
@@ -73,7 +73,7 @@ Here's a complete example showing how to connect an SRT source through a router 
 
 ```ts
 declare const stack: Stack;
-declare const mediaLiveInput: medialive.IInputRef;
+declare const mediaLiveInput: medialive.IInput;
 
 // 1. A public network interface for the SRT input
 const networkInterface = new RouterNetworkInterface(stack, 'NetworkInterface', {
@@ -204,7 +204,7 @@ Connect a router input to a MediaLive channel. `outputName` must match the `outp
 
 ```ts
 declare const stack: Stack;
-declare const mediaLiveChannel: medialive.IChannelRef;
+declare const mediaLiveChannel: medialive.IChannel;
 
 const input = new RouterInput(stack, 'ChannelInput', {
   routerInputName: 'channel-input',
@@ -226,7 +226,7 @@ If the MediaLive channel's router output group uses `SECRETS_MANAGER` transit en
 
 ```ts
 declare const stack: Stack;
-declare const mediaLiveChannel: medialive.IChannelRef;
+declare const mediaLiveChannel: medialive.IChannel;
 declare const transitSecret: Secret; // must hold the same value as the channel's MediaConnectRouterSettings.shared() secret
 
 const input = new RouterInput(stack, 'ChannelInput', {
@@ -329,7 +329,7 @@ Connect a router output to a MediaLive input (the input must be a MediaConnect R
 
 ```ts
 declare const stack: Stack;
-declare const mediaLiveInput: medialive.IInputRef;
+declare const mediaLiveInput: medialive.IInput;
 
 const output = new RouterOutput(stack, 'MediaLiveOutput', {
   routerOutputName: 'medialive-output',
