@@ -840,7 +840,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
         throw new ValidationError(lit`MustBeCanaryHandlerSpecified`, `Canary Handler must be specified as \'fileName.handler\' for legacy runtimes, received ${handler}`, this);
       }
     } else {
-      if (!handler.match(/^(([0-9a-zA-Z_-]+(\/|\.))*[0-9A-Za-z_\\-]+(\.|::)[A-Za-z_][A-Za-z0-9_]*$/)) {
+      if (!handler.match(/^(([0-9a-zA-Z_-]+(\/|\.))*[0-9A-Za-z_\\-]+(\.|::)[A-Za-z_][A-Za-z0-9_]*)?$/)) {
         throw new ValidationError(lit`MustBeCanaryHandlerSpecified`, `Canary Handler must be specified either as 'fileName.handler', 'fileName.functionName', 'folder/fileName.functionName', or 'fully.qualified.ClassName::method' for Java runtimes, received ${handler}`, this);
       }
     }
