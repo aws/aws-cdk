@@ -399,7 +399,7 @@ test.each([
     runtime,
     activeTracing: true,
   }))
-     .toThrow(`You can only enable active tracing for canaries that use canary runtime version 'syn-nodejs-2.0' or later, are not using the Playwright runtime, got ${runtime.name}.`);
+    .toThrow(`You can only enable active tracing for canaries that use canary runtime version 'syn-nodejs-2.0' or later, are not using the Playwright runtime, got ${runtime.name}.`);
 });
 
 test('environment variables can be specified', () => {
@@ -1024,7 +1024,7 @@ describe('handler validation', () => {
         }),
         runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_0,
       });
-     }).toThrow(/Canary Handler must be specified either as 'fileName.handler', 'fileName.functionName', 'folder\/fileName.functionName', or 'fully.qualified.ClassName::method' for Java runtimes/);
+    }).toThrow(/Canary Handler must be specified either as 'fileName.handler', 'fileName.functionName', 'folder\/fileName.functionName', or 'fully.qualified.ClassName::method' for Java runtimes/);
 
     expect(() => {
       new synthetics.Canary(stack, 'Canary1', {

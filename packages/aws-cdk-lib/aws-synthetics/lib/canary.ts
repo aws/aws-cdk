@@ -862,7 +862,9 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
       (
       // Only check runtime family because versions prior to syn-nodejs-2.0 are deprecated and can no longer be configured.
       // Java runtimes also support active tracing.
-        (!cdk.Token.isUnresolved(props.runtime.family) && props.runtime.family !== RuntimeFamily.NODEJS && props.runtime.family !== RuntimeFamily.JAVA) ||
+        (!cdk.Token.isUnresolved(props.runtime.family) &&
+          props.runtime.family !== RuntimeFamily.NODEJS &&
+          props.runtime.family !== RuntimeFamily.JAVA) ||
         (!cdk.Token.isUnresolved(props.runtime.name) && props.runtime.name.includes('playwright'))
       )
     ) {
