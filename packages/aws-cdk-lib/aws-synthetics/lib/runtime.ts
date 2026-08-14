@@ -13,6 +13,11 @@ export enum RuntimeFamily {
   PYTHON,
 
   /**
+   * All Lambda runtimes that depend on Java.
+   */
+  JAVA,
+
+  /**
    * Any future runtime family.
    */
   OTHER,
@@ -316,6 +321,112 @@ export class Runtime {
   public static readonly SYNTHETICS_NODEJS_PUPPETEER_13_0 = new Runtime('syn-nodejs-puppeteer-13.0', RuntimeFamily.NODEJS);
 
   /**
+   * `syn-nodejs-puppeteer-13.1` includes the following:
+   * - Lambda runtime Node.js 22.x
+   * - Puppeteer-core version 24.25.0
+   * - Chromium version 142.0.7444.175
+   * - Firefox version 145.x
+   *
+   * New Features:
+   * - **Synthetics runtime namespace migration**: Migrate the canary script to use the new namespace.
+   *   - `Synthetics` → `@aws/synthetics-puppeteer`
+   *   - `SyntheticsLink` → `@aws/synthetics-link`
+   *   - `SyntheticsLogger` → `@aws/synthetics-logger`
+   *   - `SyntheticsLogHelper` → `@aws/synthetics-log-helper`
+   *   - `BrokenLinkCheckerReport` → `@aws/synthetics-broken-link-checker-report`
+   * - **Type definitions on npm**: Type definitions are available in npm Registry. Ensure that the package version matches your canary's runtime version.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-13.1
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_13_1 = new Runtime('syn-nodejs-puppeteer-13.1', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-puppeteer-14.0` includes the following:
+   * - Lambda runtime Node.js 22.x
+   * - Puppeteer-core version 24.34.0
+   * - Chromium version 143.0.7499.169
+   * - Firefox version 146.x
+   *
+   * New Features:
+   * - **Updated versions of the bundled libraries in Puppeteer and Chromium**: The Puppeteer and Chromium dependencies are updated to new versions.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-14.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_14_0 = new Runtime('syn-nodejs-puppeteer-14.0', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-puppeteer-15.0` includes the following:
+   * - Lambda runtime Node.js 22.x
+   * - Puppeteer-core version 24.37.5
+   * - Chromium version 145.0.7632.77
+   * - Firefox version 147.0.4
+   *
+   * New Features:
+   * - **Updated versions of the bundled libraries in Puppeteer and Chromium**: The Puppeteer and Chromium dependencies are updated to new versions.
+   * - **Bug fix**: Fixed a bug where `continueOnHttpStepFailure` was not being honored, causing canary runs to be incorrectly marked as successful despite HTTP step failures occurring.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-15.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_15_0 = new Runtime('syn-nodejs-puppeteer-15.0', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-puppeteer-15.1` includes the following:
+   * - Lambda runtime Node.js 22.x
+   * - Puppeteer-core version 24.42.0
+   * - Chromium version 147.0.7727.57
+   * - Firefox version 147.0.4
+   *
+   * New Features:
+   * - **Updated versions of the bundled libraries in Puppeteer and Chromium**: The Puppeteer and Chromium dependencies are updated to new versions.
+   * - **Bug fixes**: Fixed header capture issue where HTTP headers with array values were not being captured properly.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-15.1
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_15_1 = new Runtime('syn-nodejs-puppeteer-15.1', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-puppeteer-16.0` includes the following:
+   * - Lambda runtime Node.js 22.x
+   * - Puppeteer-core version 24.42.0
+   * - Chromium version 147.0.7727.57
+   * - Firefox version 147.0.4
+   *
+   * New Features:
+   * - **Multilocation canaries**: Run the same canary across multiple AWS Regions from a single point of management.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-16.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_16_0 = new Runtime('syn-nodejs-puppeteer-16.0', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-puppeteer-16.1` includes the following:
+   * - Lambda runtime Node.js 22.x
+   * - Puppeteer-core version 24.42.0
+   * - Chromium version 147.0.7727.57
+   * - Firefox version 147.0.4
+   *
+   * Bug fixes:
+   * - **Bug fix**: Fixed an issue where HTTP headers with array values were not being captured properly.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-16.1
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_16_1 = new Runtime('syn-nodejs-puppeteer-16.1', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-puppeteer-17.0` includes the following:
+   * - Lambda runtime Node.js 22.x
+   * - Puppeteer-core version 25.2.1
+   * - Chromium version 150.0.7871.24
+   * - Firefox version 152.0.2
+   *
+   * New Features:
+   * - **Security updates**: Upgraded Chromium, ws, and ImageMagick to address several CVEs.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-17.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_17_0 = new Runtime('syn-nodejs-puppeteer-17.0', RuntimeFamily.NODEJS);
+
+  /**
    * `syn-nodejs-playwright-1.0` includes the following:
    * - Lambda runtime Node.js 20.x
    * - Playwright version 1.45
@@ -533,6 +644,73 @@ export class Runtime {
   public static readonly SYNTHETICS_NODEJS_3_1 = new Runtime('syn-nodejs-3.1', RuntimeFamily.NODEJS);
 
   /**
+   * `syn-nodejs-4.0` includes the following:
+   * - Lambda runtime Node.js 22.x
+   *
+   * New Features:
+   * - **Updated dependencies**: Applied security patches.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_Nodejs.html#CloudWatch_Synthetics_runtimeversion-syn-nodejs-4.0
+   */
+  public static readonly SYNTHETICS_NODEJS_4_0 = new Runtime('syn-nodejs-4.0', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-4.1` includes the following:
+   * - Lambda runtime Node.js 22.x
+   *
+   * New Features:
+   * - **Updated dependencies**: Upgraded fast-xml-parser to address CVEs.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_Nodejs.html#CloudWatch_Synthetics_runtimeversion-syn-nodejs-4.1
+   */
+  public static readonly SYNTHETICS_NODEJS_4_1 = new Runtime('syn-nodejs-4.1', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-4.2` includes the following:
+   * - Lambda runtime Node.js 22.x
+   *
+   * New Features:
+   * - **Updated dependencies**: Upgraded axios and fast-xml-builder to address CVEs.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_Nodejs.html#CloudWatch_Synthetics_runtimeversion-syn-nodejs-4.2
+   */
+  public static readonly SYNTHETICS_NODEJS_4_2 = new Runtime('syn-nodejs-4.2', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-5.0` includes the following:
+   * - Lambda runtime Node.js 22.x
+   *
+   * New Features:
+   * - **Updated dependencies**: Upgraded brace-expansion to address CVE.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_Nodejs.html#CloudWatch_Synthetics_runtimeversion-syn-nodejs-5.0
+   */
+  public static readonly SYNTHETICS_NODEJS_5_0 = new Runtime('syn-nodejs-5.0', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-5.1` includes the following:
+   * - Lambda runtime Node.js 22.x
+   *
+   * New Features:
+   * - **Bug fix**: Fixed an issue where HTTP headers with array values were not being captured properly.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_Nodejs.html#CloudWatch_Synthetics_runtimeversion-syn-nodejs-5.1
+   */
+  public static readonly SYNTHETICS_NODEJS_5_1 = new Runtime('syn-nodejs-5.1', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-5.2` includes the following:
+   * - Lambda runtime Node.js 22.x
+   *
+   * New Features:
+   * - **Bug fix**: Multi checks blueprint bug fix. The runtime now correctly resolves `${AWS_SECRET:...}` references in global variables and SigV4 authentication configuration.
+   * - **Updated dependencies**: Upgraded protobufjs, jsonpath, and fast-xml-parser to address CVEs.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_Nodejs.html#CloudWatch_Synthetics_runtimeversion-syn-nodejs-5.2
+   */
+  public static readonly SYNTHETICS_NODEJS_5_2 = new Runtime('syn-nodejs-5.2', RuntimeFamily.NODEJS);
+
+  /**
    * `syn-python-selenium-1.0` includes the following:
    * - Lambda runtime Python 3.8
    * - Selenium version 3.141.0
@@ -704,6 +882,103 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-7.0
    */
   public static readonly SYNTHETICS_PYTHON_SELENIUM_7_0 = new Runtime('syn-python-selenium-7.0', RuntimeFamily.PYTHON);
+
+  /**
+   * `syn-python-selenium-8.0` includes the following:
+   * - Lambda runtime Python 3.11
+   * - Selenium version 4.32.0
+   * - Chromium version 142.0.7444.175
+   *
+   * New Features:
+   * - **Updated versions of the bundled libraries in Selenium and Chromium**: The Selenium and Chromium dependencies are updated to new versions.
+   * - Modified failed HAR network request log level from ERROR to INFO.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-8.0
+   */
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_8_0 = new Runtime('syn-python-selenium-8.0', RuntimeFamily.PYTHON);
+
+  /**
+   * `syn-python-selenium-9.0` includes the following:
+   * - Lambda runtime Python 3.11
+   * - Selenium version 4.32.0
+   * - Chromium version 143.0.7499.169
+   *
+   * New Features:
+   * - **Updated versions of the bundled libraries in Chromium**: The Chromium dependency is updated to a new version.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-9.0
+   */
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_9_0 = new Runtime('syn-python-selenium-9.0', RuntimeFamily.PYTHON);
+
+  /**
+   * `syn-python-selenium-10.0` includes the following:
+   * - Lambda runtime Python 3.11
+   * - Selenium version 4.32.0
+   * - Chromium version 145.0.7632.77
+   *
+   * New Features:
+   * - **Updated versions of the bundled libraries in Chromium**: The Chromium dependency is updated to a new version.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-10.0
+   */
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_10_0 = new Runtime('syn-python-selenium-10.0', RuntimeFamily.PYTHON);
+
+  /**
+   * `syn-python-selenium-11.0` includes the following:
+   * - Lambda runtime Python 3.12
+   * - Selenium version 4.32.0
+   * - Chromium version 147.0.7727.57
+   *
+   * New Features:
+   * - **Updated Python runtime and browser versions**: Python runtime and browser versions are updated to new versions.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-11.0
+   */
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_11_0 = new Runtime('syn-python-selenium-11.0', RuntimeFamily.PYTHON);
+
+  /**
+   * `syn-python-selenium-11.1` includes the following:
+   * - Lambda runtime Python 3.12
+   * - Selenium version 4.32.0
+   * - Chromium version 147.0.7727.57
+   *
+   * New Features:
+   * - **Updated dependency versions**: Upgraded urllibx to address CVEs.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-11.1
+   */
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_11_1 = new Runtime('syn-python-selenium-11.1', RuntimeFamily.PYTHON);
+
+  /**
+   * `syn-python-selenium-12.0` includes the following:
+   * - Lambda runtime Python 3.12
+   * - Selenium version 4.32.0
+   * - Chromium version 150.0.7871.24
+   *
+   * New Features:
+   * - **Updated Chromium version**: Upgraded Chromium to address CVE-2026-11645.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-12.0
+   */
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_12_0 = new Runtime('syn-python-selenium-12.0', RuntimeFamily.PYTHON);
+
+  /**
+   * `syn-java-1.0` includes the following:
+   * - Lambda runtime Java 21
+   *
+   * Features:
+   * - **CloudWatch Logs integration**: Query and filter for logs through the CloudWatch Synthetics console.
+   *   Each log message contains a unique `canaryRunId`, making it easy to search for logs for a particular canary run.
+   * - **Metrics**: Monitor canary run success percentage and duration through CloudWatch metrics.
+   *   You can also configure alarms to alert you when canaries detect issues.
+   * - **Canary artifacts**: Each canary run uploads a detailed report corresponding to the run and the steps in the run,
+   *   which can be accessed through Amazon S3.
+   * - **Support for traces**: Emit traces for all the requests made by the canary through AWS X-Ray.
+   *   Each canary run is associated with one trace ID.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_Java.html
+   */
+  public static readonly SYNTHETICS_JAVA_1_0 = new Runtime('syn-java-1.0', RuntimeFamily.JAVA);
 
   /**
    * @param name The name of the runtime version

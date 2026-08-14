@@ -319,6 +319,29 @@ test.each([true, false])('activeTracing can be set to %s', (activeTracing: boole
   });
 });
 
+test.each([true, false])('activeTracing can be set for Java runtime', (activeTracing: boolean) => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_JAVA_1_0,
+    test: synthetics.Test.custom({
+      handler: 'canarypackage.ExampleCanary::canaryCode',
+      code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
+    }),
+    activeTracing,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    RuntimeVersion: 'syn-java-1.0',
+    RunConfig: {
+      ActiveTracing: activeTracing,
+    },
+  });
+});
+
 test.each([true, false])('specify provisioned resource cleanup', (provisionedResourceCleanup: boolean) => {
   // GIVEN
   const stack = new Stack();
@@ -376,7 +399,7 @@ test.each([
     runtime,
     activeTracing: true,
   }))
-    .toThrow(`You can only enable active tracing for canaries that use canary runtime version 'syn-nodejs-2.0' or later and are not using the Playwright runtime, got ${runtime.name}.`);
+     .toThrow(`You can only enable active tracing for canaries that use canary runtime version 'syn-nodejs-2.0' or later, are not using the Playwright runtime, got ${runtime.name}.`);
 });
 
 test('environment variables can be specified', () => {
@@ -1001,7 +1024,7 @@ describe('handler validation', () => {
         }),
         runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_0,
       });
-    }).toThrow(/Canary Handler must be specified either as 'fileName.handler', 'fileName.functionName', or 'folder\/fileName.functionName'/);
+     }).toThrow(/Canary Handler must be specified either as 'fileName.handler', 'fileName.functionName', 'folder\/fileName.functionName', or 'fully.qualified.ClassName::method' for Java runtimes/);
 
     expect(() => {
       new synthetics.Canary(stack, 'Canary1', {
@@ -1022,6 +1045,30 @@ describe('handler validation', () => {
         runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_0,
       });
     }).not.toThrow();
+
+    // Java handler with :: separator should work
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary3', {
+        test: synthetics.Test.custom({
+          handler: 'canarypackage.ExampleCanary::canaryCode',
+          code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_JAVA_1_0,
+      });
+    }).not.toThrow();
+  });
+
+  test('invalid handler for Java runtime', () => {
+    const stack = new Stack();
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary1', {
+        test: synthetics.Test.custom({
+          handler: 'invalid_java_handler',
+          code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_JAVA_1_0,
+      });
+    }).toThrow(/Canary Handler must be specified/);
   });
 
   test('handler length', () => {
