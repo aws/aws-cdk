@@ -79,7 +79,6 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/aws-medialive-alpha": "^0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "^2.202.3",
     "@aws-cdk/integ-tests-alpha": "^0.0.0",

@@ -73,7 +73,7 @@ Here's a complete example showing how to connect an SRT source through a router 
 
 ```ts
 declare const stack: Stack;
-declare const mediaLiveInput: medialive.Input;
+declare const mediaLiveInput: medialive.IInputRef;
 
 // 1. A public network interface for the SRT input
 const networkInterface = new RouterNetworkInterface(stack, 'NetworkInterface', {
@@ -204,7 +204,7 @@ Connect a router input to a MediaLive channel. `outputName` must match the `outp
 
 ```ts
 declare const stack: Stack;
-declare const mediaLiveChannel: medialive.Channel;
+declare const mediaLiveChannel: medialive.IChannelRef;
 
 const input = new RouterInput(stack, 'ChannelInput', {
   routerInputName: 'channel-input',
@@ -219,27 +219,14 @@ const input = new RouterInput(stack, 'ChannelInput', {
 });
 ```
 
-> **Tip:** If you're defining the channel with the `@aws-cdk/aws-medialive-alpha` L2, name the output definition as its own object instead of inlining it into the output group's `outputs: [...]` array, and read `.outputName` back off that object here — this ties the two references together so they can't silently drift apart:
->
-> ```ts
-> declare const video: medialive.EncodeConfiguration;
-> const routerOutput: medialive.MediaConnectRouterOutputDefinition = {
->   encodes: [video],
->   outputName: 'router-ts',
-> };
-> const routerOutputGroup = medialive.OutputGroupConfiguration.mediaConnectRouter({
->   name: 'router-out',
->   availabilityZones: ['us-east-1a'],
->   outputs: [routerOutput],
-> });
-> // Then reference routerOutput.outputName in RouterInputConfiguration.mediaLiveChannel()
-> ```
+> **Tip:** For full examples of wiring a MediaLive channel to a MediaConnect Router (including
+> transit encryption), see the [MediaLive L2 README — MediaConnect Router section](./../aws-medialive-alpha/README.md#aws-elemental-mediaconnect-router).
 
 If the MediaLive channel's router output group uses `SECRETS_MANAGER` transit encryption, the router input must specify `sourceTransitDecryption` with a secret holding the same passphrase value. When both sides use `AUTOMATIC`, no decryption configuration is needed.
 
 ```ts
 declare const stack: Stack;
-declare const mediaLiveChannel: medialive.Channel;
+declare const mediaLiveChannel: medialive.IChannelRef;
 declare const transitSecret: Secret; // must hold the same value as the channel's MediaConnectRouterSettings.shared() secret
 
 const input = new RouterInput(stack, 'ChannelInput', {
@@ -338,11 +325,11 @@ const output = new RouterOutput(stack, 'SrtOutput', {
 
 #### MediaLive Output
 
-Connect a router output to a MediaLive input (the input must be of type `medialive.InputConfiguration.mediaConnectRouter()`):
+Connect a router output to a MediaLive input (the input must be a MediaConnect Router type):
 
 ```ts
 declare const stack: Stack;
-declare const mediaLiveInput: medialive.Input;
+declare const mediaLiveInput: medialive.IInputRef;
 
 const output = new RouterOutput(stack, 'MediaLiveOutput', {
   routerOutputName: 'medialive-output',
