@@ -457,6 +457,41 @@ export class BedrockFoundationModel implements IBedrockInvokable {
   );
 
   /**
+   * Anthropic's Claude Opus 5 model, Anthropic's most advanced Opus model,
+   * powering long-running agents while delivering improvements in coding and
+   * professional work.
+   * Features a 1M token context window, 128K max output tokens, and supports reasoning.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_5 = new BedrockFoundationModel(
+    'anthropic.claude-opus-5',
+    { supportsAgents: true, supportsCrossRegion: true },
+  );
+
+  /**
+   * Anthropic's Claude Fable 5 model, Anthropic's next-generation model for
+   * complex knowledge work and coding, capable of sustained autonomous operation
+   * across multi-day tasks.
+   * Features a 1M token context window, 128K max output tokens, and supports reasoning.
+   *
+   * Using this model requires opting in to the `provider_data_share` data
+   * retention mode; see the Amazon Bedrock model card for details.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   */
+  public static readonly ANTHROPIC_CLAUDE_FABLE_5 = new BedrockFoundationModel(
+    'anthropic.claude-fable-5',
+    { supportsAgents: true, supportsCrossRegion: true },
+  );
+
+  /**
    * Anthropic's Claude Opus 4.5 model, the flagship model released November 2025.
    * Excels at real-world programming tasks, scoring highest on SWE-bench Verified benchmarks.
    * Demonstrates superior performance in long-horizon, goal-directed agentic work with fewer dead-ends.
