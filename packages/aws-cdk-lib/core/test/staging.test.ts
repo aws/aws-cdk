@@ -1751,6 +1751,85 @@ describe('staging', () => {
       ]);
     });
   });
+
+  describe('asset source that is itself a symbolic link', () => {
+    const SYMLINKS_DIR = path.join(__dirname, 'fs', 'fixtures', 'symlinks');
+    const SYMLINK_THROW = /is an external symbolic link which is forbidden due to follow mode internal-only/;
+
+    // A source tree is whatever `sourcePath` names, so a link at the root always points out
+    // of it -- even one landing next to itself. Staging it would materialize the target.
+    test.each([
+      ['a file outside the link\'s directory', 'external-link.txt'],
+      ['a file next to the link', 'local-link.txt'],
+      ['a directory outside the link\'s directory', 'external-dir-link'],
+      ['a directory next to the link', 'local-dir-link'],
+    ])('fails under mode BLOCK_EXTERNAL when the source is a link to %s', (_, link) => {
+      // GIVEN
+      const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+      const stack = new Stack(app, 'stack');
+      const source = path.join(SYMLINKS_DIR, link);
+
+      // THEN
+      expect(() => new AssetStaging(stack, 'Asset', {
+        sourcePath: source,
+        follow: SymlinkFollowMode.BLOCK_EXTERNAL,
+      })).toThrow(SYMLINK_THROW);
+    });
+
+    test('fails under mode BLOCK_EXTERNAL naming both the source and the link target', () => {
+      // GIVEN
+      const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+      const stack = new Stack(app, 'stack');
+      const source = path.join(SYMLINKS_DIR, 'external-link.txt');
+
+      // THEN
+      expect(() => new AssetStaging(stack, 'Asset', {
+        sourcePath: source,
+        follow: SymlinkFollowMode.BLOCK_EXTERNAL,
+      })).toThrow(`The asset source ${source} is an external symbolic link which is forbidden due to follow mode internal-only. It points at ${path.join(__dirname, 'fs', 'fixtures', 'test1', 'subdir2', 'subdir3', 'file3.txt')}, which is outside the asset source tree.`);
+    });
+
+    test('a regular file source is unaffected under mode BLOCK_EXTERNAL', () => {
+      // GIVEN
+      const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+      const stack = new Stack(app, 'stack');
+      const source = path.join(SYMLINKS_DIR, 'normal-file.txt');
+
+      // WHEN
+      const staging = new AssetStaging(stack, 'Asset', {
+        sourcePath: source,
+        follow: SymlinkFollowMode.BLOCK_EXTERNAL,
+      });
+
+      // THEN
+      expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
+      expect(fs.readFileSync(staging.absoluteStagedPath, 'utf8')).toEqual(fs.readFileSync(source, 'utf8'));
+    });
+
+    test.each([
+      [undefined], // EXTERNAL is also the default when `follow` is unset
+      [SymlinkFollowMode.EXTERNAL],
+      [SymlinkFollowMode.ALWAYS],
+      [SymlinkFollowMode.NEVER],
+    ])('follows a link at the source root under mode %s', (follow) => {
+      // GIVEN
+      const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+      const stack = new Stack(app, 'stack');
+      const source = path.join(SYMLINKS_DIR, 'external-link.txt');
+
+      // WHEN
+      const staging = new AssetStaging(stack, 'Asset', {
+        sourcePath: source,
+        follow,
+      });
+
+      // THEN - the target's contents are staged, as they always have been
+      expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
+      expect(fs.readFileSync(staging.absoluteStagedPath, 'utf8')).toEqual(
+        fs.readFileSync(path.join(__dirname, 'fs', 'fixtures', 'test1', 'subdir2', 'subdir3', 'file3.txt'), 'utf8'),
+      );
+    });
+  });
 });
 
 describe('staging with docker cp', () => {

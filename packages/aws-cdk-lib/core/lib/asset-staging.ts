@@ -184,7 +184,16 @@ export class AssetStaging extends Construct {
 
     // look for invalid (external) symlinks
     if (props.follow == SymlinkFollowMode.BLOCK_EXTERNAL) {
-      if (fs.statSync(this.sourcePath).isDirectory()) {
+      if (fs.lstatSync(this.sourcePath).isSymbolicLink()) {
+        // The source tree is whatever `sourcePath` names, so a link at the root can only
+        // ever point outside of it.
+        const target = resolveLinkTarget(this.sourcePath, fs.readlinkSync(this.sourcePath));
+        throw new ValidationError(
+          lit`AssetSourceSymlinkForbidden`,
+          `The asset source ${this.sourcePath} is an external symbolic link which is forbidden due to follow mode ${props.follow}. It points at ${target}, which is outside the asset source tree. Set \`follow\` to a mode that will follow symlinks (ALWAYS or EXTERNAL) or set \`sourcePath\` to the link target`,
+          this,
+        );
+      } else if (fs.statSync(this.sourcePath).isDirectory()) {
         validateInternalSymlinks(this.sourcePath, scope, props.follow);
       }
     }
