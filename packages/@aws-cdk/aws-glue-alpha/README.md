@@ -81,6 +81,17 @@ The Spark UI (`—enable-spark-ui`) is off by default; enable it by setting the
 You can find more details about version, worker type and other features in
 [Glue's public documentation](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-jobs-job.html).
 
+> **Note on continuous logging and encryption:** Because continuous logging is
+> enabled by default, job driver and executor stdout/stderr are streamed to
+> CloudWatch. Unless you attach a [`SecurityConfiguration`](#securityconfiguration)
+> with `cloudWatchEncryption`, these logs are written to the account-shared,
+> default Glue log group (`/aws-glue/jobs/logs-v2/`), which is **not** encrypted
+> with a customer-managed key. Since job logs can contain sensitive runtime data
+> (SQL statements, row values, error stack traces), attach a `SecurityConfiguration`
+> with `cloudWatchEncryption` for regulated workloads. The construct emits a
+> synthesis-time warning when continuous logging is on and no `SecurityConfiguration`
+> is attached.
+
 Reference the pyspark-etl-jobs.test.ts and scalaspark-etl-jobs.test.ts unit tests
 for examples of required-only and optional job parameters when creating these
 types of jobs.
@@ -250,8 +261,9 @@ Python shell jobs support a Python version that depends on the AWS Glue
 version you use. These can be used to schedule and run tasks that don't
 require an Apache Spark environment. Python shell jobs default to
 Python 3.9 and a MaxCapacity of `0.0625`. Python 3.9 supports pre-loaded
-analytics libraries using the `library-set=analytics` flag, which is
-enabled by default.
+analytics libraries, enabled by default (`librarySet: glue.LibrarySet.ANALYTICS`).
+Set `librarySet: glue.LibrarySet.NONE` when your libraries are custom or
+conflict with the pre-installed ones.
 
 Reference the pyspark-shell-job.test.ts unit tests for examples of 
 required-only and optional job parameters when creating these types of jobs.
@@ -335,6 +347,47 @@ new glue.PySparkEtlJob(stack, 'SelectiveJob', {
 ```
 
 This feature is available for all Spark job types (ETL, Streaming, Flex).
+
+### Job Arguments
+
+Glue jobs are configured through a map of name-value arguments (`DefaultArguments`). This construct
+manages several of these arguments on your behalf and exposes each one through a dedicated,
+strongly-typed prop:
+
+| Managed argument(s)                                                      | Prop                                                            |
+|--------------------------------------------------------------------------|-----------------------------------------------------------------|
+| `--enable-continuous-cloudwatch-log`, `--continuous-log-*`               | `continuousLogging`                                             |
+| `--enable-metrics`                                                       | `enableMetrics`                                                 |
+| `--enable-observability-metrics`                                         | `enableObservabilityMetrics`                                    |
+| `--enable-spark-ui`, `--spark-event-logs-path`                           | `sparkUI`                                                       |
+| `--job-language`, `--class`                                              | job class / `className`                                         |
+| `--extra-jars`, `--user-jars-first`, `--extra-py-files`, `--extra-files` | `extraJars`, `extraJarsFirst`, `extraPythonFiles`, `extraFiles` |
+
+The `defaultArguments` prop is the escape hatch for arguments this construct does **not** model.
+Use it for any argument without a dedicated prop:
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const stack: cdk.Stack;
+declare const role: iam.IRole;
+declare const script: glue.Code;
+
+new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
+  role,
+  script,
+  defaultArguments: {
+    // an argument this construct does not manage
+    '--enable-glue-datacatalog': 'true',
+  },
+});
+```
+
+To keep a single, unambiguous way to express each intent, setting a **construct-managed** argument
+(any argument in the table above) or a **Glue-reserved** argument (`--debug`, `--mode`,
+`--JOB_NAME`) through `defaultArguments` throws at synthesis time. Configure those through their
+dedicated prop instead — for example, use `continuousLogging: { enabled: false }` rather than
+`defaultArguments: { '--enable-continuous-cloudwatch-log': 'false' }`.
 
 ### Enable Job Run Queuing
 
