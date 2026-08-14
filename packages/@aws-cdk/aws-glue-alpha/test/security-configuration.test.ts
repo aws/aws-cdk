@@ -52,6 +52,11 @@ test('a security configuration with an encryption configuration requiring kms ke
 
   Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 1);
 
+  // Auto-created keys have rotation enabled.
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+    EnableKeyRotation: true,
+  });
+
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::SecurityConfiguration', {
     Name: 'SecurityConfiguration',
     EncryptionConfiguration: {
@@ -126,5 +131,20 @@ test('can specify a physical name', () => {
   });
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::SecurityConfiguration', {
     Name: 'MySecurityConfiguration',
+  });
+});
+
+test('removalPolicy can be overridden to DESTROY', () => {
+  const stack = new cdk.Stack();
+  new glue.SecurityConfiguration(stack, 'SecurityConfiguration', {
+    cloudWatchEncryption: {
+      mode: glue.CloudWatchEncryptionMode.KMS,
+    },
+    removalPolicy: cdk.RemovalPolicy.DESTROY,
+  });
+
+  Template.fromStack(stack).hasResource('AWS::Glue::SecurityConfiguration', {
+    DeletionPolicy: 'Delete',
+    UpdateReplacePolicy: 'Delete',
   });
 });

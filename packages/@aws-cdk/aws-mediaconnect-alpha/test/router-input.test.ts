@@ -330,7 +330,7 @@ test('Router input name validation - invalid characters', () => {
         protocol: RouterInputProtocol.rtp({ port: 5000 }),
       }),
     });
-  }).toThrow('Router input name must contain only alphanumeric characters and hyphens');
+  }).toThrow('Router input name must contain only alphanumeric characters, hyphens, and underscores');
 });
 
 describe('maximum bitrate validation', () => {
@@ -784,6 +784,60 @@ test('router input with tags and maintenance', () => {
 test('fromRouterInputArn', () => {
   const imported = RouterInput.fromRouterInputArn(stack, 'imported', 'arn:aws:mediaconnect:us-east-1:123456789012:router-input:1-abc:test');
   expect(imported.routerInputArn).toBe('arn:aws:mediaconnect:us-east-1:123456789012:router-input:1-abc:test');
+});
+
+test('AZ validation skips when region is a token (no explicit env)', () => {
+  const noEnvStack = new Stack(app, 'NoEnvStack'); // no env = token region
+  const ni = new RouterNetworkInterface(noEnvStack, 'NI', {
+    routerNetworkInterfaceName: 'test-ni',
+    configuration: RouterNetworkConfiguration.publicNetwork({ cidr: ['10.0.0.0/16'] }),
+  });
+
+  expect(() => new RouterInput(noEnvStack, 'Input', {
+    routerInputName: 'token-region-input',
+    maximumBitrate: Bitrate.mbps(10),
+    routingScope: RoutingScope.REGIONAL,
+    tier: RouterInputTier.INPUT_20,
+    configuration: RouterInputConfiguration.standard({
+      networkInterface: ni,
+      protocol: RouterInputProtocol.rtp({ port: 5000 }),
+      availabilityZone: 'us-east-1c',
+    }),
+  })).not.toThrow();
+});
+
+test('AZ validation throws when region and AZ mismatch (both concrete)', () => {
+  expect(() => new RouterInput(stack, 'MismatchInput', {
+    routerInputName: 'mismatch-input',
+    maximumBitrate: Bitrate.mbps(10),
+    routingScope: RoutingScope.REGIONAL,
+    tier: RouterInputTier.INPUT_20,
+    configuration: RouterInputConfiguration.standard({
+      networkInterface,
+      protocol: RouterInputProtocol.rtp({ port: 5000 }),
+      availabilityZone: 'us-west-2a',
+    }),
+  })).toThrow(/must be within region/);
+});
+
+test('AZ validation skips when AZ contains a token', () => {
+  const noEnvStack = new Stack(app, 'TokenAzStack');
+  const ni = new RouterNetworkInterface(noEnvStack, 'NI', {
+    routerNetworkInterfaceName: 'test-ni-2',
+    configuration: RouterNetworkConfiguration.publicNetwork({ cidr: ['10.0.0.0/16'] }),
+  });
+
+  expect(() => new RouterInput(noEnvStack, 'Input', {
+    routerInputName: 'token-az-input',
+    maximumBitrate: Bitrate.mbps(10),
+    routingScope: RoutingScope.REGIONAL,
+    tier: RouterInputTier.INPUT_20,
+    configuration: RouterInputConfiguration.standard({
+      networkInterface: ni,
+      protocol: RouterInputProtocol.rtp({ port: 5000 }),
+      availabilityZone: `${noEnvStack.region}a`,
+    }),
+  })).not.toThrow();
 });
 
 test('RoutingScope of() and toString()', () => {
