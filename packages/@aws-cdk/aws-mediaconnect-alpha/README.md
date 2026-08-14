@@ -61,7 +61,7 @@ Router resources work together in a pipeline:
 
 A typical camera-to-cloud workflow looks like:
 
-```text
+```ts
 Camera → RouterNetworkInterface → RouterInput (SRT) → [Router] → RouterOutput (MediaLive) → MediaLive Channel
 ```
 
@@ -73,7 +73,7 @@ Here's a complete example showing how to connect an SRT source through a router 
 
 ```ts
 declare const stack: Stack;
-declare const mediaLiveInput: medialive.CfnInput;
+declare const mediaLiveInput: medialive.Input;
 
 // 1. A public network interface for the SRT input
 const networkInterface = new RouterNetworkInterface(stack, 'NetworkInterface', {
@@ -204,7 +204,7 @@ Connect a router input to a MediaLive channel. `outputName` must match the `outp
 
 ```ts
 declare const stack: Stack;
-declare const mediaLiveChannel: medialive.CfnChannel;
+declare const mediaLiveChannel: medialive.Channel;
 
 const input = new RouterInput(stack, 'ChannelInput', {
   routerInputName: 'channel-input',
@@ -221,9 +221,10 @@ const input = new RouterInput(stack, 'ChannelInput', {
 
 > **Tip:** If you're defining the channel with the `@aws-cdk/aws-medialive-alpha` L2, name the output definition as its own object instead of inlining it into the output group's `outputs: [...]` array, and read `.outputName` back off that object here — this ties the two references together so they can't silently drift apart:
 >
-> ```ts nofixture
+> ```ts
+> declare const video: medialive.EncodeConfiguration;
 > const routerOutput: medialive.MediaConnectRouterOutputDefinition = {
->   encodes: [/* ... */],
+>   encodes: [video],
 >   outputName: 'router-ts',
 > };
 > const routerOutputGroup = medialive.OutputGroupConfiguration.mediaConnectRouter({
@@ -231,14 +232,14 @@ const input = new RouterInput(stack, 'ChannelInput', {
 >   availabilityZones: ['us-east-1a'],
 >   outputs: [routerOutput],
 > });
-> // ... configuration: RouterInputConfiguration.mediaLiveChannel({ outputName: routerOutput.outputName, ... })
+> // Then reference routerOutput.outputName in RouterInputConfiguration.mediaLiveChannel()
 > ```
 
 If the MediaLive channel's router output group uses `SECRETS_MANAGER` transit encryption, the router input must specify `sourceTransitDecryption` with a secret holding the same passphrase value. When both sides use `AUTOMATIC`, no decryption configuration is needed.
 
-```ts nofixture
+```ts
 declare const stack: Stack;
-declare const mediaLiveChannel: medialive.CfnChannel;
+declare const mediaLiveChannel: medialive.Channel;
 declare const transitSecret: Secret; // must hold the same value as the channel's MediaConnectRouterSettings.shared() secret
 
 const input = new RouterInput(stack, 'ChannelInput', {
@@ -341,7 +342,7 @@ Connect a router output to a MediaLive input (the input must be of type `mediali
 
 ```ts
 declare const stack: Stack;
-declare const mediaLiveInput: medialive.CfnInput;
+declare const mediaLiveInput: medialive.Input;
 
 const output = new RouterOutput(stack, 'MediaLiveOutput', {
   routerOutputName: 'medialive-output',
