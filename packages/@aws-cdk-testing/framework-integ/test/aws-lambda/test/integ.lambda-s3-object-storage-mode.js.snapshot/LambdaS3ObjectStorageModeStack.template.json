@@ -140,8 +140,7 @@
           "/python-lambda-handler.zip"
          ]
         ]
-       },
-       "Sid": "LambdaSelfManagedCodeAccess"
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -587,7 +586,10 @@
       ]
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "CodeBucketPolicy637E7C14"
+   ]
   },
   "Function76856677": {
    "Type": "AWS::Lambda::Function",
@@ -615,6 +617,7 @@
     "Runtime": "nodejs24.x"
    },
    "DependsOn": [
+    "CodeBucketPolicy637E7C14",
     "FunctionServiceRole675BB04A"
    ]
   },
@@ -637,7 +640,10 @@
       ]
      }
     }
-   }
+   },
+   "DependsOn": [
+    "CodeBucketPolicy637E7C14"
+   ]
   }
  },
  "Parameters": {

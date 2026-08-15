@@ -96,9 +96,10 @@ new lambda.LayerVersion(this, 'MyLayer', {
 });
 ```
 
-When using `REFERENCE`, configure the source bucket policy to allow the Lambda service
-principal (`lambda.amazonaws.com`) to call `s3:GetObject` and `s3:GetObjectVersion`
-for the referenced object.
+When using `REFERENCE`, CDK grants the Lambda service principal permission to call
+`s3:GetObject` and `s3:GetObjectVersion` for the referenced object. If the source
+bucket is imported and its policy cannot be modified by CDK, configure these
+permissions on the bucket before deployment.
 
 The following example shows how to define a Python function and deploy the code
 from the local directory `my-lambda-handler` to it:

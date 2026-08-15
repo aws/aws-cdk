@@ -32,37 +32,6 @@ class TestStack extends Stack {
       destinationBucket: bucket,
     });
 
-    bucket.addToResourcePolicy(new iam.PolicyStatement({
-      sid: 'LambdaSelfManagedCodeAccess',
-      principals: [new iam.ServicePrincipal('lambda.amazonaws.com')],
-      actions: [
-        's3:GetObject',
-        's3:GetObjectVersion',
-      ],
-      resources: [bucket.arnForObjects(OBJECT_KEY)],
-      conditions: {
-        StringEquals: {
-          'aws:SourceAccount': this.account,
-        },
-        ArnLike: {
-          'aws:SourceArn': [
-            this.formatArn({
-              service: 'lambda',
-              resource: 'function',
-              resourceName: '*',
-              arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
-            }),
-            this.formatArn({
-              service: 'lambda',
-              resource: 'layer',
-              resourceName: '*',
-              arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
-            }),
-          ],
-        },
-      },
-    }));
-
     const versionLookup = new cr.AwsCustomResource(this, 'CodeObjectVersion', {
       onUpdate: {
         service: 'S3',

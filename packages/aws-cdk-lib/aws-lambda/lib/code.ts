@@ -346,7 +346,7 @@ export class S3CodeV2 extends Code {
   public readonly isInline = false;
   private bucketName: string;
 
-  constructor(bucket: s3.IBucket, private key: string, private options?: BucketOptions) {
+  constructor(private readonly bucket: s3.IBucket, private key: string, private options?: BucketOptions) {
     super();
     if (options?.s3ObjectStorageMode === S3ObjectStorageMode.REFERENCE && options.objectVersion === undefined) {
       throw new ValidationError(
@@ -363,7 +363,41 @@ export class S3CodeV2 extends Code {
     this.bucketName = bucket.bucketName;
   }
 
-  public bind(_scope: Construct): CodeConfig {
+  public bind(scope: Construct): CodeConfig {
+    if (this.options?.s3ObjectStorageMode === S3ObjectStorageMode.REFERENCE) {
+      const stack = cdk.Stack.of(scope);
+      const grant = iam.Grant.addToPrincipalOrResource({
+        actions: [
+          's3:GetObject',
+          's3:GetObjectVersion',
+        ],
+        grantee: new iam.ServicePrincipal('lambda.amazonaws.com').withConditions({
+          StringEquals: {
+            'aws:SourceAccount': stack.account,
+          },
+          ArnLike: {
+            'aws:SourceArn': [
+              stack.formatArn({
+                service: 'lambda',
+                resource: 'function',
+                resourceName: '*',
+                arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+              }),
+              stack.formatArn({
+                service: 'lambda',
+                resource: 'layer',
+                resourceName: '*',
+                arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+              }),
+            ],
+          },
+        }),
+        resourceArns: [this.bucket.arnForObjects(this.key)],
+        resource: this.bucket,
+      });
+      grant.applyBefore(scope);
+    }
+
     return {
       s3Location: {
         bucketName: this.bucketName,

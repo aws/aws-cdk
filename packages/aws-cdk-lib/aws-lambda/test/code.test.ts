@@ -706,20 +706,88 @@ describe('code', () => {
       );
     });
 
+    test('fromBucketV2 grants Lambda read access to the referenced object', () => {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: {
+          account: '123456789012',
+          region: 'us-east-1',
+        },
+      });
+      const bucket = new s3.Bucket(stack, 'Bucket');
+
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromBucketV2(bucket, 'Object', {
+          objectVersion: 'v1',
+          s3ObjectStorageMode: lambda.S3ObjectStorageMode.REFERENCE,
+        }),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: [
+                's3:GetObject',
+                's3:GetObjectVersion',
+              ],
+              Condition: {
+                ArnLike: {
+                  'aws:SourceArn': [
+                    stack.resolve(stack.formatArn({
+                      service: 'lambda',
+                      resource: 'function',
+                      resourceName: '*',
+                      arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+                    })),
+                    stack.resolve(stack.formatArn({
+                      service: 'lambda',
+                      resource: 'layer',
+                      resourceName: '*',
+                      arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+                    })),
+                  ],
+                },
+                StringEquals: {
+                  'aws:SourceAccount': '123456789012',
+                },
+              },
+              Effect: 'Allow',
+              Principal: {
+                Service: 'lambda.amazonaws.com',
+              },
+              Resource: stack.resolve(bucket.arnForObjects('Object')),
+            }),
+          ]),
+        },
+      });
+    });
+
+    test.each([
+      undefined,
+      lambda.S3ObjectStorageMode.COPY,
+    ])('fromBucketV2 does not grant Lambda read access for storage mode %s', (s3ObjectStorageMode) => {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'Bucket');
+
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromBucketV2(bucket, 'Object', {
+          objectVersion: 'v1',
+          s3ObjectStorageMode,
+        }),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 0);
+    });
+
     test('fails when fromBucketV2 REFERENCE is set without objectVersion', () => {
       const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'Bucket');
 
       expect(() => lambda.Code.fromBucketV2(bucket, 'Object', {
-        s3ObjectStorageMode: lambda.S3ObjectStorageMode.REFERENCE,
-      })).toThrow(/set objectVersion when using s3ObjectStorageMode REFERENCE because Lambda requires a versioned S3 object/);
-    });
-
-    test('fails when S3CodeV2 REFERENCE is set without objectVersion', () => {
-      const stack = new cdk.Stack();
-      const bucket = new s3.Bucket(stack, 'Bucket');
-
-      expect(() => new lambda.S3CodeV2(bucket, 'Object', {
         s3ObjectStorageMode: lambda.S3ObjectStorageMode.REFERENCE,
       })).toThrow(/set objectVersion when using s3ObjectStorageMode REFERENCE because Lambda requires a versioned S3 object/);
     });
