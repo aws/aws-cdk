@@ -1,13 +1,4 @@
 {
-  "/aws-cdk-eks-cluster-inference-nodegroup": [
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)",
-        "...node internals..."
-      ]
-    }
-  ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Vpc": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -91,57 +82,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
-        "DefaultStackSynthesizer.synthesize (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
-        "visit (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
-        "visit (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
-        "synthesizeTree (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
-        "synthesize (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
-        "App.synth (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
-        "App.synth (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
-        "DefaultStackSynthesizer.synthesize (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
-        "visit (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
-        "visit (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
-        "synthesizeTree (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
-        "synthesize (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
-        "App.synth (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
-        "App.synth (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Vpc/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Vpc8378EB38"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:811:29)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:47:21)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Vpc/PublicSubnet1": [
@@ -268,46 +220,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcIGWD7BA715C"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:866:29)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:47:21)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Vpc/VPCGW": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcVPCGWBF912B6E"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:869:29)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:47:21)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/kubectlLayer/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "kubectlLayer44321E08"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new LayerVersion (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:164:30)",
-        "...new KubectlV32Layer in @aws-cdk/lambda-layer-kubectl-v32...",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:52:31)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/Role": [
@@ -339,30 +263,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterEB0386A7"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:747:46)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:48:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/KubectlReadyBarrier": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterKubectlReadyBarrier200052AF"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:834:41)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:48:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/ClusterAdminRoleAccess": [
@@ -431,374 +337,120 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResourceProviderBase (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:131:25)",
-        "new CfnUtilsProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cfn-utils-provider.generated.js:65:9)",
-        "CfnUtilsProvider.getOrCreateProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cfn-utils-provider.generated.js:62:28)",
-        "CfnUtilsProvider.getOrCreate (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cfn-utils-provider.generated.js:53:21)",
-        "CfnUtilsProvider.getOrCreate (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/cfn-utils-provider.js:13:66)",
-        "new CfnJson (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/cfn-json.js:51:67)",
-        "new ServiceAccount (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/service-account.js:87:32)",
-        "new AlbController (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.js:394:32)",
-        "AlbController.create (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.js:377:16)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:891:71)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/AWSCDKCfnUtilsProviderCustomResourceProvider/Handler": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AWSCDKCfnUtilsProviderCustomResourceProviderHandlerCF82AA57"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResourceProviderBase (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:153:24)",
-        "new CfnUtilsProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cfn-utils-provider.generated.js:65:9)",
-        "CfnUtilsProvider.getOrCreateProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cfn-utils-provider.generated.js:62:28)",
-        "CfnUtilsProvider.getOrCreate (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cfn-utils-provider.generated.js:53:21)",
-        "CfnUtilsProvider.getOrCreate (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/cfn-utils-provider.js:13:66)",
-        "new CfnJson (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/cfn-json.js:51:67)",
-        "new ServiceAccount (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/service-account.js:87:32)",
-        "new AlbController (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.js:394:32)",
-        "AlbController.create (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.js:377:16)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:891:71)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Vpc/PublicSubnet1/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1Subnet5C2D37C4"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1305:28)",
-        "new PublicSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Vpc/PublicSubnet1/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1RouteTable6C95E38E"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1325:27)",
-        "new PublicSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Vpc/PublicSubnet1/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1RouteTableAssociation97140677"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1330:32)",
-        "new PublicSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Vpc/PublicSubnet1/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addDefaultInternetRoute (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1345:27)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876:3)",
-        "Array.forEach (:)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:873:36)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:47:21)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Vpc/PublicSubnet1/EIP": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1EIPD7E02669"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addNatGateway (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1597:50)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureNat (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:196:33)",
-        "WrappedClass.createNatGateways (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:47:21)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Vpc/PublicSubnet1/NATGateway": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1NATGateway4D7517AA"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addNatGateway (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1595:25)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureNat (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:196:33)",
-        "WrappedClass.createNatGateways (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:47:21)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Vpc/PublicSubnet2/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet2Subnet691E08A3"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1305:28)",
-        "new PublicSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Vpc/PublicSubnet2/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet2RouteTable94F7E489"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1325:27)",
-        "new PublicSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Vpc/PublicSubnet2/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1330:32)",
-        "new PublicSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Vpc/PublicSubnet2/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet2DefaultRoute97F91067"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addDefaultInternetRoute (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1345:27)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876:3)",
-        "Array.forEach (:)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:873:36)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:47:21)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Vpc/PrivateSubnet1/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet1Subnet536B997A"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1305:28)",
-        "new PrivateSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Vpc/PrivateSubnet1/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet1RouteTableB2C5B500"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1325:27)",
-        "new PrivateSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Vpc/PrivateSubnet1/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1330:32)",
-        "new PrivateSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Vpc/PrivateSubnet1/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addRoute (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1434:27)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:217:16)",
-        "NatGatewayProvider.configureNat (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:202:18)",
-        "WrappedClass.createNatGateways (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:47:21)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Vpc/PrivateSubnet2/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet2Subnet3788AAA1"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1305:28)",
-        "new PrivateSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Vpc/PrivateSubnet2/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet2RouteTableA678073B"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1325:27)",
-        "new PrivateSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Vpc/PrivateSubnet2/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1330:32)",
-        "new PrivateSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Vpc/PrivateSubnet2/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet2DefaultRoute060D2087"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addRoute (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1434:27)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:217:16)",
-        "NatGatewayProvider.configureNat (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:202:18)",
-        "WrappedClass.createNatGateways (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:47:21)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/kubectlLayer/Code/AssetBucket": [
@@ -811,32 +463,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterRoleFA261979"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:681:39)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:48:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/ControlPlaneSecurityGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterControlPlaneSecurityGroupD274242C"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new SecurityGroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:461:34)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:712:58)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:48:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/KubectlProvider/Handler": [
@@ -899,36 +531,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterClusterAdminRoleAccessF2BFF759"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new AccessEntry (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/access-entry.js:338:29)",
-        "WrappedClass.grantClusterAdmin (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:970:30)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:876:49)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:48:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/OidcProviderNative/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterOidcProviderNativeBAC9C7E2"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new OidcProviderNative (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/oidc-provider-native.js:171:29)",
-        "new OidcProviderNative (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/oidc-provider.js:213:13)",
-        "get openIdConnectProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:1132:51)",
-        "new ServiceAccount (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/service-account.js:89:33)",
-        "new AlbController (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.js:394:32)",
-        "AlbController.create (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.js:377:16)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:891:71)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/NodegroupDefaultCapacity/NodeGroupRole": [
@@ -976,18 +584,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterNodegroupDefaultCapacityDA0920A3"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Nodegroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/managed-nodegroup.js:387:29)",
-        "WrappedClass.addNodegroupCapacity (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:1108:20)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:907:54)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:48:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/manifest-NeuronDevicePlugin/Resource": [
@@ -1041,17 +637,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterNodegroupInferenceInstances3C846611"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Nodegroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/managed-nodegroup.js:387:29)",
-        "WrappedClass.addNodegroupCapacity (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:1108:20)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:59:17)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/NodegroupInference2Instances/NodeGroupRole": [
@@ -1099,17 +684,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterNodegroupInference2InstancesEE502FE8"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Nodegroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/managed-nodegroup.js:387:29)",
-        "WrappedClass.addNodegroupCapacity (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:1108:20)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:62:17)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/awscdkeksclusterinferencenodegroupCluster4FEA031E-AlbController/alb-sa/Role": [
@@ -1348,51 +922,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterKubectlProviderHandler2E05C68A"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
-        "new KubectlProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:145:25)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:861:41)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:48:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/KubectlProvider/Handler/HasEcrPublic": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterKubectlProviderHandlerHasEcrPublic69E09706"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new KubectlProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:182:39)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:861:41)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:48:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/KubectlProvider/AwsCliLayer/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterKubectlProviderAwsCliLayer24064B0B"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new LayerVersion (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:164:30)",
-        "new AwsCliLayer (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/lambda-layer-awscli/lib/awscli-layer.js:118:13)",
-        "new KubectlProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:164:48)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:861:41)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:48:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/KubectlProvider/Provider/framework-onEvent": [
@@ -1436,73 +977,24 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new Nodegroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/managed-nodegroup.js:363:32)",
-        "WrappedClass.addNodegroupCapacity (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:1108:20)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:907:54)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:48:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/manifest-NeuronDevicePlugin/Resource/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ClustermanifestNeuronDevicePlugin0B3E0D17"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new KubernetesManifest (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/k8s-manifest.js:49:32)",
-        "WrappedClass.addManifest (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:355:16)",
-        "WrappedClass.addNeuronDevicePlugin (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:1379:49)",
-        "WrappedClass.addNodegroupCapacity (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:1106:22)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:59:17)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/NodegroupInferenceInstances/NodeGroupRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterNodegroupInferenceInstancesNodeGroupRole80013868"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new Nodegroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/managed-nodegroup.js:363:32)",
-        "WrappedClass.addNodegroupCapacity (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:1108:20)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:59:17)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/NodegroupInference2Instances/NodeGroupRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterNodegroupInference2InstancesNodeGroupRole3A8C7FF7"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new Nodegroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/managed-nodegroup.js:363:32)",
-        "WrappedClass.addNodegroupCapacity (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:1108:20)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:62:17)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/awscdkeksclusterinferencenodegroupCluster4FEA031E-AlbController/alb-sa/ConditionJson/Resource": [
@@ -1519,19 +1011,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "awscdkeksclusterinferencenodegroupCluster4FEA031EAlbControlleralbsaRoleCBC0A7F6"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new ServiceAccount (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/service-account.js:107:22)",
-        "new AlbController (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.js:394:32)",
-        "AlbController.create (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.js:377:16)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:891:71)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:48:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/awscdkeksclusterinferencenodegroupCluster4FEA031E-AlbController/alb-sa/Role/DefaultPolicy": [
@@ -1694,36 +1173,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "awscdkeksclusterinferencenodegroupCluster4FEA031EAlbController48A52771"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new HelmChart (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/helm-chart.js:82:32)",
-        "new AlbController (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.js:414:23)",
-        "AlbController.create (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.js:377:16)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:891:71)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:48:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/KubectlProvider/Handler/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterKubectlProviderHandlerServiceRoleB460AA6D"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
-        "new KubectlProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:145:25)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:861:41)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:48:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/KubectlProvider/Handler/ServiceRole/DefaultPolicy": [
@@ -1831,18 +1286,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterKubectlProviderframeworkonEvent68E0CF80"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
-        "WrappedClass.createFunction (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
-        "new Provider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
-        "new KubectlProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:187:26)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:861:41)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:48:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
@@ -1881,89 +1324,30 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "awscdkeksclusterinferencenodegroupCluster4FEA031EAlbControlleralbsaConditionJsonD4837132"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CfnJson (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/cfn-json.js:50:26)",
-        "new ServiceAccount (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/service-account.js:87:32)",
-        "new AlbController (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.js:394:32)",
-        "AlbController.create (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.js:377:16)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:891:71)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:48:25)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/awscdkeksclusterinferencenodegroupCluster4FEA031E-AlbController/alb-sa/Role/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "awscdkeksclusterinferencenodegroupCluster4FEA031EAlbControlleralbsaRoleDefaultPolicyD6B360F4"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "WrappedClass.addToPrincipalPolicy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "ServiceAccount.addToPrincipalPolicy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/service-account.js:185:26)",
-        "new AlbController (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.js:411:28)",
-        "AlbController.create (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.js:377:16)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:891:71)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/awscdkeksclusterinferencenodegroupCluster4FEA031E-AlbController/alb-sa/manifest-alb-saServiceAccountResource/Resource/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "awscdkeksclusterinferencenodegroupCluster4FEA031EAlbControlleralbsamanifestalbsaServiceAccountResource4D0C3E45"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new KubernetesManifest (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/k8s-manifest.js:49:32)",
-        "new ServiceAccount (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/service-account.js:135:9)",
-        "new AlbController (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.js:394:32)",
-        "AlbController.create (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.js:377:16)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:891:71)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:48:25)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/KubectlProvider/Handler/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterKubectlProviderHandlerServiceRoleDefaultPolicy77317198"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "WrappedClass.addToPrincipalPolicy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new KubectlProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:167:21)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:861:41)",
-        "new EksClusterInferenceStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:48:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-inference-nodegroup.js:75:15)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterKubectlProviderframeworkonEventServiceRoleFD0BA8C5"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
-        "WrappedClass.createFunction (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
-        "new Provider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
-        "new KubectlProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:187:26)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:861:41)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
@@ -2006,37 +1390,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole081AD342A"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "WrappedClass.addToRolePolicy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:247:33)",
-        "WrappedClass.addPermissions (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:225:29)",
-        "WrappedClass.createFunction (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:257:18)",
-        "new Provider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
-        "new KubectlProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:187:26)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:861:41)"
-      ]
     }
   ],
   "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterKubectlProviderframeworkonEventServiceRoleDefaultPolicyA4F24629"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "WrappedClass.addToPrincipalPolicy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "Grant.addToPrincipal (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:202:65)",
-        "Grant.addToPrincipalOrResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:87:30)",
-        "WrappedClass.grant (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:524:35)",
-        "WrappedClass.grantInvoke (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:328:26)",
-        "WrappedClass.addPermissions (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:220:38)"
-      ]
     }
   ]
 }

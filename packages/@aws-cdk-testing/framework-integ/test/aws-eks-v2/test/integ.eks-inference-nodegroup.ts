@@ -1,4 +1,3 @@
-/// !cdk-integ pragma:disable-update-workflow
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 import { App, Stack } from 'aws-cdk-lib';
