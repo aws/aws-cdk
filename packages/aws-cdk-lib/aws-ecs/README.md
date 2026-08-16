@@ -1727,7 +1727,7 @@ new ecs.Ec2Service(this, 'EC2Service', {
 
 Managed Instances Capacity Providers allow you to use AWS-managed EC2 instances for your ECS tasks while providing more control over instance selection than standard Fargate. AWS handles the instance lifecycle, patching, and maintenance while you can specify detailed instance requirements. You can  define detailed instance requirements to control which types of instances are used for your workloads.
 
-Capacity Option Type provides the purchasing option for the EC2 instances used in the capacity provider. Determines whether to use On-Demand or Spot instances. Valid values are `ON_DEMAND` and `SPOT`. Defaults to `ON_DEMAND` when not specified. Changing this value will trigger replacement of the capacity provider. For more information, see [Amazon EC2 billing and purchasing options](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-purchasing-options.html) in the Amazon EC2 User Guide.
+Capacity Option Type provides the purchasing option for the EC2 instances used in the capacity provider. Determines whether to use On-Demand, Spot, or Reserved instances. Valid values are `ON_DEMAND`, `SPOT`, and `RESERVED`. Defaults to `ON_DEMAND` when not specified. Changing this value will trigger replacement of the capacity provider. For more information, see [Amazon EC2 billing and purchasing options](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-purchasing-options.html) in the Amazon EC2 User Guide.
 
 See [ECS documentation for Managed Instances Capacity Provider](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/managed-instances-capacity-providers-concept.html) for more documentation.
 
@@ -1915,6 +1915,42 @@ const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICap
 });
 
 ```
+
+#### Capacity Reservations
+
+When the capacity option type is `RESERVED`, you can control how the capacity provider uses
+EC2 Capacity Reservations. This is useful when you have existing reservations you want your
+managed instances to launch into — for example when migrating from an Auto Scaling Group
+based capacity provider.
+
+Use `reservationGroupArn` to target a specific Capacity Reservation resource group, and
+`reservationPreference` to control the fallback behavior:
+
+| Preference | Behavior |
+|------------|----------|
+| `RESERVATIONS_ONLY` | Only launch into matching Capacity Reservations. Instances fail to provision if none exist. |
+| `RESERVATIONS_FIRST` | Prefer matching Capacity Reservations, falling back to On-Demand if none exist. |
+| `RESERVATIONS_EXCLUDED` | Avoid Capacity Reservations and launch exclusively On-Demand. |
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const securityGroup: ec2.SecurityGroup;
+
+const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProvider', {
+  capacityOptionType: ecs.CapacityOptionType.RESERVED,
+  capacityReservations: {
+    reservationGroupArn: 'arn:aws:resource-groups:us-east-1:123456789012:group/my-reservations',
+    reservationPreference: ecs.ReservationPreference.RESERVATIONS_FIRST,
+  },
+  subnets: vpc.privateSubnets,
+  securityGroups: [securityGroup],
+  instanceRequirements: {
+    vCpuCountMin: 1,
+    memoryMin: Size.gibibytes(2),
+  },
+});
+```
+
 #### Note: Service Replacement When Migrating from LaunchType to CapacityProviderStrategy
 
 **Understanding the Limitation**
