@@ -335,6 +335,9 @@ function headerNamesList(options: StepFunctionsExecutionIntegrationOptions): str
   if (invalid.length > 0) {
     throw new UnscopedValidationError(lit`HeaderNamesInvalidCharacter`, `'headerNames' must not contain single quotes, received: ${JSON.stringify(invalid)}`);
   }
+  if (options.headerNames.some(name => name.trim() === '')) {
+    throw new UnscopedValidationError(lit`HeaderNamesEmpty`, `'headerNames' must not contain empty or blank strings, received: ${JSON.stringify(options.headerNames)}`);
+  }
   return options.headerNames;
 }
 

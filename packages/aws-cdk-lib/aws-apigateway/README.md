@@ -278,10 +278,11 @@ AWS Step Functions will receive the following execution input:
 }
 ```
 
-`headers: true` forwards every request header, including sensitive values such as
+Setting `headers: true` forwards every request header, including sensitive values such as
 `Authorization` or `Cookie`, which then appear in the Step Functions execution history.
+
 To forward only specific headers, use `headerNames` instead. Matching is
-case-insensitive, and `headerNames` cannot be combined with `headers: true`.
+case-insensitive. You cannot specify `headerNames` if `headers` is enabled.
 
 ```ts fixture=stepfunctions
 new apigateway.StepFunctionsRestApi(this, 'StepFunctionsRestApi', {

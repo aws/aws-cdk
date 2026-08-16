@@ -243,6 +243,16 @@ describe('StepFunctionsIntegration', () => {
       })).toThrow(/'headerNames' must not contain single quotes/);
     });
 
+    test.each([[''], ['  ']])('fails when a header name is empty or blank: %j', (name) => {
+      // GIVEN
+      const { stateMachine } = givenSetup();
+
+      // WHEN / THEN
+      expect(() => apigw.StepFunctionsIntegration.startExecution(stateMachine, {
+        headerNames: [name],
+      })).toThrow(/'headerNames' must not contain empty or blank strings/);
+    });
+
     test('fails when headerNames contains a token', () => {
       // GIVEN
       const { stateMachine } = givenSetup();
