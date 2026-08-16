@@ -1,0 +1,2 @@
+docker/ignored-by-nested-dockerfile.txt
+docker/nested.Dockerfile.dockerignore

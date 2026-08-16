@@ -54,6 +54,7 @@ export const ENABLE_DIFF_NO_FAIL = ENABLE_DIFF_NO_FAIL_CONTEXT;
 export const NEW_STYLE_STACK_SYNTHESIS_CONTEXT = '@aws-cdk/core:newStyleStackSynthesis';
 export const STACK_RELATIVE_EXPORTS_CONTEXT = '@aws-cdk/core:stackRelativeExports';
 export const DOCKER_IGNORE_SUPPORT = '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport';
+export const DOCKERFILE_SPECIFIC_IGNORE_FILE = '@aws-cdk/aws-ecr-assets:dockerfileSpecificIgnoreFile';
 export const SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME = '@aws-cdk/aws-secretsmanager:parseOwnedSecretName';
 export const KMS_DEFAULT_KEY_POLICIES = '@aws-cdk/aws-kms:defaultKeyPolicies';
 export const S3_GRANT_WRITE_WITHOUT_ACL = '@aws-cdk/aws-s3:grantWriteWithoutAcl';
@@ -1929,6 +1930,25 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.262.0' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [DOCKERFILE_SPECIFIC_IGNORE_FILE]: {
+    type: FlagType.ApiDefault,
+    summary: 'Honor Dockerfile-specific .dockerignore files when staging DockerImageAsset',
+    detailsMd: `
+      When enabled, DockerImageAsset looks for \`<dockerfile>.dockerignore\` next to the
+      Dockerfile (including the default name \`Dockerfile.dockerignore\`) and uses it in
+      preference to the context-root \`.dockerignore\`, matching Docker's Filename and
+      location rule. The two files are not merged.
+
+      When disabled, only the context-root \`.dockerignore\` is read, which is the
+      historic CDK behavior.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd:
+      'Leave `@aws-cdk/aws-ecr-assets:dockerfileSpecificIgnoreFile` unset or set it to `false`. CDK will keep reading only `.dockerignore`.',
   },
 };
 
