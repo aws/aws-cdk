@@ -1,0 +1,1009 @@
+{
+  "/aws-cdk-rds-instance-metrics": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:10:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/Instance": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/CPUUtilizationAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/DatabaseConnectionsAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/FreeStorageSpaceAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/FreeableMemoryAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/NetworkReceiveThroughputAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/NetworkTransmitThroughputAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/ReadLatencyAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/WriteLatencyAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/ReadThroughputAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/WriteThroughputAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/SwapUsageAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/DiskQueueDepthAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/BurstBalanceAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/ReplicaLagAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:189:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:107:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:227:18)",
+        "/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
+        "App.synth (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:158:92)",
+        "App.synth (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:146:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:197:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:107:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:227:18)",
+        "/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
+        "App.synth (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:158:92)",
+        "App.synth (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:146:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCB9E5F0B4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:727:29)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/PublicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/PrivateSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCIGWB7E252D3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:782:29)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCVPCGW99B986DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:785:29)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/Instance/SubnetGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/Instance/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/Instance/Secret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/Instance/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceC1063A87"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DatabaseInstance (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:765:30)",
+        "new DatabaseInstance (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:12:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/CPUUtilizationAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CPUUtilizationAlarm4D91B4D0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:248:26)",
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Metric.createAlarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/metric.js:285:16)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:21:43)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/DatabaseConnectionsAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DatabaseConnectionsAlarm3643818C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:248:26)",
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Metric.createAlarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/metric.js:285:16)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:25:48)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/FreeStorageSpaceAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FreeStorageSpaceAlarm4A4F2872"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:248:26)",
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Metric.createAlarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/metric.js:285:16)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:29:45)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/FreeableMemoryAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FreeableMemoryAlarm71268F78"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:248:26)",
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Metric.createAlarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/metric.js:285:16)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:34:43)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/NetworkReceiveThroughputAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NetworkReceiveThroughputAlarm00583562"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:248:26)",
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Metric.createAlarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/metric.js:285:16)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:39:53)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/NetworkTransmitThroughputAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NetworkTransmitThroughputAlarm9830F40F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:248:26)",
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Metric.createAlarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/metric.js:285:16)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:43:54)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/ReadLatencyAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ReadLatencyAlarm6753E98E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:248:26)",
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Metric.createAlarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/metric.js:285:16)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:47:40)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/WriteLatencyAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WriteLatencyAlarmDD1F71F5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:248:26)",
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Metric.createAlarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/metric.js:285:16)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:51:41)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/ReadThroughputAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ReadThroughputAlarm57937241"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:248:26)",
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Metric.createAlarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/metric.js:285:16)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:55:43)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/WriteThroughputAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WriteThroughputAlarmF5106C8C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:248:26)",
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Metric.createAlarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/metric.js:285:16)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:59:44)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/SwapUsageAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SwapUsageAlarmDC98FBA4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:248:26)",
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Metric.createAlarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/metric.js:285:16)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:63:38)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/DiskQueueDepthAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DiskQueueDepthAlarm21EA85D3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:248:26)",
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Metric.createAlarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/metric.js:285:16)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:67:43)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/BurstBalanceAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BurstBalanceAlarmDFD721E1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:248:26)",
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Metric.createAlarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/metric.js:285:16)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:71:41)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/ReplicaLagAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ReplicaLagAlarm79ACA145"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:248:26)",
+        "new Alarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Metric.createAlarm (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/metric.js:285:16)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:76:39)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1SubnetB4246D30"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1201:28)",
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1441:13)",
+        "new PublicSubnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1001: (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1001:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:30)",
+        "WrappedClass.createSubnets (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:931:18)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:777:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1RouteTableFEE4B781"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1221:27)",
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1441:13)",
+        "new PublicSubnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1001: (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1001:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:30)",
+        "WrappedClass.createSubnets (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:931:18)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:777:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1226:32)",
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1441:13)",
+        "new PublicSubnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1001: (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1001:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:30)",
+        "WrappedClass.createSubnets (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:931:18)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:777:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1241:27)",
+        "WrappedClass.<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:792: (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:792:3)",
+        "Array.forEach (:)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:789:36)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1EIP6AD938E8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1455:50)",
+        "WrappedClass.<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:105:33)",
+        "WrappedClass.createNatGateways (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:885:22)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:802:26)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1NATGatewayE0556630"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1453:25)",
+        "WrappedClass.<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:105:33)",
+        "WrappedClass.createNatGateways (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:885:22)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:802:26)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2Subnet74179F39"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1201:28)",
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1441:13)",
+        "new PublicSubnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1001: (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1001:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:30)",
+        "WrappedClass.createSubnets (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:931:18)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:777:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1221:27)",
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1441:13)",
+        "new PublicSubnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1001: (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1001:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:30)",
+        "WrappedClass.createSubnets (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:931:18)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:777:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1226:32)",
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1441:13)",
+        "new PublicSubnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1001: (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1001:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:30)",
+        "WrappedClass.createSubnets (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:931:18)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:777:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1241:27)",
+        "WrappedClass.<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:792: (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:792:3)",
+        "Array.forEach (:)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:789:36)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/PublicSubnet2/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2EIP4947BC00"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1455:50)",
+        "WrappedClass.<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:105:33)",
+        "WrappedClass.createNatGateways (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:885:22)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:802:26)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/PublicSubnet2/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2NATGateway3C070193"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1453:25)",
+        "WrappedClass.<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:105:33)",
+        "WrappedClass.createNatGateways (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:885:22)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:802:26)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1201:28)",
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1494:13)",
+        "new PrivateSubnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1008: (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1008:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:30)",
+        "WrappedClass.createSubnets (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:931:18)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:777:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1221:27)",
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1494:13)",
+        "new PrivateSubnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1008: (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1008:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:30)",
+        "WrappedClass.createSubnets (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:931:18)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:777:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1226:32)",
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1494:13)",
+        "new PrivateSubnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1008: (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1008:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:30)",
+        "WrappedClass.createSubnets (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:931:18)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:777:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1321:27)",
+        "WrappedClass.<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:117:16)",
+        "NatGatewayProvider.configureNat (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:111:18)",
+        "WrappedClass.createNatGateways (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:885:22)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:802:26)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1201:28)",
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1494:13)",
+        "new PrivateSubnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1008: (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1008:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:30)",
+        "WrappedClass.createSubnets (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:931:18)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:777:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2RouteTable0A19E10E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1221:27)",
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1494:13)",
+        "new PrivateSubnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1008: (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1008:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:30)",
+        "WrappedClass.createSubnets (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:931:18)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:777:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1226:32)",
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1494:13)",
+        "new PrivateSubnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1008: (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1008:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:30)",
+        "WrappedClass.createSubnets (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:931:18)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:777:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/VPC/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1321:27)",
+        "WrappedClass.<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:117:16)",
+        "NatGatewayProvider.configureNat (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:111:18)",
+        "WrappedClass.createNatGateways (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:885:22)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:802:26)",
+        "new Vpc (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/Instance/SubnetGroup/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceSubnetGroupF2CBA54F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SubnetGroup (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/subnet-group.js:92:33)",
+        "new SubnetGroup (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseInstanceNew (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:479:50)",
+        "new DatabaseInstanceSource (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:606:9)",
+        "new DatabaseInstance (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:758:13)",
+        "new DatabaseInstance (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:12:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/Instance/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceSecurityGroupB4E5FA83"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecurityGroup (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:377:34)",
+        "new SecurityGroup (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new SecurityGroup (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseInstanceNew (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:485:57)",
+        "new DatabaseInstanceSource (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:606:9)",
+        "new DatabaseInstance (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:758:13)",
+        "new DatabaseInstance (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:12:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/Instance/Secret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceSecret478E0A47"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Secret (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:435:30)",
+        "new Secret (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Secret (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseSecret (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/database-secret.js:69:13)",
+        "new DatabaseSecret (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "renderCredentials (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/private/util.js:78:62)",
+        "new DatabaseInstance (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:763:62)",
+        "new DatabaseInstance (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:12:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/Instance/Secret/Attachment": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-instance-metrics/Instance/Secret/Attachment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceSecretAttachment83BEE581"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecretTargetAttachment (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:605:32)",
+        "new SecretTargetAttachment (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.attach (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:263:16)",
+        "new DatabaseInstance (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:782:38)",
+        "new DatabaseInstance (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-metrics.js:12:18)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
