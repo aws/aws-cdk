@@ -1230,6 +1230,7 @@ export class Channel extends ChannelBase {
     }
 
     // CloudWatch Logs — required when logging is enabled.
+    // See https://docs.aws.amazon.com/medialive/latest/ug/trusted-entity-requirements.html
     if ((props.logLevel ?? LogLevel.DISABLED) !== LogLevel.DISABLED) {
       role.addToPrincipalPolicy(new PolicyStatement({
         actions: [
@@ -1241,11 +1242,9 @@ export class Channel extends ChannelBase {
           'logs:DescribeLogStreams',
           'logs:DescribeLogGroups',
         ],
-        // MediaLive creates log groups under /aws/medialive/ at runtime; we scope to
-        // the current region and account but can't predict the exact log group name.
         resources: [
-          `arn:${Aws.PARTITION}:logs:${Aws.REGION}:${Aws.ACCOUNT_ID}:log-group:/aws/medialive/*`,
-          `arn:${Aws.PARTITION}:logs:${Aws.REGION}:${Aws.ACCOUNT_ID}:log-group:/aws/medialive/*:*`,
+          `arn:${Aws.PARTITION}:logs:*`,
+          `arn:${Aws.PARTITION}:log-group:*`,
         ],
       }));
     }
