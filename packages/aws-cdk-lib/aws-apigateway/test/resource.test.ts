@@ -470,4 +470,171 @@ describe('resource', () => {
       },
     }));
   });
+
+  describe('autoConfigurePathParameter', () => {
+    test('automatically adds both method and integration path parameters', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+
+      // WHEN
+      api.root.addResource('items').addProxy({
+        autoConfigurePathParameter: true,
+        defaultIntegration: new apigw.HttpIntegration('http://example.com/items/{proxy}'),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+        HttpMethod: 'ANY',
+        RequestParameters: {
+          'method.request.path.proxy': true,
+        },
+        Integration: {
+          Type: 'HTTP_PROXY',
+          Uri: 'http://example.com/items/{proxy}',
+          RequestParameters: {
+            'integration.request.path.proxy': 'method.request.path.proxy',
+          },
+        },
+      });
+    });
+
+    test('without autoConfigurePathParameter, path parameters are not added', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+
+      // WHEN
+      api.root.addResource('items').addProxy({
+        defaultIntegration: new apigw.HttpIntegration('http://example.com/items/{proxy}'),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+        HttpMethod: 'ANY',
+        RequestParameters: Match.absent(),
+        Integration: {
+          RequestParameters: Match.absent(),
+        },
+      });
+    });
+
+    test('merges with existing method requestParameters', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+
+      // WHEN
+      api.root.addResource('items').addProxy({
+        autoConfigurePathParameter: true,
+        defaultMethodOptions: {
+          requestParameters: {
+            'method.request.header.Authorization': true,
+          },
+        },
+        defaultIntegration: new apigw.HttpIntegration('http://example.com/items/{proxy}'),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+        HttpMethod: 'ANY',
+        RequestParameters: {
+          'method.request.path.proxy': true,
+          'method.request.header.Authorization': true,
+        },
+      });
+    });
+
+    test('merges with existing integration requestParameters', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+
+      // WHEN
+      api.root.addResource('items').addProxy({
+        autoConfigurePathParameter: true,
+        defaultIntegration: new apigw.HttpIntegration('http://example.com/items/{proxy}', {
+          options: {
+            requestParameters: {
+              'integration.request.header.X-Custom': 'method.request.header.Custom',
+            },
+          },
+        }),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+        HttpMethod: 'ANY',
+        Integration: {
+          RequestParameters: {
+            'integration.request.path.proxy': 'method.request.path.proxy',
+            'integration.request.header.X-Custom': 'method.request.header.Custom',
+          },
+        },
+      });
+    });
+
+    test('user-provided proxy parameter takes precedence', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+
+      // WHEN
+      api.root.addResource('items').addProxy({
+        autoConfigurePathParameter: true,
+        defaultMethodOptions: {
+          requestParameters: {
+            'method.request.path.proxy': false,
+          },
+        },
+        defaultIntegration: new apigw.HttpIntegration('http://example.com/items/{proxy}', {
+          options: {
+            requestParameters: {
+              'integration.request.path.proxy': 'method.request.querystring.path',
+            },
+          },
+        }),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+        HttpMethod: 'ANY',
+        RequestParameters: {
+          'method.request.path.proxy': false,
+        },
+        Integration: {
+          RequestParameters: {
+            'integration.request.path.proxy': 'method.request.querystring.path',
+          },
+        },
+      });
+    });
+
+    test('applies to individually added methods', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+
+      // WHEN
+      const proxy = api.root.addResource('items').addProxy({
+        autoConfigurePathParameter: true,
+        anyMethod: false,
+      });
+
+      proxy.addMethod('GET', new apigw.HttpIntegration('http://example.com/items/{proxy}'));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+        HttpMethod: 'GET',
+        RequestParameters: {
+          'method.request.path.proxy': true,
+        },
+        Integration: {
+          RequestParameters: {
+            'integration.request.path.proxy': 'method.request.path.proxy',
+          },
+        },
+      });
+    });
+  });
 });
