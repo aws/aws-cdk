@@ -14,10 +14,13 @@ import type {
   SecondaryIndexProps,
   TableClass,
   WarmThroughput,
+  VectorIndexProps,
+  SearchSchemaElement,
 } from './shared';
 import {
   BillingMode,
   MultiRegionConsistency,
+  SearchSchemaElementType,
   parseKeySchema,
   ProjectionType,
   StreamViewType,
@@ -448,6 +451,16 @@ export interface TablePropsV2 extends TableOptionsV2 {
   readonly localSecondaryIndexes?: LocalSecondaryIndexProps[];
 
   /**
+   * Vector indexes.
+   *
+   * Vector indexes enable similarity search over an embedding attribute and can
+   * only be used with `PAY_PER_REQUEST` (on-demand) billing mode.
+   *
+   * @default - no vector indexes
+   */
+  readonly vectorIndexes?: VectorIndexProps[];
+
+  /**
    * The server-side encryption.
    *
    * @default TableEncryptionV2.dynamoOwnedKey()
@@ -769,6 +782,7 @@ export class TableV2 extends TableBaseV2 {
 
   private readonly globalSecondaryIndexes: IMapBox<string, CfnGlobalTable.GlobalSecondaryIndexProperty> = Box.fromMap();
   private readonly localSecondaryIndexes: IMapBox<string, CfnGlobalTable.LocalSecondaryIndexProperty> = Box.fromMap();
+  private readonly vectorIndexes: IMapBox<string, CfnGlobalTable.VectorIndexProperty> = Box.fromMap();
   private readonly globalSecondaryIndexReadCapacitys = new Map<string, Capacity>();
   private readonly globalSecondaryIndexMaxReadUnits = new Map<string, number>();
   private readonly globalTableSettingsReplicationMode?: GlobalTableSettingsReplicationMode;
@@ -835,6 +849,7 @@ export class TableV2 extends TableBaseV2 {
 
     props.globalSecondaryIndexes?.forEach(gsi => this.addGlobalSecondaryIndex(gsi));
     props.localSecondaryIndexes?.forEach(lsi => this.addLocalSecondaryIndex(lsi));
+    props.vectorIndexes?.forEach(vi => this.addVectorIndex(vi));
 
     if (props.multiRegionConsistency === MultiRegionConsistency.STRONG) {
       this.validateMrscConfiguration(props);
@@ -855,6 +870,7 @@ export class TableV2 extends TableBaseV2 {
       multiRegionConsistency: props.multiRegionConsistency ? props.multiRegionConsistency : undefined,
       globalSecondaryIndexes: this.globalSecondaryIndexes.derive(m => m.size > 0 ? Array.from(m.values()) : undefined),
       localSecondaryIndexes: this.localSecondaryIndexes.derive(m => m.size > 0 ? Array.from(m.values()) : undefined),
+      vectorIndexes: this.vectorIndexes.derive(m => m.size > 0 ? Array.from(m.values()) : undefined),
       billingMode: this.billingMode,
       writeProvisionedThroughputSettings: this.writeProvisioning,
       writeOnDemandThroughputSettings: this.maxWriteRequestUnits
@@ -983,6 +999,22 @@ export class TableV2 extends TableBaseV2 {
     this.validateLocalSecondaryIndex(props);
     const localSecondaryIndex = this.configureLocalSecondaryIndex(props);
     this.localSecondaryIndexes.put(props.indexName, localSecondaryIndex);
+  }
+
+  /**
+   * Add a vector index to the table.
+   *
+   * Vector indexes enable similarity search over an embedding attribute and can
+   * only be used with `PAY_PER_REQUEST` (on-demand) billing mode. Vector indexes
+   * are inherited by all replica tables.
+   *
+   * @param props the properties of the vector index
+   */
+  @MethodMetadata()
+  public addVectorIndex(props: VectorIndexProps) {
+    this.validateVectorIndex(props);
+    const vectorIndex = this.configureVectorIndex(props);
+    this.vectorIndexes.put(props.indexName, vectorIndex);
   }
 
   /**
@@ -1138,6 +1170,29 @@ export class TableV2 extends TableBaseV2 {
     };
   }
 
+  private configureVectorIndex(props: VectorIndexProps): CfnGlobalTable.VectorIndexProperty {
+    const projection = this.configureIndexProjection(props);
+
+    // Search schema attributes require attribute definitions on the table. The
+    // vector attribute has an implicit type of List and is therefore not registered.
+    const searchSchema = props.searchSchema?.map((element: SearchSchemaElement) => {
+      this.addAttributeDefinition(element.attribute);
+      return {
+        attributeName: element.attribute.name,
+        searchSchemaElementType: element.type,
+      };
+    });
+
+    return {
+      indexName: props.indexName,
+      vectorAttribute: { attributeName: props.vectorAttribute },
+      dimensions: props.dimensions,
+      distanceFunction: props.distanceFunction,
+      projection,
+      searchSchema,
+    };
+  }
+
   private configureReplicaGlobalSecondaryIndexes(options: { [indexName: string]: ReplicaGlobalSecondaryIndexOptions } = {}) {
     this.validateReplicaIndexOptions(options);
 
@@ -1251,7 +1306,7 @@ export class TableV2 extends TableBaseV2 {
   }
 
   private validateIndexName(indexName: string) {
-    if (this.globalSecondaryIndexes.has(indexName) || this.localSecondaryIndexes.has(indexName)) {
+    if (this.globalSecondaryIndexes.has(indexName) || this.localSecondaryIndexes.has(indexName) || this.vectorIndexes.has(indexName)) {
       throw new ValidationError(lit`DuplicateSecondaryIndexName`, `Duplicate secondary index name, ${indexName}, is not allowed`, this);
     }
   }
@@ -1327,6 +1382,46 @@ export class TableV2 extends TableBaseV2 {
 
     if (this.localSecondaryIndexes.size === MAX_LSI_COUNT) {
       throw new ValidationError(lit`MaxLocalSecondaryIndexesExceeded`, `You may not provide more than ${MAX_LSI_COUNT} local secondary indexes`, this);
+    }
+  }
+
+  private validateVectorIndex(props: VectorIndexProps) {
+    this.validateIndexName(props.indexName);
+
+    if (this.billingMode !== BillingMode.PAY_PER_REQUEST) {
+      throw new ValidationError(lit`VectorIndexRequiresOnDemand`, `Vector indexes can only be used with ${BillingMode.PAY_PER_REQUEST} billing mode`, this);
+    }
+
+    if (!Token.isUnresolved(props.dimensions) && (!Number.isInteger(props.dimensions) || props.dimensions < 1 || props.dimensions > 4096)) {
+      throw new ValidationError(lit`VectorIndexInvalidDimensions`, `Dimensions for vector index ${props.indexName} must be an integer between 1 and 4096, got ${props.dimensions}`, this);
+    }
+
+    this.validateVectorSearchSchema(props);
+  }
+
+  /**
+   * Validate the search schema of a vector index: attribute names must be
+   * unique within the schema and at most one HASH element is allowed.
+   *
+   * @param props the properties of the vector index
+   */
+  private validateVectorSearchSchema(props: VectorIndexProps) {
+    if (!props.searchSchema) {
+      return;
+    }
+    if (props.searchSchema.length === 0) {
+      throw new ValidationError(lit`VectorIndexEmptySearchSchema`, `Search schema for vector index ${props.indexName} must contain at least one element when provided; omit searchSchema instead of passing an empty array`, this);
+    }
+    const seen = new Set<string>();
+    let hashCount = 0;
+    for (const element of props.searchSchema) {
+      if (seen.has(element.attribute.name)) {
+        throw new ValidationError(lit`VectorIndexDuplicateSearchSchemaAttribute`, `Duplicate search schema attribute name, ${element.attribute.name}, in vector index ${props.indexName}`, this);
+      }
+      seen.add(element.attribute.name);
+      if (element.type === SearchSchemaElementType.HASH && ++hashCount > 1) {
+        throw new ValidationError(lit`VectorIndexMultipleHashElements`, `At most one HASH search schema element is allowed in vector index ${props.indexName}`, this);
+      }
     }
   }
 
