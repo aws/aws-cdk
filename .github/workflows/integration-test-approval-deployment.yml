@@ -44,7 +44,7 @@ jobs:
     if: github.event.workflow_run.conclusion == 'success'
     outputs:
       pr_number: ${{ steps.find-pr.outputs.pr_number }}
-      head_sha: ${{ steps.find-pr.outputs.head_sha }}
+      approved_sha: ${{ steps.find-pr.outputs.approved_sha }}
       base_sha: ${{ steps.find-pr.outputs.base_sha }}
       has_snapshots: ${{ steps.check-snapshots.outputs.has_snapshots }}
 
@@ -80,13 +80,13 @@ jobs:
               return;
             }
             core.setOutput('pr_number', String(matching[0].number));
-            core.setOutput('head_sha', matching[0].head.sha);
+            core.setOutput('approved_sha', matching[0].head.sha);
             core.setOutput('base_sha', matching[0].base.sha);
 
       # The script is checked out from the base branch (main), not the PR,
       # so it is trusted and cannot be tampered with by the PR author.
       - name: Verify maintainer approval (non-stale)
-        run: node scripts/verify-approval.js "${{ steps.find-pr.outputs.pr_number }}"
+        run: node scripts/verify-approval.js "${{ steps.find-pr.outputs.pr_number }}" "${{ steps.find-pr.outputs.approved_sha }}"
         env:
           PROJEN_GITHUB_TOKEN: ${{ secrets.PROJEN_GITHUB_TOKEN }}
 
@@ -99,7 +99,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               base: '${{ steps.find-pr.outputs.base_sha }}',
-              head: '${{ steps.find-pr.outputs.head_sha }}',
+              head: '${{ steps.find-pr.outputs.approved_sha }}',
             });
             const snapshotPattern = /\.(?:js|ts)\.snapshot\//;
             const snapshots = comparison.files
@@ -121,7 +121,7 @@ jobs:
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              sha: '${{ steps.find-pr.outputs.head_sha }}',
+              sha: '${{ steps.find-pr.outputs.approved_sha }}',
               state: 'success',
               context: 'Integration Tests (Approval)',
               description: 'Skipped — no integration test snapshot changes',
@@ -129,10 +129,15 @@ jobs:
             });
 
 
-  # If validation succeeds, a CDK maintainer has approved the PR code on the
-  # current head commit. This means the code is trusted by the CDK team and we
-  # can proceed to check it out and run it in a privileged context (CodeBuild
+  # If validation succeeds, a CDK maintainer has approved the PR code on this
+  # exact commit. This means the code is trusted by the CDK team and we can
+  # proceed to check it out and run it in a privileged context (CodeBuild
   # with Atmosphere).
+  #
+  # Instead of gating this job with a GitHub Environment (like integration-test-deployment.yml),
+  # we rely solely on verify-approval.js to check whether the approval is valid and
+  # non-stale. This allows the workflow to run automatically without any manual
+  # interaction from the maintainer.
   deploy:
     needs: validate
     if: needs.validate.outputs.has_snapshots == 'true'
@@ -147,7 +152,7 @@ jobs:
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              sha: '${{ needs.validate.outputs.head_sha }}',
+              sha: '${{ needs.validate.outputs.approved_sha }}',
               state: 'pending',
               context: 'Integration Tests (Approval)',
               description: 'Running integration tests...',
@@ -160,7 +165,7 @@ jobs:
       - name: Checkout PR head for test execution
         uses: actions/checkout@v6
         with:
-          ref: ${{ needs.validate.outputs.head_sha }}
+          ref: ${{ needs.validate.outputs.approved_sha }}
           fetch-depth: 0
 
       - name: Setup Node.js
@@ -185,7 +190,7 @@ jobs:
           CDK_ATMOSPHERE_OIDC_ROLE: ${{ vars.CDK_ATMOSPHERE_OIDC_ROLE }}
           CDK_ATMOSPHERE_BATCH_SIZE: ${{ vars.CDK_ATMOSPHERE_BATCH_SIZE }}
           TARGET_BRANCH_COMMIT: ${{ needs.validate.outputs.base_sha }}
-          SOURCE_BRANCH_COMMIT: ${{ needs.validate.outputs.head_sha }}
+          SOURCE_BRANCH_COMMIT: ${{ needs.validate.outputs.approved_sha }}
 
       - name: Post status (success — tests passed)
         if: success()
@@ -195,7 +200,7 @@ jobs:
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              sha: '${{ needs.validate.outputs.head_sha }}',
+              sha: '${{ needs.validate.outputs.approved_sha }}',
               state: 'success',
               context: 'Integration Tests (Approval)',
               description: 'Integration tests passed',
@@ -210,7 +215,7 @@ jobs:
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              sha: '${{ needs.validate.outputs.head_sha }}',
+              sha: '${{ needs.validate.outputs.approved_sha }}',
               state: 'failure',
               context: 'Integration Tests (Approval)',
               description: 'Integration tests failed',

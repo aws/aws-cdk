@@ -2,7 +2,7 @@
 /**
  * Verifies that a PR is in an approved state by a CDK team member.
  *
- * Usage: node verify-approval.js <pr_number>
+ * Usage: node verify-approval.js <pr_number> <approved_sha>
  *
  * Env: PROJEN_GITHUB_TOKEN - token for GitHub API (team membership check)
  *      GITHUB_REPOSITORY - owner/repo (e.g. "aws/aws-cdk")
@@ -23,16 +23,21 @@ async function githubFetch(path, token) {
     headers['Authorization'] = `token ${token}`;
   }
   const response = await fetch(`https://api.github.com${path}`, { headers });
-  const data = await response.json();
+  const text = await response.text();
+  const data = text ? JSON.parse(text) : {};
   return { status: response.status, data };
 }
 
 /**
  * Core verification logic. Returns { exitCode, message }.
  */
-async function verifyApproval({ prNumber, token, repository, apiFn }) {
+async function verifyApproval({ prNumber, approvedSha, token, repository, apiFn }) {
   if (!prNumber) {
-    return { exitCode: 1, message: 'Usage: verify-approval.js <pr_number>' };
+    return { exitCode: 1, message: 'Usage: verify-approval.js <pr_number> <approved_sha>' };
+  }
+
+  if (!approvedSha) {
+    return { exitCode: 1, message: 'Usage: verify-approval.js <pr_number> <approved_sha>' };
   }
 
   if (!token || !repository) {
@@ -47,7 +52,8 @@ async function verifyApproval({ prNumber, token, repository, apiFn }) {
     return { exitCode: 1, message: `Unexpected repository: ${repository} (expected aws/aws-cdk)` };
   }
 
-  // Get current PR
+  // Verify the PR's current head matches the approved SHA.
+  // If someone pushed after approval, the PR head will differ and we reject.
   const { status: prStatus, data: pr } = await apiFn(`/repos/${owner}/${repo}/pulls/${prNumber}`, token);
 
   if (prStatus === 404) {
@@ -59,8 +65,9 @@ async function verifyApproval({ prNumber, token, repository, apiFn }) {
   if (pr.state !== 'open') {
     return { exitCode: 1, message: `PR #${prNumber} is ${pr.state}, skipping (only open PRs are eligible)` };
   }
-
-  const currentHead = pr.head.sha;
+  if (pr.head.sha !== approvedSha) {
+    return { exitCode: 1, message: `PR #${prNumber} head has changed (expected ${approvedSha.slice(0, 7)}, got ${pr.head.sha.slice(0, 7)}). New approval needed.` };
+  }
 
   // List reviews
   const { status: reviewsStatus, data: reviews } = await apiFn(
@@ -80,7 +87,7 @@ async function verifyApproval({ prNumber, token, repository, apiFn }) {
 
   // Check each approval: must be non-stale and from a CDK team member
   for (const review of approvals) {
-    if (review.commit_id !== currentHead) {
+    if (review.commit_id !== approvedSha) {
       continue;
     }
 
@@ -106,6 +113,7 @@ if (require.main === module) {
 
     const result = await verifyApproval({
       prNumber: process.argv[2],
+      approvedSha: process.argv[3],
       token,
       repository: process.env.GITHUB_REPOSITORY,
       apiFn: (path, authToken) => githubFetch(path, authToken),

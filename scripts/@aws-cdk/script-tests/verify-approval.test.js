@@ -6,14 +6,14 @@ const { verifyApproval } = require('../../verify-approval');
 
 const VALID_TOKEN = 'ghp_test_token';
 const VALID_REPO = 'aws/aws-cdk';
-const HEAD_SHA = 'abc1234567890abcdef1234567890abcdef123456';
+const APPROVED_SHA = 'abc1234567890abcdef1234567890abcdef123456';
 const STALE_SHA = 'def0000000000000000000000000000000000000';
 
-function openPr(sha = HEAD_SHA) {
+function openPr(sha = APPROVED_SHA) {
   return { state: 'open', head: { sha } };
 }
 
-function approval(login, commitId = HEAD_SHA) {
+function approval(login, commitId = APPROVED_SHA) {
   return { state: 'APPROVED', commit_id: commitId, user: { login } };
 }
 
@@ -34,6 +34,19 @@ describe('verify-approval', () => {
   test('Missing prNumber arg → exit 1', async () => {
     const result = await verifyApproval({
       prNumber: undefined,
+      approvedSha: APPROVED_SHA,
+      token: VALID_TOKEN,
+      repository: VALID_REPO,
+      apiFn: makeApiFn({}),
+    });
+    expect(result.exitCode).toBe(1);
+    expect(result.message).toContain('Usage');
+  });
+
+  test('Missing approvedSha arg → exit 1', async () => {
+    const result = await verifyApproval({
+      prNumber: '123',
+      approvedSha: undefined,
       token: VALID_TOKEN,
       repository: VALID_REPO,
       apiFn: makeApiFn({}),
@@ -45,6 +58,7 @@ describe('verify-approval', () => {
   test('Missing PROJEN_GITHUB_TOKEN → exit 1', async () => {
     const result = await verifyApproval({
       prNumber: '123',
+      approvedSha: APPROVED_SHA,
       token: undefined,
       repository: VALID_REPO,
       apiFn: makeApiFn({}),
@@ -56,6 +70,7 @@ describe('verify-approval', () => {
   test('Missing GITHUB_REPOSITORY → exit 1', async () => {
     const result = await verifyApproval({
       prNumber: '123',
+      approvedSha: APPROVED_SHA,
       token: VALID_TOKEN,
       repository: undefined,
       apiFn: makeApiFn({}),
@@ -67,6 +82,7 @@ describe('verify-approval', () => {
   test('Wrong repository (not aws/aws-cdk) → exit 1', async () => {
     const result = await verifyApproval({
       prNumber: '123',
+      approvedSha: APPROVED_SHA,
       token: VALID_TOKEN,
       repository: 'foo/bar',
       apiFn: makeApiFn({}),
@@ -78,6 +94,7 @@ describe('verify-approval', () => {
   test('PR returns 404 → exit 1', async () => {
     const result = await verifyApproval({
       prNumber: '123',
+      approvedSha: APPROVED_SHA,
       token: VALID_TOKEN,
       repository: VALID_REPO,
       apiFn: makeApiFn({
@@ -91,6 +108,7 @@ describe('verify-approval', () => {
   test('PR returns 500 → exit 1', async () => {
     const result = await verifyApproval({
       prNumber: '123',
+      approvedSha: APPROVED_SHA,
       token: VALID_TOKEN,
       repository: VALID_REPO,
       apiFn: makeApiFn({
@@ -104,10 +122,11 @@ describe('verify-approval', () => {
   test('PR is closed → exit 1', async () => {
     const result = await verifyApproval({
       prNumber: '123',
+      approvedSha: APPROVED_SHA,
       token: VALID_TOKEN,
       repository: VALID_REPO,
       apiFn: makeApiFn({
-        '/pulls/123': { status: 200, data: { state: 'closed', head: { sha: HEAD_SHA } } },
+        '/pulls/123': { status: 200, data: { state: 'closed', head: { sha: APPROVED_SHA } } },
       }),
     });
     expect(result.exitCode).toBe(1);
@@ -117,19 +136,36 @@ describe('verify-approval', () => {
   test('PR is merged → exit 1', async () => {
     const result = await verifyApproval({
       prNumber: '123',
+      approvedSha: APPROVED_SHA,
       token: VALID_TOKEN,
       repository: VALID_REPO,
       apiFn: makeApiFn({
-        '/pulls/123': { status: 200, data: { state: 'merged', head: { sha: HEAD_SHA } } },
+        '/pulls/123': { status: 200, data: { state: 'merged', head: { sha: APPROVED_SHA } } },
       }),
     });
     expect(result.exitCode).toBe(1);
     expect(result.message).toContain('merged');
   });
 
+  test('PR head has changed (new commits pushed) → exit 1', async () => {
+    const result = await verifyApproval({
+      prNumber: '123',
+      approvedSha: APPROVED_SHA,
+      token: VALID_TOKEN,
+      repository: VALID_REPO,
+      apiFn: makeApiFn({
+        '/pulls/123': { status: 200, data: { state: 'open', head: { sha: 'different_sha_after_push' } } },
+      }),
+    });
+    expect(result.exitCode).toBe(1);
+    expect(result.message).toContain('head has changed');
+    expect(result.message).toContain('New approval needed');
+  });
+
   test('Reviews returns 500 → exit 1', async () => {
     const result = await verifyApproval({
       prNumber: '123',
+      approvedSha: APPROVED_SHA,
       token: VALID_TOKEN,
       repository: VALID_REPO,
       apiFn: makeApiFn({
@@ -144,6 +180,7 @@ describe('verify-approval', () => {
   test('No approvals → exit 1', async () => {
     const result = await verifyApproval({
       prNumber: '123',
+      approvedSha: APPROVED_SHA,
       token: VALID_TOKEN,
       repository: VALID_REPO,
       apiFn: makeApiFn({
@@ -158,6 +195,7 @@ describe('verify-approval', () => {
   test('All approvals stale → exit 1', async () => {
     const result = await verifyApproval({
       prNumber: '123',
+      approvedSha: APPROVED_SHA,
       token: VALID_TOKEN,
       repository: VALID_REPO,
       apiFn: makeApiFn({
@@ -172,6 +210,7 @@ describe('verify-approval', () => {
   test('Approval from non-team member (membership returns 404) → exit 1', async () => {
     const result = await verifyApproval({
       prNumber: '123',
+      approvedSha: APPROVED_SHA,
       token: VALID_TOKEN,
       repository: VALID_REPO,
       apiFn: makeApiFn({
@@ -187,6 +226,7 @@ describe('verify-approval', () => {
   test('Valid approval from team member → exit 0', async () => {
     const result = await verifyApproval({
       prNumber: '123',
+      approvedSha: APPROVED_SHA,
       token: VALID_TOKEN,
       repository: VALID_REPO,
       apiFn: makeApiFn({
@@ -203,6 +243,7 @@ describe('verify-approval', () => {
   test('Multiple approvals: one stale, one valid → exit 0', async () => {
     const result = await verifyApproval({
       prNumber: '123',
+      approvedSha: APPROVED_SHA,
       token: VALID_TOKEN,
       repository: VALID_REPO,
       apiFn: makeApiFn({
@@ -210,7 +251,7 @@ describe('verify-approval', () => {
           status: 200,
           data: [
             approval('stale-reviewer', STALE_SHA),
-            approval('fresh-reviewer', HEAD_SHA),
+            approval('fresh-reviewer', APPROVED_SHA),
           ],
         },
         '/pulls/123': { status: 200, data: openPr() },
@@ -240,6 +281,7 @@ describe('verify-approval', () => {
 
     const result = await verifyApproval({
       prNumber: '123',
+      approvedSha: APPROVED_SHA,
       token: VALID_TOKEN,
       repository: VALID_REPO,
       apiFn,
@@ -251,6 +293,7 @@ describe('verify-approval', () => {
   test('Membership API returns 403 (rate limited) → treated as non-member', async () => {
     const result = await verifyApproval({
       prNumber: '123',
+      approvedSha: APPROVED_SHA,
       token: VALID_TOKEN,
       repository: VALID_REPO,
       apiFn: makeApiFn({
@@ -266,6 +309,7 @@ describe('verify-approval', () => {
   test('Membership state is pending (invited but not accepted) → treated as non-member', async () => {
     const result = await verifyApproval({
       prNumber: '123',
+      approvedSha: APPROVED_SHA,
       token: VALID_TOKEN,
       repository: VALID_REPO,
       apiFn: makeApiFn({
