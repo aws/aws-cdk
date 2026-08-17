@@ -10,7 +10,7 @@ export abstract class Schedule {
    * Construct a schedule from a literal schedule expression
    *
    * @param expression The expression to use. Must be in a format that AutoScaling will recognize
-   * @see http://crontab.org/
+   * @see https://crontab.org/
    */
   public static expression(expression: string): Schedule {
     return new LiteralSchedule(expression);
@@ -61,7 +61,7 @@ export abstract class Schedule {
  * All fields are strings so you can use complex expressions. Absence of
  * a field implies '*' or '?', whichever one is appropriate.
  *
- * @see http://crontab.org/
+ * @see https://crontab.org/
  */
 export interface CronOptions {
   /**
