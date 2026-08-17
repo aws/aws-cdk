@@ -3880,7 +3880,7 @@ test('grantMultiAccountReplicationTo adds required resource policy statements', 
                 },
               },
               {
-                Sid: 'AllowReplicationServiceReadWrite222222222222',
+                Sid: 'AllowReplicationServiceReadWrite',
                 Effect: 'Allow',
                 Action: [
                   'dynamodb:ReadDataForReplication',
@@ -3894,6 +3894,69 @@ test('grantMultiAccountReplicationTo adds required resource policy statements', 
                 Condition: {
                   StringEquals: {
                     'aws:SourceAccount': ['111111111111', '222222222222'],
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+    ],
+  });
+});
+
+test('grantMultiAccountReplicationTo aggregates accounts across multiple calls', () => {
+  const stack = new Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'us-east-2' } });
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  table.grants.multiAccountReplicationTo('arn:aws:dynamodb:us-east-1:222222222222:table/RemoteTable');
+  table.grants.multiAccountReplicationTo('arn:aws:dynamodb:us-west-2:333333333333:table/RemoteTable');
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      {
+        ResourcePolicy: {
+          PolicyDocument: {
+            Statement: [
+              {
+                Sid: 'AllowMultiAccountReplicaAssociation222222222222',
+                Effect: 'Allow',
+                Action: 'dynamodb:AssociateTableReplica',
+                Resource: '*',
+                Principal: {
+                  AWS: {
+                    'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::222222222222:root']],
+                  },
+                },
+              },
+              {
+                Sid: 'AllowReplicationServiceReadWrite',
+                Effect: 'Allow',
+                Action: [
+                  'dynamodb:ReadDataForReplication',
+                  'dynamodb:WriteDataForReplication',
+                  'dynamodb:ReplicateSettings',
+                ],
+                Resource: '*',
+                Principal: {
+                  Service: 'replication.dynamodb.amazonaws.com',
+                },
+                Condition: {
+                  StringEquals: {
+                    'aws:SourceAccount': ['111111111111', '222222222222', '333333333333'],
+                  },
+                },
+              },
+              {
+                Sid: 'AllowMultiAccountReplicaAssociation333333333333',
+                Effect: 'Allow',
+                Action: 'dynamodb:AssociateTableReplica',
+                Resource: '*',
+                Principal: {
+                  AWS: {
+                    'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::333333333333:root']],
                   },
                 },
               },
