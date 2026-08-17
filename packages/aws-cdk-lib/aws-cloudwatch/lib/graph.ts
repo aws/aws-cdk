@@ -1006,7 +1006,7 @@ export interface CustomWidgetProps {
 }
 
 /**
- * A CustomWidget shows the result of a AWS lambda function
+ * A CustomWidget shows the result of an AWS lambda function
  */
 export class CustomWidget extends ConcreteWidget {
   private readonly props: CustomWidgetProps;

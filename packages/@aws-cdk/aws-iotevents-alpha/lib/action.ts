@@ -24,7 +24,7 @@ export interface IAction {
 }
 
 /**
- * Properties for a AWS IoT Events action
+ * Properties for an AWS IoT Events action
  */
 export interface ActionConfig {
   /**

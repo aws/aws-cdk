@@ -75,7 +75,7 @@ interface DestinationLoggingProps {
 }
 
 /**
- * Common properties for defining a backup, intermediary, or final S3 destination for a Amazon Data Firehose delivery stream.
+ * Common properties for defining a backup, intermediary, or final S3 destination for an Amazon Data Firehose delivery stream.
  */
 export interface CommonDestinationS3Props {
   /**

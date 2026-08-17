@@ -53,7 +53,7 @@ export interface ITaskDefinition extends IResource, ITaskDefinitionRef {
   readonly isFargateCompatible: boolean;
 
   /**
-   * Return true if the task definition can be run on a ECS Anywhere cluster
+   * Return true if the task definition can be run on an ECS Anywhere cluster
    */
   readonly isExternalCompatible: boolean;
 
@@ -334,7 +334,7 @@ abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
   }
 
   /**
-   * Return true if the task definition can be run on a ECS anywhere cluster
+   * Return true if the task definition can be run on an ECS anywhere cluster
    */
   public get isExternalCompatible(): boolean {
     return isExternalCompatible(this.compatibility);
@@ -1425,7 +1425,7 @@ export function isFargateCompatible(compatibility: Compatibility): boolean {
 }
 
 /**
- * Return true if the given task definition can be run on a ECS Anywhere cluster
+ * Return true if the given task definition can be run on an ECS Anywhere cluster
  */
 export function isExternalCompatible(compatibility: Compatibility): boolean {
   return [Compatibility.EXTERNAL].includes(compatibility);
