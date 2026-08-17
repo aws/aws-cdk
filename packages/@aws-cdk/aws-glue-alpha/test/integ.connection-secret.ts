@@ -11,7 +11,7 @@ const stack = new cdk.Stack(app, 'aws-glue-connection-secret');
 // through its SECRET_ID property, so the secret value never enters the template.
 const secret = new secretsmanager.Secret(stack, 'ConnectionSecret');
 
-new glue.Connection(stack, 'JdbcConnection', {
+const connection = new glue.Connection(stack, 'JdbcConnection', {
   type: glue.ConnectionType.JDBC,
   secret,
   properties: {
@@ -20,8 +20,20 @@ new glue.Connection(stack, 'JdbcConnection', {
   },
 });
 
-new integ.IntegTest(app, 'ConnectionSecretIntegTest', {
+const test = new integ.IntegTest(app, 'ConnectionSecretIntegTest', {
   testCases: [stack],
 });
+
+// Verify the deployed connection actually has the secret associated: its
+// SECRET_ID property must resolve to the secret's reference.
+test.assertions.awsApiCall('Glue', 'getConnection', {
+  Name: connection.connectionName,
+}).expect(integ.ExpectedResult.objectLike({
+  Connection: {
+    ConnectionProperties: {
+      SECRET_ID: secret.secretRef.secretId,
+    },
+  },
+}));
 
 app.synth();
