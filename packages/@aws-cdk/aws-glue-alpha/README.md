@@ -412,21 +412,35 @@ actions list using the job or crawler objects using conditional types.
 
 #### **2. Scheduled Triggers**
 
-You can create scheduled triggers using cron expressions. This construct
-provides daily and weekly convenience functions,
-as well as a custom function that allows you to create your own
-custom timing using the [existing event Schedule class](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_events.Schedule.html)
-without having to build your own cron expressions. The L2 extracts
-the expression that Glue requires from the Schedule object. The constructor
-takes an optional description and a list of jobs or crawlers as actions.
+Use `addScheduledTrigger` with a `TriggerSchedule` to fire on a cron schedule.
+`TriggerSchedule.daily()` and `TriggerSchedule.weekly()` are convenience
+factories; `TriggerSchedule.cron(...)` lets you build any schedule from the
+[existing event Schedule class](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_events.Schedule.html)
+without writing raw cron expressions. The L2 extracts the expression that Glue
+requires from the `TriggerSchedule`.
 
-#### **3. Notify  Event Triggers**
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const stack: cdk.Stack;
+declare const role: iam.IRole;
+declare const script: glue.Code;
+const job = new glue.PySparkEtlJob(stack, 'Job', { role, script });
+const workflow = new glue.Workflow(stack, 'Workflow');
 
-There are two types of notify event triggers: batching and non-batching.
-For batching triggers, you must specify `BatchSize`. For non-batching
-triggers, `BatchSize` defaults to 1. For both triggers, `BatchWindow`
-defaults to 900 seconds, but you can override the window to align with
-your workload's requirements.
+workflow.addScheduledTrigger('WeeklyTrigger', {
+  actions: [glue.Action.job(job)],
+  schedule: glue.TriggerSchedule.weekly(),
+});
+```
+
+#### **3. Event Triggers**
+
+Use `addEventTrigger` for EventBridge event-based triggers. There are two types:
+batching and non-batching. For batching triggers, you must specify `batchSize`.
+For non-batching triggers, `batchSize` defaults to 1. For both, `batchWindow`
+defaults to 900 seconds, but you can override the window to align with your
+workload's requirements.
 
 #### **4. Conditional Triggers**
 

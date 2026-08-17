@@ -1,4 +1,5 @@
 import { CfnWorkflow, CfnTrigger } from 'aws-cdk-lib/aws-glue';
+import type { ITriggerRef } from 'aws-cdk-lib/aws-glue';
 import * as cdk from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
@@ -9,14 +10,9 @@ import {
 } from '../constants';
 import type {
   OnDemandTriggerOptions,
-  WeeklyScheduleTriggerOptions,
-  DailyScheduleTriggerOptions,
-  CustomScheduledTriggerOptions,
-  NotifyEventTriggerOptions,
+  ScheduledTriggerOptions,
+  EventTriggerOptions,
   ConditionalTriggerOptions,
-} from './trigger-options';
-import {
-  TriggerSchedule,
 } from './trigger-options';
 
 /**
@@ -39,24 +35,32 @@ export interface IWorkflow extends cdk.IResource {
   readonly workflowArn: string;
 
   /**
-   * Add an on-demand trigger to the workflow
+   * Add an on-demand trigger to the workflow.
+   *
+   * @returns a reference to the created trigger.
    */
-  addOnDemandTrigger(id: string, options: OnDemandTriggerOptions): CfnTrigger;
+  addOnDemandTrigger(id: string, options: OnDemandTriggerOptions): ITriggerRef;
 
   /**
-   * Add an daily-scheduled trigger to the workflow
+   * Add a scheduled trigger to the workflow.
+   *
+   * @returns a reference to the created trigger.
    */
-  addDailyScheduledTrigger(id: string, options: DailyScheduleTriggerOptions): CfnTrigger;
+  addScheduledTrigger(id: string, options: ScheduledTriggerOptions): ITriggerRef;
 
   /**
-   * Add an weekly-scheduled trigger to the workflow
+   * Add an EventBridge event-based trigger to the workflow.
+   *
+   * @returns a reference to the created trigger.
    */
-  addWeeklyScheduledTrigger(id: string, options: WeeklyScheduleTriggerOptions): CfnTrigger;
+  addEventTrigger(id: string, options: EventTriggerOptions): ITriggerRef;
 
   /**
-   * Add an custom-scheduled trigger to the workflow
+   * Add a conditional (predicate-based) trigger to the workflow.
+   *
+   * @returns a reference to the created trigger.
    */
-  addCustomScheduledTrigger(id: string, options: CustomScheduledTriggerOptions): CfnTrigger;
+  addConditionalTrigger(id: string, options: ConditionalTriggerOptions): ITriggerRef;
 }
 
 /**
@@ -131,80 +135,27 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
    *
    * @param id The id of the trigger.
    * @param options Additional options for the trigger.
-   * @returns The created CfnTrigger resource.
+   * @returns a reference to the created trigger.
    */
-  public addOnDemandTrigger(id: string, options: OnDemandTriggerOptions): CfnTrigger {
-    const trigger = new CfnTrigger(this, id, {
+  public addOnDemandTrigger(id: string, options: OnDemandTriggerOptions): ITriggerRef {
+    return new CfnTrigger(this, id, {
       ...options,
       workflowName: this.workflowName,
       type: 'ON_DEMAND',
       actions: options.actions?.map(action => action._render()),
       description: options.description || undefined,
     });
-
-    return trigger;
   }
 
   /**
-   * Add a daily-scheduled trigger to the workflow.
+   * Add a scheduled trigger to the workflow.
    *
    * @param id The id of the trigger.
-   * @param options Additional options for the trigger.
-   * @returns The created CfnTrigger resource.
+   * @param options Additional options for the trigger, including the schedule.
+   * @returns a reference to the created trigger.
    */
-  public addDailyScheduledTrigger(id: string, options: DailyScheduleTriggerOptions): CfnTrigger {
-    const dailySchedule = TriggerSchedule.cron({
-      minute: '0',
-      hour: '0',
-    });
-
-    const trigger = new CfnTrigger(this, id, {
-      ...options,
-      workflowName: this.workflowName,
-      type: 'SCHEDULED',
-      actions: options.actions?.map(action => action._render()),
-      schedule: dailySchedule.expressionString,
-      startOnCreation: options.startOnCreation ?? false,
-    });
-
-    return trigger;
-  }
-
-  /**
-   * Add a weekly-scheduled trigger to the workflow.
-   *
-   * @param id The id of the trigger.
-   * @param options Additional options for the trigger.
-   * @returns The created CfnTrigger resource.
-   */
-  public addWeeklyScheduledTrigger(id: string, options: WeeklyScheduleTriggerOptions): CfnTrigger {
-    const weeklySchedule = TriggerSchedule.cron({
-      minute: '0',
-      hour: '0',
-      weekDay: 'SUN',
-    });
-
-    const trigger = new CfnTrigger(this, id, {
-      ...options,
-      workflowName: this.workflowName,
-      type: 'SCHEDULED',
-      actions: options.actions?.map(action => action._render()),
-      schedule: weeklySchedule.expressionString,
-      startOnCreation: options.startOnCreation ?? false,
-    });
-
-    return trigger;
-  }
-
-  /**
-   * Add a custom-scheduled trigger to the workflow.
-   *
-   * @param id The id of the trigger.
-   * @param options Additional options for the trigger.
-   * @returns The created CfnTrigger resource.
-   */
-  public addCustomScheduledTrigger(id: string, options: CustomScheduledTriggerOptions): CfnTrigger {
-    const trigger = new CfnTrigger(this, id, {
+  public addScheduledTrigger(id: string, options: ScheduledTriggerOptions): ITriggerRef {
+    return new CfnTrigger(this, id, {
       ...options,
       workflowName: this.workflowName,
       type: 'SCHEDULED',
@@ -212,19 +163,17 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
       schedule: options.schedule.expressionString,
       startOnCreation: options.startOnCreation ?? false,
     });
-
-    return trigger;
   }
 
   /**
-   * Add an Event Bridge based trigger to the workflow.
+   * Add an EventBridge event-based trigger to the workflow.
    *
    * @param id The id of the trigger.
    * @param options Additional options for the trigger.
-   * @returns The created CfnTrigger resource.
+   * @returns a reference to the created trigger.
    */
-  public addNotifyEventTrigger(id: string, options: NotifyEventTriggerOptions): CfnTrigger {
-    const trigger = new CfnTrigger(this, id, {
+  public addEventTrigger(id: string, options: EventTriggerOptions): ITriggerRef {
+    return new CfnTrigger(this, id, {
       ...options,
       workflowName: this.workflowName,
       type: 'EVENT',
@@ -232,19 +181,17 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
       eventBatchingCondition: this.renderEventBatchingCondition(options),
       description: options.description ?? undefined,
     });
-
-    return trigger;
   }
 
   /**
-   * Add a Condition (Predicate) based trigger to the workflow.
+   * Add a conditional (predicate-based) trigger to the workflow.
    *
    * @param id The id of the trigger.
    * @param options Additional options for the trigger.
-   * @returns The created CfnTrigger resource.
+   * @returns a reference to the created trigger.
    */
-  public addConditionalTrigger(id: string, options: ConditionalTriggerOptions): CfnTrigger {
-    const trigger = new CfnTrigger(this, id, {
+  public addConditionalTrigger(id: string, options: ConditionalTriggerOptions): ITriggerRef {
+    return new CfnTrigger(this, id, {
       ...options,
       workflowName: this.workflowName,
       type: 'CONDITIONAL',
@@ -253,8 +200,6 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
       eventBatchingCondition: this.renderEventBatchingCondition(options),
       description: options.description ?? undefined,
     });
-
-    return trigger;
   }
 
   private renderPredicate(props: ConditionalTriggerOptions): CfnTrigger.PredicateProperty {
@@ -264,7 +209,7 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
     };
   }
 
-  private renderEventBatchingCondition(props: NotifyEventTriggerOptions): CfnTrigger.EventBatchingConditionProperty {
+  private renderEventBatchingCondition(props: EventTriggerOptions): CfnTrigger.EventBatchingConditionProperty {
     const defaultBatchSize = 1;
     const defaultBatchWindow = cdk.Duration.seconds(900).toSeconds();
 

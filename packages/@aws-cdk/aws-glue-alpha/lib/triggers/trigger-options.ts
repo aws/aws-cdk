@@ -129,6 +129,24 @@ export class TriggerSchedule {
   }
 
   /**
+   * Creates a schedule that fires once a day, at midnight UTC.
+   *
+   * @returns A new TriggerSchedule instance.
+   */
+  public static daily(): TriggerSchedule {
+    return TriggerSchedule.cron({ minute: '0', hour: '0' });
+  }
+
+  /**
+   * Creates a schedule that fires once a week, at midnight UTC on Sunday.
+   *
+   * @returns A new TriggerSchedule instance.
+   */
+  public static weekly(): TriggerSchedule {
+    return TriggerSchedule.cron({ minute: '0', hour: '0', weekDay: 'SUN' });
+  }
+
+  /**
    * @param expressionString The expression string for the schedule.
    */
   private constructor(public readonly expressionString: string) {}
@@ -293,9 +311,9 @@ export interface TriggerOptions {
 export interface OnDemandTriggerOptions extends TriggerOptions {}
 
 /**
- * Properties for configuring a daily-scheduled Glue Trigger.
+ * Base options for triggers that can be started when they are created.
  */
-export interface DailyScheduleTriggerOptions extends TriggerOptions {
+export interface StartableTriggerOptions extends TriggerOptions {
   /**
    * Whether to start the trigger on creation or not.
    *
@@ -305,16 +323,14 @@ export interface DailyScheduleTriggerOptions extends TriggerOptions {
 }
 
 /**
- * Properties for configuring a weekly-scheduled Glue Trigger.
+ * Properties for configuring a scheduled Glue Trigger.
  */
-export interface WeeklyScheduleTriggerOptions extends DailyScheduleTriggerOptions {}
-
-/**
- * Properties for configuring a custom-scheduled Glue Trigger.
- */
-export interface CustomScheduledTriggerOptions extends WeeklyScheduleTriggerOptions {
+export interface ScheduledTriggerOptions extends StartableTriggerOptions {
   /**
-   * The custom schedule for the trigger.
+   * The schedule on which this trigger fires.
+   *
+   * Build one with {@link TriggerSchedule.daily}, {@link TriggerSchedule.weekly},
+   * {@link TriggerSchedule.cron}, or {@link TriggerSchedule.expression}.
    */
   readonly schedule: TriggerSchedule;
 }
@@ -322,7 +338,7 @@ export interface CustomScheduledTriggerOptions extends WeeklyScheduleTriggerOpti
 /**
  * Properties for configuring an Event Bridge based Glue Trigger.
  */
-export interface NotifyEventTriggerOptions extends TriggerOptions {
+export interface EventTriggerOptions extends TriggerOptions {
   /**
    * Batch condition for the trigger.
    *
@@ -334,7 +350,7 @@ export interface NotifyEventTriggerOptions extends TriggerOptions {
 /**
  * Properties for configuring a Condition (Predicate) based Glue Trigger.
  */
-export interface ConditionalTriggerOptions extends DailyScheduleTriggerOptions{
+export interface ConditionalTriggerOptions extends StartableTriggerOptions {
   /**
    * The predicate for the trigger.
    */

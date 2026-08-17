@@ -116,8 +116,9 @@ describe('Workflow and Triggers', () => {
   });
 
   test('creates a workflow with daily scheduled trigger', () => {
-    workflow.addDailyScheduledTrigger('DailyScheduledTrigger', {
+    workflow.addScheduledTrigger('DailyScheduledTrigger', {
       actions: [glue.Action.job(job)],
+      schedule: TriggerSchedule.daily(),
       startOnCreation: true,
     });
 
@@ -149,8 +150,9 @@ describe('Workflow and Triggers', () => {
   });
 
   test('creates a workflow with weekly scheduled trigger', () => {
-    workflow.addWeeklyScheduledTrigger('WeeklyScheduledTrigger', {
+    workflow.addScheduledTrigger('WeeklyScheduledTrigger', {
       actions: [glue.Action.job(job)],
+      schedule: TriggerSchedule.weekly(),
       startOnCreation: false,
     });
 
@@ -188,7 +190,7 @@ describe('Workflow and Triggers', () => {
       weekDay: 'THU',
     });
 
-    workflow.addCustomScheduledTrigger('CustomScheduledTrigger', {
+    workflow.addScheduledTrigger('CustomScheduledTrigger', {
       actions: [glue.Action.job(job)],
       schedule: customSchedule,
       startOnCreation: true,
@@ -221,8 +223,8 @@ describe('Workflow and Triggers', () => {
     );
   });
 
-  test('creates a workflow with notify event trigger', () => {
-    workflow.addNotifyEventTrigger('NotifyEventTrigger', {
+  test('creates a workflow with event trigger', () => {
+    workflow.addEventTrigger('EventTrigger', {
       actions: [glue.Action.job(job)],
       eventBatchingCondition: {
         batchSize: 10,
@@ -396,5 +398,33 @@ describe('import factories', () => {
       resource: 'workflow',
       resourceName: 'my-workflow',
     }));
+  });
+
+  test('imported workflows expose every trigger type (all methods on IWorkflow)', () => {
+    const role = new iam.Role(stack, 'JobRole', { assumedBy: new iam.ServicePrincipal('glue.amazonaws.com') });
+    const job = new glue.PySparkEtlJob(stack, 'Job', {
+      script: glue.Code.fromAsset('test/job-script/hello_world.py'),
+      role,
+    });
+
+    // Typed as IWorkflow — this only compiles because all four trigger methods
+    // are declared on the interface, not just on the concrete class.
+    const imported: glue.IWorkflow = glue.Workflow.fromWorkflowName(stack, 'Imported', 'my-workflow');
+
+    imported.addEventTrigger('EventTrigger', { actions: [glue.Action.job(job)] });
+    imported.addConditionalTrigger('ConditionalTrigger', {
+      actions: [glue.Action.job(job)],
+      predicate: { conditions: [glue.Condition.job(job, glue.JobState.SUCCEEDED)] },
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::Glue::Trigger', 2);
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Trigger', {
+      Type: 'EVENT',
+      WorkflowName: 'my-workflow',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Trigger', {
+      Type: 'CONDITIONAL',
+      WorkflowName: 'my-workflow',
+    });
   });
 });
