@@ -1018,6 +1018,66 @@ test('can run multiple addAlias', () => {
   });
 });
 
+test('addAlias inherits the key default RETAIN removal policy', () => {
+  const stack = new cdk.Stack();
+  const key = new kms.Key(stack, 'MyKey');
+
+  key.addAlias('alias/xoo');
+
+  Template.fromStack(stack).hasResource('AWS::KMS::Alias', {
+    DeletionPolicy: 'Retain',
+    UpdateReplacePolicy: 'Retain',
+  });
+});
+
+test('addAlias inherits the key explicit DESTROY removal policy', () => {
+  const stack = new cdk.Stack();
+  const key = new kms.Key(stack, 'MyKey', { removalPolicy: cdk.RemovalPolicy.DESTROY });
+
+  key.addAlias('alias/xoo');
+
+  Template.fromStack(stack).hasResource('AWS::KMS::Alias', {
+    DeletionPolicy: 'Delete',
+    UpdateReplacePolicy: 'Delete',
+  });
+});
+
+test('alias prop inherits the key default RETAIN removal policy', () => {
+  const stack = new cdk.Stack();
+  new kms.Key(stack, 'MyKey', { alias: 'alias/xoo' });
+
+  Template.fromStack(stack).hasResource('AWS::KMS::Alias', {
+    DeletionPolicy: 'Retain',
+    UpdateReplacePolicy: 'Retain',
+  });
+});
+
+test('explicit alias removalPolicy wins over the key removal policy', () => {
+  const stack = new cdk.Stack();
+  const key = new kms.Key(stack, 'MyKey', { removalPolicy: cdk.RemovalPolicy.DESTROY });
+
+  new kms.Alias(stack, 'Alias', {
+    aliasName: 'alias/xoo',
+    targetKey: key,
+    removalPolicy: cdk.RemovalPolicy.RETAIN,
+  });
+
+  Template.fromStack(stack).hasResource('AWS::KMS::Alias', {
+    DeletionPolicy: 'Retain',
+    UpdateReplacePolicy: 'Retain',
+  });
+});
+
+test('addAlias on an imported key keeps the default Delete removal policy', () => {
+  const stack = new cdk.Stack();
+  const key = kms.Key.fromKeyArn(stack, 'Imported', 'arn:aws:kms:us-east-1:123456789012:key/abc');
+
+  key.addAlias('alias/xoo');
+
+  const alias = Template.fromStack(stack).findResources('AWS::KMS::Alias');
+  expect(Object.values(alias)[0].DeletionPolicy).toBeUndefined();
+});
+
 test('keyId resolves to a Ref', () => {
   const stack = new cdk.Stack();
   const key = new kms.Key(stack, 'MyKey');
