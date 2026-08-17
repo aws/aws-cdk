@@ -4,7 +4,7 @@
  *
  * Usage: node verify-approval.js <pr_number>
  *
- * Env: PROJEN_GITHUB_TOKEN - token with read:org scope (for team membership check)
+ * Env: PROJEN_GITHUB_TOKEN - token for GitHub API (team membership check)
  *      GITHUB_REPOSITORY - owner/repo (e.g. "aws/aws-cdk")
  *
  * Exit code: 0 if approved by a CDK team member (non-stale), 1 otherwise
@@ -12,15 +12,25 @@
 'use strict';
 
 /**
- * Core verification logic. Returns { exitCode, message }.
- *
- * @param {object} options
- * @param {string} options.prNumber - PR number to verify
- * @param {string} options.token - GitHub token with read:org scope
- * @param {string} options.repository - owner/repo string
- * @param {object} [options.octokit] - Octokit instance (injected for testing)
+ * Makes a GitHub API request. Returns { status, data }.
  */
-async function verifyApproval({ prNumber, token, repository, octokit }) {
+async function githubFetch(path, token) {
+  const headers = {
+    'Accept': 'application/vnd.github.v3+json',
+    'User-Agent': 'aws-cdk-integ-test-trigger',
+  };
+  if (token) {
+    headers['Authorization'] = `token ${token}`;
+  }
+  const response = await fetch(`https://api.github.com${path}`, { headers });
+  const data = await response.json();
+  return { status: response.status, data };
+}
+
+/**
+ * Core verification logic. Returns { exitCode, message }.
+ */
+async function verifyApproval({ prNumber, token, repository, apiFn }) {
   if (!prNumber) {
     return { exitCode: 1, message: 'Usage: verify-approval.js <pr_number>' };
   }
@@ -37,18 +47,15 @@ async function verifyApproval({ prNumber, token, repository, octokit }) {
     return { exitCode: 1, message: `Unexpected repository: ${repository} (expected aws/aws-cdk)` };
   }
 
-  // Get current PR head SHA
-  let pr;
-  try {
-    const response = await octokit.rest.pulls.get({ owner, repo, pull_number: Number(prNumber) });
-    pr = response.data;
-  } catch (err) {
-    if (err.status === 404) {
-      return { exitCode: 1, message: `PR #${prNumber} not found` };
-    }
-    return { exitCode: 1, message: `Failed to fetch PR #${prNumber}: HTTP ${err.status}` };
-  }
+  // Get current PR
+  const { status: prStatus, data: pr } = await apiFn(`/repos/${owner}/${repo}/pulls/${prNumber}`, token);
 
+  if (prStatus === 404) {
+    return { exitCode: 1, message: `PR #${prNumber} not found` };
+  }
+  if (prStatus !== 200) {
+    return { exitCode: 1, message: `Failed to fetch PR #${prNumber}: HTTP ${prStatus}` };
+  }
   if (pr.state !== 'open') {
     return { exitCode: 1, message: `PR #${prNumber} is ${pr.state}, skipping (only open PRs are eligible)` };
   }
@@ -56,12 +63,13 @@ async function verifyApproval({ prNumber, token, repository, octokit }) {
   const currentHead = pr.head.sha;
 
   // List reviews
-  let reviews;
-  try {
-    const response = await octokit.rest.pulls.listReviews({ owner, repo, pull_number: Number(prNumber) });
-    reviews = response.data;
-  } catch (err) {
-    return { exitCode: 1, message: `Failed to fetch reviews for PR #${prNumber}: HTTP ${err.status}` };
+  const { status: reviewsStatus, data: reviews } = await apiFn(
+    `/repos/${owner}/${repo}/pulls/${prNumber}/reviews`,
+    token,
+  );
+
+  if (reviewsStatus !== 200) {
+    return { exitCode: 1, message: `Failed to fetch reviews for PR #${prNumber}: HTTP ${reviewsStatus}` };
   }
 
   const approvals = reviews.filter(r => r.state === 'APPROVED');
@@ -78,19 +86,13 @@ async function verifyApproval({ prNumber, token, repository, octokit }) {
 
     // Check team membership
     // Returns { state: "active"|"pending", role: "member"|"maintainer" } on 200,
-    // or throws with status 404 if user is not a member of the team.
-    try {
-      const { data: membership } = await octokit.rest.teams.getMembershipForUserInOrg({
-        org: owner,
-        team_slug: 'aws-cdk-team',
-        username: review.user.login,
-      });
-      if (membership.state === 'active') {
-        return { exitCode: 0, message: `PR #${prNumber} is approved by CDK team member: ${review.user.login}` };
-      }
-    } catch (err) {
-      // 404 = not a member, 403 = rate limited — treat both as non-member
-      continue;
+    // or 404 if user is not a member of the team.
+    const { status: memberStatus, data: membership } = await apiFn(
+      `/orgs/${owner}/teams/aws-cdk-team/memberships/${review.user.login}`,
+      token,
+    );
+    if (memberStatus === 200 && membership.state === 'active') {
+      return { exitCode: 0, message: `PR #${prNumber} is approved by CDK team member: ${review.user.login}` };
     }
   }
 
@@ -100,25 +102,13 @@ async function verifyApproval({ prNumber, token, repository, octokit }) {
 // Only execute when run directly from command line (skipped when imported by tests)
 if (require.main === module) {
   (async () => {
-    const { Octokit } = require('@octokit/rest');
-
     const token = process.env.PROJEN_GITHUB_TOKEN;
-    const octokit = new Octokit({
-      auth: token,
-      userAgent: 'aws-cdk-integ-test-trigger',
-      log: {
-        debug: () => {},
-        info: () => {},
-        warn: () => {},
-        error: () => {},
-      },
-    });
 
     const result = await verifyApproval({
       prNumber: process.argv[2],
       token,
       repository: process.env.GITHUB_REPOSITORY,
-      octokit,
+      apiFn: (path, authToken) => githubFetch(path, authToken),
     });
 
     if (result.exitCode === 0) {
@@ -133,4 +123,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { verifyApproval };
+module.exports = { verifyApproval, githubFetch };

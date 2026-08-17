@@ -85,8 +85,6 @@ jobs:
 
       # The script is checked out from the base branch (main), not the PR,
       # so it is trusted and cannot be tampered with by the PR author.
-      - name: Install script dependencies
-        run: npm install @octokit/rest --no-save
       - name: Verify maintainer approval (non-stale)
         run: node scripts/verify-approval.js "${{ steps.find-pr.outputs.pr_number }}"
         env:
@@ -130,20 +128,6 @@ jobs:
               target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
             });
 
-      - name: Post status (failure — validation failed)
-        if: failure() && steps.find-pr.outputs.head_sha
-        uses: actions/github-script@v7
-        with:
-          script: |
-            await github.rest.repos.createCommitStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              sha: '${{ steps.find-pr.outputs.head_sha }}',
-              state: 'failure',
-              context: 'Integration Tests (Approval)',
-              description: 'Validation failed — see workflow logs',
-              target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
-            });
 
   # If validation succeeds, a CDK maintainer has approved the PR code on the
   # current head commit. This means the code is trusted by the CDK team and we
@@ -218,8 +202,8 @@ jobs:
               target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
             });
 
-      - name: Post status (failure — tests failed)
-        if: failure()
+      - name: Post status (failure — tests failed or cancelled)
+        if: ${{ !success() }}
         uses: actions/github-script@v7
         with:
           script: |
