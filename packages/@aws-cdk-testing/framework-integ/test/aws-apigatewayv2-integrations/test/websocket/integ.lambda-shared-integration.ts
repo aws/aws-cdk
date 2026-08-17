@@ -49,7 +49,8 @@ const integ = new IntegTest(app, 'websocket-lambda-shared-integration', {
 // $default which previously did not receive a permission.
 const policy = integ.assertions.awsApiCall('Lambda', 'getPolicy', {
   FunctionName: handler.functionName,
-});
+}, ['Policy']);
+
 policy.expect(ExpectedResult.objectLike({
   Policy: Match.serializedJson(Match.objectLike({
     Statement: Match.arrayWith([
