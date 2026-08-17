@@ -28,6 +28,7 @@ import * as cxschema from '../../cloud-assembly-schema';
 import { INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION } from '../../cx-api';
 import * as cxapi from '../../cx-api';
 import { profileFn } from './private/perf';
+import { memoizedGetter } from './helpers-internal';
 
 // Must be a 'require' to not run afoul of ESM module import rules
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -916,6 +917,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * To specify a different strategy for selecting availability zones override this method.
    */
+  @memoizedGetter
   public get availabilityZones(): string[] {
     // if account/region are tokens, we can't obtain AZs through the context
     // provider, so we fallback to use Fn::GetAZs. the current lowest common
