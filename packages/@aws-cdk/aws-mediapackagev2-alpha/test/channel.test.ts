@@ -158,8 +158,8 @@ test('Grant write to MediaLive Role created seperately', () => {
     PolicyDocument: {
       Statement: [{
         Action: [
-          "mediapackagev2:GetChannel",
-          "mediapackagev2:PutObject"
+          'mediapackagev2:GetChannel',
+          'mediapackagev2:PutObject',
         ],
         Effect: 'Allow',
         Resource: {
@@ -377,8 +377,8 @@ test('grants.ingest() adds correct IAM policy', () => {
     PolicyDocument: {
       Statement: [{
         Action: [
-          "mediapackagev2:GetChannel",
-          "mediapackagev2:PutObject"
+          'mediapackagev2:GetChannel',
+          'mediapackagev2:PutObject',
         ],
         Effect: 'Allow',
         Resource: {
