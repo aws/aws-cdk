@@ -32,7 +32,7 @@ describe('Workflow and Triggers', () => {
 
   test('creates a workflow with triggers and actions', () => {
     workflow.addOnDemandTrigger('OnDemandTrigger', {
-      actions: [{ job }],
+      actions: [glue.Action.job(job)],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Glue::Workflow', {
@@ -66,13 +66,10 @@ describe('Workflow and Triggers', () => {
 
   test('creates a workflow with conditional trigger', () => {
     workflow.addConditionalTrigger('ConditionalTrigger', {
-      actions: [{ job }],
+      actions: [glue.Action.job(job)],
       predicate: {
         conditions: [
-          {
-            job,
-            state: glue.JobState.SUCCEEDED,
-          },
+          glue.Condition.job(job, glue.JobState.SUCCEEDED),
         ],
       },
     });
@@ -120,7 +117,7 @@ describe('Workflow and Triggers', () => {
 
   test('creates a workflow with daily scheduled trigger', () => {
     workflow.addDailyScheduledTrigger('DailyScheduledTrigger', {
-      actions: [{ job }],
+      actions: [glue.Action.job(job)],
       startOnCreation: true,
     });
 
@@ -153,7 +150,7 @@ describe('Workflow and Triggers', () => {
 
   test('creates a workflow with weekly scheduled trigger', () => {
     workflow.addWeeklyScheduledTrigger('WeeklyScheduledTrigger', {
-      actions: [{ job }],
+      actions: [glue.Action.job(job)],
       startOnCreation: false,
     });
 
@@ -192,7 +189,7 @@ describe('Workflow and Triggers', () => {
     });
 
     workflow.addCustomScheduledTrigger('CustomScheduledTrigger', {
-      actions: [{ job }],
+      actions: [glue.Action.job(job)],
       schedule: customSchedule,
       startOnCreation: true,
     });
@@ -226,7 +223,7 @@ describe('Workflow and Triggers', () => {
 
   test('creates a workflow with notify event trigger', () => {
     workflow.addNotifyEventTrigger('NotifyEventTrigger', {
-      actions: [{ job }],
+      actions: [glue.Action.job(job)],
       eventBatchingCondition: {
         batchSize: 10,
         batchWindow: cdk.Duration.minutes(5),
@@ -263,6 +260,86 @@ describe('Workflow and Triggers', () => {
       expect.objectContaining({
         BatchSize: 10,
         BatchWindow: 300,
+      }),
+    );
+  });
+
+  test('renders a crawler action with its options', () => {
+    const crawler = CfnCrawler.fromCrawlerName(stack, 'ImportedCrawler', 'my-crawler');
+
+    workflow.addOnDemandTrigger('OnDemandTrigger', {
+      actions: [glue.Action.crawler(crawler, {
+        timeout: cdk.Duration.minutes(30),
+      })],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Trigger', {
+      Type: 'ON_DEMAND',
+      Actions: [{
+        CrawlerName: 'my-crawler',
+        Timeout: 30,
+      }],
+    });
+  });
+
+  test('renders a crawler condition', () => {
+    const crawler = CfnCrawler.fromCrawlerName(stack, 'ImportedCrawler', 'my-crawler');
+
+    workflow.addConditionalTrigger('ConditionalTrigger', {
+      actions: [glue.Action.job(job)],
+      predicate: {
+        conditions: [
+          glue.Condition.crawler(crawler, glue.CrawlerState.SUCCEEDED),
+        ],
+      },
+    });
+
+    const predicateReference = new Capture();
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Trigger', {
+      Type: 'CONDITIONAL',
+      Predicate: predicateReference,
+    });
+
+    expect(predicateReference.asObject()).toEqual(
+      expect.objectContaining({
+        Conditions: [
+          {
+            CrawlerName: 'my-crawler',
+            CrawlState: 'SUCCEEDED',
+            LogicalOperator: 'EQUALS',
+          },
+        ],
+      }),
+    );
+  });
+
+  test('honors an overridden condition logical operator', () => {
+    workflow.addConditionalTrigger('ConditionalTrigger', {
+      actions: [glue.Action.job(job)],
+      predicate: {
+        conditions: [
+          glue.Condition.job(job, glue.JobState.FAILED, {
+            logicalOperator: glue.ConditionLogicalOperator.EQUALS,
+          }),
+        ],
+      },
+    });
+
+    const predicateReference = new Capture();
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Trigger', {
+      Type: 'CONDITIONAL',
+      Predicate: predicateReference,
+    });
+
+    expect(predicateReference.asObject()).toEqual(
+      expect.objectContaining({
+        Conditions: [
+          {
+            JobName: { Ref: 'JobB9D00F9F' },
+            State: 'FAILED',
+            LogicalOperator: 'EQUALS',
+          },
+        ],
       }),
     );
   });
@@ -319,70 +396,5 @@ describe('import factories', () => {
       resource: 'workflow',
       resourceName: 'my-workflow',
     }));
-  });
-});
-
-describe('trigger validation', () => {
-  let stack: cdk.Stack;
-  let workflow: glue.Workflow;
-  let job: glue.PySparkEtlJob;
-
-  beforeEach(() => {
-    stack = new cdk.Stack();
-    workflow = new glue.Workflow(stack, 'Workflow');
-    job = new glue.PySparkEtlJob(stack, 'Job', {
-      script: glue.Code.fromAsset('test/job-script/hello_world.py'),
-      role: new iam.Role(stack, 'JobRole', { assumedBy: new iam.ServicePrincipal('glue.amazonaws.com') }),
-    });
-  });
-
-  describe('action', () => {
-    test('fails when neither job nor crawler is provided', () => {
-      expect(() => workflow.addOnDemandTrigger('Trigger', {
-        actions: [{}],
-      })).toThrow('You must provide either a job or a crawler for the action.');
-    });
-
-    test('fails when both job and crawler are provided', () => {
-      const crawler = new CfnCrawler(stack, 'Crawler', {
-        role: 'arn:aws:iam::123456789012:role/CrawlerRole',
-        targets: {},
-      });
-
-      expect(() => workflow.addOnDemandTrigger('Trigger', {
-        actions: [{ job, crawler }],
-      })).toThrow('You cannot provide both a job and a crawler for the action.');
-    });
-  });
-
-  describe('condition', () => {
-    const predicateWith = (condition: glue.Condition) => ({
-      actions: [{ job }],
-      predicate: { conditions: [condition] },
-    });
-
-    test('fails when neither job nor crawler is provided', () => {
-      expect(() => workflow.addConditionalTrigger('Trigger', predicateWith({})))
-        .toThrow('You must provide either a job or a crawler for the condition.');
-    });
-
-    test('fails when both job and crawler are provided', () => {
-      expect(() => workflow.addConditionalTrigger('Trigger', predicateWith({
-        job,
-        state: glue.JobState.SUCCEEDED,
-        crawlerName: 'my-crawler',
-        crawlState: glue.CrawlerState.SUCCEEDED,
-      }))).toThrow('You cannot provide both a job and a crawler for the condition.');
-    });
-
-    test('fails when a job is provided without a job state', () => {
-      expect(() => workflow.addConditionalTrigger('Trigger', predicateWith({ job })))
-        .toThrow('If you provide a job for the condition, you must also provide a job state.');
-    });
-
-    test('fails when a crawler is provided without a crawler state', () => {
-      expect(() => workflow.addConditionalTrigger('Trigger', predicateWith({ crawlerName: 'my-crawler' })))
-        .toThrow('If you provide a crawler for the condition, you must also provide a crawler state.');
-    });
   });
 });

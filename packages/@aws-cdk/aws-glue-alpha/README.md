@@ -399,7 +399,7 @@ const job = new glue.PySparkEtlJob(stack, 'Job', { role, script });
 // Create a workflow and add a trigger that runs the job
 const workflow = new glue.Workflow(stack, 'Workflow');
 workflow.addOnDemandTrigger('OnDemandTrigger', {
-  actions: [{ job }],
+  actions: [glue.Action.job(job)],
 });
 ```
 
