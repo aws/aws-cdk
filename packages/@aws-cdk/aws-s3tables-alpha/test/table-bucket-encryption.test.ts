@@ -359,6 +359,21 @@ describe('TableBucket with encryption', () => {
       });
     });
 
+    it('user-supplied key allowlists S3Tables maintenance SP', () => {
+      Template.fromStack(stack).hasResourceProperties(KMS_KEY_CFN_RESOURCE, {
+        'KeyPolicy': {
+          'Statement': Match.arrayWith([
+            Match.objectLike({
+              'Sid': 'AllowS3TablesMaintenanceAccess',
+              'Principal': {
+                'Service': 'maintenance.s3tables.amazonaws.com',
+              },
+            }),
+          ]),
+        },
+      });
+    });
+
     grantTests({ withKMS: true, keyName });
   });
 
