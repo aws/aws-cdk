@@ -1,0 +1,150 @@
+{
+ "Resources": {
+  "DistributionOrigin1S3OriginAccessControlEB606076": {
+   "Type": "AWS::CloudFront::OriginAccessControl",
+   "Properties": {
+    "OriginAccessControlConfig": {
+     "Name": "oaccrossstackdistributionDisOrigin1S3OriginAccessControl5F6BB63F",
+     "OriginAccessControlOriginType": "s3",
+     "SigningBehavior": "always",
+     "SigningProtocol": "sigv4"
+    }
+   }
+  },
+  "DistributionOrigin1oaccrossstackdistributionDistributionOrigin10D31DAA7BucketPolicy3589F6EC": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Fn::ImportValue": "oac-cross-stack-bucket:ExportsOutputRefBucket83908E7781C90AC0"
+    },
+    "PolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "cloudfront.amazonaws.com"
+       },
+       "Action": [
+        "s3:GetObject"
+       ],
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::ImportValue": "oac-cross-stack-bucket:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+           },
+           "/*"
+          ]
+         ]
+        }
+       ],
+       "Condition": {
+        "StringEquals": {
+         "AWS:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":cloudfront::",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":distribution/",
+            {
+             "Ref": "Distribution830FAC52"
+            }
+           ]
+          ]
+         }
+        }
+       }
+      }
+     ]
+    }
+   }
+  },
+  "Distribution830FAC52": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "Compress": true,
+      "TargetOriginId": "oaccrossstackdistributionDistributionOrigin10D31DAA7",
+      "ViewerProtocolPolicy": "allow-all"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "DomainName": {
+        "Fn::ImportValue": "oac-cross-stack-bucket:ExportsOutputFnGetAttBucket83908E77RegionalDomainName2BE53631"
+       },
+       "Id": "oaccrossstackdistributionDistributionOrigin10D31DAA7",
+       "OriginAccessControlId": {
+        "Fn::GetAtt": [
+         "DistributionOrigin1S3OriginAccessControlEB606076",
+         "Id"
+        ]
+       },
+       "S3OriginConfig": {
+        "OriginAccessIdentity": ""
+       }
+      }
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefDistribution830FAC524DF81588": {
+   "Value": {
+    "Ref": "Distribution830FAC52"
+   },
+   "Export": {
+    "Name": "oac-cross-stack-distribution:ExportsOutputRefDistribution830FAC524DF81588"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
