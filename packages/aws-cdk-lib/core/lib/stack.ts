@@ -15,6 +15,7 @@ import { CfnResource, TagType } from './cfn-resource';
 import { ContextProvider } from './context-provider';
 import type { Environment, ResourceEnvironment } from './environment';
 import { FeatureFlags } from './feature-flags';
+import { memoizedGetter } from './helpers-internal';
 import { withMixins } from './mixins/private/mixin-metadata';
 import type { PermissionsBoundary } from './permissions-boundary';
 import { PERMISSIONS_BOUNDARY_CONTEXT_KEY } from './permissions-boundary';
@@ -28,7 +29,6 @@ import * as cxschema from '../../cloud-assembly-schema';
 import { INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION } from '../../cx-api';
 import * as cxapi from '../../cx-api';
 import { profileFn } from './private/perf';
-import { memoizedGetter } from './helpers-internal';
 
 // Must be a 'require' to not run afoul of ESM module import rules
 // eslint-disable-next-line @typescript-eslint/no-require-imports
