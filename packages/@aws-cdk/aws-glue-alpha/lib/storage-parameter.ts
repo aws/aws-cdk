@@ -1,3 +1,5 @@
+import type * as kms from 'aws-cdk-lib/aws-kms';
+
 /**
  * The compression type.
  *
@@ -406,8 +408,8 @@ export class StorageParameter {
   /**
    * You can specify an AWS Key Management Service key to enable Server–Side Encryption (SSE) for Amazon S3 objects.
    */
-  public static writeKmsKeyId(value: string): StorageParameter {
-    return new StorageParameter('write.kms.key.id', value);
+  public static writeKmsKeyId(key: kms.IKey): StorageParameter {
+    return new StorageParameter('write.kms.key.id', key.keyId);
   }
 
   /**
@@ -415,8 +417,8 @@ export class StorageParameter {
    * @param key - The key of the storage parameter.
    * @param value - The value of the storage parameter.
    */
-  public static custom(key: string, value: any): StorageParameter {
-    return new StorageParameter(key, value.toString());
+  public static custom(key: string, value: string): StorageParameter {
+    return new StorageParameter(key, value);
   }
 
   protected constructor(public readonly key: string, public readonly value: string) {}
