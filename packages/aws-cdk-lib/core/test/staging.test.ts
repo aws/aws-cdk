@@ -1750,6 +1750,55 @@ describe('staging', () => {
         'validation-report.json',
       ]);
     });
+
+    // A top-level source symlink has no enclosing "source tree" to escape, the link is
+    // followed, a real regular file is written. BLOCK_EXTERNAL must NOT reject
+    // the symlink whether the link target is inside or outside the link's
+    // own directory - the staged asset ends up self-contained.
+
+    test('does not fail under BLOCK_EXTERNAL when the source is an external file symlink, and materializes it', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'stack');
+      // external-link.txt -> ../symlinks/normal-file.txt (target is outside the link's directory)
+      const sourcePath = path.join(__dirname, 'fs', 'fixtures', 'test1', 'external-link.txt');
+
+      // WHEN
+      const staging = new AssetStaging(stack, 'Asset', {
+        sourcePath,
+        follow: SymlinkFollowMode.BLOCK_EXTERNAL,
+      });
+      app.synth();
+
+      // THEN - staged as a single, self-contained file with the target's content inlined
+      expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
+      expect(staging.isArchive).toEqual(false);
+      const staged = staging.absoluteStagedPath;
+      expect(fs.lstatSync(staged).isSymbolicLink()).toBe(false);
+      expect(fs.readFileSync(staged, 'utf8')).toEqual('this is a normal file\n');
+    });
+
+    test('does not fail under BLOCK_EXTERNAL when the source is a local file symlink, and materializes it', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'stack');
+      // local-link.txt -> file1.txt (target is inside the link's directory)
+      const sourcePath = path.join(__dirname, 'fs', 'fixtures', 'test1', 'local-link.txt');
+
+      // WHEN
+      const staging = new AssetStaging(stack, 'Asset', {
+        sourcePath,
+        follow: SymlinkFollowMode.BLOCK_EXTERNAL,
+      });
+      app.synth();
+
+      // THEN
+      expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
+      expect(staging.isArchive).toEqual(false);
+      const staged = staging.absoluteStagedPath;
+      expect(fs.lstatSync(staged).isSymbolicLink()).toBe(false);
+      expect(fs.readFileSync(staged, 'utf8')).toEqual('file1\n');
+    });
   });
 });
 
