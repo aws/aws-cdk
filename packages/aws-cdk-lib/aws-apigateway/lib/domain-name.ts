@@ -3,8 +3,8 @@ import type { DomainNameReference, IDomainNameRef, IRestApiRef, IStageRef } from
 import { CfnDomainName } from './apigateway.generated';
 import type { BasePathMappingOptions } from './base-path-mapping';
 import { BasePathMapping } from './base-path-mapping';
-import type { IpAddressType, IRestApi } from './restapi';
-import { EndpointType } from './restapi';
+import type { IRestApi } from './restapi';
+import { EndpointType, IpAddressType } from './restapi';
 import * as apigwv2 from '../../aws-apigatewayv2';
 import type { IBucket } from '../../aws-s3';
 import type { IResource } from '../../core';
@@ -131,10 +131,15 @@ export interface DomainNameOptions {
   readonly endpointType?: EndpointType;
 
   /**
-   * The endpoint configuration for this domain name
-   * @default - see default values of nested attributes
+   * The IP address types that can invoke this DomainName.
+   *
+   * Use IPV4 to allow only IPv4 addresses to invoke this DomainName, or use DUAL_STACK to allow both IPv4 and IPv6 addresses to invoke this DomainName. For the PRIVATE endpoint type, only DUAL_STACK is supported.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-ip-address-type.html
+   *
+   * @default DUAL_STACK for PRIVATE endpoint type; IPV4 otherwise.
    */
-  readonly endpointConfiguration?: DomainNameEndpointConfiguration;
+  readonly ipAddressType?: IpAddressType;
 
   /**
    * The Transport Layer Security (TLS) version + cipher suite for this domain name.
@@ -206,24 +211,6 @@ export interface IDomainName extends IResource, IDomainNameRef {
   readonly domainNameAliasHostedZoneId: string;
 }
 
-/**
- * The endpoint configuration of an API's custom domain name.
- *
- * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-domainname-endpointconfiguration.html
- */
-export interface DomainNameEndpointConfiguration {
-  /**
-   * The IP address types that can invoke this DomainName.
-   *
-   * Use ipv4 to allow only IPv4 addresses to invoke this DomainName, or use dualstack to allow both IPv4 and IPv6 addresses to invoke this DomainName. For the PRIVATE endpoint type, only dualstack is supported.
-   *
-   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-ip-address-type.html
-   *
-   * @default DUAL_STACK for PRIVATE endpoint type; IPV4 otherwise.
-   */
-  readonly ipAddressType?: IpAddressType;
-}
-
 @propertyInjectable
 export class DomainName extends Resource implements IDomainName {
   /**
@@ -290,6 +277,15 @@ export class DomainName extends Resource implements IDomainName {
       throw new ValidationError(lit`DomainNameDoesNotSupportUppercase`, `Domain name does not support uppercase letters. Got: ${props.domainName}`, scope);
     }
 
+    if (this.endpointType === EndpointType.PRIVATE && props.ipAddressType && props.ipAddressType !== IpAddressType.DUAL_STACK) {
+      throw new ValidationError(
+        lit`UnsupportedIpAddressTypeForPrivateEndpoint`,
+        'For PRIVATE endpoint type, only DUAL_STACK is supported. ' +
+        'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-ip-address-type.html',
+        this,
+      );
+    }
+
     // Skip all security-policy-related validations when any relevant field is a CDK token.
     // Token values are unresolved at synthesis time; CloudFormation will validate them at deploy time.
     const skipSecurityPolicyValidation =
@@ -342,13 +338,12 @@ export class DomainName extends Resource implements IDomainName {
       this.validateSecurityPolicyEndpointType(this.securityPolicy, this.endpointType);
     }
 
-    const endpointConfiguration = props.endpointConfiguration ?? {};
     const mtlsConfig = this.configureMTLS(props.mtls);
     const resource = new CfnDomainName(this, 'Resource', {
       domainName: props.domainName,
       certificateArn: edge ? props.certificate.certificateRef.certificateArn : undefined,
       regionalCertificateArn: edge ? undefined : props.certificate.certificateRef.certificateArn,
-      endpointConfiguration: { ...endpointConfiguration, types: [this.endpointType] },
+      endpointConfiguration: { types: [this.endpointType], ipAddressType: props.ipAddressType },
       mutualTlsAuthentication: mtlsConfig,
       securityPolicy: props.securityPolicy,
       endpointAccessMode: props.endpointAccessMode,

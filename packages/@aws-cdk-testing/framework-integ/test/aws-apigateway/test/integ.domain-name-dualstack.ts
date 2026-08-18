@@ -49,7 +49,7 @@ const dualstackDomain = new apigw.DomainName(testCase, 'DualstackDomain', {
   domainName: `dualstack-${domainName}`,
   certificate,
   mapping: api,
-  endpointConfiguration: { ipAddressType: apigw.IpAddressType.DUAL_STACK },
+  ipAddressType: apigw.IpAddressType.DUAL_STACK,
 });
 new CfnRecordSet(testCase, 'DualstackDomainRecord', {
   name: `dualstack-${domainName}`,

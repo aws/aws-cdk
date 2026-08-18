@@ -72,13 +72,13 @@ describe('domains', () => {
     new apigw.DomainName(stack, 'ipv4-domain', {
       domainName: 'ipv4.example.com',
       certificate: cert,
-      endpointConfiguration: { ipAddressType: apigw.IpAddressType.IPV4 },
+      ipAddressType: apigw.IpAddressType.IPV4,
     });
 
     new apigw.DomainName(stack, 'dualstack-domain', {
       domainName: 'dualstack.example.com',
       certificate: cert,
-      endpointConfiguration: { ipAddressType: apigw.IpAddressType.DUAL_STACK },
+      ipAddressType: apigw.IpAddressType.DUAL_STACK,
     });
 
     new apigw.DomainName(stack, 'default-domain', {
@@ -101,6 +101,22 @@ describe('domains', () => {
       'DomainName': 'default.example.com',
       'EndpointConfiguration': { 'IpAddressType': Match.absent() },
     });
+  });
+
+  test('rejects IpAddressType.IPV4 with EndpointType.PRIVATE', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+    // WHEN/THEN
+    expect(() => {
+      new apigw.DomainName(stack, 'ipv4-domain', {
+        domainName: 'ipv4.example.com',
+        certificate: cert,
+        endpointType: apigw.EndpointType.PRIVATE,
+        ipAddressType: apigw.IpAddressType.IPV4,
+      });
+    }).toThrow(/For PRIVATE endpoint type, only DUAL_STACK is supported/);
   });
 
   test('accepts different security policies', () => {

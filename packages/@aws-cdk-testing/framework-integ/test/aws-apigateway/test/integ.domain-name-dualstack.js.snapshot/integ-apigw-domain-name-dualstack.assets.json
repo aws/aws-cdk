@@ -1,16 +1,16 @@
 {
   "version": "54.0.0",
   "files": {
-    "d7a3cf94c2ce349478f02bc8774b02617b06bf8a74adb9ad957bcc7bfc47d322": {
+    "f30d91697e6e96f0c9d25eae46d392a5f15f66b2d13a77657f1dfb48507ae339": {
       "displayName": "integ-apigw-domain-name-dualstack Template",
       "source": {
         "path": "integ-apigw-domain-name-dualstack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-9771e875": {
+        "current_account-current_region-6ae0517a": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d7a3cf94c2ce349478f02bc8774b02617b06bf8a74adb9ad957bcc7bfc47d322.json",
+          "objectKey": "f30d91697e6e96f0c9d25eae46d392a5f15f66b2d13a77657f1dfb48507ae339.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -26,7 +26,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"body\":{\"message\":\"Hello, world\"},\"ok\":true,\"status\":200}}",
     "flattenResponse": "false",
-    "salt": "1785721472174"
+    "salt": "1787052708970"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
