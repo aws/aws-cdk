@@ -76,9 +76,9 @@ export function appOf(construct: IConstruct): App | undefined {
   return APP_TYPE.isMarked(root) ? root : undefined;
 }
 
-  /**
-   * Check whether the given object is a CfnResource
-   */
-  export function isCfnResource(x: any): x is CfnResource {
-    return x !== null && typeof (x) === 'object' && x.cfnResourceType !== undefined;
-  }
+/**
+ * Check whether the given object is a CfnResource
+ */
+export function isCfnResource(x: any): x is CfnResource {
+  return x !== null && typeof (x) === 'object' && x.cfnResourceType !== undefined;
+}
