@@ -1,16 +1,18 @@
 import type { CfnTable } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { KeyGrants } from 'aws-cdk-lib/aws-kms';
+import type * as lambda from 'aws-cdk-lib/aws-lambda';
 import type { IResource } from 'aws-cdk-lib/core';
-import { ArnFormat, Fn, Lazy, Names, Resource, Stack, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { ArnFormat, CustomResource, Duration, Fn, Lazy, Names, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
+import { lit, md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import * as cr from 'aws-cdk-lib/custom-resources';
-import type { AwsCustomResource } from 'aws-cdk-lib/custom-resources';
-import type { Construct } from 'constructs';
+import { Construct } from 'constructs';
 import type { DataFormat } from './data-format';
 import type { IDatabase } from './database';
 import { generatePartitionProjectionParameters, type PartitionProjection } from './partition-projection';
 import type { Column } from './schema';
 import type { StorageParameter } from './storage-parameter';
+import { PartitionIndexIsCompleteFunction, PartitionIndexOnEventFunction } from '../custom-resource-handlers/dist/aws-glue-alpha/partition-index-provider.generated';
 
 /**
  * Properties of a Partition Index.
@@ -162,6 +164,23 @@ export interface TableBaseProps {
   readonly parameters?: { [key: string]: string };
 
   /**
+   * Whether the data stored in the table is encrypted.
+   *
+   * This sets the `has_encrypted_data` table parameter. Athena reads it when
+   * querying client-side (CSE-KMS) encrypted datasets; for server-side
+   * encrypted (SSE-S3 / SSE-KMS) or unencrypted data it has no effect, since
+   * Amazon S3 decrypts server-side encrypted objects transparently.
+   *
+   * Do not also set `has_encrypted_data` through `parameters` - use this
+   * property instead. A conflicting value in `parameters` is rejected.
+   *
+   * @see https://docs.aws.amazon.com/athena/latest/ug/creating-tables-based-on-encrypted-datasets-in-s3.html
+   *
+   * @default true
+   */
+  readonly hasEncryptedData?: boolean;
+
+  /**
    * Partition projection configuration for this table.
    *
    * Partition projection allows Athena to automatically add new partitions
@@ -250,11 +269,17 @@ export abstract class TableBase extends Resource implements ITable {
   protected readonly parameters: { [key: string]: string };
 
   /**
+   * Whether the data stored in the table is encrypted. Emitted as the
+   * `has_encrypted_data` table parameter.
+   */
+  protected readonly hasEncryptedData: boolean;
+
+  /**
    * Partition indexes must be created one at a time. To avoid
    * race conditions, we store the resource and add dependencies
    * each time a new partition index is created.
    */
-  private partitionIndexCustomResources: AwsCustomResource[] = [];
+  private partitionIndexCustomResources: CustomResource[] = [];
 
   constructor(scope: Construct, id: string, props: TableBaseProps) {
     super(scope, id, {
@@ -273,6 +298,9 @@ export abstract class TableBase extends Resource implements ITable {
     this.storageParameters = props.storageParameters;
     this.partitionProjection = props.partitionProjection;
     this.parameters = props.parameters ?? {};
+
+    this.hasEncryptedData = props.hasEncryptedData ?? true;
+    this.reconcileHasEncryptedData();
 
     this.compressed = props.compressed ?? false;
 
@@ -298,55 +326,134 @@ export abstract class TableBase extends Resource implements ITable {
     this.validatePartitionIndex(index);
 
     const indexName = index.indexName ?? this.generateIndexName(index.keyNames);
-    const partitionIndexCustomResource = new cr.AwsCustomResource(this, `partition-index-${indexName}`, {
-      onCreate: {
-        service: 'Glue',
-        action: 'createPartitionIndex',
-        parameters: {
-          DatabaseName: this.database.databaseName,
-          TableName: this.tableName,
-          PartitionIndex: {
-            IndexName: indexName,
-            Keys: index.keyNames,
-          },
-        },
-        physicalResourceId: cr.PhysicalResourceId.of(
-          indexName,
-        ),
-      },
-      policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-        resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
-      }),
-      // APIs are available in 2.1055.0
-      installLatestAwsSdk: false,
-    });
-    this.grantToUnderlyingResources(partitionIndexCustomResource, ['glue:UpdateTable']);
+    const provider = PartitionIndexProvider.getOrCreate(this);
 
-    // Depend on previous partition index if possible, to avoid race condition
+    // The grants are identical for every index on this table, so only add them
+    // once.
+    if (numPartitions === 0) {
+      // Add scoped permissions for this table's Glue resources
+      // https://docs.aws.amazon.com/service-authorization/latest/reference/list_awsglue.html
+      const resources = [this.tableArn, this.database.databaseArn, this.database.catalog.catalogArn];
+
+      // The catalog's encryption is fixed at construction, so the encryption key
+      // (if any) is known here. Grant the handlers access to it. No-op when the
+      // catalog uses an AWS-managed key or no encryption.
+      const key = this.database.catalog.encryptionKey;
+      if (key) {
+        const grants = KeyGrants.fromKey(key);
+        grants.decrypt(provider.onEventHandler);
+        grants.decrypt(provider.isCompleteHandler);
+      }
+
+      // Both handlers create, delete, and inspect indexes: onEvent creates/deletes on
+      // Create/Delete/Update, and isComplete recreates the index while driving a
+      // key-change update (delete -> recreate -> ACTIVE). UpdateTable/GetTable are
+      // required by the CreatePartitionIndex/DeletePartitionIndex APIs.
+      const actions = [
+        'glue:GetPartitionIndexes',
+        'glue:CreatePartitionIndex',
+        'glue:DeletePartitionIndex',
+        'glue:GetTable',
+        'glue:UpdateTable',
+      ];
+      provider.onEventHandler.addToRolePolicy(new iam.PolicyStatement({ actions, resources }));
+      provider.isCompleteHandler.addToRolePolicy(new iam.PolicyStatement({ actions, resources }));
+    }
+
+    const partitionIndexCustomResource = new CustomResource(this, `partition-index-${indexName}`, {
+      resourceType: 'Custom::GluePartitionIndex',
+      serviceToken: provider.serviceToken,
+      properties: {
+        DatabaseName: this.database.databaseName,
+        TableName: this.tableName,
+        IndexName: indexName,
+        Keys: index.keyNames,
+      },
+    });
+
+    // Ensure IAM policies are created before the custom resource invokes the handlers
+    partitionIndexCustomResource.node.addDependency(provider.onEventHandler.role!);
+    partitionIndexCustomResource.node.addDependency(provider.isCompleteHandler.role!);
+
+    // Depend on previous partition index to avoid race condition
     if (numPartitions > 0) {
-      this.partitionIndexCustomResources[numPartitions-1].node.addDependency(partitionIndexCustomResource);
+      partitionIndexCustomResource.node.addDependency(this.partitionIndexCustomResources[numPartitions-1]);
     }
     this.partitionIndexCustomResources.push(partitionIndexCustomResource);
   }
 
   private generateIndexName(keys: string[]): string {
+    const maxIndexLength = 80;
+    if (Token.isUnresolved(keys) || keys.some(k => Token.isUnresolved(k))) {
+      // The index name is derived from the key names, so tokenized keys leave
+      // nothing stable to generate from: any auto-generated name would have to
+      // fall back to the index's position on the table, which shifts if indexes
+      // are added, removed, or reordered - silently replacing indexes that did
+      // not actually change. Require an explicit, stable name instead.
+      throw new ValidationError(
+        lit`TokenizedIndexKeysRequireName`,
+        'cannot auto-generate a stable partition index name from tokenized key names; ' +
+          'specify `indexName` explicitly when index keys are not known at synthesis time',
+        this,
+      );
+    }
     const prefix = keys.join('-') + '-';
     const uniqueId = Names.uniqueId(this);
-    const maxIndexLength = 80; // arbitrarily specified
-    const startIndex = Math.max(0, uniqueId.length - (maxIndexLength - prefix.length));
-    return prefix + uniqueId.substring(startIndex);
+    if (prefix.length < maxIndexLength) {
+      // Common case: trim the uniqueId tail so the whole name fits under the cap.
+      const startIndex = Math.max(0, uniqueId.length - (maxIndexLength - prefix.length));
+      return prefix + uniqueId.substring(startIndex);
+    }
+    // The joined key names alone exceed the budget (long key names), so trimming
+    // the uniqueId is not enough. Truncate the prefix and append a hash of the
+    // table path plus the full key list, so two different (long) key sets cannot
+    // collide after truncation.
+    const hash = md5hash(uniqueId + '-' + keys.join('-')).slice(0, 8);
+    return prefix.substring(0, maxIndexLength - hash.length - 1) + '-' + hash;
+  }
+
+  /**
+   * Reconcile a `has_encrypted_data` value supplied through the free-form
+   * `parameters` map with the typed `hasEncryptedData` property.
+   *
+   * `has_encrypted_data` is managed by this construct and emitted authoritatively
+   * from `hasEncryptedData`. Supplying it through `parameters` as well is only
+   * tolerated when the value is identical; a differing (or unresolved) value is
+   * rejected so the two inputs can never silently disagree. On success the key is
+   * removed from the free-form map so the managed value is the single source of
+   * truth.
+   */
+  private reconcileHasEncryptedData(): void {
+    const key = 'has_encrypted_data';
+    if (!(key in this.parameters)) {
+      return;
+    }
+    const supplied = this.parameters[key];
+    const managed = String(this.hasEncryptedData);
+    if (Token.isUnresolved(supplied) || supplied !== managed) {
+      throw new ValidationError(
+        lit`HasEncryptedDataConflict`,
+        `the \`${key}\` table parameter is managed by the \`hasEncryptedData\` property; ` +
+          `remove it from \`parameters\` and use the boolean \`hasEncryptedData\` property instead (got ${JSON.stringify(supplied)}, expected ${JSON.stringify(managed)})`,
+        this,
+      );
+    }
+    delete this.parameters[key];
   }
 
   private validatePartitionIndex(index: PartitionIndex) {
-    if (index.indexName !== undefined && (index.indexName.length < 1 || index.indexName.length > 255)) {
+    if (index.indexName !== undefined && !Token.isUnresolved(index.indexName) && (index.indexName.length < 1 || index.indexName.length > 255)) {
       throw new ValidationError(lit`IndexNameLengthInvalid`, `Index name must be between 1 and 255 characters, but got ${index.indexName.length}`, this);
     }
     if (!this.partitionKeys || this.partitionKeys.length === 0) {
       throw new ValidationError(lit`NoPartitionKeysForIndex`, 'The table must have partition keys to create a partition index', this);
     }
-    const keyNames = this.partitionKeys.map(pk => pk.name);
-    if (!index.keyNames.every(k => keyNames.includes(k))) {
-      throw new ValidationError(lit`IndexKeysNotPartitionKeys`, `All index keys must also be partition keys. Got ${index.keyNames} but partition key names are ${keyNames}`, this);
+    if (!Token.isUnresolved(index.keyNames)) {
+      const keyNames = this.partitionKeys.map(pk => pk.name);
+      const concreteKeys = index.keyNames.filter(k => !Token.isUnresolved(k));
+      if (concreteKeys.length > 0 && !concreteKeys.every(k => keyNames.includes(k))) {
+        throw new ValidationError(lit`IndexKeysNotPartitionKeys`, `All index keys must also be partition keys. Got ${index.keyNames} but partition key names are ${keyNames}`, this);
+      }
     }
   }
 
@@ -414,8 +521,17 @@ export abstract class TableBase extends Resource implements ITable {
   }
 
   /**
-   * Grant the given identity custom permissions.
+   * Grant the given identity custom permissions on this table.
+   *
+   * This is a low-level escape hatch: the `actions` are applied verbatim,
+   * scoped to this table's ARN. Prefer the intent-based `grantRead` /
+   * `grantWrite` / `grantReadWrite` methods, which grant a curated set of
+   * actions and also cover the underlying S3 data. Only pass the specific
+   * actions the grantee needs - avoid service wildcards such as `glue:*`.
    * [disable-awslint:no-grants]
+   *
+   * @param grantee the principal
+   * @param actions the set of Glue actions to allow (for example `glue:GetTable`)
    */
   public grant(grantee: iam.IGrantable, actions: string[]) {
     return iam.Grant.addToPrincipal({
@@ -426,20 +542,86 @@ export abstract class TableBase extends Resource implements ITable {
   }
 
   /**
-   * Grant the given identity custom permissions to ALL underlying resources of the table.
-   * Permissions will be granted to the catalog, the database, and the table.
+   * Grant the given identity custom permissions on this table AND its parent
+   * catalog and database.
+   *
+   * This is a low-level escape hatch for actions (such as certain Lake
+   * Formation or crawler operations) that must be authorized against the
+   * catalog and database in addition to the table. The `actions` are applied
+   * verbatim to all three ARNs (table, catalog, database), so scope them
+   * tightly: pass only the specific actions the grantee needs and avoid
+   * service wildcards such as `glue:*`, which would grant broad access across
+   * every resource in the catalog and database.
    * [disable-awslint:no-grants]
+   *
+   * @param grantee the principal
+   * @param actions the set of Glue actions to allow (for example `glue:GetTable`)
    */
   public grantToUnderlyingResources(grantee: iam.IGrantable, actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee,
       resourceArns: [
         this.tableArn,
-        this.database.catalogArn,
+        this.database.catalog.catalogArn,
         this.database.databaseArn,
       ],
       actions,
     });
+  }
+}
+
+/**
+ * A stack-singleton custom resource provider that manages Glue partition indexes.
+ *
+ * All partition-indexed tables in a stack share a single provider (and its two
+ * Lambda handlers) to avoid provisioning a provider framework per table. The
+ * provider and handlers are grouped under this single construct so only one
+ * id is placed at stack scope.
+ */
+class PartitionIndexProvider extends Construct {
+  /**
+   * Returns the stack-singleton provider, creating it if it does not yet exist.
+   */
+  public static getOrCreate(scope: Construct): PartitionIndexProvider {
+    const stack = Stack.of(scope);
+    // A fixed, namespaced id makes this a stack singleton: every call within the
+    // same stack resolves to the same child via `tryFindChild`.
+    const id = '@aws-cdk/aws-glue-alpha.PartitionIndexProvider';
+    return (stack.node.tryFindChild(id) as PartitionIndexProvider) ?? new PartitionIndexProvider(stack, id);
+  }
+
+  public readonly onEventHandler: lambda.Function;
+  public readonly isCompleteHandler: lambda.Function;
+  private readonly provider: cr.Provider;
+
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    // The handler source lives in `@aws-cdk/custom-resource-handlers` and is code
+    // generated + airlifted into this package at build time (see
+    // scripts/airlift-custom-resource-handlers.sh), following the pattern used by the
+    // other alpha modules (aws-amplify-alpha, aws-redshift-alpha). The @aws-sdk/client-glue
+    // module is provided by the Lambda runtime rather than bundled into the asset.
+    this.onEventHandler = new PartitionIndexOnEventFunction(this, 'Handler', {
+      timeout: Duration.minutes(1),
+    });
+    this.isCompleteHandler = new PartitionIndexIsCompleteFunction(this, 'IsComplete', {
+      timeout: Duration.minutes(1),
+    });
+
+    this.provider = new cr.Provider(this, 'Provider', {
+      onEventHandler: this.onEventHandler,
+      isCompleteHandler: this.isCompleteHandler,
+      queryInterval: Duration.seconds(10),
+      totalTimeout: Duration.minutes(15),
+    });
+  }
+
+  /**
+   * The service token to wire into partition index custom resources.
+   */
+  public get serviceToken(): string {
+    return this.provider.serviceToken;
   }
 }
 

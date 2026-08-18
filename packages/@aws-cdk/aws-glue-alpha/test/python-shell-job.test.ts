@@ -14,6 +14,10 @@ describe('Job', () => {
 
   beforeEach(() => {
     stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::E1155',
+      reason: 'Syntactically incorrect log group name',
+    });
     role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/TestRole');
     codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketname');
     script = glue.Code.fromBucket(codeBucket, 'script');
@@ -187,7 +191,6 @@ describe('Job', () => {
         script,
         glueVersion: glue.GlueVersion.V2_0,
         continuousLogging: { enabled: false },
-        workerType: glue.WorkerType.G_2X,
         maxConcurrentRuns: 100,
         timeout: cdk.Duration.hours(2),
         connections: [glue.Connection.fromConnectionName(stack, 'Connection', 'connectionName')],
@@ -197,7 +200,6 @@ describe('Job', () => {
           SecondTagName: 'SecondTagValue',
           XTagName: 'XTagValue',
         },
-        numberOfWorkers: 2,
         maxRetries: 2,
       });
     });
@@ -357,7 +359,6 @@ describe('Job', () => {
         script,
         glueVersion: glue.GlueVersion.V2_0,
         continuousLogging: { enabled: false },
-        workerType: glue.WorkerType.G_2X,
         maxConcurrentRuns: 100,
         timeout: cdk.Duration.hours(2),
         connections: [glue.Connection.fromConnectionName(stack, 'Connection', 'connectionName')],
@@ -367,7 +368,6 @@ describe('Job', () => {
           SecondTagName: 'SecondTagValue',
           XTagName: 'XTagValue',
         },
-        numberOfWorkers: 2,
         maxRetries: 2,
         jobRunQueuingEnabled: true,
       });

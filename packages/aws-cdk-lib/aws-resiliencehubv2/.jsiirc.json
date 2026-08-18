@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.resiliencehubv2"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.ResilienceHubV2"
+    },
+    "python": {
+      "module": "aws_cdk.aws_resiliencehubv2"
+    }
+  }
+}

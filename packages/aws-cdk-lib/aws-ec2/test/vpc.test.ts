@@ -1,4 +1,5 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { acknowledgeTestValidationRules } from './util';
 import { Annotations, Match, Template } from '../../assertions';
 import { App, CfnOutput, CfnResource, Fn, Lazy, Stack, Tags } from '../../core';
 import { EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
@@ -2752,6 +2753,26 @@ describe('vpc', () => {
       },
     });
   });
+  test('dual-stack IPv6 default route has DependsOn VPCGatewayAttachment', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'DualStackStack');
+
+    // WHEN
+    new Vpc(stack, 'Vpc', {
+      ipProtocol: IpProtocol.DUAL_STACK,
+      maxAzs: 1,
+    });
+
+    // THEN - IPv6 default route (::/0) must depend on VPCGatewayAttachment;
+    // CloudFormation rejects routes whose IGW has not yet been attached to the VPC.
+    Template.fromStack(stack).hasResource('AWS::EC2::Route', {
+      Properties: {
+        DestinationIpv6CidrBlock: '::/0',
+      },
+      DependsOn: Match.arrayWith([Match.stringLikeRegexp('VPCGW')]),
+    });
+  });
   test('EgressOnlyIGW is created if no private subnet configured in dual stack and feature flag EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY is not enabled', () => {
     // GIVEN
     const app = new App();
@@ -2850,7 +2871,9 @@ describe('vpc', () => {
 });
 
 function getTestStack(): Stack {
-  return new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
+  const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
+  acknowledgeTestValidationRules(stack);
+  return stack;
 }
 
 function toCfnTags(tags: any): Array<{Key: string; Value: string}> {

@@ -22,12 +22,20 @@ Principles:
 
 | Task | Command | Working Directory |
 |------|---------|-------------------|
+| Install dependencies | `yarn install` | repo root |
 | Build everything | `npx lerna run build --skip-nx-cache` | repo root |
+| Build aws-cdk-lib package only | `npx lerna run build --scope=aws-cdk-lib --stream` | repo root |
+| Build one module | `yarn build` | `packages/aws-cdk-lib/aws-{service}` or `packages/@aws-cdk/aws-{service}-alpha` |
+| Build stable module integ tests | `npx lerna run build --scope=@aws-cdk-testing/framework-integ --stream` | repo root |
+| Test all in package | `yarn test` | `packages/aws-cdk-lib` |
 | Test one module | `yarn test aws-lambda` | `packages/aws-cdk-lib` |
 | Test one file | `npx jest aws-lambda/test/function.test.ts` | `packages/aws-cdk-lib` |
 | Lint | `npx lerna run lint` | repo root |
+| Lint with auto-fix | `yarn lint --fix` | repo root |
 | Rosetta (README compile check) | `/bin/bash ./scripts/run-rosetta.sh` | repo root |
-| Run integ snapshots | `yarn integ --directory test/aws-lambda/test` | `packages/@aws-cdk-testing/framework-integ` |
+| Run all integ snapshots | `yarn integ` | `packages/@aws-cdk-testing/framework-integ` |
+| Run integ snapshots in module | `yarn integ --directory test/aws-lambda/test` | `packages/@aws-cdk-testing/framework-integ` |
+| Update integ snapshots (no deploy) | `yarn integ --dry-run --update-on-failed` | `packages/@aws-cdk-testing/framework-integ` |
 | Run integ with deploy | `yarn integ test/aws-lambda/test/integ.lambda.js --update-on-failed` | `packages/@aws-cdk-testing/framework-integ` |
 
 > **Note:** All test, lint, integ, and rosetta commands require the project to be compiled first. Run the build command above before any of these.
@@ -96,7 +104,8 @@ Standard constructor: `constructor(scope: Construct, id: string, props: FooProps
 
 ### Static Type Check (never use `instanceof`)
 
-All L1 (`Cfn*`) constructs and some core constructs have this auto-generated.
+L1 `Cfn*` constructs have it auto-generated (via `spec2cdk`); some core classes, such as `App`,
+`Stack` and `Stage`, implement the same pattern by hand.
 
 ```ts
 public static isFoo(x: any): x is Foo {
@@ -125,7 +134,7 @@ public static isFoo(x: any): x is Foo {
 ## Props Design
 
 - Name: `FooProps` — always a struct (readonly properties only)
-- Flat — no artificial nesting, use shared prefixes for related props
+- Flat — no artificial nesting, use shared prefixes for related props. Exception: group **co-dependent** props (only valid together) into a required-together value object when it makes incomplete combinations unrepresentable — e.g. `workerConfiguration: { workerType, numberOfWorkers }`. Litmus: if flattening would need a synth-time throw for partial input, nest; mutually *exclusive* props use factory methods instead
 - Every optional prop needs `@default` tag:
   - Simple: `@default true`
   - Context-dependent: `@default - uses the account default encryption`
@@ -277,6 +286,8 @@ if (FeatureFlags.of(this).isEnabled(cxapi.MY_NEW_FLAG)) { ... }
   });
   ```
 - Other `Match` helpers: `Match.objectEquals`, `Match.arrayWith`, `Match.stringLikeRegexp`, `Match.absent()`
+- Avoid `Match.anyValue()` — it weakens assertions and hides regressions; assert the specific value, using `Match.stringLikeRegexp()` for non-deterministic values (asset hashes, generated IDs)
+- Avoid `app.synth()` — `Template.fromStack()` synthesizes the stack internally, so an explicit synth is redundant
 - `test.each` for boundary conditions: `test.each([0, -1, 256])('fails for invalid value %d', (val) => { ... })`
 - Error tests: assert on specific error message, prefix test name with "fails"
 - Test utility functions separately from constructs (e.g. `util.test.ts`)
@@ -321,7 +332,7 @@ Required for: new CFN resource types, new CFN properties, cross-service integrat
 
 - Module scope optional for repo-wide changes: `chore: update dependencies`
 - Lowercase, no period at end
-- `feat` and `fix` PRs MUST reference an issue: `fixes #<issue>` or `closes #<issue>`
+- You SHOULD reference an issue in every `feat` and `fix` PR: `fixes #<issue>` or `closes #<issue>`. A PR with no linked issue is routed to a lower-priority review queue, so link one to keep the PR in the normal queue. If no issue exists, open one before raising the PR.
 - `feat()` PRs require unit tests, integration snapshots, and README updates
 - Breaking changes are only allowed in `-alpha` libraries. Declare with `BREAKING CHANGE:` in the PR body before the `---` line
 - One concern per PR — submit cosmetic changes separately

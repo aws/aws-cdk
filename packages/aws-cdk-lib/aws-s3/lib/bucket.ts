@@ -31,6 +31,7 @@ import {
   Stack,
   Token,
   Tokenization,
+  Validations,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import type { IArrayBox, IBox } from '../../core/lib/helpers-internal';
@@ -399,6 +400,7 @@ export interface IBucket extends IResource, IBucketRef {
   /**
    * Enables event bridge notification, causing all events below to be sent to EventBridge:
    *
+   * - Object Created
    * - Object Deleted (DeleteObject)
    * - Object Deleted (Lifecycle expiration)
    * - Object Restore Initiated
@@ -413,12 +415,19 @@ export interface IBucket extends IResource, IBucketRef {
   enableEventBridgeNotification(): void;
 
   /**
-   * Function to add required permissions to the destination bucket for cross account
-   * replication. These permissions will be added as a resource based policy on the bucket.
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html
-   * If owner of the bucket needs to be overridden, set accessControlTransition to true and provide
-   * account ID in which destination bucket is hosted. For more information on accessControlTransition
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-accesscontroltranslation.html
+   * Adds resource policy statements to this bucket that permit cross-account replication.
+   *
+   * Call this method on the destination bucket. If the destination bucket is a referenced bucket,
+   * its policy cannot be modified by CDK and the permissions must be added in the destination
+   * account.
+   *
+   * To change replica ownership to the destination bucket owner, set `accessControlTransition` to
+   * true and provide the source bucket owner's account ID.
+   *
+   * @param roleArn The ARN of the source bucket's replication role.
+   * @param accessControlTransition Whether to change replica ownership to the destination bucket owner.
+   * @param account The source bucket owner's AWS account ID. Required when `accessControlTransition` is true.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-change-owner.html
    */
   addReplicationPolicy(roleArn: string, accessControlTransition?: boolean, account?: string): void;
 }
@@ -1075,12 +1084,19 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
   }
 
   /**
-   * Function to add required permissions to the destination bucket for cross account
-   * replication. These permissions will be added as a resource based policy on the bucket
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html
-   * If owner of the bucket needs to be overridden, set accessControlTransition to true and provide
-   * account ID in which destination bucket is hosted. For more information on accessControlTransition
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-accesscontroltranslation.html
+   * Adds resource policy statements to this bucket that permit cross-account replication.
+   *
+   * Call this method on the destination bucket. If the destination bucket is a referenced bucket,
+   * its policy cannot be modified by CDK and the permissions must be added in the destination
+   * account.
+   *
+   * To change replica ownership to the destination bucket owner, set `accessControlTransition` to
+   * true and provide the source bucket owner's account ID.
+   *
+   * @param roleArn The ARN of the source bucket's replication role.
+   * @param accessControlTransition Whether to change replica ownership to the destination bucket owner.
+   * @param account The source bucket owner's AWS account ID. Required when `accessControlTransition` is true.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-change-owner.html
    */
   public addReplicationPolicy(roleArn: string, accessControlTransition?: boolean, account?: string) {
     const results: boolean[] = [];
@@ -1586,21 +1602,36 @@ export interface ReplicationRule {
   /**
    * The destination bucket for the replicated objects.
    *
-   * The destination can be either in the same AWS account or a cross account.
+   * The destination can be in the same AWS account or a different account.
    *
-   * If you want to configure cross-account replication,
-   * the destination bucket must have a policy that allows the source bucket to replicate objects to it.
+   * For cross-account replication, the destination bucket must have a policy that allows the source
+   * bucket to replicate objects to it. Use `addReplicationPolicy()` to add the required permissions
+   * when the destination bucket is managed by CDK. If the destination bucket is referenced, configure
+   * the policy separately in the destination account.
+   *
+   * When importing a cross-account destination into the source stack, use
+   * `Bucket.fromBucketAttributes()` and set the `account` attribute to the destination bucket owner's
+   * account ID. `Bucket.fromBucketArn()` and `Bucket.fromBucketName()` assume the bucket is owned by
+   * the same account as the scope in which it is imported.
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html
    */
   readonly destination: IBucket;
 
   /**
-   * Whether to want to change replica ownership to the AWS account that owns the destination bucket.
+   * Whether to change replica ownership to the AWS account that owns the destination bucket.
    *
    * This can only be specified if the source bucket and the destination bucket are not in the same AWS account.
    *
-   * @default - The replicas are owned by same AWS account that owns the source object
+   * When enabled, use `addReplicationPolicy()` on the destination bucket with the source bucket
+   * owner's account ID to grant the required permissions.
+   *
+   * This is not required when the destination bucket uses `ObjectOwnership.BUCKET_OWNER_ENFORCED`,
+   * because the destination bucket owner automatically owns all objects.
+   *
+   * @default - The replicas are owned by the source object owner, unless the destination bucket uses
+   * `ObjectOwnership.BUCKET_OWNER_ENFORCED`
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-change-owner.html
    */
   readonly accessControlTransition?: boolean;
 
@@ -2489,6 +2520,7 @@ export class Bucket extends BucketBase {
   private readonly inventories: IArrayBox<Inventory> = Box.fromArray();
   private readonly _resource: CfnBucket;
   private readonly reflection: BucketReflection;
+  private _suppressedTypeCheck = false;
 
   constructor(scope: Construct, id: string, props: BucketProps = {}) {
     super(scope, id, {
@@ -2523,6 +2555,8 @@ export class Bucket extends BucketBase {
     this.ownershipControls = Box.fromValue<CfnBucket.OwnershipControlsProperty | undefined>(
       this.parseOwnershipControls(props.accessControl),
     );
+
+    this.acknowledgeAccessControl();
 
     const resource = new CfnBucket(this, 'Resource', {
       bucketName: this.physicalName,
@@ -2618,6 +2652,18 @@ export class Bucket extends BucketBase {
   }
 
   /**
+   * If we are using the accessControl property (for historical reasons), silence the warning about it.
+   */
+  private acknowledgeAccessControl() {
+    if (this.accessControl.get() !== undefined) {
+      Validations.of(this).acknowledge({
+        id: 'CloudFormation-Validate::W3045',
+        reason: 'accessControl is deprecated, but we are still using it for historical reasons.',
+      });
+    }
+  }
+
+  /**
    * Add a lifecycle rule to the bucket
    *
    * @param rule The rule to add
@@ -2625,6 +2671,16 @@ export class Bucket extends BucketBase {
   @MethodMetadata()
   public addLifecycleRule(rule: LifecycleRule) {
     this.lifecycleRules.push(rule);
+
+    if ((rule.objectSizeLessThan !== undefined || rule.objectSizeLessThan !== undefined) && !this._suppressedTypeCheck) {
+      // These are typed as numbers by CDK, but as strings by CloudFormation. The validation plugin is going to complain
+      // about the type mismatch, so suppress the warning for this construct if it's applicable.
+      Validations.of(this).acknowledge({
+        id: 'CloudFormation-Validate::W9003',
+        reason: 'LifecycleRule.objectSizeLessThan and LifecycleRule.objectSizeGreaterThan are numbers for historical reasons',
+      });
+      this._suppressedTypeCheck = true;
+    }
   }
 
   /**
@@ -2732,7 +2788,7 @@ export class Bucket extends BucketBase {
       throw new ValidationError(lit`EncryptionkeySpecified`, `encryptionKey is specified, so 'encryption' must be set to KMS or DSSE (value: ${encryptionType})`, this);
     }
 
-    // if bucketKeyEnabled is set, encryption can not be BucketEncryption.UNENCRYPTED
+    // if bucketKeyEnabled is set, encryption cannot be BucketEncryption.UNENCRYPTED
     if (props.bucketKeyEnabled && encryptionType === BucketEncryption.UNENCRYPTED) {
       throw new ValidationError(lit`BucketKeyEnabledSpecifiedEncryption`, `bucketKeyEnabled is specified, so 'encryption' must be set to KMS, DSSE or S3 (value: ${encryptionType})`, this);
     }
@@ -3276,6 +3332,7 @@ export class Bucket extends BucketBase {
     } else {
       this.accessControl.set(BucketAccessControl.LOG_DELIVERY_WRITE);
       this.ownershipControls.set(this.parseOwnershipControls(BucketAccessControl.LOG_DELIVERY_WRITE));
+      this.acknowledgeAccessControl();
     }
   }
 
@@ -3355,7 +3412,7 @@ export class Bucket extends BucketBase {
  */
 export enum BucketEncryption {
   /**
-   * Previous option. Buckets can not be unencrypted now.
+   * Previous option. Buckets cannot be unencrypted now.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html
    * @deprecated S3 applies server-side encryption with SSE-S3 for every bucket
    * that default encryption is not configured.

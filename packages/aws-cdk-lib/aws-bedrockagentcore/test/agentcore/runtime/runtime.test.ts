@@ -1501,21 +1501,115 @@ describe('Runtime metrics and grant methods tests', () => {
       MetricName: 'Invocations',
       Namespace: 'AWS/Bedrock-AgentCore',
       Statistic: 'Sum',
+      // Dimensions synth in alphabetical order by Name. Assert each dimension
+      // in its own arrayWith, not in one ordered array.
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Operation', Value: 'InvokeAgentRuntime' }),
+      ]),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Name', Value: Match.stringLikeRegexp('.*::DEFAULT$') }),
+      ]),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
       Dimensions: Match.arrayWith([
         Match.objectLike({ Name: 'Resource', Value: { 'Fn::GetAtt': [Match.stringLikeRegexp('.*'), 'AgentRuntimeArn'] } }),
       ]),
     });
+    // Regression guard: the buggy shape emitted a `Service` dimension.
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.not(Match.arrayWith([
+        Match.objectLike({ Name: 'Service' }),
+      ])),
+    });
   });
 
-  test('metricInvocationsAggregated() produces Invocations with Resource dimension', () => {
+  test('metricLatency() emits per-resource Operation/Name/Resource dimensions and no Service', () => {
+    alarmForMetric('LatencyDimAlarm', runtime.metricLatency());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Latency',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Average',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Operation', Value: 'InvokeAgentRuntime' }),
+      ]),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Latency',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Name', Value: Match.stringLikeRegexp('.*::DEFAULT$') }),
+      ]),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Latency',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Resource', Value: { 'Fn::GetAtt': [Match.stringLikeRegexp('.*'), 'AgentRuntimeArn'] } }),
+      ]),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Latency',
+      Dimensions: Match.not(Match.arrayWith([
+        Match.objectLike({ Name: 'Service' }),
+      ])),
+    });
+  });
+
+  test('metricInvocationsAggregated() produces Invocations with only the AggregateOperation dimension', () => {
     alarmForMetric('InvocAggAlarm', runtime.metricInvocationsAggregated());
 
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::CloudWatch::Alarm', {
       MetricName: 'Invocations',
       Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+      // Aggregated metrics carry one dimension: AggregateOperation.
+      Dimensions: [{ Name: 'AggregateOperation', Value: 'InvokeAgentRuntime' }],
+    });
+    // Guard: per-resource dimensions must be absent on the aggregated metric.
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.not(Match.arrayWith([
+        Match.objectLike({ Name: 'Operation' }),
+      ])),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.not(Match.arrayWith([
+        Match.objectLike({ Name: 'Name' }),
+      ])),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.not(Match.arrayWith([
+        Match.objectLike({ Name: 'Resource' }),
+      ])),
+    });
+  });
+
+  test('metricInvocationsAggregated() merges a caller-supplied dimension onto the AggregateOperation path', () => {
+    alarmForMetric('InvocAggOverrideAlarm', runtime.metricInvocationsAggregated({
+      dimensionsMap: { Foo: 'bar' },
+    }));
+
+    const template = Template.fromStack(stack);
+    // The caller dimension merges onto the aggregated metric.
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
       Dimensions: Match.arrayWith([
-        Match.objectLike({ Name: 'Resource', Value: 'All' }),
+        Match.objectLike({ Name: 'Foo', Value: 'bar' }),
+      ]),
+    });
+    // The AggregateOperation dimension stays present with the override.
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'AggregateOperation', Value: 'InvokeAgentRuntime' }),
       ]),
     });
   });
@@ -1586,15 +1680,83 @@ describe('Runtime metrics and grant methods tests', () => {
     });
   });
 
-  test('metricSessionsAggregated() produces Sessions with Resource dimension', () => {
+  test('metricSessionsAggregated() produces Sessions with only the AggregateOperation dimension', () => {
     alarmForMetric('SessionsAggAlarm', runtime.metricSessionsAggregated());
 
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::CloudWatch::Alarm', {
       MetricName: 'Sessions',
       Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+      Dimensions: [{ Name: 'AggregateOperation', Value: 'InvokeAgentRuntime' }],
+    });
+    // Guard: per-resource dimensions must be absent on the aggregated metric.
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Sessions',
+      Dimensions: Match.not(Match.arrayWith([
+        Match.objectLike({ Name: 'Operation' }),
+      ])),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Sessions',
+      Dimensions: Match.not(Match.arrayWith([
+        Match.objectLike({ Name: 'Name' }),
+      ])),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Sessions',
+      Dimensions: Match.not(Match.arrayWith([
+        Match.objectLike({ Name: 'Resource' }),
+      ])),
+    });
+  });
+
+  test('caller-supplied dimensionsMap overrides the per-resource defaults', () => {
+    alarmForMetric('OverrideAlarm', runtime.metricInvocations({
+      dimensionsMap: { Operation: 'CustomOp', Resource: 'custom-resource' },
+    }));
+
+    const template = Template.fromStack(stack);
+    // Overridden dimensions win (order-independent per-dimension assertions).
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
       Dimensions: Match.arrayWith([
-        Match.objectLike({ Name: 'Resource', Value: 'All' }),
+        Match.objectLike({ Name: 'Operation', Value: 'CustomOp' }),
+      ]),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Resource', Value: 'custom-resource' }),
+      ]),
+    });
+    // The un-overridden default (Name) is still present.
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Name', Value: Match.stringLikeRegexp('.*::DEFAULT$') }),
+      ]),
+    });
+  });
+
+  test('unnamed runtime resolves Name to a concrete synth string ending ::DEFAULT', () => {
+    // A runtime without runtimeName gets a Lazy token (Names.uniqueResourceName)
+    // that resolves at synth to a plain string, NOT an Fn::Join.
+    const repository = new ecr.Repository(stack, 'TokenRepository', {
+      repositoryName: 'token-agent-runtime',
+    });
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+    const unnamed = new Runtime(stack, 'unnamed-runtime', {
+      agentRuntimeArtifact,
+    });
+
+    alarmForMetric('TokenNameAlarm', unnamed.metricInvocations());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Name', Value: Match.stringLikeRegexp('^[^{]*::DEFAULT$') }),
       ]),
     });
   });
@@ -2257,6 +2419,8 @@ describe('Runtime role validation tests', () => {
     // Should not throw, just add warning
     expect(runtime.role).toBe(crossAccountRole);
 
+    cdk.Validations.of(app).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'Testing hardcoded ARN for cross-account role' });
+
     const annotations = Annotations.fromStack(stack).findWarning('*', Match.stringLikeRegexp('.*different account.*cross-account.*'));
     expect(annotations.length).toBe(1);
 
@@ -2552,7 +2716,7 @@ describe('Runtime request header configuration tests', () => {
           allowlistedHeaders: ['Invalid-Header@Name'],
         },
       });
-    }).toThrow(/Request header must contain only letters, numbers, and hyphens/);
+    }).toThrow(/Request header must start with a letter and contain only letters, numbers, underscores, and hyphens/);
   });
 
   test('Should throw error for empty header name', () => {
@@ -2565,6 +2729,59 @@ describe('Runtime request header configuration tests', () => {
         },
       });
     }).toThrow(/The field Request header is 0 characters long but must be at least 1 characters/);
+  });
+
+  test('Should accept headers beyond the X-Amzn-Bedrock-AgentCore-Runtime-Custom- prefix', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        requestHeaderConfiguration: {
+          allowlistedHeaders: [
+            'X-Custom-Auth',
+            'X-Request-Signature',
+            'X-Amzn-Bedrock-AgentCore-Runtime-Custom-MyHeader',
+            'Authorization',
+          ],
+        },
+      });
+    }).not.toThrow();
+  });
+
+  test('Should throw error for header with spaces', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        requestHeaderConfiguration: {
+          allowlistedHeaders: ['Invalid Header With Spaces'],
+        },
+      });
+    }).toThrow(/Request header must start with a letter and contain only letters, numbers, underscores, and hyphens/);
+  });
+
+  test('Should throw error for header starting with a number', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        requestHeaderConfiguration: {
+          allowlistedHeaders: ['123-invalid'],
+        },
+      });
+    }).toThrow(/Request header must start with a letter and contain only letters, numbers, underscores, and hyphens/);
+  });
+
+  test('Should accept headers with underscores', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        requestHeaderConfiguration: {
+          allowlistedHeaders: ['X-Custom_Header', 'My_Header_Name'],
+        },
+      });
+    }).not.toThrow();
   });
 });
 
@@ -3262,30 +3479,6 @@ describe('Runtime observability tests', () => {
   });
 });
 
-describe('ProtocolType.of() escape hatch', () => {
-  let stack: cdk.Stack;
-
-  beforeEach(() => {
-    stack = new cdk.Stack();
-  });
-
-  test('renders custom protocol value in the template', () => {
-    new Runtime(stack, 'TestRuntime', {
-      runtimeName: 'test_protocol',
-      agentRuntimeArtifact: AgentRuntimeArtifact.fromCodeAsset({
-        path: path.join(__dirname, 'testArtifact'),
-        runtime: AgentCoreRuntime.PYTHON_3_12,
-        entrypoint: ['main.py'],
-      }),
-      protocolConfiguration: ProtocolType.of('CUSTOM_PROTOCOL'),
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
-      ProtocolConfiguration: 'CUSTOM_PROTOCOL',
-    });
-  });
-});
-
 describe('Runtime applicationLogGroup tests', () => {
   test('Should expose applicationLogGroup pointing at the default endpoint log group', () => {
     const app = new cdk.App();
@@ -3406,3 +3599,4 @@ describe('Runtime applicationLogGroup tests', () => {
     });
   });
 });
+
