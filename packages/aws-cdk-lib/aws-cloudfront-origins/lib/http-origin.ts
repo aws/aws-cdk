@@ -1,4 +1,4 @@
-import { validateSecondsInRangeOrUndefined } from './private/utils';
+import { validateMinimumSeconds } from './private/utils';
 import * as cloudfront from '../../aws-cloudfront';
 import type * as cdk from '../../core';
 import { Token, UnscopedValidationError } from '../../core';
@@ -41,8 +41,8 @@ export interface HttpOriginProps extends cloudfront.OriginProps {
    * The minimum is 1 second. The maximum is governed by the origin response timeout quota, which is
    * adjustable, so the effective maximum depends on the target account.
    *
-   * Note that values over 60 seconds are possible only after a limit increase request for the origin response timeout quota
-   * has been approved in the target account; otherwise, values over 60 seconds will produce an error at deploy time.
+   * The default quota allows up to 120 seconds; higher values require an approved limit increase
+   * in the target account, and otherwise produce an error at deploy time.
    *
    * @default Duration.seconds(30)
    */
@@ -77,8 +77,8 @@ export class HttpOrigin extends cloudfront.OriginBase {
   constructor(domainName: string, private readonly props: HttpOriginProps = {}) {
     super(domainName, props);
 
-    validateSecondsInRangeOrUndefined('readTimeout', 1, undefined, props.readTimeout);
-    validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, undefined, props.keepaliveTimeout);
+    validateMinimumSeconds('readTimeout', 1, props.readTimeout);
+    validateMinimumSeconds('keepaliveTimeout', 1, props.keepaliveTimeout);
     this.validateResponseCompletionTimeoutWithReadTimeout(props.responseCompletionTimeout, props.readTimeout);
 
     this.validatePortNumber('httpPort', props.httpPort);

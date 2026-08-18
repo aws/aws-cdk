@@ -218,9 +218,9 @@ test.each([
 });
 
 test.each([
-  Duration.seconds(181),
+  Duration.seconds(121),
   Duration.minutes(5),
-])('VPC origin allows readTimeout of %s above the default quota', (readTimeout) => {
+])('VPC origin accepts readTimeout of %s above the default quota', (readTimeout) => {
   // GIVEN
   const vpc = new ec2.Vpc(stack, 'Vpc');
   const loadBalancer = new elbv2.ApplicationLoadBalancer(stack, 'ALB', { vpc });
@@ -245,9 +245,9 @@ test.each([
 });
 
 test.each([
-  Duration.seconds(181),
-  Duration.minutes(5),
-])('VPC origin allows keepaliveTimeout of %s within the default quota', (keepaliveTimeout) => {
+  Duration.seconds(301),
+  Duration.minutes(10),
+])('VPC origin accepts keepaliveTimeout of %s above the default quota', (keepaliveTimeout) => {
   // GIVEN
   const vpc = new ec2.Vpc(stack, 'Vpc');
   const loadBalancer = new elbv2.ApplicationLoadBalancer(stack, 'ALB', { vpc });
