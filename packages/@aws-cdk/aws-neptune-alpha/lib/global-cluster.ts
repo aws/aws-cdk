@@ -66,7 +66,7 @@ export interface GlobalClusterProps {
    * Cannot be used together with `sourceCluster`; when a source cluster is
    * provided the storage encryption setting is inherited from it.
    *
-   * @default - false, or inherited from `sourceCluster`.
+   * @default true, or inherited from `sourceCluster`.
    */
   readonly storageEncrypted?: boolean;
 }
@@ -107,7 +107,6 @@ export class GlobalCluster extends GlobalClusterBase {
 
   constructor(scope: Construct, id: string, props: GlobalClusterProps = {}) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
     if (props.sourceCluster && props.engineVersion) {
@@ -120,6 +119,8 @@ export class GlobalCluster extends GlobalClusterBase {
 
     this.validateGlobalClusterIdentifier(props.globalClusterIdentifier);
 
+    const storageEncrypted = props.sourceCluster ? undefined : (props.storageEncrypted ?? true);
+
     const resource = new CfnGlobalCluster(this, 'Resource', {
       globalClusterIdentifier: props.globalClusterIdentifier,
       // Engine and version are inherited from the source cluster when one is provided.
@@ -127,7 +128,7 @@ export class GlobalCluster extends GlobalClusterBase {
       engineVersion: props.sourceCluster ? undefined : props.engineVersion?.version,
       sourceDbClusterIdentifier: props.sourceCluster ? this.clusterArn(props.sourceCluster) : undefined,
       deletionProtection: props.deletionProtection,
-      storageEncrypted: props.sourceCluster ? undefined : props.storageEncrypted,
+      storageEncrypted,
     });
 
     this.globalClusterIdentifier = resource.ref;

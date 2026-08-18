@@ -131,13 +131,13 @@ disaster recovery from Region-wide outages.
 
 > Visit [Neptune Global Database](https://docs.aws.amazon.com/neptune/latest/userguide/neptune-global-database.html) for more details.
 
-You can create an empty global database cluster and add clusters to it later:
+You can create an empty global database cluster and add clusters to it later. Storage is
+encrypted by default:
 
 ```ts
 new neptune.GlobalCluster(this, 'GlobalCluster', {
   globalClusterIdentifier: 'my-global-cluster',
   engineVersion: neptune.EngineVersion.V1_3_0_0,
-  storageEncrypted: true,
 });
 ```
 

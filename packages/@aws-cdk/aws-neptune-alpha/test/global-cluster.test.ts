@@ -14,6 +14,15 @@ test('creates a global cluster from minimal properties', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::Neptune::GlobalCluster', {
     Engine: 'neptune',
+    StorageEncrypted: true,
+  });
+});
+
+test('storageEncrypted defaults to true, but can be disabled explicitly', () => {
+  new GlobalCluster(stack, 'Global', { storageEncrypted: false });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Neptune::GlobalCluster', {
+    StorageEncrypted: false,
   });
 });
 
