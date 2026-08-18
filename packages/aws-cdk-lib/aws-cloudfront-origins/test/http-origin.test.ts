@@ -80,9 +80,9 @@ test.each([
 });
 
 test.each([
-  Duration.seconds(181),
+  Duration.seconds(121),
   Duration.minutes(5),
-])('allows readTimeout above the default quota, which the service validates at deploy time', (readTimeout) => {
+])('accepts readTimeout above the default quota, which the service validates at deploy time', (readTimeout) => {
   expect(() => {
     new HttpOrigin('www.example.com', {
       readTimeout,
@@ -112,9 +112,9 @@ test.each([
 });
 
 test.each([
-  Duration.seconds(181),
-  Duration.minutes(5),
-])('allows keepaliveTimeout within the default quota, which the service validates at deploy time', (keepaliveTimeout) => {
+  Duration.seconds(301),
+  Duration.minutes(10),
+])('accepts keepaliveTimeout above the default quota, which the service validates at deploy time', (keepaliveTimeout) => {
   expect(() => {
     new HttpOrigin('www.example.com', {
       keepaliveTimeout,
