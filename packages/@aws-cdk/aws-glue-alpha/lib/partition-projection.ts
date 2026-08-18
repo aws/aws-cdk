@@ -225,6 +225,55 @@ interface PartitionProjectionConfigurationProps {
 }
 
 /**
+ * Whether a DATE projection `format` has a precision other than single-day or
+ * single-month — in which case Athena requires both `interval` and
+ * `intervalUnit` (they are optional, defaulting to 1 day/month, only at
+ * single-day or single-month precision).
+ *
+ * The precision is the finest field the format expresses: a time-of-day field
+ * (hour/minute/second/fraction) is finer than a day; a day field is single-day;
+ * a month field (with no day/time) is single-month; anything coarser (year,
+ * week, quarter only) is coarser than a month.
+ *
+ * @see https://docs.aws.amazon.com/athena/latest/ug/partition-projection-supported-types.html#partition-projection-date-type
+ */
+function dateFormatRequiresInterval(format: string): boolean {
+  // Collect the unquoted Java DateTimeFormatter pattern letters, honoring the
+  // same single-quote literal escaping as the format validation above.
+  const letters = new Set<string>();
+  let inQuote = false;
+  for (let i = 0; i < format.length; i++) {
+    const ch = format[i];
+    if (ch === "'") {
+      if (i + 1 < format.length && format[i + 1] === "'") {
+        i++;
+      } else {
+        inQuote = !inQuote;
+      }
+    } else if (!inQuote && /[a-zA-Z]/.test(ch)) {
+      letters.add(ch);
+    }
+  }
+
+  const hasAny = (candidates: string) => [...candidates].some(c => letters.has(c));
+
+  // Hour/minute/second/fraction/nano fields — finer than a single day.
+  if (hasAny('HhKkmsSAnN')) {
+    return true;
+  }
+  // Day-of-month / day-of-year — single-day precision (interval optional).
+  if (hasAny('dD')) {
+    return false;
+  }
+  // Month — single-month precision (interval optional).
+  if (hasAny('ML')) {
+    return false;
+  }
+  // Coarser than a month (year/week/quarter only) — interval required.
+  return true;
+}
+
+/**
  * Factory class for creating partition projection configurations.
  */
 export class PartitionProjectionConfiguration {
@@ -356,6 +405,19 @@ export class PartitionProjectionConfiguration {
         lit`DateIntervalInvalid`,
         `DATE partition projection interval must be a positive integer, but got ${props.interval}`,
       );
+    }
+
+    // At a precision other than single-day or single-month, Athena requires
+    // both `interval` and `intervalUnit` (at single-day/single-month precision
+    // they are optional and default to 1 day/month). Only enforce when the
+    // format is a resolved literal we can inspect.
+    if (!Token.isUnresolved(props.format) && dateFormatRequiresInterval(props.format)) {
+      if (props.interval === undefined || props.intervalUnit === undefined) {
+        throw new UnscopedValidationError(
+          lit`DateIntervalRequired`,
+          `DATE partition projection with format '${props.format}' has a precision other than single-day or single-month, so both 'interval' and 'intervalUnit' are required`,
+        );
+      }
     }
 
     return new PartitionProjectionConfiguration({

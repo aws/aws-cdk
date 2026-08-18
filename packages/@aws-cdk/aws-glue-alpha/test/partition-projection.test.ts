@@ -73,6 +73,41 @@ describe('PartitionProjectionConfiguration Validation', () => {
           min: '2020-01-01',
           max: '2023-12-31',
           format,
+          // interval/intervalUnit supplied so the finer-than-day formats are valid;
+          // this case exercises format-character acceptance, not the interval rule.
+          interval: 1,
+          intervalUnit: glue.DateIntervalUnit.HOURS,
+        });
+      }).not.toThrow();
+    });
+
+    test.each([
+      'yyyy-MM-dd-HH',
+      "yyyyMMdd'T'HHmmss",
+      'yyyy',
+    ])('requires interval and intervalUnit when format=%p is not single-day/single-month precision', (format) => {
+      expect(() => {
+        glue.PartitionProjectionConfiguration.date({ min: '2020-01-01', max: '2023-12-31', format });
+      }).toThrow(/both 'interval' and 'intervalUnit' are required/);
+    });
+
+    test.each([
+      'yyyy-MM-dd',
+      'yyyy-MM',
+    ])('allows omitting interval/intervalUnit when format=%p is single-day or single-month precision', (format) => {
+      expect(() => {
+        glue.PartitionProjectionConfiguration.date({ min: '2020-01', max: '2023-12', format });
+      }).not.toThrow();
+    });
+
+    test('accepts a finer-than-day format when interval and intervalUnit are provided', () => {
+      expect(() => {
+        glue.PartitionProjectionConfiguration.date({
+          min: '2020-01-01-00',
+          max: '2023-12-31-23',
+          format: 'yyyy-MM-dd-HH',
+          interval: 1,
+          intervalUnit: glue.DateIntervalUnit.HOURS,
         });
       }).not.toThrow();
     });
