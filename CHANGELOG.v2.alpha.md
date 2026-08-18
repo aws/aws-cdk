@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.263.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.262.2-alpha.0...v2.263.0-alpha.0) (2026-07-31)
+
+### ⚠ BREAKING CHANGES
+
+* **mediaconnect:** `removalPolicy` prop removed from `FlowProps`, `GatewayProps`, and `BridgeProps`. These resources now follow CloudFormation's default deletion behaviour (Delete).
+
+### Bug Fixes
+
+* **glue-alpha:** race condition when creating mutiple indices ([#38016](https://github.com/aws/aws-cdk/issues/38016)) ([18b1947](https://github.com/aws/aws-cdk/commit/18b1947a9db0e695ec85888faf24939261ffbe30)), closes [#24813](https://github.com/aws/aws-cdk/issues/24813) [#34](https://github.com/aws/aws-cdk/issues/34) [#34](https://github.com/aws/aws-cdk/issues/34)
+* **mediaconnect:** jsdoc typo ([#38434](https://github.com/aws/aws-cdk/issues/38434)) ([7fe6d3d](https://github.com/aws/aws-cdk/commit/7fe6d3df03720b381bb989f289855557f2cd47ac))
+* **mediaconnect:** remove default removal policy ([#38437](https://github.com/aws/aws-cdk/issues/38437)) ([238193d](https://github.com/aws/aws-cdk/commit/238193de50910ac1da8fb9f31f01776863998989))
+
+## [2.262.2-alpha.0](https://github.com/aws/aws-cdk/compare/v2.262.1-alpha.0...v2.262.2-alpha.0) (2026-07-29)
+
+## [2.262.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.262.0-alpha.0...v2.262.1-alpha.0) (2026-07-23)
+
+## [2.262.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.261.0-alpha.0...v2.262.0-alpha.0) (2026-07-22)
+
+
+### Bug Fixes
+
+* **redshift-alpha:** quote identifiers and escape literals containing special characters ([#38269](https://github.com/aws/aws-cdk/issues/38269)) ([3cb6844](https://github.com/aws/aws-cdk/commit/3cb684493ba4a86c8f96b3c57bb1df3541db87b7))
+
+## [2.261.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.260.0-alpha.0...v2.261.0-alpha.0) (2026-07-02)
+
+
+### Features
+
+* **metrics-facade-alpha:** generate metrics facades ([#37334](https://github.com/aws/aws-cdk/issues/37334)) ([aa9beb0](https://github.com/aws/aws-cdk/commit/aa9beb08e6740c16a682a93921959f2574d7ca99))
+
 ## [2.260.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.259.0-alpha.0...v2.260.0-alpha.0) (2026-06-16)
 
 ## [2.259.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.258.1-alpha.0...v2.259.0-alpha.0) (2026-06-11)
