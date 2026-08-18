@@ -408,8 +408,8 @@ export class StorageParameter {
   /**
    * You can specify an AWS Key Management Service key to enable Server–Side Encryption (SSE) for Amazon S3 objects.
    */
-  public static writeKmsKeyId(key: kms.IKey): StorageParameter {
-    return new StorageParameter('write.kms.key.id', key.keyId);
+  public static writeKmsKeyId(key: kms.IKeyRef): StorageParameter {
+    return new StorageParameter('write.kms.key.id', key.keyRef.keyId);
   }
 
   /**
