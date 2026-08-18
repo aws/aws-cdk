@@ -15,7 +15,6 @@ import { CfnResource, TagType } from './cfn-resource';
 import { ContextProvider } from './context-provider';
 import type { Environment, ResourceEnvironment } from './environment';
 import { FeatureFlags } from './feature-flags';
-import { memoizedGetter } from './helpers-internal';
 import { withMixins } from './mixins/private/mixin-metadata';
 import type { PermissionsBoundary } from './permissions-boundary';
 import { PERMISSIONS_BOUNDARY_CONTEXT_KEY } from './permissions-boundary';
@@ -917,17 +916,13 @@ export class Stack extends Construct implements ITaggable {
    *
    * To specify a different strategy for selecting availability zones override this method.
    */
-  @memoizedGetter
   public get availabilityZones(): string[] {
     // if account/region are tokens, we can't obtain AZs through the context
     // provider, so we fallback to use Fn::GetAZs. the current lowest common
     // denominator is 2 AZs across all AWS regions.
     const agnostic = Token.isUnresolved(this.account) || Token.isUnresolved(this.region);
     if (agnostic) {
-      return this.node.tryGetContext(cxapi.AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY) || [
-        Fn.select(0, Fn.getAzs()),
-        Fn.select(1, Fn.getAzs()),
-      ];
+      return this.node.tryGetContext(cxapi.AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY) || firstTwoAgnosticAzs();
     }
 
     const value = ContextProvider.getValue(this, {
@@ -1922,6 +1917,20 @@ function count(xs: string[]): Record<string, number> {
   return ret;
 }
 
+const firstTwoAgnosticAzs = (() => {
+  let cache: string[] | undefined;
+
+  return () => {
+    if (!cache) {
+      cache = [
+        Fn.select(0, Fn.getAzs()),
+        Fn.select(1, Fn.getAzs()),
+      ];
+    }
+    return cache;
+  };
+})();
+
 // These imports have to be at the end to prevent circular imports
 /* eslint-disable import/order */
 import { CfnOutput } from './cfn-output';
@@ -1963,3 +1972,4 @@ function makeCustomCoupledReference(value: any, strength: ReferenceStrength): Cu
   }
   return new CustomCoupledReference(resolvable, strength);
 }
+
