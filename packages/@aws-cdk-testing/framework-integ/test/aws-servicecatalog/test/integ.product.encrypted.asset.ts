@@ -61,6 +61,7 @@ const productStackHistory = new ProductStackHistory(stack, 'ProductStackHistory'
   productStack: new TestProductStack(stack, 'SNSTopicProduct3'),
   currentVersionName: 'v1',
   currentVersionLocked: false,
+  directory: path.join(__dirname, 'product-stack-snapshots'),
 });
 
 const kmsKey = new kms.Key(stack, 'KmsKey', {

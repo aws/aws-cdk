@@ -384,7 +384,7 @@
       "DisableTemplateValidation": false,
       "Info": {
        "LoadTemplateFromURL": {
-        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/e3d02db86c0d1baccd824dbe984b3e37153502d8511f859c5664c716dc4ca3c9.json"
+        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/e84e8b76be17556e330d4e833f6f9528b03560a8efa92bc955d4143a300912df.json"
        }
       },
       "Name": "v1"
@@ -402,7 +402,7 @@
       "DisableTemplateValidation": false,
       "Info": {
        "LoadTemplateFromURL": {
-        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/ff5d7c5889c1c3e06b0d5ec1e9cae941ed44715b96e8872c9b2eb2af322cf4d3.json"
+        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/76849f76213d6fb06f97da51e8992a75cc771039cba6578fc6376f5b25679eb7.json"
        }
       },
       "Name": "v1"
