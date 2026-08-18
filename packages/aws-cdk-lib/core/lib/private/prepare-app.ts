@@ -2,11 +2,11 @@ import type { IConstruct } from 'constructs';
 import { Dependable } from 'constructs';
 import { resolveReferences } from './refs';
 import { CfnResource } from '../cfn-resource';
+import { debugModeEnabled } from '../debug';
 import type { Stack } from '../stack';
 import { iterateDfsPostorder, iterateDfsPreorder } from './construct-iteration';
-import { writePropertyAssignmentMetadataForConstruct } from './resolve';
-import { debugModeEnabled } from '../debug';
 import { STACK_TYPE, stageOf } from './core-construct-finders';
+import { writePropertyAssignmentMetadataForConstruct } from './resolve';
 
 function writePropertyAssignmentMetadata(root: IConstruct) {
   if (!debugModeEnabled()) return;
