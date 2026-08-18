@@ -73,6 +73,7 @@
    "Properties": {
     "DomainName": "dualstack-*.example.com",
     "EndpointConfiguration": {
+     "IpAddressType": "dualstack",
      "Types": [
       "REGIONAL"
      ]
