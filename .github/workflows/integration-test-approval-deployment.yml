@@ -113,6 +113,11 @@ jobs:
               core.setOutput('has_snapshots', 'true');
             }
 
+      # We only post a commit status from the validate job when skipping (no snapshots).
+      # If validation fails (bad approval, stale commit, etc.), no status is posted — the
+      # PR simply has no status for this check, which is intentional: a missing status
+      # means "not attempted" rather than "attempted and failed". The deploy job handles
+      # its own pending/success/failure/cancelled statuses.
       - name: Post status (success — skipped, no snapshots)
         if: steps.check-snapshots.outputs.has_snapshots == 'false'
         uses: actions/github-script@v7
@@ -123,7 +128,7 @@ jobs:
               repo: context.repo.repo,
               sha: '${{ steps.find-pr.outputs.approved_sha }}',
               state: 'success',
-              context: 'Integration Tests (Approval)',
+              context: 'Integration Test Deployment (On Approval)',
               description: 'Skipped — no integration test snapshot changes',
               target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
             });
@@ -154,7 +159,7 @@ jobs:
               repo: context.repo.repo,
               sha: '${{ needs.validate.outputs.approved_sha }}',
               state: 'pending',
-              context: 'Integration Tests (Approval)',
+              context: 'Integration Test Deployment (On Approval)',
               description: 'Running integration tests...',
               target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
             });
@@ -202,13 +207,13 @@ jobs:
               repo: context.repo.repo,
               sha: '${{ needs.validate.outputs.approved_sha }}',
               state: 'success',
-              context: 'Integration Tests (Approval)',
+              context: 'Integration Test Deployment (On Approval)',
               description: 'Integration tests passed',
               target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
             });
 
-      - name: Post status (failure — tests failed or cancelled)
-        if: ${{ !success() }}
+      - name: Post status (failure — tests failed)
+        if: failure()
         uses: actions/github-script@v7
         with:
           script: |
@@ -217,7 +222,22 @@ jobs:
               repo: context.repo.repo,
               sha: '${{ needs.validate.outputs.approved_sha }}',
               state: 'failure',
-              context: 'Integration Tests (Approval)',
+              context: 'Integration Test Deployment (On Approval)',
               description: 'Integration tests failed',
+              target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+            });
+
+      - name: Post status (failure — cancelled)
+        if: cancelled()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ needs.validate.outputs.approved_sha }}',
+              state: 'failure',
+              context: 'Integration Test Deployment (On Approval)',
+              description: 'Integration tests cancelled',
               target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
             });
