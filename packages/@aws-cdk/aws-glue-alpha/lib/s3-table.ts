@@ -365,7 +365,7 @@ const writePermissions = [
   'glue:UpdatePartition',
 ];
 
-function renderColumns(columns?: Array<Column | Column>) {
+function renderColumns(columns?: Column[]) {
   if (columns === undefined) {
     return undefined;
   }
