@@ -1,6 +1,6 @@
 import type { IConstruct } from 'constructs';
-import { LinkedQueue } from './linked-queue';
 import { isCfnResource, NESTED_STACK_TYPE, STACK_TYPE, STAGE_TYPE } from './core-construct-finders';
+import { LinkedQueue } from './linked-queue';
 import type { CfnResource } from '../cfn-resource';
 
 /**

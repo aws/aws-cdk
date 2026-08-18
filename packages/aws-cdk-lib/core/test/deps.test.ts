@@ -1,9 +1,9 @@
+import { CloudFormationStackArtifact } from '@aws-cdk/cloud-assembly-api';
 import { Construct } from 'constructs';
 import * as core from '../lib';
 import { Names } from '../lib';
-import { dispatchDependencyOperation } from '../lib/private/deps';
 import { stackOf } from '../lib/private/core-construct-finders';
-import { CloudFormationStackArtifact } from '@aws-cdk/cloud-assembly-api';
+import { dispatchDependencyOperation } from '../lib/private/deps';
 
 let app: core.App;
 
@@ -177,7 +177,7 @@ describe('deps', () => {
       const rootStack = new core.Stack(app, 'Root');
       const compoundConstruct = new Construct(rootStack, 'Compound');
       const nestedStack = new core.NestedStack(compoundConstruct, 'Nested');
-      const nestedStackSibling = new core.CfnResource(compoundConstruct, 'NestedSibling', {  type: 'Test::Resource::Fake' });
+      const nestedStackSibling = new core.CfnResource(compoundConstruct, 'NestedSibling', { type: 'Test::Resource::Fake' });
 
       const nestedChild = new core.CfnResource(nestedStack, 'NestedChild', { type: 'Test::Resource::Fake' });
       const topChild = new core.CfnResource(rootStack, 'TopChild', { type: 'Test::Resource::Fake' });
@@ -219,7 +219,7 @@ describe('deps', () => {
       const topStack = new core.Stack(app, 'Root');
       const compoundConstruct = new Construct(topStack, 'Compound');
       const supportStack = new core.Stack(compoundConstruct, 'Support');
-      const supportStackSibling = new core.CfnResource(compoundConstruct, 'NestedSibling', {  type: 'Test::Resource::Fake' });
+      const supportStackSibling = new core.CfnResource(compoundConstruct, 'NestedSibling', { type: 'Test::Resource::Fake' });
 
       const supportChild = new core.CfnResource(supportStack, 'SupportChild', { type: 'Test::Resource::Fake' });
       const topChild = new core.CfnResource(topStack, 'TopChild', { type: 'Test::Resource::Fake' });

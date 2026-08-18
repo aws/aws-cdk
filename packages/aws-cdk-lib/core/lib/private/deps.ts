@@ -1,11 +1,11 @@
 import { Dependable, type IConstruct } from 'constructs';
 import { UnscopedValidationError } from '../errors';
 import type { NestedStack } from '../nested-stack';
+import { iterateDfsPreorder, iterateStackCfnResources } from './construct-iteration';
+import { NESTED_STACK_TYPE, STACK_TYPE, STAGE_TYPE } from './core-construct-finders';
 import { lit } from '../private/literal-string';
 import type { Stack } from '../stack';
 import type { Stage } from '../stage';
-import { iterateDfsPreorder, iterateStackCfnResources } from './construct-iteration';
-import { NESTED_STACK_TYPE, STACK_TYPE, STAGE_TYPE } from './core-construct-finders';
 
 /**
  * Turn all dependencies added via `source.node.addDependency(target)` into concrete dependencies.
