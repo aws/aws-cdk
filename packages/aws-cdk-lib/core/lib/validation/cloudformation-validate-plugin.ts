@@ -1,7 +1,11 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { RegoEngine, TemplateFile, version } from '@aws/cloudformation-validate';
-import type { Engine, EngineConfig, RuleInfo, Severity } from '@aws/cloudformation-validate';
+import type { AdditionalSchemaSource, Engine, EngineConfig, RuleInfo, Severity } from '@aws/cloudformation-validate';
 import type { PolicyValidationPluginReport, PolicyViolatingResource } from './report';
 import type { IPolicyValidationPlugin, IPolicyValidationContext } from './validation';
+import { UnscopedValidationError } from '../errors';
+import { lit } from '../private/literal-string';
 import { profileSpan, recordCounter } from '../private/perf';
 
 const VALIDATE_DETAILED_METRIC = 'CloudFormationValidate.validate';
@@ -48,6 +52,25 @@ export interface CloudFormationValidatePluginProps {
    * @default - no guard rules
    */
   readonly guardRules?: ValidationRuleSource[];
+
+  /**
+   * Path to a directory containing additional CloudFormation resource provider
+   * schema files (JSON) to merge with the bundled schemas.
+   *
+   * The directory should contain **only** valid CFN resource provider schema
+   * files. All `.json` files found (recursively) are treated as schemas and
+   * must contain a valid JSON object with a `typeName` field. Non-JSON files
+   * (e.g., `.keep`, `.md`) are safely ignored.
+   *
+   * Fails hard on invalid JSON or missing `typeName` in `.json` files to
+   * prevent silent validation gaps.
+   *
+   * Use case: validating templates that use pre-GA CloudFormation properties
+   * not yet in the published registry (e.g., from spec2cdk/temporary-schemas).
+   *
+   * @default - no additional schemas
+   */
+  readonly additionalSchemasDirectory?: string;
 }
 
 /**
@@ -88,6 +111,11 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
     }
     if (props.guardRules) {
       config.guardRules = props.guardRules;
+    }
+    if (props.additionalSchemasDirectory) {
+      config.schemaValidatorConfig = {
+        additionalSchemas: loadSchemasFromDirectory(props.additionalSchemasDirectory),
+      };
     }
     this.engine = new RegoEngine(config);
   }
@@ -241,3 +269,97 @@ const IGNORE_RULES = new Set([
   // <https://github.com/aws-cloudformation/cloudformation-validate/issues/194>
   'E2001',
 ]);
+
+/**
+ * Check if `child` is contained within `root` using path.relative.
+ * Avoids the startsWith prefix-collision bug (e.g., /tmp/schemas vs /tmp/schemas-evil).
+ */
+function isContainedWithin(root: string, child: string): boolean {
+  const rel = path.relative(root, child);
+  return !rel.startsWith('..') && !path.isAbsolute(rel);
+}
+
+/**
+ * Maximum directory depth for recursive schema discovery.
+ * The expected layout is temporary-schemas/<region>/<file>.json (depth 2).
+ */
+const MAX_SCHEMA_DIRECTORY_DEPTH = 5;
+
+/**
+ * Recursively discover and load CFN resource provider schema files from a directory.
+ * Each file must be a valid JSON file with a "typeName" field.
+ *
+ * Fails hard on any unexpected condition — these indicate misconfiguration
+ * or a compromised filesystem, and silently degrading would weaken the
+ * validation gate without any signal.
+ *
+ * @throws Error on symlinks, path escape, depth exceeded, invalid JSON, or missing typeName
+ */
+function loadSchemasFromDirectory(dir: string): AdditionalSchemaSource[] {
+  const schemas: AdditionalSchemaSource[] = [];
+  if (!fs.existsSync(dir)) {
+    return schemas;
+  }
+
+  const rootReal = fs.realpathSync(dir);
+
+  function walk(currentDir: string, depth: number) {
+    if (depth > MAX_SCHEMA_DIRECTORY_DEPTH) {
+      throw new UnscopedValidationError(lit`SchemaLoadError`,
+        `[CloudFormation Validate] Schema directory exceeds maximum depth of ${MAX_SCHEMA_DIRECTORY_DEPTH}: ${currentDir}`,
+      );
+    }
+
+    const entries = fs.readdirSync(currentDir, { withFileTypes: true });
+
+    for (const entry of entries) {
+      const fullPath = path.join(currentDir, entry.name);
+
+      if (entry.isSymbolicLink()) {
+        throw new UnscopedValidationError(lit`SchemaLoadError`,
+          `[CloudFormation Validate] Symbolic link found in schema directory (not allowed): ${fullPath}`,
+        );
+      }
+
+      if (entry.isDirectory()) {
+        const resolved = fs.realpathSync(fullPath);
+        if (!isContainedWithin(rootReal, resolved)) {
+          throw new UnscopedValidationError(lit`SchemaLoadError`,
+            `[CloudFormation Validate] Path escapes schema root directory: ${fullPath} resolves to ${resolved}`,
+          );
+        }
+        walk(fullPath, depth + 1);
+      } else if (entry.isFile() && entry.name.endsWith('.json')) {
+        const content = fs.readFileSync(fullPath, 'utf-8');
+        let parsed: any;
+        try {
+          parsed = JSON.parse(content);
+        } catch (e) {
+          throw new UnscopedValidationError(lit`SchemaLoadError`,
+            `[CloudFormation Validate] Invalid JSON in schema file: ${fullPath}: ${e}`,
+          );
+        }
+        if (!parsed.typeName) {
+          throw new UnscopedValidationError(lit`SchemaLoadError`,
+            `[CloudFormation Validate] Schema file missing required "typeName" field: ${fullPath}`,
+          );
+        }
+        schemas.push({
+          typeName: parsed.typeName,
+          schema: content,
+        });
+      }
+    }
+  }
+
+  walk(rootReal, 0);
+
+  if (schemas.length > 0) {
+    // Audit trail: log which overlays were loaded so stale ones are detectable
+    const typeNames = schemas.map(s => s.typeName).join(', ');
+    process.stderr.write(`[CloudFormation Validate] Loaded ${schemas.length} schema overlay(s): ${typeNames}\n`);
+  }
+
+  return schemas;
+}
+
