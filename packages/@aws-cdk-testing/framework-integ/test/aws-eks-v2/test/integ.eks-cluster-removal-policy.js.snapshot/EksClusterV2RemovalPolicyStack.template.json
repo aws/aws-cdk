@@ -1148,6 +1148,23 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "AccessEntryRole0AE13E39": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
   "AccessEntry5263FF03": {
    "Type": "AWS::EKS::AccessEntry",
    "Properties": {
@@ -1173,7 +1190,12 @@
     "ClusterName": {
      "Ref": "ClusterEB0386A7"
     },
-    "PrincipalArn": "arn:aws:iam::123456789012:user/test-user"
+    "PrincipalArn": {
+     "Fn::GetAtt": [
+      "AccessEntryRole0AE13E39",
+      "Arn"
+     ]
+    }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2097,8 +2119,9 @@
     },
     "Release": "eksclusterv2removalpolicystackhelmchartca54b512",
     "Chart": "redis",
+    "Version": "28.0.7",
     "Namespace": "default",
-    "Repository": "https://charts.bitnami.com/bitnami",
+    "Repository": "oci://registry-1.docker.io/bitnamicharts/redis",
     "CreateNamespace": true
    },
    "DependsOn": [

@@ -49,6 +49,17 @@
       }
     }
   ],
+  "/EksClusterV2RemovalPolicyStack/AccessEntryRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
   "/EksClusterV2RemovalPolicyStack/AccessEntry": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -338,6 +349,12 @@
         "addonName": "*",
         "removalPolicy": "destroy"
       }
+    }
+  ],
+  "/EksClusterV2RemovalPolicyStack/AccessEntryRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AccessEntryRole0AE13E39"
     }
   ],
   "/EksClusterV2RemovalPolicyStack/AccessEntry/Resource": [
