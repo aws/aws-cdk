@@ -1724,6 +1724,23 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     }
   },
   '@aws-cdk.aws-glue-alpha': {
+    'Catalog': {
+      'catalogName': '*',
+      'description': '*',
+      'encryptionAtRest': '*',
+      'connectionPasswordEncryption': {
+        'kmsKey': '*',
+        'returnConnectionPasswordEncrypted': 'boolean'
+      }
+    },
+    'AccountCatalog': {
+      'encryptionAtRest': '*',
+      'connectionPasswordEncryption': {
+        'kmsKey': '*',
+        'returnConnectionPasswordEncrypted': 'boolean'
+      }
+    },
+    'ImportedCatalog': {},
     'Connection': {
       'type': '*',
       'connectionName': '*',
@@ -1769,12 +1786,26 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'description': '*',
       'rulesetDqdl': '*',
       'tags': '*',
-      'targetTable': '*'
+      'targetTable': '*',
+      'removalPolicy': 'RemovalPolicy'
     },
     'Database': {
       'databaseName': '*',
       'locationUri': '*',
-      'description': '*'
+      'description': '*',
+      'catalog': {
+        'catalogId': '*',
+        'catalogArn': '*',
+        'encryptionKey': '*',
+        'connectionPasswordKey': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'removalPolicy': 'RemovalPolicy'
     },
     'ExternalTable': {
       'connection': {
@@ -1791,16 +1822,20 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'tableName': '*',
       'description': '*',
       'database': {
-        'catalogArn': '*',
-        'catalogId': '*',
+        'catalog': {
+          'catalogId': '*',
+          'catalogArn': '*',
+          'encryptionKey': '*',
+          'connectionPasswordKey': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
         'databaseArn': '*',
-        'databaseName': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
+        'databaseName': '*'
       },
       'columns': {
         'name': '*',
@@ -1895,16 +1930,20 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'tableName': '*',
       'description': '*',
       'database': {
-        'catalogArn': '*',
-        'catalogId': '*',
+        'catalog': {
+          'catalogId': '*',
+          'catalogArn': '*',
+          'encryptionKey': '*',
+          'connectionPasswordKey': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
         'databaseArn': '*',
-        'databaseName': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
+        'databaseName': '*'
       },
       'columns': {
         'name': '*',
@@ -1974,7 +2013,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       's3Encryption': {
         'mode': 'S3EncryptionMode',
         'kmsKey': '*'
-      }
+      },
+      'removalPolicy': 'RemovalPolicy'
     },
     'Table': {}
   },
@@ -3776,9 +3816,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'flowName': '*',
       'availabilityZone': '*',
       'flowSize': '*',
-      'maintenance': {
-        'maintenanceDay': 'MaintenanceDay',
-        'maintenanceStartHour': '*'
+      'maintenanceConfiguration': {
+        'day': 'MaintenanceDay',
+        'time': '*'
       },
       'mediaStreams': '*',
       'ndiConfig': {
@@ -10587,6 +10627,31 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     }
   },
   'aws-cdk-lib.aws-cloudwatch': {
+    'AlarmMuteRule': {
+      'alarms': '*',
+      'alarmMuteRuleName': '*',
+      'description': '*',
+      'schedule': '*',
+      'duration': '*',
+      'start': {
+        'year': '*',
+        'month': '*',
+        'day': '*',
+        'hour': '*',
+        'minute': '*'
+      },
+      'expire': {
+        'year': '*',
+        'month': '*',
+        'day': '*',
+        'hour': '*',
+        'minute': '*'
+      },
+      'tags': '*',
+      'addAlarm': [
+        '*'
+      ]
+    },
     'Alarm': {
       'metric': {
         'warnings': '*',
@@ -12081,6 +12146,17 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'securityGroupRemovalPolicy': 'RemovalPolicy',
       'copyTagsToSnapshot': 'boolean',
       'storageType': 'StorageType',
+      'manageMasterUserPassword': 'boolean',
+      'masterUserSecretKmsKey': {
+        'keyArn': '*',
+        'keyId': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
       'addRotationSingleUser': [
         '*'
       ],
@@ -13364,7 +13440,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'region': '*'
           }
         }
-      }
+      },
+      'ipAddressType': 'VpcEndpointIpAddressType',
+      'dnsRecordIpType': 'VpcEndpointDnsRecordIpType'
     },
     'InterfaceVpcEndpoint': {
       'vpc': {
@@ -27202,12 +27280,16 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       },
       'tags': '*',
+      'streamDeliveryResources': '*',
       'addMemoryStrategy': [
         {
           'strategyName': '*',
           'description': '*',
           'strategyType': 'MemoryStrategyType'
         }
+      ],
+      'addStreamDeliveryResource': [
+        '*'
       ]
     },
     'RuntimeEndpoint': {
