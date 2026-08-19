@@ -3,7 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { GraduationContext } from '../lib/context';
 import { GraduationReport } from '../lib/report';
-import { graduateReadme, mergeAwslint, rewriteImports, rewriteTestAssetPaths } from '../lib/transforms';
+import { graduateReadme, mergeAwslint, rewriteImports, rewriteIntegImports, rewriteTestAssetPaths } from '../lib/transforms';
 
 /** Build a GraduationContext rooted at a throwaway temp dir for the `aws-foo` service. */
 function makeCtx(): { ctx: GraduationContext; report: GraduationReport; repoRoot: string } {
@@ -148,6 +148,56 @@ describe('rewriteTestAssetPaths', () => {
       expect(out).toContain('path.join(__dirname, "job-script", "hello.py")');
       expect(out).not.toContain("'test/job-script/hello.py'");
       expect(out).toMatch(/import \* as path from ['"]path['"]/);
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('rewriteIntegImports', () => {
+  test('retargets ../lib and the alpha package to the published subpath', () => {
+    const { ctx, repoRoot } = makeCtx();
+    try {
+      const file = write(path.join(repoRoot, 'integ.foo.ts'), [
+        "import * as foo from '../lib';",
+        "import { Bar } from '@aws-cdk/aws-foo-alpha';",
+        "import * as cdk from 'aws-cdk-lib';",
+        "import * as integ from '@aws-cdk/integ-tests-alpha';",
+        '',
+      ].join('\n'));
+
+      rewriteIntegImports(ctx, file);
+
+      const out = fs.readFileSync(file, 'utf-8');
+      expect(out).toContain("import * as foo from 'aws-cdk-lib/aws-foo';");
+      expect(out).toContain("import { Bar } from 'aws-cdk-lib/aws-foo';");
+      // Unrelated imports are left alone.
+      expect(out).toContain("import * as cdk from 'aws-cdk-lib';");
+      expect(out).toContain("import * as integ from '@aws-cdk/integ-tests-alpha';");
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('treats regex metacharacters in the service name literally (no regex injection)', () => {
+    // A service name with a '.' must match literally, not as a regex wildcard.
+    const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'grad-'));
+    try {
+      const ctx = new GraduationContext(
+        { service: 'aws-fo.o', cleanup: false, strict: false, dryRun: false },
+        repoRoot,
+      );
+      const file = write(path.join(repoRoot, 'integ.foo.ts'), [
+        "import * as a from '@aws-cdk/aws-fo.o-alpha';", // exact match → rewrite
+        "import * as b from '@aws-cdk/aws-foXo-alpha';", // would match if '.' were a wildcard → must NOT rewrite
+        '',
+      ].join('\n'));
+
+      rewriteIntegImports(ctx, file);
+
+      const out = fs.readFileSync(file, 'utf-8');
+      expect(out).toContain("import * as a from 'aws-cdk-lib/aws-fo.o';");
+      expect(out).toContain("import * as b from '@aws-cdk/aws-foXo-alpha';");
     } finally {
       fs.rmSync(repoRoot, { recursive: true, force: true });
     }

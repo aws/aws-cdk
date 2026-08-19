@@ -316,11 +316,14 @@ function ensurePathImport(sourceFile: SourceFile): void {
 }
 
 /** Integ tests import from the published subpath, not relative paths. */
-function rewriteIntegImports(ctx: GraduationContext, file: string): void {
+export function rewriteIntegImports(ctx: GraduationContext, file: string): void {
   let text = fs.readFileSync(file, 'utf-8');
   const target = `aws-cdk-lib/${ctx.service}`;
+  // Escape every regex metacharacter (including backslash) so the service name,
+  // which originates from a command-line argument, cannot alter the pattern.
+  const escapedAlpha = ctx.alphaPackageName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   text = text.replace(/from ['"]\.\.\/lib['"]/g, `from '${target}'`);
-  text = text.replace(new RegExp(`from ['"]${ctx.alphaPackageName.replace(/[/-]/g, '\\$&')}['"]`, 'g'), `from '${target}'`);
+  text = text.replace(new RegExp(`from ['"]${escapedAlpha}['"]`, 'g'), `from '${target}'`);
   fs.writeFileSync(file, text);
 }
 
