@@ -117,7 +117,10 @@ new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
   script,
   glueVersion: glue.GlueVersion.V5_1,
   continuousLogging: { enabled: false },
-  workerType: glue.WorkerType.G_2X,
+  workerConfiguration: {
+    workerType: glue.WorkerType.G_2X,
+    numberOfWorkers: 2,
+  },
   maxConcurrentRuns: 100,
   timeout: cdk.Duration.hours(2),
   connections: [glue.Connection.fromConnectionName(stack, 'Connection', 'connectionName')],
@@ -127,7 +130,6 @@ new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
     SecondTagName: 'SecondTagValue',
     XTagName: 'XTagValue',
   },
-  numberOfWorkers: 2,
   maxRetries: 2,
 });
 ```
@@ -174,7 +176,10 @@ new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
   script,
   glueVersion: glue.GlueVersion.V5_1,
   continuousLogging: { enabled: false },
-  workerType: glue.WorkerType.G_2X,
+  workerConfiguration: {
+    workerType: glue.WorkerType.G_2X,
+    numberOfWorkers: 2,
+  },
   maxConcurrentRuns: 100,
   timeout: cdk.Duration.hours(2),
   connections: [glue.Connection.fromConnectionName(stack, 'Connection', 'connectionName')],
@@ -184,7 +189,6 @@ new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
     SecondTagName: 'SecondTagValue',
     XTagName: 'XTagValue',
   },
-  numberOfWorkers: 2,
   maxRetries: 2,
 });
 ```
@@ -229,7 +233,10 @@ new glue.PySparkFlexEtlJob(stack, 'pySparkFlexEtlJob', {
   script,
   glueVersion: glue.GlueVersion.V5_1,
   continuousLogging: { enabled: false },
-  workerType: glue.WorkerType.G_2X,
+  workerConfiguration: {
+    workerType: glue.WorkerType.G_2X,
+    numberOfWorkers: 2,
+  },
   maxConcurrentRuns: 100,
   timeout: cdk.Duration.hours(2),
   connections: [glue.Connection.fromConnectionName(stack, 'Connection', 'connectionName')],
@@ -239,7 +246,6 @@ new glue.PySparkFlexEtlJob(stack, 'pySparkFlexEtlJob', {
     SecondTagName: 'SecondTagValue',
     XTagName: 'XTagValue',
   },
-  numberOfWorkers: 2,
   maxRetries: 2,
 });
 ```
@@ -497,31 +503,28 @@ See [Adding a Connection to Your Data Store](https://docs.aws.amazon.com/glue/la
 
 A `SecurityConfiguration` is a set of security properties that can be used by AWS Glue to encrypt data at rest.
 
+Each encryption config is built with a factory that pairs the encryption mode
+with its key, so illegal combinations (such as an S3-managed encryption carrying
+a KMS key) cannot be expressed:
+
 ```ts
 new glue.SecurityConfiguration(this, 'MySecurityConfiguration', {
-  cloudWatchEncryption: {
-    mode: glue.CloudWatchEncryptionMode.KMS,
-  },
-  jobBookmarksEncryption: {
-    mode: glue.JobBookmarksEncryptionMode.CLIENT_SIDE_KMS,
-  },
-  s3Encryption: {
-    mode: glue.S3EncryptionMode.KMS,
-  },
+  cloudWatchEncryption: glue.CloudWatchEncryption.kms(),
+  jobBookmarksEncryption: glue.JobBookmarksEncryption.clientSideKms(),
+  s3Encryption: glue.S3Encryption.kms(),
 });
 ```
 
-By default, a shared KMS key is created for use with the encryption configurations that require one. You can also supply your own key for each encryption config, for example, for CloudWatch encryption:
+By default, a shared KMS key is created for use with the encryption configurations that require one. You can also supply your own key to any factory, for example, for CloudWatch encryption:
 
 ```ts
 declare const key: kms.Key;
 new glue.SecurityConfiguration(this, 'MySecurityConfiguration', {
-  cloudWatchEncryption: {
-    mode: glue.CloudWatchEncryptionMode.KMS,
-    kmsKey: key,
-  },
+  cloudWatchEncryption: glue.CloudWatchEncryption.kms(key),
 });
 ```
+
+Use `glue.S3Encryption.s3Managed()` for S3-managed (SSE-S3) encryption, which takes no key.
 
 See [documentation](https://docs.aws.amazon.com/glue/latest/dg/encryption-security-configuration.html) for more info for Glue encrypting data written by Crawlers, Jobs, and Development Endpoints.
 
@@ -1070,6 +1073,25 @@ new glue.ExternalTable(this, 'MyTable', {
   dataFormat: glue.DataFormat.JSON,
 });
 ```
+
+## Data Quality Ruleset
+
+A `DataQualityRuleset` defines a set of data quality rules — authored in Glue's
+Data Quality Definition Language (DQDL) — that are evaluated against a table in
+the Data Catalog.
+
+```ts
+new glue.DataQualityRuleset(this, 'MyRuleset', {
+  rulesetName: 'my_ruleset',
+  dqdl: glue.Dqdl.fromString('Rules = [ RowCount > 100, IsComplete "order_id" ]'),
+  targetTable: new glue.DataQualityTargetTable('my_database', 'my_table'),
+});
+```
+
+Build the DQDL document with `Dqdl.fromString(...)`. Glue parses and validates the
+DQDL when the ruleset is deployed; see the
+[DQDL reference](https://docs.aws.amazon.com/glue/latest/dg/dqdl.html) for the
+full rule syntax.
 
 ## [Encryption](https://docs.aws.amazon.com/athena/latest/ug/encryption.html)
 
