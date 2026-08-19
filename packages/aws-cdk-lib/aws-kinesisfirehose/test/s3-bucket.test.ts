@@ -919,7 +919,6 @@ describe('S3 destination', () => {
     test.each([
       cdk.TimeZone.ASIA_TOKYO,
       cdk.TimeZone.AMERICA_LOS_ANGELES,
-      cdk.TimeZone.AMERICA_PORT_MINUS_AU_MINUS_PRINCE,
       cdk.TimeZone.of('UTC'),
     ])('sets customTimeZone: %s', (timezone: cdk.TimeZone) => {
       const destination = new firehose.S3Bucket(bucket, {
@@ -961,6 +960,7 @@ describe('S3 destination', () => {
       cdk.TimeZone.EST5EDT,
       cdk.TimeZone.ETC_GMT_MINUS_1,
       cdk.TimeZone.FACTORY,
+      cdk.TimeZone.AMERICA_PORT_MINUS_AU_MINUS_PRINCE,
       cdk.TimeZone.of(''),
     ])('throws when customTimeZone is not a standard IANA timezone: %s', (timezone: cdk.TimeZone) => {
       const destination = new firehose.S3Bucket(bucket, {
