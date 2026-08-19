@@ -1280,8 +1280,8 @@ describe('BrowserCustom recording configuration with S3 location tests', () => {
 
     // Exact statement match: the auto-created execution role has no inline
     // statements of its own, so its default policy must contain exactly this
-    // one least-privilege recording statement. Any added/removed action,
-    // changed resource, or dropped condition fails this assertion.
+    // one least-privilege recording statement. Any added/removed action or
+    // changed resource fails this assertion.
     template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
@@ -1292,11 +1292,6 @@ describe('BrowserCustom recording configuration with S3 location tests', () => {
               's3:AbortMultipartUpload',
             ],
             Effect: 'Allow',
-            Condition: {
-              StringEquals: {
-                'aws:ResourceAccount': '123456789012',
-              },
-            },
             Resource: {
               'Fn::Join': [
                 '',
@@ -1323,9 +1318,11 @@ describe('BrowserCustom recording configuration with S3 location tests', () => {
     expect(templateJson).not.toContain('s3:List*');
     // No object-level grant on the entire bucket (bucket/*).
     expect(templateJson).not.toContain(':s3:::my-recording-bucket/*');
+    // The aws:ResourceAccount condition has been dropped.
+    expect(templateJson).not.toContain('aws:ResourceAccount');
   });
 
-  test('Should append * to a prefix with no trailing slash (current behavior, no normalization)', () => {
+  test('Should normalize a concrete prefix with no trailing slash to prefix/*', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test-stack', {
       env: { account: '123456789012', region: 'us-east-1' },
@@ -1345,8 +1342,9 @@ describe('BrowserCustom recording configuration with S3 location tests', () => {
 
     const template = Template.fromStack(stack);
 
-    // The construct does not normalize a missing trailing slash: the object key is
-    // used verbatim with a '*' appended, so 'recordings' scopes to '.../recordings*'.
+    // A concrete object key without a trailing slash is normalized: a '/' is added
+    // before the '*' so the grant is scoped to '.../recordings/*' (the folder),
+    // not the broader '.../recordings*'.
     template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
@@ -1359,7 +1357,7 @@ describe('BrowserCustom recording configuration with S3 location tests', () => {
             Resource: {
               'Fn::Join': [
                 '',
-                ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-recording-bucket/recordings*'],
+                ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-recording-bucket/recordings/*'],
               ],
             },
           }),

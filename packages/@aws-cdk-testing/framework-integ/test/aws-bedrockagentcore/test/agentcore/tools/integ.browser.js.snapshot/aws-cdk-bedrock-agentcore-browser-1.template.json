@@ -266,13 +266,6 @@
         "s3:ListMultipartUploadParts",
         "s3:PutObject"
        ],
-       "Condition": {
-        "StringEquals": {
-         "aws:ResourceAccount": {
-          "Ref": "AWS::AccountId"
-         }
-        }
-       },
        "Effect": "Allow",
        "Resource": {
         "Fn::Join": [

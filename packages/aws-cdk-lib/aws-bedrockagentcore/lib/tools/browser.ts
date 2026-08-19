@@ -825,19 +825,20 @@ export class BrowserCustom extends BrowserCustomBase {
         `${this.browserCustomName}RecordingBucket`,
         s3Location.bucketName,
       );
+      // Normalize a concrete prefix to end with '/' so the grant is scoped to the
+      // recording "folder" (bucket/prefix/*). A tokenized prefix cannot be inspected
+      // at synth, so it is used verbatim (bucket/prefix*).
+      const objectKey = s3Location.objectKey;
+      const prefix = !Token.isUnresolved(objectKey) && !objectKey.endsWith('/')
+        ? `${objectKey}/`
+        : objectKey;
       // Grant only the write actions the recorder needs, scoped to the recording
-      // prefix objects (bucket/prefix/*), not the whole bucket. An aws:ResourceAccount
-      // condition guards against the confused-deputy problem. See:
+      // prefix objects (bucket/prefix/*), not the whole bucket. See:
       // https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/browser-resource-session-management.html
       const grant = iam.Grant.addToPrincipal({
         grantee: this.executionRole,
         actions: perms.BROWSER_RECORDING_S3_PERMS,
-        resourceArns: [bucket.arnForObjects(`${s3Location.objectKey}*`)],
-        conditions: {
-          StringEquals: {
-            'aws:ResourceAccount': Stack.of(this).account,
-          },
-        },
+        resourceArns: [bucket.arnForObjects(`${prefix}*`)],
       });
       // Ensure the policy is applied before the browser resource is created
       grant.applyBefore(this.__resource);
