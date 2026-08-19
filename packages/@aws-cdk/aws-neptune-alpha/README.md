@@ -169,6 +169,21 @@ new neptune.DatabaseCluster(this, 'Database', {
 });
 ```
 
+`globalCluster` also accepts the low-level `CfnGlobalCluster`, so you're not required to use the
+`GlobalCluster` L2 construct:
+
+```ts
+import { CfnGlobalCluster } from 'aws-cdk-lib/aws-neptune';
+
+declare const cfnGlobalCluster: CfnGlobalCluster;
+
+new neptune.DatabaseCluster(this, 'Database', {
+  vpc,
+  instanceType: neptune.InstanceType.R5_LARGE,
+  globalCluster: cfnGlobalCluster,
+});
+```
+
 ## Automatic minor version upgrades
 
 By setting `autoMinorVersionUpgrade` to true, Neptune will automatically update

@@ -1,3 +1,4 @@
+import type { GlobalClusterReference, IGlobalClusterRef } from 'aws-cdk-lib/aws-neptune';
 import { CfnGlobalCluster } from 'aws-cdk-lib/aws-neptune';
 import type { IResource } from 'aws-cdk-lib/core';
 import { ArnFormat, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
@@ -12,7 +13,7 @@ import type { EngineVersion, IDatabaseCluster } from './cluster';
  *
  * @see https://docs.aws.amazon.com/neptune/latest/userguide/neptune-global-database.html
  */
-export interface IGlobalCluster extends IResource {
+export interface IGlobalCluster extends IResource, IGlobalClusterRef {
   /**
    * The identifier of the global database cluster.
    *
@@ -76,6 +77,10 @@ export interface GlobalClusterProps {
  */
 abstract class GlobalClusterBase extends Resource implements IGlobalCluster {
   public abstract readonly globalClusterIdentifier: string;
+
+  public get globalClusterRef(): GlobalClusterReference {
+    return { globalClusterIdentifier: this.globalClusterIdentifier };
+  }
 }
 
 /**

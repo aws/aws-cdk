@@ -3,6 +3,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type * as kms from 'aws-cdk-lib/aws-kms';
 import * as logs from 'aws-cdk-lib/aws-logs';
+import type { IGlobalClusterRef } from 'aws-cdk-lib/aws-neptune';
 import { CfnDBCluster, CfnDBInstance } from 'aws-cdk-lib/aws-neptune';
 import type { Duration, IResource } from 'aws-cdk-lib/core';
 import { Aws, Lazy, RemovalPolicy, Resource, Token, ValidationError } from 'aws-cdk-lib/core';
@@ -11,7 +12,6 @@ import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import { Endpoint } from './endpoint';
-import type { IGlobalCluster } from './global-cluster';
 import { InstanceType } from './instance';
 import type { IClusterParameterGroup, IParameterGroup } from './parameter-group';
 import type { ISubnetGroup } from './subnet-group';
@@ -415,7 +415,7 @@ export interface DatabaseClusterProps {
    *
    * @default - the cluster is not part of a global database.
    */
-  readonly globalCluster?: IGlobalCluster;
+  readonly globalCluster?: IGlobalClusterRef;
 }
 
 /**
@@ -711,7 +711,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       associatedRoles: props.associatedRoles ? props.associatedRoles.map(role => ({ roleArn: role.roleArn })) : undefined,
       iamAuthEnabled: Lazy.any({ produce: () => this.enableIamAuthentication }),
       dbPort: props.port,
-      globalClusterIdentifier: props.globalCluster?.globalClusterIdentifier,
+      globalClusterIdentifier: props.globalCluster?.globalClusterRef.globalClusterIdentifier,
       // Backup
       backupRetentionPeriod: props.backupRetention?.toDays(),
       preferredBackupWindow: props.preferredBackupWindow,

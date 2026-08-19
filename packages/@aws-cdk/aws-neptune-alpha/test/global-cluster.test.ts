@@ -1,6 +1,7 @@
 import { Stack, Tags } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { CfnGlobalCluster } from 'aws-cdk-lib/aws-neptune';
 import { DatabaseCluster, EngineVersion, GlobalCluster, InstanceType } from '../lib';
 
 let stack: Stack;
@@ -132,6 +133,23 @@ test('a database cluster can join a global database cluster', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
     GlobalClusterIdentifier: { Ref: Match.stringLikeRegexp('Global.*') },
+  });
+});
+
+test('a database cluster can join a global database cluster defined as an L1 CfnGlobalCluster', () => {
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cfnGlobalCluster = new CfnGlobalCluster(stack, 'Global', {
+    globalClusterIdentifier: 'my-global-cluster',
+  });
+
+  new DatabaseCluster(stack, 'Database', {
+    vpc,
+    instanceType: InstanceType.R5_LARGE,
+    globalCluster: cfnGlobalCluster,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
+    GlobalClusterIdentifier: { Ref: 'Global' },
   });
 });
 
