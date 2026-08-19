@@ -819,13 +819,27 @@ export class BrowserCustom extends BrowserCustomBase {
       if (!Token.isUnresolved(this.recordingConfig.s3Location.bucketName)) {
         Stack.of(this).resolve(this.recordingConfig.s3Location.bucketName);
       }
+      const s3Location = this.recordingConfig.s3Location;
       const bucket = s3.Bucket.fromBucketName(
         this,
         `${this.browserCustomName}RecordingBucket`,
-        this.recordingConfig.s3Location.bucketName,
+        s3Location.bucketName,
       );
+      // Grant only the write actions the recorder needs, scoped to the recording
+      // prefix objects (bucket/prefix/*), not the whole bucket. An aws:ResourceAccount
+      // condition guards against the confused-deputy problem. See:
+      // https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/browser-resource-session-management.html
+      const grant = iam.Grant.addToPrincipal({
+        grantee: this.executionRole,
+        actions: perms.BROWSER_RECORDING_S3_PERMS,
+        resourceArns: [bucket.arnForObjects(`${s3Location.objectKey}*`)],
+        conditions: {
+          StringEquals: {
+            'aws:ResourceAccount': Stack.of(this).account,
+          },
+        },
+      });
       // Ensure the policy is applied before the browser resource is created
-      const grant = bucket.grantReadWrite(this.executionRole);
       grant.applyBefore(this.__resource);
     }
   }

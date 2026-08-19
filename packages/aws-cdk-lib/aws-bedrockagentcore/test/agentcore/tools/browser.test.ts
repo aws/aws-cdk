@@ -1255,6 +1255,68 @@ describe('BrowserCustom recording configuration with S3 location tests', () => {
     });
   });
 
+  test('Should grant least-privilege, prefix-scoped S3 permissions for recording', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    new BrowserCustom(stack, 'test-browser-with-recording', {
+      browserCustomName: 'test_browser_with_recording',
+      networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
+      recordingConfig: {
+        enabled: true,
+        s3Location: {
+          bucketName: 'my-recording-bucket',
+          objectKey: 'recordings/',
+        },
+      },
+    });
+
+    const template = Template.fromStack(stack);
+
+    // The execution role policy grants exactly the three write actions the
+    // recorder needs, scoped to the recording prefix objects (bucket/prefix/*),
+    // with an aws:ResourceAccount confused-deputy guard.
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          {
+            Action: [
+              's3:PutObject',
+              's3:ListMultipartUploadParts',
+              's3:AbortMultipartUpload',
+            ],
+            Effect: 'Allow',
+            Condition: {
+              StringEquals: {
+                'aws:ResourceAccount': '123456789012',
+              },
+            },
+            Resource: {
+              'Fn::Join': [
+                '',
+                ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-recording-bucket/recordings/*'],
+              ],
+            },
+          },
+        ]),
+      },
+    });
+
+    // The broad grantReadWrite action set and whole-bucket scope must not be present.
+    const templateJson = JSON.stringify(template.toJSON());
+    expect(templateJson).not.toContain('s3:GetObject');
+    expect(templateJson).not.toContain('s3:GetBucket');
+    expect(templateJson).not.toContain('s3:DeleteObject');
+    expect(templateJson).not.toContain('s3:List*');
+    // No object-level grant on the entire bucket (bucket/*).
+    expect(templateJson).not.toContain(':s3:::my-recording-bucket/*');
+  });
+
   test('Should handle recording config with enabled true but no S3 location', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test-stack', {
