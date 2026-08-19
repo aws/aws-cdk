@@ -104,7 +104,8 @@ Standard constructor: `constructor(scope: Construct, id: string, props: FooProps
 
 ### Static Type Check (never use `instanceof`)
 
-All L1 (`Cfn*`) constructs and some core constructs have this auto-generated.
+L1 `Cfn*` constructs have it auto-generated (via `spec2cdk`); some core classes, such as `App`,
+`Stack` and `Stage`, implement the same pattern by hand.
 
 ```ts
 public static isFoo(x: any): x is Foo {
@@ -133,7 +134,7 @@ public static isFoo(x: any): x is Foo {
 ## Props Design
 
 - Name: `FooProps` — always a struct (readonly properties only)
-- Flat — no artificial nesting, use shared prefixes for related props
+- Flat — no artificial nesting, use shared prefixes for related props. Exception: group **co-dependent** props (only valid together) into a required-together value object when it makes incomplete combinations unrepresentable — e.g. `workerConfiguration: { workerType, numberOfWorkers }`. Litmus: if flattening would need a synth-time throw for partial input, nest; mutually *exclusive* props use factory methods instead
 - Every optional prop needs `@default` tag:
   - Simple: `@default true`
   - Context-dependent: `@default - uses the account default encryption`
@@ -331,7 +332,7 @@ Required for: new CFN resource types, new CFN properties, cross-service integrat
 
 - Module scope optional for repo-wide changes: `chore: update dependencies`
 - Lowercase, no period at end
-- `feat` and `fix` PRs MUST reference an issue: `fixes #<issue>` or `closes #<issue>`
+- You SHOULD reference an issue in every `feat` and `fix` PR: `fixes #<issue>` or `closes #<issue>`. A PR with no linked issue is routed to a lower-priority review queue, so link one to keep the PR in the normal queue. If no issue exists, open one before raising the PR.
 - `feat()` PRs require unit tests, integration snapshots, and README updates
 - Breaking changes are only allowed in `-alpha` libraries. Declare with `BREAKING CHANGE:` in the PR body before the `---` line
 - One concern per PR — submit cosmetic changes separately
