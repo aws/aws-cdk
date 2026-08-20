@@ -1,0 +1,15 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "codebuild-service-role-override-test/DefaultTest": {
+      "stacks": [
+        "codebuild-service-role-override"
+      ],
+      "diffAssets": true,
+      "assertionStack": "codebuild-service-role-override-test/DefaultTest/DeployAssert",
+      "assertionStackName": "codebuildserviceroleoverridetestDefaultTestDeployAssertC177E1D3"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
