@@ -1,0 +1,13 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "lambda-event-source-dynamodb-table-v2-integ/DefaultTest": {
+      "stacks": [
+        "lambda-event-source-dynamodb-table-v2"
+      ],
+      "assertionStack": "lambda-event-source-dynamodb-table-v2-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdaeventsourcedynamodbtablev2integDefaultTestDeployAssert7FAB868C"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}

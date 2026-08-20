@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "b58172921bc5650342429363cfb2bf4173efdc57e50858d6b32297860d9f8188": {
+      "displayName": "lambda-event-source-dynamodb-table-v2 Template",
+      "source": {
+        "path": "lambda-event-source-dynamodb-table-v2.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-dd7b4f78": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b58172921bc5650342429363cfb2bf4173efdc57e50858d6b32297860d9f8188.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
