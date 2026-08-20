@@ -280,8 +280,7 @@ export class DomainName extends Resource implements IDomainName {
     if (this.endpointType === EndpointType.PRIVATE && props.ipAddressType && props.ipAddressType !== IpAddressType.DUAL_STACK) {
       throw new ValidationError(
         lit`UnsupportedIpAddressTypeForPrivateEndpoint`,
-        'For PRIVATE endpoint type, only DUAL_STACK is supported. ' +
-        'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-ip-address-type.html',
+        `For PRIVATE endpoint type, only DUAL_STACK is supported. Got ${props.ipAddressType}.`,
         this,
       );
     }
