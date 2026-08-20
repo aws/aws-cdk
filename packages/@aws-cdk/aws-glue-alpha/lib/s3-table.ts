@@ -76,6 +76,14 @@ export class S3TableStorage {
    * Store the table's data in an existing bucket. CDK does not manage the
    * bucket's encryption.
    *
+   * The bucket can be one you don't own, imported with
+   * `Bucket.fromBucketArn()` or `Bucket.fromBucketAttributes()`. If that bucket
+   * is KMS-encrypted, import it with `Bucket.fromBucketAttributes()` and supply
+   * the `encryptionKey` attribute. Otherwise, CDK has no reference to the key,
+   * which means that `S3Table.grantRead()`/`grantWrite()` will correctly grant
+   * S3 access but silently skip the KMS permissions on the key. As a consequence,
+   * at runtime, reads and writes will fail with access denied on the key.
+   *
    * @param bucket the bucket that holds the table's data.
    */
   public static fromBucket(bucket: s3.IBucket): S3TableStorage {
