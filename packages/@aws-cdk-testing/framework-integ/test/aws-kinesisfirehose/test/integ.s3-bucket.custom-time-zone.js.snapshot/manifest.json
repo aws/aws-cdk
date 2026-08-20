@@ -1,28 +1,28 @@
 {
   "version": "54.0.0",
   "artifacts": {
-    "aws-glue-connection.assets": {
+    "aws-cdk-firehose-delivery-stream-s3-custom-time-zone.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-glue-connection.assets.json",
+        "file": "aws-cdk-firehose-delivery-stream-s3-custom-time-zone.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-glue-connection": {
+    "aws-cdk-firehose-delivery-stream-s3-custom-time-zone": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-glue-connection.template.json",
+        "templateFile": "aws-cdk-firehose-delivery-stream-s3-custom-time-zone.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21ec5c0089ff1b50a0969ac6f9abaafcecc8e6e5e488d1360d4a571356474779.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2336b8ec5ed4bee6b9a43a99041c5767a20c77eb2ed019df8368b18511e85418.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-glue-connection.assets"
+          "aws-cdk-firehose-delivery-stream-s3-custom-time-zone.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,10 +31,46 @@
         }
       },
       "dependencies": [
-        "aws-glue-connection.assets"
+        "aws-cdk-firehose-delivery-stream-s3-custom-time-zone.assets"
       ],
-      "additionalMetadataFile": "aws-glue-connection.metadata.json",
-      "displayName": "aws-glue-connection"
+      "additionalMetadataFile": "aws-cdk-firehose-delivery-stream-s3-custom-time-zone.metadata.json",
+      "displayName": "aws-cdk-firehose-delivery-stream-s3-custom-time-zone"
+    },
+    "integtestsDefaultTestDeployAssert44C8D370.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integtestsDefaultTestDeployAssert44C8D370.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integtestsDefaultTestDeployAssert44C8D370": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integtestsDefaultTestDeployAssert44C8D370.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/67bbbee43dad46cd673c9f4fdc6c69adc2005bb1fb27dbd00569460dad40892f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integtestsDefaultTestDeployAssert44C8D370.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-firehose-delivery-stream-s3-custom-time-zone",
+        "integtestsDefaultTestDeployAssert44C8D370.assets"
+      ],
+      "additionalMetadataFile": "integtestsDefaultTestDeployAssert44C8D370.metadata.json",
+      "displayName": "integ-tests/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
