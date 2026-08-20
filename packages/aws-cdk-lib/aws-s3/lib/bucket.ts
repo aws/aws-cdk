@@ -15,7 +15,6 @@ import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import type { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import type * as s3tables from '../../aws-s3tables';
 import type {
   Duration,
   IResource,
@@ -1754,21 +1753,6 @@ export enum BucketNamespace {
 }
 
 /**
- * The type of table bucket that an S3 Metadata configuration is stored in.
- */
-export enum MetadataTableBucketType {
-  /**
-   * An AWS managed table bucket. V2 metadata configurations are stored in AWS managed table buckets.
-   */
-  AWS_MANAGED = 'aws',
-
-  /**
-   * A customer-managed table bucket. V1 metadata configurations are stored in customer-managed table buckets.
-   */
-  CUSTOMER_MANAGED = 'customer',
-}
-
-/**
  * The server-side encryption settings for an S3 Metadata table.
  */
 export abstract class MetadataTableEncryption {
@@ -1820,13 +1804,13 @@ export interface JournalTableConfiguration {
    *
    * @default false
    */
-  readonly recordExpiration?: boolean;
+  readonly recordExpirationEnabled?: boolean;
 
   /**
    * How long journal table records are retained before they expire.
    *
-   * Only applies when `recordExpiration` is `true`, and must be a whole number
-   * of days between 7 and 2147483647.
+   * Only applies when `recordExpirationEnabled` is `true`, and must be a whole
+   * number of days between 7 and 2147483647.
    *
    * @default - records never expire
    */
@@ -1835,23 +1819,9 @@ export interface JournalTableConfiguration {
   /**
    * The encryption settings for the journal table.
    *
-   * @default - the default encryption of the destination table bucket
+   * @default - the default encryption of the AWS managed table bucket
    */
   readonly encryption?: MetadataTableEncryption;
-
-  /**
-   * The ARN of the journal table.
-   *
-   * @default - the table ARN is assigned by S3
-   */
-  readonly tableArn?: string;
-
-  /**
-   * The name of the journal table.
-   *
-   * @default - the table name is assigned by S3
-   */
-  readonly tableName?: string;
 }
 
 /**
@@ -1862,31 +1832,15 @@ export interface JournalTableConfiguration {
 export interface InventoryTableConfiguration {
   /**
    * Whether the inventory table is enabled.
-   *
-   * @default true
    */
-  readonly enabled?: boolean;
+  readonly enabled: boolean;
 
   /**
    * The encryption settings for the inventory table.
    *
-   * @default - the default encryption of the destination table bucket
+   * @default - the default encryption of the AWS managed table bucket
    */
   readonly encryption?: MetadataTableEncryption;
-
-  /**
-   * The ARN of the inventory table.
-   *
-   * @default - the table ARN is assigned by S3
-   */
-  readonly tableArn?: string;
-
-  /**
-   * The name of the inventory table.
-   *
-   * @default - the table name is assigned by S3
-   */
-  readonly tableName?: string;
 }
 
 /**
@@ -1897,15 +1851,13 @@ export interface InventoryTableConfiguration {
 export interface AnnotationTableConfiguration {
   /**
    * Whether the annotation table is enabled.
-   *
-   * @default true
    */
-  readonly enabled?: boolean;
+  readonly enabled: boolean;
 
   /**
    * The encryption settings for the annotation table.
    *
-   * @default - the default encryption of the destination table bucket
+   * @default - the default encryption of the AWS managed table bucket
    */
   readonly encryption?: MetadataTableEncryption;
 
@@ -1918,44 +1870,6 @@ export interface AnnotationTableConfiguration {
    * @default - no role, only valid when the annotation table is disabled
    */
   readonly role?: iam.IRoleRef;
-
-  /**
-   * The ARN of the annotation table.
-   *
-   * @default - the table ARN is assigned by S3
-   */
-  readonly tableArn?: string;
-
-  /**
-   * The name of the annotation table.
-   *
-   * @default - the table name is assigned by S3
-   */
-  readonly tableName?: string;
-}
-
-/**
- * The destination of an S3 Metadata configuration.
- */
-export interface MetadataDestination {
-  /**
-   * The type of the table bucket where the metadata configuration is stored.
-   */
-  readonly tableBucketType: MetadataTableBucketType;
-
-  /**
-   * The table bucket where the metadata configuration is stored.
-   *
-   * @default - the AWS managed table bucket for the account and region
-   */
-  readonly tableBucket?: s3tables.ITableBucketRef;
-
-  /**
-   * The namespace in the table bucket where the metadata tables are stored.
-   *
-   * @default - a namespace derived from the general purpose bucket name
-   */
-  readonly tableNamespace?: string;
 }
 
 /**
@@ -1989,13 +1903,6 @@ export interface MetadataConfiguration {
    * @default - no annotation table
    */
   readonly annotationTable?: AnnotationTableConfiguration;
-
-  /**
-   * The destination of the metadata configuration.
-   *
-   * @default - an AWS managed table bucket
-   */
-  readonly destination?: MetadataDestination;
 }
 
 export interface BucketProps {
@@ -2302,6 +2209,7 @@ export interface BucketProps {
    * @default - No metadata configuration
    */
   readonly metadataConfiguration?: MetadataConfiguration;
+
   /**
    * The objectOwnership of the bucket.
    *

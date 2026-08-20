@@ -4,7 +4,6 @@ import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { CfnKey } from '../../aws-kms';
-import * as s3tables from '../../aws-s3tables';
 import * as cdk from '../../core';
 import { Tags } from '../../core';
 import * as cxapi from '../../cx-api';
@@ -3929,7 +3928,7 @@ describe('bucket', () => {
       new s3.Bucket(stack, 'MyBucket', {
         metadataConfiguration: {
           journalTable: {
-            recordExpiration: true,
+            recordExpirationEnabled: true,
             recordExpirationAfter: cdk.Duration.days(10),
           },
         },
@@ -3953,7 +3952,7 @@ describe('bucket', () => {
       new s3.Bucket(stack, 'MyBucket', {
         metadataConfiguration: {
           inventoryTable: { enabled: false },
-          annotationTable: { role },
+          annotationTable: { enabled: true, role },
         },
       });
 
@@ -3993,6 +3992,7 @@ describe('bucket', () => {
         metadataConfiguration: {
           journalTable: { encryption: s3.MetadataTableEncryption.kms(key) },
           inventoryTable: {
+            enabled: true,
             encryption: s3.MetadataTableEncryption.kms(key),
           },
         },
@@ -4021,9 +4021,9 @@ describe('bucket', () => {
 
       expect(() => new s3.Bucket(stack, 'MyBucket', {
         metadataConfiguration: {
-          journalTable: { recordExpiration: true },
+          journalTable: { recordExpirationEnabled: true },
         },
-      })).toThrow(/'recordExpirationAfter' must be specified when 'recordExpiration' is enabled/);
+      })).toThrow(/'recordExpirationAfter' must be specified when 'recordExpirationEnabled' is true/);
     });
 
     test('fails when a duration is given but record expiration is disabled', () => {
@@ -4033,7 +4033,7 @@ describe('bucket', () => {
         metadataConfiguration: {
           journalTable: { recordExpirationAfter: cdk.Duration.days(10) },
         },
-      })).toThrow(/'recordExpirationAfter' can only be specified when 'recordExpiration' is enabled/);
+      })).toThrow(/'recordExpirationAfter' can only be specified when 'recordExpirationEnabled' is true/);
     });
 
     test.each([0, 1, 6, 2147483648])('fails for an out of range record expiration of %d days', (days) => {
@@ -4042,7 +4042,7 @@ describe('bucket', () => {
       expect(() => new s3.Bucket(stack, 'MyBucket', {
         metadataConfiguration: {
           journalTable: {
-            recordExpiration: true,
+            recordExpirationEnabled: true,
             recordExpirationAfter: cdk.Duration.days(days),
           },
         },
@@ -4054,7 +4054,7 @@ describe('bucket', () => {
       new s3.Bucket(stack, 'MyBucket', {
         metadataConfiguration: {
           journalTable: {
-            recordExpiration: true,
+            recordExpirationEnabled: true,
             recordExpirationAfter: cdk.Duration.days(7),
           },
         },
@@ -4064,56 +4064,6 @@ describe('bucket', () => {
         MetadataConfiguration: {
           JournalTableConfiguration: {
             RecordExpiration: { Expiration: 'ENABLED', Days: 7 },
-          },
-        },
-      });
-    });
-
-    test('renders explicit table names and ARNs', () => {
-      const stack = new cdk.Stack();
-      const role = new iam.Role(stack, 'Role', {
-        assumedBy: new iam.ServicePrincipal('metadata.s3.amazonaws.com'),
-      });
-
-      new s3.Bucket(stack, 'MyBucket', {
-        metadataConfiguration: {
-          journalTable: { tableName: 'my-journal' },
-          inventoryTable: { tableName: 'my-inventory' },
-          annotationTable: { tableName: 'my-annotations', role },
-        },
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-        MetadataConfiguration: {
-          JournalTableConfiguration: { TableName: 'my-journal' },
-          InventoryTableConfiguration: { TableName: 'my-inventory' },
-          AnnotationTableConfiguration: { TableName: 'my-annotations' },
-        },
-      });
-    });
-
-    test('renders a customer-managed destination', () => {
-      const stack = new cdk.Stack();
-      const tableBucket = new s3tables.CfnTableBucket(stack, 'TableBucket', {
-        tableBucketName: 'my-table-bucket',
-      });
-
-      new s3.Bucket(stack, 'MyBucket', {
-        metadataConfiguration: {
-          destination: {
-            tableBucketType: s3.MetadataTableBucketType.CUSTOMER_MANAGED,
-            tableBucket,
-            tableNamespace: 'my_namespace',
-          },
-        },
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-        MetadataConfiguration: {
-          Destination: {
-            TableBucketType: 'customer',
-            TableBucketArn: { Ref: 'TableBucket' },
-            TableNamespace: 'my_namespace',
           },
         },
       });
@@ -4154,7 +4104,7 @@ describe('bucket', () => {
       new s3.Bucket(stack, 'MyBucket', {
         metadataConfiguration: {
           journalTable: {
-            recordExpiration: true,
+            recordExpirationEnabled: true,
             recordExpirationAfter: cdk.Duration.days(days.valueAsNumber),
           },
         },

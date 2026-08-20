@@ -169,14 +169,14 @@ export class BucketMetadataConfiguration extends Mixin {
     if (!this.supports(construct)) return;
 
     const journalTable = this.metadataConfiguration.journalTable ?? {};
-    const expirationEnabled = journalTable.recordExpiration ?? false;
+    const expirationEnabled = journalTable.recordExpirationEnabled ?? false;
     const days = journalTable.recordExpirationAfter?.toDays();
 
     if (expirationEnabled && days === undefined) {
-      throw new ValidationError(lit`JournalTableRecordExpirationAfterRequired`, "'recordExpirationAfter' must be specified when 'recordExpiration' is enabled", construct);
+      throw new ValidationError(lit`JournalTableRecordExpirationAfterRequired`, "'recordExpirationAfter' must be specified when 'recordExpirationEnabled' is true", construct);
     }
     if (!expirationEnabled && days !== undefined) {
-      throw new ValidationError(lit`JournalTableRecordExpirationDisabled`, "'recordExpirationAfter' can only be specified when 'recordExpiration' is enabled", construct);
+      throw new ValidationError(lit`JournalTableRecordExpirationDisabled`, "'recordExpirationAfter' can only be specified when 'recordExpirationEnabled' is true", construct);
     }
     // S3 retains journal table records for a minimum of 7 days.
     if (days !== undefined && !Token.isUnresolved(days) && (days < 7 || days > 2147483647)) {
@@ -186,13 +186,11 @@ export class BucketMetadataConfiguration extends Mixin {
     // S3 rejects an enabled annotation table without a role at deploy time, even though
     // CloudFormation marks the property as optional.
     const annotationTable = this.metadataConfiguration.annotationTable;
-    const annotationEnabled = annotationTable?.enabled ?? true;
-    if (annotationTable && annotationEnabled && annotationTable.role === undefined) {
+    if (annotationTable?.enabled && annotationTable.role === undefined) {
       throw new ValidationError(lit`AnnotationTableRoleRequired`, "'role' must be specified when the annotation table is enabled", construct);
     }
 
     const inventoryTable = this.metadataConfiguration.inventoryTable;
-    const destination = this.metadataConfiguration.destination;
 
     construct.metadataConfiguration = {
       journalTableConfiguration: {
@@ -201,26 +199,15 @@ export class BucketMetadataConfiguration extends Mixin {
           days,
         },
         encryptionConfiguration: journalTable.encryption?._render(),
-        tableArn: journalTable.tableArn,
-        tableName: journalTable.tableName,
       },
       inventoryTableConfiguration: inventoryTable ? {
-        configurationState: (inventoryTable.enabled ?? true) ? 'ENABLED' : 'DISABLED',
+        configurationState: inventoryTable.enabled ? 'ENABLED' : 'DISABLED',
         encryptionConfiguration: inventoryTable.encryption?._render(),
-        tableArn: inventoryTable.tableArn,
-        tableName: inventoryTable.tableName,
       } : undefined,
       annotationTableConfiguration: annotationTable ? {
-        configurationState: annotationEnabled ? 'ENABLED' : 'DISABLED',
+        configurationState: annotationTable.enabled ? 'ENABLED' : 'DISABLED',
         encryptionConfiguration: annotationTable.encryption?._render(),
         role: annotationTable.role?.roleRef.roleArn,
-        tableArn: annotationTable.tableArn,
-        tableName: annotationTable.tableName,
-      } : undefined,
-      destination: destination ? {
-        tableBucketType: destination.tableBucketType,
-        tableBucketArn: destination.tableBucket?.tableBucketRef.tableBucketArn,
-        tableNamespace: destination.tableNamespace,
       } : undefined,
     };
   }

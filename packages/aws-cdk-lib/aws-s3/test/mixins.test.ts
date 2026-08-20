@@ -190,7 +190,7 @@ describe('S3 Mixins', () => {
       });
       const mixin = new BucketMetadataConfiguration({
         journalTable: {
-          recordExpiration: true,
+          recordExpirationEnabled: true,
           recordExpirationAfter: cdk.Duration.days(7),
         },
         inventoryTable: { enabled: true },

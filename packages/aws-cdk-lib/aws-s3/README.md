@@ -782,7 +782,7 @@ const annotationRole = new iam.Role(this, 'AnnotationRole', {
 new s3.Bucket(this, 'DataBucket', {
   metadataConfiguration: {
     inventoryTable: { enabled: true },
-    annotationTable: { role: annotationRole },
+    annotationTable: { enabled: true, role: annotationRole },
   },
 });
 ```
@@ -793,7 +793,7 @@ By default, journal table records are kept forever. To expire them, enable recor
 new s3.Bucket(this, 'DataBucket', {
   metadataConfiguration: {
     journalTable: {
-      recordExpiration: true,
+      recordExpirationEnabled: true,
       recordExpirationAfter: Duration.days(10),
     },
   },
@@ -811,6 +811,7 @@ new s3.Bucket(this, 'DataBucket', {
       encryption: s3.MetadataTableEncryption.kms(key),
     },
     inventoryTable: {
+      enabled: true,
       encryption: s3.MetadataTableEncryption.s3Managed(),
     },
   },
