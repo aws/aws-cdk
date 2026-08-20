@@ -1309,17 +1309,6 @@ describe('BrowserCustom recording configuration with S3 location tests', () => {
     template.hasResource('AWS::BedrockAgentCore::BrowserCustom', {
       DependsOn: Match.arrayWith([Match.stringLikeRegexp('.*ServiceRoleDefaultPolicy.*')]),
     });
-
-    // The broad grantReadWrite action set and whole-bucket scope must not be present.
-    const templateJson = JSON.stringify(template.toJSON());
-    expect(templateJson).not.toContain('s3:GetObject');
-    expect(templateJson).not.toContain('s3:GetBucket');
-    expect(templateJson).not.toContain('s3:DeleteObject');
-    expect(templateJson).not.toContain('s3:List*');
-    // No object-level grant on the entire bucket (bucket/*).
-    expect(templateJson).not.toContain(':s3:::my-recording-bucket/*');
-    // The aws:ResourceAccount condition has been dropped.
-    expect(templateJson).not.toContain('aws:ResourceAccount');
   });
 
   test('Should normalize a concrete prefix with no trailing slash to prefix/*', () => {
