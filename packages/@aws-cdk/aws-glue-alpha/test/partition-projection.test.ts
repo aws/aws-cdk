@@ -81,22 +81,30 @@ describe('PartitionProjectionConfiguration Validation', () => {
       }).not.toThrow();
     });
 
+    // Sub-day precision (a field finer than a day) requires interval + unit.
+    // `a` (AM/PM) counts as sub-day. Verified against Athena: these fail with
+    // INVALID_TABLE_PROPERTY "... sub-day precision" when no interval is given.
     test.each([
-      'yyyy-MM-dd-HH',
-      "yyyyMMdd'T'HHmmss",
-      'yyyy',
-    ])('requires interval and intervalUnit when format=%p is not single-day/single-month precision', (format) => {
+      'yyyy-MM-dd-HH', // hourly
+      "yyyyMMdd'T'HHmmss", // to the second
+      'yyyy-MM-dd a', // AM/PM — two partitions per day
+    ])('requires interval and intervalUnit when format=%p has sub-day precision', (format) => {
       expect(() => {
         glue.PartitionProjectionConfiguration.date({ min: '2020-01-01', max: '2023-12-31', format });
-      }).toThrow(/both 'interval' and 'intervalUnit' are required/);
+      }).toThrow(/has sub-day precision, so both 'interval' and 'intervalUnit' are required/);
     });
 
+    // Day precision or coarser (month, year, quarter) does not require them —
+    // Athena defaults the step. Verified against Athena: a `yyyy` projection
+    // queries successfully with no interval.
     test.each([
-      'yyyy-MM-dd',
-      'yyyy-MM',
-    ])('allows omitting interval/intervalUnit when format=%p is single-day or single-month precision', (format) => {
+      'yyyy-MM-dd', // day
+      'yyyy-MM', // month
+      'yyyy', // year (coarser than a month, yet still optional)
+      'yyyy-QQ', // quarter
+    ])('allows omitting interval/intervalUnit when format=%p is day precision or coarser', (format) => {
       expect(() => {
-        glue.PartitionProjectionConfiguration.date({ min: '2020-01', max: '2023-12', format });
+        glue.PartitionProjectionConfiguration.date({ min: '2020', max: '2023', format });
       }).not.toThrow();
     });
 

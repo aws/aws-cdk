@@ -143,22 +143,22 @@ export interface DatePartitionProjectionConfigurationProps {
   /**
    * Interval between partition values.
    *
-   * When the provided dates are at single-day or single-month precision,
-   * the interval is optional and defaults to 1 day or 1 month, respectively.
-   * Otherwise, interval is required.
+   * Required (together with `intervalUnit`) when `format` carries sub-day
+   * precision — i.e. a field finer than a day, such as hours or AM/PM. At day
+   * or coarser precision Athena defaults the step, so it is optional.
    *
-   * @default - 1 for single-day or single-month precision, otherwise required
+   * @default - Athena's default step for the format's precision; required when `format` is sub-day precision
    */
   readonly interval?: number;
 
   /**
    * Unit for the interval.
    *
-   * When the provided dates are at single-day or single-month precision,
-   * the intervalUnit is optional and defaults to 1 day or 1 month, respectively.
-   * Otherwise, the intervalUnit is required.
+   * Required (together with `interval`) when `format` carries sub-day
+   * precision — i.e. a field finer than a day, such as hours or AM/PM. At day
+   * or coarser precision Athena defaults the step, so it is optional.
    *
-   * @default - DAYS for single-day precision, MONTHS for single-month precision, otherwise required
+   * @default - Athena's default unit for the format's precision; required when `format` is sub-day precision
    */
   readonly intervalUnit?: DateIntervalUnit;
 }
@@ -225,15 +225,21 @@ interface PartitionProjectionConfigurationProps {
 }
 
 /**
- * Whether a DATE projection `format` has a precision other than single-day or
- * single-month — in which case Athena requires both `interval` and
- * `intervalUnit` (they are optional, defaulting to 1 day/month, only at
- * single-day or single-month precision).
+ * Whether a DATE projection `format` carries sub-day precision, in which case
+ * Athena requires both `interval` and `intervalUnit`.
  *
- * The precision is the finest field the format expresses: a time-of-day field
- * (hour/minute/second/fraction) is finer than a day; a day field is single-day;
- * a month field (with no day/time) is single-month; anything coarser (year,
- * week, quarter only) is coarser than a month.
+ * Athena only requires the two when the format contains a field finer than a
+ * day (hour/minute/second/fraction, or AM/PM). At day, month, or coarser
+ * precision it defaults the step and accepts the format without them — so, e.g.
+ * a plain `yyyy` needs no interval.
+ *
+ * Verified empirically against Athena (us-west-2, 2026-08): a `yyyy` projection
+ * queries successfully with no interval, whereas `yyyy-MM-dd-HH` and
+ * `yyyy-MM-dd a` fail with `INVALID_TABLE_PROPERTY: Must provide both an
+ * interval and interval unit for projected temporal partition columns with
+ * sub-day precision`. Note this check fires at synth to surface, at construction
+ * time, a misconfiguration Athena would otherwise only reject at query time
+ * (the Glue `CreateTable`/CloudFormation deploy itself succeeds).
  *
  * @see https://docs.aws.amazon.com/athena/latest/ug/partition-projection-supported-types.html#partition-projection-date-type
  */
@@ -255,22 +261,14 @@ function dateFormatRequiresInterval(format: string): boolean {
     }
   }
 
-  const hasAny = (candidates: string) => [...candidates].some(c => letters.has(c));
-
-  // Hour/minute/second/fraction/nano fields — finer than a single day.
-  if (hasAny('HhKkmsSAnN')) {
-    return true;
-  }
-  // Day-of-month / day-of-year — single-day precision (interval optional).
-  if (hasAny('dD')) {
-    return false;
-  }
-  // Month — single-month precision (interval optional).
-  if (hasAny('ML')) {
-    return false;
-  }
-  // Coarser than a month (year/week/quarter only) — interval required.
-  return true;
+  // Sub-day fields — anything finer than a day. `a` (AM/PM-of-day) splits the
+  // day in two, so it counts alongside hour/minute/second/fraction/nano:
+  //   a am/pm  h clock-hour(1-12)  K hour-of-am-pm(0-11)  k clock-hour(1-24)
+  //   H hour-of-day(0-23)  m minute  s second  S fraction  A milli-of-day
+  //   n nano-of-second  N nano-of-day
+  // Every coarser field (day, month, year, week, quarter, day-of-week) is
+  // accepted by Athena without an interval, so only the sub-day set requires it.
+  return [...'ahKkHmsSAnN'].some(c => letters.has(c));
 }
 
 /**
@@ -407,15 +405,14 @@ export class PartitionProjectionConfiguration {
       );
     }
 
-    // At a precision other than single-day or single-month, Athena requires
-    // both `interval` and `intervalUnit` (at single-day/single-month precision
-    // they are optional and default to 1 day/month). Only enforce when the
-    // format is a resolved literal we can inspect.
+    // For sub-day precision (a field finer than a day), Athena requires both
+    // `interval` and `intervalUnit`; at day or coarser precision it defaults
+    // them. Only enforce when the format is a resolved literal we can inspect.
     if (!Token.isUnresolved(props.format) && dateFormatRequiresInterval(props.format)) {
       if (props.interval === undefined || props.intervalUnit === undefined) {
         throw new UnscopedValidationError(
           lit`DateIntervalRequired`,
-          `DATE partition projection with format '${props.format}' has a precision other than single-day or single-month, so both 'interval' and 'intervalUnit' are required`,
+          `DATE partition projection with format '${props.format}' has sub-day precision, so both 'interval' and 'intervalUnit' are required`,
         );
       }
     }
