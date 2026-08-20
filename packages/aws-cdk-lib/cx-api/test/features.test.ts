@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as feats from '../lib/features';
-import { MAGIC_V2NEXT, compareVersions } from '../lib/private/flag-modeling';
+import { FlagType, MAGIC_V2NEXT, compareVersions } from '../lib/private/flag-modeling';
 
 test('futureFlagDefault returns false if non existent flag was given', () => {
   expect(feats.futureFlagDefault('non-existent-flag')).toEqual(false);
@@ -52,8 +52,23 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.EKS_DEFAULT_AL2023]: false,
     [feats.ANNOTATIONS_IN_VALIDATION_REPORT]: false,
     [feats.VALIDATE_AGAINST_DEFAULT_RULES]: false,
+    [feats.AUTO_SCOPE_CODEBUILD_ROLE_FOR_FULL_CLONE]: false,
 
   });
+});
+
+test('AUTO_SCOPE_CODEBUILD_ROLE_FOR_FULL_CLONE flag is registered with expected metadata', () => {
+  const flag = feats.FLAGS[feats.AUTO_SCOPE_CODEBUILD_ROLE_FOR_FULL_CLONE];
+  expect(flag).toBeDefined();
+  expect(flag.type).toEqual(FlagType.ApiDefault);
+  expect(flag.recommendedValue).toEqual(true);
+  expect(flag.unconfiguredBehavesLike?.v2).toEqual(false);
+  expect(flag.introducedIn.v2).toEqual('V2NEXT');
+  // ApiDefault flags must document how to retain the old behavior
+  // (narrow the discriminated union so compatibilityWithOldBehaviorMd is in scope)
+  if (flag.type === FlagType.ApiDefault) {
+    expect(flag.compatibilityWithOldBehaviorMd).toBeDefined();
+  }
 });
 
 test('expired feature flags may not be changed anymore', () => {
