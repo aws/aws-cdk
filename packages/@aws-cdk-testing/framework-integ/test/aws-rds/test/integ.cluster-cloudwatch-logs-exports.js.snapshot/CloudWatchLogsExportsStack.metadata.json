@@ -1,4 +1,13 @@
 {
+  "/CloudWatchLogsExportsStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-cloudwatch-logs-exports.js:10:15)",
+        "...node internals..."
+      ]
+    }
+  ],
   "/CloudWatchLogsExportsStack/VPC": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -60,18 +69,57 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/VPC/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VPCB9E5F0B4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:770:29)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-cloudwatch-logs-exports.js:11:13)",
+        "...node internals..."
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/VPC/PublicSubnet1": [
@@ -206,12 +254,30 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "VPCIGWB7E252D3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:825:29)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-cloudwatch-logs-exports.js:11:13)",
+        "...node internals..."
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/VPC/VPCGW": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VPCVPCGW99B986DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:828:29)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-cloudwatch-logs-exports.js:11:13)",
+        "...node internals..."
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/DatabaseClusterMysql/Subnets": [
@@ -259,6 +325,15 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "DatabaseClusterMysqlB6D501E4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DatabaseCluster (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:932:29)",
+        "new DatabaseCluster (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-cloudwatch-logs-exports.js:13:15)",
+        "...node internals..."
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/DatabaseClusterMysql/writer": [
@@ -312,6 +387,15 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "DatabaseClusterPostgresql0775776E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DatabaseCluster (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:932:29)",
+        "new DatabaseCluster (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-cloudwatch-logs-exports.js:22:20)",
+        "...node internals..."
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/DatabaseClusterPostgresql/writer": [
@@ -324,150 +408,504 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputRefDatabaseClusterMysqlB6D501E494AA5328"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "IntegTestBaseStack.exportValue (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/Exports/Output{\"Ref\":\"DatabaseClusterPostgresql0775776E\"}": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputRefDatabaseClusterPostgresql0775776E85EBE50E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "IntegTestBaseStack.exportValue (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/VPC/PublicSubnet1/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VPCPublicSubnet1SubnetB4246D30"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/VPC/PublicSubnet1/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VPCPublicSubnet1RouteTableFEE4B781"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/VPC/PublicSubnet1/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/VPC/PublicSubnet1/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1304:27)",
+        "WrappedClass.<anonymous> (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835: (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:3)",
+        "Array.forEach (:)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-cloudwatch-logs-exports.js:11:13)",
+        "...node internals..."
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/VPC/PublicSubnet1/EIP": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VPCPublicSubnet1EIP6AD938E8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1556:50)",
+        "WrappedClass.<anonymous> (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-cloudwatch-logs-exports.js:11:13)",
+        "...node internals..."
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/VPC/PublicSubnet1/NATGateway": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VPCPublicSubnet1NATGatewayE0556630"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1554:25)",
+        "WrappedClass.<anonymous> (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-cloudwatch-logs-exports.js:11:13)",
+        "...node internals..."
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/VPC/PublicSubnet2/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VPCPublicSubnet2Subnet74179F39"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/VPC/PublicSubnet2/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/VPC/PublicSubnet2/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/VPC/PublicSubnet2/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1304:27)",
+        "WrappedClass.<anonymous> (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835: (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:3)",
+        "Array.forEach (:)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-cloudwatch-logs-exports.js:11:13)",
+        "...node internals..."
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/VPC/PublicSubnet2/EIP": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VPCPublicSubnet2EIP4947BC00"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1556:50)",
+        "WrappedClass.<anonymous> (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-cloudwatch-logs-exports.js:11:13)",
+        "...node internals..."
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/VPC/PublicSubnet2/NATGateway": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VPCPublicSubnet2NATGateway3C070193"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1554:25)",
+        "WrappedClass.<anonymous> (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-cloudwatch-logs-exports.js:11:13)",
+        "...node internals..."
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/VPC/PrivateSubnet1/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/VPC/PrivateSubnet1/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/VPC/PrivateSubnet1/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/VPC/PrivateSubnet1/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1393:27)",
+        "WrappedClass.<anonymous> (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
+        "NatGatewayProvider.configureNat (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
+        "WrappedClass.createNatGateways (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-cloudwatch-logs-exports.js:11:13)",
+        "...node internals..."
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/VPC/PrivateSubnet2/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/VPC/PrivateSubnet2/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VPCPrivateSubnet2RouteTable0A19E10E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/VPC/PrivateSubnet2/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/VPC/PrivateSubnet2/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1393:27)",
+        "WrappedClass.<anonymous> (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
+        "NatGatewayProvider.configureNat (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
+        "WrappedClass.createNatGateways (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-cloudwatch-logs-exports.js:11:13)",
+        "...node internals..."
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/DatabaseClusterMysql/Subnets/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "DatabaseClusterMysqlSubnets10EC6FA4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SubnetGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/subnet-group.js:117:33)",
+        "new SubnetGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseClusterNew (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:334:52)",
+        "new DatabaseCluster (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:917:13)",
+        "new DatabaseCluster (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-cloudwatch-logs-exports.js:13:15)",
+        "...node internals..."
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/DatabaseClusterMysql/SecurityGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "DatabaseClusterMysqlSecurityGroup107C8D9A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecurityGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
+        "new SecurityGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new SecurityGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseClusterNew (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:341:13)",
+        "new DatabaseCluster (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:917:13)",
+        "new DatabaseCluster (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-cloudwatch-logs-exports.js:13:15)",
+        "...node internals..."
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/DatabaseClusterMysql/Secret/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "DatabaseClusterMysqlSecretCF6F81B6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Secret (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:501:30)",
+        "new Secret (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Secret (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseSecret (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/database-secret.js:94:13)",
+        "new DatabaseSecret (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "renderCredentials (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/private/util.js:78:64)",
+        "new DatabaseCluster (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:929:64)",
+        "new DatabaseCluster (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-cloudwatch-logs-exports.js:13:15)",
+        "...node internals..."
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/DatabaseClusterMysql/Secret/Attachment": [
@@ -483,24 +921,77 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "DatabaseClusterMysqlwriter9C0937B3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new AuroraClusterInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.js:303:30)",
+        "new AuroraClusterInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "ClusterInstance.bind (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.js:207:16)",
+        "WrappedClass._createInstances (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:485:37)",
+        "new DatabaseCluster (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:962:62)",
+        "new DatabaseCluster (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-cloudwatch-logs-exports.js:13:15)",
+        "...node internals..."
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/DatabaseClusterPostgresql/Subnets/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "DatabaseClusterPostgresqlSubnetsE0173DAA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SubnetGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/subnet-group.js:117:33)",
+        "new SubnetGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseClusterNew (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:334:52)",
+        "new DatabaseCluster (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:917:13)",
+        "new DatabaseCluster (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-cloudwatch-logs-exports.js:22:20)",
+        "...node internals..."
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/DatabaseClusterPostgresql/SecurityGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "DatabaseClusterPostgresqlSecurityGroupEF4103D2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecurityGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
+        "new SecurityGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new SecurityGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseClusterNew (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:341:13)",
+        "new DatabaseCluster (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:917:13)",
+        "new DatabaseCluster (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-cloudwatch-logs-exports.js:22:20)",
+        "...node internals..."
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/DatabaseClusterPostgresql/Secret/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "DatabaseClusterPostgresqlSecretD2D9C157"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Secret (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:501:30)",
+        "new Secret (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Secret (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseSecret (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/database-secret.js:94:13)",
+        "new DatabaseSecret (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "renderCredentials (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/private/util.js:78:64)",
+        "new DatabaseCluster (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:929:64)",
+        "new DatabaseCluster (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-cloudwatch-logs-exports.js:22:20)",
+        "...node internals..."
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/DatabaseClusterPostgresql/Secret/Attachment": [
@@ -516,18 +1007,55 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "DatabaseClusterPostgresqlwriterAD8947A3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new AuroraClusterInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.js:303:30)",
+        "new AuroraClusterInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "ClusterInstance.bind (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.js:207:16)",
+        "WrappedClass._createInstances (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:485:37)",
+        "new DatabaseCluster (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:962:62)",
+        "new DatabaseCluster (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-cloudwatch-logs-exports.js:22:20)",
+        "...node internals..."
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/DatabaseClusterMysql/Secret/Attachment/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "DatabaseClusterMysqlSecretAttachment776D4EC7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecretTargetAttachment (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:691:32)",
+        "new SecretTargetAttachment (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.attach (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:309:16)",
+        "new DatabaseCluster (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:942:38)",
+        "new DatabaseCluster (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-cloudwatch-logs-exports.js:13:15)",
+        "...node internals..."
+      ]
     }
   ],
   "/CloudWatchLogsExportsStack/DatabaseClusterPostgresql/Secret/Attachment/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "DatabaseClusterPostgresqlSecretAttachment09D32DC9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecretTargetAttachment (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:691:32)",
+        "new SecretTargetAttachment (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.attach (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:309:16)",
+        "new DatabaseCluster (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:942:38)",
+        "new DatabaseCluster (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-cloudwatch-logs-exports.js:22:20)",
+        "...node internals..."
+      ]
     }
   ]
 }
