@@ -4,7 +4,7 @@ import { Architecture, Code } from 'aws-cdk-lib/aws-lambda';
 import type { BundlingFileAccess, BundlingOptions as CdkBundlingOptions, DockerVolume } from 'aws-cdk-lib/core';
 import { AssetStaging, DockerImage, PERF_BUNDLING_SRC_SYM } from 'aws-cdk-lib/core';
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
-import { lit, profileSpan } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { lit, posixShellEscape, profileSpan } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { Packaging, DependenciesFile } from './packaging';
 import type { BundlingOptions, ICommandHooks } from './types';
 
@@ -193,8 +193,4 @@ function validateOutputPathSuffix(outputPathSuffix: string): void {
 
 function pathEscapesRoot(relativePath: string): boolean {
   return path.posix.isAbsolute(relativePath) || relativePath === '..' || relativePath.startsWith('../');
-}
-
-function posixShellEscape(arg: string): string {
-  return "'" + arg.replace(/'/g, "'\\''") + "'";
 }
