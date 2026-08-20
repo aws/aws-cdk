@@ -450,13 +450,15 @@ certain types of data stores.
 
 * **Networking - the CDK determines the best fit subnet for Glue connection
 configuration**
-    The prior version of the glue-alpha-module requires the developer to
-    specify the subnet of the Connection when it’s defined. Now, you can still
-    specify the specific subnet you want to use, but are no longer required
-    to. You are only required to provide a VPC and either a public or private
-    subnet selection. Without a specific subnet provided, the L2 leverages the
-    existing [EC2 Subnet Selection](https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_ec2/SubnetSelection.html)
-    library to make the best choice selection for the subnet.
+    You can specify the exact subnet of the Connection when it's defined, but
+    you are not required to. Instead, you can provide a `vpc` and, optionally, a
+    `vpcSubnets` selection, and the L2 leverages the existing
+    [EC2 Subnet Selection](https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_ec2/SubnetSelection.html)
+    library to make the best choice selection for the subnet. A Glue connection
+    targets a single subnet, so the first subnet of the selection is used.
+    `subnet` and `vpc` are mutually exclusive.
+
+Pin the connection to a specific subnet:
 
 ```ts
 declare const securityGroup: ec2.SecurityGroup;
@@ -467,6 +469,20 @@ new glue.Connection(this, 'MyConnection', {
   securityGroups: [securityGroup],
   // The VPC subnet which contains the data source
   subnet,
+});
+```
+
+Or let the CDK select a subnet from a VPC:
+
+```ts
+declare const securityGroup: ec2.SecurityGroup;
+declare const vpc: ec2.Vpc;
+new glue.Connection(this, 'MyConnection', {
+  type: glue.ConnectionType.NETWORK,
+  securityGroups: [securityGroup],
+  vpc,
+  // Optional - defaults to private subnets
+  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
 });
 ```
 
@@ -503,31 +519,28 @@ See [Adding a Connection to Your Data Store](https://docs.aws.amazon.com/glue/la
 
 A `SecurityConfiguration` is a set of security properties that can be used by AWS Glue to encrypt data at rest.
 
+Each encryption config is built with a factory that pairs the encryption mode
+with its key, so illegal combinations (such as an S3-managed encryption carrying
+a KMS key) cannot be expressed:
+
 ```ts
 new glue.SecurityConfiguration(this, 'MySecurityConfiguration', {
-  cloudWatchEncryption: {
-    mode: glue.CloudWatchEncryptionMode.KMS,
-  },
-  jobBookmarksEncryption: {
-    mode: glue.JobBookmarksEncryptionMode.CLIENT_SIDE_KMS,
-  },
-  s3Encryption: {
-    mode: glue.S3EncryptionMode.KMS,
-  },
+  cloudWatchEncryption: glue.CloudWatchEncryption.kms(),
+  jobBookmarksEncryption: glue.JobBookmarksEncryption.clientSideKms(),
+  s3Encryption: glue.S3Encryption.kms(),
 });
 ```
 
-By default, a shared KMS key is created for use with the encryption configurations that require one. You can also supply your own key for each encryption config, for example, for CloudWatch encryption:
+By default, a shared KMS key is created for use with the encryption configurations that require one. You can also supply your own key to any factory, for example, for CloudWatch encryption:
 
 ```ts
 declare const key: kms.Key;
 new glue.SecurityConfiguration(this, 'MySecurityConfiguration', {
-  cloudWatchEncryption: {
-    mode: glue.CloudWatchEncryptionMode.KMS,
-    kmsKey: key,
-  },
+  cloudWatchEncryption: glue.CloudWatchEncryption.kms(key),
 });
 ```
+
+Use `glue.S3Encryption.s3Managed()` for S3-managed (SSE-S3) encryption, which takes no key.
 
 See [documentation](https://docs.aws.amazon.com/glue/latest/dg/encryption-security-configuration.html) for more info for Glue encrypting data written by Crawlers, Jobs, and Development Endpoints.
 
@@ -1076,6 +1089,25 @@ new glue.ExternalTable(this, 'MyTable', {
   dataFormat: glue.DataFormat.JSON,
 });
 ```
+
+## Data Quality Ruleset
+
+A `DataQualityRuleset` defines a set of data quality rules — authored in Glue's
+Data Quality Definition Language (DQDL) — that are evaluated against a table in
+the Data Catalog.
+
+```ts
+new glue.DataQualityRuleset(this, 'MyRuleset', {
+  rulesetName: 'my_ruleset',
+  dqdl: glue.Dqdl.fromString('Rules = [ RowCount > 100, IsComplete "order_id" ]'),
+  targetTable: new glue.DataQualityTargetTable('my_database', 'my_table'),
+});
+```
+
+Build the DQDL document with `Dqdl.fromString(...)`. Glue parses and validates the
+DQDL when the ruleset is deployed; see the
+[DQDL reference](https://docs.aws.amazon.com/glue/latest/dg/dqdl.html) for the
+full rule syntax.
 
 ## [Encryption](https://docs.aws.amazon.com/athena/latest/ug/encryption.html)
 
