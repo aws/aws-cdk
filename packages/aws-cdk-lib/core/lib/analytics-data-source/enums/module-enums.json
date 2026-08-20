@@ -538,12 +538,6 @@
     "S3EncryptionMode": [
       "SSE-S3",
       "SSE-KMS"
-    ],
-    "CloudWatchEncryptionMode": [
-      "SSE-KMS"
-    ],
-    "JobBookmarksEncryptionMode": [
-      "CSE-KMS"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/storage-parameter.ts": {
@@ -2350,6 +2344,15 @@
       "USER_PREFERENCE",
       "EPISODIC",
       "CUSTOM"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.ts": {
+    "StreamDeliveryContentType": [
+      "MEMORY_RECORDS"
+    ],
+    "StreamDeliveryContentLevel": [
+      "METADATA_ONLY",
+      "FULL_CONTENT"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/tools/browser.ts": {
@@ -5321,6 +5324,16 @@
       0,
       1,
       2
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/http-endpoint.ts": {
+    "HttpCompression": [
+      "GZIP",
+      "NONE"
+    ],
+    "HttpBackupMode": [
+      "FailedDataOnly",
+      "AllData"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/processors/record-deaggregation-processor.ts": {
