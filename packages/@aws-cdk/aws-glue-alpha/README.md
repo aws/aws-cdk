@@ -75,7 +75,9 @@ similar constructors. ETL jobs default to the G2 worker type, but you can
 override this default with other supported worker type values (G1, G2, G4
 and G8). ETL jobs defaults to Glue version 4.0, which you can override to 3.0.
 The following ETL features are enabled by default:
-`—enable-metrics, —enable-spark-ui, —enable-continuous-cloudwatch-log.`
+`—enable-metrics, —enable-continuous-cloudwatch-log.`
+The Spark UI (`—enable-spark-ui`) is off by default; enable it by setting the
+`sparkUI` prop.
 You can find more details about version, worker type and other features in
 [Glue's public documentation](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-jobs-job.html).
 
@@ -115,7 +117,10 @@ new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
   script,
   glueVersion: glue.GlueVersion.V5_1,
   continuousLogging: { enabled: false },
-  workerType: glue.WorkerType.G_2X,
+  workerConfiguration: {
+    workerType: glue.WorkerType.G_2X,
+    numberOfWorkers: 2,
+  },
   maxConcurrentRuns: 100,
   timeout: cdk.Duration.hours(2),
   connections: [glue.Connection.fromConnectionName(stack, 'Connection', 'connectionName')],
@@ -125,7 +130,6 @@ new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
     SecondTagName: 'SecondTagValue',
     XTagName: 'XTagValue',
   },
-  numberOfWorkers: 2,
   maxRetries: 2,
 });
 ```
@@ -135,11 +139,12 @@ new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
 Streaming jobs are similar to ETL jobs, except that they perform ETL on data
 streams using the Apache Spark Structured Streaming framework. Some Spark
 job features are not available to Streaming ETL jobs. They support Scala
-and pySpark languages. PySpark streaming jobs default Python 3.9,
-which you can override with any non-deprecated version of Python. It
+and pySpark languages. PySpark streaming jobs run on Python 3. It
 defaults to the G2 worker type and Glue 4.0, both of which you can override.
 The following best practice features are enabled by default:
-`—enable-metrics, —enable-spark-ui, —enable-continuous-cloudwatch-log`.
+`—enable-metrics, —enable-continuous-cloudwatch-log`.
+The Spark UI (`—enable-spark-ui`) is off by default; enable it by setting the
+`sparkUI` prop.
 
 Reference the pyspark-streaming-jobs.test.ts and scalaspark-streaming-jobs.test.ts 
 unit tests for examples of required-only and optional job parameters when creating
@@ -171,7 +176,10 @@ new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
   script,
   glueVersion: glue.GlueVersion.V5_1,
   continuousLogging: { enabled: false },
-  workerType: glue.WorkerType.G_2X,
+  workerConfiguration: {
+    workerType: glue.WorkerType.G_2X,
+    numberOfWorkers: 2,
+  },
   maxConcurrentRuns: 100,
   timeout: cdk.Duration.hours(2),
   connections: [glue.Connection.fromConnectionName(stack, 'Connection', 'connectionName')],
@@ -181,7 +189,6 @@ new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
     SecondTagName: 'SecondTagValue',
     XTagName: 'XTagValue',
   },
-  numberOfWorkers: 2,
   maxRetries: 2,
 });
 ```
@@ -190,9 +197,11 @@ new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
 
 The flexible execution class is appropriate for non-urgent jobs such as
 pre-production jobs, testing, and one-time data loads. Flexible jobs default
-to Glue version 3.0 and worker type `G_2X`. The following best practice
+to Glue version 5.0 and worker type `G_2X`. The following best practice
 features are enabled by default:
-`—enable-metrics, —enable-spark-ui, —enable-continuous-cloudwatch-log`
+`—enable-metrics, —enable-continuous-cloudwatch-log`
+The Spark UI (`—enable-spark-ui`) is off by default; enable it by setting the
+`sparkUI` prop.
 
 Reference the pyspark-flex-etl-jobs.test.ts and scalaspark-flex-etl-jobs.test.ts 
 unit tests for examples of required-only and optional job parameters when creating
@@ -217,14 +226,17 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 declare const stack: cdk.Stack;
 declare const role: iam.IRole;
 declare const script: glue.Code;
-new glue.PySparkEtlJob(stack, 'pySparkEtlJob', {
-  jobName: 'pySparkEtlJob',
+new glue.PySparkFlexEtlJob(stack, 'pySparkFlexEtlJob', {
+  jobName: 'pySparkFlexEtlJob',
   description: 'This is a description',
   role,
   script,
   glueVersion: glue.GlueVersion.V5_1,
   continuousLogging: { enabled: false },
-  workerType: glue.WorkerType.G_2X,
+  workerConfiguration: {
+    workerType: glue.WorkerType.G_2X,
+    numberOfWorkers: 2,
+  },
   maxConcurrentRuns: 100,
   timeout: cdk.Duration.hours(2),
   connections: [glue.Connection.fromConnectionName(stack, 'Connection', 'connectionName')],
@@ -234,7 +246,6 @@ new glue.PySparkEtlJob(stack, 'pySparkEtlJob', {
     SecondTagName: 'SecondTagValue',
     XTagName: 'XTagValue',
   },
-  numberOfWorkers: 2,
   maxRetries: 2,
 });
 ```
@@ -274,14 +285,13 @@ declare const extraPythonFile: glue.Code;
 new glue.PythonShellJob(stack, 'PythonShellJob', {
   jobName: 'PythonShellJobCustomName',
   description: 'This is a description',
-  pythonVersion: glue.PythonVersion.TWO,
+  pythonVersion: glue.PythonVersion.THREE_NINE,
   maxCapacity: glue.MaxCapacity.DPU_1,
   role,
   script,
   extraPythonFiles: [extraPythonFile],
-  glueVersion: glue.GlueVersion.V2_0,
+  glueVersion: glue.GlueVersion.V3_0,
   continuousLogging: { enabled: false },
-  workerType: glue.WorkerType.G_2X,
   maxConcurrentRuns: 100,
   timeout: cdk.Duration.hours(2),
   connections: [glue.Connection.fromConnectionName(stack, 'Connection', 'connectionName')],
@@ -291,7 +301,6 @@ new glue.PythonShellJob(stack, 'PythonShellJob', {
     SecondTagName: 'SecondTagValue',
     XTagName: 'XTagValue',
   },
-  numberOfWorkers: 2,
   maxRetries: 2,
 });
 ```
@@ -355,10 +364,12 @@ new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
 
 ### Uploading scripts from the CDK app repository to S3
 
-Similar to other L2 constructs, the Glue L2 automates uploading / updating
-scripts to S3 via an optional fromAsset parameter pointing to a script
-in the local file structure. You provide the existing S3 bucket and
-path to which you'd like the script to be uploaded.
+Similar to other L2 constructs, the Glue L2 automates uploading local
+scripts to S3. Use `glue.Code.fromAsset(path)` to point at a script in your
+local file structure; it is uploaded to the CDK-managed asset bucket. To
+reference a script that already exists in S3, use
+`glue.Code.fromBucket(bucket, key)`, which performs no upload. A `script` is
+required for every job.
 
 Reference the unit tests for examples of repo and S3 code target examples.
 
@@ -370,14 +381,33 @@ jobs, and triggers. Standalone triggers are an anti-pattern, so you must
 create triggers from within a workflow using the L2 construct.
 
 Within a workflow object, there are functions to create different
-types of triggers with actions and predicates. You then add those triggers
-to jobs.
+types of triggers with actions and predicates. You add triggers to the
+workflow, and each trigger references the jobs or crawlers it runs as its
+actions.
 
-StartOnCreation defaults to true for all trigger types, but you can
-override it if you prefer for your trigger not to start on creation.
+`startOnCreation` applies to scheduled triggers (and, via
+`ConditionalTriggerOptions`, conditional triggers) only. It defaults to `false`,
+but you can override it if you prefer for your trigger to start on creation.
 
 Reference the workflow-triggers.test.ts unit tests for examples of creating
 workflows and triggers.
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const stack: cdk.Stack;
+declare const role: iam.IRole;
+declare const script: glue.Code;
+
+// Create a job to run from the workflow
+const job = new glue.PySparkEtlJob(stack, 'Job', { role, script });
+
+// Create a workflow and add a trigger that runs the job
+const workflow = new glue.Workflow(stack, 'Workflow');
+workflow.addOnDemandTrigger('OnDemandTrigger', {
+  actions: [{ job }],
+});
+```
 
 #### **1. On-Demand Triggers**
 
@@ -389,7 +419,7 @@ actions list using the job or crawler objects using conditional types.
 #### **2. Scheduled Triggers**
 
 You can create scheduled triggers using cron expressions. This construct
-provides daily, weekly, and monthly convenience functions,
+provides daily and weekly convenience functions,
 as well as a custom function that allows you to create your own
 custom timing using the [existing event Schedule class](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_events.Schedule.html)
 without having to build your own cron expressions. The L2 extracts
@@ -458,6 +488,13 @@ new glue.Connection(this, "RdsConnection", {
 });
 ```
 
+Connection `properties` are emitted verbatim into the CloudFormation template, so
+any credential placed there in plaintext is stored in plaintext in the template,
+`cdk.out`, and source control. Reference a Secrets Manager secret through
+`SECRET_ID` (as above) instead. If a property key looks like a credential (for
+example `PASSWORD`, `SECRET`, or `TOKEN`) and holds a plaintext literal, the
+construct emits a synthesis-time warning.
+
 If you need to use a connection type that doesn't exist as a static member on `ConnectionType`, you can instantiate a `ConnectionType` object, e.g: `new glue.ConnectionType('NEW_TYPE')`.
 
 See [Adding a Connection to Your Data Store](https://docs.aws.amazon.com/glue/latest/dg/populate-add-connection.html) and [Connection Structure](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-catalog-connections.html#aws-glue-api-catalog-connections-Connection) documentation for more information on the supported data stores and their configurations.
@@ -466,33 +503,182 @@ See [Adding a Connection to Your Data Store](https://docs.aws.amazon.com/glue/la
 
 A `SecurityConfiguration` is a set of security properties that can be used by AWS Glue to encrypt data at rest.
 
+Each encryption config is built with a factory that pairs the encryption mode
+with its key, so illegal combinations (such as an S3-managed encryption carrying
+a KMS key) cannot be expressed:
+
 ```ts
 new glue.SecurityConfiguration(this, 'MySecurityConfiguration', {
-  cloudWatchEncryption: {
-    mode: glue.CloudWatchEncryptionMode.KMS,
-  },
-  jobBookmarksEncryption: {
-    mode: glue.JobBookmarksEncryptionMode.CLIENT_SIDE_KMS,
-  },
-  s3Encryption: {
-    mode: glue.S3EncryptionMode.KMS,
-  },
+  cloudWatchEncryption: glue.CloudWatchEncryption.kms(),
+  jobBookmarksEncryption: glue.JobBookmarksEncryption.clientSideKms(),
+  s3Encryption: glue.S3Encryption.kms(),
 });
 ```
 
-By default, a shared KMS key is created for use with the encryption configurations that require one. You can also supply your own key for each encryption config, for example, for CloudWatch encryption:
+By default, a shared KMS key is created for use with the encryption configurations that require one. You can also supply your own key to any factory, for example, for CloudWatch encryption:
 
 ```ts
 declare const key: kms.Key;
 new glue.SecurityConfiguration(this, 'MySecurityConfiguration', {
-  cloudWatchEncryption: {
-    mode: glue.CloudWatchEncryptionMode.KMS,
+  cloudWatchEncryption: glue.CloudWatchEncryption.kms(key),
+});
+```
+
+Use `glue.S3Encryption.s3Managed()` for S3-managed (SSE-S3) encryption, which takes no key.
+
+See [documentation](https://docs.aws.amazon.com/glue/latest/dg/encryption-security-configuration.html) for more info for Glue encrypting data written by Crawlers, Jobs, and Development Endpoints.
+
+## Catalog
+
+The Glue Data Catalog is a persistent metadata store for your data assets. Every
+account has an implicit, account-wide catalog that always exists, and you can also
+create additional catalogs as `AWS::Glue::Catalog` resources (for example, to
+federate to another metastore).
+
+A catalog's encryption is fixed when the catalog is created: a catalog either
+carries encryption settings or it does not. This keeps its configuration easy to
+reason about — there are no mutation methods that change encryption after the fact.
+
+### The account-wide catalog
+
+Use `Catalog.forAccount(scope)` to obtain the implicit account catalog. It is not
+a CloudFormation resource — it always exists. Repeated calls within the same stack
+return the same instance:
+
+```ts
+const catalog = glue.Catalog.forAccount(this);
+```
+
+To configure Data Catalog encryption for the account, use
+`Catalog.encryptAccount(scope, options)`:
+
+```ts
+declare const key: kms.Key;
+glue.Catalog.encryptAccount(this, {
+  encryptionAtRest: glue.DataCatalogEncryptionAtRest.kms(key),
+});
+```
+
+Because encryption is fixed at construction, `encryptAccount` must be called
+*before* the account catalog is first used in the stack — before any
+`Catalog.forAccount(this)` call, and before any `Database` that uses the account
+catalog. Calling it after the account catalog has been materialized throws.
+
+The account catalog's encryption is an account- and region-wide setting, managed
+through the singleton `PutDataCatalogEncryptionSettings` API. Configure it in
+exactly one stack. Configuring it from multiple stacks in the same account and
+region makes those stacks overwrite one another at deploy time, and the result is
+order-dependent. Unlike duplicate settings within a single stack (which
+CloudFormation rejects), this cross-stack conflict is not caught at synthesis
+time, because each stack synthesizes to its own template.
+
+### Creating a catalog
+
+To create a new catalog resource, use the `Catalog` constructor. Encryption is
+configured through the `encryptionAtRest` and `connectionPasswordEncryption` props:
+
+```ts
+new glue.Catalog(this, 'MyCatalog', {
+  catalogName: 'my-catalog',
+  description: 'my catalog description',
+});
+```
+
+### Encryption at rest
+
+Configure Data Catalog encryption at rest through the `encryptionAtRest` option
+(on `Catalog.encryptAccount` or the `Catalog` constructor).
+It accepts a `DataCatalogEncryptionAtRest` describing the mode:
+
+```ts
+declare const key: kms.Key;
+
+// SSE-KMS with a customer-managed key
+glue.Catalog.encryptAccount(this, {
+  encryptionAtRest: glue.DataCatalogEncryptionAtRest.kms(key),
+});
+
+// SSE-KMS with an AWS-managed key (omit the key)
+new glue.Catalog(this, 'ManagedKeyCatalog', {
+  catalogName: 'managed-key-catalog',
+  encryptionAtRest: glue.DataCatalogEncryptionAtRest.kms(),
+});
+
+// Disable encryption at rest
+new glue.Catalog(this, 'PlaintextCatalog', {
+  catalogName: 'plaintext-catalog',
+  encryptionAtRest: glue.DataCatalogEncryptionAtRest.disabled(),
+});
+```
+
+When you use `SSE-KMS-WITH-SERVICE-ROLE`, AWS Glue accesses the KMS key through a
+service role you provide. If you pass a customer-managed key, the role is
+automatically granted the permissions it needs to encrypt and decrypt catalog data:
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const key: kms.Key;
+declare const role: iam.IRole;
+glue.Catalog.encryptAccount(this, {
+  encryptionAtRest: glue.DataCatalogEncryptionAtRest.kmsWithServiceRole(role, key),
+});
+```
+
+The customer-managed key, when configured, is exposed on the catalog as
+`encryptionKey` (and the connection-password key as `connectionPasswordKey`), so
+you can reference it to grant additional access. It is undefined when encryption is
+disabled or an AWS-managed key is used.
+
+### Connection password encryption
+
+Independently from encryption at rest, the Data Catalog can encrypt the passwords
+stored in connection properties. Configure it through the
+`connectionPasswordEncryption` option:
+
+```ts
+declare const key: kms.Key;
+glue.Catalog.encryptAccount(this, {
+  connectionPasswordEncryption: {
     kmsKey: key,
+    // Whether GetConnection/GetConnections return the password encrypted (default: true)
+    returnConnectionPasswordEncrypted: true,
   },
 });
 ```
 
-See [documentation](https://docs.aws.amazon.com/glue/latest/dg/encryption-security-configuration.html) for more info for Glue encrypting data written by Crawlers, Jobs, and Development Endpoints.
+The two encryption blocks are independent: enabling one does not require the other,
+and each may use a different KMS key. The customer-managed key for connection
+passwords is exposed as `connectionPasswordKey`.
+
+### Importing a catalog
+
+You can import an existing catalog by ARN or by id. An imported catalog is a pure
+identity handle — it emits no resources and does not manage the catalog's
+encryption:
+
+```ts
+const byId = glue.Catalog.fromCatalogId(this, 'ById', 'my-catalog-id');
+const byArn = glue.Catalog.fromCatalogArn(this, 'ByArn', 'arn:aws:glue:us-east-1:123456789012:catalog/my-catalog-id');
+```
+
+To manage the Data Catalog encryption of a catalog you did not create in this
+stack, add a `CfnDataCatalogEncryptionSettings` resource targeting its id
+directly. Do this from exactly one stack: like the account catalog, a catalog has
+a single encryption configuration, so two settings resources targeting the same id
+race to overwrite one another at deploy time. Within a single stack this is caught
+by CloudFormation template validation (E3019, duplicate primary identifiers);
+across stacks it is not, since each stack synthesizes to its own template.
+
+```ts
+import { CfnDataCatalogEncryptionSettings } from 'aws-cdk-lib/aws-glue';
+
+new CfnDataCatalogEncryptionSettings(this, 'Encryption', {
+  catalogId: 'my-catalog-id',
+  dataCatalogEncryptionSettings: {
+    encryptionAtRest: { catalogEncryptionMode: 'SSE-KMS' },
+  },
+});
+```
 
 ## Database
 
@@ -502,6 +688,19 @@ A `Database` is a logical grouping of `Tables` in the Glue Catalog.
 new glue.Database(this, 'MyDatabase', {
   databaseName: 'my_database',
   description: 'my_database_description',
+});
+```
+
+Because a database is a container for tables and their metadata, it is retained
+by default when removed from the stack, to avoid accidental data loss. Set
+`removalPolicy` to `RemovalPolicy.DESTROY` to have it deleted instead:
+
+```ts
+import { RemovalPolicy } from 'aws-cdk-lib';
+
+new glue.Database(this, 'MyDatabase', {
+  databaseName: 'my_database',
+  removalPolicy: RemovalPolicy.DESTROY,
 });
 ```
 
@@ -642,7 +841,7 @@ new glue.S3Table(this, 'MyTable', {
 Alternatively, you can call the `addPartitionIndex()` function on a table:
 
 ```ts
-declare const myTable: glue.Table;
+declare const myTable: glue.S3Table;
 myTable.addPartitionIndex({
   indexName: 'my-index',
   keyNames: ['year'],
@@ -875,7 +1074,28 @@ new glue.ExternalTable(this, 'MyTable', {
 });
 ```
 
+## Data Quality Ruleset
+
+A `DataQualityRuleset` defines a set of data quality rules — authored in Glue's
+Data Quality Definition Language (DQDL) — that are evaluated against a table in
+the Data Catalog.
+
+```ts
+new glue.DataQualityRuleset(this, 'MyRuleset', {
+  rulesetName: 'my_ruleset',
+  dqdl: glue.Dqdl.fromString('Rules = [ RowCount > 100, IsComplete "order_id" ]'),
+  targetTable: new glue.DataQualityTargetTable('my_database', 'my_table'),
+});
+```
+
+Build the DQDL document with `Dqdl.fromString(...)`. Glue parses and validates the
+DQDL when the ruleset is deployed; see the
+[DQDL reference](https://docs.aws.amazon.com/glue/latest/dg/dqdl.html) for the
+full rule syntax.
+
 ## [Encryption](https://docs.aws.amazon.com/athena/latest/ug/encryption.html)
+
+When the table creates its own S3 bucket (i.e. you do not pass an explicit `bucket`), that bucket enforces SSL: a bucket policy denies any request made over plain HTTP. If you provide your own bucket, enabling `enforceSSL` on it is your responsibility.
 
 You can enable encryption on a Table's data:
 
@@ -973,6 +1193,28 @@ new glue.S3Table(this, 'MyTable', {
 
 *Note: you cannot provide a `Bucket` when creating the `S3Table` if you wish to use server-side encryption (`KMS`, `KMS_MANAGED` or `S3_MANAGED`)*.
 
+### Marking table data as encrypted
+
+Both `S3Table` and `ExternalTable` set the `has_encrypted_data` table parameter, which
+Athena reads when querying client-side (`CSE-KMS`) encrypted datasets. It defaults to `true`.
+Set `hasEncryptedData` to `false` when the underlying data is not encrypted:
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.S3Table(this, 'MyTable', {
+  hasEncryptedData: false,
+  database: myDatabase,
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+});
+```
+
+Do not set `has_encrypted_data` through the free-form `parameters` map as well - a value
+there that conflicts with `hasEncryptedData` is rejected at synthesis time.
+
 ## Types
 
 A table's schema is a collection of columns, each of which have a `name` and a `type`. Types are recursive structures, consisting of primitive and complex types:
@@ -992,7 +1234,7 @@ new glue.S3Table(this, 'MyTable', {
     type: glue.Schema.map(
       glue.Schema.STRING,
       glue.Schema.TIMESTAMP),
-    comment: 'map<string,string>',
+    comment: 'map<string,timestamp>',
   }, {
     name: 'struct_column',
     type: glue.Schema.struct([{
