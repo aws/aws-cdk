@@ -1,0 +1,21 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "2f754de3502597e5880aa3002845558c269888eb5b2935d2c77eb393556676c7": {
+      "displayName": "codebuild-service-role-override-cross-account-project Template",
+      "source": {
+        "path": "codebuild-service-role-override-cross-account-project.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "222222222222-test-region-e18e0729": {
+          "bucketName": "cdk-hnb659fds-assets-222222222222-test-region",
+          "objectKey": "2f754de3502597e5880aa3002845558c269888eb5b2935d2c77eb393556676c7.json",
+          "region": "test-region",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::222222222222:role/cdk-hnb659fds-file-publishing-role-222222222222-test-region"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

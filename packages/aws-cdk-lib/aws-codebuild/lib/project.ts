@@ -18,7 +18,7 @@ import { NoArtifacts } from './no-artifacts';
 import { NoSource } from './no-source';
 import { runScriptLinuxBuildSpec, S3_BUCKET_ENV, S3_KEY_ENV } from './private/run-script-linux-build-spec';
 import type { LoggingOptions } from './project-logs';
-import { renderReportGroupArn } from './report-group-utils';
+import { createLoggingPolicyStatement, createReportGroupPolicyStatement } from './project-role-permissions';
 import type { ISource } from './source';
 import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-types';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -1194,21 +1194,12 @@ export class Project extends ProjectBase {
 
     this.resource = resource;
 
-    this.addToRolePolicy(this.createLoggingPermission());
+    this.addToRolePolicy(createLoggingPolicyStatement(this, this.projectName));
     // add permissions to create and use test report groups
     // with names starting with the project's name,
     // unless the customer explicitly opts out of it
     if (props.grantReportGroupPermissions !== false) {
-      this.addToRolePolicy(new iam.PolicyStatement({
-        actions: [
-          'codebuild:CreateReportGroup',
-          'codebuild:CreateReport',
-          'codebuild:UpdateReport',
-          'codebuild:BatchPutTestCases',
-          'codebuild:BatchPutCodeCoverages',
-        ],
-        resources: [renderReportGroupArn(this, `${this.projectName}-*`)],
-      }));
+      this.addToRolePolicy(createReportGroupPolicyStatement(this, this.projectName));
     }
 
     // https://docs.aws.amazon.com/codebuild/latest/userguide/session-manager.html
@@ -1354,22 +1345,6 @@ export class Project extends ProjectBase {
   private set encryptionKey(encryptionKey: kms.IKey) {
     this._encryptionKey.set(encryptionKey);
     encryptionKey.grantEncryptDecrypt(this);
-  }
-
-  private createLoggingPermission() {
-    const logGroupArn = Stack.of(this).formatArn({
-      service: 'logs',
-      resource: 'log-group',
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-      resourceName: `/aws/codebuild/${this.projectName}`,
-    });
-
-    const logGroupStarArn = `${logGroupArn}:*`;
-
-    return new iam.PolicyStatement({
-      resources: [logGroupArn, logGroupStarArn],
-      actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
-    });
   }
 
   private renderEnvironment(
