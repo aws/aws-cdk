@@ -1,7 +1,7 @@
 import { Stack, Tags } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { CfnGlobalCluster } from 'aws-cdk-lib/aws-neptune';
+import { CfnDBCluster, CfnGlobalCluster } from 'aws-cdk-lib/aws-neptune';
 import { DatabaseCluster, EngineVersion, GlobalCluster, InstanceType } from '../lib';
 
 let stack: Stack;
@@ -61,6 +61,20 @@ test('creates a global cluster from a source cluster', () => {
     StorageEncrypted: Match.absent(),
     SourceDBClusterIdentifier: {
       'Fn::Join': ['', Match.arrayWith([':rds:'])],
+    },
+  });
+});
+
+test('creates a global cluster from a source cluster defined as an L1 CfnDBCluster', () => {
+  const sourceCluster = new CfnDBCluster(stack, 'SourceDatabase', {
+    dbClusterIdentifier: 'my-source-cluster',
+  });
+
+  new GlobalCluster(stack, 'Global', { sourceCluster });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Neptune::GlobalCluster', {
+    SourceDBClusterIdentifier: {
+      'Fn::Join': ['', Match.arrayWith([':rds:', { Ref: 'SourceDatabase' }])],
     },
   });
 });

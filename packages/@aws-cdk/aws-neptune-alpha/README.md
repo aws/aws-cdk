@@ -152,6 +152,19 @@ new neptune.GlobalCluster(this, 'GlobalCluster', {
 });
 ```
 
+`sourceCluster` also accepts the low-level `CfnDBCluster`:
+
+```ts
+import { CfnDBCluster } from 'aws-cdk-lib/aws-neptune';
+
+declare const cfnDbCluster: CfnDBCluster;
+
+new neptune.GlobalCluster(this, 'GlobalCluster', {
+  globalClusterIdentifier: 'my-global-cluster',
+  sourceCluster: cfnDbCluster,
+});
+```
+
 To add a cluster as a member of an existing global database, pass the global database cluster
 when defining the `DatabaseCluster`:
 

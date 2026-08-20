@@ -3,7 +3,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type * as kms from 'aws-cdk-lib/aws-kms';
 import * as logs from 'aws-cdk-lib/aws-logs';
-import type { IGlobalClusterRef } from 'aws-cdk-lib/aws-neptune';
+import type { DBClusterReference, IDBClusterRef, IGlobalClusterRef } from 'aws-cdk-lib/aws-neptune';
 import { CfnDBCluster, CfnDBInstance } from 'aws-cdk-lib/aws-neptune';
 import type { Duration, IResource } from 'aws-cdk-lib/core';
 import { Aws, Lazy, RemovalPolicy, Resource, Token, ValidationError } from 'aws-cdk-lib/core';
@@ -421,7 +421,7 @@ export interface DatabaseClusterProps {
 /**
  * Create a clustered database with a given number of instances.
  */
-export interface IDatabaseCluster extends IResource, ec2.IConnectable {
+export interface IDatabaseCluster extends IResource, ec2.IConnectable, IDBClusterRef {
   /**
    * Identifier of the cluster
    */
@@ -553,6 +553,10 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
   public abstract readonly connections: ec2.Connections;
 
   protected abstract enableIamAuthentication?: boolean;
+
+  public get dbClusterRef(): DBClusterReference {
+    return { dbClusterIdentifier: this.clusterIdentifier };
+  }
 
   /**
    * [disable-awslint:no-grants]

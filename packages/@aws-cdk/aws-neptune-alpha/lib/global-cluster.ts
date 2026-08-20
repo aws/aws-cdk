@@ -1,4 +1,4 @@
-import type { GlobalClusterReference, IGlobalClusterRef } from 'aws-cdk-lib/aws-neptune';
+import type { GlobalClusterReference, IDBClusterRef, IGlobalClusterRef } from 'aws-cdk-lib/aws-neptune';
 import { CfnGlobalCluster } from 'aws-cdk-lib/aws-neptune';
 import type { IResource } from 'aws-cdk-lib/core';
 import { ArnFormat, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
@@ -6,7 +6,7 @@ import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
-import type { EngineVersion, IDatabaseCluster } from './cluster';
+import type { EngineVersion } from './cluster';
 
 /**
  * A Neptune Global Database cluster.
@@ -52,7 +52,7 @@ export interface GlobalClusterProps {
    *
    * @default - an empty global database cluster is created without a primary cluster.
    */
-  readonly sourceCluster?: IDatabaseCluster;
+  readonly sourceCluster?: IDBClusterRef;
 
   /**
    * Indicates whether the global database cluster has deletion protection enabled.
@@ -143,11 +143,11 @@ export class GlobalCluster extends GlobalClusterBase {
    * Build the ARN of a Neptune database cluster, which is what
    * `SourceDBClusterIdentifier` expects.
    */
-  private clusterArn(cluster: IDatabaseCluster): string {
+  private clusterArn(cluster: IDBClusterRef): string {
     return Stack.of(this).formatArn({
       service: 'rds',
       resource: 'cluster',
-      resourceName: cluster.clusterIdentifier,
+      resourceName: cluster.dbClusterRef.dbClusterIdentifier,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
   }
