@@ -1,4 +1,4 @@
-import { UnscopedValidationError } from 'aws-cdk-lib';
+import { Token, UnscopedValidationError } from 'aws-cdk-lib';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
@@ -111,11 +111,13 @@ export class Schema {
    * @see https://docs.aws.amazon.com/athena/latest/ug/data-types.html
    */
   public static decimal(precision: number, scale?: number): Type {
-    if (precision < 1 || precision > 38 || precision % 1 !== 0) {
-      throw new UnscopedValidationError(lit`DecimalPrecisionOutOfRange`, `decimal precision must be a positive integer between 1 and 38, got ${precision}`);
-    }
-    if (scale !== undefined && (scale < 0 || scale > 38 || scale % 1 !== 0)) {
-      throw new UnscopedValidationError(lit`DecimalScaleOutOfRange`, `decimal scale must be an integer between 0 and 38, got ${scale}`);
+    if (Token.isResolved(precision) && Token.isResolved(scale)) {
+      if (precision < 1 || precision > 38 || precision % 1 !== 0) {
+        throw new UnscopedValidationError(lit`DecimalPrecisionOutOfRange`, `decimal precision must be a positive integer between 1 and 38, got ${precision}`);
+      }
+      if (scale !== undefined && (scale < 0 || scale > 38 || scale % 1 !== 0)) {
+        throw new UnscopedValidationError(lit`DecimalScaleOutOfRange`, `decimal scale must be an integer between 0 and 38, got ${scale}`);
+      }
     }
     return Type._of(scale !== undefined ? `decimal(${precision},${scale})` : `decimal(${precision})`, true);
   }
@@ -190,8 +192,7 @@ export class Schema {
    * `inputString` is emitted verbatim and is not validated.
    *
    * @param inputString the Glue input string for the type (for example `interval_day_to_second`).
-   * @param isPrimitive whether the type is a primitive (non-nested) data type.
-   * @default isPrimitive - true
+   * @param isPrimitive whether the type is a primitive (non-nested) data type. Defaults to true.
    */
   public static custom(inputString: string, isPrimitive?: boolean): Type {
     return Type._of(inputString, isPrimitive ?? true);

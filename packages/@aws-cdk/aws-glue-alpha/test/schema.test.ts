@@ -1,3 +1,4 @@
+import { Lazy } from 'aws-cdk-lib';
 import { Schema } from '../lib';
 
 test('boolean type', () => {
@@ -262,3 +263,17 @@ test('decimal allows scale greater than precision (only bounded by 38)', () => {
 test('decimal rejects scale greater than 38', () => {
   expect(() => Schema.decimal(38, 39)).toThrow(/decimal scale must be an integer between 0 and 38/);
 });
+
+test('decimal rejects non-integer precision or scale', () => {
+  expect(() => Schema.decimal(5.5)).toThrow(/.../);
+  expect(() => Schema.decimal(10, 2.5)).toThrow(/.../);
+});
+
+test('unresolved values are not validated', () => {
+  expect(() => Schema.decimal(Lazy.number({ produce: () => 5.5 }))).not.toThrow();
+  expect(() => Schema.decimal(
+    Lazy.number({ produce: () => 10 }),
+    Lazy.number({ produce: () => 2.5 })),
+  ).not.toThrow();
+});
+
