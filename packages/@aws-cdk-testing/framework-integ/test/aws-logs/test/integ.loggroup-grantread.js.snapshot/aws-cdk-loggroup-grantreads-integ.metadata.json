@@ -1,0 +1,132 @@
+{
+  "/aws-cdk-loggroup-grantreads-integ": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "[eval]:8: ([eval]:8:1)",
+        "...node internals...",
+        "[eval]-wrapper:6: ([eval]-wrapper:6:2)",
+        "...node internals...",
+        "node:internal/main/eval_string:51 (:)"
+      ]
+    }
+  ],
+  "/aws-cdk-loggroup-grantreads-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "[eval]:17 (:)"
+      ]
+    }
+  ],
+  "/aws-cdk-loggroup-grantreads-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "[eval]:17 (:)"
+      ]
+    }
+  ],
+  "/aws-cdk-loggroup-grantreads-integ/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogGroupF5B46931"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:540:29)",
+        "new LogGroup (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "[eval]:10: ([eval]:10:1)",
+        "...node internals...",
+        "[eval]-wrapper:6: ([eval]-wrapper:6:2)",
+        "...node internals...",
+        "node:internal/main/eval_string:51 (:)"
+      ]
+    }
+  ],
+  "/aws-cdk-loggroup-grantreads-integ/LogGroup2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogGroup2477F707C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:540:29)",
+        "new LogGroup (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "[eval]:13: ([eval]:13:1)",
+        "...node internals...",
+        "[eval]-wrapper:6: ([eval]-wrapper:6:2)",
+        "...node internals...",
+        "node:internal/main/eval_string:51 (:)"
+      ]
+    }
+  ],
+  "/aws-cdk-loggroup-grantreads-integ/LogGroup/Policy/ResourcePolicy": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogGroupPolicyResourcePolicy6FA18555"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ResourcePolicy (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/policy.js:108:24)",
+        "new ResourcePolicy (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToResourcePolicy (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:209:27)",
+        "Grant.addToPrincipalOrResource (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:68:49)",
+        "LogGroupGrants.actions (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/logs-grants.generated.js:51:59)",
+        "LogGroupGrants.read (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/logs-grants.generated.js:93:21)",
+        "WrappedClass.grantRead (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:174:28)",
+        "[eval]:11: ([eval]:11:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-loggroup-grantreads-integ/LogGroup2/Policy/ResourcePolicy": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogGroup2PolicyResourcePolicy7142029A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ResourcePolicy (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/policy.js:108:24)",
+        "new ResourcePolicy (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToResourcePolicy (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:209:27)",
+        "Grant.addToPrincipalOrResource (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:68:49)",
+        "LogGroupGrants.actions (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/logs-grants.generated.js:51:59)",
+        "LogGroupGrants.read (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/logs-grants.generated.js:93:21)",
+        "WrappedClass.grantRead (/Users/macintoshhd/workspace/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:174:28)",
+        "[eval]:14: ([eval]:14:1)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
