@@ -1,0 +1,14 @@
+{
+  "/aws-apigateway-stepfunctions-startexecution-without-default-method-responses/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-apigateway-stepfunctions-startexecution-without-default-method-responses/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}
