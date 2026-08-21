@@ -1154,6 +1154,21 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
       });
     }).toThrow(/Managed ComputeEnvironment 'MyCE' specifies 'spotFleetRole' without specifying 'spot'/);
   });
+
+  test('uses uppercase MANAGED type when feature flag is enabled', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.BATCH_COMPUTE_ENVIRONMENT_TYPE_UPPERCASE]: true } });
+    const flagStack = new Stack(app, 'FlagStack');
+    const flagVpc = new ec2.Vpc(flagStack, 'vpc');
+
+    // WHEN
+    new ManagedEc2EcsComputeEnvironment(flagStack, 'MyCE', { vpc: flagVpc });
+
+    // THEN
+    Template.fromStack(flagStack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      Type: 'MANAGED',
+    });
+  });
 });
 
 describe('ManagedEc2EksComputeEnvironment', () => {
@@ -1470,5 +1485,20 @@ describe('FargateComputeEnvironment', () => {
 
     // THEN
     expect(ce.computeEnvironmentArn).toEqual('arn:aws:batch:us-east-1:123456789012:compute-environment/ce-name');
+  });
+
+  test('uses uppercase MANAGED type when feature flag is enabled', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.BATCH_COMPUTE_ENVIRONMENT_TYPE_UPPERCASE]: true } });
+    const flagStack = new Stack(app, 'FlagStack');
+    const flagVpc = new ec2.Vpc(flagStack, 'vpc');
+
+    // WHEN
+    new FargateComputeEnvironment(flagStack, 'MyCE', { vpc: flagVpc });
+
+    // THEN
+    Template.fromStack(flagStack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      Type: 'MANAGED',
+    });
   });
 });
