@@ -694,6 +694,7 @@ export class CodeInterpreterCustom extends CodeInterpreterCustomBase {
 
     // L1 instantiation
     this.__resource = new agent_core.CfnCodeInterpreterCustom(this, 'Resource', cfnProps);
+    this.node.defaultChild = this.__resource;
 
     // Get attributes directly from the CloudFormation resource
     this.codeInterpreterId = this.__resource.attrCodeInterpreterId;
