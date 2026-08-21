@@ -1522,6 +1522,7 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
         globalTableSettingsReplicationMode: props.globalTableSettingsReplicationMode,
       }],
       globalTableSourceArn: props.replicaSourceTable.tableArn,
+      sseSpecification: props.encryption?._renderSseSpecification(),
     });
     resource.applyRemovalPolicy(props.removalPolicy);
 
