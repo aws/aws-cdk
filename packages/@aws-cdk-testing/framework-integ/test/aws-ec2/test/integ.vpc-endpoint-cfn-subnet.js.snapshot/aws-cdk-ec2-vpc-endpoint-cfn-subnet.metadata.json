@@ -1,0 +1,126 @@
+{
+  "/aws-cdk-ec2-vpc-endpoint-cfn-subnet/VPC": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-ec2-vpc-endpoint-cfn-subnet/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/aws-cdk-ec2-vpc-endpoint-cfn-subnet/PrivateSubnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrivateSubnet"
+    }
+  ],
+  "/aws-cdk-ec2-vpc-endpoint-cfn-subnet/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-ec2-vpc-endpoint-cfn-subnet/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-ec2-vpc-endpoint-cfn-subnet/VPC/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCB9E5F0B4"
+    }
+  ],
+  "/aws-cdk-ec2-vpc-endpoint-cfn-subnet/VPC/RestrictDefaultSecurityGroupCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-ec2-vpc-endpoint-cfn-subnet/VPC/SSMEndpoint": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-ec2-vpc-endpoint-cfn-subnet/VPC/ExplicitCfnSubnetc8d8f8728643b096c2b46ebd014e4bac5320894590": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "No routeTableId was provided to the subnet at 'aws-cdk-ec2-vpc-endpoint-cfn-subnet/VPC/ExplicitCfnSubnetc8d8f8728643b096c2b46ebd014e4bac5320894590'. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171) [ack: @aws-cdk/aws-ec2:noSubnetRouteTableId]",
+      "trace": [
+        "Annotations.addMessage (C:\\Projects\\oss-contrib\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\annotations.js:234:29)",
+        "Annotations.addWarningV2 (C:\\Projects\\oss-contrib\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\annotations.js:103:18)",
+        "new ImportedSubnet (C:\\Projects\\oss-contrib\\aws-cdk\\packages\\aws-cdk-lib\\aws-ec2\\lib\\vpc.js:1783:45)",
+        "new ImportedSubnet (C:\\Projects\\oss-contrib\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\prop-injectable.js:32:13)",
+        "Subnet.fromSubnetAttributes (C:\\Projects\\oss-contrib\\aws-cdk\\packages\\aws-cdk-lib\\aws-ec2\\lib\\vpc.js:1185:20)",
+        "C:\\Projects\\oss-contrib\\aws-cdk\\packages\\aws-cdk-lib\\aws-ec2\\lib\\vpc.js:344:32",
+        "Array.map (<anonymous>)",
+        "WrappedClass.selectSubnetObjects (C:\\Projects\\oss-contrib\\aws-cdk\\packages\\aws-cdk-lib\\aws-ec2\\lib\\vpc.js:340:38)",
+        "WrappedClass.selectSubnets (C:\\Projects\\oss-contrib\\aws-cdk\\packages\\aws-cdk-lib\\aws-ec2\\lib\\vpc.js:239:30)",
+        "WrappedClass.endpointSubnets (C:\\Projects\\oss-contrib\\aws-cdk\\packages\\aws-cdk-lib\\aws-ec2\\lib\\vpc-endpoint.js:999:47)",
+        "new InterfaceVpcEndpoint (C:\\Projects\\oss-contrib\\aws-cdk\\packages\\aws-cdk-lib\\aws-ec2\\lib\\vpc-endpoint.js:969:36)",
+        "new InterfaceVpcEndpoint (C:\\Projects\\oss-contrib\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\no-box-stack-traces.js:43:17)",
+        "new InterfaceVpcEndpoint (C:\\Projects\\oss-contrib\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\prop-injectable.js:32:13)",
+        "WrappedClass.addInterfaceEndpoint (C:\\Projects\\oss-contrib\\aws-cdk\\packages\\aws-cdk-lib\\aws-ec2\\lib\\vpc.js:303:16)",
+        "new VpcEndpointCfnSubnetStack (C:\\Projects\\oss-contrib\\aws-cdk\\packages\\@aws-cdk-testing\\framework-integ\\test\\aws-ec2\\test\\integ.vpc-endpoint-cfn-subnet.js:52:13)",
+        "Object.<anonymous> (C:\\Projects\\oss-contrib\\aws-cdk\\packages\\@aws-cdk-testing\\framework-integ\\test\\aws-ec2\\test\\integ.vpc-endpoint-cfn-subnet.js:58:15)",
+        "Module._compile (node:internal/modules/cjs/loader:1761:14)",
+        "Object..js (node:internal/modules/cjs/loader:1893:10)",
+        "Module.load (node:internal/modules/cjs/loader:1481:32)",
+        "Module._load (node:internal/modules/cjs/loader:1300:12)",
+        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:245:24)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-vpc-endpoint-cfn-subnet/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+    }
+  ],
+  "/aws-cdk-ec2-vpc-endpoint-cfn-subnet/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+    }
+  ],
+  "/aws-cdk-ec2-vpc-endpoint-cfn-subnet/VPC/RestrictDefaultSecurityGroupCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCRestrictDefaultSecurityGroupCustomResource59474679"
+    }
+  ],
+  "/aws-cdk-ec2-vpc-endpoint-cfn-subnet/VPC/SSMEndpoint/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-ec2-vpc-endpoint-cfn-subnet/VPC/SSMEndpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCSSMEndpoint80026734"
+    }
+  ],
+  "/aws-cdk-ec2-vpc-endpoint-cfn-subnet/VPC/SSMEndpoint/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCSSMEndpointSecurityGroup242B411E"
+    }
+  ]
+}

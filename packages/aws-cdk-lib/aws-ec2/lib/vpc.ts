@@ -421,6 +421,12 @@ export interface SubnetSelection {
    *
    * Cannot be specified together with `subnetType` or `subnetGroupName`.
    *
+   * Expects L2 `ISubnet` objects. L1 `CfnSubnet` objects are automatically wrapped using
+   * `Subnet.fromSubnetAttributes()` so that subnet IDs resolve correctly in synthesized templates.
+   * If the `CfnSubnet` was created with an explicit `availabilityZone`, that value is preserved;
+   * otherwise AZ-dependent features (such as AZ-based subnet filters) are unavailable for the
+   * wrapped subnet.
+   *
    * @default - Use all subnets in a selected group (all private subnets by default)
    */
   readonly subnets?: ISubnet[];
@@ -655,7 +661,20 @@ abstract class VpcBase extends Resource implements IVpc {
     selection = this.reifySelectionDefaults(selection);
 
     if (selection.subnets !== undefined) {
-      return selection.subnets;
+      // L1 CfnSubnet objects don't implement ISubnet (.subnetId is absent) and are silently
+      // dropped when subnet IDs are mapped. Wrap them so references resolve correctly.
+      return selection.subnets.map((subnet) => {
+        if (CfnSubnet.isCfnSubnet(subnet)) {
+          const wrapperId = `ExplicitCfnSubnet${Node.of(subnet).addr}`;
+          return (this.node.tryFindChild(wrapperId) as ISubnet | undefined) ??
+            Subnet.fromSubnetAttributes(this, wrapperId, {
+              subnetId: subnet.ref,
+              availabilityZone: subnet.availabilityZone,
+              ipv4CidrBlock: subnet.cidrBlock,
+            });
+        }
+        return subnet;
+      });
     }
 
     let subnets;
