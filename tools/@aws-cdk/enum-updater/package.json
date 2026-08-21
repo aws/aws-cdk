@@ -26,8 +26,8 @@
     "typescript": "~5.9.3"
   },
   "dependencies": {
-    "axios": "^1.18.1",
-    "esbuild": "^0.28.1",
+    "axios": "^1.19.0",
+    "esbuild": "^0.28.2",
     "extract-zip": "^2.0.1",
     "tmp": "^0.2.7",
     "ts-morph": "~27.0.2"
