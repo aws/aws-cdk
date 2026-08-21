@@ -163,7 +163,10 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
     if (props.cognitoDomain?.domainPrefix &&
       !Token.isUnresolved(props.cognitoDomain?.domainPrefix) &&
       !/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(props.cognitoDomain.domainPrefix)) {
-      throw new ValidationError(lit`DomainPrefixCognitoDomainContain`, 'domainPrefix for cognitoDomain must start and end with a lowercase alphanumeric character, contain only lowercase alphanumeric characters and hyphens (not leading or trailing), and be 1-63 characters in length', this);
+      throw new ValidationError(
+        `domainPrefix for cognitoDomain must match the pattern: start and end with a lowercase alphanumeric, contain only lowercase alphanumeric and hyphens, and be 1-63 characters in length. See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpooldomain.html#cfn-cognito-userpooldomain-domain`,
+        this,
+      );
     }
 
     this.isCognitoDomain = !!props.cognitoDomain;
