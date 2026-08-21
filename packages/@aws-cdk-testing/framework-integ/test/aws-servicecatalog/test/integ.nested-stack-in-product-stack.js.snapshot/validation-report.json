@@ -17,7 +17,7 @@
           },
           "violatingConstructs": [
             {
-              "constructPath": "integ-servicecatalog-two-products",
+              "constructPath": "aws-cdk-nested-stack-in-product-stack",
               "constructFqn": "aws-cdk-lib.Stack",
               "libraryVersion": "0.0.0"
             }
@@ -32,7 +32,7 @@
           },
           "violatingConstructs": [
             {
-              "constructPath": "integ-product/DefaultTest/DeployAssert",
+              "constructPath": "aws-cdk-nested-stack-in-product-stack-integ/DefaultTest/DeployAssert",
               "constructFqn": "aws-cdk-lib.Stack",
               "libraryVersion": "0.0.0"
             }

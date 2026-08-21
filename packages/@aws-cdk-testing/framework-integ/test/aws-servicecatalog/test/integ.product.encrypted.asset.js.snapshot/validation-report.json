@@ -17,7 +17,7 @@
           },
           "violatingConstructs": [
             {
-              "constructPath": "integ-servicecatalog-two-products",
+              "constructPath": "integ-servicecatalog-product-encrypted-asset",
               "constructFqn": "aws-cdk-lib.Stack",
               "libraryVersion": "0.0.0"
             }
@@ -32,7 +32,7 @@
           },
           "violatingConstructs": [
             {
-              "constructPath": "integ-product/DefaultTest/DeployAssert",
+              "constructPath": "integ-product-encrypted-asset/DefaultTest/DeployAssert",
               "constructFqn": "aws-cdk-lib.Stack",
               "libraryVersion": "0.0.0"
             }
