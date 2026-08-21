@@ -4370,6 +4370,10 @@ test('TableV2MultiAccountReplica with custom encryption', () => {
   });
 
   Template.fromStack(replicaStack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    SSESpecification: {
+      SSEEnabled: true,
+      SSEType: 'KMS',
+    },
     Replicas: [
       Match.objectLike({
         SSESpecification: {
