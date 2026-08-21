@@ -78,6 +78,34 @@ const model = new sagemaker.Model(this, 'InferencePipelineModel', {
 });
 ```
 
+### Direct Invocation Model
+
+A direct invocation model allows you to host multiple containers on a single endpoint and invoke
+each container independently. Unlike an inference pipeline where containers are chained
+sequentially, direct invocation lets clients target specific containers by hostname. This is useful
+when you want to host multiple models on a single endpoint to reduce costs. See the [AWS
+documentation](https://docs.aws.amazon.com/sagemaker/latest/dg/multi-container-endpoints.html) to
+learn more about multi-container endpoints.
+
+When using direct invocation mode, each container must have a unique `containerHostname`:
+
+```ts
+import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
+
+declare const image1: sagemaker.ContainerImage;
+declare const modelData1: sagemaker.ModelData;
+declare const image2: sagemaker.ContainerImage;
+declare const modelData2: sagemaker.ModelData;
+
+const model = new sagemaker.Model(this, 'DirectInvocationModel', {
+  containers: [
+    { image: image1, modelData: modelData1, containerHostname: 'containerA' },
+    { image: image2, modelData: modelData2, containerHostname: 'containerB' },
+  ],
+  inferenceExecutionMode: sagemaker.InferenceExecutionMode.DIRECT,
+});
+```
+
 ### Model Properties
 
 #### Network Isolation
