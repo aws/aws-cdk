@@ -639,6 +639,39 @@ export class TaskDefinition extends TaskDefinitionBase {
     return this._inferenceAccelerators;
   }
 
+  private renderVolumes(): CfnTaskDefinition.VolumeProperty[] {
+    return this.volumes.map(renderVolume);
+
+    function renderVolume(spec: Volume): CfnTaskDefinition.VolumeProperty {
+      return {
+        host: spec.host,
+        name: spec.name,
+        configuredAtLaunch: spec.configuredAtLaunch,
+        dockerVolumeConfiguration: spec.dockerVolumeConfiguration && {
+          autoprovision: spec.dockerVolumeConfiguration.autoprovision,
+          driver: spec.dockerVolumeConfiguration.driver,
+          driverOpts: spec.dockerVolumeConfiguration.driverOpts,
+          labels: spec.dockerVolumeConfiguration.labels,
+          scope: spec.dockerVolumeConfiguration.scope,
+        },
+        efsVolumeConfiguration: spec.efsVolumeConfiguration && {
+          filesystemId: spec.efsVolumeConfiguration.fileSystemId,
+          authorizationConfig: spec.efsVolumeConfiguration.authorizationConfig,
+          rootDirectory: spec.efsVolumeConfiguration.rootDirectory,
+          transitEncryption: spec.efsVolumeConfiguration.transitEncryption,
+          transitEncryptionPort: spec.efsVolumeConfiguration.transitEncryptionPort,
+
+        },
+        s3FilesVolumeConfiguration: spec.s3FilesVolumeConfiguration && {
+          fileSystemArn: spec.s3FilesVolumeConfiguration.fileSystemArn,
+          accessPointArn: spec.s3FilesVolumeConfiguration.accessPointArn,
+          rootDirectory: spec.s3FilesVolumeConfiguration.rootDirectory,
+          transitEncryptionPort: spec.s3FilesVolumeConfiguration.transitEncryptionPort,
+        },
+      };
+    }
+  }
+
   private renderInferenceAccelerators(): CfnTaskDefinition.InferenceAcceleratorProperty[] {
     return this._inferenceAccelerators.map(renderInferenceAccelerator);
 
@@ -766,7 +799,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     }
 
     // Other volume configurations must not be specified.
-    if (volume.host || volume.dockerVolumeConfiguration || volume.efsVolumeConfiguration) {
+    if (volume.host || volume.dockerVolumeConfiguration || volume.efsVolumeConfiguration || volume.s3FilesVolumeConfiguration) {
       throw new ValidationError(lit`VolumeConfigurationsSpecifiedConfiguredAtLaunch`, `Volume Configurations must not be specified for '${volume.name}' when 'configuredAtLaunch' is set to true`, this);
     }
   }
@@ -1168,6 +1201,19 @@ export interface Volume {
    * @default No Elastic FileSystem is setup
    */
   readonly efsVolumeConfiguration?: EfsVolumeConfiguration;
+
+  /**
+   * This property is specified when you are using Amazon S3 Files.
+   *
+   * When specifying Amazon S3 Files volumes in tasks using the Fargate launch type,
+   * Fargate creates a supervisor container that is responsible for managing the Amazon S3 Files volume.
+   * The supervisor container uses a small amount of the task's memory.
+   * The supervisor container is visible when querying the task metadata version 4 endpoint,
+   * but is not visible in CloudWatch Container Insights.
+   *
+   * @default No S3 FileSystem is setup
+   */
+  readonly s3FilesVolumeConfiguration?: S3FilesVolumeConfiguration;
 }
 
 /**
@@ -1328,6 +1374,36 @@ export interface EfsVolumeConfiguration {
    * @default No configuration.
    */
   readonly authorizationConfig?: AuthorizationConfig;
+}
+
+/**
+ * The configuration for an S3 Files volume.
+ */
+export interface S3FilesVolumeConfiguration {
+  /**
+   * The Amazon S3 Files file system ARN to use.
+   */
+  readonly fileSystemArn: string;
+  /**
+   * The Amazon S3 Files access point ARN to use.
+   *
+   * @default No access point configuration.
+   */
+  readonly accessPointArn?: string;
+  /**
+   * The directory within the Amazon S3 Files file system to mount as the root directory inside the host.
+   * Specifying / will have the same effect as omitting this parameter.
+   *
+   * @default The root of the Amazon S3 Files volume
+   */
+  readonly rootDirectory?: string;
+  /**
+   * The port to use when sending encrypted data between
+   * the Amazon ECS host and the Amazon S3 Files server. EFS mount helper uses.
+   *
+   * @default Port selection strategy that the Amazon EFS mount helper uses.
+   */
+  readonly transitEncryptionPort?: number;
 }
 
 /**
