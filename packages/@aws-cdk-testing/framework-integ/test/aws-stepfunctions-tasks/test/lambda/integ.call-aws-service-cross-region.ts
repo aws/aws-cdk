@@ -43,6 +43,7 @@ class TestStack extends cdk.Stack {
       iamResources: ['*'],
       region: targetRegion,
       resultPath: sfn.JsonPath.DISCARD,
+      lambdaTimeout: cdk.Duration.seconds(60),
     });
 
     const pollTable = new tasks.CallAwsServiceCrossRegion(this, 'DescribeTable', {
