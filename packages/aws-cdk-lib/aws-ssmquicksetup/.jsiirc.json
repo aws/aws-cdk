@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_ssmquicksetup"
+    },
+    "ruby": {
+      "module": "AWSCDK::SSMQuickSetup"
     }
   }
 }

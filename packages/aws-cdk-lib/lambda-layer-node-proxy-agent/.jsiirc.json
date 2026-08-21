@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.lambda_layer_node_proxy_agent"
+    },
+    "ruby": {
+      "module": "AWSCDK::LambdaLayerNodeProxyAgent"
     }
   }
 }
