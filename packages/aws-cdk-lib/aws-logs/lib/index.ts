@@ -13,6 +13,11 @@ export * from './query-definition';
 export * from './data-protection-policy';
 export * from './field-index-policy';
 export * from './transformer';
+export * from './account-policy';
+export * from './account-policy-subscription-filter';
+export * from './account-policy-data-protection';
+export * from './account-policy-field-index';
+export * from './account-policy-transformer';
 
 // AWS::Logs CloudFormation Resources:
 export * from './logs.generated';

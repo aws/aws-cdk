@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "account-policy-data-protection/DefaultTest": {
+      "stacks": [
+        "aws-cdk-account-policy-data-protection-integ"
+      ],
+      "assertionStack": "account-policy-data-protection/DefaultTest/DeployAssert",
+      "assertionStackName": "accountpolicydataprotectionDefaultTestDeployAssertD1F83875"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
