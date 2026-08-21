@@ -1784,9 +1784,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'rulesetName': '*',
       'clientToken': '*',
       'description': '*',
-      'rulesetDqdl': '*',
+      'dqdl': '*',
       'tags': '*',
-      'targetTable': '*'
+      'targetTable': '*',
+      'removalPolicy': 'RemovalPolicy'
     },
     'Database': {
       'databaseName': '*',
@@ -1803,7 +1804,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'account': '*',
           'region': '*'
         }
-      }
+      },
+      'removalPolicy': 'RemovalPolicy'
     },
     'ExternalTable': {
       'connection': {
@@ -1861,6 +1863,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'enablePartitionFiltering': 'boolean',
       'storageParameters': '*',
       'parameters': '*',
+      'hasEncryptedData': 'boolean',
       'partitionProjection': '*',
       'grantRead': [
         {
@@ -1969,6 +1972,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'enablePartitionFiltering': 'boolean',
       'storageParameters': '*',
       'parameters': '*',
+      'hasEncryptedData': 'boolean',
       'partitionProjection': '*',
       'grantRead': [
         {
@@ -2000,18 +2004,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'SecurityConfiguration': {
       'securityConfigurationName': '*',
-      'cloudWatchEncryption': {
-        'mode': 'CloudWatchEncryptionMode',
-        'kmsKey': '*'
-      },
-      'jobBookmarksEncryption': {
-        'mode': 'JobBookmarksEncryptionMode',
-        'kmsKey': '*'
-      },
-      's3Encryption': {
-        'mode': 'S3EncryptionMode',
-        'kmsKey': '*'
-      }
+      'cloudWatchEncryption': '*',
+      'jobBookmarksEncryption': '*',
+      's3Encryption': '*',
+      'removalPolicy': 'RemovalPolicy'
     },
     'Table': {}
   },
@@ -12143,6 +12139,17 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'securityGroupRemovalPolicy': 'RemovalPolicy',
       'copyTagsToSnapshot': 'boolean',
       'storageType': 'StorageType',
+      'manageMasterUserPassword': 'boolean',
+      'masterUserSecretKmsKey': {
+        'keyArn': '*',
+        'keyId': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
       'addRotationSingleUser': [
         '*'
       ],
@@ -13426,7 +13433,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'region': '*'
           }
         }
-      }
+      },
+      'ipAddressType': 'VpcEndpointIpAddressType',
+      'dnsRecordIpType': 'VpcEndpointDnsRecordIpType'
     },
     'InterfaceVpcEndpoint': {
       'vpc': {
@@ -13650,6 +13659,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         '*'
       ],
       'addIpv6DefaultInternetRoute': [
+        '*',
         '*'
       ],
       'addIpv6DefaultEgressOnlyInternetRoute': [
@@ -16031,6 +16041,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'remotePodNetworks': {
         'cidrs': '*'
       },
+      'controlPlaneScalingTier': '*',
       'removalPolicy': 'RemovalPolicy',
       'grantAccess': [
         '*',
@@ -16609,6 +16620,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'remotePodNetworks': {
         'cidrs': '*'
       },
+      'controlPlaneScalingTier': '*',
       'removalPolicy': 'RemovalPolicy'
     },
     'Nodegroup': {
@@ -25593,6 +25605,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'extraJars': '*',
       'extraJarsFirst': 'boolean',
       'jobRunQueuingEnabled': 'boolean',
+      'workerConfiguration': {
+        'workerType': 'WorkerType',
+        'numberOfWorkers': '*'
+      },
       'sparkUI': {
         'bucket': {
           'bucketArn': '*',
@@ -25640,8 +25656,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'jobName': '*',
       'description': '*',
-      'numberOfWorkers': '*',
-      'workerType': 'WorkerType',
       'maxConcurrentRuns': '*',
       'defaultArguments': '*',
       'connections': {
@@ -25667,7 +25681,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'tags': '*',
       'glueVersion': 'GlueVersion',
-      'enableProfilingMetrics': 'boolean',
       'continuousLogging': {
         'enabled': 'boolean',
         'logGroup': {
@@ -25691,6 +25704,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'extraFiles': '*',
       'extraJars': '*',
       'extraJarsFirst': 'boolean',
+      'workerConfiguration': {
+        'workerType': 'WorkerType',
+        'numberOfWorkers': '*'
+      },
       'sparkUI': {
         'bucket': {
           'bucketArn': '*',
@@ -25738,8 +25755,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'jobName': '*',
       'description': '*',
-      'numberOfWorkers': '*',
-      'workerType': 'WorkerType',
       'maxConcurrentRuns': '*',
       'defaultArguments': '*',
       'connections': {
@@ -25765,7 +25780,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'tags': '*',
       'glueVersion': 'GlueVersion',
-      'enableProfilingMetrics': 'boolean',
       'continuousLogging': {
         'enabled': 'boolean',
         'logGroup': {
@@ -25789,6 +25803,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'extraJars': '*',
       'extraJarsFirst': 'boolean',
       'jobRunQueuingEnabled': 'boolean',
+      'workerConfiguration': {
+        'workerType': 'WorkerType',
+        'numberOfWorkers': '*'
+      },
       'sparkUI': {
         'bucket': {
           'bucketArn': '*',
@@ -25836,8 +25854,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'jobName': '*',
       'description': '*',
-      'numberOfWorkers': '*',
-      'workerType': 'WorkerType',
       'maxConcurrentRuns': '*',
       'defaultArguments': '*',
       'connections': {
@@ -25863,7 +25879,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'tags': '*',
       'glueVersion': 'GlueVersion',
-      'enableProfilingMetrics': 'boolean',
       'continuousLogging': {
         'enabled': 'boolean',
         'logGroup': {
@@ -25906,8 +25921,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'jobName': '*',
       'description': '*',
-      'numberOfWorkers': '*',
-      'workerType': 'WorkerType',
       'maxConcurrentRuns': '*',
       'defaultArguments': '*',
       'connections': {
@@ -25933,7 +25946,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'tags': '*',
       'glueVersion': 'GlueVersion',
-      'enableProfilingMetrics': 'boolean',
       'continuousLogging': {
         'enabled': 'boolean',
         'logGroup': {
@@ -25953,6 +25965,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'RayJob': {
       'runtime': 'Runtime',
+      'numberOfWorkers': '*',
       'jobRunQueuingEnabled': 'boolean',
       'enableMetrics': 'boolean',
       'enableObservabilityMetrics': 'boolean',
@@ -25976,8 +25989,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'jobName': '*',
       'description': '*',
-      'numberOfWorkers': '*',
-      'workerType': 'WorkerType',
       'maxConcurrentRuns': '*',
       'defaultArguments': '*',
       'connections': {
@@ -26003,7 +26014,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'tags': '*',
       'glueVersion': 'GlueVersion',
-      'enableProfilingMetrics': 'boolean',
       'continuousLogging': {
         'enabled': 'boolean',
         'logGroup': {
@@ -26028,6 +26038,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'extraJars': '*',
       'extraJarsFirst': 'boolean',
       'jobRunQueuingEnabled': 'boolean',
+      'workerConfiguration': {
+        'workerType': 'WorkerType',
+        'numberOfWorkers': '*'
+      },
       'sparkUI': {
         'bucket': {
           'bucketArn': '*',
@@ -26075,8 +26089,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'jobName': '*',
       'description': '*',
-      'numberOfWorkers': '*',
-      'workerType': 'WorkerType',
       'maxConcurrentRuns': '*',
       'defaultArguments': '*',
       'connections': {
@@ -26102,7 +26114,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'tags': '*',
       'glueVersion': 'GlueVersion',
-      'enableProfilingMetrics': 'boolean',
       'continuousLogging': {
         'enabled': 'boolean',
         'logGroup': {
@@ -26126,6 +26137,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'extraFiles': '*',
       'extraJars': '*',
       'extraJarsFirst': 'boolean',
+      'workerConfiguration': {
+        'workerType': 'WorkerType',
+        'numberOfWorkers': '*'
+      },
       'sparkUI': {
         'bucket': {
           'bucketArn': '*',
@@ -26173,8 +26188,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'jobName': '*',
       'description': '*',
-      'numberOfWorkers': '*',
-      'workerType': 'WorkerType',
       'maxConcurrentRuns': '*',
       'defaultArguments': '*',
       'connections': {
@@ -26200,7 +26213,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'tags': '*',
       'glueVersion': 'GlueVersion',
-      'enableProfilingMetrics': 'boolean',
       'continuousLogging': {
         'enabled': 'boolean',
         'logGroup': {
@@ -26224,6 +26236,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'extraJars': '*',
       'extraJarsFirst': 'boolean',
       'jobRunQueuingEnabled': 'boolean',
+      'workerConfiguration': {
+        'workerType': 'WorkerType',
+        'numberOfWorkers': '*'
+      },
       'sparkUI': {
         'bucket': {
           'bucketArn': '*',
@@ -26271,8 +26287,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'jobName': '*',
       'description': '*',
-      'numberOfWorkers': '*',
-      'workerType': 'WorkerType',
       'maxConcurrentRuns': '*',
       'defaultArguments': '*',
       'connections': {
@@ -26298,7 +26312,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'tags': '*',
       'glueVersion': 'GlueVersion',
-      'enableProfilingMetrics': 'boolean',
       'continuousLogging': {
         'enabled': 'boolean',
         'logGroup': {
@@ -27264,12 +27277,16 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       },
       'tags': '*',
+      'streamDeliveryResources': '*',
       'addMemoryStrategy': [
         {
           'strategyName': '*',
           'description': '*',
           'strategyType': 'MemoryStrategyType'
         }
+      ],
+      'addStreamDeliveryResource': [
+        '*'
       ]
     },
     'RuntimeEndpoint': {
