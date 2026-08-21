@@ -41,6 +41,7 @@ import {
   KeyPair,
   UserData,
 } from '../lib';
+import * as instanceLib from '../lib/instance';
 
 describe('vpc', () => {
   describe('When creating a VPC', () => {
@@ -1672,6 +1673,57 @@ describe('vpc', () => {
           natGateways: 1,
         });
       }).toThrow("Cannot specify both of 'keyName' and 'keyPair'; prefer 'keyPair'");
+    });
+
+    test('NAT instances V2 do not pass the deprecated keyName to instances when it is not provided', () => {
+      // GIVEN
+      // The deprecation warning for InstanceProps#keyName triggers on the mere presence
+      // of the key, even when its value is undefined
+      // https://github.com/aws/aws-cdk/issues/30806
+      const OriginalInstance = instanceLib.Instance;
+      const instanceConstructorSpy = jest.spyOn(instanceLib, 'Instance')
+        .mockImplementation((...args: ConstructorParameters<typeof instanceLib.Instance>) => new OriginalInstance(...args));
+
+      try {
+        const stack = getTestStack();
+
+        // WHEN
+        const natGatewayProvider = NatProvider.instanceV2({
+          instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.SMALL),
+          machineImage: new GenericLinuxImage({
+            'us-east-1': 'ami-1',
+          }),
+        });
+        new Vpc(stack, 'TheVPC', { natGatewayProvider });
+
+        // THEN
+        expect(instanceConstructorSpy).toHaveBeenCalled();
+        for (const [, , instanceProps] of instanceConstructorSpy.mock.calls) {
+          expect(instanceProps).not.toHaveProperty('keyName');
+        }
+      } finally {
+        instanceConstructorSpy.mockRestore();
+      }
+    });
+
+    test('NAT instances V2 still set KeyName when keyName is provided', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      const natGatewayProvider = NatProvider.instanceV2({
+        instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.SMALL),
+        machineImage: new GenericLinuxImage({
+          'us-east-1': 'ami-1',
+        }),
+        keyName: 'my-key-pair',
+      });
+      new Vpc(stack, 'TheVPC', { natGatewayProvider });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+        KeyName: 'my-key-pair',
+      });
     });
 
     test('throws if creditSpecification is set with a non-burstable instance type', () => {
