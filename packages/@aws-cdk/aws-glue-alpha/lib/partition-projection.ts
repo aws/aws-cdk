@@ -233,14 +233,6 @@ interface PartitionProjectionConfigurationProps {
  * precision it defaults the step and accepts the format without them — so, e.g.
  * a plain `yyyy` needs no interval.
  *
- * Verified empirically against Athena (us-west-2, 2026-08): a `yyyy` projection
- * queries successfully with no interval, whereas `yyyy-MM-dd-HH` and
- * `yyyy-MM-dd a` fail with `INVALID_TABLE_PROPERTY: Must provide both an
- * interval and interval unit for projected temporal partition columns with
- * sub-day precision`. Note this check fires at synth to surface, at construction
- * time, a misconfiguration Athena would otherwise only reject at query time
- * (the Glue `CreateTable`/CloudFormation deploy itself succeeds).
- *
  * @see https://docs.aws.amazon.com/athena/latest/ug/partition-projection-supported-types.html#partition-projection-date-type
  */
 function dateFormatRequiresInterval(format: string): boolean {

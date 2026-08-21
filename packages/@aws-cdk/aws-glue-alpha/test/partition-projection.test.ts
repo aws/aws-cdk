@@ -82,8 +82,7 @@ describe('PartitionProjectionConfiguration Validation', () => {
     });
 
     // Sub-day precision (a field finer than a day) requires interval + unit.
-    // `a` (AM/PM) counts as sub-day. Verified against Athena: these fail with
-    // INVALID_TABLE_PROPERTY "... sub-day precision" when no interval is given.
+    // `a` (AM/PM) counts as sub-day.
     test.each([
       'yyyy-MM-dd-HH', // hourly
       "yyyyMMdd'T'HHmmss", // to the second
@@ -95,8 +94,7 @@ describe('PartitionProjectionConfiguration Validation', () => {
     });
 
     // Day precision or coarser (month, year, quarter) does not require them —
-    // Athena defaults the step. Verified against Athena: a `yyyy` projection
-    // queries successfully with no interval.
+    // Athena defaults the step.
     test.each([
       'yyyy-MM-dd', // day
       'yyyy-MM', // month
