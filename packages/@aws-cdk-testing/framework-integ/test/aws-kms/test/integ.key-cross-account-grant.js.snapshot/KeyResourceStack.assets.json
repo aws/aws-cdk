@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "4acac697084c7d4adde2bb14a3b2243e779b7d0ba83b13e9ca2c117e2298e601": {
+      "displayName": "KeyResourceStack Template",
+      "source": {
+        "path": "KeyResourceStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "12345678-current_region-c95fd5ab": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-${AWS::Region}",
+          "objectKey": "4acac697084c7d4adde2bb14a3b2243e779b7d0ba83b13e9ca2c117e2298e601.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
