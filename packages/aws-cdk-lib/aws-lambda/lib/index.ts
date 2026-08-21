@@ -30,6 +30,7 @@ export * from './params-and-secrets-layers';
 export * from './snapstart-config';
 export * from './schema-registry';
 export * from './capacity-provider';
+export * from './network-connector';
 
 // AWS::Lambda CloudFormation Resources:
 export * from './lambda.generated';
