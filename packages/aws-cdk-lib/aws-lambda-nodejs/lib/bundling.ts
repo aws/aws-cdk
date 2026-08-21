@@ -320,36 +320,41 @@ export class Bundling implements cdk.BundlingOptions {
     pathJoin: (...parts: string[]) => string,
     options: BundlingCommandOptions,
     deps: NodeModuleDeps,
-  ): BundlingStep[] {
+  ): NodeModuleFileOps {
     const lockFilePath = pathJoin(options.inputDir, this.relativeDepsLockFilePath ?? this.packageManager.lockFile);
     const isPnpm = this.packageManager.lockFile === LockFile.PNPM;
     const isBun = this.packageManager.lockFile === LockFile.BUN_LOCK || this.packageManager.lockFile === LockFile.BUN;
 
-    return [{
-      type: 'shell',
-      commands: [chain([
-        isPnpm ? osCommand.write(pathJoin(options.outputDir, 'pnpm-workspace.yaml'), '') : '',
-        osCommand.writeJson(pathJoin(options.outputDir, 'package.json'), { dependencies: deps.dependencies }),
-        osCommand.copy(lockFilePath, pathJoin(options.outputDir, this.packageManager.lockFile)),
-        osCommand.changeDirectory(options.outputDir),
-        this.packageManager.installCommand.join(' '),
-        isPnpm ? osCommand.remove(pathJoin(options.outputDir, 'node_modules', '.modules.yaml'), true) : '',
-        isBun ? osCommand.removeDir(pathJoin(options.outputDir, 'node_modules', '.cache')) : '',
-      ])],
-    }];
+    return {
+      prepareSteps: [{
+        type: 'shell',
+        commands: [chain([
+          isPnpm ? osCommand.write(pathJoin(options.outputDir, 'pnpm-workspace.yaml'), '') : '',
+          osCommand.writeJson(pathJoin(options.outputDir, 'package.json'), { dependencies: deps.dependencies }),
+          osCommand.copy(lockFilePath, pathJoin(options.outputDir, this.packageManager.lockFile)),
+        ])],
+      }],
+      installSteps: [{
+        type: 'shell',
+        commands: [chain([
+          osCommand.changeDirectory(options.outputDir),
+          this.packageManager.installCommand.join(' '),
+          isPnpm ? osCommand.remove(pathJoin(options.outputDir, 'node_modules', '.modules.yaml'), true) : '',
+          isBun ? osCommand.removeDir(pathJoin(options.outputDir, 'node_modules', '.cache')) : '',
+        ])],
+      }],
+    };
   }
 
   /**
    * Produces callback+spawn steps for file operations in local bundling.
    */
-  private localFileOps(outputDir: string, deps: NodeModuleDeps): BundlingStep[] {
+  private localFileOps(outputDir: string, deps: NodeModuleDeps): NodeModuleFileOps {
     const lockFilePath = path.join(this.projectRoot, this.relativeDepsLockFilePath ?? this.packageManager.lockFile);
     const isPnpm = this.packageManager.lockFile === LockFile.PNPM;
     const isBun = this.packageManager.lockFile === LockFile.BUN_LOCK || this.packageManager.lockFile === LockFile.BUN;
 
-    const steps: BundlingStep[] = [];
-
-    steps.push({
+    const prepareSteps: BundlingStep[] = [{
       type: 'callback',
       operation: () => {
         if (isPnpm) {
@@ -358,12 +363,14 @@ export class Bundling implements cdk.BundlingOptions {
         fs.writeFileSync(path.join(outputDir, 'package.json'), JSON.stringify({ dependencies: deps.dependencies }));
         fs.copyFileSync(lockFilePath, path.join(outputDir, this.packageManager.lockFile));
       },
-    });
+    }];
 
-    steps.push({ type: 'spawn', command: [...this.packageManager.installCommand], cwd: outputDir });
+    const installSteps: BundlingStep[] = [
+      { type: 'spawn', command: [...this.packageManager.installCommand], cwd: outputDir },
+    ];
 
     if (isPnpm) {
-      steps.push({
+      installSteps.push({
         type: 'callback',
         operation: () => {
           const modulesYaml = path.join(outputDir, 'node_modules', '.modules.yaml');
@@ -374,7 +381,7 @@ export class Bundling implements cdk.BundlingOptions {
       });
     }
     if (isBun) {
-      steps.push({
+      installSteps.push({
         type: 'callback',
         operation: () => {
           const cacheDir = path.join(outputDir, 'node_modules', '.cache');
@@ -385,7 +392,7 @@ export class Bundling implements cdk.BundlingOptions {
       });
     }
 
-    return steps;
+    return { prepareSteps, installSteps };
   }
 
   private getLocalBundlingProvider(scope: IConstruct): cdk.ILocalBundling {
@@ -461,24 +468,31 @@ export class Bundling implements cdk.BundlingOptions {
     ];
     steps.push({ type: 'spawn', command: [...options.esbuildRunner, '--bundle', entryPath, ...esbuildArgs] });
 
-    // 4-5. Node modules installation
+    // 4-6. Node modules installation (three sub-steps)
     if (this.props.nodeModules) {
       const pkgPath = findUp('package.json', path.dirname(this.props.entry));
       if (!pkgPath) {
         throw new ValidationError(lit`CannotFindPackageJsonProject`, 'Cannot find a `package.json` in this project. Using `nodeModules` requires a `package.json`.', scope);
       }
 
-      // Before install hooks
+      const dependencies = extractDependencies(pkgPath, this.props.nodeModules);
+      const fileOps = options.createFileOps({ dependencies });
+
+      // 4. Write workspace files (pnpm-workspace.yaml, package.json, lockfile)
+      steps.push(...fileOps.prepareSteps);
+
+      // 5. Before install hooks — run AFTER workspace files are written so callers
+      //    can modify them (e.g. append allowBuilds entries to pnpm-workspace.yaml)
       const beforeInstall = this.props.commandHooks?.beforeInstall(options.inputDir, options.outputDir) ?? [];
       if (beforeInstall.length) {
         steps.push({ type: 'shell', commands: beforeInstall });
       }
 
-      const dependencies = extractDependencies(pkgPath, this.props.nodeModules);
-      steps.push(...options.createFileOps({ dependencies }));
+      // 6. Run the package manager install + cleanup
+      steps.push(...fileOps.installSteps);
     }
 
-    // 6. After bundling hooks
+    // 7. After bundling hooks
     const afterBundling = this.props.commandHooks?.afterBundling(options.inputDir, options.outputDir) ?? [];
     if (afterBundling.length) {
       steps.push({ type: 'shell', commands: afterBundling });
@@ -571,6 +585,20 @@ interface NodeModuleDeps {
 }
 
 /**
+ * Two-phase node-module file operations.
+ * `prepareSteps` writes workspace configuration files (e.g. `pnpm-workspace.yaml`,
+ * `package.json`, and the lockfile) into the output directory.
+ * `installSteps` runs the package manager install command and post-install cleanup.
+ * Separating the two phases lets the `beforeInstall` commandHook run between them so
+ * callers can modify the workspace files (e.g. append `allowBuilds` entries) before the
+ * package manager reads them.
+ */
+interface NodeModuleFileOps {
+  readonly prepareSteps: BundlingStep[];
+  readonly installSteps: BundlingStep[];
+}
+
+/**
  * Options for the unified step builder.
  */
 interface StepBuilderOptions {
@@ -584,8 +612,8 @@ interface StepBuilderOptions {
   readonly esbuildRunner: string[];
   /** The tsc command as an argv array, or undefined if not available */
   readonly tscRunner?: string[];
-  /** Produces steps for nodeModules file operations (differs between local and Docker) */
-  readonly createFileOps: (deps: NodeModuleDeps) => BundlingStep[];
+  /** Produces two-phase steps for nodeModules file operations (differs between local and Docker) */
+  readonly createFileOps: (deps: NodeModuleDeps) => NodeModuleFileOps;
 }
 
 /**
