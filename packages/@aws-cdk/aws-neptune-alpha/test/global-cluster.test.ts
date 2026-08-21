@@ -1,4 +1,4 @@
-import { Stack, Tags } from 'aws-cdk-lib';
+import { RemovalPolicy, Stack, Tags } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { CfnDBCluster, CfnGlobalCluster } from 'aws-cdk-lib/aws-neptune';
@@ -41,6 +41,43 @@ test('creates a global cluster from all properties', () => {
     EngineVersion: '1.3.0.0',
     DeletionProtection: true,
     StorageEncrypted: true,
+  });
+});
+
+test('retains the global cluster by default', () => {
+  new GlobalCluster(stack, 'Global');
+
+  Template.fromStack(stack).hasResource('AWS::Neptune::GlobalCluster', {
+    DeletionPolicy: 'Retain',
+    UpdateReplacePolicy: 'Retain',
+  });
+});
+
+test('applies the removal policy to the underlying resource', () => {
+  new GlobalCluster(stack, 'Global', { removalPolicy: RemovalPolicy.DESTROY });
+
+  Template.fromStack(stack).hasResource('AWS::Neptune::GlobalCluster', {
+    DeletionPolicy: 'Delete',
+    UpdateReplacePolicy: 'Delete',
+  });
+});
+
+test('enables deletion protection by default when the removal policy is RETAIN', () => {
+  new GlobalCluster(stack, 'Global', { removalPolicy: RemovalPolicy.RETAIN });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Neptune::GlobalCluster', {
+    DeletionProtection: true,
+  });
+});
+
+test('an explicit deletionProtection overrides the RETAIN removal policy default', () => {
+  new GlobalCluster(stack, 'Global', {
+    removalPolicy: RemovalPolicy.RETAIN,
+    deletionProtection: false,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Neptune::GlobalCluster', {
+    DeletionProtection: false,
   });
 });
 

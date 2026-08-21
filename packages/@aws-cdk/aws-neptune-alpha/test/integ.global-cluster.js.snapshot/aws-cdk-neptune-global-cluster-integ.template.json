@@ -8,7 +8,9 @@
     "EngineVersion": "1.3.0.0",
     "GlobalClusterIdentifier": "my-global-cluster",
     "StorageEncrypted": true
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   }
  },
  "Outputs": {

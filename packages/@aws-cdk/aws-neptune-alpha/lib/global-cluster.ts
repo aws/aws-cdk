@@ -1,7 +1,7 @@
 import type { GlobalClusterReference, IDBClusterRef, IGlobalClusterRef } from 'aws-cdk-lib/aws-neptune';
 import { CfnGlobalCluster } from 'aws-cdk-lib/aws-neptune';
 import type { IResource } from 'aws-cdk-lib/core';
-import { ArnFormat, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
+import { ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
@@ -57,7 +57,7 @@ export interface GlobalClusterProps {
   /**
    * Indicates whether the global database cluster has deletion protection enabled.
    *
-   * @default false
+   * @default - true only if `removalPolicy` is explicitly set to `RemovalPolicy.RETAIN`; false otherwise
    */
   readonly deletionProtection?: boolean;
 
@@ -70,6 +70,14 @@ export interface GlobalClusterProps {
    * @default true, or inherited from `sourceCluster`.
    */
   readonly storageEncrypted?: boolean;
+
+  /**
+   * The removal policy to apply when the global database cluster is removed
+   * from the stack or replaced during a stack update.
+   *
+   * @default - RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -126,14 +134,20 @@ export class GlobalCluster extends GlobalClusterBase {
 
     const storageEncrypted = props.sourceCluster ? undefined : (props.storageEncrypted ?? true);
 
+    const deletionProtection = props.deletionProtection ?? (props.removalPolicy === RemovalPolicy.RETAIN ? true : undefined);
+
     const resource = new CfnGlobalCluster(this, 'Resource', {
       globalClusterIdentifier: props.globalClusterIdentifier,
       // Engine and version are inherited from the source cluster when one is provided.
       engine: props.sourceCluster ? undefined : 'neptune',
       engineVersion: props.sourceCluster ? undefined : props.engineVersion?.version,
       sourceDbClusterIdentifier: props.sourceCluster ? this.clusterArn(props.sourceCluster) : undefined,
-      deletionProtection: props.deletionProtection,
+      deletionProtection,
       storageEncrypted,
+    });
+
+    resource.applyRemovalPolicy(props.removalPolicy, {
+      applyToUpdateReplacePolicy: true,
     });
 
     this.globalClusterIdentifier = resource.ref;
