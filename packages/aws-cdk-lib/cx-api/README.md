@@ -794,3 +794,21 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/core:scopedValidationPluginAcknowledgments`
+
+When enabled, validation plugin acknowledgments only suppress violations when every violating resource is the
+acknowledged construct or one of its descendants. Acknowledging a rule on one construct no longer suppresses
+violations of the same rule on unrelated constructs or stacks.
+
+When disabled, acknowledgments suppress matching rule IDs across the entire app to preserve the previous behavior.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/core:scopedValidationPluginAcknowledgments": true
+  }
+}
+```

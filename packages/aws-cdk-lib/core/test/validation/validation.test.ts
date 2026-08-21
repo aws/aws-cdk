@@ -1075,6 +1075,315 @@ describe('validations', () => {
       expect(output).not.toContain('S3_BUCKET_VERSIONING_ENABLED');
     });
 
+    test('plugin violation acknowledgments only apply to the acknowledged construct scope', () => {
+      const app = new NonStrictApp({
+        context: {
+          ...annotationReportContext,
+          [cxapi.SCOPED_VALIDATION_PLUGIN_ACKNOWLEDGMENTS]: true,
+          '@aws-cdk/core:failSynthOnValidationErrors': false,
+        },
+      });
+      const stackA = new core.Stack(app, 'StackA');
+      const resourceA = new core.CfnResource(stackA, 'Resource', {
+        type: 'AWS::S3::Bucket',
+      });
+      const stackB = new core.Stack(app, 'StackB');
+      const resourceB = new core.CfnResource(stackB, 'Resource', {
+        type: 'AWS::S3::Bucket',
+      });
+
+      core.Validations.of(app).addPlugins(
+        new FakePlugin('test-plugin', [
+          {
+            description: 'S3 Bucket should have versioning enabled',
+            ruleName: 'S3_BUCKET_VERSIONING_ENABLED',
+            severity: 'error',
+            violatingResources: [{
+              locations: ['Properties/VersioningConfiguration'],
+              resourceLogicalId: stackA.getLogicalId(resourceA),
+              templatePath: 'StackA.template.json',
+            }],
+          },
+          {
+            description: 'S3 Bucket should have versioning enabled',
+            ruleName: 'S3_BUCKET_VERSIONING_ENABLED',
+            severity: 'error',
+            violatingResources: [{
+              locations: ['Properties/VersioningConfiguration'],
+              resourceLogicalId: stackB.getLogicalId(resourceB),
+              templatePath: 'StackB.template.json',
+            }],
+          },
+        ]),
+      );
+
+      core.Validations.of(resourceA).acknowledge({
+        id: 'test-plugin::S3_BUCKET_VERSIONING_ENABLED',
+        reason: 'Accepted for StackA only',
+      });
+
+      redactAsmDir(app.synth());
+
+      const report = loadJson(path.join(app.outdir, 'validation-report.json'));
+      expect(report.pluginReports[0].violations).toHaveLength(1);
+      expect(report.pluginReports[0].violations[0].violatingConstructs[0].constructPath).toEqual('StackB/Resource');
+      expect(report.pluginReports[0].suppressedViolations).toHaveLength(1);
+      expect(report.pluginReports[0].suppressedViolations[0]).toEqual(expect.objectContaining({
+        acknowledgedAt: 'StackA/Resource',
+      }));
+    });
+
+    test('unconfigured scoped acknowledgments preserve app-wide rule suppression', () => {
+      const app = new NonStrictApp({
+        context: {
+          ...annotationReportContext,
+          '@aws-cdk/core:failSynthOnValidationErrors': false,
+        },
+      });
+      const stackA = new core.Stack(app, 'StackA');
+      const resourceA = new core.CfnResource(stackA, 'Resource', {
+        type: 'AWS::S3::Bucket',
+      });
+      const stackB = new core.Stack(app, 'StackB');
+      const resourceB = new core.CfnResource(stackB, 'Resource', {
+        type: 'AWS::S3::Bucket',
+      });
+
+      core.Validations.of(app).addPlugins(
+        new FakePlugin('test-plugin', [{
+          description: 'S3 Bucket should have versioning enabled',
+          ruleName: 'S3_BUCKET_VERSIONING_ENABLED',
+          severity: 'error',
+          violatingResources: [{
+            locations: ['Properties/VersioningConfiguration'],
+            resourceLogicalId: stackB.getLogicalId(resourceB),
+            templatePath: 'StackB.template.json',
+          }],
+        }]),
+      );
+
+      core.Validations.of(resourceA).acknowledge({
+        id: 'test-plugin::S3_BUCKET_VERSIONING_ENABLED',
+        reason: 'Legacy app-wide suppression',
+      });
+
+      redactAsmDir(app.synth());
+
+      const report = loadJson(path.join(app.outdir, 'validation-report.json'));
+      expect(report.pluginReports[0].violations).toHaveLength(0);
+      expect(report.pluginReports[0].suppressedViolations).toHaveLength(1);
+      expect(report.pluginReports[0].suppressedViolations[0]).toEqual(expect.objectContaining({
+        acknowledgedAt: 'StackA/Resource',
+      }));
+    });
+
+    test('stack acknowledgment applies to descendants but not unrelated stacks', () => {
+      const app = new NonStrictApp({
+        context: {
+          ...annotationReportContext,
+          [cxapi.SCOPED_VALIDATION_PLUGIN_ACKNOWLEDGMENTS]: true,
+          '@aws-cdk/core:failSynthOnValidationErrors': false,
+        },
+      });
+      const stackA = new core.Stack(app, 'StackA');
+      const resourceA1 = new core.CfnResource(stackA, 'ResourceA1', { type: 'AWS::S3::Bucket' });
+      const resourceA2 = new core.CfnResource(stackA, 'ResourceA2', { type: 'AWS::S3::Bucket' });
+      const stackB = new core.Stack(app, 'StackB');
+      const resourceB = new core.CfnResource(stackB, 'ResourceB', { type: 'AWS::S3::Bucket' });
+
+      core.Validations.of(app).addPlugins(
+        new FakePlugin('test-plugin', [
+          policyViolation(stackA.getLogicalId(resourceA1), 'StackA.template.json'),
+          policyViolation(stackA.getLogicalId(resourceA2), 'StackA.template.json'),
+          policyViolation(stackB.getLogicalId(resourceB), 'StackB.template.json'),
+        ]),
+      );
+      core.Validations.of(stackA).acknowledge({
+        id: 'test-plugin::S3_BUCKET_VERSIONING_ENABLED',
+        reason: 'Accepted for StackA',
+      });
+
+      redactAsmDir(app.synth());
+
+      const report = loadJson(path.join(app.outdir, 'validation-report.json'));
+      expect(report.pluginReports[0].violations).toHaveLength(1);
+      expect(report.pluginReports[0].violations[0].violatingConstructs[0].constructPath).toEqual('StackB/ResourceB');
+      expect(report.pluginReports[0].suppressedViolations).toHaveLength(2);
+      expect(report.pluginReports[0].suppressedViolations).toEqual(expect.arrayContaining([
+        expect.objectContaining({ acknowledgedAt: 'StackA' }),
+      ]));
+    });
+
+    test('multiple acknowledgments for the same rule retain every scope', () => {
+      const app = new NonStrictApp({
+        context: {
+          ...annotationReportContext,
+          [cxapi.SCOPED_VALIDATION_PLUGIN_ACKNOWLEDGMENTS]: true,
+          '@aws-cdk/core:failSynthOnValidationErrors': false,
+        },
+      });
+      const stackA = new core.Stack(app, 'StackA');
+      const resourceA = new core.CfnResource(stackA, 'Resource', { type: 'AWS::S3::Bucket' });
+      const stackB = new core.Stack(app, 'StackB');
+      const resourceB = new core.CfnResource(stackB, 'Resource', { type: 'AWS::S3::Bucket' });
+
+      core.Validations.of(app).addPlugins(
+        new FakePlugin('test-plugin', [
+          policyViolation(stackA.getLogicalId(resourceA), 'StackA.template.json'),
+          policyViolation(stackB.getLogicalId(resourceB), 'StackB.template.json'),
+        ]),
+      );
+      core.Validations.of(resourceA).acknowledge({
+        id: 'test-plugin::S3_BUCKET_VERSIONING_ENABLED',
+        reason: 'Accepted for StackA',
+      });
+      core.Validations.of(resourceB).acknowledge({
+        id: 'test-plugin::S3_BUCKET_VERSIONING_ENABLED',
+        reason: 'Accepted for StackB',
+      });
+
+      redactAsmDir(app.synth());
+
+      const report = loadJson(path.join(app.outdir, 'validation-report.json'));
+      expect(report.pluginReports[0].violations).toHaveLength(0);
+      expect(report.pluginReports[0].suppressedViolations).toHaveLength(2);
+      expect(report.pluginReports[0].suppressedViolations
+        .map((violation: any) => violation.acknowledgedAt)
+        .sort()).toEqual(['StackA/Resource', 'StackB/Resource']);
+    });
+
+    test('partially acknowledged multi-resource violations remain active', () => {
+      const app = new NonStrictApp({
+        context: {
+          ...annotationReportContext,
+          [cxapi.SCOPED_VALIDATION_PLUGIN_ACKNOWLEDGMENTS]: true,
+          '@aws-cdk/core:failSynthOnValidationErrors': false,
+        },
+      });
+      const stackA = new core.Stack(app, 'StackA');
+      const resourceA = new core.CfnResource(stackA, 'Resource', { type: 'AWS::S3::Bucket' });
+      const stackB = new core.Stack(app, 'StackB');
+      const resourceB = new core.CfnResource(stackB, 'Resource', { type: 'AWS::S3::Bucket' });
+
+      core.Validations.of(app).addPlugins(
+        new FakePlugin('test-plugin', [{
+          description: 'Related resources violate the rule',
+          ruleName: 'S3_BUCKET_VERSIONING_ENABLED',
+            severity: 'error',
+            violatingResources: [
+              {
+                locations: [],
+                resourceLogicalId: stackA.getLogicalId(resourceA),
+                templatePath: 'StackA.template.json',
+              },
+              {
+                locations: [],
+                resourceLogicalId: stackB.getLogicalId(resourceB),
+                templatePath: 'StackB.template.json',
+              },
+          ],
+        }]),
+      );
+      core.Validations.of(stackA).acknowledge({
+        id: 'test-plugin::S3_BUCKET_VERSIONING_ENABLED',
+        reason: 'Accepted for StackA',
+      });
+
+      redactAsmDir(app.synth());
+
+      const report = loadJson(path.join(app.outdir, 'validation-report.json'));
+      expect(report.pluginReports[0].violations).toHaveLength(1);
+      expect(report.pluginReports[0].violations[0].violatingConstructs).toHaveLength(2);
+      expect(report.pluginReports[0].suppressedViolations).toBeUndefined();
+    });
+
+    test('construct path matching respects path segment boundaries', () => {
+      const app = new NonStrictApp({
+        context: {
+          ...annotationReportContext,
+          [cxapi.SCOPED_VALIDATION_PLUGIN_ACKNOWLEDGMENTS]: true,
+          '@aws-cdk/core:failSynthOnValidationErrors': false,
+        },
+      });
+      const stack = new core.Stack(app, 'Stack');
+      const resource = new Construct(stack, 'Resource');
+      new Construct(stack, 'ResourceSibling');
+
+      core.Validations.of(app).addPlugins(
+        new FakeNonBeta1Plugin('test-plugin', [
+          constructPolicyViolation('Stack/Resource'),
+          constructPolicyViolation('Stack/ResourceSibling'),
+        ]),
+      );
+      core.Validations.of(resource).acknowledge({
+        id: 'test-plugin::S3_BUCKET_VERSIONING_ENABLED',
+        reason: 'Accepted for Resource',
+      });
+
+      redactAsmDir(app.synth());
+
+      const report = loadJson(path.join(app.outdir, 'validation-report.json'));
+      expect(report.pluginReports[0].violations).toHaveLength(1);
+      expect(report.pluginReports[0].violations[0].violatingConstructs[0].constructPath).toEqual('Stack/ResourceSibling');
+      expect(report.pluginReports[0].suppressedViolations).toHaveLength(1);
+    });
+
+    test('app acknowledgment suppresses violations whose resource cannot be resolved', () => {
+      const app = new NonStrictApp({
+        context: {
+          ...annotationReportContext,
+          [cxapi.SCOPED_VALIDATION_PLUGIN_ACKNOWLEDGMENTS]: true,
+          '@aws-cdk/core:failSynthOnValidationErrors': false,
+        },
+      });
+      new core.Stack(app);
+      core.Validations.of(app).addPlugins(
+        new FakePlugin('test-plugin', [policyViolation('UnknownResource', 'Default.template.json')]),
+      );
+      core.Validations.of(app).acknowledge({
+        id: 'test-plugin::S3_BUCKET_VERSIONING_ENABLED',
+        reason: 'Accepted for the app',
+      });
+
+      redactAsmDir(app.synth());
+
+      const report = loadJson(path.join(app.outdir, 'validation-report.json'));
+      expect(report.pluginReports[0].violations).toHaveLength(0);
+      expect(report.pluginReports[0].suppressedViolations).toHaveLength(1);
+    });
+
+    test('construct-scoped acknowledgments do not suppress violations without a construct path', () => {
+      const app = new NonStrictApp({
+        context: {
+          ...annotationReportContext,
+          [cxapi.SCOPED_VALIDATION_PLUGIN_ACKNOWLEDGMENTS]: true,
+          '@aws-cdk/core:failSynthOnValidationErrors': false,
+        },
+      });
+      const stack = new core.Stack(app);
+      core.Validations.of(app).addPlugins(
+        new FakePlugin('test-plugin', [
+          policyViolation('UnknownResource', 'Default.template.json'),
+          {
+            description: 'Violation without resources',
+            ruleName: 'S3_BUCKET_VERSIONING_ENABLED',
+            severity: 'error',
+            violatingResources: [],
+          },
+        ]),
+      );
+      core.Validations.of(stack).acknowledge({
+        id: 'test-plugin::S3_BUCKET_VERSIONING_ENABLED',
+        reason: 'Accepted for this stack',
+      });
+
+      redactAsmDir(app.synth());
+
+      const report = loadJson(path.join(app.outdir, 'validation-report.json'));
+      expect(report.pluginReports[0].violations).toHaveLength(2);
+      expect(report.pluginReports[0].suppressedViolations).toBeUndefined();
+    });
+
     test('suppressed violations appear in validation-report.json', () => {
       const app = new NonStrictApp({
         context: {
@@ -1501,6 +1810,31 @@ describe('validations', () => {
     });
   });
 });
+
+function policyViolation(resourceLogicalId: string, templatePath: string): core.PolicyViolationBeta1 {
+  return {
+    description: 'S3 Bucket should have versioning enabled',
+    ruleName: 'S3_BUCKET_VERSIONING_ENABLED',
+    severity: 'error',
+    violatingResources: [{
+      locations: ['Properties/VersioningConfiguration'],
+      resourceLogicalId,
+      templatePath,
+    }],
+  };
+}
+
+function constructPolicyViolation(constructPath: string): core.PolicyViolation {
+  return {
+    description: 'S3 Bucket should have versioning enabled',
+    ruleName: 'S3_BUCKET_VERSIONING_ENABLED',
+    severity: 'error',
+    violatingResources: [{
+      constructPath,
+      locations: [],
+    }],
+  };
+}
 
 class FakePlugin implements core.IPolicyValidationPluginBeta1 {
   constructor(
