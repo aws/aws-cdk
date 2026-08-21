@@ -110,6 +110,17 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    * @default false
    */
   readonly combineBatchBuildArtifacts?: boolean;
+
+  /**
+   * An optional role to assume when running this action, overriding the
+   * service role configured on this action's CodeBuild project.
+   *
+   * The pipeline's role will be granted `iam:PassRole` on this role.
+   *
+   * @default - the CodeBuild project's service role is used
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-configurations-reference.html
+   */
+  readonly serviceRoleOverride?: iam.IRole;
 }
 
 /**
@@ -231,6 +242,13 @@ export class CodeBuildAction extends Action {
       if (this.props.combineBatchBuildArtifacts) {
         configuration.CombineArtifacts = 'true';
       }
+    }
+    if (this.props.serviceRoleOverride) {
+      configuration.ServiceRoleArnOverride = this.props.serviceRoleOverride.roleArn;
+      options.role.addToPolicy(new iam.PolicyStatement({
+        actions: ['iam:PassRole'],
+        resources: [this.props.serviceRoleOverride.roleArn],
+      }));
     }
     return {
       configuration,
