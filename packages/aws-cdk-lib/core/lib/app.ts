@@ -331,7 +331,6 @@ export class App extends Stage {
     if (this.shouldReportSlowSynth(totalAppTimeMs / stackCount)) {
       emitPerformanceCountersFile();
     }
-    performance.clearMeasures();
 
     return ret;
   }
