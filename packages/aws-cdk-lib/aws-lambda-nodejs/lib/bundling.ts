@@ -524,7 +524,7 @@ export class Bundling implements cdk.BundlingOptions {
           // Powershell.exe instead of cmd.exe because the quoting rules are saner.
           // See https://github.com/aws/aws-cdk/issues/37387
           if (isWindows) {
-            exec('powershell.exe', ['-NoProfile', '-Command', `& ${step.command.map(powershellEscape).join(' ')}`], {
+            exec('powershell.exe', ['-NoProfile', '-Command', powershellCommandLine(step.command)], {
               ...execOptions,
               cwd: step.cwd ?? cwd,
             });
@@ -683,6 +683,28 @@ function posixShellEscape(arg: string): string {
 
 function powershellEscape(arg: string): string {
   return "'" + arg.replace(/'/g, "''") + "'";
+}
+
+/**
+ * Build the PowerShell command line used to run a bundling spawn step on Windows.
+ *
+ * The executable is resolved with `Get-Command -CommandType Application` rather than
+ * being passed to the call operator directly. Given a bare command name such as `npm`,
+ * PowerShell's own command discovery can select the `npm.ps1` shim, and `.ps1` scripts
+ * are subject to the execution policy: under `AllSigned` (typically set at
+ * `MachinePolicy` scope via Group Policy, which overrides every other scope) the shim is
+ * refused and bundling fails. `-CommandType Application` only matches external programs
+ * such as `npm.cmd`, which the execution policy does not apply to.
+ *
+ * Arguments remain individually quoted, so this keeps the argument handling introduced
+ * to fix command injection in local bundling.
+ *
+ * See https://github.com/aws/aws-cdk/issues/38439
+ */
+function powershellCommandLine(command: string[]): string {
+  const [executable, ...args] = command;
+  const resolved = `(Get-Command ${powershellEscape(executable)} -CommandType Application)[0].Source`;
+  return ['&', resolved, ...args.map(powershellEscape)].join(' ');
 }
 
 /**
