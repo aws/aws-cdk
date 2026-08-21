@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "91c0987c56c5e4176696b32d049ce55c1aba32c2cc1a43e9a5fb956f81adfa00": {
+      "displayName": "StackStage-ProdStack Template",
+      "source": {
+        "path": "UseCustomApprovalRoleStackStageProdStackB475229D.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-b0c3d308": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "91c0987c56c5e4176696b32d049ce55c1aba32c2cc1a43e9a5fb956f81adfa00.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

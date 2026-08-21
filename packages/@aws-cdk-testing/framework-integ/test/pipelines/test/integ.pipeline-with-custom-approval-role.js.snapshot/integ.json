@@ -1,0 +1,14 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "UseCustomApprovalRoleTest/DefaultTest": {
+      "stacks": [
+        "UseCustomApprovalRole"
+      ],
+      "diffAssets": true,
+      "assertionStack": "UseCustomApprovalRoleTest/DefaultTest/DeployAssert",
+      "assertionStackName": "UseCustomApprovalRoleTestDefaultTestDeployAssert0922C50D"
+    }
+  },
+  "minimumCliVersion": "2.1121.0"
+}
