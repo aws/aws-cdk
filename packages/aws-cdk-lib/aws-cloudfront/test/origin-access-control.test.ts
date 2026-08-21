@@ -60,6 +60,33 @@ describe('S3OriginAccessControl', () => {
     expect(imported.originAccessControlId).toEqual(originAccessControlId);
   });
 
+  test('creates an S3OriginAccessControl with the sigv4a signing protocol', () => {
+    new S3OriginAccessControl(stack, 'Sigv4aS3OriginAccessControl', {
+      signing: Signing.SIGV4A_ALWAYS,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::OriginAccessControl', {
+      OriginAccessControlConfig: {
+        SigningBehavior: SigningBehavior.ALWAYS,
+        SigningProtocol: SigningProtocol.SIGV4A,
+        OriginAccessControlOriginType: OriginAccessControlOriginType.S3,
+      },
+    });
+  });
+
+  test('creates an S3OriginAccessControl with the sigv4a signing protocol and a custom signing behavior', () => {
+    new S3OriginAccessControl(stack, 'Sigv4aNoOverrideS3OriginAccessControl', {
+      signing: new Signing(SigningProtocol.SIGV4A, SigningBehavior.NO_OVERRIDE),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::OriginAccessControl', {
+      OriginAccessControlConfig: {
+        SigningBehavior: SigningBehavior.NO_OVERRIDE,
+        SigningProtocol: SigningProtocol.SIGV4A,
+      },
+    });
+  });
+
   test('creates a FunctionUrlOriginAccessControl with default properties', () => {
     const oac = new FunctionUrlOriginAccessControl(stack, 'DefaultFunctionUrlOriginAccessControl');
 
