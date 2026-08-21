@@ -132,7 +132,7 @@ export interface TableBaseProps {
    * @example
    *
    *    declare const glueDatabase: glue.IDatabase;
-   *    const table = new glue.Table(this, 'Table', {
+   *    const table = new glue.S3Table(this, 'Table', {
    *      storageParameters: [
    *          glue.StorageParameter.skipHeaderLineCount(1),
    *          glue.StorageParameter.compressionType(glue.CompressionType.GZIP),
@@ -162,6 +162,23 @@ export interface TableBaseProps {
    * @default - The parameter is not defined
    */
   readonly parameters?: { [key: string]: string };
+
+  /**
+   * Whether the data stored in the table is encrypted.
+   *
+   * This sets the `has_encrypted_data` table parameter. Athena reads it when
+   * querying client-side (CSE-KMS) encrypted datasets; for server-side
+   * encrypted (SSE-S3 / SSE-KMS) or unencrypted data it has no effect, since
+   * Amazon S3 decrypts server-side encrypted objects transparently.
+   *
+   * Do not also set `has_encrypted_data` through `parameters` - use this
+   * property instead. A conflicting value in `parameters` is rejected.
+   *
+   * @see https://docs.aws.amazon.com/athena/latest/ug/creating-tables-based-on-encrypted-datasets-in-s3.html
+   *
+   * @default true
+   */
+  readonly hasEncryptedData?: boolean;
 
   /**
    * Partition projection configuration for this table.
@@ -252,6 +269,12 @@ export abstract class TableBase extends Resource implements ITable {
   protected readonly parameters: { [key: string]: string };
 
   /**
+   * Whether the data stored in the table is encrypted. Emitted as the
+   * `has_encrypted_data` table parameter.
+   */
+  protected readonly hasEncryptedData: boolean;
+
+  /**
    * Partition indexes must be created one at a time. To avoid
    * race conditions, we store the resource and add dependencies
    * each time a new partition index is created.
@@ -275,6 +298,9 @@ export abstract class TableBase extends Resource implements ITable {
     this.storageParameters = props.storageParameters;
     this.partitionProjection = props.partitionProjection;
     this.parameters = props.parameters ?? {};
+
+    this.hasEncryptedData = props.hasEncryptedData ?? true;
+    this.reconcileHasEncryptedData();
 
     this.compressed = props.compressed ?? false;
 
@@ -386,6 +412,35 @@ export abstract class TableBase extends Resource implements ITable {
     return prefix.substring(0, maxIndexLength - hash.length - 1) + '-' + hash;
   }
 
+  /**
+   * Reconcile a `has_encrypted_data` value supplied through the free-form
+   * `parameters` map with the typed `hasEncryptedData` property.
+   *
+   * `has_encrypted_data` is managed by this construct and emitted authoritatively
+   * from `hasEncryptedData`. Supplying it through `parameters` as well is only
+   * tolerated when the value is identical; a differing (or unresolved) value is
+   * rejected so the two inputs can never silently disagree. On success the key is
+   * removed from the free-form map so the managed value is the single source of
+   * truth.
+   */
+  private reconcileHasEncryptedData(): void {
+    const key = 'has_encrypted_data';
+    if (!(key in this.parameters)) {
+      return;
+    }
+    const supplied = this.parameters[key];
+    const managed = String(this.hasEncryptedData);
+    if (Token.isUnresolved(supplied) || supplied !== managed) {
+      throw new ValidationError(
+        lit`HasEncryptedDataConflict`,
+        `the \`${key}\` table parameter is managed by the \`hasEncryptedData\` property; ` +
+          `remove it from \`parameters\` and use the boolean \`hasEncryptedData\` property instead (got ${JSON.stringify(supplied)}, expected ${JSON.stringify(managed)})`,
+        this,
+      );
+    }
+    delete this.parameters[key];
+  }
+
   private validatePartitionIndex(index: PartitionIndex) {
     if (index.indexName !== undefined && !Token.isUnresolved(index.indexName) && (index.indexName.length < 1 || index.indexName.length > 255)) {
       throw new ValidationError(lit`IndexNameLengthInvalid`, `Index name must be between 1 and 255 characters, but got ${index.indexName.length}`, this);
@@ -466,8 +521,17 @@ export abstract class TableBase extends Resource implements ITable {
   }
 
   /**
-   * Grant the given identity custom permissions.
+   * Grant the given identity custom permissions on this table.
+   *
+   * This is a low-level escape hatch: the `actions` are applied verbatim,
+   * scoped to this table's ARN. Prefer the intent-based `grantRead` /
+   * `grantWrite` / `grantReadWrite` methods, which grant a curated set of
+   * actions and also cover the underlying S3 data. Only pass the specific
+   * actions the grantee needs - avoid service wildcards such as `glue:*`.
    * [disable-awslint:no-grants]
+   *
+   * @param grantee the principal
+   * @param actions the set of Glue actions to allow (for example `glue:GetTable`)
    */
   public grant(grantee: iam.IGrantable, actions: string[]) {
     return iam.Grant.addToPrincipal({
@@ -478,9 +542,20 @@ export abstract class TableBase extends Resource implements ITable {
   }
 
   /**
-   * Grant the given identity custom permissions to ALL underlying resources of the table.
-   * Permissions will be granted to the catalog, the database, and the table.
+   * Grant the given identity custom permissions on this table AND its parent
+   * catalog and database.
+   *
+   * This is a low-level escape hatch for actions (such as certain Lake
+   * Formation or crawler operations) that must be authorized against the
+   * catalog and database in addition to the table. The `actions` are applied
+   * verbatim to all three ARNs (table, catalog, database), so scope them
+   * tightly: pass only the specific actions the grantee needs and avoid
+   * service wildcards such as `glue:*`, which would grant broad access across
+   * every resource in the catalog and database.
    * [disable-awslint:no-grants]
+   *
+   * @param grantee the principal
+   * @param actions the set of Glue actions to allow (for example `glue:GetTable`)
    */
   public grantToUnderlyingResources(grantee: iam.IGrantable, actions: string[]) {
     return iam.Grant.addToPrincipal({
