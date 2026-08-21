@@ -840,8 +840,8 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
         throw new ValidationError(lit`MustBeCanaryHandlerSpecified`, `Canary Handler must be specified as \'fileName.handler\' for legacy runtimes, received ${handler}`, this);
       }
     } else {
-      if (!handler.match(/^([0-9a-zA-Z_-]+\/)*[0-9A-Za-z_\\-]+\.[A-Za-z_][A-Za-z0-9_]*$/)) {
-        throw new ValidationError(lit`MustBeCanaryHandlerSpecified`, `Canary Handler must be specified either as \'fileName.handler\', \'fileName.functionName\', or \'folder/fileName.functionName\', received ${handler}`, this);
+      if (!handler.match(/^(([0-9a-zA-Z_-]+(\/|\.))*[0-9A-Za-z_\\-]+(\.|::)[A-Za-z_][A-Za-z0-9_]*)?$/)) {
+        throw new ValidationError(lit`MustBeCanaryHandlerSpecified`, `Canary Handler must be specified either as 'fileName.handler', 'fileName.functionName', 'folder/fileName.functionName', or 'fully.qualified.ClassName::method' for Java runtimes, received ${handler}`, this);
       }
     }
     if (handler.length < 1 || handler.length > 128) {
@@ -860,12 +860,15 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
     if (
       props.activeTracing &&
       (
-      // Only check runtime family is nodejs because versions prior to syn-nodejs-2.0 are deprecated and can no longer be configured.
-        (!cdk.Token.isUnresolved(props.runtime.family) && props.runtime.family !== RuntimeFamily.NODEJS) ||
+      // Only check runtime family because versions prior to syn-nodejs-2.0 are deprecated and can no longer be configured.
+      // Java runtimes also support active tracing.
+        (!cdk.Token.isUnresolved(props.runtime.family) &&
+          props.runtime.family !== RuntimeFamily.NODEJS &&
+          props.runtime.family !== RuntimeFamily.JAVA) ||
         (!cdk.Token.isUnresolved(props.runtime.name) && props.runtime.name.includes('playwright'))
       )
     ) {
-      throw new ValidationError(lit`ActiveTracingNotSupported`, `You can only enable active tracing for canaries that use canary runtime version 'syn-nodejs-2.0' or later and are not using the Playwright runtime, got ${props.runtime.name}.`, this);
+      throw new ValidationError(lit`ActiveTracingNotSupported`, `You can only enable active tracing for canaries that use canary runtime version 'syn-nodejs-2.0' or later, are not using the Playwright runtime, got ${props.runtime.name}.`, this);
     }
 
     let memoryInMb: number | undefined;
