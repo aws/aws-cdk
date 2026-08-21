@@ -134,27 +134,27 @@ describe('utils', () => {
         }
       });
 
-      test('does not follow external', () => {
+      test('throws on external', () => {
         const sourceRoot = path.join('source', 'root');
         const linkTarget = path.join('alternate', 'referent');
         const mockFsExists = ImportMock.mockFunction(fs, 'existsSync');
         try {
-          expect(util.shouldFollow(SymlinkFollowMode.BLOCK_EXTERNAL, sourceRoot, linkTarget)).toEqual(false);
-          expect(mockFsExists.notCalled).toEqual(true);
+          expect(() => util.shouldFollow(SymlinkFollowMode.BLOCK_EXTERNAL, sourceRoot, linkTarget))
+            .toThrow(/external symbolic link which is forbidden/);
         } finally {
           mockFsExists.restore();
         }
       });
 
-      test('does not follow a sibling that shares a name prefix with the root', () => {
+      test('throws on a sibling that shares a name prefix with the root', () => {
         // 'source/root-sibling' is external to 'source/root' despite the shared
-        // string prefix, so BLOCK_EXTERNAL must not follow it.
+        // string prefix, so BLOCK_EXTERNAL must reject it.
         const sourceRoot = path.join('source', 'root');
         const linkTarget = path.join('source', 'root-sibling', 'referent');
         const mockFsExists = ImportMock.mockFunction(fs, 'existsSync');
         try {
-          expect(util.shouldFollow(SymlinkFollowMode.BLOCK_EXTERNAL, sourceRoot, linkTarget)).toEqual(false);
-          expect(mockFsExists.notCalled).toEqual(true);
+          expect(() => util.shouldFollow(SymlinkFollowMode.BLOCK_EXTERNAL, sourceRoot, linkTarget))
+            .toThrow(/external symbolic link which is forbidden/);
         } finally {
           mockFsExists.restore();
         }
