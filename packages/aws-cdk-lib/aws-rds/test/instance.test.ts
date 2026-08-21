@@ -627,6 +627,101 @@ describe('instance', () => {
         vpc,
       })).toThrow(/You must specify `snapshotIdentifier` or `clusterSnapshotIdentifier`/);
     });
+
+    describe('manageMasterUserPassword', () => {
+      test('Oracle instance from snapshot with manageMasterUserPassword', () => {
+        // WHEN
+        new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+          snapshotIdentifier: 'my-snapshot',
+          engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
+          vpc,
+          manageMasterUserPassword: true,
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+          DBSnapshotIdentifier: 'my-snapshot',
+          ManageMasterUserPassword: true,
+          MasterUserPassword: Match.absent(),
+          MasterUserSecret: Match.absent(),
+        });
+
+        Template.fromStack(stack).resourceCountIs('AWS::SecretsManager::Secret', 0);
+      });
+
+      test('Oracle instance from snapshot with manageMasterUserPassword and KMS encryption key', () => {
+        // GIVEN
+        const kmsKey = new kms.Key(stack, 'Key');
+
+        // WHEN
+        new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+          snapshotIdentifier: 'my-snapshot',
+          engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
+          vpc,
+          manageMasterUserPassword: true,
+          // Use a plain object with generatePassword: false to only specify encryptionKey
+          credentials: { generatePassword: false, encryptionKey: kmsKey },
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+          DBSnapshotIdentifier: 'my-snapshot',
+          ManageMasterUserPassword: true,
+          MasterUserSecret: {
+            KmsKeyId: stack.resolve(kmsKey.keyArn),
+          },
+          MasterUserPassword: Match.absent(),
+        });
+      });
+
+      test('manageMasterUserPassword exposes secret via ManagedSecret', () => {
+        // WHEN
+        const instance = new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+          snapshotIdentifier: 'my-snapshot',
+          engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
+          vpc,
+          manageMasterUserPassword: true,
+        });
+
+        // THEN
+        expect(instance.secret).toBeDefined();
+      });
+
+      test('throws when manageMasterUserPassword is used with non-Oracle engine', () => {
+        // THEN
+        expect(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+          snapshotIdentifier: 'my-snapshot',
+          engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+          vpc,
+          manageMasterUserPassword: true,
+        })).toThrow(/`manageMasterUserPassword` is only supported for Oracle DB instances when restoring from a snapshot/);
+      });
+
+      test('throws when manageMasterUserPassword is used with unsupported credential properties', () => {
+        // THEN
+        expect(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+          snapshotIdentifier: 'my-snapshot',
+          engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
+          vpc,
+          manageMasterUserPassword: true,
+          credentials: rds.SnapshotCredentials.fromPassword(cdk.SecretValue.unsafePlainText('password')),
+        })).toThrow(/When manageMasterUserPassword is enabled, only 'username' and 'encryptionKey' are allowed in snapshotCredentials/);
+      });
+
+      test('addRotationSingleUser throws when manageMasterUserPassword is enabled', () => {
+        // GIVEN
+        const instance = new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+          snapshotIdentifier: 'my-snapshot',
+          engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
+          vpc,
+          manageMasterUserPassword: true,
+        });
+
+        // THEN
+        expect(() => instance.addRotationSingleUser())
+          .toThrow(/Cannot add rotation when `manageMasterUserPassword` is enabled/);
+      });
+    });
   });
 
   test('create a read replica in the same region - with the subnet group name', () => {
