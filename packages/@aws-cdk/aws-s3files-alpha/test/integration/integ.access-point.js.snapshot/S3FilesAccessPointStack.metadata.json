@@ -1,0 +1,474 @@
+{
+  "/S3FilesAccessPointStack/Vpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "maxAzs": "*"
+      }
+    }
+  ],
+  "/S3FilesAccessPointStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/S3FilesAccessPointStack/Bucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "versioned": true,
+        "removalPolicy": "destroy",
+        "autoDeleteObjects": true
+      }
+    }
+  ],
+  "/S3FilesAccessPointStack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/S3FilesAccessPointStack/FileSystem": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "S3 Files requires bucket versioning to be enabled. Ensure versioning is enabled on the bucket before deploying. [ack: @aws-cdk/aws-s3files-alpha:bucketVersioningNotVerified]",
+      "trace": [
+        "Annotations.addMessage (/local/home/caradoni/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:236:29)",
+        "Annotations.addWarningV2 (/local/home/caradoni/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:105:18)",
+        "FileSystem.validateProps (/local/home/caradoni/workspaces/aws-cdk/packages/@aws-cdk/aws-s3files-alpha/lib/file-system.js:345:44)",
+        "new FileSystem (/local/home/caradoni/workspaces/aws-cdk/packages/@aws-cdk/aws-s3files-alpha/lib/file-system.js:193:14)",
+        "new FileSystemWithAccessPointStack (/local/home/caradoni/workspaces/aws-cdk/packages/@aws-cdk/aws-s3files-alpha/test/integration/integ.access-point.js:52:27)",
+        "Object.<anonymous> (/local/home/caradoni/workspaces/aws-cdk/packages/@aws-cdk/aws-s3files-alpha/test/integration/integ.access-point.js:75:15)",
+        "Module._compile (node:internal/modules/cjs/loader:1760:14)",
+        "Object..js (node:internal/modules/cjs/loader:1892:10)",
+        "Module.load (node:internal/modules/cjs/loader:1480:32)",
+        "Module._load (node:internal/modules/cjs/loader:1299:12)",
+        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:245:24)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    }
+  ],
+  "/S3FilesAccessPointStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/S3FilesAccessPointStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/S3FilesAccessPointStack/Vpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpc8378EB38"
+    }
+  ],
+  "/S3FilesAccessPointStack/Vpc/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/S3FilesAccessPointStack/Vpc/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/S3FilesAccessPointStack/Vpc/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIGWD7BA715C"
+    }
+  ],
+  "/S3FilesAccessPointStack/Vpc/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcVPCGWBF912B6E"
+    }
+  ],
+  "/S3FilesAccessPointStack/Vpc/RestrictDefaultSecurityGroupCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/S3FilesAccessPointStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+    }
+  ],
+  "/S3FilesAccessPointStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+    }
+  ],
+  "/S3FilesAccessPointStack/Bucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Bucket83908E77"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/S3FilesAccessPointStack/Bucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/S3FilesAccessPointStack/Bucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/S3FilesAccessPointStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    }
+  ],
+  "/S3FilesAccessPointStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    }
+  ],
+  "/S3FilesAccessPointStack/FileSystem/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/S3FilesAccessPointStack/FileSystem/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "description": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addIngressRule": [
+          {
+            "canInlineRule": true,
+            "connections": "*",
+            "uniqueId": "*"
+          },
+          {},
+          "*"
+        ]
+      }
+    }
+  ],
+  "/S3FilesAccessPointStack/FileSystem/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FileSystem8A8E25C0"
+    }
+  ],
+  "/S3FilesAccessPointStack/FileSystem/MountTarget-PrivateSubnet1": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FileSystemMountTargetPrivateSubnet1DA207B1B"
+    }
+  ],
+  "/S3FilesAccessPointStack/Exports/Output{\"Ref\":\"FileSystemAccessPointF8178182\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefFileSystemAccessPointF8178182DF8BC44C"
+    }
+  ],
+  "/S3FilesAccessPointStack/Vpc/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1Subnet5C2D37C4"
+    }
+  ],
+  "/S3FilesAccessPointStack/Vpc/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTable6C95E38E"
+    }
+  ],
+  "/S3FilesAccessPointStack/Vpc/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+    }
+  ],
+  "/S3FilesAccessPointStack/Vpc/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+    }
+  ],
+  "/S3FilesAccessPointStack/Vpc/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1EIPD7E02669"
+    }
+  ],
+  "/S3FilesAccessPointStack/Vpc/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1NATGateway4D7517AA"
+    }
+  ],
+  "/S3FilesAccessPointStack/Vpc/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1Subnet536B997A"
+    }
+  ],
+  "/S3FilesAccessPointStack/Vpc/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+    }
+  ],
+  "/S3FilesAccessPointStack/Vpc/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+    }
+  ],
+  "/S3FilesAccessPointStack/Vpc/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+    }
+  ],
+  "/S3FilesAccessPointStack/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
+    }
+  ],
+  "/S3FilesAccessPointStack/Bucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BucketPolicyE9A3008A"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/S3FilesAccessPointStack/Bucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
+    }
+  ],
+  "/S3FilesAccessPointStack/FileSystem/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FileSystemServiceRole31A18070"
+    }
+  ],
+  "/S3FilesAccessPointStack/FileSystem/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/S3FilesAccessPointStack/FileSystem/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FileSystemSecurityGroup2269DE17"
+    }
+  ],
+  "/S3FilesAccessPointStack/FileSystem/AccessPoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FileSystemAccessPointF8178182"
+    }
+  ],
+  "/S3FilesAccessPointStack/FileSystem/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FileSystemServiceRoleDefaultPolicy458B4F25"
+    }
+  ]
+}
