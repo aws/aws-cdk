@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "0ec0759c47d3337a1f7822a3c58f06fc4f09327a4dcfedcd68314135ab7c546c": {
+      "displayName": "aws-cdk-log-group-resource-policy-arn-integ Template",
+      "source": {
+        "path": "aws-cdk-log-group-resource-policy-arn-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-b793f70d": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0ec0759c47d3337a1f7822a3c58f06fc4f09327a4dcfedcd68314135ab7c546c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
