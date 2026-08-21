@@ -1,5 +1,6 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as bedrock from '../../../bedrock';
 
 const app = new cdk.App();
@@ -103,6 +104,19 @@ new cdk.CfnOutput(stack, 'AgentWithCrossRegionArn', {
 new cdk.CfnOutput(stack, 'PromptWithRouterArn', {
   value: promptWithRouter.promptArn,
   description: 'ARN of the prompt using prompt router',
+});
+
+// Test grantProfileUsage: verifies IAM policy with two statements
+// (inference-profile + foundation-model with condition) deploys successfully
+const grantTestRole = new iam.Role(stack, 'GrantProfileUsageRole', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+  description: 'Validates grantProfileUsage generates a deployable IAM policy',
+});
+crossRegionProfile.grantProfileUsage(grantTestRole);
+
+new cdk.CfnOutput(stack, 'GrantProfileUsageRoleArn', {
+  value: grantTestRole.roleArn,
+  description: 'Role with cross-region inference profile permissions',
 });
 
 new IntegTest(app, 'BedrockInferenceProfilesTest', {
