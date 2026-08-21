@@ -96,6 +96,27 @@ onCommitRule.addTarget(new targets.SnsTopic(topic, {
 }));
 ```
 
+### Custom Target Id
+
+By default, each target added to a rule is given an auto-generated id
+(`Target0`, `Target1`, ...). When importing infrastructure that was created
+outside of CDK (for example, by the `PutTargets` API) you may need to
+preserve the existing target `Id` to avoid CloudFormation drift detection.
+You can do this by passing an explicit id as the second argument of
+`addTarget`:
+
+```ts
+declare const onCommitRule: events.Rule;
+declare const topic: sns.Topic;
+
+onCommitRule.addTarget(new targets.SnsTopic(topic), {
+  id: 'MyExistingTargetId',
+});
+```
+
+The id must be between 1 and 64 characters and may contain alphanumeric
+characters, periods (`.`), hyphens (`-`), and underscores (`_`).
+
 ### Role
 You can specify an IAM Role:
 
