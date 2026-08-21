@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import { performance } from 'perf_hooks';
-import { profileClass, profileFn, profileObj, profileSpan, readPerfCounters, recordCounter } from '../../lib/private/perf';
+import type { RecordPerformanceOptions } from '../../lib/private/perf';
+import { profileClass, profileFn, profileObj, profileSpan, readPerfCounters, recordPerformanceEntry } from '../../lib/private/perf';
 
 beforeEach(() => {
   performance.clearMeasures();
@@ -68,6 +69,10 @@ test('spans can be recorded, and counts can be skipped', () => {
     },
   });
 });
+
+function recordCounter(key: string, count: number, options?: RecordPerformanceOptions) {
+  recordPerformanceEntry(key, { count, ...options });
+}
 
 test('arbitrary counters can be recorded, aggregated, and selected for telemetry', () => {
   // WHEN
