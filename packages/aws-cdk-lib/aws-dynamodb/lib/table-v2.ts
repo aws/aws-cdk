@@ -879,7 +879,6 @@ export class TableV2 extends TableBaseV2 {
     this.grants = new TableGrants({
       table: this,
       regions: Array.from(this.replicaTables.keys()),
-      hasIndex: this.hasIndex,
     });
 
     if (props.tableName) {
