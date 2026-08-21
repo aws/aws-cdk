@@ -1,10 +1,9 @@
 import * as fs from 'fs';
-import { performance } from 'perf_hooks';
 import type { RecordPerformanceOptions } from '../../lib/private/perf';
-import { profileClass, profileFn, profileObj, profileSpan, readPerfCounters, recordPerformanceEntry } from '../../lib/private/perf';
+import { profileClass, profileFn, profileObj, profileSpan, readPerfCounters, recordPerformanceEntry, resetCounters } from '../../lib/private/perf';
 
 beforeEach(() => {
-  performance.clearMeasures();
+  resetCounters();
 });
 
 test('functions can be instrumented', () => {

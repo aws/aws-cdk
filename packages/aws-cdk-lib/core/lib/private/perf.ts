@@ -142,6 +142,14 @@ export function recordPerformanceEntry(key: string, options: RecordPerformanceOp
 }
 
 /**
+ * Reset all counters
+ */
+export function resetCounters() {
+  STATE.allCounters = {};
+  STATE.telemetryCounters = {};
+}
+
+/**
  * Increase an entry in a single set of perf counters
  */
 function bumpPerfCounter(counters: PerfCounters, key: string, durationMs?: number, count?: number) {

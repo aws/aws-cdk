@@ -1,7 +1,7 @@
 import { performance } from 'perf_hooks';
 import type { Construct, IConstruct } from 'constructs';
 import * as fs from 'fs-extra';
-import { readPerfCounters, recordPerformanceEntry } from './helpers-internal';
+import { readPerfCounters, recordPerformanceEntry, resetCounters } from './helpers-internal';
 import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
 import type { ICustomSynthesis } from './private/synthesis';
 import { addCustomSynthesis } from './private/synthesis';
@@ -331,6 +331,7 @@ export class App extends Stage {
     if (this.shouldReportSlowSynth(totalAppTimeMs / stackCount)) {
       emitPerformanceCountersFile();
     }
+    resetCounters();
 
     return ret;
   }
