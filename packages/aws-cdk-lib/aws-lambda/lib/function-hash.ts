@@ -5,13 +5,18 @@ import { FeatureFlags, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { lit } from '../../core/lib/private/literal-string';
-import { LAMBDA_RECOGNIZE_LAYER_VERSION, LAMBDA_RECOGNIZE_VERSION_PROPS } from '../../cx-api';
+import { LAMBDA_RECOGNIZE_LAYER_VERSION, LAMBDA_RECOGNIZE_VERSION_PROPS, LAMBDA_STABLE_FUNCTION_HASH } from '../../cx-api';
 
 export function calculateFunctionHash(fn: LambdaFunction, additional: string = '') {
   const stack = Stack.of(fn);
+  const stableHash = FeatureFlags.of(fn).isEnabled(LAMBDA_STABLE_FUNCTION_HASH);
 
   const functionResource = fn.node.defaultChild as CfnResource;
   const { properties, template, logicalId } = resolveSingleResourceProperties(stack, functionResource);
+
+  if (stableHash) {
+    sortVpcConfigArrays(properties);
+  }
 
   let stringifiedConfig;
   if (FeatureFlags.of(fn).isEnabled(LAMBDA_RECOGNIZE_VERSION_PROPS)) {
@@ -24,10 +29,51 @@ export function calculateFunctionHash(fn: LambdaFunction, additional: string = '
   }
 
   if (FeatureFlags.of(fn).isEnabled(LAMBDA_RECOGNIZE_LAYER_VERSION)) {
-    stringifiedConfig = stringifiedConfig + calculateLayersHash([...fn._layers].sort());
+    // The default array sort comparator stringifies each layer object to
+    // "[object Object]", so it does not actually order layers. Under the
+    // stable-hash flag, sort layers with an explicit comparator instead.
+    const layers = stableHash
+      ? [...fn._layers].sort(compareLayers)
+      : [...fn._layers].sort();
+    stringifiedConfig = stringifiedConfig + calculateLayersHash(layers, stableHash);
   }
 
   return md5hash(stringifiedConfig + additional);
+}
+
+/**
+ * Sort the VpcConfig arrays of a resolved AWS::Lambda::Function properties object in place.
+ *
+ * The order of SubnetIds and SecurityGroupIds carries no semantic meaning, but a VPC
+ * lookup can return them in any order, which would otherwise change the version hash.
+ */
+function sortVpcConfigArrays(properties: any) {
+  const vpcConfig = properties?.VpcConfig;
+  if (vpcConfig == null || typeof vpcConfig !== 'object') {
+    return;
+  }
+  for (const key of ['SubnetIds', 'SecurityGroupIds']) {
+    if (Array.isArray(vpcConfig[key])) {
+      vpcConfig[key] = [...vpcConfig[key]].sort(compareByJson);
+    }
+  }
+}
+
+/**
+ * Compare layers by ARN when resolved, falling back to the construct id.
+ */
+function compareLayers(a: ILayerVersion, b: ILayerVersion): number {
+  const keyOf = (layer: ILayerVersion) =>
+    !Token.isUnresolved(layer.layerVersionArn) ? layer.layerVersionArn : layer.node.id;
+  return keyOf(a).localeCompare(keyOf(b));
+}
+
+/**
+ * Compare array elements by their JSON representation, so that both plain strings
+ * and resolved intrinsics ({ Ref: ... }, { 'Fn::GetAtt': ... }) order deterministically.
+ */
+function compareByJson(a: any, b: any): number {
+  return JSON.stringify(a).localeCompare(JSON.stringify(b));
 }
 
 export function trimFromStart(s: string, maxLength: number) {
@@ -103,7 +149,7 @@ function filterUsefulKeys(properties: any, fn: LambdaFunction) {
   return ret;
 }
 
-function calculateLayersHash(layers: ILayerVersion[]): string {
+function calculateLayersHash(layers: ILayerVersion[], stableHash: boolean = false): string {
   const layerConfig: {[key: string]: any } = {};
   for (const layer of layers) {
     const stack = Stack.of(layer);
@@ -128,6 +174,16 @@ function calculateLayersHash(layers: ILayerVersion[]): string {
 
     // all properties require replacement, so they are all version locked.
     layerConfig[layer.node.id] = sortLayerVersionProperties(properties);
+  }
+
+  if (stableHash) {
+    // JSON.stringify preserves insertion order, so sort the keys to make the
+    // hash independent of the order in which layers were processed.
+    const sortedConfig: {[key: string]: any } = {};
+    for (const key of Object.keys(layerConfig).sort()) {
+      sortedConfig[key] = layerConfig[key];
+    }
+    return md5hash(JSON.stringify(sortedConfig));
   }
 
   return md5hash(JSON.stringify(layerConfig));

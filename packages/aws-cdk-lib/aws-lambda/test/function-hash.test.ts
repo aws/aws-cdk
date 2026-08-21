@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
 import { Template } from '../../assertions';
+import * as ec2 from '../../aws-ec2';
 import * as ssm from '../../aws-ssm';
 import { App, CfnOutput, CfnResource, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
@@ -524,4 +525,137 @@ test.each([false, true])('can invalidate version hash using invalidateVersionBas
   } else {
     expect(template1.toJSON()).toEqual(template2.toJSON());
   }
+});
+
+describe('stable function hash', () => {
+  function vpcFunction(app: App, stackName: string, subnetIds: string[], securityGroupIds: string[]) {
+    const stack = new Stack(app, stackName);
+    const vpc = ec2.Vpc.fromVpcAttributes(stack, 'Vpc', {
+      vpcId: 'vpc-12345',
+      availabilityZones: subnetIds.map((_, i) => `dummy${i}`),
+      privateSubnetIds: subnetIds,
+    });
+    return new lambda.Function(stack, 'MyFunction', {
+      runtime: THE_RUNTIME,
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+      vpc,
+      securityGroups: securityGroupIds.map((id, i) => ec2.SecurityGroup.fromSecurityGroupId(stack, `SG${i}`, id)),
+    });
+  }
+
+  describe('VpcConfig array ordering', () => {
+    test('with feature flag, permuted SubnetIds and SecurityGroupIds produce the same hash', () => {
+      const app = new App({ context: { [cxapi.LAMBDA_STABLE_FUNCTION_HASH]: true } });
+      const fn1 = vpcFunction(app, 'Stack1', ['subnet-aaa', 'subnet-bbb', 'subnet-ccc'], ['sg-111', 'sg-222']);
+      const fn2 = vpcFunction(app, 'Stack2', ['subnet-ccc', 'subnet-aaa', 'subnet-bbb'], ['sg-222', 'sg-111']);
+
+      expect(calculateFunctionHash(fn1)).toEqual(calculateFunctionHash(fn2));
+    });
+
+    test('without feature flag, permuted SubnetIds produce different hashes (old behavior preserved)', () => {
+      const app = new App();
+      const fn1 = vpcFunction(app, 'Stack1', ['subnet-aaa', 'subnet-bbb', 'subnet-ccc'], ['sg-111']);
+      const fn2 = vpcFunction(app, 'Stack2', ['subnet-ccc', 'subnet-aaa', 'subnet-bbb'], ['sg-111']);
+
+      expect(calculateFunctionHash(fn1)).not.toEqual(calculateFunctionHash(fn2));
+    });
+
+    test('with feature flag, a different subnet set still produces a different hash', () => {
+      const app = new App({ context: { [cxapi.LAMBDA_STABLE_FUNCTION_HASH]: true } });
+      const fn1 = vpcFunction(app, 'Stack1', ['subnet-aaa', 'subnet-bbb'], ['sg-111']);
+      const fn2 = vpcFunction(app, 'Stack2', ['subnet-aaa', 'subnet-ddd'], ['sg-111']);
+
+      expect(calculateFunctionHash(fn1)).not.toEqual(calculateFunctionHash(fn2));
+    });
+  });
+
+  describe('layer ordering', () => {
+    test('with feature flag, identical functions with imported layers produce identical hashes', () => {
+      const app = new App({
+        context: {
+          [cxapi.LAMBDA_RECOGNIZE_LAYER_VERSION]: true,
+          [cxapi.LAMBDA_STABLE_FUNCTION_HASH]: true,
+        },
+      });
+
+      const makeFn = (stackName: string) => {
+        const stack = new Stack(app, stackName);
+        const layerZ = lambda.LayerVersion.fromLayerVersionArn(stack, 'LayerZ', 'arn:aws:lambda:region:account:layer:zzz:1');
+        const layerA = lambda.LayerVersion.fromLayerVersionArn(stack, 'LayerA', 'arn:aws:lambda:region:account:layer:aaa:1');
+        return new lambda.Function(stack, 'MyFunction', {
+          runtime: THE_RUNTIME,
+          code: lambda.Code.fromInline('foo'),
+          handler: 'index.handler',
+          layers: [layerZ, layerA],
+        });
+      };
+
+      expect(calculateFunctionHash(makeFn('Stack1'))).toEqual(calculateFunctionHash(makeFn('Stack2')));
+    });
+
+    test('with feature flag, different imported layer ARNs still produce different hashes', () => {
+      const app = new App({
+        context: {
+          [cxapi.LAMBDA_RECOGNIZE_LAYER_VERSION]: true,
+          [cxapi.LAMBDA_STABLE_FUNCTION_HASH]: true,
+        },
+      });
+
+      const stack1 = new Stack(app, 'Stack1');
+      const fn1 = new lambda.Function(stack1, 'MyFunction', {
+        runtime: THE_RUNTIME,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'index.handler',
+        layers: [lambda.LayerVersion.fromLayerVersionArn(stack1, 'Layer', 'arn:aws:lambda:region:account:layer:name:1')],
+      });
+
+      const stack2 = new Stack(app, 'Stack2');
+      const fn2 = new lambda.Function(stack2, 'MyFunction', {
+        runtime: THE_RUNTIME,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'index.handler',
+        layers: [lambda.LayerVersion.fromLayerVersionArn(stack2, 'Layer', 'arn:aws:lambda:region:account:layer:name:2')],
+      });
+
+      expect(calculateFunctionHash(fn1)).not.toEqual(calculateFunctionHash(fn2));
+    });
+
+    test('with feature flag, in-app layer order still does not affect the hash', () => {
+      const app = new App({
+        context: {
+          [cxapi.LAMBDA_RECOGNIZE_LAYER_VERSION]: true,
+          [cxapi.LAMBDA_STABLE_FUNCTION_HASH]: true,
+        },
+      });
+
+      const layerStack = new Stack(app, 'LayerStack');
+      const layer1 = new lambda.LayerVersion(layerStack, 'Layer1', {
+        code: lambda.Code.fromAsset(path.join(__dirname, 'layer-code')),
+        compatibleRuntimes: [THE_RUNTIME],
+      });
+      const layer2 = new lambda.LayerVersion(layerStack, 'Layer2', {
+        code: lambda.Code.fromAsset(path.join(__dirname, 'layer-code')),
+        compatibleRuntimes: [THE_RUNTIME],
+      });
+
+      const stack1 = new Stack(app, 'Stack1');
+      const fn1 = new lambda.Function(stack1, 'MyFunction', {
+        runtime: THE_RUNTIME,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'index.handler',
+        layers: [layer1, layer2],
+      });
+
+      const stack2 = new Stack(app, 'Stack2');
+      const fn2 = new lambda.Function(stack2, 'MyFunction', {
+        runtime: THE_RUNTIME,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'index.handler',
+        layers: [layer2, layer1],
+      });
+
+      expect(calculateFunctionHash(fn1)).toEqual(calculateFunctionHash(fn2));
+    });
+  });
 });
