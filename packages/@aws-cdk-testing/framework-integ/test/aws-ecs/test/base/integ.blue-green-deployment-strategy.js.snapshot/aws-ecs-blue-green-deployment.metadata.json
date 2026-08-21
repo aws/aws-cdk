@@ -1,0 +1,1349 @@
+{
+  "/aws-ecs-blue-green-deployment": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:10:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "maxAzs": "*",
+        "restrictDefaultSecurityGroup": false
+      }
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/FargateCluster": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "defaultCloudMapNamespace": {
+          "name": "*",
+          "useForServiceConnect": true
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addDefaultCloudMapNamespace": [
+          {
+            "name": "*",
+            "useForServiceConnect": true
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/LBSecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "allowAllOutbound": true
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addIngressRule": [
+          {
+            "canInlineRule": true,
+            "connections": "*",
+            "uniqueId": "*"
+          },
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addIngressRule": [
+          {
+            "canInlineRule": true,
+            "connections": "*",
+            "uniqueId": "*"
+          },
+          {},
+          "*",
+          false
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEgressRule": [
+          "*",
+          {},
+          "*",
+          true
+        ]
+      }
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/ECSSecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "allowAllOutbound": true
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addIngressRule": [
+          "*",
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addIngressRule": [
+          "*",
+          {},
+          "*",
+          false
+        ]
+      }
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/ALB": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/LambdaHook": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "handler": "*",
+        "runtime": "*",
+        "code": "*"
+      }
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/TaskDef": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Service": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]",
+      "trace": [
+        "Annotations.addMessage (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:200:29)",
+        "Annotations.addWarningV2 (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:70:18)",
+        "new BaseService (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:433:47)",
+        "new FargateService (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/fargate/fargate-service.js:161:13)",
+        "new FargateService (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:108:17)",
+        "Module._compile (node:internal/modules/cjs/loader:1706:14)",
+        "Module._extensions..js (node:internal/modules/cjs/loader:1839:10)",
+        "Module.load (node:internal/modules/cjs/loader:1441:32)",
+        "Module._load (node:internal/modules/cjs/loader:1263:12)",
+        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:237:24)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
+        "node:internal/main/run_main_module:36:49"
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:258:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:135:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:266:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:135:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpc8378EB38"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:768:29)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/PrivateSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIGWD7BA715C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:823:29)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcVPCGWBF912B6E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:826:29)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/FargateCluster/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FargateCluster7CCD5F93"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Cluster (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:327:32)",
+        "new Cluster (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:13:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/FargateCluster/DefaultServiceDiscoveryNamespace": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "name": "*",
+        "vpc": "*"
+      }
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/BlueTG/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BlueTG7C058B2C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TargetGroupBase (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/shared/base-target-group.js:139:25)",
+        "new ApplicationTargetGroup (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-target-group.js:207:13)",
+        "new ApplicationTargetGroup (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:21:25)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/GreenTG/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GreenTG71A27F2F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TargetGroupBase (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/shared/base-target-group.js:139:25)",
+        "new ApplicationTargetGroup (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-target-group.js:207:13)",
+        "new ApplicationTargetGroup (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:32:26)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/LBSecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LBSecurityGroup4464B654"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecurityGroup (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:416:34)",
+        "new SecurityGroup (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:43:25)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/ECSSecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ECSSecurityGroupA14DBE7D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecurityGroup (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:416:34)",
+        "new SecurityGroup (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:48:26)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/ECSSecurityGroup/from awsecsbluegreendeploymentLBSecurityGroup67E4A783:80": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ECSSecurityGroupfromawsecsbluegreendeploymentLBSecurityGroup67E4A78380F93FD2DA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addIngressRule (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:96:13)",
+        "WrappedClass.addIngressRule (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:441:23)",
+        "WrappedClass.<anonymous> (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:52:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/ALB/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ALBAEE750D2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BaseLoadBalancer (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/shared/base-load-balancer.js:190:26)",
+        "new ApplicationLoadBalancer (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-load-balancer.js:241:13)",
+        "new ApplicationLoadBalancer (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:54:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/ALB/ALBListenerHTTP": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/ALBProductionListenerRule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ALBProductionListenerRule243D0687"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ApplicationListenerRule (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-listener-rule.js:62:26)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:66:26)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/LambdaHook/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/LambdaHook/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaHookBF1BC8B4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
+        "new Function (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:84:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/LambdaHook/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/TaskDef/TaskRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/TaskDef/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TaskDef54694570"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TaskDefinition (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/task-definition.js:388:29)",
+        "new TaskDefinition (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new FargateTaskDefinition (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/fargate/fargate-task-definition.js:144:13)",
+        "new FargateTaskDefinition (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:93:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Service/Service": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ServiceD69D759B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BaseService (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:379:29)",
+        "new FargateService (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/fargate/fargate-service.js:161:13)",
+        "new FargateService (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:108:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Service/LBAlternateOptionsRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Service/PreScaleUpRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1Subnet5C2D37C4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1262:28)",
+        "new Subnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
+        "new PublicSubnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTable6C95E38E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1281:27)",
+        "new Subnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
+        "new PublicSubnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1286:32)",
+        "new Subnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
+        "new PublicSubnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1301:27)",
+        "WrappedClass.<anonymous> (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:833: (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:833:3)",
+        "Array.forEach (:)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:830:36)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1EIPD7E02669"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1553:50)",
+        "WrappedClass.<anonymous> (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:926:22)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:843:26)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1NATGateway4D7517AA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1551:25)",
+        "WrappedClass.<anonymous> (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:926:22)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:843:26)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2Subnet691E08A3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1262:28)",
+        "new Subnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
+        "new PublicSubnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTable94F7E489"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1281:27)",
+        "new Subnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
+        "new PublicSubnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1286:32)",
+        "new Subnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
+        "new PublicSubnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2DefaultRoute97F91067"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1301:27)",
+        "WrappedClass.<anonymous> (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:833: (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:833:3)",
+        "Array.forEach (:)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:830:36)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet2/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2EIP3C605A87"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1553:50)",
+        "WrappedClass.<anonymous> (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:926:22)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:843:26)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet2/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2NATGateway9182C01D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1551:25)",
+        "WrappedClass.<anonymous> (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:926:22)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:843:26)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1Subnet536B997A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1262:28)",
+        "new Subnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
+        "new PrivateSubnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049: (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1281:27)",
+        "new Subnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
+        "new PrivateSubnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049: (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1286:32)",
+        "new Subnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
+        "new PrivateSubnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049: (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1390:27)",
+        "WrappedClass.<anonymous> (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
+        "NatGatewayProvider.configureNat (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
+        "WrappedClass.createNatGateways (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:926:22)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:843:26)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2Subnet3788AAA1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1262:28)",
+        "new Subnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
+        "new PrivateSubnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049: (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2RouteTableA678073B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1281:27)",
+        "new Subnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
+        "new PrivateSubnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049: (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1286:32)",
+        "new Subnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
+        "new PrivateSubnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049: (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Vpc/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1390:27)",
+        "WrappedClass.<anonymous> (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
+        "NatGatewayProvider.configureNat (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
+        "WrappedClass.createNatGateways (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:926:22)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:843:26)",
+        "new Vpc (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/FargateCluster/DefaultServiceDiscoveryNamespace/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FargateClusterDefaultServiceDiscoveryNamespace04381E1E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new PrivateDnsNamespace (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-servicediscovery/lib/private-dns-namespace.js:144:24)",
+        "new PrivateDnsNamespace (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addDefaultCloudMapNamespace (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:487:35)",
+        "WrappedClass.<anonymous> (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Cluster (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:334:24)",
+        "new Cluster (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:13:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/ALB/ALBListenerHTTP/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ALBALBListenerHTTP413250C3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BaseListener (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/shared/base-listener.js:69:26)",
+        "new ApplicationListener (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-listener.js:230:13)",
+        "new ApplicationListener (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addListener (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-load-balancer.js:330:30)",
+        "WrappedClass.<anonymous> (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:61:22)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/LambdaHook/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaHookServiceRole9AAAD33B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
+        "new Function (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:84:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/LambdaHook/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaHookLogGroup46DB72C9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
+        "new LogGroup (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:777:34)",
+        "new Function (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:84:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/TaskDef/TaskRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TaskDefTaskRole1EDB4A67"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TaskDefinition (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/task-definition.js:333:47)",
+        "new TaskDefinition (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new FargateTaskDefinition (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/fargate/fargate-task-definition.js:144:13)",
+        "new FargateTaskDefinition (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:93:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Service/LBAlternateOptionsRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ServiceLBAlternateOptionsRole06C91D94"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "AlternateTarget.bind (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/alternate-target-configuration.js:89:41)",
+        "WrappedClass.attachToELBv2 (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:1356:60)",
+        "Object.attachToApplicationTargetGroup (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:1037:33)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:130:8)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Service/PreScaleUpRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ServicePreScaleUpRoleD002A553"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "DeploymentLifecycleLambdaTarget.bind (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/deployment-lifecycle-hook-target.js:80:26)",
+        "/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:552: (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:552:3)",
+        "Array.map (:)",
+        "WrappedClass.renderLifecycleHooks (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:551:40)",
+        "Object.produce (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:401:77)",
+        "LazyAny.resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/lazy.js:278:66)",
+        "LazyAny.resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/lazy.js:323:32)",
+        "RememberingTokenResolver.resolveToken (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/resolvable.js:66:30)",
+        "RememberingTokenResolver.resolveToken (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:195:22)",
+        "resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:134:55)",
+        "Object.resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:55:48)",
+        "resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:149:51)",
+        "Object.resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:55:48)",
+        "resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:149:51)",
+        "Object.resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:55:48)",
+        "RememberingTokenResolver.resolveToken (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/resolvable.js:68:32)",
+        "RememberingTokenResolver.resolveToken (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:195:22)",
+        "resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:134:55)",
+        "Object.resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:55:48)",
+        "resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:149:51)",
+        "Object.resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:55:48)",
+        "RememberingTokenResolver.resolveToken (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/resolvable.js:68:32)",
+        "RememberingTokenResolver.resolveToken (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:195:22)",
+        "resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:134:55)",
+        "Object.resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:55:48)",
+        "resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:149:51)",
+        "Object.resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:55:48)",
+        "resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:149:51)",
+        "findTokens (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:185:5)",
+        "findAllReferences (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:139:55)",
+        "resolveReferences (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:32:19)",
+        "prepareApp (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:32:36)",
+        "synthesize (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:36)",
+        "App.synth (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:135:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Service/PreScaleUpRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-ecs-blue-green-deployment/Service/PreScaleUpRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ServicePreScaleUpRoleDefaultPolicyF1032E86"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
+        "new Policy (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "WrappedClass.grant (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:483:35)",
+        "WrappedClass.grantInvoke (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:287:26)",
+        "DeploymentLifecycleLambdaTarget.bind (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/deployment-lifecycle-hook-target.js:83:26)",
+        "/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:552: (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:552:3)",
+        "Array.map (:)",
+        "WrappedClass.renderLifecycleHooks (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:551:40)",
+        "Object.produce (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:401:77)",
+        "LazyAny.resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/lazy.js:278:66)",
+        "LazyAny.resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/lazy.js:323:32)",
+        "RememberingTokenResolver.resolveToken (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/resolvable.js:66:30)",
+        "RememberingTokenResolver.resolveToken (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:195:22)",
+        "resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:134:55)",
+        "Object.resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:55:48)",
+        "resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:149:51)",
+        "Object.resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:55:48)",
+        "resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:149:51)",
+        "Object.resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:55:48)",
+        "RememberingTokenResolver.resolveToken (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/resolvable.js:68:32)",
+        "RememberingTokenResolver.resolveToken (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:195:22)",
+        "resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:134:55)",
+        "Object.resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:55:48)",
+        "resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:149:51)",
+        "Object.resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:55:48)",
+        "RememberingTokenResolver.resolveToken (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/resolvable.js:68:32)",
+        "RememberingTokenResolver.resolveToken (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:195:22)",
+        "resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:134:55)",
+        "Object.resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:55:48)",
+        "resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:149:51)",
+        "Object.resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:55:48)",
+        "resolve (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:149:51)",
+        "findTokens (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:185:5)",
+        "findAllReferences (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:139:55)",
+        "resolveReferences (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:32:19)",
+        "prepareApp (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:32:36)",
+        "synthesize (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:36)",
+        "App.synth (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/base/integ.blue-green-deployment-strategy.js:135:5)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
