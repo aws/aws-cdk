@@ -323,6 +323,40 @@ const eventBus = events.EventBus.fromEventBusArn(this, 'ImportedEventBus', 'arn:
 eventBus.grantPutEventsTo(lambdaFunction);
 ```
 
+## Granting InvokeApiDestination to an API Destination
+
+An [API destination](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-api-destinations.html)
+is an HTTP endpoint that you can set as the target of an event. Services such as
+EventBridge Scheduler need permission to call it.
+
+Use the `grantInvokeApiDestination` method to grant `events:InvokeApiDestination`
+on the destination to a grantee. It works on destinations you create as well as
+on destinations imported with `ApiDestination.fromApiDestinationAttributes`.
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+
+declare const secret: secretsmanager.Secret;
+
+const connection = new events.Connection(this, 'Connection', {
+  authorization: events.Authorization.apiKey('x-api-key', secret.secretValue),
+});
+
+const destination = new events.ApiDestination(this, 'Destination', {
+  connection,
+  endpoint: 'https://example.com',
+  httpMethod: events.HttpMethod.GET,
+});
+
+const invokeRole = new iam.Role(this, 'InvokeRole', {
+  assumedBy: new iam.ServicePrincipal('scheduler.amazonaws.com'),
+});
+
+// Grants `events:InvokeApiDestination` scoped to the destination.
+destination.grantInvokeApiDestination(invokeRole);
+```
+
 ## Use a customer managed key
 
 To use a customer managed key for events on the event bus, use the `kmsKey` attribute.

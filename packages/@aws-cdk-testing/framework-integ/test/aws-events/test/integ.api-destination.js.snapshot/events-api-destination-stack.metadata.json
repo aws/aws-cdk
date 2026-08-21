@@ -1,0 +1,110 @@
+{
+  "/events-api-destination-stack/Secret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/events-api-destination-stack/Connection": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/events-api-destination-stack/Destination": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/events-api-destination-stack/DestinationArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DestinationArn"
+    }
+  ],
+  "/events-api-destination-stack/DestinationArnForPolicy": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DestinationArnForPolicy"
+    }
+  ],
+  "/events-api-destination-stack/InvokeRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/events-api-destination-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/events-api-destination-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/events-api-destination-stack/Secret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SecretA720EF05"
+    }
+  ],
+  "/events-api-destination-stack/Connection/Connection": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Connection07624BCD"
+    }
+  ],
+  "/events-api-destination-stack/Destination/ApiDestination": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DestinationApiDestinationA879FAE5"
+    }
+  ],
+  "/events-api-destination-stack/InvokeRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InvokeRoleC9AEA952"
+    }
+  ],
+  "/events-api-destination-stack/InvokeRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/events-api-destination-stack/InvokeRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InvokeRoleDefaultPolicyC476D83C"
+    }
+  ]
+}
