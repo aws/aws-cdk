@@ -114,6 +114,39 @@ export class OAuth2CredentialProviderVendor {
   }
 }
 
+/**
+ * Source of the OAuth2 client secret.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-bedrockagentcore-oauth2credentialprovider-customoauth2providerconfiginput.html
+ */
+export enum ClientSecretSource {
+  /** The service creates and manages the secret in Secrets Manager (default). */
+  MANAGED = 'MANAGED',
+  /**
+   * You supply a pre-existing AWS Secrets Manager secret.
+   * Must be accompanied by `clientSecretConfig` on the provider props.
+   */
+  EXTERNAL = 'EXTERNAL',
+}
+
+/**
+ * A reference to a pre-existing AWS Secrets Manager secret that stores an OAuth2 client secret
+ * value, for use with `ClientSecretSource.EXTERNAL`.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-bedrockagentcore-oauth2credentialprovider-secretreference.html
+ */
+export interface OAuth2ClientSecretConfig {
+  /**
+   * The ID (name or ARN) of the AWS Secrets Manager secret that stores the client secret value.
+   */
+  readonly secretId: string;
+
+  /**
+   * The JSON key used to extract the client secret value from the secret.
+   */
+  readonly jsonKey: string;
+}
+
 /******************************************************************************
  *                                Interface
  *****************************************************************************/
@@ -240,20 +273,34 @@ export interface OAuth2CredentialProviderBaseProps {
 
 /**
  * OAuth2 client identifier and secret registered with the identity provider (all vendors).
+ *
+ * Provide exactly one of {@link clientSecret} (`ClientSecretSource.MANAGED`, the default) or
+ * {@link clientSecretConfig} (`ClientSecretSource.EXTERNAL`). Both forms are supported by every
+ * `usingProviderName` factory on {@link OAuth2CredentialProvider}.
  */
 export interface OAuth2ClientCredentials {
   /** OAuth2 client identifier. */
   readonly clientId: string;
   /**
-   * OAuth2 client secret.
+   * OAuth2 client secret (supplied in plaintext, used when `ClientSecretSource.MANAGED`).
    *
    * **NOTE:** The client secret will be included in the CloudFormation template as part of synthesis.
    * The service stores the secret in Secrets Manager after creation, but the value is visible
    * in the template and deployment history. Use `SecretValue.unsafePlainText()` to explicitly
    * acknowledge plaintext, or pass a reference from another construct to avoid embedding the
    * literal value.
+   *
+   * @default - not specified; provide `clientSecretConfig` instead
    */
-  readonly clientSecret: SecretValue;
+  readonly clientSecret?: SecretValue;
+
+  /**
+   * A reference to a pre-existing AWS Secrets Manager secret that stores the client secret
+   * (`ClientSecretSource.EXTERNAL`), instead of embedding the secret value in the template.
+   *
+   * @default - not specified; provide `clientSecret` instead
+   */
+  readonly clientSecretConfig?: OAuth2ClientSecretConfig;
 }
 
 /**
@@ -602,6 +649,53 @@ function assertCustomOAuth2DiscoveryXor(scope: Construct, props: CustomOAuth2Cre
   }
 }
 
+/**
+ * @internal
+ * Validates that exactly one of `clientSecret` (`ClientSecretSource.MANAGED`) or
+ * `clientSecretConfig` (`ClientSecretSource.EXTERNAL`) is provided, and returns the corresponding
+ * CloudFormation property fragment for whichever vendor config is being built.
+ *
+ * When `clientSecret` is used, no `clientSecretSource` is emitted — this preserves the exact
+ * template output CDK produced before EXTERNAL support existed (CloudFormation treats an absent
+ * `ClientSecretSource` as `MANAGED`).
+ */
+function resolveClientSecretFragment(
+  scope: Construct,
+  props: OAuth2ClientCredentials,
+  vendorValue: string,
+): { clientSecret?: string; clientSecretSource?: string; clientSecretConfig?: CfnOAuth2CredentialProvider.SecretReferenceProperty } {
+  const hasSecret = props.clientSecret !== undefined;
+  const hasConfig = props.clientSecretConfig !== undefined;
+
+  if (hasSecret && hasConfig) {
+    throw new ValidationError(
+      lit`ClientSecretExclusive`,
+      `Provide either clientSecret or clientSecretConfig for ${vendorValue} OAuth2, not both.`,
+      scope,
+    );
+  }
+  if (!hasSecret && !hasConfig) {
+    throw new ValidationError(
+      lit`ClientSecretRequired`,
+      'Provide either clientSecret (ClientSecretSource.MANAGED) or clientSecretConfig' +
+        `(ClientSecretSource.EXTERNAL) for ${vendorValue} OAuth2.`,
+      scope,
+    );
+  }
+
+  if (hasConfig) {
+    return {
+      clientSecretSource: ClientSecretSource.EXTERNAL,
+      clientSecretConfig: {
+        secretId: props.clientSecretConfig!.secretId,
+        jsonKey: props.clientSecretConfig!.jsonKey,
+      },
+    };
+  }
+
+  return { clientSecret: props.clientSecret!.unsafeUnwrap() };
+}
+
 /******************************************************************************
  *                         Abstract base
  *****************************************************************************/
@@ -724,7 +818,7 @@ function newOAuth2WithIncludedClientCredentialsOnly(
     oauth2ProviderConfigInput: {
       includedOauth2ProviderConfig: {
         clientId: props.clientId,
-        clientSecret: props.clientSecret.unsafeUnwrap(),
+        ...resolveClientSecretFragment(scope, props, `${vendor.value}`),
       },
     },
   });
@@ -746,7 +840,7 @@ function newOAuth2WithIncludedTenant(
     oauth2ProviderConfigInput: {
       includedOauth2ProviderConfig: {
         clientId: props.clientId,
-        clientSecret: props.clientSecret.unsafeUnwrap(),
+        ...resolveClientSecretFragment(scope, props, `${vendor.value}`),
         authorizationEndpoint: props.authorizationEndpoint,
         issuer: props.issuer,
         tokenEndpoint: props.tokenEndpoint,
@@ -783,7 +877,12 @@ export class OAuth2CredentialProvider extends OAuth2CredentialProviderBase {
       oAuth2CredentialProviderName: props.oAuth2CredentialProviderName,
       tags: props.tags,
       credentialProviderVendor: OAuth2CredentialProviderVendor.SLACK.value,
-      oauth2ProviderConfigInput: { slackOauth2ProviderConfig: { clientId: props.clientId, clientSecret: props.clientSecret.unsafeUnwrap() } },
+      oauth2ProviderConfigInput: {
+        slackOauth2ProviderConfig: {
+          clientId: props.clientId,
+          ...resolveClientSecretFragment(scope, props, OAuth2CredentialProviderVendor.SLACK.value ),
+        },
+      },
     });
   }
 
@@ -795,7 +894,12 @@ export class OAuth2CredentialProvider extends OAuth2CredentialProviderBase {
       oAuth2CredentialProviderName: props.oAuth2CredentialProviderName,
       tags: props.tags,
       credentialProviderVendor: OAuth2CredentialProviderVendor.GITHUB.value,
-      oauth2ProviderConfigInput: { githubOauth2ProviderConfig: { clientId: props.clientId, clientSecret: props.clientSecret.unsafeUnwrap() } },
+      oauth2ProviderConfigInput: {
+        githubOauth2ProviderConfig: {
+          clientId: props.clientId,
+          ...resolveClientSecretFragment(scope, props, OAuth2CredentialProviderVendor.GITHUB.value),
+        },
+      },
     });
   }
 
@@ -807,7 +911,12 @@ export class OAuth2CredentialProvider extends OAuth2CredentialProviderBase {
       oAuth2CredentialProviderName: props.oAuth2CredentialProviderName,
       tags: props.tags,
       credentialProviderVendor: OAuth2CredentialProviderVendor.GOOGLE.value,
-      oauth2ProviderConfigInput: { googleOauth2ProviderConfig: { clientId: props.clientId, clientSecret: props.clientSecret.unsafeUnwrap() } },
+      oauth2ProviderConfigInput: {
+        googleOauth2ProviderConfig: {
+          clientId: props.clientId,
+          ...resolveClientSecretFragment(scope, props, OAuth2CredentialProviderVendor.GOOGLE.value ),
+        },
+      },
     });
   }
 
@@ -819,7 +928,12 @@ export class OAuth2CredentialProvider extends OAuth2CredentialProviderBase {
       oAuth2CredentialProviderName: props.oAuth2CredentialProviderName,
       tags: props.tags,
       credentialProviderVendor: OAuth2CredentialProviderVendor.SALESFORCE.value,
-      oauth2ProviderConfigInput: { salesforceOauth2ProviderConfig: { clientId: props.clientId, clientSecret: props.clientSecret.unsafeUnwrap() } },
+      oauth2ProviderConfigInput: {
+        salesforceOauth2ProviderConfig: {
+          clientId: props.clientId,
+          ...resolveClientSecretFragment(scope, props, OAuth2CredentialProviderVendor.SALESFORCE.value ),
+        },
+      },
     });
   }
 
@@ -834,7 +948,7 @@ export class OAuth2CredentialProvider extends OAuth2CredentialProviderBase {
       oauth2ProviderConfigInput: {
         microsoftOauth2ProviderConfig: {
           clientId: props.clientId,
-          clientSecret: props.clientSecret.unsafeUnwrap(),
+          ...resolveClientSecretFragment(scope, props, OAuth2CredentialProviderVendor.MICROSOFT.value),
           tenantId: props.tenantId,
         },
       },
@@ -849,7 +963,12 @@ export class OAuth2CredentialProvider extends OAuth2CredentialProviderBase {
       oAuth2CredentialProviderName: props.oAuth2CredentialProviderName,
       tags: props.tags,
       credentialProviderVendor: OAuth2CredentialProviderVendor.ATLASSIAN.value,
-      oauth2ProviderConfigInput: { atlassianOauth2ProviderConfig: { clientId: props.clientId, clientSecret: props.clientSecret.unsafeUnwrap() } },
+      oauth2ProviderConfigInput: {
+        atlassianOauth2ProviderConfig: {
+          clientId: props.clientId,
+          ...resolveClientSecretFragment(scope, props, OAuth2CredentialProviderVendor.ATLASSIAN.value ),
+        },
+      },
     });
   }
 
@@ -861,7 +980,12 @@ export class OAuth2CredentialProvider extends OAuth2CredentialProviderBase {
       oAuth2CredentialProviderName: props.oAuth2CredentialProviderName,
       tags: props.tags,
       credentialProviderVendor: OAuth2CredentialProviderVendor.LINKEDIN.value,
-      oauth2ProviderConfigInput: { linkedinOauth2ProviderConfig: { clientId: props.clientId, clientSecret: props.clientSecret.unsafeUnwrap() } },
+      oauth2ProviderConfigInput: {
+        linkedinOauth2ProviderConfig: {
+          clientId: props.clientId,
+          ...resolveClientSecretFragment(scope, props, OAuth2CredentialProviderVendor.LINKEDIN.value ),
+        },
+      },
     });
   }
 
@@ -1023,6 +1147,7 @@ export class OAuth2CredentialProvider extends OAuth2CredentialProviderBase {
    */
   public static usingCustom(scope: Construct, id: string, props: CustomOAuth2CredentialProviderProps): OAuth2CredentialProvider {
     assertCustomOAuth2DiscoveryXor(scope, props);
+    const clientSecretFragment = resolveClientSecretFragment(scope, props, 'custom OAuth2');
 
     const oauthDiscovery: CfnOAuth2CredentialProvider.Oauth2DiscoveryProperty =
       props.discoveryUrl !== undefined
@@ -1036,7 +1161,7 @@ export class OAuth2CredentialProvider extends OAuth2CredentialProviderBase {
       oauth2ProviderConfigInput: {
         customOauth2ProviderConfig: {
           clientId: props.clientId,
-          clientSecret: props.clientSecret.unsafeUnwrap(),
+          ...clientSecretFragment,
           oauthDiscovery,
         },
       },
