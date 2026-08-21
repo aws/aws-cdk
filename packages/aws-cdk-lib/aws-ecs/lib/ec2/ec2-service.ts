@@ -280,6 +280,16 @@ export class Ec2Service extends BaseService implements IEc2Service {
     if (props.minHealthyPercent === undefined && props.daemon) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:minHealthyPercentDaemon', 'minHealthyPercent has not been configured so the default value of 0% for a daemon service is used. See https://github.com/aws/aws-cdk/issues/31705');
     }
+
+    // Force a CodeDeploy deployment to trigger when only the capacity
+    // provider strategy changes, since that alone isn't otherwise detected
+    // as a change requiring a new deployment.
+    const cfnService = this.node.defaultChild as CfnService;
+    const capacityProviderStrategyHash = hashCapacityProviderStrategies(props.capacityProviderStrategies);
+
+    if (capacityProviderStrategyHash && props.deploymentController?.type === DeploymentControllerType.CODE_DEPLOY) {
+      cfnService.addPropertyOverride('DeploymentConfiguration.TriggerHash', capacityProviderStrategyHash);
+    }
   }
 
   /**
@@ -418,3 +428,20 @@ export class BuiltInAttributes {
    */
   public static readonly OS_TYPE = 'attribute:ecs.os-type';
 }
+
+/**
+ * Computes a stable hash of the capacity provider strategies, used to force
+ * a CodeDeploy deployment to trigger when only the capacity provider
+ * strategy changes (since CloudFormation alone won't detect this as a
+ * deployment-triggering change).
+ */
+function hashCapacityProviderStrategies(strategies?: CfnService.CapacityProviderStrategyItemProperty[]): string | undefined {
+  if (!strategies || strategies.length === 0) {
+    return undefined;
+  }
+  return strategies
+    .map((s) => `${s.capacityProvider ?? ''}-${s.weight ?? 0}-${s.base ?? 0}`)
+    .sort()
+    .join('|');
+}
+
