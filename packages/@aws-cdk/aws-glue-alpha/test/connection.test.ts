@@ -160,11 +160,26 @@ test('setting both `secret` and a SECRET_ID property throws', () => {
   const stack = new cdk.Stack();
   const secret = new secretsmanager.Secret(stack, 'Secret');
 
-  expect(() => new glue.Connection(stack, 'Connection', {
+  new glue.Connection(stack, 'Connection', {
     type: glue.ConnectionType.JDBC,
     secret,
     properties: { SECRET_ID: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:other' },
-  })).toThrow('cannot set both `secret` and a `SECRET_ID` connection property');
+  });
+
+  expect(() => Template.fromStack(stack)).toThrow('cannot set both `secret` and a `SECRET_ID` connection property');
+});
+
+test('setting `secret` and adding a SECRET_ID via addProperty throws', () => {
+  const stack = new cdk.Stack();
+  const secret = new secretsmanager.Secret(stack, 'Secret');
+
+  const connection = new glue.Connection(stack, 'Connection', {
+    type: glue.ConnectionType.JDBC,
+    secret,
+  });
+  connection.addProperty('SECRET_ID', 'arn:aws:secretsmanager:us-east-1:123456789012:secret:other');
+
+  expect(() => Template.fromStack(stack)).toThrow('cannot set both `secret` and a `SECRET_ID` connection property');
 });
 
 test('referencing a secret does not trigger the plaintext-secret warning', () => {

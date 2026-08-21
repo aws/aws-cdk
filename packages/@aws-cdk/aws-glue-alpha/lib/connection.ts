@@ -378,9 +378,6 @@ export class Connection extends cdk.Resource implements IConnection {
 
     this.properties = props.properties || {};
 
-    if (props.secret !== undefined && this.properties.SECRET_ID !== undefined) {
-      throw new cdk.ValidationError(lit`ConnectionSecretConflict`, 'cannot set both `secret` and a `SECRET_ID` connection property', this);
-    }
     const secretId = props.secret?.secretRef.secretId;
 
     const physicalConnectionRequirements = props.subnet || props.securityGroups ? {
@@ -395,9 +392,14 @@ export class Connection extends cdk.Resource implements IConnection {
         connectionProperties: cdk.Lazy.any({
           produce: () => {
             // Inspect the final property set at synthesis time so properties
-            // added via `addProperty` are covered as well. The `SECRET_ID`
-            // injected from `secret` is a reference, not a credential, so it is
-            // merged in after this scan.
+            // added via `addProperty` are covered as well — a `SECRET_ID` added
+            // after construction would otherwise be silently overwritten by the
+            // one injected from `secret`.
+            if (secretId !== undefined && this.properties.SECRET_ID !== undefined) {
+              throw new cdk.ValidationError(lit`ConnectionSecretConflict`, 'cannot set both `secret` and a `SECRET_ID` connection property', this);
+            }
+            // The `SECRET_ID` injected from `secret` is a reference, not a
+            // credential, so it is merged in after this scan.
             warnOnPlaintextSecrets(
               this,
               this.properties,
