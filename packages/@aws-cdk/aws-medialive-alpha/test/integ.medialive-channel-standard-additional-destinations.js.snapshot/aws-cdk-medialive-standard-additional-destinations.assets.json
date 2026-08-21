@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "f9351fd2ad8a5739daf0e16b79b851bfd383d4129ad0c2a00d7daafe651f2dfe": {
+      "displayName": "aws-cdk-medialive-standard-additional-destinations Template",
+      "source": {
+        "path": "aws-cdk-medialive-standard-additional-destinations.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-d7918ff6": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f9351fd2ad8a5739daf0e16b79b851bfd383d4129ad0c2a00d7daafe651f2dfe.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

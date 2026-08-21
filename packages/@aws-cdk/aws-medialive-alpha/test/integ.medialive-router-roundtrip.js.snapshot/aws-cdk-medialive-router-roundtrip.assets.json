@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "d0207ad363498006048a3ab99364dc535ce2267d40f9922f2f3b2a95b940e2cd": {
+      "displayName": "aws-cdk-medialive-router-roundtrip Template",
+      "source": {
+        "path": "aws-cdk-medialive-router-roundtrip.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-98a89d71": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d0207ad363498006048a3ab99364dc535ce2267d40f9922f2f3b2a95b940e2cd.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
