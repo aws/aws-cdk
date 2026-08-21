@@ -79,6 +79,15 @@ describe('BrowserCustom default tests', () => {
       },
     });
   });
+
+  test('Should apply removal policy via the L2 construct', () => {
+    expect(() => browser.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY)).not.toThrow();
+
+    const cfnBrowser = browser.node.defaultChild as cdk.CfnResource;
+    expect(cfnBrowser).toBeDefined();
+    expect(cfnBrowser.cfnOptions.deletionPolicy).toBe('Delete');
+    expect(cfnBrowser.cfnOptions.updateReplacePolicy).toBe('Delete');
+  });
 });
 
 describe('BrowserCustom with VPC config tests', () => {

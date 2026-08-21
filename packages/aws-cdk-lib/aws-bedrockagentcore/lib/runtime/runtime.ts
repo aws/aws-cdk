@@ -146,6 +146,20 @@ export interface RuntimeProps {
    * @default - No logging configured
    */
   readonly loggingConfigs?: LoggingConfig[];
+
+  /**
+   * Whether to create resource policies for log/trace delivery.
+   *
+   * When `false`, the `AWS::Logs::ResourcePolicy` and `AWS::XRay::ResourcePolicy`
+   * are not created. This is useful when deploying many runtimes per account/Region,
+   * as each resource policy consumes an account-level quota slot (CloudWatch Logs: 10,
+   * X-Ray: lower). For same-account `/aws/vendedlogs/` delivery, the log-delivery
+   * service-linked role provides the necessary write access without an explicit policy.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/cloudwatch_limits_cwl.html
+   * @default true
+   */
+  readonly manageDeliveryResourcePolicy?: boolean;
 }
 
 /**
@@ -387,12 +401,16 @@ export class Runtime extends RuntimeBase {
     this.lastUpdatedAt = this.runtimeResource.attrLastUpdatedAt;
 
     // Configure observability (tracing and logging)
+    const observabilityOptions = {
+      manageDeliveryResourcePolicy: props.manageDeliveryResourcePolicy,
+    };
+
     if (props.tracingEnabled) {
-      configureTracingDelivery(this, this.agentRuntimeArn);
+      configureTracingDelivery(this, this.agentRuntimeArn, observabilityOptions);
     }
 
     if (props.loggingConfigs && props.loggingConfigs.length > 0) {
-      configureLoggingDelivery(this, this.agentRuntimeArn, props.loggingConfigs);
+      configureLoggingDelivery(this, this.agentRuntimeArn, props.loggingConfigs, observabilityOptions);
     }
   }
 
