@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import { Cluster } from '../lib';
 
 describe('Aurora DSQL Cluster', () => {
@@ -103,6 +104,27 @@ describe('Aurora DSQL Cluster', () => {
       UpdateReplacePolicy: 'Retain',
     });
   });
+
+  test('cluster with encryptionKey', () => {
+    // GIVEN
+    const stack = testStack();
+    const key = new kms.Key(stack, 'Key');
+
+    // WHEN
+    new Cluster(stack, 'Cluster', {
+      encryptionKey: key,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::DSQL::Cluster', {
+      Properties: {
+        KmsEncryptionKey: {
+          'Fn::GetAtt': ['Key961B73FD', 'Arn'],
+        },
+      },
+    });
+  });
+
 });
 
 describe('Aurora DSQL Cluster - Imports', () => {
