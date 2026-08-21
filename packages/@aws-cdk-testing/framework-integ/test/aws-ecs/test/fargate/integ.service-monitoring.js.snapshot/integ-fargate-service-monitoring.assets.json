@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "a64791a73b2d94fceae110e0f33076b0a4dbd0d2fb15482527f4ea565892a37d": {
+      "displayName": "integ-fargate-service-monitoring Template",
+      "source": {
+        "path": "integ-fargate-service-monitoring.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-7414c0f5": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a64791a73b2d94fceae110e0f33076b0a4dbd0d2fb15482527f4ea565892a37d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
