@@ -880,8 +880,6 @@ export class TableV2 extends TableBaseV2 {
       table: this,
       regions: Array.from(this.replicaTables.keys()),
       hasIndex: this.hasIndex,
-      encryptedResource: this.encryptionKey ? this : undefined,
-      policyResource: this,
     });
 
     if (props.tableName) {
