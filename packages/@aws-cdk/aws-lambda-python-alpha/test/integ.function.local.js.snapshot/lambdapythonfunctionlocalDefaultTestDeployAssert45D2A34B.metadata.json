@@ -1,0 +1,920 @@
+{
+  "/lambda-python-function-local/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:38:38)",
+        "new IntegTestCase (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:61:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
+        "visit (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
+        "visit (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
+        "visit (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
+        "visit (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
+        "synthesizeTree (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
+        "synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
+        "App.synth (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:71:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
+        "visit (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
+        "visit (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
+        "visit (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
+        "visit (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
+        "synthesizeTree (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
+        "synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
+        "App.synth (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:71:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke8491b98f835e3db011a3740073aa772d/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke8491b98f835e3db011a3740073aa772d/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke8491b98f835e3db011a3740073aa772dInvokeC9D51642"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:202:9)",
+        "DeployAssert.invokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66: (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:65:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke8491b98f835e3db011a3740073aa772d/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke8491b98f835e3db011a3740073aa772d"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:84:25)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:369:38)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "invokeAspectsV2 (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:341:5)",
+        "synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:36:9)",
+        "App.synth (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:71:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:78:26)",
+        "SingletonFunction.ensureFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new AwsApiCall (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:47:25)",
+        "new LambdaInvokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:180:9)",
+        "DeployAssert.invokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66: (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:65:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:126:28)",
+        "SingletonFunction.ensureFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new AwsApiCall (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:47:25)",
+        "new LambdaInvokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:180:9)",
+        "DeployAssert.invokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66: (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:65:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke84dbf115f7313b7816893644efe8c21a/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke84dbf115f7313b7816893644efe8c21a/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke84dbf115f7313b7816893644efe8c21aInvoke617726DF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:202:9)",
+        "DeployAssert.invokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66: (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:65:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke84dbf115f7313b7816893644efe8c21a/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke84dbf115f7313b7816893644efe8c21a"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:84:25)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:369:38)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "invokeAspectsV2 (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:341:5)",
+        "synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:36:9)",
+        "App.synth (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:71:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvokea2d8eb804758fb75f362a953c4dde747/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvokea2d8eb804758fb75f362a953c4dde747/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokea2d8eb804758fb75f362a953c4dde747Invoke4DD755CE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:202:9)",
+        "DeployAssert.invokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66: (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:65:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvokea2d8eb804758fb75f362a953c4dde747/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvokea2d8eb804758fb75f362a953c4dde747"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:84:25)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:369:38)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "invokeAspectsV2 (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:341:5)",
+        "synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:36:9)",
+        "App.synth (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:71:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke4b080cc9aca440ce6bfed9e0c3444e72/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke4b080cc9aca440ce6bfed9e0c3444e72/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke4b080cc9aca440ce6bfed9e0c3444e72Invoke4464C4C0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:202:9)",
+        "DeployAssert.invokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66: (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:65:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke4b080cc9aca440ce6bfed9e0c3444e72/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke4b080cc9aca440ce6bfed9e0c3444e72"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:84:25)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:369:38)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "invokeAspectsV2 (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:341:5)",
+        "synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:36:9)",
+        "App.synth (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:71:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvokeb9258e6eaa0c9fe2f5a4f531a34d951a/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvokeb9258e6eaa0c9fe2f5a4f531a34d951a/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeb9258e6eaa0c9fe2f5a4f531a34d951aInvokeC1CFA79E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:202:9)",
+        "DeployAssert.invokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66: (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:65:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvokeb9258e6eaa0c9fe2f5a4f531a34d951a/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvokeb9258e6eaa0c9fe2f5a4f531a34d951a"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:84:25)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:369:38)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "invokeAspectsV2 (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:341:5)",
+        "synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:36:9)",
+        "App.synth (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:71:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke220506c3bb66e64afc0721ec617b32e5/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke220506c3bb66e64afc0721ec617b32e5/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke220506c3bb66e64afc0721ec617b32e5InvokeA188CC2F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:202:9)",
+        "DeployAssert.invokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66: (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:65:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke220506c3bb66e64afc0721ec617b32e5/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke220506c3bb66e64afc0721ec617b32e5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:84:25)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:369:38)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "invokeAspectsV2 (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:341:5)",
+        "synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:36:9)",
+        "App.synth (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:71:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke993a8d2b970109e10b789ad04296438f/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke993a8d2b970109e10b789ad04296438f/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke993a8d2b970109e10b789ad04296438fInvokeC25D65B6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:202:9)",
+        "DeployAssert.invokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66: (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:65:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke993a8d2b970109e10b789ad04296438f/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke993a8d2b970109e10b789ad04296438f"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:84:25)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:369:38)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "invokeAspectsV2 (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:341:5)",
+        "synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:36:9)",
+        "App.synth (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:71:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke664242fb75238aac828fcfbabf5d44bd/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke664242fb75238aac828fcfbabf5d44bd/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke664242fb75238aac828fcfbabf5d44bdInvoke5EB0172C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:202:9)",
+        "DeployAssert.invokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66: (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:65:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke664242fb75238aac828fcfbabf5d44bd/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke664242fb75238aac828fcfbabf5d44bd"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:84:25)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:369:38)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "invokeAspectsV2 (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:341:5)",
+        "synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:36:9)",
+        "App.synth (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:71:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvokef92f32241d0a6f3f28c351a8de83514a/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvokef92f32241d0a6f3f28c351a8de83514a/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokef92f32241d0a6f3f28c351a8de83514aInvoke6C7B195A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:202:9)",
+        "DeployAssert.invokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66: (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:65:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvokef92f32241d0a6f3f28c351a8de83514a/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvokef92f32241d0a6f3f28c351a8de83514a"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:84:25)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:369:38)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "invokeAspectsV2 (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:341:5)",
+        "synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:36:9)",
+        "App.synth (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:71:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke2655712d582c2ea7e4efe7c698d4089b/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke2655712d582c2ea7e4efe7c698d4089b/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke2655712d582c2ea7e4efe7c698d4089bInvokeAB8AA318"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:202:9)",
+        "DeployAssert.invokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66: (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:65:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke2655712d582c2ea7e4efe7c698d4089b/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke2655712d582c2ea7e4efe7c698d4089b"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:84:25)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:369:38)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "invokeAspectsV2 (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:341:5)",
+        "synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:36:9)",
+        "App.synth (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:71:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke9e3284326296c1bb2a212f74b54d6de3/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke9e3284326296c1bb2a212f74b54d6de3/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke9e3284326296c1bb2a212f74b54d6de3InvokeE57D203B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:202:9)",
+        "DeployAssert.invokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66: (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:65:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke9e3284326296c1bb2a212f74b54d6de3/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke9e3284326296c1bb2a212f74b54d6de3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:84:25)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:369:38)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "recurse (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
+        "invokeAspectsV2 (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:341:5)",
+        "synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:36:9)",
+        "App.synth (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:71:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke8491b98f835e3db011a3740073aa772d/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke8491b98f835e3db011a3740073aa772d"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "new LambdaInvokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:180:9)",
+        "DeployAssert.invokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66: (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:65:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke84dbf115f7313b7816893644efe8c21a/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke84dbf115f7313b7816893644efe8c21a"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "new LambdaInvokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:180:9)",
+        "DeployAssert.invokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66: (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:65:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvokea2d8eb804758fb75f362a953c4dde747/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokea2d8eb804758fb75f362a953c4dde747"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "new LambdaInvokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:180:9)",
+        "DeployAssert.invokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66: (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:65:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke4b080cc9aca440ce6bfed9e0c3444e72/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke4b080cc9aca440ce6bfed9e0c3444e72"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "new LambdaInvokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:180:9)",
+        "DeployAssert.invokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66: (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:65:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvokeb9258e6eaa0c9fe2f5a4f531a34d951a/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeb9258e6eaa0c9fe2f5a4f531a34d951a"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "new LambdaInvokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:180:9)",
+        "DeployAssert.invokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66: (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:65:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke220506c3bb66e64afc0721ec617b32e5/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke220506c3bb66e64afc0721ec617b32e5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "new LambdaInvokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:180:9)",
+        "DeployAssert.invokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66: (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:65:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke993a8d2b970109e10b789ad04296438f/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke993a8d2b970109e10b789ad04296438f"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "new LambdaInvokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:180:9)",
+        "DeployAssert.invokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66: (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:65:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke664242fb75238aac828fcfbabf5d44bd/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke664242fb75238aac828fcfbabf5d44bd"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "new LambdaInvokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:180:9)",
+        "DeployAssert.invokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66: (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:65:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvokef92f32241d0a6f3f28c351a8de83514a/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokef92f32241d0a6f3f28c351a8de83514a"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "new LambdaInvokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:180:9)",
+        "DeployAssert.invokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66: (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:65:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke2655712d582c2ea7e4efe7c698d4089b/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke2655712d582c2ea7e4efe7c698d4089b"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "new LambdaInvokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:180:9)",
+        "DeployAssert.invokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66: (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:65:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke9e3284326296c1bb2a212f74b54d6de3/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke9e3284326296c1bb2a212f74b54d6de3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "new LambdaInvokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:180:9)",
+        "DeployAssert.invokeFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66: (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:66:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:65:24)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
