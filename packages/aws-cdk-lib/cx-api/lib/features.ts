@@ -158,6 +158,7 @@ export const EKS_DEFAULT_AL2023 = '@aws-cdk/aws-eks:defaultToAL2023';
 export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInValidationReport';
 export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackReferences';
 export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
+export const STEPFUNCTIONS_GRANT_READ_CORRECT_RESOURCE_SCOPES = '@aws-cdk/aws-stepfunctions:grantReadCorrectResourceScopes';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1927,6 +1928,34 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this flag is explicitly set to \`true\`, violations are treated as errors and will
       fail synthesis. When unconfigured, violations are reported as warnings only.`,
     introducedIn: { v2: '2.262.0' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [STEPFUNCTIONS_GRANT_READ_CORRECT_RESOURCE_SCOPES]: {
+    type: FlagType.BugFix,
+    summary: 'Scope the resources granted by StateMachine.grantRead() to the documented values',
+    detailsMd: `
+      \`StateMachine.grantRead()\` scopes two actions to the opposite of what AWS
+      documents in the Service Authorization Reference:
+
+      - \`states:DescribeStateMachine\` supports a \`statemachine\` resource ARN, but is
+        granted on \`*\`. A grantee therefore reads the definition of *every* state
+        machine in the account, not just the one that was granted.
+      - \`states:ListStateMachines\` has no resource type, so it must be granted on \`*\`.
+        It is scoped to the state machine ARN instead, where it never authorizes.
+
+      When this flag is enabled, \`states:DescribeStateMachine\` is scoped to the state
+      machine's ARN and \`states:ListStateMachines\` is granted on \`*\`. The activity
+      actions \`states:ListActivities\` and \`states:DescribeActivity\` are no longer
+      granted at all, since a state machine grant should not confer access to
+      activities.
+
+      When disabled, the previous permissions are emitted unchanged. This flag exists
+      because enabling it narrows permissions, which can break a grantee that has come
+      to depend on the broader \`*\` scope.`,
+    introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
   },

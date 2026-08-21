@@ -118,6 +118,7 @@ Flags come in three types:
 | [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-stack references are strong, weak, or both | 2.254.0 | config |
 | [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | 2.259.0 | new default |
 | [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | 2.262.0 | config |
+| [@aws-cdk/aws-stepfunctions:grantReadCorrectResourceScopes](#aws-cdkaws-stepfunctionsgrantreadcorrectresourcescopes) | Scope the resources granted by StateMachine.grantRead() to the documented values | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -199,6 +200,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption": true,
     "@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2": true,
     "@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy": true,
+    "@aws-cdk/aws-stepfunctions:grantReadCorrectResourceScopes": true,
     "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": true,
     "@aws-cdk/core:annotationsInValidationReport": true,
     "@aws-cdk/core:aspectPrioritiesMutating": true,
@@ -2549,6 +2551,38 @@ fail synthesis. When unconfigured, violations are reported as warnings only.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.262.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-stepfunctions:grantReadCorrectResourceScopes
+
+*Scope the resources granted by StateMachine.grantRead() to the documented values*
+
+Flag type: Backwards incompatible bugfix
+
+`StateMachine.grantRead()` scopes two actions to the opposite of what AWS
+documents in the Service Authorization Reference:
+
+- `states:DescribeStateMachine` supports a `statemachine` resource ARN, but is
+  granted on `*`. A grantee therefore reads the definition of *every* state
+  machine in the account, not just the one that was granted.
+- `states:ListStateMachines` has no resource type, so it must be granted on `*`.
+  It is scoped to the state machine ARN instead, where it never authorizes.
+
+When this flag is enabled, `states:DescribeStateMachine` is scoped to the state
+machine's ARN and `states:ListStateMachines` is granted on `*`. The activity
+actions `states:ListActivities` and `states:DescribeActivity` are no longer
+granted at all, since a state machine grant should not confer access to
+activities.
+
+When disabled, the previous permissions are emitted unchanged. This flag exists
+because enabling it narrows permissions, which can break a grantee that has come
+to depend on the broader `*` scope.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->
