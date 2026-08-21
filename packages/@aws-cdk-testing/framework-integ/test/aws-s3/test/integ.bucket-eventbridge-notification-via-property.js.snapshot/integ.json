@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "S3EventBridgeNotificationViaPropertyIntegTest/DefaultTest": {
+      "stacks": [
+        "S3EventBridgeNotificationViaPropertyTest"
+      ],
+      "assertionStack": "S3EventBridgeNotificationViaPropertyIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "S3EventBridgeNotificationViaPropertyIntegTestDefaultTestDeployAssertEC0A562E"
+    }
+  },
+  "minimumCliVersion": "2.1123.0"
+}
