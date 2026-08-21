@@ -3,7 +3,7 @@ import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Bucket } from '../../aws-s3';
-import { App, CfnParameter, Fn, RemovalPolicy, Stack } from '../../core';
+import { App, CfnParameter, Fn, RemovalPolicy, Stack, Validations } from '../../core';
 import type { ILogGroup, ILogSubscriptionDestination } from '../lib';
 import { LogGroupGrants, LogGroup, RetentionDays, LogGroupClass, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier, FilterPattern, FieldIndexPolicy, ParserProcessor, ParserProcessorType, JsonMutatorType, JsonMutatorProcessor, CfnLogGroup } from '../lib';
 
@@ -100,7 +100,10 @@ describe('log group', () => {
   test('unresolved retention', () => {
     // GIVEN
     const stack = new Stack();
-
+    Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::W3030',
+      reason: 'Testing unresolved retention',
+    });
     const parameter = new CfnParameter(stack, 'RetentionInDays', { default: 30, type: 'Number' });
 
     // WHEN
@@ -486,7 +489,18 @@ describe('log group', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
-      PolicyDocument: '{"Statement":[{"Action":"logs:PutLogEvents","Effect":"Allow","Principal":{"AWS":"123456789012"},"Resource":"*"}],"Version":"2012-10-17"}',
+      PolicyDocument: {
+        'Fn::Join': [
+          '',
+          [
+            '{\"Statement\":[{\"Action\":\"logs:PutLogEvents\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::123456789012:root\"},\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}',
+          ],
+        ],
+      },
       PolicyName: 'LogGroupPolicy643B329C',
     });
   });
@@ -535,14 +549,18 @@ describe('log group', () => {
         'Fn::Join': [
           '',
           [
-            '{\"Statement\":[{\"Action\":\"logs:PutLogEvents\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"',
+            '{\"Statement\":[{\"Action\":\"logs:PutLogEvents\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::',
             {
               'Fn::Select': [
                 4,
                 { 'Fn::Split': [':', { 'Fn::ImportValue': 'SomeRole' }] },
               ],
             },
-            '\"},\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}',
+            ':root\"},\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}',
           ],
         ],
       },
