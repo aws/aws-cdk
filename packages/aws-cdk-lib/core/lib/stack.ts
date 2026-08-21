@@ -20,6 +20,7 @@ import type { PermissionsBoundary } from './permissions-boundary';
 import { PERMISSIONS_BOUNDARY_CONTEXT_KEY } from './permissions-boundary';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
 import { LogicalIDs } from './private/logical-id';
+import { renderTemplateMetadata } from './private/metadata-context-metadata';
 import { resolve } from './private/resolve';
 import { makeUniqueId } from './private/uniqueid';
 import type { IPropertyInjector } from './prop-injectors';
@@ -1419,7 +1420,7 @@ export class Stack extends Construct implements ITaggable {
       Description: this.templateOptions.description,
       Transform: transform,
       AWSTemplateFormatVersion: this.templateOptions.templateFormatVersion,
-      Metadata: this.templateOptions.metadata,
+      Metadata: renderTemplateMetadata(this, this.templateOptions.metadata),
     };
 
     const elements = cfnElements(this);

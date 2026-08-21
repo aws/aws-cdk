@@ -1,0 +1,85 @@
+{
+  "/MetadataContextMixinTestStack/AuditQueue": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuditQueue"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.MetadataContextMixin"
+      }
+    },
+    {
+      "type": "aws:cdk:metadata-context",
+      "data": {
+        "context": {
+          "why": "append-only audit trail buffer",
+          "mutable": "must-never-change",
+          "must": [
+            "never shorten retention below 14d (audit requirement)"
+          ]
+        },
+        "options": {
+          "applyToAllResources": false
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.MetadataContextMixin"
+      }
+    },
+    {
+      "type": "aws:cdk:metadata-context",
+      "data": {
+        "context": {
+          "deps": [
+            "NetworkStack"
+          ]
+        },
+        "options": {
+          "applyToAllResources": false
+        }
+      }
+    }
+  ],
+  "/MetadataContextMixinTestStack/EventsTopic": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventsTopic"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.MetadataContextMixin"
+      }
+    },
+    {
+      "type": "aws:cdk:metadata-context",
+      "data": {
+        "context": {
+          "deps": [
+            "NetworkStack"
+          ]
+        },
+        "options": {
+          "applyToAllResources": false
+        }
+      }
+    }
+  ],
+  "/MetadataContextMixinTestStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/MetadataContextMixinTestStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}
