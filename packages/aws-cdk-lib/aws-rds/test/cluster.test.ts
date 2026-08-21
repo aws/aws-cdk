@@ -554,6 +554,8 @@ describe('cluster new api', () => {
 
     test.each([
       ['MySQL', DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_08_0 })],
+      ['MySQL 8.4.7', DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_8_4_7 })],
+      ['MySQL 8.4.7 with inferred major version', DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.of('8.4.mysql_aurora.8.4.7') })],
       ['PostgreSQL', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_17_4 })],
     ])('with serverlessV2 auto-pause configuration for Aurora %s', (type: string, engine: IClusterEngine) => {
       // GIVEN
