@@ -209,7 +209,11 @@
      },
      "S3Key": "98f62bef9320f8c0a0a7be21d7c746f069131f196f51ffe3008a6bb730b368ec.zip"
     },
-    "Description": "/opt/awscli/aws"
+    "Description": "/opt/awscli/aws",
+    "CompatibleArchitectures": [
+     "x86_64",
+     "arm64"
+    ]
    }
   },
   "BucketDeploymentCustomResourceCB7E2133": {

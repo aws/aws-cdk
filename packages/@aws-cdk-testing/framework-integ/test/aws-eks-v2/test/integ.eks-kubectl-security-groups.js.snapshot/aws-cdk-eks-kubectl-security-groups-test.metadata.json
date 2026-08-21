@@ -3,7 +3,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -11,31 +11,19 @@
   "/aws-cdk-eks-kubectl-security-groups-test/Vpc": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "maxAzs": "*",
-        "natGateways": "*",
-        "restrictDefaultSecurityGroup": false
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/KubectlSG1": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "vpc": "*",
-        "description": "*",
-        "allowAllOutbound": true
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/KubectlSG2": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "vpc": "*",
-        "description": "*",
-        "allowAllOutbound": true
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/KubectlLayer1": [
@@ -47,39 +35,17 @@
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "vpc": "*",
-        "version": "*",
-        "endpointAccess": "*",
-        "defaultCapacityType": 0,
-        "defaultCapacity": "*",
-        "kubectlProviderOptions": {
-          "privateSubnets": [
-            "*",
-            "*"
-          ]
-        },
-        "removalPolicy": "destroy"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "grantClusterAdmin": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/KubectlSG3": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "vpc": "*",
-        "description": "*",
-        "allowAllOutbound": true
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/KubectlLayer2": [
@@ -91,30 +57,11 @@
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "vpc": "*",
-        "version": "*",
-        "endpointAccess": "*",
-        "defaultCapacityType": 0,
-        "defaultCapacity": "*",
-        "kubectlProviderOptions": {
-          "privateSubnets": [
-            "*",
-            "*"
-          ],
-          "securityGroup": "*"
-        },
-        "removalPolicy": "destroy"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "grantClusterAdmin": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/KubectlLayer3": [
@@ -126,29 +73,11 @@
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "vpc": "*",
-        "version": "*",
-        "endpointAccess": "*",
-        "defaultCapacityType": 0,
-        "defaultCapacity": "*",
-        "kubectlProviderOptions": {
-          "privateSubnets": [
-            "*",
-            "*"
-          ]
-        },
-        "removalPolicy": "destroy"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "grantClusterAdmin": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/BootstrapVersion": [
@@ -159,16 +88,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
-        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+        "addBootstrapVersionRule (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:222:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:140:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:260:18)",
+        "/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467: (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:3)",
+        "visit (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:524:9)",
+        "visit (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:521:9)",
+        "synthesizeTree (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:460:5)",
+        "synthesize (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:88:5)",
+        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:191:92)",
+        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:179:27)"
       ]
     }
   ],
@@ -180,16 +109,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
-        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+        "addBootstrapVersionRule (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:230:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:140:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:260:18)",
+        "/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467: (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:3)",
+        "visit (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:524:9)",
+        "visit (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:521:9)",
+        "synthesizeTree (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:460:5)",
+        "synthesize (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:88:5)",
+        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:191:92)",
+        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:179:27)"
       ]
     }
   ],
@@ -201,10 +130,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:770:29)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:28:21)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:760:29)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:61:21)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -212,121 +140,61 @@
   "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PublicSubnet1": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": true,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": true,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {}
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addNatGateway": [
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PublicSubnet2": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": true,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": true,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {}
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PrivateSubnet1": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {}
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PrivateSubnet2": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {}
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Vpc/IGW": [
@@ -337,10 +205,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:825:29)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:28:21)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:815:29)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:61:21)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -353,10 +220,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:828:29)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:28:21)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:29)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:61:21)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -369,11 +235,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:39:28)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new SecurityGroup (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:410:34)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:72:28)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -386,11 +250,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:44:28)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new SecurityGroup (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:410:34)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:77:28)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -403,11 +265,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:164:30)",
-        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LayerVersion (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:130:30)",
         "...new KubectlV34Layer in @aws-cdk/lambda-layer-kubectl-v34...",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:56:31)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:89:31)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -415,26 +276,13 @@
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/ControlPlaneSecurityGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "vpc": "*",
-        "description": "*"
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/Resource": [
@@ -445,10 +293,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:706:46)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:49:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:703:46)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:82:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -461,10 +308,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:793:41)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:49:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:790:41)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:82:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -472,19 +318,7 @@
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/ClusterAdminRoleAccess": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "principal": "*",
-        "cluster": "*",
-        "accessPolicies": [
-          {
-            "policy": "*",
-            "accessScope": {
-              "type": "cluster",
-              "namespaces": "*"
-            }
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/KubectlSG3/Resource": [
@@ -495,11 +329,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:80:28)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new SecurityGroup (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:410:34)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:113:28)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -512,11 +344,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:164:30)",
-        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LayerVersion (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:130:30)",
         "...new KubectlV34Layer in @aws-cdk/lambda-layer-kubectl-v34...",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:92:31)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:125:31)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -524,26 +355,13 @@
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/ControlPlaneSecurityGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "vpc": "*",
-        "description": "*"
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/Resource": [
@@ -554,10 +372,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:706:46)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:85:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:703:46)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:118:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -570,10 +387,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:793:41)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:85:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:790:41)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:118:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -581,19 +397,7 @@
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/ClusterAdminRoleAccess": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "principal": "*",
-        "cluster": "*",
-        "accessPolicies": [
-          {
-            "policy": "*",
-            "accessScope": {
-              "type": "cluster",
-              "namespaces": "*"
-            }
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/KubectlLayer3/Resource": [
@@ -604,11 +408,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:164:30)",
-        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LayerVersion (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:130:30)",
         "...new KubectlV34Layer in @aws-cdk/lambda-layer-kubectl-v34...",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:121:31)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:154:31)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -616,26 +419,13 @@
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/ControlPlaneSecurityGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "vpc": "*",
-        "description": "*"
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/Resource": [
@@ -646,10 +436,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:706:46)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:114:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:703:46)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:147:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -662,10 +451,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:793:41)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:114:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:790:41)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:147:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -673,19 +461,7 @@
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/ClusterAdminRoleAccess": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "principal": "*",
-        "cluster": "*",
-        "accessPolicies": [
-          {
-            "policy": "*",
-            "accessScope": {
-              "type": "cluster",
-              "namespaces": "*"
-            }
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PublicSubnet1/Subnet": [
@@ -696,16 +472,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1234:28)",
+        "new PublicSubnet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1474:13)",
+        "/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1034: (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1034:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1005:30)",
+        "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:964:18)",
+        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:810:18)"
       ]
     }
   ],
@@ -717,16 +490,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1254:27)",
+        "new PublicSubnet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1474:13)",
+        "/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1034: (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1034:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1005:30)",
+        "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:964:18)",
+        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:810:18)"
       ]
     }
   ],
@@ -738,16 +508,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1259:32)",
+        "new PublicSubnet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1474:13)",
+        "/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1034: (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1034:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1005:30)",
+        "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:964:18)",
+        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:810:18)"
       ]
     }
   ],
@@ -759,14 +526,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addDefaultInternetRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1304:27)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:3)",
+        "WrappedClass.addDefaultInternetRoute (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1274:27)",
+        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:825: (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:825:3)",
         "Array.forEach (:)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:28:21)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:822:36)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:61:21)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -779,14 +545,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addNatGateway (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1556:50)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureNat (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
-        "WrappedClass.createNatGateways (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:28:21)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "WrappedClass.addNatGateway (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1488:50)",
+        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:138:33)",
+        "WrappedClass.createNatGateways (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:918:22)",
+        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:26)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:61:21)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -799,14 +564,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addNatGateway (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1554:25)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureNat (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
-        "WrappedClass.createNatGateways (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:28:21)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "WrappedClass.addNatGateway (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1486:25)",
+        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:138:33)",
+        "WrappedClass.createNatGateways (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:918:22)",
+        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:26)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:61:21)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -819,16 +583,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1234:28)",
+        "new PublicSubnet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1474:13)",
+        "/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1034: (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1034:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1005:30)",
+        "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:964:18)",
+        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:810:18)"
       ]
     }
   ],
@@ -840,16 +601,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1254:27)",
+        "new PublicSubnet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1474:13)",
+        "/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1034: (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1034:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1005:30)",
+        "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:964:18)",
+        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:810:18)"
       ]
     }
   ],
@@ -861,16 +619,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1259:32)",
+        "new PublicSubnet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1474:13)",
+        "/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1034: (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1034:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1005:30)",
+        "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:964:18)",
+        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:810:18)"
       ]
     }
   ],
@@ -882,14 +637,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addDefaultInternetRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1304:27)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:3)",
+        "WrappedClass.addDefaultInternetRoute (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1274:27)",
+        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:825: (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:825:3)",
         "Array.forEach (:)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:28:21)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:822:36)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:61:21)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -902,16 +656,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1234:28)",
+        "new PrivateSubnet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1527:13)",
+        "/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1041: (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1041:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1005:30)",
+        "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:964:18)",
+        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:810:18)"
       ]
     }
   ],
@@ -923,16 +674,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1254:27)",
+        "new PrivateSubnet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1527:13)",
+        "/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1041: (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1041:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1005:30)",
+        "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:964:18)",
+        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:810:18)"
       ]
     }
   ],
@@ -944,16 +692,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1259:32)",
+        "new PrivateSubnet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1527:13)",
+        "/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1041: (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1041:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1005:30)",
+        "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:964:18)",
+        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:810:18)"
       ]
     }
   ],
@@ -965,15 +710,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1393:27)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
-        "NatGatewayProvider.configureNat (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
-        "WrappedClass.createNatGateways (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:28:21)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "WrappedClass.addRoute (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1354:27)",
+        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:150:16)",
+        "NatGatewayProvider.configureNat (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:144:18)",
+        "WrappedClass.createNatGateways (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:918:22)",
+        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:26)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:61:21)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -986,16 +730,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1234:28)",
+        "new PrivateSubnet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1527:13)",
+        "/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1041: (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1041:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1005:30)",
+        "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:964:18)",
+        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:810:18)"
       ]
     }
   ],
@@ -1007,16 +748,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1254:27)",
+        "new PrivateSubnet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1527:13)",
+        "/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1041: (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1041:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1005:30)",
+        "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:964:18)",
+        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:810:18)"
       ]
     }
   ],
@@ -1028,16 +766,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "new Subnet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1259:32)",
+        "new PrivateSubnet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1527:13)",
+        "/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1041: (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1041:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1005:30)",
+        "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:964:18)",
+        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:810:18)"
       ]
     }
   ],
@@ -1049,15 +784,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1393:27)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
-        "NatGatewayProvider.configureNat (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
-        "WrappedClass.createNatGateways (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:28:21)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "WrappedClass.addRoute (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1354:27)",
+        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:150:16)",
+        "NatGatewayProvider.configureNat (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:144:18)",
+        "WrappedClass.createNatGateways (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:918:22)",
+        "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:26)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:61:21)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -1076,12 +810,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:640:39)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:49:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new Role (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:422:34)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:637:39)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:82:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -1094,13 +826,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:671:58)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:49:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new SecurityGroup (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:410:34)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:668:58)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:82:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -1113,9 +842,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "MutableImport.addIngressRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:98:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:62:39)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "MutableImport.addIngressRule (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:117:13)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:95:39)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -1128,9 +857,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "MutableImport.addIngressRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:98:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:63:39)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "MutableImport.addIngressRule (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:117:13)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:96:39)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -1138,58 +867,25 @@
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Handler": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "timeout": "*",
-        "description": "*",
-        "memorySize": "*",
-        "environment": "*",
-        "role": "*",
-        "code": "*",
-        "handler": "*",
-        "runtime": "*",
-        "vpc": "*",
-        "securityGroups": [
-          "*",
-          "*"
-        ],
-        "vpcSubnets": {
-          "subnets": [
-            "*",
-            "*"
-          ]
-        }
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEnvironment": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addLayers": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addLayers": [
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/AwsCliLayer": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {}
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/ClusterAdminRoleAccess/Resource": [
@@ -1200,15 +896,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new AccessEntry (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/access-entry.js:338:29)",
-        "new AccessEntry (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new AccessEntry (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.grantClusterAdmin (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:929:30)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:835:49)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:49:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new AccessEntry (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/access-entry.js:284:29)",
+        "WrappedClass.grantClusterAdmin (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:917:30)",
+        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:832:49)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:82:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -1233,12 +926,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:640:39)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:85:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new Role (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:422:34)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:637:39)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:118:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -1251,13 +942,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:671:58)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:85:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new SecurityGroup (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:410:34)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:668:58)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:118:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -1270,9 +958,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "MutableImport.addIngressRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:98:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:98:39)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "MutableImport.addIngressRule (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:117:13)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:131:39)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -1280,57 +968,25 @@
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Handler": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "timeout": "*",
-        "description": "*",
-        "memorySize": "*",
-        "environment": "*",
-        "role": "*",
-        "code": "*",
-        "handler": "*",
-        "runtime": "*",
-        "vpc": "*",
-        "securityGroups": [
-          "*"
-        ],
-        "vpcSubnets": {
-          "subnets": [
-            "*",
-            "*"
-          ]
-        }
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEnvironment": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addLayers": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addLayers": [
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/AwsCliLayer": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {}
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/ClusterAdminRoleAccess/Resource": [
@@ -1341,15 +997,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new AccessEntry (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/access-entry.js:338:29)",
-        "new AccessEntry (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new AccessEntry (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.grantClusterAdmin (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:929:30)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:835:49)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:85:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new AccessEntry (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/access-entry.js:284:29)",
+        "WrappedClass.grantClusterAdmin (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:917:30)",
+        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:832:49)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:118:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -1374,12 +1027,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:640:39)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:114:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new Role (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:422:34)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:637:39)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:147:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -1392,13 +1043,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:671:58)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:114:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new SecurityGroup (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:410:34)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:668:58)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:147:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -1406,57 +1054,25 @@
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Handler": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "timeout": "*",
-        "description": "*",
-        "memorySize": "*",
-        "environment": "*",
-        "role": "*",
-        "code": "*",
-        "handler": "*",
-        "runtime": "*",
-        "vpc": "*",
-        "securityGroups": [
-          "*"
-        ],
-        "vpcSubnets": {
-          "subnets": [
-            "*",
-            "*"
-          ]
-        }
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEnvironment": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addLayers": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addLayers": [
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/AwsCliLayer": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {}
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/ClusterAdminRoleAccess/Resource": [
@@ -1467,15 +1083,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new AccessEntry (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/access-entry.js:338:29)",
-        "new AccessEntry (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new AccessEntry (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.grantClusterAdmin (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:929:30)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:835:49)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:114:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new AccessEntry (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/access-entry.js:284:29)",
+        "WrappedClass.grantClusterAdmin (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:917:30)",
+        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:832:49)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:147:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -1489,72 +1102,31 @@
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Handler/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          },
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addManagedPolicy": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addManagedPolicy": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addManagedPolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Handler/Resource": [
@@ -1565,13 +1137,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:104:25)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:49:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:627:29)",
+        "new KubectlProvider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:107:25)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:817:41)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:82:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -1584,11 +1154,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:141:39)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:49:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new KubectlProvider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:144:39)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:817:41)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:82:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -1601,15 +1170,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:164:30)",
-        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AwsCliLayer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/lambda-layer-awscli/lib/awscli-layer.js:77:13)",
-        "new AwsCliLayer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:123:48)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:49:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new LayerVersion (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:130:30)",
+        "new AwsCliLayer (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/lambda-layer-awscli/lib/awscli-layer.js:95:13)",
+        "new KubectlProvider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:126:48)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:817:41)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:82:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -1617,39 +1183,11 @@
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Provider/framework-onEvent": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "code": "*",
-        "description": "*",
-        "runtime": "*",
-        "handler": "*",
-        "timeout": "*",
-        "loggingFormat": "JSON",
-        "applicationLogLevelV2": "FATAL",
-        "logGroup": "*",
-        "vpc": "*",
-        "vpcSubnets": {
-          "subnets": [
-            "*",
-            "*"
-          ]
-        },
-        "securityGroups": [
-          "*",
-          "*"
-        ],
-        "role": "*",
-        "functionName": "*",
-        "environmentEncryption": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEnvironment": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/manifest-TestConfigMap1/Resource/Default": [
@@ -1660,13 +1198,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new KubernetesManifest (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/k8s-manifest.js:49:32)",
-        "WrappedClass.addManifest (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:314:16)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:65:18)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new CustomResource (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:116:29)",
+        "new KubernetesManifest (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/k8s-manifest.js:37:32)",
+        "WrappedClass.addManifest (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:331:16)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:98:18)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -1674,72 +1210,31 @@
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Handler/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          },
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addManagedPolicy": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addManagedPolicy": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addManagedPolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Handler/Resource": [
@@ -1750,13 +1245,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:104:25)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:85:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:627:29)",
+        "new KubectlProvider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:107:25)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:817:41)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:118:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -1769,11 +1262,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:141:39)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:85:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new KubectlProvider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:144:39)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:817:41)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:118:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -1786,15 +1278,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:164:30)",
-        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AwsCliLayer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/lambda-layer-awscli/lib/awscli-layer.js:77:13)",
-        "new AwsCliLayer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:123:48)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:85:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new LayerVersion (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:130:30)",
+        "new AwsCliLayer (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/lambda-layer-awscli/lib/awscli-layer.js:95:13)",
+        "new KubectlProvider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:126:48)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:817:41)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:118:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -1802,38 +1291,11 @@
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Provider/framework-onEvent": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "code": "*",
-        "description": "*",
-        "runtime": "*",
-        "handler": "*",
-        "timeout": "*",
-        "loggingFormat": "JSON",
-        "applicationLogLevelV2": "FATAL",
-        "logGroup": "*",
-        "vpc": "*",
-        "vpcSubnets": {
-          "subnets": [
-            "*",
-            "*"
-          ]
-        },
-        "securityGroups": [
-          "*"
-        ],
-        "role": "*",
-        "functionName": "*",
-        "environmentEncryption": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEnvironment": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/manifest-TestConfigMap2/Resource/Default": [
@@ -1844,13 +1306,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new KubernetesManifest (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/k8s-manifest.js:49:32)",
-        "WrappedClass.addManifest (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:314:16)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:99:18)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new CustomResource (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:116:29)",
+        "new KubernetesManifest (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/k8s-manifest.js:37:32)",
+        "WrappedClass.addManifest (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:331:16)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:132:18)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -1858,72 +1318,31 @@
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Handler/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          },
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addManagedPolicy": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addManagedPolicy": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addManagedPolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Handler/Resource": [
@@ -1934,13 +1353,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:104:25)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:114:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:627:29)",
+        "new KubectlProvider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:107:25)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:817:41)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:147:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -1953,11 +1370,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:141:39)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:114:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new KubectlProvider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:144:39)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:817:41)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:147:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -1970,15 +1386,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:164:30)",
-        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AwsCliLayer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/lambda-layer-awscli/lib/awscli-layer.js:77:13)",
-        "new AwsCliLayer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:123:48)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:114:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new LayerVersion (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:130:30)",
+        "new AwsCliLayer (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/lambda-layer-awscli/lib/awscli-layer.js:95:13)",
+        "new KubectlProvider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:126:48)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:817:41)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:147:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -1986,38 +1399,11 @@
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Provider/framework-onEvent": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "code": "*",
-        "description": "*",
-        "runtime": "*",
-        "handler": "*",
-        "timeout": "*",
-        "loggingFormat": "JSON",
-        "applicationLogLevelV2": "FATAL",
-        "logGroup": "*",
-        "vpc": "*",
-        "vpcSubnets": {
-          "subnets": [
-            "*",
-            "*"
-          ]
-        },
-        "securityGroups": [
-          "*"
-        ],
-        "role": "*",
-        "functionName": "*",
-        "environmentEncryption": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEnvironment": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/manifest-TestConfigMap3/Resource/Default": [
@@ -2028,13 +1414,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new KubernetesManifest (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/k8s-manifest.js:49:32)",
-        "WrappedClass.addManifest (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:314:16)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:128:18)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new CustomResource (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:116:29)",
+        "new KubernetesManifest (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/k8s-manifest.js:37:32)",
+        "WrappedClass.addManifest (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:331:16)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:161:18)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -2047,15 +1431,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:104:25)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:49:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new Role (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:422:34)",
+        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:542:39)",
+        "new KubectlProvider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:107:25)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:817:41)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:82:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -2067,27 +1448,15 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Handler/Code/AssetBucket": [
@@ -2105,60 +1474,27 @@
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Provider/framework-onEvent/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          },
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Provider/framework-onEvent/Resource": [
@@ -2169,49 +1505,32 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:146:26)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:49:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)"
+        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:627:29)",
+        "WrappedClass.createFunction (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:201:24)",
+        "new Provider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:156:42)",
+        "new KubectlProvider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:149:26)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:817:41)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:82:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)"
       ]
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "statements": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Handler/ServiceRole/Resource": [
@@ -2222,15 +1541,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:104:25)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:85:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new Role (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:422:34)",
+        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:542:39)",
+        "new KubectlProvider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:107:25)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:817:41)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:118:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -2242,27 +1558,15 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Handler/Code/AssetBucket": [
@@ -2280,60 +1584,27 @@
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Provider/framework-onEvent/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          },
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Provider/framework-onEvent/Resource": [
@@ -2344,49 +1615,32 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:146:26)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:85:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)"
+        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:627:29)",
+        "WrappedClass.createFunction (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:201:24)",
+        "new Provider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:156:42)",
+        "new KubectlProvider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:149:26)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:817:41)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:118:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)"
       ]
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "statements": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Handler/ServiceRole/Resource": [
@@ -2397,15 +1651,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:104:25)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:114:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)",
+        "new Role (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:422:34)",
+        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:542:39)",
+        "new KubectlProvider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:107:25)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:817:41)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:147:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)",
         "...node internals..."
       ]
     }
@@ -2417,27 +1668,15 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Handler/Code/AssetBucket": [
@@ -2455,60 +1694,27 @@
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Provider/framework-onEvent/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          },
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Provider/framework-onEvent/Resource": [
@@ -2519,49 +1725,32 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:146:26)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:114:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)"
+        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:627:29)",
+        "WrappedClass.createFunction (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:201:24)",
+        "new Provider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:156:42)",
+        "new KubectlProvider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:149:26)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:817:41)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:147:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)"
       ]
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "statements": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Handler/ServiceRole/DefaultPolicy/Resource": [
@@ -2572,16 +1761,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:126:21)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:49:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)"
+        "new Policy (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:133:30)",
+        "WrappedClass.addToPrincipalPolicy (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:474:42)",
+        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new KubectlProvider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:129:21)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:817:41)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:82:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)"
       ]
     }
   ],
@@ -2593,16 +1779,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:146:26)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+        "new Role (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:422:34)",
+        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:542:39)",
+        "WrappedClass.createFunction (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:201:24)",
+        "new Provider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:156:42)",
+        "new KubectlProvider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:149:26)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:817:41)"
       ]
     }
   ],
@@ -2613,27 +1795,15 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Provider/framework-onEvent/Code/AssetBucket": [
@@ -2650,16 +1820,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToRolePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:206:33)",
-        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:184:29)",
-        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:216:18)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:146:26)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)"
+        "new Policy (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:133:30)",
+        "WrappedClass.addToRolePolicy (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:206:33)",
+        "WrappedClass.addPermissions (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:192:29)",
+        "WrappedClass.createFunction (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:224:18)",
+        "new Provider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:156:42)",
+        "new KubectlProvider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:149:26)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:817:41)"
       ]
     }
   ],
@@ -2671,16 +1838,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:126:21)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:85:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)"
+        "new Policy (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:133:30)",
+        "WrappedClass.addToPrincipalPolicy (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:474:42)",
+        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new KubectlProvider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:129:21)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:817:41)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:118:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)"
       ]
     }
   ],
@@ -2692,16 +1856,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:146:26)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+        "new Role (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:422:34)",
+        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:542:39)",
+        "WrappedClass.createFunction (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:201:24)",
+        "new Provider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:156:42)",
+        "new KubectlProvider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:149:26)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:817:41)"
       ]
     }
   ],
@@ -2712,27 +1872,15 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Provider/framework-onEvent/Code/AssetBucket": [
@@ -2749,16 +1897,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToRolePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:206:33)",
-        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:184:29)",
-        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:216:18)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:146:26)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)"
+        "new Policy (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:133:30)",
+        "WrappedClass.addToRolePolicy (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:206:33)",
+        "WrappedClass.addPermissions (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:192:29)",
+        "WrappedClass.createFunction (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:224:18)",
+        "new Provider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:156:42)",
+        "new KubectlProvider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:149:26)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:817:41)"
       ]
     }
   ],
@@ -2770,16 +1915,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:126:21)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksKubectlSecurityGroupsStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:114:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:150:15)"
+        "new Policy (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:133:30)",
+        "WrappedClass.addToPrincipalPolicy (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:474:42)",
+        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new KubectlProvider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:129:21)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:817:41)",
+        "new EksKubectlSecurityGroupsStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:147:26)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-kubectl-security-groups.js:183:15)"
       ]
     }
   ],
@@ -2791,16 +1933,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:146:26)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+        "new Role (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:422:34)",
+        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:542:39)",
+        "WrappedClass.createFunction (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:201:24)",
+        "new Provider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:156:42)",
+        "new KubectlProvider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:149:26)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:817:41)"
       ]
     }
   ],
@@ -2811,27 +1949,15 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Provider/framework-onEvent/Code/AssetBucket": [
@@ -2848,16 +1974,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToRolePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:206:33)",
-        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:184:29)",
-        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:216:18)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:146:26)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:820:41)"
+        "new Policy (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:133:30)",
+        "WrappedClass.addToRolePolicy (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:206:33)",
+        "WrappedClass.addPermissions (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:192:29)",
+        "WrappedClass.createFunction (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:224:18)",
+        "new Provider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:156:42)",
+        "new KubectlProvider (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:149:26)",
+        "new Cluster (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:817:41)"
       ]
     }
   ],
@@ -2869,16 +1992,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
-        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
-        "WrappedClass.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:483:35)",
-        "WrappedClass.grantInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:287:26)",
-        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:179:38)"
+        "new Policy (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:133:30)",
+        "WrappedClass.addToPrincipalPolicy (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:474:42)",
+        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:164:65)",
+        "Grant.addToPrincipalOrResource (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:67:30)",
+        "WrappedClass.grant (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:401:33)",
+        "WrappedClass.grantInvoke (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:269:26)",
+        "WrappedClass.addPermissions (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:187:38)"
       ]
     }
   ],
@@ -2890,16 +2011,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
-        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
-        "WrappedClass.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:483:35)",
-        "WrappedClass.grantInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:287:26)",
-        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:179:38)"
+        "new Policy (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:133:30)",
+        "WrappedClass.addToPrincipalPolicy (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:474:42)",
+        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:164:65)",
+        "Grant.addToPrincipalOrResource (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:67:30)",
+        "WrappedClass.grant (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:401:33)",
+        "WrappedClass.grantInvoke (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:269:26)",
+        "WrappedClass.addPermissions (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:187:38)"
       ]
     }
   ],
@@ -2911,16 +2030,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
-        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
-        "WrappedClass.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:483:35)",
-        "WrappedClass.grantInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:287:26)",
-        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:179:38)"
+        "new Policy (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:133:30)",
+        "WrappedClass.addToPrincipalPolicy (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:474:42)",
+        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:164:65)",
+        "Grant.addToPrincipalOrResource (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:67:30)",
+        "WrappedClass.grant (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:401:33)",
+        "WrappedClass.grantInvoke (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:269:26)",
+        "WrappedClass.addPermissions (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:187:38)"
       ]
     }
   ]

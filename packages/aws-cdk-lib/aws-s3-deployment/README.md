@@ -373,6 +373,27 @@ resource handler.
 > NOTE: a new AWS Lambda handler will be created in your stack for each combination
 > of memory and storage size.
 
+## Lambda Architecture
+
+By default, the deployment handler Lambda function uses the `X86_64` architecture.
+You can use the `architecture` property to deploy using the `ARM_64` (Graviton)
+architecture for cost savings and sustainability improvements.
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
+declare const destinationBucket: s3.Bucket;
+
+new s3deploy.BucketDeployment(this, 'DeployWithGraviton', {
+  sources: [s3deploy.Source.asset('./website')],
+  destinationBucket,
+  architecture: lambda.Architecture.ARM_64,
+});
+```
+
+> NOTE: a new AWS Lambda handler will be created in your stack for each unique
+> combination of memory, storage size, VPC, security groups, and architecture.
+
 ## JSON-Aware Source Processing
 
 When using `Source.jsonData` with CDK Tokens (references to construct properties), you may need to enable the escaping option. This is particularly important when the referenced properties might contain special characters that require proper JSON escaping (like double quotes, line breaks, etc.).
