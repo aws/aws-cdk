@@ -124,7 +124,18 @@
          "QueueName"
         ]
        },
-       "\"]],\"singleValueFullPrecision\":true}},{\"type\":\"custom\",\"width\":6,\"height\":6,\"x\":0,\"y\":68,\"properties\":{\"endpoint\":\"arn:aws:lambda:us-west-2:123456789012:function:my-function\",\"title\":\"My custom alarm\",\"updateOn\":{\"refresh\":true,\"resize\":true,\"timeRange\":true}}}]}"
+       "\"]],\"singleValueFullPrecision\":true}},{\"type\":\"metric\",\"width\":6,\"height\":3,\"x\":0,\"y\":68,\"properties\":{\"view\":\"singleValue\",\"title\":\"Live data of sent message size \",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/SQS\",\"SentMessageSize\",\"QueueName\",\"",
+       {
+        "Fn::GetAtt": [
+         "queue",
+         "QueueName"
+        ]
+       },
+       "\"]],\"liveData\":true}},{\"type\":\"custom\",\"width\":6,\"height\":6,\"x\":0,\"y\":71,\"properties\":{\"endpoint\":\"arn:aws:lambda:us-west-2:123456789012:function:my-function\",\"title\":\"My custom alarm\",\"updateOn\":{\"refresh\":true,\"resize\":true,\"timeRange\":true}}}]}"
       ]
      ]
     },
