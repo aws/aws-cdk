@@ -1,9 +1,10 @@
 import type { Construct } from 'constructs';
 import type { DeliveryPolicy } from './delivery-policy';
+import { snsServicePrincipal } from './private/service-principal';
 import { CfnSubscription } from './sns.generated';
 import type { SubscriptionFilter } from './subscription-filter';
 import type { ITopic } from './topic-base';
-import { PolicyStatement, ServicePrincipal } from '../../aws-iam';
+import { PolicyStatement } from '../../aws-iam';
 import type { IQueue } from '../../aws-sqs';
 import { Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
@@ -259,7 +260,7 @@ export class Subscription extends Resource {
     deadLetterQueue.addToResourcePolicy(new PolicyStatement({
       resources: [deadLetterQueue.queueArn],
       actions: ['sqs:SendMessage'],
-      principals: [new ServicePrincipal('sns.amazonaws.com')],
+      principals: [snsServicePrincipal(props.topic, deadLetterQueue)],
       conditions: {
         ArnEquals: { 'aws:SourceArn': props.topic.topicArn },
       },

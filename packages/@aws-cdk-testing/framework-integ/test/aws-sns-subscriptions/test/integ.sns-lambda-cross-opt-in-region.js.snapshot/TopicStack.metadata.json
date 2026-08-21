@@ -1,0 +1,28 @@
+{
+  "/TopicStack/MyTopic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "topicName": "*"
+      }
+    }
+  ],
+  "/TopicStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/TopicStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/TopicStack/MyTopic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyTopic86869434"
+    }
+  ]
+}
