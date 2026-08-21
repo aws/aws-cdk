@@ -105,6 +105,7 @@ export const RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS = '@aws-cdk/aws-rds:pr
 export const AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS = '@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters';
 export const APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION = '@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier';
 export const CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME = '@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource';
+export const AUTO_SCOPE_CODEBUILD_ROLE_FOR_FULL_CLONE = '@aws-cdk/aws-codepipeline-actions:autoScopeCodeBuildRoleForFullClone';
 export const LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION = '@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction';
 export const CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE = '@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse';
 export const CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2 = '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2';
@@ -1929,6 +1930,32 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.262.0' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [AUTO_SCOPE_CODEBUILD_ROLE_FOR_FULL_CLONE]: {
+    type: FlagType.ApiDefault,
+    summary: 'Auto-create a CodeBuild service role scoped to the repositories it uses from CodeConnections Full Clone sources',
+    detailsMd: `
+      When a CodeBuild action has any CodeConnections sources that use Full Clone, enabling this
+      flag creates a dedicated CodeBuild service role whose access to the connection is scoped to the
+      repositories the action clones, following the principle of least privilege. The role is exposed
+      as \`buildAction.serviceRole\`.
+
+      The auto-created role is intentionally minimal. It grants only: CloudWatch Logs for the project's
+      log group, CodeBuild report groups, read/write on the pipeline artifact bucket (and its KMS key,
+      if any), \`UseConnection\` on each connection with a \`FullRepositoryId\` condition for the cloned
+      repositories, and \`codecommit:GitPull\` scoped to any CodeCommit Full Clone repositories on the
+      same action. Grant any other permissions through \`buildAction.serviceRole\`, or pass an explicit
+      \`serviceRoleOverride\` you control.
+
+      Role creation is skipped when the CodeBuild project is imported, or when a source connection ARN is
+      not known at synthesis time. Does not affect CodeBuild Rules. To override the role for a CodeBuild
+      Rule, set \`ServiceRoleArnOverride\` in the rule's \`configuration\` map.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to keep using the CodeBuild project default service role, or pass an explicit `serviceRoleOverride`.',
   },
 };
 
