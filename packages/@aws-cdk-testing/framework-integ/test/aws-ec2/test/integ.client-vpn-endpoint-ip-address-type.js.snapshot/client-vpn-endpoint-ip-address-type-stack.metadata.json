@@ -1,0 +1,877 @@
+{
+  "/client-vpn-endpoint-ip-address-type-stack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "maxAzs": "*",
+        "natGateways": "*",
+        "ipProtocol": "Dual_Stack"
+      }
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:258:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:266:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/ImportCertificates/CreateCertificates": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/ImportCertificates/DeleteCertificates": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Custom::ACMImportCertificatesCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomACMImportCertificatesCustomResourceProviderRole2CE46D14"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:99:25)",
+        "new CustomResourceProvider (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider.js:127:9)",
+        "CustomResourceProvider.getOrCreateProvider (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider.js:123:16)",
+        "CustomResourceProvider.getOrCreate (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider.js:97:21)",
+        "new ImportCertificates (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:42:67)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:16:30)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Custom::ACMImportCertificatesCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomACMImportCertificatesCustomResourceProviderHandler2EB12457"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:115:24)",
+        "new CustomResourceProvider (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider.js:127:9)",
+        "CustomResourceProvider.getOrCreateProvider (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider.js:123:16)",
+        "CustomResourceProvider.getOrCreate (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider.js:97:21)",
+        "new ImportCertificates (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:42:67)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:16:30)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpc8378EB38"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:768:29)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:17:21)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/ipv6cidr": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpcipv6cidr40D3CB78"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AmazonProvided.allocateVpcIpv6Cidr (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/ip-addresses.js:249:16)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:811:57)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:17:21)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": true
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": true
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/PublicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": true
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": true
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/IsolatedSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": true
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": true
+      }
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/IsolatedSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": true
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": true
+      }
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIGWD7BA715C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:823:29)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:17:21)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcVPCGWBF912B6E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:826:29)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:17:21)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/Endpoint": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "cidr": "*",
+        "serverCertificateArn": "*",
+        "clientCertificateArn": "*",
+        "logGroup": "*",
+        "vpc": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addAuthorizationRule": [
+          "*",
+          {
+            "cidr": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogGroupF5B46931"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
+        "new LogGroup (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:23:26)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/ImportCertificates/CreateCertificates/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ImportCertificatesCreateCertificates71085A81"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:140:29)",
+        "new CustomResource (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ImportCertificates (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:51:36)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:16:30)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/ImportCertificates/DeleteCertificates/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ImportCertificatesDeleteCertificates6462F0A6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:140:29)",
+        "new CustomResource (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ImportCertificates (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:57:9)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:16:30)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1Subnet5C2D37C4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1262:28)",
+        "new Subnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
+        "new PublicSubnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:17:21)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTable6C95E38E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1281:27)",
+        "new Subnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
+        "new PublicSubnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:17:21)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1286:32)",
+        "new Subnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
+        "new PublicSubnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:17:21)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1301:27)",
+        "WrappedClass.<anonymous> (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:833: (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:833:3)",
+        "Array.forEach (:)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:830:36)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:17:21)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/PublicSubnet1/DefaultRoute6": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1DefaultRoute6A21265FB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1390:27)",
+        "WrappedClass.<anonymous> (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.addIpv6DefaultInternetRoute (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1317:18)",
+        "WrappedClass.<anonymous> (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:837: (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:837:3)",
+        "Array.forEach (:)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:830:36)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:17:21)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2Subnet691E08A3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1262:28)",
+        "new Subnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
+        "new PublicSubnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:17:21)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTable94F7E489"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1281:27)",
+        "new Subnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
+        "new PublicSubnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:17:21)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1286:32)",
+        "new Subnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
+        "new PublicSubnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:17:21)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2DefaultRoute97F91067"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1301:27)",
+        "WrappedClass.<anonymous> (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:833: (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:833:3)",
+        "Array.forEach (:)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:830:36)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:17:21)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/PublicSubnet2/DefaultRoute6": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2DefaultRoute63E63096C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1390:27)",
+        "WrappedClass.<anonymous> (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.addIpv6DefaultInternetRoute (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1317:18)",
+        "WrappedClass.<anonymous> (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:837: (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:837:3)",
+        "Array.forEach (:)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:830:36)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:17:21)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/IsolatedSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet1SubnetE48C5737"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1262:28)",
+        "new Subnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
+        "new PrivateSubnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1055: (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1055:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:17:21)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/IsolatedSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet1RouteTable4771E3E5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1281:27)",
+        "new Subnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
+        "new PrivateSubnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1055: (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1055:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:17:21)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/IsolatedSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet1RouteTableAssociationD300FCBB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1286:32)",
+        "new Subnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
+        "new PrivateSubnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1055: (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1055:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:17:21)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/IsolatedSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet2Subnet16364B91"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1262:28)",
+        "new Subnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
+        "new PrivateSubnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1055: (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1055:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:17:21)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/IsolatedSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet2RouteTable1D30AF7D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1281:27)",
+        "new Subnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
+        "new PrivateSubnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1055: (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1055:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:17:21)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/IsolatedSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet2RouteTableAssociationF7B18CCA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1286:32)",
+        "new Subnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
+        "new PrivateSubnet (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1055: (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1055:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:17:21)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/Endpoint/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*"
+      }
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/Endpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcEndpoint6FF034F6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ClientVpnEndpoint (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/client-vpn-endpoint.js:251:30)",
+        "new ClientVpnEndpoint (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addClientVpnEndpoint (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:273:16)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:26:13)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/Endpoint/Association0": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcEndpointAssociation06B066321"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ClientVpnEndpoint (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/client-vpn-endpoint.js:299:52)",
+        "new ClientVpnEndpoint (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addClientVpnEndpoint (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:273:16)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:26:13)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/Endpoint/Association1": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcEndpointAssociation12B51A67F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ClientVpnEndpoint (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/client-vpn-endpoint.js:299:52)",
+        "new ClientVpnEndpoint (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addClientVpnEndpoint (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:273:16)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:26:13)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/Endpoint/AuthorizeAll": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "cidr": "*",
+        "clientVpnEndpoint": "*"
+      }
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/Endpoint/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcEndpointSecurityGroup7B25EFDC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecurityGroup (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:416:34)",
+        "new SecurityGroup (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ClientVpnEndpoint (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/client-vpn-endpoint.js:247:61)",
+        "new ClientVpnEndpoint (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addClientVpnEndpoint (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:273:16)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:26:13)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/client-vpn-endpoint-ip-address-type-stack/Vpc/Endpoint/AuthorizeAll/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcEndpointAuthorizeAll70F0E613"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ClientVpnAuthorizationRule (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/client-vpn-authorization-rule.js:99:13)",
+        "new ClientVpnAuthorizationRule (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addAuthorizationRule (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/client-vpn-endpoint.js:329:20)",
+        "WrappedClass.<anonymous> (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new ClientVpnEndpoint (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/client-vpn-endpoint.js:306:22)",
+        "new ClientVpnEndpoint (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addClientVpnEndpoint (/local/home/julsweat/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:273:16)",
+        "new TestStack (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:26:13)",
+        "<anonymous> (/local/home/julsweat/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.client-vpn-endpoint-ip-address-type.js:70:9)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
