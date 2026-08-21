@@ -1,0 +1,13 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "integ-aws-ecs-circuit-breaker-threshold/DefaultTest": {
+      "stacks": [
+        "aws-ecs-circuit-breaker-threshold"
+      ],
+      "assertionStack": "integ-aws-ecs-circuit-breaker-threshold/DefaultTest/DeployAssert",
+      "assertionStackName": "integawsecscircuitbreakerthresholdDefaultTestDeployAssert02792791"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}
