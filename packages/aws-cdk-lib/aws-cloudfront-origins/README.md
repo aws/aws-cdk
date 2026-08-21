@@ -817,6 +817,51 @@ new cloudfront.Distribution(this, 'Distribution', {
 });
 ```
 
+## From an API Gateway HTTP API
+
+Origins can be created from an API Gateway HTTP API. The origin path will automatically be set as the stage name.
+
+```ts
+declare const httpApi: apigatewayv2.HttpApi;
+new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: { origin: new origins.HttpApiOrigin(httpApi) },
+});
+```
+
+If you want to use a specific stage, you can specify it in the `stage` property.
+
+```ts
+declare const httpApi: apigatewayv2.HttpApi;
+const prodStage = httpApi.addStage('prod', { autoDeploy: true });
+new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: { origin: new origins.HttpApiOrigin(httpApi, { stage: prodStage }) },
+});
+```
+
+If you want to use a different origin path, you can specify it in the `originPath` property.
+
+```ts
+declare const httpApi: apigatewayv2.HttpApi;
+new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: { origin: new origins.HttpApiOrigin(httpApi, { originPath: '/custom-origin-path' }) },
+});
+```
+
+You can specify the IP address type for connecting to the origin:
+
+```ts
+declare const httpApi: apigatewayv2.HttpApi;
+const origin = new origins.HttpApiOrigin(httpApi, {
+  ipAddressType: cloudfront.OriginIpAddressType.IPV6, // IPv4, IPv6, or DUALSTACK
+});
+
+new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: { origin },
+});
+```
+
+The `ipAddressType` property allows you to specify whether CloudFront should use IPv4, IPv6, or both (dual-stack) when connecting to your origin.
+
 ## From a Lambda Function URL
 
 Lambda Function URLs enable direct invocation of Lambda functions via HTTP(S), without intermediaries. They can be set as CloudFront origins for streamlined function execution behind a CDN, leveraging caching and custom domains.
