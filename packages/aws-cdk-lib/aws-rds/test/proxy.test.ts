@@ -1105,3 +1105,110 @@ describe('feature flag @aws-cdk/aws-rds:databaseProxyUniqueResourceName', () => 
     });
   });
 });
+
+describe('feature flag @aws-cdk/aws-rds:databaseProxyLowercaseDerivedName', () => {
+  test('lowercases the derived proxy name when the construct id contains uppercase', () => {
+    // GIVEN
+    stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    stack.node.setContext(cxapi.DATABASE_PROXY_LOWERCASE_DERIVED_NAME, true);
+    vpc = new ec2.Vpc(stack, 'VPC');
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_5_7,
+      }),
+      vpc,
+    });
+
+    // WHEN
+    new rds.DatabaseProxy(stack, 'MyProxy', {
+      proxyTarget: rds.ProxyTarget.fromInstance(instance),
+      secrets: [instance.secret!],
+      vpc,
+    });
+
+    // THEN - the derived name matches what RDS will actually create (lowercase)
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxy', {
+      DBProxyName: 'myproxy',
+    });
+  });
+
+  test('does not modify an explicitly provided proxy name', () => {
+    // GIVEN
+    stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    stack.node.setContext(cxapi.DATABASE_PROXY_LOWERCASE_DERIVED_NAME, true);
+    vpc = new ec2.Vpc(stack, 'VPC');
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_5_7,
+      }),
+      vpc,
+    });
+
+    // WHEN
+    new rds.DatabaseProxy(stack, 'MyProxy', {
+      proxyTarget: rds.ProxyTarget.fromInstance(instance),
+      dbProxyName: 'Explicit-MixedCase',
+      secrets: [instance.secret!],
+      vpc,
+    });
+
+    // THEN - explicit names are the caller's responsibility and left untouched
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxy', {
+      DBProxyName: 'Explicit-MixedCase',
+    });
+  });
+
+  test('leaves the derived name unchanged when the flag is not set (backwards compatible)', () => {
+    // GIVEN - no feature flag context set
+    stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    vpc = new ec2.Vpc(stack, 'VPC');
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_5_7,
+      }),
+      vpc,
+    });
+
+    // WHEN
+    new rds.DatabaseProxy(stack, 'MyProxy', {
+      proxyTarget: rds.ProxyTarget.fromInstance(instance),
+      secrets: [instance.secret!],
+      vpc,
+    });
+
+    // THEN - preserves the pre-flag (mixed-case) behavior
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxy', {
+      DBProxyName: 'MyProxy',
+    });
+  });
+
+  test('lowercases the unique resource name when both RDS proxy flags are enabled', () => {
+    // GIVEN - both the unique-name and lowercase flags enabled
+    stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    stack.node.setContext(cxapi.DATABASE_PROXY_UNIQUE_RESOURCE_NAME, true);
+    stack.node.setContext(cxapi.DATABASE_PROXY_LOWERCASE_DERIVED_NAME, true);
+    vpc = new ec2.Vpc(stack, 'VPC');
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_5_7,
+      }),
+      vpc,
+    });
+
+    // WHEN
+    new rds.DatabaseProxy(stack, 'MyProxy', {
+      proxyTarget: rds.ProxyTarget.fromInstance(instance),
+      secrets: [instance.secret!],
+      vpc,
+    });
+
+    // THEN - the unique resource name is also lowercased
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxy', {
+      DBProxyName: 'myproxy',
+    });
+  });
+});
