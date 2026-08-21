@@ -1,7 +1,8 @@
-import { Template } from '../../../assertions';
+import { Match, Template } from '../../../assertions';
 import * as codebuild from '../../../aws-codebuild';
 import * as codecommit from '../../../aws-codecommit';
 import * as codepipeline from '../../../aws-codepipeline';
+import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
 import * as sns from '../../../aws-sns';
 import { App, SecretValue, Stack } from '../../../core';
@@ -302,6 +303,114 @@ describe('CodeBuild Action', () => {
           },
         ],
       });
+    });
+
+    test('sets the ServiceRoleArnOverride configuration and grants PassRole', () => {
+      const stack = new Stack();
+
+      const codeBuildProject = new codebuild.PipelineProject(stack, 'CodeBuild');
+      const overrideRole = new iam.Role(stack, 'OverrideRole', {
+        assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+      });
+
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.S3SourceAction({
+                actionName: 'S3_Source',
+                bucket: new s3.Bucket(stack, 'Bucket'),
+                bucketKey: 'key',
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'CodeBuild',
+                input: sourceOutput,
+                project: codeBuildProject,
+                serviceRoleOverride: overrideRole,
+              }),
+            ],
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        'Stages': [
+          {
+            'Name': 'Source',
+          },
+          {
+            'Name': 'Build',
+            'Actions': [
+              {
+                'Name': 'CodeBuild',
+                'Configuration': {
+                  'ServiceRoleArnOverride': stack.resolve(overrideRole.roleArn),
+                },
+              },
+            ],
+          },
+        ],
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': Match.arrayWith([
+            {
+              'Action': 'iam:PassRole',
+              'Effect': 'Allow',
+              'Resource': stack.resolve(overrideRole.roleArn),
+            },
+          ]),
+        },
+      });
+    });
+
+    test('does not set ServiceRoleArnOverride by default', () => {
+      const stack = new Stack();
+
+      const codeBuildProject = new codebuild.PipelineProject(stack, 'CodeBuild');
+
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.S3SourceAction({
+                actionName: 'S3_Source',
+                bucket: new s3.Bucket(stack, 'Bucket'),
+                bucketKey: 'key',
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'CodeBuild',
+                input: sourceOutput,
+                project: codeBuildProject,
+              }),
+            ],
+          },
+        ],
+      });
+
+      const template = Template.fromStack(stack).toJSON() as any;
+      const pipelines = Object.values(template.Resources ?? {}).filter(
+        (r: any) => r.Type === 'AWS::CodePipeline::Pipeline');
+      expect(pipelines).toHaveLength(1);
+      const actions = (pipelines[0] as any).Properties.Stages.flatMap(
+        (stage: any) => stage.Actions ?? []);
+      expect(actions.some((action: any) => action.Configuration?.ServiceRoleArnOverride)).toBe(false);
     });
 
     describe('environment variables', () => {
