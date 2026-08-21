@@ -3,8 +3,7 @@ import type { MapBaseJsonataOptions, MapBaseJsonPathOptions, MapBaseOptions, Map
 import { MapBase } from './map-base';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
-import type { CatchProps, IChainable, INextable, ProcessorConfig, RetryProps } from '../types';
-import { ProcessorMode, QueryLanguage } from '../types';
+import type { CatchProps, ICatchable, IChainable, INextable, ProcessorConfig, RetryProps, ProcessorMode, QueryLanguage } from '../types';
 import type { StateBaseProps } from './state';
 
 interface MapOptions extends MapBaseOptions {
@@ -47,7 +46,7 @@ export interface MapProps extends MapBaseProps, MapOptions {}
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-map-state.html
  */
-export class Map extends MapBase implements INextable {
+export class Map extends MapBase implements INextable, ICatchable {
   /**
    * Define a Map state using JSONPath in the state machine
    *
@@ -158,7 +157,7 @@ export class Map extends MapBase implements INextable {
    * When a particular error occurs, execution will continue at the error
    * handler instead of failing the state machine execution.
    */
-  public addCatch(handler: IChainable, props: CatchProps = {}): Map {
+  public addCatch(handler: IChainable, props: CatchProps = {}): ICatchable {
     super._addCatch(handler.startState, props);
     return this;
   }
