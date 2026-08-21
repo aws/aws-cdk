@@ -111,13 +111,11 @@ export class Schema {
    * @see https://docs.aws.amazon.com/athena/latest/ug/data-types.html
    */
   public static decimal(precision: number, scale?: number): Type {
-    if (Token.isResolved(precision) && Token.isResolved(scale)) {
-      if (precision < 1 || precision > 38 || precision % 1 !== 0) {
-        throw new UnscopedValidationError(lit`DecimalPrecisionOutOfRange`, `decimal precision must be a positive integer between 1 and 38, got ${precision}`);
-      }
-      if (scale !== undefined && (scale < 0 || scale > 38 || scale % 1 !== 0)) {
-        throw new UnscopedValidationError(lit`DecimalScaleOutOfRange`, `decimal scale must be an integer between 0 and 38, got ${scale}`);
-      }
+    if (Token.isResolved(precision) && (precision < 1 || precision > 38 || precision % 1 !== 0)) {
+      throw new UnscopedValidationError(lit`DecimalPrecisionOutOfRange`, `decimal precision must be a positive integer between 1 and 38, got ${precision}`);
+    }
+    if (scale !== undefined && Token.isResolved(scale) && (scale < 0 || scale > 38 || scale % 1 !== 0)) {
+      throw new UnscopedValidationError(lit`DecimalScaleOutOfRange`, `decimal scale must be an integer between 0 and 38, got ${scale}`);
     }
     return Type._of(scale !== undefined ? `decimal(${precision},${scale})` : `decimal(${precision})`, true);
   }
