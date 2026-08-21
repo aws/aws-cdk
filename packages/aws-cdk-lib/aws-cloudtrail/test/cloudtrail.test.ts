@@ -137,7 +137,7 @@ describe('cloudtrail', () => {
       const stack = getTestStack();
       const topic = new sns.Topic(stack, 'Topic');
 
-      new Trail(stack, 'Trail', { snsTopic: topic });
+      const trail = new Trail(stack, 'Trail', { snsTopic: topic });
 
       Template.fromStack(stack).resourceCountIs('AWS::CloudTrail::Trail', 1);
       Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
@@ -146,6 +146,11 @@ describe('cloudtrail', () => {
           Statement: [
             {
               Action: 'sns:Publish',
+              Condition: {
+                StringEquals: {
+                  'aws:SourceArn': stack.resolve(trail.trailArn),
+                },
+              },
               Effect: 'Allow',
               Principal: { Service: 'cloudtrail.amazonaws.com' },
               Resource: { Ref: 'TopicBFC7AF6E' },
@@ -154,6 +159,18 @@ describe('cloudtrail', () => {
           ],
           Version: '2012-10-17',
         },
+      });
+    });
+
+    test('with cross-account sns topic', () => {
+      const stack = getTestStack();
+      const topic = sns.Topic.fromTopicArn(stack, 'Topic', 'arn:aws:sns:us-east-1:999999999999:MyTopic');
+
+      new Trail(stack, 'Trail', { snsTopic: topic });
+
+      Template.fromStack(stack).resourceCountIs('AWS::CloudTrail::Trail', 1);
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
+        SnsTopicName: 'MyTopic',
       });
     });
 
