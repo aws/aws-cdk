@@ -1013,8 +1013,9 @@ export abstract class BaseService extends Resource
       Annotations.of(this)._addTrackableError(lit`CircuitBreakerRequiresEcsController`, 'Deployment circuit breaker requires the ECS deployment controller.');
     }
 
-    if (!props.circuitBreaker && this.isEcsDeploymentController) {
+    if (!props.circuitBreaker && this.isEcsDeploymentController && additionalProps?.schedulingStrategy !== 'DAEMON') {
       // If we *could* use a circuit breaker, then let's recommend users to do so. It makes detecting errors sooo much faster.
+      // The circuit breaker is not applicable to DAEMON services (its threshold is desiredCount-based and daemon services have no desiredCount).
       Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:shouldUseCircuitBreaker', 'Enable the \'circuitBreaker\' property to trigger a quicker deployment failure if tasks are failing to come start (without this setting deployments may take up to 3 hours to fail).');
     }
 
