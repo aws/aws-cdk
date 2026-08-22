@@ -141,7 +141,7 @@
       "data": "IAMServiceRoleDefaultPolicy379D1A0E"
     }
   ],
-  "/aws-glue-job-pyspark-etl/BasicPySparkETLJob/Coded194a11e6093124ac8ca0f26b7502843/AssetBucket": [
+  "/aws-glue-job-pyspark-etl/BasicPySparkETLJob/Code6dbcfe8d866482117bbd4c9ac479ca21/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
