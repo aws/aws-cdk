@@ -2,6 +2,7 @@
 
 import type { AwsCredentialIdentityProvider } from '@smithy/types';
 import type { AwsSdkCall } from './construct-types';
+import { DEFAULT_RESPONSE_RETRY_OPTIONS, httpRequest, withRetries } from '../../utils';
 
 type Event = AWSLambda.CloudFormationCustomResourceEvent;
 
@@ -82,16 +83,7 @@ export function respond(
     },
   };
 
-  return new Promise((resolve, reject) => {
-    try {
-      const request = require('https').request(requestOptions, resolve);
-      request.on('error', reject);
-      request.write(responseBody);
-      request.end();
-    } catch (e) {
-      reject(e);
-    }
-  });
+  return withRetries(DEFAULT_RESPONSE_RETRY_OPTIONS, httpRequest)(requestOptions, responseBody);
 }
 
 /**
