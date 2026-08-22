@@ -1,0 +1,72 @@
+{
+  "/eks-pod-identity-target-role-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/eks-pod-identity-target-role-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/eks-pod-identity-target-role-integ/DefaultTest/DeployAssert/AwsApiCallEKSlistPodIdentityAssociationsa2367419c2f573ba80a202dff0676152/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/eks-pod-identity-target-role-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/eks-pod-identity-target-role-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/eks-pod-identity-target-role-integ/DefaultTest/DeployAssert/AwsApiCallEKSdescribePodIdentityAssociation4e9c41b6ff27a2e551f92b8292bff11c/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/eks-pod-identity-target-role-integ/DefaultTest/DeployAssert/AwsApiCallEKSdescribePodIdentityAssociation4e9c41b6ff27a2e551f92b8292bff11c/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallEKSdescribePodIdentityAssociation4e9c41b6ff27a2e551f92b8292bff11c"
+    }
+  ],
+  "/eks-pod-identity-target-role-integ/DefaultTest/DeployAssert/AwsApiCallEKSlistPodIdentityAssociationsa2367419c2f573ba80a202dff0676152/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallEKSlistPodIdentityAssociationsa2367419c2f573ba80a202dff0676152"
+    }
+  ],
+  "/eks-pod-identity-target-role-integ/DefaultTest/DeployAssert/AwsApiCallEKSdescribePodIdentityAssociation4e9c41b6ff27a2e551f92b8292bff11c/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallEKSdescribePodIdentityAssociation4e9c41b6ff27a2e551f92b8292bff11c"
+    }
+  ]
+}
