@@ -4742,7 +4742,8 @@ test('grantReadData on encrypted table grants KMS permissions via auto-discovery
     encryption: TableEncryptionV2.customerManagedKey(key),
   });
 
-  table.grantReadData(new iam.ServicePrincipal('lambda.amazonaws.com'));
+  const principal = new iam.AccountRootPrincipal();
+  table.grantReadData(principal);
 
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     KeyPolicy: {
@@ -4755,7 +4756,18 @@ test('grantReadData on encrypted table grants KMS permissions via auto-discovery
             'kms:ReEncrypt*',
             'kms:GenerateDataKey*',
           ]),
-          Principal: { Service: 'lambda.amazonaws.com' },
+          Principal: {
+            AWS: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':iam::111111111111:root',
+                ],
+              ],
+            },
+          },
         }),
       ]),
     },
