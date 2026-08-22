@@ -307,7 +307,7 @@ test('assets have a display name based on their construct path', () => {
   }
 });
 
-describe('dockerfile-specific ignore file (under feature flag)', () => {
+describe('dockerfile-specific ignore file', () => {
   const directory = path.join(__dirname, 'dockerfile-specific-ignore');
 
   function stagedDir(flagOn: boolean, file?: string) {
@@ -329,17 +329,15 @@ describe('dockerfile-specific ignore file (under feature flag)', () => {
     }
   }
 
-  const todayContextRootOnly: Record<string, boolean> = {
-    'ignored-by-context-root.txt': false,
-    'ignored-by-dockerfile.txt': true,
-    'ignored-by-custom-dockerfile.txt': true,
-    '.dockerignore': true,
-  };
-
   test('flag off uses only .dockerignore for default and custom Dockerfiles', () => {
     for (const file of [undefined, 'Dockerfile.Custom']) {
       const staged = stagedDir(false, file);
-      expectFiles(staged, todayContextRootOnly);
+      expectFiles(staged, {
+        'ignored-by-context-root.txt': false,
+        'ignored-by-dockerfile.txt': true,
+        'ignored-by-custom-dockerfile.txt': true,
+        '.dockerignore': true,
+      });
     }
   });
 
