@@ -1,0 +1,35 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "1da1c09471d24915174fb104c450d1cb51cae6dc47e1d01b63e1e7548ec00c0b": {
+      "displayName": "integ-assets-dockerfile-specific-dockerignore Template",
+      "source": {
+        "path": "integ-assets-dockerfile-specific-dockerignore.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-1f5e3e98": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "1da1c09471d24915174fb104c450d1cb51cae6dc47e1d01b63e1e7548ec00c0b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {
+    "b4298cb62c7ea51c737829c8d72f2303357f76e875dbf49174ffe24496815d1d": {
+      "displayName": "DockerImageWithDockerfileSpecificIgnore",
+      "source": {
+        "directory": "asset.b4298cb62c7ea51c737829c8d72f2303357f76e875dbf49174ffe24496815d1d",
+        "dockerFile": "Dockerfile.Custom"
+      },
+      "destinations": {
+        "current_account-current_region-af1a5268": {
+          "repositoryName": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}",
+          "imageTag": "b4298cb62c7ea51c737829c8d72f2303357f76e875dbf49174ffe24496815d1d",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  }
+}

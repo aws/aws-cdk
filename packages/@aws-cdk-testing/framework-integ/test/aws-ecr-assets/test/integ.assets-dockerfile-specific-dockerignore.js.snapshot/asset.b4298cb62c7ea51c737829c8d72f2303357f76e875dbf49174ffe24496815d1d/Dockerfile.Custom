@@ -1,0 +1,6 @@
+# Pass oracle: build succeeds only when must-not-exist.txt is absent after ADD.
+FROM public.ecr.aws/docker/library/alpine:3.20
+WORKDIR /ctx
+ADD . /ctx
+RUN test ! -e /ctx/must-not-exist.txt
+CMD ["true"]
