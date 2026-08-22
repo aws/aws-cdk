@@ -660,6 +660,71 @@ describe('User Pool', () => {
     }).toThrow(/Only the `PRE_TOKEN_GENERATION_CONFIG` operation supports V2_0 and V3_0 lambda version./);
   });
 
+  test('add inboundFederation trigger via addTrigger', () => {
+    // GIVEN
+    const stack = new Stack();
+    const inboundFederationFn = fooFunction(stack, 'InboundFederation');
+
+    // WHEN
+    const pool = new UserPool(stack, 'Pool');
+    pool.addTrigger(UserPoolOperation.INBOUND_FEDERATION, inboundFederationFn);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      LambdaConfig: {
+        InboundFederation: {
+          LambdaArn: stack.resolve(inboundFederationFn.functionArn),
+          LambdaVersion: 'V1_0',
+        },
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: stack.resolve(inboundFederationFn.functionArn),
+      Principal: 'cognito-idp.amazonaws.com',
+    });
+  });
+
+  test('add inboundFederation trigger via lambdaTriggers prop', () => {
+    // GIVEN
+    const stack = new Stack();
+    const inboundFederationFn = fooFunction(stack, 'InboundFederation');
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      lambdaTriggers: {
+        inboundFederation: inboundFederationFn,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      LambdaConfig: {
+        InboundFederation: {
+          LambdaArn: stack.resolve(inboundFederationFn.functionArn),
+          LambdaVersion: 'V1_0',
+        },
+      },
+    });
+  });
+
+  test('inboundFederation trigger does not support V2_0 or V3_0', () => {
+    // GIVEN
+    const stack = new Stack();
+    const inboundFederationFn = fooFunction(stack, 'InboundFederation');
+
+    // WHEN
+    const pool = new UserPool(stack, 'Pool');
+    expect(() => {
+      pool.addTrigger(
+        UserPoolOperation.INBOUND_FEDERATION,
+        inboundFederationFn,
+        LambdaVersion.V2_0,
+      );
+    }).toThrow('Only the `PRE_TOKEN_GENERATION_CONFIG` operation supports V2_0 and V3_0 lambda version.');
+  });
+
   test('can use same lambda as trigger for multiple user pools', () => {
     // GIVEN
     const stack = new Stack();
