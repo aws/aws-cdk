@@ -198,7 +198,7 @@ interface DatabaseClusterBaseProps {
   /**
    * Indicates whether the DB cluster should have deletion protection enabled.
    *
-   * @default - true if `removalPolicy` is RETAIN, `undefined` otherwise, which will not enable deletion protection.
+   * @default - true if `removalPolicy` is RETAIN or RETAIN_ON_UPDATE_OR_DELETE, `undefined` otherwise, which will not enable deletion protection.
    * To disable deletion protection after it has been enabled, you must explicitly set this value to `false`.
    */
   readonly deletionProtection?: boolean;
