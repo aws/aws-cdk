@@ -645,6 +645,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ON_DEMAND",
     "CAPACITY_BLOCK"
   ],
+  "CatalogEncryptionMode": [
+    "DISABLED",
+    "SSE-KMS",
+    "SSE-KMS-WITH-SERVICE-ROLE"
+  ],
   "CfnCapabilities": [
     "",
     "CAPABILITY_IAM",
@@ -744,9 +749,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "emailHeader",
     "linkTag",
     "messageTag"
-  ],
-  "CloudWatchEncryptionMode": [
-    "SSE-KMS"
   ],
   "ClusterLoggingTypes": [
     "api",
@@ -1848,6 +1850,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "JWT",
     "REQUEST"
   ],
+  "HttpBackupMode": [
+    "FailedDataOnly",
+    "AllData"
+  ],
   "HttpCodeElb": [
     "HTTPCode_ELB_3XX_Count",
     "HTTPCode_ELB_4XX_Count",
@@ -1862,6 +1868,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "HTTPCode_Target_3XX_Count",
     "HTTPCode_Target_4XX_Count",
     "HTTPCode_Target_5XX_Count"
+  ],
+  "HttpCompression": [
+    "GZIP",
+    "NONE"
   ],
   "HttpConnectionType": [
     "VPC_LINK",
@@ -2524,9 +2534,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "JitterType": [
     "FULL",
     "NONE"
-  ],
-  "JobBookmarksEncryptionMode": [
-    "CSE-KMS"
   ],
   "JobLanguage": [
     "scala",
@@ -4168,6 +4175,13 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "gp3",
     "io1",
     "io2"
+  ],
+  "StreamDeliveryContentLevel": [
+    "METADATA_ONLY",
+    "FULL_CONTENT"
+  ],
+  "StreamDeliveryContentType": [
+    "MEMORY_RECORDS"
   ],
   "StreamEncryption": [
     "NONE",
