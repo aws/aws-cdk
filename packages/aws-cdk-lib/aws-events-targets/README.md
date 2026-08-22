@@ -23,6 +23,7 @@ Currently supported are:
   - [Run an ECS Task](#run-an-ecs-task)
     - [Tagging Tasks](#tagging-tasks)
     - [Launch type for ECS Task](#launch-type-for-ecs-task)
+    - [Imported Task Definitions without a revision](#imported-task-definitions-without-a-revision)
     - [Assign public IP addresses to tasks](#assign-public-ip-addresses-to-tasks)
     - [Enable Amazon ECS Exec for ECS Task](#enable-amazon-ecs-exec-for-ecs-task)
   - [Run a Redshift query](#schedule-a-redshift-query-serverless-or-cluster)
@@ -611,6 +612,44 @@ rule.addTarget(new targets.EcsTask({
   cluster,
   taskDefinition,
   launchType: ecs.LaunchType.FARGATE,
+}));
+```
+
+### Imported Task Definitions without a revision
+
+When an `EcsTask` target grants the EventBridge rule role permission to call `ecs:RunTask`, the
+resource is scoped to the task definition ARN. If the ARN does not pin a specific revision (e.g.
+`arn:aws:ecs:region:account:task-definition/family`), the permission must be scoped with a `:*`
+revision wildcard so that the latest active revision can be run.
+
+When the ARN is a concrete string, whether it includes a revision is inferred automatically. When
+the ARN is only known at deploy time (for example, when it is imported via `Fn.importValue` or
+passed in as a CloudFormation parameter), its revision cannot be inferred from the string. In that
+case, set `taskDefinitionArnIncludesRevision` on the imported task definition's attributes to record
+whether the ARN includes a revision, so the correct `ecs:RunTask` permission is generated.
+
+```ts
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as iam from 'aws-cdk-lib/aws-iam';
+
+declare const cluster: ecs.ICluster;
+
+// The ARN is resolved at deploy time and does not include a revision, so the generated
+// `ecs:RunTask` permission is scoped with a `:*` wildcard.
+const importedTaskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionAttributes(this, 'ImportedTaskDef', {
+  taskDefinitionArn: cdk.Fn.importValue('MyTaskDefinitionArn'),
+  networkMode: ecs.NetworkMode.AWS_VPC,
+  taskRole: iam.Role.fromRoleArn(this, 'TaskRole', 'arn:aws:iam::012345678901:role/MyTaskRole'),
+  taskDefinitionArnIncludesRevision: false,
+});
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+rule.addTarget(new targets.EcsTask({
+  cluster,
+  taskDefinition: importedTaskDefinition,
 }));
 ```
 

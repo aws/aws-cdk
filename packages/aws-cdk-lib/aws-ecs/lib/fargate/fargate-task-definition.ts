@@ -152,6 +152,7 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
       networkMode: attrs.networkMode,
       taskRole: attrs.taskRole,
       executionRole: attrs.executionRole,
+      taskDefinitionArnIncludesRevision: attrs.taskDefinitionArnIncludesRevision,
     });
   }
 
