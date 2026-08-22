@@ -140,19 +140,25 @@ describe('serverless cluster', () => {
     });
   });
 
-  test("sets the retention policy of the SubnetGroup to 'Retain' if the Serverless Cluster is created with 'Retain'", () => {
+  test.each([
+    [cdk.RemovalPolicy.RETAIN, 'Retain', 'Retain'],
+    [cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE, 'RetainExceptOnCreate', 'Retain'],
+  ])('propagates Serverless Cluster RemovalPolicy \'%s\' to its SubnetGroup', (removalPolicy, deletionPolicy, updateReplacePolicy) => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
     new ServerlessCluster(stack, 'Cluster', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       vpc,
-      removalPolicy: cdk.RemovalPolicy.RETAIN,
+      removalPolicy,
     });
 
     Template.fromStack(stack).hasResource('AWS::RDS::DBSubnetGroup', {
-      DeletionPolicy: 'Retain',
-      UpdateReplacePolicy: 'Retain',
+      DeletionPolicy: deletionPolicy,
+      UpdateReplacePolicy: updateReplacePolicy,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      DeletionProtection: true,
     });
   });
 

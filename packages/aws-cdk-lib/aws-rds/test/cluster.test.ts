@@ -2529,7 +2529,10 @@ describe('cluster', () => {
     });
   });
 
-  test("sets the retention policy of the SubnetGroup to 'Retain' if the Cluster is created with 'Retain'", () => {
+  test.each([
+    [RemovalPolicy.RETAIN, 'Retain', 'Retain'],
+    [RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE, 'RetainExceptOnCreate', 'Retain'],
+  ])('propagates Cluster RemovalPolicy \'%s\' to its helper resources', (removalPolicy, deletionPolicy, updateReplacePolicy) => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
@@ -2540,12 +2543,19 @@ describe('cluster', () => {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.LARGE),
         vpc,
       },
-      removalPolicy: cdk.RemovalPolicy.RETAIN,
+      removalPolicy,
     });
 
     Template.fromStack(stack).hasResource('AWS::RDS::DBSubnetGroup', {
-      DeletionPolicy: 'Retain',
-      UpdateReplacePolicy: 'Retain',
+      DeletionPolicy: deletionPolicy,
+      UpdateReplacePolicy: updateReplacePolicy,
+    });
+    Template.fromStack(stack).allResources('AWS::RDS::DBInstance', {
+      DeletionPolicy: deletionPolicy,
+      UpdateReplacePolicy: updateReplacePolicy,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      DeletionProtection: true,
     });
   });
 
