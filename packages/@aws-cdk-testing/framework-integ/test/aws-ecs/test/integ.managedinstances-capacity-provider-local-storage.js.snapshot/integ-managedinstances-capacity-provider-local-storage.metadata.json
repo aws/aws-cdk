@@ -1,0 +1,382 @@
+{
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/ManagedInstancesCluster": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/ManagedInstancesSecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/ManagedInstancesCapacityProvider": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/TaskDef": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/ManagedInstancesService": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]",
+      "trace": [
+        "Annotations.addMessage (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:198:29)",
+        "Annotations.addWarningV2 (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:68:18)",
+        "new BaseService (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:369:45)",
+        "new FargateService (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/fargate/fargate-service.js:127:13)",
+        "new FargateService (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/integ.managedinstances-capacity-provider-local-storage.js:49:1)",
+        "Module._compile (node:internal/modules/cjs/loader:1529:14)",
+        "Module._extensions..js (node:internal/modules/cjs/loader:1613:10)",
+        "Module.load (node:internal/modules/cjs/loader:1275:32)",
+        "Module._load (node:internal/modules/cjs/loader:1096:12)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)",
+        "node:internal/main/run_main_module:28:49"
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpc8378EB38"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/PublicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/PrivateSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIGWD7BA715C"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcVPCGWBF912B6E"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/ManagedInstancesCluster/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ManagedInstancesClusterDC139296"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/ManagedInstancesCluster/ManagedInstancesCluster": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ManagedInstancesClusterDA186AC9"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/ManagedInstancesSecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ManagedInstancesSecurityGroupC479A9F6"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/ManagedInstancesCapacityProvider/ManagedInstancesCapacityProviderRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/ManagedInstancesCapacityProvider/InstanceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/ManagedInstancesCapacityProvider/InstanceProfile": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/ManagedInstancesCapacityProvider/ManagedInstancesCapacityProvider": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ManagedInstancesCapacityProviderC2946447"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/TaskDef/TaskRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/TaskDef/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TaskDef54694570"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/ManagedInstancesService/Service": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ManagedInstancesServiceDFC92B6D"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/ManagedInstancesService/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1Subnet5C2D37C4"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTable6C95E38E"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1EIPD7E02669"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1NATGateway4D7517AA"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2Subnet691E08A3"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTable94F7E489"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2DefaultRoute97F91067"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/PublicSubnet2/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2EIP3C605A87"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/PublicSubnet2/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2NATGateway9182C01D"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1Subnet536B997A"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2Subnet3788AAA1"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2RouteTableA678073B"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/Vpc/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/ManagedInstancesCapacityProvider/ManagedInstancesCapacityProviderRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ManagedInstancesCapacityProviderManagedInstancesCapacityProviderRoleDFF8AC23"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/ManagedInstancesCapacityProvider/InstanceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ManagedInstancesCapacityProviderInstanceRole675E7CC0"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/ManagedInstancesCapacityProvider/InstanceProfile/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ManagedInstancesCapacityProviderInstanceProfile1A23BEDA"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/TaskDef/TaskRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TaskDefTaskRole1EDB4A67"
+    }
+  ],
+  "/integ-managedinstances-capacity-provider-local-storage/ManagedInstancesService/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ManagedInstancesServiceSecurityGroupF72D809E"
+    }
+  ]
+}
