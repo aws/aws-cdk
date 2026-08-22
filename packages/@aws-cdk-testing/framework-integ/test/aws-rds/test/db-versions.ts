@@ -18,10 +18,10 @@ function getFullVersion(version: unknown): string {
 }
 
 /**
- * Extracts the latest version from an engine version class by sorting keys
- * based on their actual version strings and returning the highest one.
+ * Extracts the nth latest version from an engine version class by sorting keys
+ * based on their actual version strings and returning the nth largest one.
  */
-function getLatestVersion<T extends object>(versionClass: T, substring?: string) {
+export function getNthLatestVersion<T extends object>(n: number, versionClass: T, substring?: string) {
   const keys = (Object.keys(versionClass) as Array<keyof T>)
     .filter(key => typeof versionClass[key] !== 'function')
     .filter(key => !substring || String(key).includes(substring));
@@ -32,7 +32,15 @@ function getLatestVersion<T extends object>(versionClass: T, substring?: string)
     return fullVersionA.localeCompare(fullVersionB, undefined, { numeric: true });
   });
 
-  return versionClass[keys[keys.length - 1]] as Exclude<T[keyof T], Function>;
+  return versionClass[keys[keys.length - n]] as Exclude<T[keyof T], Function>;
+}
+
+/**
+ * Extracts the latest version from an engine version class by sorting keys
+ * based on their actual version strings and returning the highest one.
+ */
+function getLatestVersion<T extends object>(versionClass: T, substring?: string) {
+  return getNthLatestVersion(1, versionClass, substring);
 }
 
 export const INTEG_TEST_LATEST_AURORA_MYSQL = getLatestVersion(rds.AuroraMysqlEngineVersion);
