@@ -1194,6 +1194,113 @@ test('Imported task definition with revision uses original arn for policy resour
   template.hasResource('AWS::IAM::Policy', { Properties: policyMatch });
 });
 
+test('Imported task definition with a tokenized ARN and taskDefinitionArnIncludesRevision=false adds wildcard to policy resource', () => {
+  // The ARN is only known at deploy time (e.g. an Fn.importValue), so its revision cannot be
+  // inferred from the string. The explicit flag tells us it does not include a revision.
+  const importedArn = cdk.Fn.importValue('MyTaskDefArn');
+  const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionAttributes(stack, 'TaskDefImport', {
+    taskDefinitionArn: importedArn,
+    taskRole: iam.Role.fromRoleArn(stack, 'RoleImport', 'arn:aws:iam::012345678901:role/MyTaskRole'),
+    networkMode: ecs.NetworkMode.AWS_VPC,
+    taskDefinitionArnIncludesRevision: false,
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+  });
+
+  rule.addTarget(
+    new EcsTask({
+      cluster: cluster,
+      taskDefinition: taskDefinition,
+    }),
+  );
+
+  const policyMatch = Match.objectLike({
+    PolicyDocument: {
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: 'ecs:RunTask',
+          Resource: {
+            'Fn::Join': ['', [{ 'Fn::ImportValue': 'MyTaskDefArn' }, ':*']],
+          },
+        }),
+      ]),
+    },
+  });
+  const template = Template.fromStack(stack);
+  template.hasResource('AWS::IAM::Policy', { Properties: policyMatch });
+});
+
+test('Imported task definition with a tokenized ARN and taskDefinitionArnIncludesRevision=true uses the ARN as-is', () => {
+  const importedArn = cdk.Fn.importValue('MyTaskDefArn');
+  const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionAttributes(stack, 'TaskDefImport', {
+    taskDefinitionArn: importedArn,
+    taskRole: iam.Role.fromRoleArn(stack, 'RoleImport', 'arn:aws:iam::012345678901:role/MyTaskRole'),
+    networkMode: ecs.NetworkMode.AWS_VPC,
+    taskDefinitionArnIncludesRevision: true,
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+  });
+
+  rule.addTarget(
+    new EcsTask({
+      cluster: cluster,
+      taskDefinition: taskDefinition,
+    }),
+  );
+
+  const policyMatch = Match.objectLike({
+    PolicyDocument: {
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: 'ecs:RunTask',
+          Resource: { 'Fn::ImportValue': 'MyTaskDefArn' },
+        }),
+      ]),
+    },
+  });
+  const template = Template.fromStack(stack);
+  template.hasResource('AWS::IAM::Policy', { Properties: policyMatch });
+});
+
+test('taskDefinitionArnIncludesRevision overrides the inferred revision when the ARN is a concrete string', () => {
+  // The concrete ARN ends with `:1` (would normally be treated as revision-included), but the
+  // explicit flag forces the `:*` wildcard to be appended.
+  const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionAttributes(stack, 'TaskDefImport', {
+    taskDefinitionArn: 'arn:aws:ecs:us-west-2:012345678901:task-definition/MyTask',
+    taskRole: iam.Role.fromRoleArn(stack, 'RoleImport', 'arn:aws:iam::012345678901:role/MyTaskRole'),
+    networkMode: ecs.NetworkMode.AWS_VPC,
+    taskDefinitionArnIncludesRevision: true,
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+  });
+
+  rule.addTarget(
+    new EcsTask({
+      cluster: cluster,
+      taskDefinition: taskDefinition,
+    }),
+  );
+
+  const policyMatch = Match.objectLike({
+    PolicyDocument: {
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: 'ecs:RunTask',
+          Resource: taskDefinition.taskDefinitionArn,
+        }),
+      ]),
+    },
+  });
+  const template = Template.fromStack(stack);
+  template.hasResource('AWS::IAM::Policy', { Properties: policyMatch });
+});
+
 test.each([
   [10, 'less than minimum'],
   [201, 'greater than maximum'],
