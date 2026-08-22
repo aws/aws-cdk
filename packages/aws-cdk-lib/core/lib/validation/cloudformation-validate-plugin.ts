@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { RegoEngine, TemplateFile, version } from '@aws/cloudformation-validate';
 import type { Engine, EngineConfig, RuleInfo, Severity } from '@aws/cloudformation-validate';
 import type { PolicyValidationPluginReport, PolicyViolatingResource } from './report';
@@ -48,6 +50,18 @@ export interface CloudFormationValidatePluginProps {
    * @default - no guard rules
    */
   readonly guardRules?: ValidationRuleSource[];
+
+  /**
+   * Whether to evaluate the default Rego rules that ship with the CDK.
+   *
+   * Registering a `CloudFormationValidatePlugin` explicitly replaces the
+   * auto-registered default instance, so without this flag adding custom
+   * rules would silently drop the CDK default rules. Individual default
+   * rules can be suppressed by ID via `Validations.of(scope).acknowledge()`.
+   *
+   * @default true
+   */
+  readonly includeDefaultRules?: boolean;
 }
 
 /**
@@ -83,8 +97,12 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
 
   constructor(props: CloudFormationValidatePluginProps = {}) {
     const config: EngineConfig = {};
-    if (props.regoRules) {
-      config.customRules = props.regoRules;
+    const regoRules = [
+      ...(props.includeDefaultRules ?? true) ? defaultRegoRules() : [],
+      ...props.regoRules ?? [],
+    ];
+    if (regoRules.length > 0) {
+      config.customRules = regoRules;
     }
     if (props.guardRules) {
       config.guardRules = props.guardRules;
@@ -204,6 +222,24 @@ function mapSeverity(severity: Severity): string {
     case 'DEBUG': return 'debug';
     default: return 'warning';
   }
+}
+
+/**
+ * CDK-authored default Rego rules, shipped with aws-cdk-lib.
+ *
+ * These are ports of L2 construct validations to template-level rules, so the
+ * same checks also apply to templates produced via L1 constructs, escape
+ * hatches, or `CfnInclude`. See `rules/` next to this file.
+ */
+function defaultRegoRules(): ValidationRuleSource[] {
+  const rulesDir = path.join(__dirname, 'rules');
+  return fs.readdirSync(rulesDir)
+    .filter((f) => f.endsWith('.rego'))
+    .sort()
+    .map((f) => ({
+      name: f,
+      content: fs.readFileSync(path.join(rulesDir, f), 'utf-8'),
+    }));
 }
 
 // Rules that the engine will report but we want to ignore because CDK creates

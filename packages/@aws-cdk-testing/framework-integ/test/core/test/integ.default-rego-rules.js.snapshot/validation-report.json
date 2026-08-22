@@ -1,0 +1,62 @@
+{
+  "version": "54.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.5.1",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "CDK-GameLift-005",
+          "description": "RoutingStrategy.FleetId: Alias with TERMINAL routing must not reference a fleet; either route to a fleet or set a terminal message, not both",
+          "severity": "warning",
+          "violatingConstructs": [
+            {
+              "constructPath": "DefaultRegoRulesStack/ViolatingAlias",
+              "constructFqn": "aws-cdk-lib.aws_gamelift.CfnAlias",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "DefaultRegoRulesStack.template.json",
+                "logicalId": "ViolatingAlias",
+                "propertyPaths": [
+                  "Properties.RoutingStrategy.FleetId"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "W8003",
+          "description": "Fn::Equals in condition 'NeverTrue' will always return False",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Best Practice"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "DefaultRegoRulesStack",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        },
+        {
+          "ruleName": "F0001",
+          "description": "Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "DefaultRegoRulesTest/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
