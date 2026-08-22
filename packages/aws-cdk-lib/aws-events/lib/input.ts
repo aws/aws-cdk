@@ -112,9 +112,9 @@ export abstract class RuleTargetInput {
    *   message: events.RuleTargetInput.fromObject({ source: 'my-app' }),
    * }));
    *
-   * // With EventField it becomes an `InputTransformer`:
-   * //   InputPathsMap: { f1: '$.detail.instance-id', f2: '$.detail.state' }
-   * //   InputTemplate: '{"instance":<f1>,"state":<f2>}'
+   * // Referencing the event makes it an `InputTransformer` instead: each path
+   * // becomes an `InputPathsMap` entry keyed by a readable hint derived from the
+   * // path, with a matching <hint> placeholder substituted into the `InputTemplate`.
    * rule.addTarget(new targets.SnsTopic(topic, {
    *   message: events.RuleTargetInput.fromObject({
    *     instance: events.EventField.fromPath('$.detail.instance-id'),
@@ -339,10 +339,10 @@ export class FieldAwareEventInput extends RuleTargetInput {
 /**
  * Represents a field in the event pattern
  *
- * Each `EventField` you reference from a `RuleTargetInput` is registered in the
- * target's `InputPathsMap` under a generated key, and the place you referenced it
- * becomes a `<key>` placeholder in the `InputTemplate`. Referencing the same path
- * more than once reuses a single key.
+ * Each `EventField` you reference from a `RuleTargetInput` becomes an entry in the
+ * target's `InputPathsMap`, keyed by a readable hint derived from the path, and the
+ * place you referenced it becomes a matching placeholder in the `InputTemplate`.
+ * Referencing the same path more than once reuses a single entry.
  *
  * Because these are string tokens, they can be embedded in template literals and
  * composed with other strings.
