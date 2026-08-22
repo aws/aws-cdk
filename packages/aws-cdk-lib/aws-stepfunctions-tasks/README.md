@@ -251,6 +251,22 @@ Use camelCase for actions and PascalCase for parameter names.
 The task automatically adds an IAM statement to the state machine role's policy based on the
 service and action called. The resources for this statement must be specified in `iamResources`.
 
+For scenarios where you need to manage IAM permissions manually (such as recursive Step Functions
+that reference themselves), you can omit the `iamResources` parameter:
+
+```ts
+// For recursive Step Functions or manual IAM management
+const startExecution = new tasks.CallAwsService(this, 'StartExecution', {
+  service: 'sfn',
+  action: 'startExecution',
+  parameters: {
+    StateMachineArn: sfn.JsonPath.stringAt('$.stateMachineArn'),
+    Input: sfn.JsonPath.objectAt('$.input'),
+  },
+  // iamResources omitted - you must attach the necessary permissions manually
+});
+```
+
 Use the `iamAction` prop to manually specify the IAM action name in the case where the IAM
 action name does not match with the API service/action name:
 
