@@ -59,7 +59,7 @@
  "Outputs": {
   "ImageUri": {
    "Value": {
-    "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:b4298cb62c7ea51c737829c8d72f2303357f76e875dbf49174ffe24496815d1d"
+    "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:c78d0ab471d1068da376384477865617417f4c4e2774bb483592b9ad5594034a"
    }
   }
  },
