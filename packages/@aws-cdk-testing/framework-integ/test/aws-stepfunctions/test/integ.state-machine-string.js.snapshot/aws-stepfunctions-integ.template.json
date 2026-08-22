@@ -20,19 +20,63 @@
   "StateMachine2E01A3A5": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
+    "DefinitionString": "{\"StartAt\":\"Pass\",\"States\":{\"Pass\":{\"Type\":\"Pass\",\"End\":true}}}",
     "RoleArn": {
      "Fn::GetAtt": [
       "StateMachineRoleB840431D",
       "Arn"
      ]
-    },
-    "DefinitionString": "{\"StartAt\":\"Pass\",\"States\":{\"Pass\":{\"Type\":\"Pass\",\"End\":true}}}"
+    }
    },
    "DependsOn": [
     "StateMachineRoleB840431D"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "StateMachineWithTimeoutRole35083C77": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "StateMachineWithTimeout0E1B00DE": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": "{\"StartAt\":\"Pass\",\"States\":{\"Pass\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":3600}",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "StateMachineWithTimeoutRole35083C77",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "StateMachineWithTimeoutRole35083C77"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefStateMachineWithTimeout0E1B00DE8F396A89": {
+   "Value": {
+    "Ref": "StateMachineWithTimeout0E1B00DE"
+   },
+   "Export": {
+    "Name": "aws-stepfunctions-integ:ExportsOutputRefStateMachineWithTimeout0E1B00DE8F396A89"
+   }
   }
  },
  "Parameters": {
