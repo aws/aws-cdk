@@ -135,6 +135,8 @@ export class PipelineGraph {
     const retGraph: AGraph = Graph.of(stage.stageName, { type: 'group' });
 
     const stackGraphs = new Map<StackDeployment, AGraph>();
+    const prepareNodes: AGraphNode[] = [];
+    const deployNodes: AGraphNode[] = [];
 
     for (const stack of stage.stacks) {
       const stackGraphName = findUniqueName(retGraph, [
@@ -153,6 +155,7 @@ export class PipelineGraph {
 
       retGraph.add(stackGraph);
       stackGraph.add(deployNode);
+      deployNodes.push(deployNode);
 
       // node or node collection that represents first point of contact in each stack
       let firstDeployNode;
@@ -160,6 +163,7 @@ export class PipelineGraph {
         stackGraph.add(prepareNode);
         deployNode.dependOn(prepareNode);
         firstDeployNode = prepareNode;
+        prepareNodes.push(prepareNode);
       } else {
         firstDeployNode = deployNode;
       }
@@ -223,6 +227,32 @@ export class PipelineGraph {
     }
 
     this.addPrePost(stage.pre, stage.post, retGraph);
+
+    // Stage-wide deployGate barrier: gate nodes sit in retGraph, depend on
+    // prepareNodes directly, and deployNodes depend on gate nodes directly.
+    // All wiring is at leaf level within retGraph — no Graph-level edges that
+    // would cause projectDependencies to create cycles.
+    if (stage.deployGate.length > 0) {
+      if (prepareNodes.length === 0) {
+        throw new ValidationError(
+          lit`DeployGateRequiresPrepareStep`,
+          'cannot use \'deployGate\' steps in stage \'' + stage.stageName + '\': change sets are ' +
+          'disabled for this pipeline (\'useChangeSets: false\'), so there is no \'Prepare\' action to wait for',
+          this.pipeline,
+        );
+      }
+      const deployGateNodes: AGraphNode[] = stage.deployGate
+        .map(step => this.addStepNode(step, retGraph))
+        .filter((n): n is AGraphNode => n !== undefined);
+      for (const gateNode of deployGateNodes) {
+        gateNode.dependOn(...prepareNodes);
+      }
+      if (deployGateNodes.length > 0) {
+        for (const deployNode of deployNodes) {
+          deployNode.dependOn(...deployGateNodes);
+        }
+      }
+    }
 
     return retGraph;
   }

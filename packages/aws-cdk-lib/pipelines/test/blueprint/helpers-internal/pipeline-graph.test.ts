@@ -4,7 +4,7 @@ import { ManualApprovalStep, Step } from '../../../lib';
 import type { GraphNode } from '../../../lib/helpers-internal';
 import { Graph, PipelineGraph } from '../../../lib/helpers-internal';
 import { flatten } from '../../../lib/private/javascript';
-import { AppWithOutput, AppWithExposedStacks, OneStackApp, TestApp } from '../../testhelpers/test-app';
+import { AppWithOutput, AppWithExposedStacks, OneStackApp, TwoStackApp, TestApp } from '../../testhelpers/test-app';
 
 let app: TestApp;
 
@@ -290,6 +290,205 @@ describe('options for other engines', () => {
     expect(() => new PipelineGraph(blueprint, {
       prepareStep: false,
     })).toThrow(/Cannot use 'changeSet' steps/);
+  });
+});
+
+describe('deployGate', () => {
+  let blueprint: Blueprint;
+  beforeEach(() => {
+    blueprint = new Blueprint(app, 'Bp', {
+      synth: new cdkp.ShellStep('Synth', {
+        input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+        commands: ['build'],
+      }),
+    });
+  });
+
+  test('gate node depends on all prepare nodes, all deploy nodes depend on gate', () => {
+    // GIVEN — 3 independent stacks
+    const stage = new AppWithExposedStacks(app, 'Prod');
+    blueprint.addStage(stage, {
+      deployGate: [new ManualApprovalStep('Approve')],
+    });
+
+    // WHEN
+    const graph = new PipelineGraph(blueprint);
+
+    // THEN — sortedLeaves gives the correct tranche order (this is what CodePipeline uses)
+    const leaves = graph.graph.sortedLeaves();
+    const trancheIds = leaves.map(t => t.map(n => n.id).sort());
+
+    // All Prepare nodes come before Approve
+    const approveTranche = leaves.findIndex(t => t.some(n => n.id === 'Approve'));
+    const prepare1Tranche = leaves.findIndex(t => t.some(n => n.id === 'Prepare' && n.parentGraph?.id === 'Stack1'));
+    const prepare2Tranche = leaves.findIndex(t => t.some(n => n.id === 'Prepare' && n.parentGraph?.id === 'Stack2'));
+    const prepare3Tranche = leaves.findIndex(t => t.some(n => n.id === 'Prepare' && n.parentGraph?.id === 'Stack3'));
+    expect(approveTranche).toBeGreaterThan(prepare1Tranche);
+    expect(approveTranche).toBeGreaterThan(prepare2Tranche);
+    expect(approveTranche).toBeGreaterThan(prepare3Tranche);
+
+    // All Deploy nodes come after Approve
+    const deploy1Tranche = leaves.findIndex(t => t.some(n => n.id === 'Deploy' && n.parentGraph?.id === 'Stack1'));
+    const deploy2Tranche = leaves.findIndex(t => t.some(n => n.id === 'Deploy' && n.parentGraph?.id === 'Stack2'));
+    const deploy3Tranche = leaves.findIndex(t => t.some(n => n.id === 'Deploy' && n.parentGraph?.id === 'Stack3'));
+    expect(deploy1Tranche).toBeGreaterThan(approveTranche);
+    expect(deploy2Tranche).toBeGreaterThan(approveTranche);
+    expect(deploy3Tranche).toBeGreaterThan(approveTranche);
+
+    // direct dependency check
+    const approveNode = nodeAt(graph.graph, 'Prod', 'Approve');
+    const prepare1 = nodeAt(graph.graph, 'Prod', 'Stack1', 'Prepare');
+    const prepare2 = nodeAt(graph.graph, 'Prod', 'Stack2', 'Prepare');
+    const prepare3 = nodeAt(graph.graph, 'Prod', 'Stack3', 'Prepare');
+    const deploy1 = nodeAt(graph.graph, 'Prod', 'Stack1', 'Deploy');
+    const deploy2 = nodeAt(graph.graph, 'Prod', 'Stack2', 'Deploy');
+    const deploy3 = nodeAt(graph.graph, 'Prod', 'Stack3', 'Deploy');
+    expect(approveNode.dependencies).toContain(prepare1);
+    expect(approveNode.dependencies).toContain(prepare2);
+    expect(approveNode.dependencies).toContain(prepare3);
+    expect(deploy1.dependencies).toContain(approveNode);
+    expect(deploy2.dependencies).toContain(approveNode);
+    expect(deploy3.dependencies).toContain(approveNode);
+
+    void trancheIds; // used above
+  });
+
+  test('multiple gate steps run in parallel by default', () => {
+    // GIVEN
+    const stage = new AppWithExposedStacks(app, 'Prod');
+    blueprint.addStage(stage, {
+      deployGate: [
+        new ManualApprovalStep('ApproveA'),
+        new ManualApprovalStep('ApproveB'),
+      ],
+    });
+
+    // WHEN
+    const leaves = new PipelineGraph(blueprint).graph.sortedLeaves();
+
+    // THEN — both gate nodes are in the same tranche (parallel)
+    const approveATranche = leaves.findIndex(t => t.some(n => n.id === 'ApproveA'));
+    const approveBTranche = leaves.findIndex(t => t.some(n => n.id === 'ApproveB'));
+    expect(approveATranche).toBeGreaterThan(-1);
+    expect(approveATranche).toEqual(approveBTranche);
+  });
+
+  test('Step.sequence chains gate steps in order', () => {
+    // GIVEN
+    const stage = new AppWithExposedStacks(app, 'Prod');
+    blueprint.addStage(stage, {
+      deployGate: Step.sequence([
+        new ManualApprovalStep('First'),
+        new ManualApprovalStep('Second'),
+      ]),
+    });
+
+    // WHEN
+    const leaves = new PipelineGraph(blueprint).graph.sortedLeaves();
+
+    // THEN — Second is in a later tranche than First
+    const firstTranche = leaves.findIndex(t => t.some(n => n.id === 'First'));
+    const secondTranche = leaves.findIndex(t => t.some(n => n.id === 'Second'));
+    expect(firstTranche).toBeGreaterThan(-1);
+    expect(secondTranche).toBeGreaterThan(firstTranche);
+  });
+
+  test('deploy nodes do not depend on each other — all stacks deploy in parallel after gate', () => {
+    // GIVEN — 3 independent stacks
+    const stage = new AppWithExposedStacks(app, 'Prod');
+    blueprint.addStage(stage, {
+      deployGate: [new ManualApprovalStep('Approve')],
+    });
+
+    // WHEN
+    const graph = new PipelineGraph(blueprint);
+    const deploy1 = nodeAt(graph.graph, 'Prod', 'Stack1', 'Deploy');
+    const deploy2 = nodeAt(graph.graph, 'Prod', 'Stack2', 'Deploy');
+    const deploy3 = nodeAt(graph.graph, 'Prod', 'Stack3', 'Deploy');
+
+    // THEN — deploy nodes only depend on the gate, not on each other
+    expect(deploy1.dependencies).not.toContain(deploy2);
+    expect(deploy1.dependencies).not.toContain(deploy3);
+    expect(deploy2.dependencies).not.toContain(deploy1);
+    expect(deploy2.dependencies).not.toContain(deploy3);
+    expect(deploy3.dependencies).not.toContain(deploy1);
+    expect(deploy3.dependencies).not.toContain(deploy2);
+  });
+
+  test('throws when stage has dependent stacks', () => {
+    // GIVEN — TwoStackApp has Stack2 depending on Stack1 by default
+    expect(() => {
+      blueprint.addStage(new TwoStackApp(app, 'Prod'), {
+        deployGate: [new ManualApprovalStep('Approve')],
+      });
+    }).toThrow(/cannot use.*deployGate.*dependent/);
+  });
+
+  test('throws when prepareStep is disabled', () => {
+    // GIVEN
+    blueprint.addStage(new AppWithExposedStacks(app, 'Prod'), {
+      deployGate: [new ManualApprovalStep('Approve')],
+    });
+
+    // THEN
+    expect(() => new PipelineGraph(blueprint, { prepareStep: false })).toThrow(/cannot use.*deployGate.*change sets are disabled/);
+  });
+
+  test('throws when gate step consumes stack output', () => {
+    // GIVEN
+    const myApp = new AppWithOutput(app, 'Prod');
+    const scriptStep = new cdkp.ShellStep('Check', {
+      envFromCfnOutputs: { BUCKET_NAME: myApp.theOutput },
+      commands: ['echo $BUCKET_NAME'],
+    });
+
+    // THEN
+    expect(() => {
+      blueprint.addStage(myApp, {
+        deployGate: [scriptStep],
+      });
+    }).toThrow(/cannot use.*deployGate.*consume stack outputs/);
+  });
+
+  test('post steps depend on all stack graphs, not on the gate node directly', () => {
+    // GIVEN
+    const stage = new AppWithExposedStacks(app, 'Prod');
+    blueprint.addStage(stage, {
+      deployGate: [new ManualApprovalStep('Approve')],
+      post: [new ManualApprovalStep('PostDeploy')],
+    });
+
+    // WHEN
+    const graph = new PipelineGraph(blueprint);
+    const postNode = nodeAt(graph.graph, 'Prod', 'PostDeploy');
+    const stack1Graph = nodeAt(graph.graph, 'Prod', 'Stack1');
+    const stack2Graph = nodeAt(graph.graph, 'Prod', 'Stack2');
+    const stack3Graph = nodeAt(graph.graph, 'Prod', 'Stack3');
+    const approveNode = nodeAt(graph.graph, 'Prod', 'Approve');
+
+    // THEN — post depends on all stack graphs (which transitively include deploy nodes)
+    expect(postNode.dependencies).toContain(stack1Graph);
+    expect(postNode.dependencies).toContain(stack2Graph);
+    expect(postNode.dependencies).toContain(stack3Graph);
+    // post does NOT directly depend on the gate — it gets that transitively via deploy nodes
+    expect(postNode.dependencies).not.toContain(approveNode);
+  });
+
+  test('without deployGate, deploy node only depends on its own prepare node within the stack graph', () => {
+    // GIVEN — same stage without deployGate
+    blueprint.addStage(new AppWithExposedStacks(app, 'Prod'));
+
+    // WHEN
+    const graph = new PipelineGraph(blueprint);
+    const deploy1 = nodeAt(graph.graph, 'Prod', 'Stack1', 'Deploy');
+    const prepare1 = nodeAt(graph.graph, 'Prod', 'Stack1', 'Prepare');
+    const prepare2 = nodeAt(graph.graph, 'Prod', 'Stack2', 'Prepare');
+    const prepare3 = nodeAt(graph.graph, 'Prod', 'Stack3', 'Prepare');
+
+    // THEN — deploy1 depends on its own prepare, but NOT on other stacks' prepare nodes
+    expect(deploy1.dependencies).toContain(prepare1);
+    expect(deploy1.dependencies).not.toContain(prepare2);
+    expect(deploy1.dependencies).not.toContain(prepare3);
   });
 });
 

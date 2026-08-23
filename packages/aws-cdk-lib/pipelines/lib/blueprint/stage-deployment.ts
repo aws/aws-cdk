@@ -33,6 +33,27 @@ export interface StageDeploymentProps {
   readonly post?: Step[];
 
   /**
+   * Additional steps to run once every stack in this stage has had its change
+   * set prepared, and before any stack in this stage is deployed.
+   *
+   * All steps given here run as a single dependency barrier: every stack's
+   * "Prepare" action in this stage must complete before any of them starts,
+   * and every stack's "Deploy" action waits for all of them to complete.
+   * Multiple steps given here run in parallel with each other (use
+   * `Step.sequence()` if you need them to run in order).
+   *
+   * This only works for stages whose stacks have no dependencies on each
+   * other. If any two stacks in the stage depend on each other, a validation
+   * error is thrown, because a dependent stack's change set cannot be
+   * computed before its dependency has been deployed.
+   *
+   * Requires change sets to be enabled (`useChangeSets: true`, the default).
+   *
+   * @default - No additional steps
+   */
+  readonly deployGate?: Step[];
+
+  /**
    * Instructions for additional steps that are run at the stack level
    *
    * @default - No additional instructions
@@ -96,6 +117,31 @@ export class StageDeployment {
       }
     }
 
+    if ((props.deployGate ?? []).length > 0) {
+      const dependentStacks = Array.from(stepFromArtifact.values())
+        .filter(s => s.stackDependencies.length > 0);
+      if (dependentStacks.length > 0) {
+        throw new ValidationError(
+          lit`DeployGateRequiresIndependentStacks`,
+          'cannot use \'deployGate\' steps in stage \'' + stage.stageName + '\': ' +
+          'stack(s) ' + dependentStacks.map(s => s.stackName).join(', ') + ' depend on other stacks in the same stage. ' +
+          '\'deployGate\' requires all stacks in a stage to be independent, because a dependent ' +
+          'stack\'s change set cannot be prepared before its dependency has been deployed',
+          stage,
+        );
+      }
+      const stepsWithOutputs = (props.deployGate ?? []).filter(s => s.consumedStackOutputs.length > 0);
+      if (stepsWithOutputs.length > 0) {
+        throw new ValidationError(
+          lit`DeployGateCannotConsumeStackOutputs`,
+          'cannot use \'deployGate\' steps that consume stack outputs in stage \'' + stage.stageName + '\': ' +
+          'step(s) ' + stepsWithOutputs.map(s => s.id).join(', ') + ' consume stack outputs, ' +
+          'but \'deployGate\' steps run before any stack in the stage is deployed',
+          stage,
+        );
+      }
+    }
+
     return new StageDeployment(Array.from(stepFromArtifact.values()), {
       stageName: stage.stageName,
       ...props,
@@ -118,6 +164,12 @@ export class StageDeployment {
   public readonly post: Step[];
 
   /**
+   * Additional steps that run after every stack's change set has been prepared
+   * and before any stack in this stage is deployed.
+   */
+  public readonly deployGate: Step[];
+
+  /**
    * Instructions for additional steps that are run at stack level
    */
   public readonly stackSteps: StackSteps[];
@@ -134,6 +186,7 @@ export class StageDeployment {
     this.stageName = props.stageName ?? '';
     this.pre = props.pre ?? [];
     this.post = props.post ?? [];
+    this.deployGate = props.deployGate ?? [];
     this.stackSteps = props.stackSteps ?? [];
   }
 

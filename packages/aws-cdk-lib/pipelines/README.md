@@ -638,6 +638,44 @@ const orderedSteps = pipelines.Step.sequence([
 ]);
 ```
 
+#### Stage-wide change set review gate
+
+If you want to inspect all change sets for a stage before any stack is deployed,
+use `deployGate`. All stacks' "Prepare" (change set creation) actions run first,
+then the gate steps run, and only then do all "Deploy" (change set execute) actions run.
+This lets a reviewer examine every pending change set before approving the deployment.
+
+```ts
+declare const pipeline: pipelines.CodePipeline;
+
+// All stacks in this stage must be independent of each other (no stack-to-stack dependencies)
+const prod = new MyApplicationStage(this, 'Prod');
+pipeline.addStage(prod, {
+  deployGate: [new pipelines.ManualApprovalStep('ReviewAllChangeSets')],
+});
+```
+
+Multiple gate steps run in parallel. Use `Step.sequence()` to chain them:
+
+```ts
+declare const pipeline: pipelines.CodePipeline;
+declare const prod: Stage;
+
+pipeline.addStage(prod, {
+  deployGate: pipelines.Step.sequence([
+    new pipelines.ManualApprovalStep('SecurityReview'),
+    new pipelines.ManualApprovalStep('ChangeManagementApproval'),
+  ]),
+});
+```
+
+**Restrictions:**
+- Requires change sets to be enabled (`useChangeSets: true`, which is the default).
+- All stacks in the stage must be independent of each other (no stack-to-stack
+  dependencies within the stage). If any stack depends on another stack in the same
+  stage, a `ValidationError` is thrown at synthesis time, because a dependent stack's
+  change set cannot be computed before its dependency has been deployed.
+
 #### Using CloudFormation Stack Outputs in approvals
 
 Because many CloudFormation deployments result in the generation of resources with unpredictable
