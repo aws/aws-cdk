@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "4d521f282762f984a382b1fc8a88f8540d2833b4847b605d59eaf28fe6f9c4f8": {
+      "displayName": "aws-cdk-subscriptionfilter-serialization-integ Template",
+      "source": {
+        "path": "aws-cdk-subscriptionfilter-serialization-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-de524967": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4d521f282762f984a382b1fc8a88f8540d2833b4847b605d59eaf28fe6f9c4f8.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

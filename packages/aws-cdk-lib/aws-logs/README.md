@@ -167,6 +167,60 @@ new logs.SubscriptionFilter(this, 'Subscription', {
 });
 ```
 
+### Serializing subscription filter deployments
+
+CloudFormation creates independent `AWS::Logs::SubscriptionFilter` resources in
+parallel. The resource handler calls the `DescribeSubscriptionFilters` API,
+which has a low rate limit, so stacks containing many subscription filters can
+fail to deploy with a "Rate exceeded" error.
+
+If you are affected, apply the `SubscriptionFilterSerializationAspect` to the
+stack (or any parent scope) to add a dependency chain between all subscription
+filters in each stack, so CloudFormation deploys them one at a time:
+
+```ts
+import { Aspects } from 'aws-cdk-lib';
+import * as destinations from 'aws-cdk-lib/aws-logs-destinations';
+import * as kinesis from 'aws-cdk-lib/aws-kinesis';
+
+declare const stream: kinesis.Stream;
+
+for (let i = 0; i < 70; i++) {
+  const logGroup = new logs.LogGroup(this, `LogGroup${i}`);
+  new logs.SubscriptionFilter(this, `Subscription${i}`, {
+    logGroup,
+    destination: new destinations.KinesisDestination(stream),
+    filterPattern: logs.FilterPattern.allEvents(),
+  });
+}
+
+Aspects.of(this).add(new logs.SubscriptionFilterSerializationAspect());
+```
+
+If full serialization makes your deployments too slow, set `maxConcurrency` to
+allow a bounded number of subscription filters to deploy in parallel. Filters
+are distributed round-robin over that many dependency chains:
+
+```ts
+import { Aspects } from 'aws-cdk-lib';
+
+Aspects.of(this).add(new logs.SubscriptionFilterSerializationAspect({
+  maxConcurrency: 5,
+}));
+```
+
+Keep in mind:
+
+* The dependencies added by this aspect apply to every lifecycle operation,
+  so updates, replacements and deletes of the subscription filters are
+  serialized as well, and deployments that touch many filters will take
+  longer.
+* If one subscription filter fails to deploy, CloudFormation will not start
+  on the filters downstream of it in the chain, and the rollback is
+  serialized the same way.
+* Filters are chained in construct tree order, which is stable across
+  synthesis of an unchanged app.
+
 ## Metric Filters
 
 CloudWatch Logs can extract and emit metrics based on a textual log stream.

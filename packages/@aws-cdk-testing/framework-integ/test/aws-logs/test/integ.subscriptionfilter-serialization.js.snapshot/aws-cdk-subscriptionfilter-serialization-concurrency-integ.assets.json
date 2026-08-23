@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "d31ea43ed598bac63a7dfafbeccb7d4380df44df05c32630edbb0c3746961f4d": {
+      "displayName": "aws-cdk-subscriptionfilter-serialization-concurrency-integ Template",
+      "source": {
+        "path": "aws-cdk-subscriptionfilter-serialization-concurrency-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-233d0a17": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d31ea43ed598bac63a7dfafbeccb7d4380df44df05c32630edbb0c3746961f4d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,564 @@
+{
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/Stream": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/LogGroup0": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/Subscription0": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroup": "*",
+        "destination": "*",
+        "filterPattern": {
+          "logPatternString": "*"
+        }
+      }
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/LogGroup1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/Subscription1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroup": "*",
+        "destination": "*",
+        "filterPattern": {
+          "logPatternString": "*"
+        }
+      }
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/LogGroup2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/Subscription2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroup": "*",
+        "destination": "*",
+        "filterPattern": {
+          "logPatternString": "*"
+        }
+      }
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/LogGroup3": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/Subscription3": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroup": "*",
+        "destination": "*",
+        "filterPattern": {
+          "logPatternString": "*"
+        }
+      }
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/Stream/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Stream790BDEE4"
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/LogGroup0/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogGroup0B487484F"
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/Subscription0/CloudWatchLogsCanPutRecords": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "grantPassRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/Subscription0/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Subscription0FDB4636C"
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/LogGroup1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogGroup106AAD846"
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/Subscription1/CloudWatchLogsCanPutRecords": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "grantPassRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/Subscription1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Subscription1502865EA"
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/LogGroup2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogGroup2477F707C"
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/Subscription2/CloudWatchLogsCanPutRecords": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "grantPassRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/Subscription2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Subscription2A7F1FE79"
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/LogGroup3/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogGroup34356AF39"
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/Subscription3/CloudWatchLogsCanPutRecords": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "grantPassRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/Subscription3/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Subscription31D6C88EB"
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/Subscription0/CloudWatchLogsCanPutRecords/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Subscription0CloudWatchLogsCanPutRecordsDC2375BA"
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/Subscription0/CloudWatchLogsCanPutRecords/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/Subscription1/CloudWatchLogsCanPutRecords/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Subscription1CloudWatchLogsCanPutRecords1078F216"
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/Subscription1/CloudWatchLogsCanPutRecords/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/Subscription2/CloudWatchLogsCanPutRecords/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Subscription2CloudWatchLogsCanPutRecordsF6DE75AE"
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/Subscription2/CloudWatchLogsCanPutRecords/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/Subscription3/CloudWatchLogsCanPutRecords/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Subscription3CloudWatchLogsCanPutRecords02CB3545"
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/Subscription3/CloudWatchLogsCanPutRecords/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/Subscription0/CloudWatchLogsCanPutRecords/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Subscription0CloudWatchLogsCanPutRecordsDefaultPolicy9845D542"
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/Subscription1/CloudWatchLogsCanPutRecords/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Subscription1CloudWatchLogsCanPutRecordsDefaultPolicyCBF329C0"
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/Subscription2/CloudWatchLogsCanPutRecords/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Subscription2CloudWatchLogsCanPutRecordsDefaultPolicyD3E02346"
+    }
+  ],
+  "/aws-cdk-subscriptionfilter-serialization-concurrency-integ/Subscription3/CloudWatchLogsCanPutRecords/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Subscription3CloudWatchLogsCanPutRecordsDefaultPolicy6EC39ED7"
+    }
+  ]
+}
