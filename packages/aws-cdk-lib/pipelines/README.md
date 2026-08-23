@@ -679,6 +679,15 @@ pipeline.addStage(prod, {
   `envFromCfnOutputs`), because they run before any stack in the stage is deployed
   and no stack output values exist yet. A `ValidationError` is thrown at synthesis
   time if this is attempted.
+- `deployGate` works the same way regardless of whether the stacks in the stage
+  target different AWS accounts or regions. The `Prepare` actions run in parallel
+  across accounts/regions, the gate step(s) wait for all of them, and only then
+  do the `Deploy` actions run (also in parallel across accounts/regions). No
+  additional cross-account or cross-region configuration is required.
+- Do not reuse the same `Step` instance as the `deployGate` for more than one
+  stage. Steps are deduplicated by object identity internally; reusing one across
+  stages will wire the second stage's deploy actions to the first stage's gate
+  node. Create a new instance per stage instead.
 
 #### Using CloudFormation Stack Outputs in approvals
 

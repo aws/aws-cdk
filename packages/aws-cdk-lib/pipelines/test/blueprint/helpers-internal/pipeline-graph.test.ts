@@ -504,6 +504,32 @@ describe('deployGate', () => {
     expect(deploy1.dependencies).not.toContain(prepare2);
     expect(deploy1.dependencies).not.toContain(prepare3);
   });
+
+  test('reusing the same Step instance as both deployGate and pre throws a ValidationError', () => {
+    // addStepNode() dedupes by Step identity, so using the same instance in both
+    // pre and deployGate would create a cycle (Shared -> prepareGraph -> Shared).
+    // fromStage() catches this and throws.
+    const stage = new AppWithExposedStacks(app, 'Prod');
+    const shared = new ManualApprovalStep('Shared');
+
+    expect(() => {
+      blueprint.addStage(stage, { pre: [shared], deployGate: [shared] });
+    }).toThrow(/cannot use.*deployGate.*multiple roles/);
+  });
+
+  test('reusing the same Step instance as deployGate across two stages causes a cycle (known limitation: use separate instances)', () => {
+    // addStepNode() dedupes per PipelineGraph by Step identity only, not by (Step, stage).
+    // Reusing the same instance across stages wires the second stage's deploys to the
+    // first stage's gate node, creating a cycle. This is a pre-existing limitation of
+    // addStepNode() — not introduced by deployGate. Users must create a new Step per stage.
+    const stageA = new AppWithExposedStacks(app, 'Beta');
+    const stageB = new AppWithExposedStacks(app, 'Prod');
+    const shared = new ManualApprovalStep('Approve');
+    blueprint.addStage(stageA, { deployGate: [shared] });
+    blueprint.addStage(stageB, { deployGate: [shared] });
+
+    expect(() => new PipelineGraph(blueprint)).toThrow(/Dependency cycle/);
+  });
 });
 
 describe('with app with output', () => {

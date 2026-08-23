@@ -140,6 +140,17 @@ export class StageDeployment {
           stage,
         );
       }
+      const otherSteps = new Set([...(props.pre ?? []), ...(props.post ?? [])]);
+      const duplicateSteps = (props.deployGate ?? []).filter(s => otherSteps.has(s));
+      if (duplicateSteps.length > 0) {
+        throw new ValidationError(
+          lit`DeployGateStepAlreadyUsed`,
+          'cannot use \'deployGate\' steps that are also used as \'pre\' or \'post\' steps in stage \'' + stage.stageName + '\': ' +
+          'step(s) ' + duplicateSteps.map(s => s.id).join(', ') + ' appear in multiple roles. ' +
+          'Create a separate Step instance for each role',
+          stage,
+        );
+      }
     }
 
     return new StageDeployment(Array.from(stepFromArtifact.values()), {
