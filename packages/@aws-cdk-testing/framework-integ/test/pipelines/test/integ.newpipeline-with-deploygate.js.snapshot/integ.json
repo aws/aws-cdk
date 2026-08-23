@@ -1,0 +1,15 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "PipelineStackDeployGate-integ/DefaultTest": {
+      "stacks": [
+        "PipelineStackDeployGate"
+      ],
+      "diffAssets": true,
+      "assertionStack": "PipelineStackDeployGate-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "PipelineStackDeployGateintegDefaultTestDeployAssertA69036EA"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
