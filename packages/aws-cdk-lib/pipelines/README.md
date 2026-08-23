@@ -675,6 +675,10 @@ pipeline.addStage(prod, {
   dependencies within the stage). If any stack depends on another stack in the same
   stage, a `ValidationError` is thrown at synthesis time, because a dependent stack's
   change set cannot be computed before its dependency has been deployed.
+- `deployGate` steps cannot consume CloudFormation stack outputs (via
+  `envFromCfnOutputs`), because they run before any stack in the stage is deployed
+  and no stack output values exist yet. A `ValidationError` is thrown at synthesis
+  time if this is attempted.
 
 #### Using CloudFormation Stack Outputs in approvals
 

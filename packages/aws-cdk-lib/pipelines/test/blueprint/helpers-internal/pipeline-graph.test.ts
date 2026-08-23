@@ -328,24 +328,24 @@ describe('deployGate', () => {
     expect(approveTranche).toBeGreaterThan(prepare3Tranche);
 
     // All Deploy nodes come after Approve
-    const deploy1Tranche = leaves.findIndex(t => t.some(n => n.id === 'Deploy' && n.parentGraph?.id === 'Stack1'));
-    const deploy2Tranche = leaves.findIndex(t => t.some(n => n.id === 'Deploy' && n.parentGraph?.id === 'Stack2'));
-    const deploy3Tranche = leaves.findIndex(t => t.some(n => n.id === 'Deploy' && n.parentGraph?.id === 'Stack3'));
+    const deploy1Tranche = leaves.findIndex(t => t.some(n => n.id === 'Deploy' && n.parentGraph?.id === 'Stack1-Deploy'));
+    const deploy2Tranche = leaves.findIndex(t => t.some(n => n.id === 'Deploy' && n.parentGraph?.id === 'Stack2-Deploy'));
+    const deploy3Tranche = leaves.findIndex(t => t.some(n => n.id === 'Deploy' && n.parentGraph?.id === 'Stack3-Deploy'));
     expect(deploy1Tranche).toBeGreaterThan(approveTranche);
     expect(deploy2Tranche).toBeGreaterThan(approveTranche);
     expect(deploy3Tranche).toBeGreaterThan(approveTranche);
 
     // direct dependency check
     const approveNode = nodeAt(graph.graph, 'Prod', 'Approve');
-    const prepare1 = nodeAt(graph.graph, 'Prod', 'Stack1', 'Prepare');
-    const prepare2 = nodeAt(graph.graph, 'Prod', 'Stack2', 'Prepare');
-    const prepare3 = nodeAt(graph.graph, 'Prod', 'Stack3', 'Prepare');
-    const deploy1 = nodeAt(graph.graph, 'Prod', 'Stack1', 'Deploy');
-    const deploy2 = nodeAt(graph.graph, 'Prod', 'Stack2', 'Deploy');
-    const deploy3 = nodeAt(graph.graph, 'Prod', 'Stack3', 'Deploy');
-    expect(approveNode.dependencies).toContain(prepare1);
-    expect(approveNode.dependencies).toContain(prepare2);
-    expect(approveNode.dependencies).toContain(prepare3);
+    const stack1Graph = nodeAt(graph.graph, 'Prod', 'Stack1');
+    const stack2Graph = nodeAt(graph.graph, 'Prod', 'Stack2');
+    const stack3Graph = nodeAt(graph.graph, 'Prod', 'Stack3');
+    const deploy1 = nodeAt(graph.graph, 'Prod', 'Stack1-Deploy', 'Deploy');
+    const deploy2 = nodeAt(graph.graph, 'Prod', 'Stack2-Deploy', 'Deploy');
+    const deploy3 = nodeAt(graph.graph, 'Prod', 'Stack3-Deploy', 'Deploy');
+    expect(approveNode.dependencies).toContain(stack1Graph);
+    expect(approveNode.dependencies).toContain(stack2Graph);
+    expect(approveNode.dependencies).toContain(stack3Graph);
     expect(deploy1.dependencies).toContain(approveNode);
     expect(deploy2.dependencies).toContain(approveNode);
     expect(deploy3.dependencies).toContain(approveNode);
@@ -402,9 +402,9 @@ describe('deployGate', () => {
 
     // WHEN
     const graph = new PipelineGraph(blueprint);
-    const deploy1 = nodeAt(graph.graph, 'Prod', 'Stack1', 'Deploy');
-    const deploy2 = nodeAt(graph.graph, 'Prod', 'Stack2', 'Deploy');
-    const deploy3 = nodeAt(graph.graph, 'Prod', 'Stack3', 'Deploy');
+    const deploy1 = nodeAt(graph.graph, 'Prod', 'Stack1-Deploy', 'Deploy');
+    const deploy2 = nodeAt(graph.graph, 'Prod', 'Stack2-Deploy', 'Deploy');
+    const deploy3 = nodeAt(graph.graph, 'Prod', 'Stack3-Deploy', 'Deploy');
 
     // THEN — deploy nodes only depend on the gate, not on each other
     expect(deploy1.dependencies).not.toContain(deploy2);
@@ -461,17 +461,31 @@ describe('deployGate', () => {
     // WHEN
     const graph = new PipelineGraph(blueprint);
     const postNode = nodeAt(graph.graph, 'Prod', 'PostDeploy');
-    const stack1Graph = nodeAt(graph.graph, 'Prod', 'Stack1');
-    const stack2Graph = nodeAt(graph.graph, 'Prod', 'Stack2');
-    const stack3Graph = nodeAt(graph.graph, 'Prod', 'Stack3');
     const approveNode = nodeAt(graph.graph, 'Prod', 'Approve');
+    const deploy1Graph = nodeAt(graph.graph, 'Prod', 'Stack1-Deploy');
+    const deploy2Graph = nodeAt(graph.graph, 'Prod', 'Stack2-Deploy');
+    const deploy3Graph = nodeAt(graph.graph, 'Prod', 'Stack3-Deploy');
 
-    // THEN — post depends on all stack graphs (which transitively include deploy nodes)
-    expect(postNode.dependencies).toContain(stack1Graph);
-    expect(postNode.dependencies).toContain(stack2Graph);
-    expect(postNode.dependencies).toContain(stack3Graph);
-    // post does NOT directly depend on the gate — it gets that transitively via deploy nodes
+    // THEN — post depends on the deploy sub-graphs (which contain Deploy nodes)
+    expect(postNode.dependencies).toContain(deploy1Graph);
+    expect(postNode.dependencies).toContain(deploy2Graph);
+    expect(postNode.dependencies).toContain(deploy3Graph);
+    // post does NOT directly depend on the gate
     expect(postNode.dependencies).not.toContain(approveNode);
+  });
+
+  test('renderDot() and render() do not throw for a deployGate stage', () => {
+    // Gate nodes depend on stackGraph objects (not on Prepare leaf nodes directly),
+    // so sortedChildren() on retGraph sees no cycle: gateNode -> stackGraph is a
+    // forward edge, and deployNode (inside stackGraph) -> gateNode does not project
+    // to a retGraph-level cycle because deployNode is not a direct child of retGraph.
+    const stage = new AppWithExposedStacks(app, 'Prod');
+    blueprint.addStage(stage, {
+      deployGate: [new ManualApprovalStep('Approve')],
+    });
+    const graph = new PipelineGraph(blueprint).graph;
+    expect(() => graph.render()).not.toThrow();
+    expect(() => graph.renderDot()).not.toThrow();
   });
 
   test('without deployGate, deploy node only depends on its own prepare node within the stack graph', () => {

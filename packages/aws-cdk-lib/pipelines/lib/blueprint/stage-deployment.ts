@@ -203,4 +203,19 @@ export class StageDeployment {
   public addPost(...steps: Step[]) {
     this.post.push(...steps);
   }
+
+  /**
+   * Add an additional step to run after every stack in this stage has been
+   * prepared, and before any stack in this stage is deployed.
+   *
+   * @warning Unlike setting `deployGate` via `StageDeploymentProps`, steps
+   * added here bypass the validation performed in `fromStage()` (independent-
+   * stacks check and stack-output check). Adding a step that violates either
+   * constraint will NOT raise a `ValidationError` — it will silently produce
+   * an incorrect pipeline graph. Prefer passing `deployGate` in the props to
+   * `addStage()` / `StageDeployment.fromStage()` whenever possible.
+   */
+  public addDeployGate(...steps: Step[]) {
+    this.deployGate.push(...steps);
+  }
 }
