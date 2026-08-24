@@ -98,7 +98,7 @@ const input = new RouterInput(stack, 'Input', {
   }),
 });
 
-// 3. A router output delivering to MediaLive (see "MediaLive Output" below for the input requirement)
+// 3. A router output delivering to MediaLive
 const output = new RouterOutput(stack, 'Output', {
   routerOutputName: 'medialive-output',
   maximumBitrate: Bitrate.mbps(10),
@@ -200,7 +200,7 @@ const input = new RouterInput(stack, 'FailoverInput', {
 
 #### MediaLive Channel Input
 
-Connect a router input to a MediaLive channel. `outputName` must match the `outputName` of an output within the channel's MediaConnect Router output group — not the output group's name.
+Connect a router input to a MediaLive channel. The `outputName` must match the name of an output configured in the channel's MediaConnect Router output group.
 
 ```ts
 declare const stack: Stack;
@@ -221,8 +221,6 @@ const input = new RouterInput(stack, 'ChannelInput', {
 
 > **Tip:** For full examples of wiring a MediaLive channel to a MediaConnect Router (including
 > transit encryption), see the [MediaLive L2 README — MediaConnect Router section](./../aws-medialive-alpha/README.md#aws-elemental-mediaconnect-router).
-
-If the MediaLive channel's router output group uses `SECRETS_MANAGER` transit encryption, the router input must specify `sourceTransitDecryption` with a secret holding the same passphrase value. When both sides use `AUTOMATIC`, no decryption configuration is needed.
 
 ```ts
 declare const stack: Stack;
