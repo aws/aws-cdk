@@ -1,0 +1,68 @@
+// Fixture with packages imported, but nothing else
+import { Construct } from 'constructs';
+import { Bitrate, Duration, Stack } from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import * as medialive from 'aws-cdk-lib/aws-medialive';
+import {
+  Bridge,
+  BridgeConfiguration,
+  BridgeOutputConfiguration,
+  BridgeProtocol,
+  BridgeSource,
+  BridgeSourceConfiguration,
+  Colorimetry,
+  Encoding,
+  EncryptionAlgorithm,
+  EncodingProfile,
+  Flow,
+  FlowEntitlement,
+  FlowOutput,
+  FlowSize,
+  Framerate,
+  Gateway,
+  GatewayNetwork,
+  MediaLivePipeline,
+  MediaStream,
+  MediaVideoFormat,
+  NetworkConfiguration,
+  NetworkInterface,
+  OutputConfiguration,
+  PixelAspectRatio,
+  RouterInput,
+  RouterInputConfiguration,
+  RouterInputProtocol,
+  RouterInputTier,
+  RouterNetworkConfiguration,
+  RouterNetworkInterface,
+  RouterOutput,
+  RouterOutputConfiguration,
+  RouterOutputProtocol,
+  RouterOutputTier,
+  RouterSrtEncryption,
+  RoutingScope,
+  PrimarySource,
+  ScanMode,
+  SourceConfiguration,
+  SourcePriorityConfig,
+  SrtPasswordEncryption,
+  State,
+  StaticKeyEncryption,
+  Tcs,
+  TransitEncryption,
+  VideoRange,
+  VpcInterface,
+  VpcInterfaceConfig,
+  AudioStreamOrderOptions,
+} from '@aws-cdk/aws-mediaconnect-alpha';
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    const stack = this;
+
+    /// here
+  }
+}
