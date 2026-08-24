@@ -513,6 +513,24 @@ construct emits a synthesis-time warning.
 
 If you need to use a connection type that doesn't exist as a static member on `ConnectionType`, you can instantiate a `ConnectionType` object, e.g: `new glue.ConnectionType('NEW_TYPE')`.
 
+### Snowflake Connection
+
+To connect to Snowflake, use `ConnectionType.SNOWFLAKE`:
+
+```ts
+declare const securityGroup: ec2.SecurityGroup;
+declare const subnet: ec2.Subnet;
+new glue.Connection(this, 'SnowflakeConnection', {
+  type: glue.ConnectionType.SNOWFLAKE,
+  securityGroups: [securityGroup],
+  subnet,
+  properties: {
+    SNOWFLAKE_URL: 'https://account.snowflakecomputing.com',
+    SNOWFLAKE_ROLE: 'ACCOUNTADMIN',
+  },
+});
+```
+
 See [Adding a Connection to Your Data Store](https://docs.aws.amazon.com/glue/latest/dg/populate-add-connection.html) and [Connection Structure](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-catalog-connections.html#aws-glue-api-catalog-connections-Connection) documentation for more information on the supported data stores and their configurations.
 
 ## SecurityConfiguration
