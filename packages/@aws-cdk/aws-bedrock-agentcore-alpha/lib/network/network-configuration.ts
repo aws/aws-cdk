@@ -7,6 +7,7 @@ import type { Construct } from 'constructs';
 /**
  * VPC configuration properties.
  * Only used when network mode is VPC.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface VpcConfigProps {
   /**
@@ -64,6 +65,7 @@ interface NetworkConfig {
 
 /**
  * Abstract base class for network configuration.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export abstract class NetworkConfiguration {
   /**
@@ -140,6 +142,7 @@ export abstract class NetworkConfiguration {
 
 /**
  * Network configuration for the Browser tool.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class BrowserNetworkConfiguration extends NetworkConfiguration {
   /**
@@ -178,6 +181,7 @@ export class BrowserNetworkConfiguration extends NetworkConfiguration {
 
 /**
  * Network configuration for the Code Interpreter tool.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class CodeInterpreterNetworkConfiguration extends NetworkConfiguration {
   /**
@@ -225,6 +229,7 @@ export class CodeInterpreterNetworkConfiguration extends NetworkConfiguration {
 
 /**
  * Network configuration for the Runtime.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class RuntimeNetworkConfiguration extends NetworkConfiguration {
   /**

@@ -1,11 +1,11 @@
 import type { ICfnConditionExpression, ICfnRuleConditionExpression } from './cfn-condition';
 import { UnscopedValidationError } from './errors';
 import { minimalCloudFormationJoin } from './private/cloudformation-lang';
+import { stackOf } from './private/core-construct-finders';
 import { Intrinsic } from './private/intrinsic';
 import { lit } from './private/literal-string';
 import { Reference } from './reference';
 import type { IResolvable, IResolveContext } from './resolvable';
-import { Stack } from './stack';
 import { Token } from './token';
 
 /**
@@ -212,6 +212,22 @@ export class Fn {
    */
   public static importValue(sharedValueToImport: string): string {
     return new FnImportValue(sharedValueToImport).toString();
+  }
+
+  /**
+   * The intrinsic function `Fn::GetStackOutput` returns the value of an output
+   * from another stack. This is similar to `Fn::ImportValue`, but it can reference
+   * a normal output, without the need to export anything. As with `Fn::ImportValue`,
+   * you typically use this function to create cross-stack references.
+   * @param stackName The name of the producer stack.
+   * @param outputName The name of the output to get the value from.
+   * @param region The region where the producer stack is deployed. If not provided,
+   * it will default to the same region as the consumer stack.
+   * @param roleArn The role to be used when describing the producer stack. If not
+   * provided, it will default to the role used to create the producer stack.
+   */
+  public static getStackOutput(stackName: string, outputName: string, region?: string, roleArn?: string): string {
+    return new FnGetStackOutput(stackName, outputName, region, roleArn).toString();
   }
 
   /**
@@ -519,7 +535,7 @@ class FnFindInMap extends FnBase {
 
   public resolve(context: IResolveContext): any {
     if (this.defaultValue !== undefined) {
-      Stack.of(context.scope).addTransform('AWS::LanguageExtensions');
+      stackOf(context.scope).addTransform('AWS::LanguageExtensions');
     }
     return { 'Fn::FindInMap': [this.mapName, this.topLevelKey, this.secondLevelKey, this.defaultValue !== undefined ? { DefaultValue: this.defaultValue } : undefined] };
   }
@@ -585,6 +601,23 @@ class FnImportValue extends FnBase {
    */
   constructor(sharedValueToImport: string) {
     super('Fn::ImportValue', sharedValueToImport);
+  }
+}
+
+/**
+ * The intrinsic function `Fn::GetStackOutput` returns the value of an output
+ * from another stack. This is similar to `Fn::ImportValue`, but it can reference
+ * a normal output, without the need to export anything. As with `Fn::ImportValue`,
+ * you typically use this function to create cross-stack references.
+ */
+class FnGetStackOutput extends FnBase {
+  constructor(stackName: string, outputName: string, region?: string, roleArn?: string) {
+    super('Fn::GetStackOutput', {
+      StackName: stackName,
+      Region: region,
+      RoleArn: roleArn,
+      OutputName: outputName,
+    });
   }
 }
 
@@ -913,7 +946,7 @@ class FnToJsonString implements IResolvable {
   }
 
   public resolve(context: IResolveContext): any {
-    Stack.of(context.scope).addTransform('AWS::LanguageExtensions');
+    stackOf(context.scope).addTransform('AWS::LanguageExtensions');
     return { 'Fn::ToJsonString': this.object };
   }
 
@@ -942,7 +975,7 @@ class FnLength implements IResolvable {
   }
 
   public resolve(context: IResolveContext): any {
-    Stack.of(context.scope).addTransform('AWS::LanguageExtensions');
+    stackOf(context.scope).addTransform('AWS::LanguageExtensions');
     return { 'Fn::Length': this.array };
   }
 

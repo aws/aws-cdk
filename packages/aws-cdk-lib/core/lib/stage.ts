@@ -1,17 +1,17 @@
 import * as private_cxapi from '@aws-cdk/cloud-assembly-api';
-import { type IConstruct, Construct, Node } from 'constructs';
+import { type IConstruct, Construct } from 'constructs';
 import type { Environment } from './environment';
 import { ValidationError } from './errors';
 import { FeatureFlags } from './feature-flags';
 import type { PermissionsBoundary } from './permissions-boundary';
+import { STAGE_TYPE, stageOf } from './private/core-construct-finders';
 import { synthesize } from './private/synthesis';
 import { type IPropertyInjector, PropertyInjectors } from './prop-injectors';
-import type { IPolicyValidationPluginBeta1 } from './validation';
+import type { IPolicyValidationPlugin, IPolicyValidationPluginBeta1 } from './validation';
+import { _toBeta1Plugin } from './validation';
 import * as public_cxapi from '../../cx-api';
 import { _convertCloudAssembly, _convertCloudAssemblyBuilder } from '../../cx-api';
 import { lit } from './private/literal-string';
-
-const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');
 
 /**
  * Initialization props for a stage.
@@ -125,7 +125,7 @@ export class Stage extends Construct {
    *
    */
   public static of(construct: IConstruct): Stage | undefined {
-    return Node.of(construct).scopes.reverse().slice(1).find(Stage.isStage);
+    return stageOf(construct);
   }
 
   /**
@@ -133,7 +133,7 @@ export class Stage extends Construct {
    *
    */
   public static isStage(this: void, x: any): x is Stage {
-    return x !== null && typeof(x) === 'object' && STAGE_SYMBOL in x;
+    return STAGE_TYPE.isMarked(x);
   }
 
   /**
@@ -183,12 +183,13 @@ export class Stage extends Construct {
    * synthesis will be interrupted and the report displayed to the user.
    *
    * @default - no validation plugins are used
+   * @deprecated Do not use this function to look up validation plugins. Use `Validations.of(stage).plugins` instead.
    */
   public get policyValidationBeta1(): IPolicyValidationPluginBeta1[] {
-    return [...this._policyValidationBeta1];
+    return this._policyValidation.map(_toBeta1Plugin);
   }
 
-  private readonly _policyValidationBeta1: IPolicyValidationPluginBeta1[] = [];
+  private readonly _policyValidation: IPolicyValidationPlugin[] = [];
 
   constructor(scope: Construct, id: string, props: StageProps = {}) {
     super(scope, id);
@@ -202,7 +203,7 @@ export class Stage extends Construct {
       injectors.add(...props.propertyInjectors);
     }
 
-    Object.defineProperty(this, STAGE_SYMBOL, { value: true });
+    STAGE_TYPE.mark(this);
 
     this.constructPathsCache = new Set<string>();
     this.parentStage = Stage.of(this);
@@ -216,7 +217,7 @@ export class Stage extends Construct {
     this.stageName = [this.parentStage?.stageName, props.stageName ?? id].filter(x => x).join('-');
 
     if (props.policyValidationBeta1) {
-      this._policyValidationBeta1.push(...props.policyValidationBeta1);
+      this._policyValidation.push(...props.policyValidationBeta1);
     }
   }
 
@@ -225,8 +226,17 @@ export class Stage extends Construct {
    *
    * @internal
    */
-  public _addValidationPlugins(...plugins: IPolicyValidationPluginBeta1[]): void {
-    this._policyValidationBeta1.push(...plugins);
+  public _addValidationPlugins(...plugins: IPolicyValidationPlugin[]): void {
+    this._policyValidation.push(...plugins);
+  }
+
+  /**
+   * Returns the raw validation plugins without Beta1 wrapping.
+   *
+   * @internal
+   */
+  public get _validationPlugins(): IPolicyValidationPlugin[] {
+    return [...this._policyValidation];
   }
 
   /**
@@ -276,7 +286,8 @@ export class Stage extends Construct {
 
     // If the construct paths set has changed
     if (!this.constructPathSetsAreEqual(this.constructPathsCache, newConstructPaths)) {
-      const errorMessage = 'Synthesis has been called multiple times and the construct tree was modified after the first synthesis.';
+      const diff = this.constructPathSetsDiff(this.constructPathsCache, newConstructPaths).join(', ');
+      const errorMessage = `Synthesis has been called multiple times and the construct tree was modified after the first synthesis (${diff})`;
       if (options.errorOnDuplicateSynth ?? true) {
         throw new ValidationError(lit`ConstructTreeModifiedAfterSynth`, errorMessage + ' This is not allowed. Remove multple synth() calls and do not modify the construct tree after the first synth().', this);
       } else {
@@ -297,7 +308,7 @@ export class Stage extends Construct {
     function recurse(root: IConstruct) {
       paths.add(root.node.path);
       for (const child of root.node.children) {
-        if (!Stage.isStage(child)) {
+        if (!STAGE_TYPE.isMarked(child)) {
           recurse(child);
         }
       }
@@ -315,6 +326,34 @@ export class Stage extends Construct {
       }
     }
     return true;
+  }
+
+  /**
+   * Returns a list of +/- marked construct paths that have been added or removed between the 2 sets
+   */
+  private constructPathSetsDiff(set1: Set<string>, set2: Set<string>): string[] {
+    const ret: string[] = [];
+
+    for (const id of set1) {
+      if (!set2.has(id)) {
+        ret.push(`-${id}`);
+      }
+    }
+    for (const id of set2) {
+      if (!set1.has(id)) {
+        ret.push(`+${id}`);
+      }
+    }
+
+    // Simplify the diff by removing any construct paths that are a suffix of another construct path in the diff.
+    // We're doing it inefficiently, but this work is rare.
+    ret.sort((a, b) => a.length - b.length);
+    for (let i = 0; i < ret.length; i++) {
+      const prefix = ret[i] + '/';
+      stripInPlace(ret, i + 1, (x) => x.startsWith(prefix));
+    }
+
+    return ret;
   }
 
   private createBuilder(outdir?: string) {
@@ -374,4 +413,16 @@ export interface StageSynthesisOptions {
    * @default false
    */
   readonly aspectStabilization?: boolean;
+}
+
+/**
+ * Mutate an array in place by removing all elements starting from `startIndex` that match the predicate.
+ */
+function stripInPlace<A>(arr: A[], startIndex: number, predicate: (a: A) => boolean): void {
+  for (let i = startIndex; i < arr.length; i++) {
+    if (predicate(arr[i])) {
+      arr.splice(i, 1);
+      i--;
+    }
+  }
 }

@@ -65,7 +65,6 @@ import {
   CustomResource,
   FeatureFlags,
   Fn,
-  Lazy,
   Names,
   Resource,
   Stack,
@@ -74,7 +73,10 @@ import {
   UnscopedValidationError,
   ValidationError,
 } from '../../core';
+import type { IBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import {
@@ -1707,7 +1709,7 @@ export class Vpc extends VpcBase {
         }
         // configure IPv6 route if VPC is dual stack
         if (this.useIpv6) {
-          publicSubnet.addIpv6DefaultInternetRoute(igw.ref);
+          publicSubnet.addIpv6DefaultInternetRoute(igw.ref, att);
         }
       });
 
@@ -2089,6 +2091,7 @@ export interface SubnetProps {
  * @resource AWS::EC2::Subnet
  */
 @propertyInjectable
+@noBoxStackTraces
 export class Subnet extends Resource implements ISubnet {
   /**
    * Uniquely identifies this class.
@@ -2168,7 +2171,7 @@ export class Subnet extends Resource implements ISubnet {
 
   private readonly _internetConnectivityEstablished = new DependencyGroup();
 
-  private _networkAcl: INetworkAcl;
+  private _networkAcl: IBox<INetworkAcl>;
 
   constructor(scope: Construct, id: string, props: SubnetProps) {
     super(scope, id);
@@ -2198,8 +2201,9 @@ export class Subnet extends Resource implements ISubnet {
 
     // subnet.attrNetworkAclAssociationId is the default ACL after the subnet
     // was just created. However, the ACL can be replaced at a later time.
-    this._networkAcl = NetworkAcl.fromNetworkAclId(this, 'Acl', subnet.attrNetworkAclAssociationId);
-    this.subnetNetworkAclAssociationId = Lazy.string({ produce: () => this._networkAcl.networkAclRef.networkAclId });
+    this._networkAcl = Box.fromValue(NetworkAcl.fromNetworkAclId(this, 'Acl', subnet.attrNetworkAclAssociationId));
+    // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
+    this.subnetNetworkAclAssociationId = Token.asString(this._networkAcl.derive(acl => acl.networkAclRef.networkAclId));
     this.node.defaultChild = subnet;
 
     const table = new CfnRouteTable(this, 'RouteTable', {
@@ -2239,18 +2243,26 @@ export class Subnet extends Resource implements ISubnet {
   }
 
   /**
-   * Create a default IPv6 route that points to a passed IGW.
+   * Create a default IPv6 route that points to a passed IGW, with a dependency
+   * on the IGW's attachment to the VPC.
    *
    * @param gatewayId the logical ID (ref) of the gateway attached to your VPC
+   * @param gatewayAttachment the gateway attachment construct to be added as a dependency
    */
   @MethodMetadata()
-  public addIpv6DefaultInternetRoute(gatewayId: string) {
-    this.addRoute('DefaultRoute6', {
-      routerType: RouterType.GATEWAY,
-      routerId: gatewayId,
+  public addIpv6DefaultInternetRoute(gatewayId: string, gatewayAttachment?: IDependable) {
+    const route = new CfnRoute(this, 'DefaultRoute6', {
+      routeTableId: this.routeTable.routeTableId,
       destinationIpv6CidrBlock: '::/0',
-      enablesInternetConnectivity: true,
+      gatewayId,
     });
+    if (gatewayAttachment) {
+      route.node.addDependency(gatewayAttachment);
+    }
+
+    // Since the 'route' depends on the gateway attachment, just
+    // depending on the route is enough.
+    this._internetConnectivityEstablished.add(route);
   }
 
   /**
@@ -2279,7 +2291,7 @@ export class Subnet extends Resource implements ISubnet {
    * object and calling `associateNetworkAcl()`.
    */
   public get networkAcl(): INetworkAcl {
-    return this._networkAcl;
+    return this._networkAcl.get();
   }
 
   /**
@@ -2333,7 +2345,7 @@ export class Subnet extends Resource implements ISubnet {
 
   @MethodMetadata()
   public associateNetworkAcl(id: string, networkAcl: INetworkAcl) {
-    this._networkAcl = networkAcl;
+    this._networkAcl.set(networkAcl);
 
     const scope = networkAcl instanceof Construct ? networkAcl : this;
     const other = networkAcl instanceof Construct ? this : networkAcl;
@@ -2400,7 +2412,7 @@ export enum RouterType {
   EGRESS_ONLY_INTERNET_GATEWAY = 'EgressOnlyInternetGateway',
 
   /**
-   * Internet Gateway
+   * Internet Gateway or Virtual Private Gateway
    */
   GATEWAY = 'Gateway',
 

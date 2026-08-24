@@ -79,6 +79,21 @@ test('deploy from local directory asset', () => {
   });
 });
 
+test('empty sources array is preserved', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app);
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  new s3deploy.BucketDeployment(stack, 'EmptyDeployment', {
+    destinationBucket: bucket,
+    sources: [],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    SourceBucketNames: [],
+  });
+});
+
 test('deploy with configured log retention', () => {
   // GIVEN
   const stack = new cdk.Stack();
@@ -1637,14 +1652,14 @@ test('DeployTimeSubstitutedFile throws error when source file path is invalid', 
 
   expect(() => {
     new s3deploy.DeployTimeSubstitutedFile(stack, 'MyFile', {
-      source: path.join(__dirname, 'non-existant-file.yaml'),
+      source: path.join(__dirname, 'non-existent-file.yaml'),
       destinationBucket: bucket,
       substitutions: {
         testMethod: 'changedTestMethodSuccess',
         mock: 'changedMockTypeSuccess',
       },
     });
-  }).toThrow(`No file found at 'source' path ${path.join(__dirname, 'non-existant-file.yaml')}`);
+  }).toThrow(`No file found at 'source' path ${path.join(__dirname, 'non-existent-file.yaml')}`);
 });
 
 test('DeployTimeSubstitutedFile does not make substitutions when no substitutions are passed in', () => {

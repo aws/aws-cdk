@@ -26,22 +26,13 @@ import { UsagePlan } from './usage-plan';
 import * as cloudwatch from '../../aws-cloudwatch';
 import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import type {
-  IResource as IResourceBase,
-  Size,
-} from '../../core';
-import {
-  ArnFormat,
-  CfnOutput,
-  FeatureFlags,
-  Lazy,
-  RemovalPolicy,
-  Resource,
-  Stack,
-  Token,
-} from '../../core';
+import type { IResource as IResourceBase, Size } from '../../core';
+import { ArnFormat, CfnOutput, FeatureFlags, RemovalPolicy, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import type { IBox, ISetBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { applyInjectors } from '../../core/lib/prop-injectors-helpers';
@@ -424,9 +415,21 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
 
   private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
-  private _allowedVpcEndpoints: Set<ec2.IVPCEndpointRef> = new Set();
+  private allowedVpcEndpoints: ISetBox<ec2.IVPCEndpointRef> = Box.fromSet();
 
-  protected resourcePolicy?: iam.PolicyDocument;
+  private readonly _resourcePolicy: IBox<iam.PolicyDocument | undefined> = Box.fromValue<iam.PolicyDocument | undefined>(undefined);
+
+  /**
+   * A policy document that contains the resource policy for this RestApi.
+   */
+  protected get resourcePolicy(): iam.PolicyDocument | undefined {
+    return this._resourcePolicy.get() as iam.PolicyDocument | undefined;
+  }
+
+  protected set resourcePolicy(value: iam.PolicyDocument | undefined) {
+    this._resourcePolicy.set(value);
+  }
+
   protected cloudWatchAccount?: CfnAccount;
 
   constructor(scope: Construct, id: string, props: RestApiBaseProps = { }) {
@@ -440,6 +443,27 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
   }
 
   public abstract addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
+
+  /**
+   * @internal
+   */
+  protected _setResourcePolicy(policy: iam.PolicyDocument | undefined): void {
+    this._resourcePolicy.set(policy);
+  }
+
+  /**
+   * @internal
+   */
+  protected _updateResourcePolicy(fn: (doc: iam.PolicyDocument | undefined) => iam.PolicyDocument | undefined): void {
+    this._resourcePolicy.update(fn);
+  }
+
+  /**
+   * @internal
+   */
+  protected get _resourcePolicyAsToken(): any {
+    return Token.asAny(this._resourcePolicy);
+  }
 
   /**
    * Returns the URL for an HTTP path.
@@ -522,13 +546,11 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
    * @param vpcEndpoints the interface VPC endpoints to grant access to
    */
   public grantInvokeFromVpcEndpointsOnly(vpcEndpoints: ec2.IVpcEndpoint[]): void {
-    vpcEndpoints.forEach(endpoint => this._allowedVpcEndpoints.add(endpoint));
+    vpcEndpoints.forEach(endpoint => this.allowedVpcEndpoints.add(endpoint));
 
-    const endpoints = Lazy.list({
-      produce: () => {
-        return Array.from(this._allowedVpcEndpoints).map(endpoint => endpoint.vpcEndpointRef.vpcEndpointId);
-      },
-    });
+    const endpoints = Token.asList(this.allowedVpcEndpoints.derive(es => {
+      return Array.from(es).map(endpoint => endpoint.vpcEndpointRef.vpcEndpointId);
+    }));
 
     this.addToResourcePolicy(new iam.PolicyStatement({
       principals: [new iam.AnyPrincipal()],
@@ -791,6 +813,7 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
  * @resource AWS::ApiGateway::RestApi
  */
 @propertyInjectable
+@noBoxStackTraces
 export class SpecRestApi extends RestApiBase {
   /**
    * Uniquely identifies this class.
@@ -816,10 +839,10 @@ export class SpecRestApi extends RestApiBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
     const apiDefConfig = props.apiDefinition.bind(this);
-    this.resourcePolicy = props.policy;
+    this._setResourcePolicy(props.policy);
     const resource = new CfnRestApi(this, 'Resource', {
       name: this.restApiName,
-      policy: Lazy.any({ produce: () => this.resourcePolicy }),
+      policy: this._resourcePolicyAsToken,
       failOnWarnings: props.failOnWarnings,
       minimumCompressionSize: props.minCompressionSize?.toBytes(),
       binaryMediaTypes: props.binaryMediaTypes,
@@ -856,8 +879,11 @@ export class SpecRestApi extends RestApiBase {
    */
   @MethodMetadata()
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
-    this.resourcePolicy = this.resourcePolicy ?? new iam.PolicyDocument();
-    this.resourcePolicy.addStatements(statement);
+    this._updateResourcePolicy(doc => {
+      const d = doc ?? new iam.PolicyDocument();
+      d.addStatements(statement);
+      return d;
+    });
 
     return { statementAdded: true, policyDependable: this };
   }
@@ -894,6 +920,7 @@ export interface RestApiAttributes {
  * public endpoint.
  */
 @propertyInjectable
+@noBoxStackTraces
 export class RestApi extends RestApiBase {
   /**
    * Uniquely identifies this class.
@@ -973,12 +1000,12 @@ export class RestApi extends RestApiBase {
       throw new ValidationError(lit`PropertiesMinCompressionSizeMinimum`, 'both properties minCompressionSize and minimumCompressionSize cannot be set at once.', scope);
     }
 
-    this.resourcePolicy = props.policy;
+    this._setResourcePolicy(props.policy);
 
     const resource = new CfnRestApi(this, 'Resource', {
       name: this.physicalName,
       description: props.description,
-      policy: Lazy.any({ produce: () => this.resourcePolicy }),
+      policy: this._resourcePolicyAsToken,
       failOnWarnings: props.failOnWarnings,
       minimumCompressionSize: props.minCompressionSize?.toBytes() ?? props.minimumCompressionSize,
       binaryMediaTypes: props.binaryMediaTypes,
@@ -1016,8 +1043,11 @@ export class RestApi extends RestApiBase {
    */
   @MethodMetadata()
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
-    this.resourcePolicy = this.resourcePolicy ?? new iam.PolicyDocument();
-    this.resourcePolicy.addStatements(statement);
+    this._updateResourcePolicy(doc => {
+      const d = doc ?? new iam.PolicyDocument();
+      d.addStatements(statement);
+      return d;
+    });
 
     return { statementAdded: true, policyDependable: this };
   }
