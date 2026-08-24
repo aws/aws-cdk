@@ -1,7 +1,7 @@
 {
  "Resources": {
-  "AwsApiCallawssdkclients3filesGetSynchronizationConfigurationCommand1d2fd830daca9400e914351c11584999": {
-   "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-s3filesGetSynchr",
+  "AwsApiCallawssdkclients3filesGetFileSystemCommand1d2fd830daca9400e914351c11584999": {
+   "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-s3filesGetFileSy",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -10,8 +10,8 @@
      ]
     },
     "service": "@aws-sdk/client-s3files",
-    "api": "GetSynchronizationConfigurationCommand",
-    "expected": "{\"$ObjectLike\":{\"importDataRules\":[{\"prefix\":\"\",\"trigger\":\"ON_FILE_ACCESS\",\"sizeLessThan\":1073741824}],\"expirationDataRules\":[{\"daysAfterLastAccess\":7}]}}",
+    "api": "GetFileSystemCommand",
+    "expected": "{\"$ObjectLike\":{\"status\":\"available\"}}",
     "parameters": {
      "fileSystemId": {
       "Fn::Join": [
@@ -19,7 +19,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "S3FilesSyncConfigStack:ExportsOutputFnGetAttFileSystem8A8E25C0FileSystemId8EC1E37B"
+         "Fn::ImportValue": "S3FilesKmsStack:ExportsOutputFnGetAttFileSystem8A8E25C0FileSystemId8EC1E37B"
         },
         "\""
        ]
@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1787586874286"
+    "salt": "1787586905454"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -60,7 +60,7 @@
        "Statement": [
         {
          "Action": [
-          "s3files:GetSynchronizationConfiguration"
+          "s3files:GetFileSystem"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -99,10 +99,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallawssdkclients3filesGetSynchronizationConfigurationCommand1d2fd830daca9400e914351c11584999": {
+  "AssertionResultsAwsApiCallawssdkclients3filesGetFileSystemCommand1d2fd830daca9400e914351c11584999": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallawssdkclients3filesGetSynchronizationConfigurationCommand1d2fd830daca9400e914351c11584999",
+     "AwsApiCallawssdkclients3filesGetFileSystemCommand1d2fd830daca9400e914351c11584999",
      "assertion"
     ]
    }

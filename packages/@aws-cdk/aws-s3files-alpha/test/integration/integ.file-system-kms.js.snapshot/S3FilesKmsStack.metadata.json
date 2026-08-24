@@ -1,5 +1,5 @@
 {
-  "/S3FilesBasicStack/Vpc": [
+  "/S3FilesKmsStack/Vpc": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -7,47 +7,57 @@
       }
     }
   ],
-  "/S3FilesBasicStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+  "/S3FilesKmsStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
     {
       "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
       "data": true
     }
   ],
-  "/S3FilesBasicStack/Bucket": [
+  "/S3FilesKmsStack/Key": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/S3FilesKmsStack/Bucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
         "versioned": true,
+        "encryption": "KMS",
+        "encryptionKey": "*",
         "removalPolicy": "destroy",
         "autoDeleteObjects": true
       }
     }
   ],
-  "/S3FilesBasicStack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+  "/S3FilesKmsStack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
     {
       "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
       "data": true
     }
   ],
-  "/S3FilesBasicStack/BootstrapVersion": [
+  "/S3FilesKmsStack/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
     }
   ],
-  "/S3FilesBasicStack/CheckBootstrapVersion": [
+  "/S3FilesKmsStack/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
     }
   ],
-  "/S3FilesBasicStack/Vpc/Resource": [
+  "/S3FilesKmsStack/Vpc/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Vpc8378EB38"
     }
   ],
-  "/S3FilesBasicStack/Vpc/PublicSubnet1": [
+  "/S3FilesKmsStack/Vpc/PublicSubnet1": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -83,43 +93,7 @@
       }
     }
   ],
-  "/S3FilesBasicStack/Vpc/PublicSubnet2": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": true,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": true,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {}
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addNatGateway": [
-          "*"
-        ]
-      }
-    }
-  ],
-  "/S3FilesBasicStack/Vpc/PrivateSubnet1": [
+  "/S3FilesKmsStack/Vpc/PrivateSubnet1": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -147,65 +121,43 @@
       "data": {}
     }
   ],
-  "/S3FilesBasicStack/Vpc/PrivateSubnet2": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {}
-    }
-  ],
-  "/S3FilesBasicStack/Vpc/IGW": [
+  "/S3FilesKmsStack/Vpc/IGW": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcIGWD7BA715C"
     }
   ],
-  "/S3FilesBasicStack/Vpc/VPCGW": [
+  "/S3FilesKmsStack/Vpc/VPCGW": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcVPCGWBF912B6E"
     }
   ],
-  "/S3FilesBasicStack/Vpc/RestrictDefaultSecurityGroupCustomResource": [
+  "/S3FilesKmsStack/Vpc/RestrictDefaultSecurityGroupCustomResource": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/S3FilesBasicStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+  "/S3FilesKmsStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
     }
   ],
-  "/S3FilesBasicStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+  "/S3FilesKmsStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
     }
   ],
-  "/S3FilesBasicStack/Bucket/Resource": [
+  "/S3FilesKmsStack/Key/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Key961B73FD"
+    }
+  ],
+  "/S3FilesKmsStack/Bucket/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Bucket83908E77"
@@ -217,7 +169,7 @@
       }
     }
   ],
-  "/S3FilesBasicStack/Bucket/Policy": [
+  "/S3FilesKmsStack/Bucket/Policy": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -225,25 +177,25 @@
       }
     }
   ],
-  "/S3FilesBasicStack/Bucket/AutoDeleteObjectsCustomResource": [
+  "/S3FilesKmsStack/Bucket/AutoDeleteObjectsCustomResource": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/S3FilesBasicStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+  "/S3FilesKmsStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
     }
   ],
-  "/S3FilesBasicStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+  "/S3FilesKmsStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
     }
   ],
-  "/S3FilesBasicStack/FileSystem/ServiceRole": [
+  "/S3FilesKmsStack/FileSystem/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -332,9 +284,25 @@
           {}
         ]
       }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     }
   ],
-  "/S3FilesBasicStack/FileSystem/SecurityGroup": [
+  "/S3FilesKmsStack/FileSystem/SecurityGroup": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -343,157 +311,91 @@
       }
     }
   ],
-  "/S3FilesBasicStack/FileSystem/Resource": [
+  "/S3FilesKmsStack/FileSystem/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "FileSystem8A8E25C0"
     }
   ],
-  "/S3FilesBasicStack/FileSystem/MountTarget-PrivateSubnet1": [
+  "/S3FilesKmsStack/FileSystem/MountTarget-PrivateSubnet1": [
     {
       "type": "aws:cdk:logicalId",
       "data": "FileSystemMountTargetPrivateSubnet1DA207B1B"
     }
   ],
-  "/S3FilesBasicStack/FileSystem/MountTarget-PrivateSubnet2": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "FileSystemMountTargetPrivateSubnet293CF443B"
-    }
-  ],
-  "/S3FilesBasicStack/Exports/Output{\"Fn::GetAtt\":[\"FileSystem8A8E25C0\",\"FileSystemId\"]}": [
+  "/S3FilesKmsStack/Exports/Output{\"Fn::GetAtt\":[\"FileSystem8A8E25C0\",\"FileSystemId\"]}": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputFnGetAttFileSystem8A8E25C0FileSystemId8EC1E37B"
     }
   ],
-  "/S3FilesBasicStack/Vpc/PublicSubnet1/Subnet": [
+  "/S3FilesKmsStack/Vpc/PublicSubnet1/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1Subnet5C2D37C4"
     }
   ],
-  "/S3FilesBasicStack/Vpc/PublicSubnet1/RouteTable": [
+  "/S3FilesKmsStack/Vpc/PublicSubnet1/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1RouteTable6C95E38E"
     }
   ],
-  "/S3FilesBasicStack/Vpc/PublicSubnet1/RouteTableAssociation": [
+  "/S3FilesKmsStack/Vpc/PublicSubnet1/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1RouteTableAssociation97140677"
     }
   ],
-  "/S3FilesBasicStack/Vpc/PublicSubnet1/DefaultRoute": [
+  "/S3FilesKmsStack/Vpc/PublicSubnet1/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
     }
   ],
-  "/S3FilesBasicStack/Vpc/PublicSubnet1/EIP": [
+  "/S3FilesKmsStack/Vpc/PublicSubnet1/EIP": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1EIPD7E02669"
     }
   ],
-  "/S3FilesBasicStack/Vpc/PublicSubnet1/NATGateway": [
+  "/S3FilesKmsStack/Vpc/PublicSubnet1/NATGateway": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1NATGateway4D7517AA"
     }
   ],
-  "/S3FilesBasicStack/Vpc/PublicSubnet2/Subnet": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "VpcPublicSubnet2Subnet691E08A3"
-    }
-  ],
-  "/S3FilesBasicStack/Vpc/PublicSubnet2/RouteTable": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "VpcPublicSubnet2RouteTable94F7E489"
-    }
-  ],
-  "/S3FilesBasicStack/Vpc/PublicSubnet2/RouteTableAssociation": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
-    }
-  ],
-  "/S3FilesBasicStack/Vpc/PublicSubnet2/DefaultRoute": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "VpcPublicSubnet2DefaultRoute97F91067"
-    }
-  ],
-  "/S3FilesBasicStack/Vpc/PublicSubnet2/EIP": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "VpcPublicSubnet2EIP3C605A87"
-    }
-  ],
-  "/S3FilesBasicStack/Vpc/PublicSubnet2/NATGateway": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "VpcPublicSubnet2NATGateway9182C01D"
-    }
-  ],
-  "/S3FilesBasicStack/Vpc/PrivateSubnet1/Subnet": [
+  "/S3FilesKmsStack/Vpc/PrivateSubnet1/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet1Subnet536B997A"
     }
   ],
-  "/S3FilesBasicStack/Vpc/PrivateSubnet1/RouteTable": [
+  "/S3FilesKmsStack/Vpc/PrivateSubnet1/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet1RouteTableB2C5B500"
     }
   ],
-  "/S3FilesBasicStack/Vpc/PrivateSubnet1/RouteTableAssociation": [
+  "/S3FilesKmsStack/Vpc/PrivateSubnet1/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
     }
   ],
-  "/S3FilesBasicStack/Vpc/PrivateSubnet1/DefaultRoute": [
+  "/S3FilesKmsStack/Vpc/PrivateSubnet1/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
     }
   ],
-  "/S3FilesBasicStack/Vpc/PrivateSubnet2/Subnet": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "VpcPrivateSubnet2Subnet3788AAA1"
-    }
-  ],
-  "/S3FilesBasicStack/Vpc/PrivateSubnet2/RouteTable": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "VpcPrivateSubnet2RouteTableA678073B"
-    }
-  ],
-  "/S3FilesBasicStack/Vpc/PrivateSubnet2/RouteTableAssociation": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
-    }
-  ],
-  "/S3FilesBasicStack/Vpc/PrivateSubnet2/DefaultRoute": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "VpcPrivateSubnet2DefaultRoute060D2087"
-    }
-  ],
-  "/S3FilesBasicStack/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+  "/S3FilesKmsStack/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
     }
   ],
-  "/S3FilesBasicStack/Bucket/Policy/Resource": [
+  "/S3FilesKmsStack/Bucket/Policy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BucketPolicyE9A3008A"
@@ -505,19 +407,19 @@
       }
     }
   ],
-  "/S3FilesBasicStack/Bucket/AutoDeleteObjectsCustomResource/Default": [
+  "/S3FilesKmsStack/Bucket/AutoDeleteObjectsCustomResource/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
     }
   ],
-  "/S3FilesBasicStack/FileSystem/ServiceRole/Resource": [
+  "/S3FilesKmsStack/FileSystem/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "FileSystemServiceRole31A18070"
     }
   ],
-  "/S3FilesBasicStack/FileSystem/ServiceRole/DefaultPolicy": [
+  "/S3FilesKmsStack/FileSystem/ServiceRole/DefaultPolicy": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -569,15 +471,23 @@
           {}
         ]
       }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     }
   ],
-  "/S3FilesBasicStack/FileSystem/SecurityGroup/Resource": [
+  "/S3FilesKmsStack/FileSystem/SecurityGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "FileSystemSecurityGroup2269DE17"
     }
   ],
-  "/S3FilesBasicStack/FileSystem/ServiceRole/DefaultPolicy/Resource": [
+  "/S3FilesKmsStack/FileSystem/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "FileSystemServiceRoleDefaultPolicy458B4F25"

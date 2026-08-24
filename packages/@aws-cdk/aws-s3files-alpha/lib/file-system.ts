@@ -1,4 +1,4 @@
-import { Annotations, ArnFormat, type Duration, type IResource, RemovalPolicy, Resource, type Size, Stack, UnscopedValidationError } from 'aws-cdk-lib';
+import { ArnFormat, type Duration, type IResource, RemovalPolicy, Resource, type Size, Stack, ValidationError } from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -383,7 +383,7 @@ export class FileSystem extends FileSystemBase {
    */
   public static fromFileSystemAttributes(scope: Construct, id: string, attrs: FileSystemAttributes): IFileSystem {
     if (!attrs.fileSystemArn && !attrs.fileSystemId) {
-      throw new UnscopedValidationError(lit`FileSystemImportInvalid`, 'One of fileSystemArn or fileSystemId must be provided');
+      throw new ValidationError(lit`FileSystemImportInvalid`, 'One of fileSystemArn or fileSystemId must be provided', scope);
     }
 
     class Import extends FileSystemBase {
@@ -409,12 +409,18 @@ export class FileSystem extends FileSystemBase {
 
         this.connections = new ec2.Connections({
           securityGroups: [attrs.securityGroup],
+          defaultPort: ec2.Port.tcp(FileSystem.DEFAULT_PORT),
         });
       }
     }
 
     return new Import();
   }
+
+  /**
+   * The default port NFS clients use to connect to S3 Files mount targets.
+   */
+  private static readonly DEFAULT_PORT = 2049;
 
   public readonly fileSystemArn: string;
   public readonly fileSystemId: string;
@@ -440,14 +446,9 @@ export class FileSystem extends FileSystemBase {
       description: 'Security group for S3 Files mount targets',
     });
 
-    securityGroup.addIngressRule(
-      ec2.Peer.ipv4(props.vpcConfiguration.vpc.vpcCidrBlock),
-      ec2.Port.tcp(2049),
-      'Allow NFS traffic from VPC',
-    );
-
     this.connections = new ec2.Connections({
       securityGroups: [securityGroup],
+      defaultPort: ec2.Port.tcp(FileSystem.DEFAULT_PORT),
     });
 
     this._resource = new CfnFileSystem(this, 'Resource', {
@@ -463,7 +464,11 @@ export class FileSystem extends FileSystemBase {
 
     this._resource.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.RETAIN);
 
-    this.fileSystemArn = this._resource.attrFileSystemArn;
+    // Use `ref` (rather than the `FileSystemArn` attribute) for the ARN. `ref`
+    // resolves to the file system ARN (its primary identifier) and matches the
+    // token the L1 `fileSystemRef` exposes, which downstream reflection (e.g.
+    // `lambda.FileSystem.fromS3FilesAccessPoint`) relies on to locate the file system.
+    this.fileSystemArn = this._resource.ref;
     this.fileSystemId = this._resource.attrFileSystemId;
 
     // Create mount targets
@@ -521,22 +526,39 @@ export class FileSystem extends FileSystemBase {
           StringEquals: {
             'aws:SourceAccount': Stack.of(this).account,
           },
+          ArnLike: {
+            'aws:SourceArn': Stack.of(this).formatArn({
+              service: 's3files',
+              resource: 'file-system',
+              resourceName: '*',
+            }),
+          },
         },
       }),
     });
 
+    // Bucket-level permissions. S3 Files requires S3 Versioning on the bucket.
+    role.addToPolicy(new iam.PolicyStatement({
+      actions: [
+        's3:ListBucket',
+        's3:ListBucketVersions',
+        's3:GetBucketLocation',
+      ],
+      resources: [props.bucket.bucketArn],
+    }));
+
+    // Object-level permissions, including versioning and multipart uploads.
     role.addToPolicy(new iam.PolicyStatement({
       actions: [
         's3:GetObject',
+        's3:GetObjectVersion',
         's3:PutObject',
         's3:DeleteObject',
-        's3:ListBucket',
-        's3:GetBucketLocation',
+        's3:DeleteObjectVersion',
+        's3:ListMultipartUploadParts',
+        's3:AbortMultipartUpload',
       ],
-      resources: [
-        props.bucket.bucketArn,
-        props.bucket.arnForObjects('*'),
-      ],
+      resources: [props.bucket.arnForObjects('*')],
     }));
 
     role.addToPolicy(new iam.PolicyStatement({
@@ -604,27 +626,24 @@ export class FileSystem extends FileSystemBase {
   }
 
   private validateProps(props: FileSystemProps): void {
-    // Versioning cannot be verified statically from IBucket — emit a warning
-    // so users are reminded to enable it on the bucket before deploying.
-    Annotations.of(this).addWarningV2('@aws-cdk/aws-s3files-alpha:bucketVersioningNotVerified',
-      'S3 Files requires bucket versioning to be enabled. Ensure versioning is enabled on the bucket before deploying.');
-
     if (props.synchronizationConfiguration) {
       const { importDataRules, dataExpiration } = props.synchronizationConfiguration;
 
       if (importDataRules.length < 1 || importDataRules.length > 10) {
-        throw new UnscopedValidationError(lit`ImportDataRulesCountInvalid`, 'importDataRules must contain between 1 and 10 rules');
+        throw new ValidationError(lit`ImportDataRulesCountInvalid`, 'importDataRules must contain between 1 and 10 rules', this);
       }
 
       for (const rule of importDataRules) {
         if (rule.prefix !== '' && !rule.prefix.endsWith('/')) {
-          throw new UnscopedValidationError(lit`ImportDataRulePrefixInvalid`, `importDataRule prefix must be empty or end with '/': '${rule.prefix}'`);
+          throw new ValidationError(lit`ImportDataRulePrefixInvalid`, `importDataRule prefix must be empty or end with '/': '${rule.prefix}'`, this);
         }
       }
 
+      // `toDays` throws for fractional day durations (and for unresolved tokens),
+      // so we only need to bound-check the value here.
       const days = dataExpiration.toDays();
-      if (days < 1 || days > 365 || !Number.isInteger(days)) {
-        throw new UnscopedValidationError(lit`DataExpirationInvalid`, 'dataExpiration must be a whole number of days between 1 and 365');
+      if (days < 1 || days > 365) {
+        throw new ValidationError(lit`DataExpirationInvalid`, 'dataExpiration must be between 1 and 365 days', this);
       }
     }
   }
