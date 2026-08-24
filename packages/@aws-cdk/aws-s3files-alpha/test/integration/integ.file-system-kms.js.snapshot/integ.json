@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "S3FilesKmsIntegTest/DefaultTest": {
+      "stacks": [
+        "S3FilesKmsStack"
+      ],
+      "assertionStack": "S3FilesKmsIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "S3FilesKmsIntegTestDefaultTestDeployAssert3B088211"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}

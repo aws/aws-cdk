@@ -2,7 +2,7 @@
   "version": "54.0.0",
   "files": {
     "bea78ce725e22a5e0d82378f6b49028c09ba86499286d6945a0506e820854e92": {
-      "displayName": "S3FilesBasicStack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
+      "displayName": "S3FilesKmsStack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
       "source": {
         "path": "asset.bea78ce725e22a5e0d82378f6b49028c09ba86499286d6945a0506e820854e92",
         "packaging": "zip"
@@ -16,7 +16,7 @@
       }
     },
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
-      "displayName": "S3FilesBasicStack/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
+      "displayName": "S3FilesKmsStack/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
       "source": {
         "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
         "packaging": "zip"
@@ -29,16 +29,16 @@
         }
       }
     },
-    "030eeb12b3d972b5115831c48b3e1ab8239f20bc2c067263c49834fecdc62668": {
-      "displayName": "S3FilesBasicStack Template",
+    "b3c6467b66c24fa010750d0b4fcd9ca8748119f312859747d3fb3d8313252ca4": {
+      "displayName": "S3FilesKmsStack Template",
       "source": {
-        "path": "S3FilesBasicStack.template.json",
+        "path": "S3FilesKmsStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-a062af30": {
+        "current_account-current_region-3a208284": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "030eeb12b3d972b5115831c48b3e1ab8239f20bc2c067263c49834fecdc62668.json",
+          "objectKey": "b3c6467b66c24fa010750d0b4fcd9ca8748119f312859747d3fb3d8313252ca4.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
