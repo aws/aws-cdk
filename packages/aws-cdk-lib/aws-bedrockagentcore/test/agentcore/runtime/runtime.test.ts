@@ -3511,9 +3511,7 @@ describe('Runtime observability tests', () => {
     });
 
     // X-Ray resource policy should NOT be created
-    expect(() => {
-      template.hasResourceProperties('AWS::XRay::ResourcePolicy', {});
-    }).toThrow();
+    template.resourceCountIs('AWS::XRay::ResourcePolicy', 0);
   });
 
   test('Should not create CloudWatch Logs resource policy when manageDeliveryResourcePolicy is false', () => {
@@ -3558,9 +3556,7 @@ describe('Runtime observability tests', () => {
     });
 
     // CloudWatch Logs resource policy should NOT be created
-    expect(() => {
-      template.hasResourceProperties('AWS::Logs::ResourcePolicy', {});
-    }).toThrow();
+    template.resourceCountIs('AWS::Logs::ResourcePolicy', 0);
   });
 
   test('Should not create any delivery resource policies when manageDeliveryResourcePolicy is false with both tracing and logging', () => {
@@ -3593,13 +3589,8 @@ describe('Runtime observability tests', () => {
     const template = Template.fromStack(stack);
 
     // Neither X-Ray nor CloudWatch Logs resource policies should be created
-    expect(() => {
-      template.hasResourceProperties('AWS::XRay::ResourcePolicy', {});
-    }).toThrow();
-
-    expect(() => {
-      template.hasResourceProperties('AWS::Logs::ResourcePolicy', {});
-    }).toThrow();
+    template.resourceCountIs('AWS::XRay::ResourcePolicy', 0);
+    template.resourceCountIs('AWS::Logs::ResourcePolicy', 0);
   });
 });
 

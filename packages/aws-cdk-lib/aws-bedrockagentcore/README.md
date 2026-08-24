@@ -812,7 +812,13 @@ For additional information, please refer to the [Set up logging and tracing for 
 
 ##### Opting out of resource policy management
 
-When deploying many AgentCore Runtime constructs per account/Region, the per-stack `AWS::Logs::ResourcePolicy` and `AWS::XRay::ResourcePolicy` created by the observability delivery consume account-level quota slots (CloudWatch Logs: 10, X-Ray: lower). Set `manageDeliveryResourcePolicy: false` to skip resource policy creation while still provisioning delivery sources, destinations, and deliveries. For same-account `/aws/vendedlogs/` delivery, the log-delivery service-linked role provides the necessary write access without an explicit policy.
+When deploying many AgentCore Runtime constructs per account/Region, the per-stack `AWS::Logs::ResourcePolicy` and `AWS::XRay::ResourcePolicy` created by the observability delivery consume account-level quota slots (CloudWatch Logs: 10, X-Ray: lower). Set `manageDeliveryResourcePolicy: false` to skip resource policy creation while still provisioning delivery sources, destinations, and deliveries.
+
+**Important**: Setting `false` means you own the delivery permission. There are two safe ways to use it:
+- Same-account delivery to a `/aws/vendedlogs/` log group, where the log-delivery service-linked role grants write access implicitly.
+- Attaching the delivery resource policy yourself.
+
+Otherwise delivery silently fails: synthesis and deploy succeed, but nothing is delivered. Per the [vended-logs delivery docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-infrastructure-V2-CloudWatchLogs.html), a resource policy is required for CloudWatch Logs delivery outside the `/aws/vendedlogs/` same-account case.
 
 ```typescript fixture=default
 const repository = new ecr.Repository(this, 'TestRepository', {
@@ -821,7 +827,10 @@ const repository = new ecr.Repository(this, 'TestRepository', {
 
 const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
 
-const logGroup = new logs.LogGroup(this, 'RuntimeLogGroup');
+// Use a /aws/vendedlogs/ log group for same-account delivery without explicit resource policy
+const logGroup = new logs.LogGroup(this, 'RuntimeLogGroup', {
+  logGroupName: '/aws/vendedlogs/bedrock-agentcore/my-runtime',
+});
 
 new agentcore.Runtime(this, 'test-runtime', {
   runtimeName: 'test_runtime',
