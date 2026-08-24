@@ -2101,6 +2101,21 @@ describe('vpc', () => {
       expect(subnetIds).toEqual(vpc.isolatedSubnets.map(s => s.subnetId));
     });
 
+    test('can select subnets by environment-agnostic AZ', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      const { subnetIds } = vpc.selectSubnets({
+        subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+        availabilityZones: [stack.availabilityZones[0], stack.availabilityZones[1]],
+      });
+
+      // THEN
+      expect(subnetIds).toHaveLength(2); // 2 private subnets
+    });
+
     test('can select subnets by name', () => {
       // GIVEN
       const stack = getTestStack();
@@ -2751,6 +2766,26 @@ describe('vpc', () => {
       VpcId: {
         Ref: Match.stringLikeRegexp('^Vpc.*'),
       },
+    });
+  });
+  test('dual-stack IPv6 default route has DependsOn VPCGatewayAttachment', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'DualStackStack');
+
+    // WHEN
+    new Vpc(stack, 'Vpc', {
+      ipProtocol: IpProtocol.DUAL_STACK,
+      maxAzs: 1,
+    });
+
+    // THEN - IPv6 default route (::/0) must depend on VPCGatewayAttachment;
+    // CloudFormation rejects routes whose IGW has not yet been attached to the VPC.
+    Template.fromStack(stack).hasResource('AWS::EC2::Route', {
+      Properties: {
+        DestinationIpv6CidrBlock: '::/0',
+      },
+      DependsOn: Match.arrayWith([Match.stringLikeRegexp('VPCGW')]),
     });
   });
   test('EgressOnlyIGW is created if no private subnet configured in dual stack and feature flag EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY is not enabled', () => {
