@@ -373,6 +373,39 @@ required for every job.
 
 Reference the unit tests for examples of repo and S3 code target examples.
 
+#### Uploading scripts to a custom bucket
+
+By default `glue.Code.fromAsset(path)` uploads the script to the shared CDK
+asset bucket. If you would rather keep your Glue scripts in a dedicated bucket -
+for example so that developers can be granted access to the scripts without
+being given access to the CDK asset bucket - pass an optional `bucket` to
+`glue.Code.fromAsset`:
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+
+declare const role: iam.IRole;
+
+const scriptsBucket = new s3.Bucket(this, 'ScriptsBucket');
+
+new glue.PythonShellJob(this, 'ShellJob', {
+  script: glue.Code.fromAsset(
+    path.join(__dirname, 'job-scripts', 'my-script.py'),
+    undefined, // asset options
+    scriptsBucket, // deploy the script to this bucket instead of the CDK asset bucket
+  ),
+  role,
+});
+```
+
+When a `bucket` is supplied, the script file is deployed into that bucket (via an
+`aws-s3-deployment.BucketDeployment`) and the job's script location points at the
+object in your bucket. The job's role is granted read access to just that object,
+so it never needs access to the CDK asset bucket. The deployment is configured
+with `prune: false`, so it never removes other objects that already exist in your
+bucket. The script is stored under its file name (e.g. `my-script.py`) at the root
+of the bucket.
+
 ### Workflow Triggers
 
 You can use Glue workflows to create and visualize complex
