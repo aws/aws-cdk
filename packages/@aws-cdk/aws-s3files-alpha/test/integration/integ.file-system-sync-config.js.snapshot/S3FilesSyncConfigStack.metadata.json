@@ -29,28 +29,6 @@
       "data": true
     }
   ],
-  "/S3FilesSyncConfigStack/FileSystem": [
-    {
-      "type": "aws:cdk:warning",
-      "data": "S3 Files requires bucket versioning to be enabled. Ensure versioning is enabled on the bucket before deploying. [ack: @aws-cdk/aws-s3files-alpha:bucketVersioningNotVerified]",
-      "trace": [
-        "Annotations.addMessage (/local/home/caradoni/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:236:29)",
-        "Annotations.addWarningV2 (/local/home/caradoni/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:105:18)",
-        "FileSystem.validateProps (/local/home/caradoni/workspaces/aws-cdk/packages/@aws-cdk/aws-s3files-alpha/lib/file-system.js:345:44)",
-        "new FileSystem (/local/home/caradoni/workspaces/aws-cdk/packages/@aws-cdk/aws-s3files-alpha/lib/file-system.js:193:14)",
-        "new FileSystemWithSyncConfigStack (/local/home/caradoni/workspaces/aws-cdk/packages/@aws-cdk/aws-s3files-alpha/test/integration/integ.file-system-sync-config.js:51:27)",
-        "Object.<anonymous> (/local/home/caradoni/workspaces/aws-cdk/packages/@aws-cdk/aws-s3files-alpha/test/integration/integ.file-system-sync-config.js:72:15)",
-        "Module._compile (node:internal/modules/cjs/loader:1760:14)",
-        "Object..js (node:internal/modules/cjs/loader:1892:10)",
-        "Module.load (node:internal/modules/cjs/loader:1480:32)",
-        "Module._load (node:internal/modules/cjs/loader:1299:12)",
-        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
-        "wrapModuleLoad (node:internal/modules/cjs/loader:245:24)",
-        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
-        "node:internal/main/run_main_module:33:47"
-      ]
-    }
-  ],
   "/S3FilesSyncConfigStack/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -274,6 +252,22 @@
           {}
         ]
       }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     }
   ],
   "/S3FilesSyncConfigStack/FileSystem/SecurityGroup": [
@@ -282,20 +276,6 @@
       "data": {
         "vpc": "*",
         "description": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addIngressRule": [
-          {
-            "canInlineRule": true,
-            "connections": "*",
-            "uniqueId": "*"
-          },
-          {},
-          "*"
-        ]
       }
     }
   ],
@@ -425,6 +405,14 @@
       "data": {
         "attachToRole": [
           "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
         ]
       }
     },

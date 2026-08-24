@@ -24,11 +24,17 @@ automatically exported back to the bucket after a short idle period.
 
 ## File System
 
+> S3 Files requires [S3 Versioning](https://docs.aws.amazon.com/AmazonS3/latest/userguide/Versioning.html)
+> to be enabled on the backing bucket. Deployment will fail if the bucket does
+> not have versioning enabled, so make sure to create the bucket with
+> `versioned: true`.
+
 Create an S3 Bucket backed by a File System:
 
 ```ts
 declare const vpc: ec2.Vpc;
-declare const bucket: s3.Bucket;
+
+const bucket = new s3.Bucket(this, 'Bucket', { versioned: true });
 
 const fileSystem = new s3files.FileSystem(this, 'MyFileSystem', {
   bucket,
@@ -83,7 +89,8 @@ const fileSystem = new s3files.FileSystem(this, 'MyFileSystem', {
   prefix: 'data/',
   synchronizationConfiguration: {
     importDataRules: [{
-      prefix: '/',
+      // Use an empty string to match the root of the bucket.
+      prefix: '',
       sizeLessThan: Size.gibibytes(1),
       trigger: s3files.ImportDataRuleTrigger.ON_FILE_ACCESS,
     }],
@@ -158,7 +165,11 @@ const fileSystem = s3files.FileSystem.fromFileSystemAttributes(
   },
 );
 
-const accessPoint = s3files.AccessPoint.fromAccessPointId(
-  this, 'ImportedAp', 'fsap-12345678',
+// Import by ARN, or by ID together with the file system it belongs to.
+const accessPoint = s3files.AccessPoint.fromAccessPointAttributes(
+  this, 'ImportedAp', {
+    accessPointArn:
+      'arn:aws:s3files:us-east-1:123456789012:file-system/fs-12345678/access-point/fsap-12345678',
+  },
 );
 ```

@@ -1,4 +1,4 @@
-import { ArnFormat, type IResource, Resource, Stack, UnscopedValidationError } from 'aws-cdk-lib';
+import { ArnFormat, type IResource, Resource, Stack, ValidationError } from 'aws-cdk-lib';
 import { CfnAccessPoint } from 'aws-cdk-lib/aws-s3files';
 import type { AccessPointReference, IAccessPointRef, IFileSystemRef } from 'aws-cdk-lib/aws-s3files';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
@@ -113,7 +113,8 @@ export interface AccessPointAttributes {
   readonly accessPointArn?: string;
 
   /**
-   * The file system associated with this access point.
+   * The file system this access point belongs to. Required when importing by
+   * `accessPointId`, since the access point ARN is nested under the file system.
    *
    * @default - no file system
    */
@@ -161,18 +162,18 @@ abstract class AccessPointBase extends Resource implements IAccessPoint {
  */
 export class AccessPoint extends AccessPointBase {
   /**
-   * Import an existing access point by its ID.
-   */
-  public static fromAccessPointId(scope: Construct, id: string, accessPointId: string): IAccessPoint {
-    return AccessPoint.fromAccessPointAttributes(scope, id, { accessPointId });
-  }
-
-  /**
    * Import an existing access point from its attributes.
+   *
+   * Provide either `accessPointArn`, or `accessPointId` together with the
+   * `fileSystem` it belongs to (the access point ARN is nested under the file
+   * system, so the file system is required to construct it from an ID).
    */
   public static fromAccessPointAttributes(scope: Construct, id: string, attrs: AccessPointAttributes): IAccessPoint {
     if (!attrs.accessPointArn && !attrs.accessPointId) {
-      throw new UnscopedValidationError(lit`AccessPointImportInvalid`, 'One of accessPointArn or accessPointId must be provided');
+      throw new ValidationError(lit`AccessPointImportInvalid`, 'One of accessPointArn or accessPointId must be provided', scope);
+    }
+    if (!attrs.accessPointArn && !attrs.fileSystem) {
+      throw new ValidationError(lit`AccessPointImportMissingFileSystem`, 'fileSystem is required when importing an access point by accessPointId', scope);
     }
 
     class Import extends AccessPointBase {
@@ -184,15 +185,15 @@ export class AccessPoint extends AccessPointBase {
         super(scope, id);
 
         if (attrs.accessPointArn) {
+          // ARN format: arn:...:file-system/${FileSystemId}/access-point/${AccessPointId}
           this.accessPointArn = attrs.accessPointArn;
-          this.accessPointId = Stack.of(scope).splitArn(attrs.accessPointArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+          const resourceName = Stack.of(scope).splitArn(attrs.accessPointArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+          this.accessPointId = resourceName.split('/').pop()!;
         } else {
           this.accessPointId = attrs.accessPointId!;
-          this.accessPointArn = Stack.of(scope).formatArn({
-            service: 's3files',
-            resource: 'access-point',
-            resourceName: attrs.accessPointId,
-          });
+          // The access point ARN is the file system ARN with the access point
+          // segment appended: arn:...:file-system/${fsId}/access-point/${apId}
+          this.accessPointArn = `${attrs.fileSystem!.fileSystemRef.fileSystemArn}/access-point/${this.accessPointId}`;
         }
 
         this.fileSystem = attrs.fileSystem;

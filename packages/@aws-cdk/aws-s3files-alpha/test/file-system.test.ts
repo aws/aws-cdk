@@ -1,5 +1,5 @@
 import { Duration, Size, Stack } from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
@@ -44,7 +44,7 @@ describe('FileSystem', () => {
     template.resourceCountIs('AWS::S3Files::MountTarget', 2);
   });
 
-  test('creates security group with NFS ingress', () => {
+  test('creates a security group without an implicit ingress rule', () => {
     const stack = new Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const bucket = new s3.Bucket(stack, 'Bucket', { versioned: true });
@@ -58,11 +58,36 @@ describe('FileSystem', () => {
     });
 
     const template = Template.fromStack(stack);
+    // The security group is created, but no VPC-wide ingress rule is added
+    // (consumers open access explicitly via connections.allowDefaultPortFrom).
     template.hasResourceProperties('AWS::EC2::SecurityGroup', {
       GroupDescription: 'Security group for S3 Files mount targets',
+    });
+    template.resourcePropertiesCountIs('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: Match.anyValue(),
+    }, 0);
+  });
+
+  test('connections default port allows NFS ingress on 2049', () => {
+    const stack = new Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const bucket = new s3.Bucket(stack, 'Bucket', { versioned: true });
+
+    const fs = new FileSystem(stack, 'FileSystem', {
+      bucket,
+      vpcConfiguration: {
+        vpc,
+        vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+      },
+    });
+
+    fs.connections.allowDefaultPortFrom(ec2.Peer.ipv4('10.0.0.0/16'));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::EC2::SecurityGroup', {
       SecurityGroupIngress: [
         {
-          CidrIp: { 'Fn::GetAtt': ['Vpc8378EB38', 'CidrBlock'] },
+          CidrIp: '10.0.0.0/16',
           FromPort: 2049,
           ToPort: 2049,
           IpProtocol: 'tcp',
@@ -194,7 +219,7 @@ describe('FileSystem', () => {
           dataExpiration: Duration.days(400),
         },
       });
-    }).toThrow(/dataExpiration must be a whole number of days between 1 and 365/);
+    }).toThrow(/dataExpiration must be between 1 and 365 days/);
   });
 
   test('imports from fileSystemArn', () => {
