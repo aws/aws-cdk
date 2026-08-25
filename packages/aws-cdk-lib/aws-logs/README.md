@@ -100,6 +100,34 @@ new logs.LogGroup(this, 'LogGroup', {
 });
 ```
 
+CloudWatch Logs can only use a customer-managed key if the key's resource policy
+grants the CloudWatch Logs service permission to use it. When the
+`@aws-cdk/aws-logs:logGroupGrantEncryptionKey` feature flag is enabled and the key
+is created in the same CDK application, the `LogGroup` adds this statement to the
+key policy automatically, scoped to the log group via the
+`aws:logs:arn` encryption context.
+
+If you pass an **imported** key (for example `kms.Key.fromKeyArn(...)`), the CDK
+cannot modify its resource policy, so you must grant the permission yourself on the
+account that owns the key:
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as iam from 'aws-cdk-lib/aws-iam';
+
+declare const importedKey: kms.IKey;
+
+importedKey.addToResourcePolicy(new iam.PolicyStatement({
+  principals: [new iam.ServicePrincipal(`logs.${this.region}.amazonaws.com`)],
+  actions: ['kms:Encrypt*', 'kms:Decrypt*', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:Describe*'],
+  resources: ['*'],
+}));
+
+new logs.LogGroup(this, 'LogGroup', {
+  encryptionKey: importedKey,
+});
+```
+
 See the AWS documentation for more detailed information about [encrypting CloudWatch
 Logs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/encrypt-log-data-kms.html).
 

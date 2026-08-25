@@ -17,11 +17,12 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
 import type { RemovalPolicy } from '../../core';
-import { Arn, ArnFormat, Resource, Stack, Token, ValidationError } from '../../core';
+import { Arn, ArnFormat, FeatureFlags, Resource, Stack, Token, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import * as cxapi from '../../cx-api';
 
 export interface ILogGroup extends iam.IResourceWithPolicy, ILogGroupRef {
   /**
@@ -729,6 +730,64 @@ export class LogGroup extends LogGroupBase {
     });
 
     this.resource.applyRemovalPolicy(props.removalPolicy);
+
+    if (props.encryptionKey) {
+      this.grantEncryptionKeyUsage(props.encryptionKey, props.logGroupName);
+    }
+  }
+
+  /**
+   * Grant the CloudWatch Logs service principal permission to use the log group's
+   * customer-managed encryption key.
+   *
+   * CloudWatch Logs cannot create a log group encrypted with a customer-managed key
+   * unless the key's resource policy allows the service to use it, so without this the
+   * log group fails to deploy. Imported keys still require a manual grant: the statement
+   * added here no-ops on a key whose resource policy the CDK does not own, so those keys
+   * must be granted separately on the account that owns them.
+   *
+   * The statement is scoped to this log group through the `aws:logs:arn` encryption
+   * context. When the log group name is known at synthesis time the scope is exact;
+   * for auto-named log groups it is scoped to any log group in this account and region,
+   * because referencing the generated name would create a cyclic dependency between the
+   * key and the log group.
+   */
+  private grantEncryptionKeyUsage(encryptionKey: kms.IKeyRef, logGroupName?: string): void {
+    if (!FeatureFlags.of(this).isEnabled(cxapi.LOG_GROUP_GRANT_ENCRYPTION_KEY)) {
+      return;
+    }
+    // A bare IKeyRef carries only identifiers and has no resource policy to add to.
+    // Full keys (owned or imported) expose addToResourcePolicy; imported keys no-op
+    // inside it, so this guard only filters out refs that lack the method entirely.
+    if (!('addToResourcePolicy' in encryptionKey)) {
+      return;
+    }
+
+    const isKnownName = logGroupName !== undefined && !Token.isUnresolved(logGroupName);
+    const stack = Stack.of(this);
+    const logGroupArn = stack.formatArn({
+      service: 'logs',
+      resource: 'log-group',
+      resourceName: isKnownName ? logGroupName : '*',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+
+    (encryptionKey as kms.IKey).addToResourcePolicy(new iam.PolicyStatement({
+      principals: [new iam.ServicePrincipal(`logs.${stack.region}.amazonaws.com`)],
+      actions: [
+        'kms:Encrypt*',
+        'kms:Decrypt*',
+        'kms:ReEncrypt*',
+        'kms:GenerateDataKey*',
+        'kms:Describe*',
+      ],
+      resources: ['*'],
+      conditions: {
+        [isKnownName ? 'ArnEquals' : 'ArnLike']: {
+          'kms:EncryptionContext:aws:logs:arn': logGroupArn,
+        },
+      },
+    }));
   }
 }
 
