@@ -88,5 +88,5 @@
   "@aws-cdk/core:annotationsInValidationReport": true,
   "@aws-cdk/core:defaultCrossStackReferences": "weak",
   "@aws-cdk/core:validateAgainstDefaultRules": true,
-  "@aws-cdk/aws-events:eventBusPolicyUniqueStatementId": true
+  "@aws-cdk/aws-logs:logGroupGrantEncryptionKey": true
 }
