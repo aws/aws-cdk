@@ -66,6 +66,16 @@ export interface HttpOriginProps extends cloudfront.OriginProps {
    * @default undefined - AWS Cloudfront default is IPv4
    */
   readonly ipAddressType?: cloudfront.OriginIpAddressType;
+
+  /**
+   * Configures mutual TLS (mTLS) authentication between CloudFront and your origin server.
+   *
+   * When specified, CloudFront uses the provided client certificate from ACM
+   * to authenticate with the origin using mutual TLS.
+   *
+   * @default - no mutual TLS authentication
+   */
+  readonly originMtlsConfig?: cloudfront.OriginMtlsConfig;
 }
 
 /**
@@ -79,6 +89,12 @@ export class HttpOrigin extends cloudfront.OriginBase {
     validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, 180, props.keepaliveTimeout);
     this.validateResponseCompletionTimeoutWithReadTimeout(props.responseCompletionTimeout, props.readTimeout);
 
+    if (props.originMtlsConfig && props.protocolPolicy === cloudfront.OriginProtocolPolicy.HTTP_ONLY) {
+      throw new UnscopedValidationError(
+        lit`OriginMtlsConfigRequiresHttps`,
+        'originMtlsConfig requires a TLS connection to the origin, but protocolPolicy is set to HTTP_ONLY. Use HTTPS_ONLY or MATCH_VIEWER instead.',
+      );
+    }
     this.validatePortNumber('httpPort', props.httpPort);
     this.validatePortNumber('httpsPort', props.httpsPort);
   }
@@ -92,6 +108,9 @@ export class HttpOrigin extends cloudfront.OriginBase {
       originReadTimeout: this.props.readTimeout?.toSeconds(),
       originKeepaliveTimeout: this.props.keepaliveTimeout?.toSeconds(),
       ipAddressType: this.props.ipAddressType,
+      originMtlsConfig: this.props.originMtlsConfig
+        ? { clientCertificateArn: this.props.originMtlsConfig.clientCertificate.certificateRef.certificateArn }
+        : undefined,
     };
   }
 
