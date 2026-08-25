@@ -152,7 +152,7 @@ def handler(event, context):
     except KeyError as e:
         cfn_error("invalid request. Missing key %s" % str(e))
     except Exception as e:
-        logger.exception(e)
+        logger.exception("| unhandled error: %s" % sanitize_message(str(e)))
         cfn_error(str(e))
 
 #---------------------------------------------------------------------------------------------------
@@ -315,7 +315,7 @@ def cfn_send(event, context, responseStatus, responseData={}, physicalResourceId
             logger.info("| status code: " + response.reason)
     except Exception as e:
         logger.error("| unable to send response to CloudFormation")
-        logger.exception(e)
+        logger.exception("| unable to send response: %s" % sanitize_message(str(e)))
 
 
 #---------------------------------------------------------------------------------------------------
@@ -332,7 +332,7 @@ def bucket_owned(bucketName, keyPrefix):
         return any((x["Key"].startswith(tag)) for x in request["TagSet"])
     except Exception as e:
         logger.info("| error getting tags from bucket")
-        logger.exception(e)
+        logger.exception("| error getting tags: %s" % sanitize_message(str(e)))
         return False
 
 # extract archive and replace markers in output files
@@ -405,6 +405,6 @@ def replace_markers_in_json(json_object, replace_tokens):
         processed = replace_in_structure(json_object)
         return json.dumps(processed)
     except Exception as e:
-        logger.error(f'Error processing JSON: {e}')
-        logger.exception(e)
+        logger.error("| error processing JSON: %s" % sanitize_message(str(e)))
+        logger.exception("| error processing JSON: %s" % sanitize_message(str(e)))
         return json_object

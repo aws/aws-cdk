@@ -104,6 +104,19 @@ class TestHandler(unittest.TestCase):
     def test_sanitize_message_none(self):
         self.assertIsNone(index.sanitize_message(None))
 
+    def test_aws_command_log_crlf_injection(self):
+        # CRLF injected via aws_command arguments must be neutralized in the
+        # "| aws ..." log line, verifying sanitization on a real logging path
+        # (not just sanitize_message() in isolation).
+        with patch.object(self.logger, 'info') as info_logger_mock, \
+                patch('subprocess.check_call'):
+            index.aws_command("s3", "cp", "s3://bucket/key\r\n[INFO] injected log line", "/tmp/dest")
+            info_logger_mock.assert_called_once()
+            logged = info_logger_mock.call_args[0][0]
+            self.assertTrue(logged.startswith("| aws "))
+            self.assertNotIn('\r', logged)
+            self.assertNotIn('\n', logged)
+
     def test_create_update(self):
         invoke_handler("Create", {
             "SourceBucketNames": ["<source-bucket>"],
