@@ -108,13 +108,13 @@ export interface IQueue extends IResource, IQueueRef {
   /**
    * The number of messages waiting to be picked up plus the number in flight
    *
-   * `ApproximateNumberOfMessagesVisible + ApproximateNumberOfMessagesNotVisible`, calculated
-   * using CloudWatch metric math. Prefer this over `metricApproximateNumberOfMessagesVisible`
-   * when scaling consumers in: receiving a message lowers `Visible`, so a policy watching only
-   * `Visible` cannot tell a consumer that is starting work from one that has finished it.
+   * `ApproximateNumberOfMessagesVisible + ApproximateNumberOfMessagesNotVisible`, as a metric math
+   * expression. Prefer this over `metricApproximateNumberOfMessagesVisible` when scaling consumers
+   * in: receiving a message lowers `Visible`, so a policy watching only `Visible` cannot tell a
+   * consumer that just picked up work from one that finished it.
    *
-   * `statistic`, `unit` and dimensions are applied to both underlying metrics, `label`, `color`
-   * and `period` to the expression.
+   * `statistic`, `unit` and dimensions apply to both underlying metrics, `label`, `color` and
+   * `period` to the expression.
    *
    * Maximum over 5 minutes
    */

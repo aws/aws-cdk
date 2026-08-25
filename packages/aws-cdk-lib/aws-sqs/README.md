@@ -111,8 +111,7 @@ const queue2 = new sqs.Queue(this, 'Queue', {
 
 ## Monitoring
 
-Amazon SQS metrics are available as `metric*` methods on a queue, and `metric()` returns any
-metric by name:
+SQS metrics are available as `metric*` methods on a queue; `metric()` returns any metric by name:
 
 ```ts
 const queue = new sqs.Queue(this, 'Queue');
@@ -123,28 +122,23 @@ queue.metricApproximateAgeOfOldestMessage().createAlarm(this, 'MessagesTooOld', 
 });
 ```
 
-On top of those, `metricApproximateNumberOfMessagesOutstanding()` returns
-`ApproximateNumberOfMessagesVisible + ApproximateNumberOfMessagesNotVisible` as a CloudWatch
-metric math expression: the messages waiting to be picked up, plus the messages a consumer has
-received but not yet deleted.
+`metricApproximateNumberOfMessagesOutstanding()` returns
+`ApproximateNumberOfMessagesVisible + ApproximateNumberOfMessagesNotVisible` as a metric math
+expression: messages waiting to be picked up, plus messages received but not yet deleted.
 
 ### Autoscaling consumers on queue depth
 
-Scaling a worker fleet on queue depth needs a *different metric in each direction*, and getting
-this wrong is an easy way to end up repeatedly retrying the same work:
+Scaling a worker fleet on queue depth needs a different metric in each direction:
 
-* **Scale out on `ApproximateNumberOfMessagesVisible`** — the work nobody has started yet. A
-  message that is already in flight is owned by a consumer, so adding capacity for it only
-  produces an idle consumer.
+* **Scale out on `ApproximateNumberOfMessagesVisible`** — work nobody has started yet. An in-flight
+  message is already owned by a consumer, so adding capacity for it produces an idle consumer.
 * **Scale in on `metricApproximateNumberOfMessagesOutstanding()`** — everything still owed.
-  Receiving a message moves it from `Visible` to `NotVisible`, so a scale-in policy watching
-  `Visible` alone cannot distinguish a consumer that has just *picked up* work from one that has
-  *finished* it, and can terminate a consumer mid-message. The message only becomes visible again
-  once its visibility timeout expires, so the longer your consumers hold a message, the longer that
-  work stalls.
+  Receiving a message moves it from `Visible` to `NotVisible`, so a policy watching `Visible` alone
+  cannot tell a consumer that just picked up work from one that finished it, and can terminate a
+  consumer mid-message. The message reappears only after its visibility timeout, so the longer
+  consumers hold messages, the longer that work stalls.
 
-Because the two directions read different metrics, this is two one-sided step scaling policies
-rather than one. The `change: 0` step in each policy is what stops it from acting in the other
+That means two one-sided policies; the `change: 0` step keeps each from acting in the other
 direction:
 
 ```ts
@@ -162,8 +156,7 @@ taskCount.scaleOnMetric('ScaleOutOnWaitingWork', {
   adjustmentType: appscaling.AdjustmentType.CHANGE_IN_CAPACITY,
 });
 
-// Only scale in once nothing is outstanding at all, so the task that gets removed
-// cannot be holding a message.
+// Remove a task only when nothing is outstanding, so it cannot be holding a message.
 taskCount.scaleOnMetric('ScaleInOnOutstandingWork', {
   metric: queue.metricApproximateNumberOfMessagesOutstanding({ period: Duration.minutes(1) }),
   scalingSteps: [
@@ -174,14 +167,13 @@ taskCount.scaleOnMetric('ScaleInOnOutstandingWork', {
 });
 ```
 
-A few things to be aware of:
+Caveats:
 
-* **Target tracking cannot use this metric.** Application Auto Scaling target tracking accepts only
-  a single direct metric, not a math expression, so `scaleToTrackCustomMetric()` will throw
-  `Only direct metrics are supported for Target Tracking`. Use step scaling as shown above. See
-  [aws-cdk#20659](https://github.com/aws/aws-cdk/issues/20659).
-* `ApproximateNumberOfMessagesNotVisible` can briefly report a non-zero value on an otherwise empty
-  queue when one of the SQS storage servers is momentarily unavailable. Evaluate several consecutive
-  datapoints rather than reacting to a single one, particularly when scaling in to zero.
-* Delayed messages are counted by neither term. If you use delay queues or per-message
-  `DelaySeconds`, add `metricApproximateNumberOfMessagesDelayed()`.
+* **Target tracking rejects this metric.** It accepts only direct metrics, so
+  `scaleToTrackCustomMetric()` throws `Only direct metrics are supported for Target Tracking`
+  ([aws-cdk#20659](https://github.com/aws/aws-cdk/issues/20659)).
+* `ApproximateNumberOfMessagesNotVisible` can briefly report non-zero on an empty queue if an SQS
+  storage server is unavailable. Evaluate several consecutive datapoints, especially when scaling in
+  to zero.
+* Neither term counts delayed messages. Add `metricApproximateNumberOfMessagesDelayed()` if you use
+  delay queues or `DelaySeconds`.
