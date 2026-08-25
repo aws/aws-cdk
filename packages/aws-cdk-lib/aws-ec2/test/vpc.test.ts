@@ -3,7 +3,7 @@ import { acknowledgeTestValidationRules } from './util';
 import { Annotations, Match, Template } from '../../assertions';
 import { App, CfnOutput, CfnResource, Fn, Lazy, Stack, Tags } from '../../core';
 import { EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
-import type { PublicSubnet } from '../lib';
+import type { NatInstanceProps, PublicSubnet } from '../lib';
 import {
   AclCidr,
   AclTraffic,
@@ -1675,7 +1675,13 @@ describe('vpc', () => {
       }).toThrow("Cannot specify both of 'keyName' and 'keyPair'; prefer 'keyPair'");
     });
 
-    test('NAT instances V2 do not pass the deprecated keyName to instances when it is not provided', () => {
+    // Both providers pass `keyName` on to `Instance`, so both need the regression assertion.
+    const natInstanceProviders: Array<[string, (props: NatInstanceProps) => NatProvider]> = [
+      ['V1', NatProvider.instance],
+      ['V2', NatProvider.instanceV2],
+    ];
+
+    testDeprecated.each(natInstanceProviders)('NAT instances %s do not pass the deprecated keyName to instances when it is not provided', (_version, natInstanceProvider) => {
       // GIVEN
       // The deprecation warning for InstanceProps#keyName triggers on the mere presence
       // of the key, even when its value is undefined
@@ -1688,7 +1694,7 @@ describe('vpc', () => {
         const stack = getTestStack();
 
         // WHEN
-        const natGatewayProvider = NatProvider.instanceV2({
+        const natGatewayProvider = natInstanceProvider({
           instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.SMALL),
           machineImage: new GenericLinuxImage({
             'us-east-1': 'ami-1',
@@ -1706,12 +1712,12 @@ describe('vpc', () => {
       }
     });
 
-    test('NAT instances V2 still set KeyName when keyName is provided', () => {
+    testDeprecated.each(natInstanceProviders)('NAT instances %s still set KeyName when keyName is provided', (_version, natInstanceProvider) => {
       // GIVEN
       const stack = getTestStack();
 
       // WHEN
-      const natGatewayProvider = NatProvider.instanceV2({
+      const natGatewayProvider = natInstanceProvider({
         instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.SMALL),
         machineImage: new GenericLinuxImage({
           'us-east-1': 'ami-1',
