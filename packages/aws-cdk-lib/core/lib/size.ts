@@ -179,7 +179,7 @@ export class Size {
   /**
    * Convert this Size object to the most appropriate readable number.
    */
-  public toString() {
+  public toHumanString() {
     if (this.isUnresolved()) {
       return `${Token.asString(this.amount)} ${this.unit.shortLabel}`;
     }
@@ -194,6 +194,13 @@ export class Size {
     }
 
     return `${bytes} bytes`;
+  }
+
+  /**
+   * Convert this Size object to its constructor form
+   */
+  public toString() {
+    return `Size.${this.unit.label}(${this.amount})`;
   }
 }
 

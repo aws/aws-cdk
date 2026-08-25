@@ -114,10 +114,17 @@ describe('size', () => {
   });
 
   test('stringification of Size objects', () => {
-    expect(String(Size.bytes(123))).toEqual('123 bytes');
-    expect(String(Size.bytes(1000000))).toEqual('976.56 KiB');
-    expect(String(Size.bytes(1024 * 1024 * 1024))).toEqual('1 GiB');
-    expect(String(Size.gibibytes(1))).toEqual('1 GiB');
+    expect(Size.bytes(123).toHumanString()).toEqual('123 bytes');
+    expect(Size.bytes(1000000).toHumanString()).toEqual('976.56 KiB');
+    expect(Size.bytes(1024 * 1024 * 1024).toHumanString()).toEqual('1 GiB');
+    expect(Size.gibibytes(1).toHumanString()).toEqual('1 GiB');
+  });
+
+  test('stringification of Size objects', () => {
+    expect(String(Size.bytes(123))).toEqual('Size.bytes(123)');
+    expect(String(Size.bytes(1000000))).toEqual('Size.bytes(1000000)');
+    expect(String(Size.bytes(1024 * 1024 * 1024))).toEqual('Size.bytes(1073741824)');
+    expect(String(Size.gibibytes(1))).toEqual('Size.gibibytes(1)');
   });
 });
 
