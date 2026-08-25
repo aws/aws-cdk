@@ -7,7 +7,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "24fbe344d97d22a2818e978b5ecf7bd9ba705ec2706f6a018aeda5b534d2ced3.zip"
+     "S3Key": "9a746caeb230acdc3265185e86b9466a51c3ec22cffc1616d837969aabd69237.zip"
     },
     "Description": "/opt/nodejs/node_modules/proxy-agent"
    }
@@ -50,7 +50,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "c28f2ed1d4c5d55aa97190fa5736e9befe4e90833c871c7c567784509682cbb6.zip"
+     "S3Key": "8ecd72eb07701188f85af550a8ea80012413edfe9d1ea7139e0d2ce0bd68b0ff.zip"
     },
     "Description": "onEvent handler for EKS cluster resource provider",
     "Environment": {
@@ -134,7 +134,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "c28f2ed1d4c5d55aa97190fa5736e9befe4e90833c871c7c567784509682cbb6.zip"
+     "S3Key": "8ecd72eb07701188f85af550a8ea80012413edfe9d1ea7139e0d2ce0bd68b0ff.zip"
     },
     "Description": "isComplete handler for EKS cluster resource provider",
     "Environment": {
@@ -286,6 +286,25 @@
        "Resource": {
         "Ref": "Providerwaiterstatemachine5D4A9DF0"
        }
+      },
+      {
+       "Action": [
+        "ssm:DeleteParameter",
+        "ssm:PutParameter"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:ssm:us-east-1:",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":parameter/cdk/custom-resource-provider/c8c18bf50d82c0e533454237e0fd6e89066c90818c/*"
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -305,7 +324,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
+     "S3Key": "11c04ce459ec0bc700bdff5e70ad4f0a313696dafa7c5beb06bec95adc6158e9.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-native-oidc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
@@ -324,7 +343,8 @@
       },
       "WAITER_STATE_MACHINE_ARN": {
        "Ref": "Providerwaiterstatemachine5D4A9DF0"
-      }
+      },
+      "RESPONSE_URL_PARAMETER_PREFIX": "/cdk/custom-resource-provider/c8c18bf50d82c0e533454237e0fd6e89066c90818c"
      }
     },
     "Handler": "framework.onEvent",
@@ -464,6 +484,25 @@
          ]
         }
        ]
+      },
+      {
+       "Action": [
+        "ssm:DeleteParameter",
+        "ssm:GetParameter"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:ssm:us-east-1:",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":parameter/cdk/custom-resource-provider/c8c18bf50d82c0e533454237e0fd6e89066c90818c/*"
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -483,7 +522,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
+     "S3Key": "11c04ce459ec0bc700bdff5e70ad4f0a313696dafa7c5beb06bec95adc6158e9.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (aws-cdk-eks-cluster-native-oidc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
@@ -639,6 +678,25 @@
          ]
         }
        ]
+      },
+      {
+       "Action": [
+        "ssm:DeleteParameter",
+        "ssm:GetParameter"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:ssm:us-east-1:",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":parameter/cdk/custom-resource-provider/c8c18bf50d82c0e533454237e0fd6e89066c90818c/*"
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -658,7 +716,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
+     "S3Key": "11c04ce459ec0bc700bdff5e70ad4f0a313696dafa7c5beb06bec95adc6158e9.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (aws-cdk-eks-cluster-native-oidc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
