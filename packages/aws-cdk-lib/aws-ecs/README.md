@@ -1140,26 +1140,26 @@ Since AWS has changed the [ARN format for ECS](https://docs.aws.amazon.com/Amazo
 feature flag `@aws-cdk/aws-ecs:arnFormatIncludesClusterName` must be enabled to use the new ARN format.
 The feature flag changes behavior for the entire CDK project. Therefore it is not possible to mix the old and the new format in one CDK project.
 
-```tss
+```ts
 declare const cluster: ecs.Cluster;
 
 // Import service from EC2 service attributes
-const service = ecs.Ec2Service.fromEc2ServiceAttributes(this, 'EcsService', {
+const ec2ServiceFromAttributes = ecs.Ec2Service.fromEc2ServiceAttributes(this, 'Ec2ServiceFromAttributes', {
   serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
   cluster,
 });
 
 // Import service from EC2 service ARN
-const service = ecs.Ec2Service.fromEc2ServiceArn(this, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
+const ec2ServiceFromArn = ecs.Ec2Service.fromEc2ServiceArn(this, 'Ec2ServiceFromArn', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
 
 // Import service from Fargate service attributes
-const service = ecs.FargateService.fromFargateServiceAttributes(this, 'EcsService', {
+const fargateServiceFromAttributes = ecs.FargateService.fromFargateServiceAttributes(this, 'FargateServiceFromAttributes', {
   serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
   cluster,
 });
 
 // Import service from Fargate service ARN
-const service = ecs.FargateService.fromFargateServiceArn(this, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
+const fargateServiceFromArn = ecs.FargateService.fromFargateServiceArn(this, 'FargateServiceFromArn', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
 ```
 
 ### Availability Zone rebalancing
@@ -1552,6 +1552,51 @@ declare const ecsService: ecs.FargateService;
 
 ecsService.associateCloudMapService({
   service: cloudMapService,
+});
+```
+
+### Using an Existing Cloud Map Namespace
+
+You can use an existing Cloud Map namespace as the default namespace for a cluster
+instead of creating a new one. This is useful when you want to share a namespace
+across multiple clusters or when you want to use a namespace that was created
+outside of CDK:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+// Create or reference an existing namespace
+const existingNamespace = new cloudmap.PrivateDnsNamespace(this, 'Namespace', {
+  name: 'example.local',
+  vpc,
+});
+
+const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
+
+// Use the existing namespace as the default
+cluster.addExistingDefaultCloudMapNamespace({
+  namespace: existingNamespace,
+  useForServiceConnect: true,
+});
+```
+
+You can also import an existing namespace:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const importedNamespace = cloudmap.PrivateDnsNamespace.fromPrivateDnsNamespaceAttributes(
+  this, 'ImportedNamespace', {
+    namespaceId: 'ns-xxxxxxxxxxxxx',
+    namespaceArn: 'arn:aws:servicediscovery:us-east-1:123456789012:namespace/ns-xxxxxxxxxxxxx',
+    namespaceName: 'example.local',
+  }
+);
+
+const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
+
+cluster.addExistingDefaultCloudMapNamespace({
+  namespace: importedNamespace,
 });
 ```
 

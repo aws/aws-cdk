@@ -645,6 +645,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ON_DEMAND",
     "CAPACITY_BLOCK"
   ],
+  "CatalogEncryptionMode": [
+    "DISABLED",
+    "SSE-KMS",
+    "SSE-KMS-WITH-SERVICE-ROLE"
+  ],
   "CfnCapabilities": [
     "",
     "CAPABILITY_IAM",
@@ -744,9 +749,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "emailHeader",
     "linkTag",
     "messageTag"
-  ],
-  "CloudWatchEncryptionMode": [
-    "SSE-KMS"
   ],
   "ClusterLoggingTypes": [
     "api",
@@ -1042,6 +1044,13 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "ContributorInsightsMode": [
     "ACCESSED_AND_THROTTLED_KEYS",
     "THROTTLED_KEYS"
+  ],
+  "ControlPlaneScalingTier": [
+    "standard",
+    "tier-xl",
+    "tier-2xl",
+    "tier-4xl",
+    "tier-8xl"
   ],
   "CoreDnsComputeType": [
     "ec2",
@@ -1475,6 +1484,14 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "",
     "Memory"
   ],
+  "EncodingProfile": [
+    "CONTRIBUTION_H264_DEFAULT",
+    "DISTRIBUTION_H264_DEFAULT"
+  ],
+  "EncryptionKeyType": [
+    "SECRETS_MANAGER",
+    "AUTOMATIC"
+  ],
   "EncryptionOption": [
     "SSE_S3",
     "SSE_KMS",
@@ -1497,6 +1514,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "EngineLifecycleSupport": [
     "open-source-rds-extended-support",
     "open-source-rds-extended-support-disabled"
+  ],
+  "EntitlementStatus": [
+    "ENABLED",
+    "DISABLED"
   ],
   "EnvironmentFileType": [
     "s3"
@@ -1688,11 +1709,25 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ALL",
     "REJECT"
   ],
+  "FlowOutputProtocol": [
+    "zixi-push",
+    "rtp-fec",
+    "rtp",
+    "zixi-pull",
+    "rist",
+    "srt-listener",
+    "srt-caller",
+    "ndi-speed-hq"
+  ],
   "FollowMode": [
     "never",
     "always",
     "external",
     "internal-only"
+  ],
+  "ForwardErrorCorrection": [
+    "ENABLED",
+    "DISABLED"
   ],
   "Frequency": [
     "DAILY",
@@ -1815,6 +1850,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "JWT",
     "REQUEST"
   ],
+  "HttpBackupMode": [
+    "FailedDataOnly",
+    "AllData"
+  ],
   "HttpCodeElb": [
     "HTTPCode_ELB_3XX_Count",
     "HTTPCode_ELB_4XX_Count",
@@ -1829,6 +1868,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "HTTPCode_Target_3XX_Count",
     "HTTPCode_Target_4XX_Count",
     "HTTPCode_Target_5XX_Count"
+  ],
+  "HttpCompression": [
+    "GZIP",
+    "NONE"
   ],
   "HttpConnectionType": [
     "VPC_LINK",
@@ -2344,6 +2387,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "BASIC",
     "DETAILED"
   ],
+  "InstanceRefreshStrategy": [
+    "Rolling",
+    "ReplaceRootVolume"
+  ],
   "InstanceSize": [
     "nano",
     "micro",
@@ -2487,9 +2534,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "JitterType": [
     "FULL",
     "NONE"
-  ],
-  "JobBookmarksEncryptionMode": [
-    "CSE-KMS"
   ],
   "JobLanguage": [
     "scala",
@@ -2794,6 +2838,15 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "USE_DEFAULT_VALUE",
     "REJECT_MESSAGE"
   ],
+  "MaintenanceDay": [
+    "MONDAY",
+    "TUESDAY",
+    "WEDNESDAY",
+    "THURSDAY",
+    "FRIDAY",
+    "SATURDAY",
+    "SUNDAY"
+  ],
   "MaintenanceTrackName": [
     "current",
     "trailing"
@@ -2834,6 +2887,15 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "LAMBDA",
     "MCP_SERVER",
     "API_GATEWAY"
+  ],
+  "MediaLivePipeline": [
+    "PIPELINE_0",
+    "PIPELINE_1"
+  ],
+  "MediaStreamType": [
+    "video",
+    "audio",
+    "ancillary-data"
   ],
   "MemoryStrategyType": [
     "SUMMARIZATION",
@@ -3408,6 +3470,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "PriceClass_200",
     "PriceClass_All"
   ],
+  "PrimarySource": [
+    0,
+    1
+  ],
   "PrincipalScope": [
     "all",
     "specific"
@@ -3463,6 +3529,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "TLS",
     "UDP",
     "TCP_UDP"
+  ],
+  "ProtocolConfigType": [
+    "failover",
+    "merge"
   ],
   "ProtocolType": [
     "MCP",
@@ -3775,6 +3845,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "vip",
     "static-ip"
   ],
+  "ScaleInProtectedInstances": [
+    "Refresh",
+    "Ignore",
+    "Wait"
+  ],
   "ScalingEvent": [
     "autoscaling:EC2_INSTANCE_LAUNCH",
     "autoscaling:EC2_INSTANCE_TERMINATE",
@@ -3931,6 +4006,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "inline",
     "both"
   ],
+  "SourcePriorityMode": [
+    "NO_PRIORITY",
+    "PRIMARY_SECONDARY"
+  ],
   "SourceType": [
     "lambda",
     "sqs",
@@ -4013,10 +4092,19 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "AUDIT",
     "OFF"
   ],
+  "StandbyInstances": [
+    "Terminate",
+    "Ignore",
+    "Wait"
+  ],
   "StartingPosition": [
     "TRIM_HORIZON",
     "LATEST",
     "AT_TIMESTAMP"
+  ],
+  "State": [
+    "ENABLED",
+    "DISABLED"
   ],
   "StateMachineInvocationType": [
     "FIRE_AND_FORGET",
@@ -4087,6 +4175,13 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "gp3",
     "io1",
     "io2"
+  ],
+  "StreamDeliveryContentLevel": [
+    "METADATA_ONLY",
+    "FULL_CONTENT"
+  ],
+  "StreamDeliveryContentType": [
+    "MEMORY_RECORDS"
   ],
   "StreamEncryption": [
     "NONE",

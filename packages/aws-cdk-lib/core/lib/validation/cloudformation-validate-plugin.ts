@@ -2,6 +2,10 @@ import { RegoEngine, TemplateFile, version } from '@aws/cloudformation-validate'
 import type { Engine, EngineConfig, RuleInfo, Severity } from '@aws/cloudformation-validate';
 import type { PolicyValidationPluginReport, PolicyViolatingResource } from './report';
 import type { IPolicyValidationPlugin, IPolicyValidationContext } from './validation';
+import { profileSpan, recordPerformanceEntry } from '../private/perf';
+
+const VALIDATE_DETAILED_METRIC = 'CloudFormationValidate.validate';
+const DIAGNOSTICS_METRIC = 'CloudFormationValidate.diagnostics';
 
 interface MutableViolation {
   ruleName: string;
@@ -102,36 +106,60 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
   public validate(context: IPolicyValidationContext): PolicyValidationPluginReport {
     const violations: MutableViolation[] = [];
 
-    for (const templatePath of context.templatePaths) {
+    for (const { stackConstructPath, templatePath } of context.stackTemplates) {
       const templateFile = new TemplateFile(templatePath);
-      const report = this.engine.validateStandard(templateFile, {
-        // Environment-agnostic stacks use these cx-api sentinels in the cloud assembly. Omitting
-        // them lets the engine model the pseudo-parameters symbolically instead of validating the
-        // sentinel text as if it were a real account or region.
-        pseudoParameterOverrides: {
-          accountId: context.accountId,
-          region: context.region,
-        },
-        exclude: {
-          ids: [...IGNORE_RULES],
-          services: [{
-            // CDK still synthesizes AWS::AutoScaling::LaunchConfiguration for applications using
-            // the legacy launch-configuration behavior. Auto Scaling remains deployable despite
-            // its maintenance-mode classification, so suppress only its W3697 lifecycle warning
-            // rather than hiding lifecycle findings for every service.
-            // <https://github.com/aws-cloudformation/cloudformation-validate/issues/37>
-            ruleId: 'W3697',
-            service: 'AWS::AutoScaling',
-          }],
-        },
-        severityLevel: 'WARN',
+      const report = (() => {
+        using _span = profileSpan(VALIDATE_DETAILED_METRIC, { telemetry: true });
+
+        return this.engine.validateDetailed(templateFile, {
+          pseudoParameterOverrides: {
+            accountId: context.accountId,
+            region: context.region,
+          },
+          exclude: {
+            ids: [...IGNORE_RULES],
+            services: [{
+              // CDK still synthesizes AWS::AutoScaling::LaunchConfiguration for applications using
+              // the legacy launch-configuration behavior. Auto Scaling remains deployable despite
+              // its maintenance-mode classification, so suppress only its W3697 lifecycle warning
+              // rather than hiding lifecycle findings for every service.
+              // <https://github.com/aws-cloudformation/cloudformation-validate/issues/37>
+              ruleId: 'W3697',
+              service: 'AWS::AutoScaling',
+            }],
+          },
+          severityLevel: 'WARN',
+        });
+      })();
+
+      recordPerformanceEntry(DIAGNOSTICS_METRIC, {
+        count: report.diagnostics.length,
+        telemetry: true,
       });
+      const diagnosticsBySeverity = new Map<Severity, number>();
+
+      for (const diagnostic of report.diagnostics) {
+        diagnosticsBySeverity.set(diagnostic.severity, (diagnosticsBySeverity.get(diagnostic.severity) ?? 0) + 1);
+      }
+
+      for (const [severity, count] of diagnosticsBySeverity) {
+        recordPerformanceEntry(`${DIAGNOSTICS_METRIC}.${severity}`, {
+          count,
+          telemetry: true,
+        });
+      }
 
       for (const diagnostic of report.diagnostics) {
         const severity = mapSeverity(diagnostic.severity);
 
+        const resourceLogicalId = diagnostic.entity?.entityType === 'Resource'
+          ? diagnostic.entity.logicalId
+          : undefined;
+
         const violatingResource: PolicyViolatingResource = {
-          resourceLogicalId: diagnostic.resourceId,
+          resourceLogicalId,
+          // If this is not about any resources, best we can do is point it to the stack
+          constructPath: !resourceLogicalId ? stackConstructPath : undefined,
           templatePath,
           locations: diagnostic.propertyPath ? [diagnostic.propertyPath] : [],
         };
@@ -191,9 +219,11 @@ const IGNORE_RULES = new Set([
   // Will be silenced forever.
   'W1020',
 
-  // WHAT: Condition can never be false.
-  // WHY: The engine assumes AWS::Partition can only ever equal 'aws', which is not true. Should be removed.
-  'W1028',
+  // WHAT: Fn::GetStackOutput is not an allowed direct source for Fn::Split.
+  // WHY: CDK generates this nesting when deserializing weak string-list cross-stack references,
+  // and customers cannot control the generated expression.
+  // https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/intrinsic-function-reference-split.html
+  'E1018',
 
   // WHAT: Circular dependency detection
   // WHY: Something seems fishy about it
@@ -209,13 +239,11 @@ const IGNORE_RULES = new Set([
   // span accounts.
   'W9013',
 
-  // WHAT: Lambda Permission should always have a SourceAccount
-  // WHY: It doesn't seem to detect the account that's there in the ARN?
-  // <https://github.com/aws-cloudformation/cloudformation-validate/issues/183>
-  'W3663',
-
   // WHAT: value type tracking (parameter default should be a string)
-  // WHY: When the value is imported, it is considered not a string.
+  // WHY: This is a valid finding, but CDK can synthesize Fn::ImportValue as a parameter default when resolving
+  // a cross-stack reference. CloudFormation does not support intrinsic functions in the Parameters section.
+  // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
+  // https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/intrinsic-function-reference.html
   // <https://github.com/aws-cloudformation/cloudformation-validate/issues/194>
   'E2001',
 ]);
