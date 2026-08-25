@@ -8,43 +8,91 @@ import type { VideoSelectorSettings } from './video-selection';
 /**
  * The source end behavior for file-based inputs.
  */
-export enum SourceEndBehavior {
+export class SourceEndBehavior {
   /** Continue with the last frame */
-  CONTINUE = 'CONTINUE',
+  public static readonly CONTINUE = new SourceEndBehavior('CONTINUE');
   /** Loop the input */
-  LOOP = 'LOOP',
+  public static readonly LOOP = new SourceEndBehavior('LOOP');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): SourceEndBehavior {
+    return new SourceEndBehavior(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * Input filter mode.
  */
-export enum InputFilter {
+export class InputFilter {
   /** Auto-detect filtering based on input type */
-  AUTO = 'AUTO',
+  public static readonly AUTO = new InputFilter('AUTO');
   /** Disable filtering */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new InputFilter('DISABLED');
   /** Force filtering regardless of input type */
-  FORCED = 'FORCED',
+  public static readonly FORCED = new InputFilter('FORCED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): InputFilter {
+    return new InputFilter(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * SMPTE-2038 data preference.
  */
-export enum Smpte2038DataPreference {
+export class Smpte2038DataPreference {
   /** Extract from SMPTE-2038 if present */
-  PREFER = 'PREFER',
+  public static readonly PREFER = new Smpte2038DataPreference('PREFER');
   /** Never extract from SMPTE-2038 */
-  IGNORE = 'IGNORE',
+  public static readonly IGNORE = new Smpte2038DataPreference('IGNORE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Smpte2038DataPreference {
+    return new Smpte2038DataPreference(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * Server validation mode for HTTPS inputs.
  */
-export enum ServerValidation {
+export class ServerValidation {
   /** Check cryptography and server name */
-  CHECK_CRYPTOGRAPHY_AND_VALIDATE_NAME = 'CHECK_CRYPTOGRAPHY_AND_VALIDATE_NAME',
+  public static readonly CHECK_CRYPTOGRAPHY_AND_VALIDATE_NAME = new ServerValidation('CHECK_CRYPTOGRAPHY_AND_VALIDATE_NAME');
   /** Check cryptography only (useful for S3 bucket names with dots) */
-  CHECK_CRYPTOGRAPHY_ONLY = 'CHECK_CRYPTOGRAPHY_ONLY',
+  public static readonly CHECK_CRYPTOGRAPHY_ONLY = new ServerValidation('CHECK_CRYPTOGRAPHY_ONLY');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): ServerValidation {
+    return new ServerValidation(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -70,11 +118,23 @@ export interface NetworkInputSettings {
 }
 
 /** The source MediaLive ingests SCTE-35 messages from for an HLS input. */
-export enum HlsScte35Source {
+export class HlsScte35Source {
   /** Ingest SCTE-35 from the content segments (in the stream). */
-  SEGMENTS = 'SEGMENTS',
+  public static readonly SEGMENTS = new HlsScte35Source('SEGMENTS');
   /** Ingest SCTE-35 from tags in the playlist (the HLS manifest). */
-  MANIFEST = 'MANIFEST',
+  public static readonly MANIFEST = new HlsScte35Source('MANIFEST');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsScte35Source {
+    return new HlsScte35Source(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -114,14 +174,26 @@ export interface HlsInputSettings {
  * Input preference when deciding which input to make active after a previously failed input
  * has recovered.
  */
-export enum InputPreference {
+export class InputPreference {
   /** No preference — stay on the currently active input even after the other recovers. */
-  EQUAL_INPUT_PREFERENCE = 'EQUAL_INPUT_PREFERENCE',
+  public static readonly EQUAL_INPUT_PREFERENCE = new InputPreference('EQUAL_INPUT_PREFERENCE');
   /**
    * Prefer the primary input — switch back to it once it has been free of failover
    * conditions for the error-clear time.
    */
-  PRIMARY_INPUT_PREFERRED = 'PRIMARY_INPUT_PREFERRED',
+  public static readonly PRIMARY_INPUT_PREFERRED = new InputPreference('PRIMARY_INPUT_PREFERRED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): InputPreference {
+    return new InputPreference(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -143,8 +215,6 @@ export interface AudioSilenceFailoverProps {
    * The audio selector (defined on the input attachment) that MediaLive monitors for
    * silence. Pass the same `AudioSelector` instance you put in the attachment's
    * `audioSelectors` — select your most important rendition.
-   *
-   * [disable-awslint:prefer-ref-interface]
    */
   readonly audioSelector: AudioSelector;
   /**

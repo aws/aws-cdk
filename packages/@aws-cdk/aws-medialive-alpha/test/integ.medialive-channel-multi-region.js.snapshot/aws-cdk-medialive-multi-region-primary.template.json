@@ -23,33 +23,17 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "mediapackagev2:PutObject",
+       "Action": [
+        "mediapackagev2:GetChannel",
+        "mediapackagev2:PutObject"
+       ],
        "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "PrimaryMpChannel91E96122",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:aws:mediapackagev2:us-west-2:",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":channelGroup/secondary-group/channel/secondary-mp"
-          ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "s3:PutObject",
-       "Effect": "Allow",
-       "Resource": "*"
+       "Resource": {
+        "Fn::GetAtt": [
+         "PrimaryMpChannel91E96122",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"

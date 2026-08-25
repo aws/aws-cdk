@@ -48,7 +48,7 @@ describe('Cluster', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::MediaLive::Cluster', {
-      ClusterType: clusterType,
+      ClusterType: clusterType.value,
     });
   });
 

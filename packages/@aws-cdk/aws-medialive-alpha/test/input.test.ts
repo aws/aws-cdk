@@ -181,7 +181,7 @@ describe('MediaConnect Flow input', () => {
     });
   });
 
-  test('grants the input role managed flow-management actions', () => {
+  test('a user-provided role receives no managed flow-management grants', () => {
     const role = new Role(stack, 'Role', { assumedBy: new ServicePrincipal('medialive.amazonaws.com') });
     new Input(stack, 'MyInput', {
       inputName: 'my-mc-flow',
@@ -191,23 +191,9 @@ describe('MediaConnect Flow input', () => {
       }),
     });
 
-    // The input role MediaLive assumes must be able to add and remove the output MediaLive
-    // creates on the flow. These managed actions don't support resource-level scoping, so "*".
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: Match.arrayWith([
-          Match.objectLike({
-            Effect: 'Allow',
-            Action: Match.arrayWith([
-              'mediaconnect:ManagedDescribeFlow',
-              'mediaconnect:ManagedAddOutput',
-              'mediaconnect:ManagedRemoveOutput',
-            ]),
-            Resource: '*',
-          }),
-        ]),
-      },
-    });
+    // The caller owns the role, so the input attaches no policy to it — no managed
+    // flow-management actions, nothing.
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
   });
 
   test('auto-creates a role when none is provided', () => {
@@ -233,7 +219,7 @@ describe('MediaConnect Flow input', () => {
     // ...wired to the input and granted the managed flow-management actions.
     template.hasResourceProperties('AWS::MediaLive::Input', {
       Type: 'MEDIACONNECT',
-      RoleArn: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
+      RoleArn: { 'Fn::GetAtt': [Match.stringLikeRegexp('MediaConnectRole'), 'Arn'] },
     });
     template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
@@ -551,29 +537,18 @@ describe('CDI input', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::MediaLive::Input', {
       Type: 'AWS_CDI',
-      RoleArn: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
+      RoleArn: { 'Fn::GetAtt': [Match.stringLikeRegexp('CdiRole'), 'Arn'] },
       Vpc: { SubnetIds: Match.anyValue() },
     });
   });
 
-  test('auto-grants EC2 ENI permissions to the role', () => {
+  test('a user-provided role receives no EC2 ENI grants', () => {
     new Input(stack, 'MyInput', {
       input: InputConfiguration.cdi({ subnets: vpc.privateSubnets, role }),
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: Match.arrayWith([
-          Match.objectLike({
-            Action: Match.arrayWith(['ec2:CreateNetworkInterface', 'ec2:DeleteNetworkInterface']),
-          }),
-          Match.objectLike({
-            Action: Match.arrayWith(['ec2:DescribeNetworkInterfaces']),
-            Resource: '*',
-          }),
-        ]),
-      },
-    });
+    // The caller owns the role, so the input attaches no EC2 ENI policy to it.
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
   });
 
   test('fails when not exactly 2 subnets', () => {
@@ -599,7 +574,21 @@ describe('CDI input', () => {
     });
     template.hasResourceProperties('AWS::MediaLive::Input', {
       Type: 'AWS_CDI',
-      RoleArn: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
+      RoleArn: { 'Fn::GetAtt': [Match.stringLikeRegexp('CdiRole'), 'Arn'] },
+    });
+    // The auto-created role is granted the EC2 ENI actions it needs.
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: Match.arrayWith(['ec2:CreateNetworkInterface', 'ec2:DeleteNetworkInterface']),
+          }),
+          Match.objectLike({
+            Action: Match.arrayWith(['ec2:DescribeNetworkInterfaces']),
+            Resource: '*',
+          }),
+        ]),
+      },
     });
   });
 });

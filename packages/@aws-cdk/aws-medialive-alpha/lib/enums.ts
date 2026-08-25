@@ -7,287 +7,683 @@ export enum HlsMode {
 }
 
 /** HLS input loss action. */
-export enum HlsInputLossAction {
+export class HlsInputLossAction {
   /** Emit output with slate/black frames */
-  EMIT_OUTPUT = 'EMIT_OUTPUT',
+  public static readonly EMIT_OUTPUT = new HlsInputLossAction('EMIT_OUTPUT');
   /** Pause the output */
-  PAUSE_OUTPUT = 'PAUSE_OUTPUT',
+  public static readonly PAUSE_OUTPUT = new HlsInputLossAction('PAUSE_OUTPUT');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsInputLossAction {
+    return new HlsInputLossAction(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** HLS client cache control. */
-export enum HlsClientCache {
+export class HlsClientCache {
   /** Enable client caching */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new HlsClientCache('ENABLED');
   /** Disable client caching */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new HlsClientCache('DISABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsClientCache {
+    return new HlsClientCache(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** HLS codec specification. */
-export enum HlsCodecSpecification {
+export class HlsCodecSpecification {
   /** RFC 4281 */
-  RFC_4281 = 'RFC_4281',
+  public static readonly RFC_4281 = new HlsCodecSpecification('RFC_4281');
   /** RFC 6381 */
-  RFC_6381 = 'RFC_6381',
+  public static readonly RFC_6381 = new HlsCodecSpecification('RFC_6381');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsCodecSpecification {
+    return new HlsCodecSpecification(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** HLS directory structure. */
-export enum HlsDirectoryStructure {
+export class HlsDirectoryStructure {
   /** Single directory */
-  SINGLE_DIRECTORY = 'SINGLE_DIRECTORY',
+  public static readonly SINGLE_DIRECTORY = new HlsDirectoryStructure('SINGLE_DIRECTORY');
   /** Subdirectory per stream */
-  SUBDIRECTORY_PER_STREAM = 'SUBDIRECTORY_PER_STREAM',
+  public static readonly SUBDIRECTORY_PER_STREAM = new HlsDirectoryStructure('SUBDIRECTORY_PER_STREAM');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsDirectoryStructure {
+    return new HlsDirectoryStructure(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** HLS discontinuity tags. */
-export enum HlsDiscontinuityTags {
+export class HlsDiscontinuityTags {
   /** Insert discontinuity tags */
-  INSERT = 'INSERT',
+  public static readonly INSERT = new HlsDiscontinuityTags('INSERT');
   /** Never insert discontinuity tags */
-  NEVER_INSERT = 'NEVER_INSERT',
+  public static readonly NEVER_INSERT = new HlsDiscontinuityTags('NEVER_INSERT');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsDiscontinuityTags {
+    return new HlsDiscontinuityTags(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** HLS encryption type. */
-export enum HlsEncryptionType {
+export class HlsEncryptionType {
   /** AES-128 encryption */
-  AES128 = 'AES128',
+  public static readonly AES128 = new HlsEncryptionType('AES128');
   /** Sample AES encryption */
-  SAMPLE_AES = 'SAMPLE_AES',
+  public static readonly SAMPLE_AES = new HlsEncryptionType('SAMPLE_AES');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsEncryptionType {
+    return new HlsEncryptionType(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** HLS ID3 segment tagging state. */
-export enum HlsId3SegmentTaggingState {
+export class HlsId3SegmentTaggingState {
   /** Disabled */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new HlsId3SegmentTaggingState('DISABLED');
   /** Enabled */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new HlsId3SegmentTaggingState('ENABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsId3SegmentTaggingState {
+    return new HlsId3SegmentTaggingState(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** HLS I-frame only playlists. */
-export enum HlsIFrameOnlyPlaylists {
+export class HlsIFrameOnlyPlaylists {
   /** Disabled */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new HlsIFrameOnlyPlaylists('DISABLED');
   /** Standard */
-  STANDARD = 'STANDARD',
+  public static readonly STANDARD = new HlsIFrameOnlyPlaylists('STANDARD');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsIFrameOnlyPlaylists {
+    return new HlsIFrameOnlyPlaylists(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** HLS incomplete segment behavior. */
-export enum HlsIncompleteSegmentBehavior {
+export class HlsIncompleteSegmentBehavior {
   /** Auto */
-  AUTO = 'AUTO',
+  public static readonly AUTO = new HlsIncompleteSegmentBehavior('AUTO');
   /** Suppress */
-  SUPPRESS = 'SUPPRESS',
+  public static readonly SUPPRESS = new HlsIncompleteSegmentBehavior('SUPPRESS');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsIncompleteSegmentBehavior {
+    return new HlsIncompleteSegmentBehavior(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** HLS IV in manifest. */
-export enum HlsIvInManifest {
+export class HlsIvInManifest {
   /** Include IV in manifest */
-  INCLUDE = 'INCLUDE',
+  public static readonly INCLUDE = new HlsIvInManifest('INCLUDE');
   /** Exclude IV from manifest */
-  EXCLUDE = 'EXCLUDE',
+  public static readonly EXCLUDE = new HlsIvInManifest('EXCLUDE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsIvInManifest {
+    return new HlsIvInManifest(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** HLS IV source. */
-export enum HlsIvSource {
+export class HlsIvSource {
   /** IV follows segment number */
-  FOLLOWS_SEGMENT_NUMBER = 'FOLLOWS_SEGMENT_NUMBER',
+  public static readonly FOLLOWS_SEGMENT_NUMBER = new HlsIvSource('FOLLOWS_SEGMENT_NUMBER');
   /** Explicit IV */
-  EXPLICIT = 'EXPLICIT',
+  public static readonly EXPLICIT = new HlsIvSource('EXPLICIT');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsIvSource {
+    return new HlsIvSource(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** HLS manifest compression. */
-export enum HlsManifestCompression {
+export class HlsManifestCompression {
   /** No compression */
-  NONE = 'NONE',
+  public static readonly NONE = new HlsManifestCompression('NONE');
   /** Gzip compression */
-  GZIP = 'GZIP',
+  public static readonly GZIP = new HlsManifestCompression('GZIP');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsManifestCompression {
+    return new HlsManifestCompression(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** HLS manifest duration format. */
-export enum HlsManifestDurationFormat {
+export class HlsManifestDurationFormat {
   /** Floating point */
-  FLOATING_POINT = 'FLOATING_POINT',
+  public static readonly FLOATING_POINT = new HlsManifestDurationFormat('FLOATING_POINT');
   /** Integer */
-  INTEGER = 'INTEGER',
+  public static readonly INTEGER = new HlsManifestDurationFormat('INTEGER');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsManifestDurationFormat {
+    return new HlsManifestDurationFormat(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** HLS output selection. */
-export enum HlsOutputSelection {
+export class HlsOutputSelection {
   /** Manifests and segments */
-  MANIFESTS_AND_SEGMENTS = 'MANIFESTS_AND_SEGMENTS',
+  public static readonly MANIFESTS_AND_SEGMENTS = new HlsOutputSelection('MANIFESTS_AND_SEGMENTS');
   /** Segments only */
-  SEGMENTS_ONLY = 'SEGMENTS_ONLY',
+  public static readonly SEGMENTS_ONLY = new HlsOutputSelection('SEGMENTS_ONLY');
   /** Variant manifests and segments */
-  VARIANT_MANIFESTS_AND_SEGMENTS = 'VARIANT_MANIFESTS_AND_SEGMENTS',
+  public static readonly VARIANT_MANIFESTS_AND_SEGMENTS = new HlsOutputSelection('VARIANT_MANIFESTS_AND_SEGMENTS');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsOutputSelection {
+    return new HlsOutputSelection(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** HLS program date time. */
-export enum HlsProgramDateTime {
+export class HlsProgramDateTime {
   /** Include */
-  INCLUDE = 'INCLUDE',
+  public static readonly INCLUDE = new HlsProgramDateTime('INCLUDE');
   /** Exclude */
-  EXCLUDE = 'EXCLUDE',
+  public static readonly EXCLUDE = new HlsProgramDateTime('EXCLUDE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsProgramDateTime {
+    return new HlsProgramDateTime(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** HLS program date time clock. */
-export enum HlsProgramDateTimeClock {
+export class HlsProgramDateTimeClock {
   /** Initialize from output timecode */
-  INITIALIZE_FROM_OUTPUT_TIMECODE = 'INITIALIZE_FROM_OUTPUT_TIMECODE',
+  public static readonly INITIALIZE_FROM_OUTPUT_TIMECODE = new HlsProgramDateTimeClock('INITIALIZE_FROM_OUTPUT_TIMECODE');
   /** System clock */
-  SYSTEM_CLOCK = 'SYSTEM_CLOCK',
+  public static readonly SYSTEM_CLOCK = new HlsProgramDateTimeClock('SYSTEM_CLOCK');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsProgramDateTimeClock {
+    return new HlsProgramDateTimeClock(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** HLS redundant manifest. */
-export enum HlsRedundantManifest {
+export class HlsRedundantManifest {
   /** Disabled */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new HlsRedundantManifest('DISABLED');
   /** Enabled */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new HlsRedundantManifest('ENABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsRedundantManifest {
+    return new HlsRedundantManifest(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** HLS segmentation mode. */
-export enum HlsSegmentationMode {
+export class HlsSegmentationMode {
   /** Use input segmentation */
-  USE_INPUT_SEGMENTATION = 'USE_INPUT_SEGMENTATION',
+  public static readonly USE_INPUT_SEGMENTATION = new HlsSegmentationMode('USE_INPUT_SEGMENTATION');
   /** Use segment duration */
-  USE_SEGMENT_DURATION = 'USE_SEGMENT_DURATION',
+  public static readonly USE_SEGMENT_DURATION = new HlsSegmentationMode('USE_SEGMENT_DURATION');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsSegmentationMode {
+    return new HlsSegmentationMode(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** HLS stream inf resolution. */
-export enum HlsStreamInfResolution {
+export class HlsStreamInfResolution {
   /** Include */
-  INCLUDE = 'INCLUDE',
+  public static readonly INCLUDE = new HlsStreamInfResolution('INCLUDE');
   /** Exclude */
-  EXCLUDE = 'EXCLUDE',
+  public static readonly EXCLUDE = new HlsStreamInfResolution('EXCLUDE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsStreamInfResolution {
+    return new HlsStreamInfResolution(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** HLS caption language setting. */
-export enum HlsCaptionLanguageSetting {
+export class HlsCaptionLanguageSetting {
   /** Insert */
-  INSERT = 'INSERT',
+  public static readonly INSERT = new HlsCaptionLanguageSetting('INSERT');
   /** None */
-  NONE = 'NONE',
+  public static readonly NONE = new HlsCaptionLanguageSetting('NONE');
   /** Omit */
-  OMIT = 'OMIT',
+  public static readonly OMIT = new HlsCaptionLanguageSetting('OMIT');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsCaptionLanguageSetting {
+    return new HlsCaptionLanguageSetting(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * Whether MediaPackage sets a MediaPackage V2 audio rendition as default / auto-select in the HLS
  * manifest. Across all renditions: at most one may be `YES`; not all may be `NO`.
  */
-export enum MediaPackageV2HlsSetting {
+export class MediaPackageV2HlsSetting {
   /** Set this rendition as default / auto-select. */
-  YES = 'YES',
+  public static readonly YES = new MediaPackageV2HlsSetting('YES');
   /** Do not set this rendition as default / auto-select. */
-  NO = 'NO',
+  public static readonly NO = new MediaPackageV2HlsSetting('NO');
   /** Let MediaPackage decide for this rendition. */
-  OMIT = 'OMIT',
+  public static readonly OMIT = new MediaPackageV2HlsSetting('OMIT');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): MediaPackageV2HlsSetting {
+    return new MediaPackageV2HlsSetting(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Ad marker type for an HLS output group. */
-export enum HlsAdMarkers {
+export class HlsAdMarkers {
   /** Adobe ad markers. */
-  ADOBE = 'ADOBE',
+  public static readonly ADOBE = new HlsAdMarkers('ADOBE');
   /** Elemental ad markers. */
-  ELEMENTAL = 'ELEMENTAL',
+  public static readonly ELEMENTAL = new HlsAdMarkers('ELEMENTAL');
   /** Elemental SCTE-35 ad markers. */
-  ELEMENTAL_SCTE35 = 'ELEMENTAL_SCTE35',
+  public static readonly ELEMENTAL_SCTE35 = new HlsAdMarkers('ELEMENTAL_SCTE35');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsAdMarkers {
+    return new HlsAdMarkers(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Ad marker type for an RTMP output group. */
-export enum RtmpAdMarkers {
+export class RtmpAdMarkers {
   /** onCuePoint SCTE-35 ad markers. */
-  ON_CUE_POINT_SCTE35 = 'ON_CUE_POINT_SCTE35',
+  public static readonly ON_CUE_POINT_SCTE35 = new RtmpAdMarkers('ON_CUE_POINT_SCTE35');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): RtmpAdMarkers {
+    return new RtmpAdMarkers(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** HLS timed metadata ID3 frame. */
-export enum HlsTimedMetadataId3Frame {
+export class HlsTimedMetadataId3Frame {
   /** None */
-  NONE = 'NONE',
+  public static readonly NONE = new HlsTimedMetadataId3Frame('NONE');
   /** PRIV */
-  PRIV = 'PRIV',
+  public static readonly PRIV = new HlsTimedMetadataId3Frame('PRIV');
   /** TDRL */
-  TDRL = 'TDRL',
+  public static readonly TDRL = new HlsTimedMetadataId3Frame('TDRL');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsTimedMetadataId3Frame {
+    return new HlsTimedMetadataId3Frame(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Whether to use chunked transfer encoding for an HLS CDN connection (Akamai, WebDAV). */
-export enum HttpTransferMode {
+export class HttpTransferMode {
   /** Use chunked transfer encoding. */
-  CHUNKED = 'CHUNKED',
+  public static readonly CHUNKED = new HttpTransferMode('CHUNKED');
   /** Do not use chunked transfer encoding. */
-  NON_CHUNKED = 'NON_CHUNKED',
+  public static readonly NON_CHUNKED = new HttpTransferMode('NON_CHUNKED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HttpTransferMode {
+    return new HttpTransferMode(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** HLS TS file mode. */
-export enum HlsTsFileMode {
+export class HlsTsFileMode {
   /** Segmented files */
-  SEGMENTED_FILES = 'SEGMENTED_FILES',
+  public static readonly SEGMENTED_FILES = new HlsTsFileMode('SEGMENTED_FILES');
   /** Single file */
-  SINGLE_FILE = 'SINGLE_FILE',
+  public static readonly SINGLE_FILE = new HlsTsFileMode('SINGLE_FILE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsTsFileMode {
+    return new HlsTsFileMode(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** RTMP authentication scheme. */
-export enum RtmpAuthenticationScheme {
+export class RtmpAuthenticationScheme {
   /** Common authentication */
-  COMMON = 'COMMON',
+  public static readonly COMMON = new RtmpAuthenticationScheme('COMMON');
   /** Akamai authentication */
-  AKAMAI = 'AKAMAI',
+  public static readonly AKAMAI = new RtmpAuthenticationScheme('AKAMAI');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): RtmpAuthenticationScheme {
+    return new RtmpAuthenticationScheme(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** RTMP cache full behavior. */
-export enum RtmpCacheFullBehavior {
+export class RtmpCacheFullBehavior {
   /** Disconnect immediately */
-  DISCONNECT_IMMEDIATELY = 'DISCONNECT_IMMEDIATELY',
+  public static readonly DISCONNECT_IMMEDIATELY = new RtmpCacheFullBehavior('DISCONNECT_IMMEDIATELY');
   /** Wait for server */
-  WAIT_FOR_SERVER = 'WAIT_FOR_SERVER',
+  public static readonly WAIT_FOR_SERVER = new RtmpCacheFullBehavior('WAIT_FOR_SERVER');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): RtmpCacheFullBehavior {
+    return new RtmpCacheFullBehavior(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** RTMP caption data. */
-export enum RtmpCaptionData {
+export class RtmpCaptionData {
   /** All */
-  ALL = 'ALL',
+  public static readonly ALL = new RtmpCaptionData('ALL');
   /** Field 1 and field 2 608 */
-  FIELD1_AND_FIELD2_608 = 'FIELD1_AND_FIELD2_608',
+  public static readonly FIELD1_AND_FIELD2_608 = new RtmpCaptionData('FIELD1_AND_FIELD2_608');
   /** Field 1 608 */
-  FIELD1_608 = 'FIELD1_608',
+  public static readonly FIELD1_608 = new RtmpCaptionData('FIELD1_608');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): RtmpCaptionData {
+    return new RtmpCaptionData(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** RTMP input loss action. */
-export enum RtmpInputLossAction {
+export class RtmpInputLossAction {
   /** Emit output */
-  EMIT_OUTPUT = 'EMIT_OUTPUT',
+  public static readonly EMIT_OUTPUT = new RtmpInputLossAction('EMIT_OUTPUT');
   /** Pause output */
-  PAUSE_OUTPUT = 'PAUSE_OUTPUT',
+  public static readonly PAUSE_OUTPUT = new RtmpInputLossAction('PAUSE_OUTPUT');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): RtmpInputLossAction {
+    return new RtmpInputLossAction(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** RTMP include filler NAL units. */
-export enum RtmpIncludeFillerNalUnits {
+export class RtmpIncludeFillerNalUnits {
   /** Auto */
-  AUTO = 'AUTO',
+  public static readonly AUTO = new RtmpIncludeFillerNalUnits('AUTO');
   /** Drop */
-  DROP = 'DROP',
+  public static readonly DROP = new RtmpIncludeFillerNalUnits('DROP');
   /** Include */
-  INCLUDE = 'INCLUDE',
+  public static readonly INCLUDE = new RtmpIncludeFillerNalUnits('INCLUDE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): RtmpIncludeFillerNalUnits {
+    return new RtmpIncludeFillerNalUnits(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** RTMP TLS certificate verification mode. */
-export enum RtmpCertificateMode {
+export class RtmpCertificateMode {
   /** Verify the TLS certificate chain */
-  VERIFY_AUTHENTICITY = 'VERIFY_AUTHENTICITY',
+  public static readonly VERIFY_AUTHENTICITY = new RtmpCertificateMode('VERIFY_AUTHENTICITY');
   /** Do not verify the TLS certificate */
-  SELF_SIGNED = 'SELF_SIGNED',
+  public static readonly SELF_SIGNED = new RtmpCertificateMode('SELF_SIGNED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): RtmpCertificateMode {
+    return new RtmpCertificateMode(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * Behavior of last resort when input video is lost and no more backup inputs are available,
  * for an SRT output group.
  */
-export enum SrtInputLossAction {
+export class SrtInputLossAction {
   /** Drop the entire transport stream. */
-  DROP_TS = 'DROP_TS',
+  public static readonly DROP_TS = new SrtInputLossAction('DROP_TS');
   /** Drop the program from the transport stream (replaced with null packets to meet bitrate). */
-  DROP_PROGRAM = 'DROP_PROGRAM',
+  public static readonly DROP_PROGRAM = new SrtInputLossAction('DROP_PROGRAM');
   /** Continue emitting with repeat, black, or slate frames substituted for the absent video. */
-  EMIT_PROGRAM = 'EMIT_PROGRAM',
+  public static readonly EMIT_PROGRAM = new SrtInputLossAction('EMIT_PROGRAM');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): SrtInputLossAction {
+    return new SrtInputLossAction(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** SRT output encryption type. */
@@ -301,139 +697,331 @@ export enum SrtEncryptionType {
 }
 
 /** UDP input loss action. */
-export enum UdpInputLossAction {
+export class UdpInputLossAction {
   /** Drop the entire transport stream */
-  DROP_TS = 'DROP_TS',
+  public static readonly DROP_TS = new UdpInputLossAction('DROP_TS');
   /** Drop the program from the transport stream */
-  DROP_PROGRAM = 'DROP_PROGRAM',
+  public static readonly DROP_PROGRAM = new UdpInputLossAction('DROP_PROGRAM');
   /** Continue emitting with substitute frames */
-  EMIT_PROGRAM = 'EMIT_PROGRAM',
+  public static readonly EMIT_PROGRAM = new UdpInputLossAction('EMIT_PROGRAM');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): UdpInputLossAction {
+    return new UdpInputLossAction(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Enables column-only or column-and-row FEC for a UDP output. */
-export enum FecMode {
+export class FecMode {
   /** Column-only FEC. */
-  COLUMN = 'COLUMN',
+  public static readonly COLUMN = new FecMode('COLUMN');
   /** Column-and-row FEC (more robust). */
-  COLUMN_AND_ROW = 'COLUMN_AND_ROW',
+  public static readonly COLUMN_AND_ROW = new FecMode('COLUMN_AND_ROW');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): FecMode {
+    return new FecMode(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** UDP timed metadata ID3 frame. */
-export enum UdpTimedMetadataId3Frame {
+export class UdpTimedMetadataId3Frame {
   /** None */
-  NONE = 'NONE',
+  public static readonly NONE = new UdpTimedMetadataId3Frame('NONE');
   /** PRIV */
-  PRIV = 'PRIV',
+  public static readonly PRIV = new UdpTimedMetadataId3Frame('PRIV');
   /** TDRL */
-  TDRL = 'TDRL',
+  public static readonly TDRL = new UdpTimedMetadataId3Frame('TDRL');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): UdpTimedMetadataId3Frame {
+    return new UdpTimedMetadataId3Frame(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** MS Smooth audio-only timecode control. */
-export enum MsSmoothAudioOnlyTimecodeControl {
+export class MsSmoothAudioOnlyTimecodeControl {
   /** Passthrough */
-  PASSTHROUGH = 'PASSTHROUGH',
+  public static readonly PASSTHROUGH = new MsSmoothAudioOnlyTimecodeControl('PASSTHROUGH');
   /** Use configured clock */
-  USE_CONFIGURED_CLOCK = 'USE_CONFIGURED_CLOCK',
+  public static readonly USE_CONFIGURED_CLOCK = new MsSmoothAudioOnlyTimecodeControl('USE_CONFIGURED_CLOCK');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): MsSmoothAudioOnlyTimecodeControl {
+    return new MsSmoothAudioOnlyTimecodeControl(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** MS Smooth certificate mode. */
-export enum MsSmoothCertificateMode {
+export class MsSmoothCertificateMode {
   /** Self-signed */
-  SELF_SIGNED = 'SELF_SIGNED',
+  public static readonly SELF_SIGNED = new MsSmoothCertificateMode('SELF_SIGNED');
   /** Verify authenticity */
-  VERIFY_AUTHENTICITY = 'VERIFY_AUTHENTICITY',
+  public static readonly VERIFY_AUTHENTICITY = new MsSmoothCertificateMode('VERIFY_AUTHENTICITY');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): MsSmoothCertificateMode {
+    return new MsSmoothCertificateMode(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** MS Smooth event ID mode. */
-export enum MsSmoothEventIdMode {
+export class MsSmoothEventIdMode {
   /** No event ID */
-  NO_EVENT_ID = 'NO_EVENT_ID',
+  public static readonly NO_EVENT_ID = new MsSmoothEventIdMode('NO_EVENT_ID');
   /** Use configured */
-  USE_CONFIGURED = 'USE_CONFIGURED',
+  public static readonly USE_CONFIGURED = new MsSmoothEventIdMode('USE_CONFIGURED');
   /** Use timestamp */
-  USE_TIMESTAMP = 'USE_TIMESTAMP',
+  public static readonly USE_TIMESTAMP = new MsSmoothEventIdMode('USE_TIMESTAMP');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): MsSmoothEventIdMode {
+    return new MsSmoothEventIdMode(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** MS Smooth event stop behavior. */
-export enum MsSmoothEventStopBehavior {
+export class MsSmoothEventStopBehavior {
   /** None */
-  NONE = 'NONE',
+  public static readonly NONE = new MsSmoothEventStopBehavior('NONE');
   /** Send EOS */
-  SEND_EOS = 'SEND_EOS',
+  public static readonly SEND_EOS = new MsSmoothEventStopBehavior('SEND_EOS');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): MsSmoothEventStopBehavior {
+    return new MsSmoothEventStopBehavior(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** MS Smooth input loss action. */
-export enum MsSmoothInputLossAction {
+export class MsSmoothInputLossAction {
   /** Emit output */
-  EMIT_OUTPUT = 'EMIT_OUTPUT',
+  public static readonly EMIT_OUTPUT = new MsSmoothInputLossAction('EMIT_OUTPUT');
   /** Pause output */
-  PAUSE_OUTPUT = 'PAUSE_OUTPUT',
+  public static readonly PAUSE_OUTPUT = new MsSmoothInputLossAction('PAUSE_OUTPUT');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): MsSmoothInputLossAction {
+    return new MsSmoothInputLossAction(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** MS Smooth segmentation mode. */
-export enum MsSmoothSegmentationMode {
+export class MsSmoothSegmentationMode {
   /** Use input segmentation */
-  USE_INPUT_SEGMENTATION = 'USE_INPUT_SEGMENTATION',
+  public static readonly USE_INPUT_SEGMENTATION = new MsSmoothSegmentationMode('USE_INPUT_SEGMENTATION');
   /** Use segment duration */
-  USE_SEGMENT_DURATION = 'USE_SEGMENT_DURATION',
+  public static readonly USE_SEGMENT_DURATION = new MsSmoothSegmentationMode('USE_SEGMENT_DURATION');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): MsSmoothSegmentationMode {
+    return new MsSmoothSegmentationMode(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** MS Smooth sparse track type. */
-export enum MsSmoothSparseTrackType {
+export class MsSmoothSparseTrackType {
   /** None */
-  NONE = 'NONE',
+  public static readonly NONE = new MsSmoothSparseTrackType('NONE');
   /** SCTE-35 */
-  SCTE_35 = 'SCTE_35',
+  public static readonly SCTE_35 = new MsSmoothSparseTrackType('SCTE_35');
   /** SCTE-35 without segmentation */
-  SCTE_35_WITHOUT_SEGMENTATION = 'SCTE_35_WITHOUT_SEGMENTATION',
+  public static readonly SCTE_35_WITHOUT_SEGMENTATION = new MsSmoothSparseTrackType('SCTE_35_WITHOUT_SEGMENTATION');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): MsSmoothSparseTrackType {
+    return new MsSmoothSparseTrackType(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** MS Smooth stream manifest behavior. */
-export enum MsSmoothStreamManifestBehavior {
+export class MsSmoothStreamManifestBehavior {
   /** Do not send */
-  DO_NOT_SEND = 'DO_NOT_SEND',
+  public static readonly DO_NOT_SEND = new MsSmoothStreamManifestBehavior('DO_NOT_SEND');
   /** Send */
-  SEND = 'SEND',
+  public static readonly SEND = new MsSmoothStreamManifestBehavior('SEND');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): MsSmoothStreamManifestBehavior {
+    return new MsSmoothStreamManifestBehavior(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** MS Smooth timestamp offset mode. */
-export enum MsSmoothTimestampOffsetMode {
+export class MsSmoothTimestampOffsetMode {
   /** Use configured offset */
-  USE_CONFIGURED_OFFSET = 'USE_CONFIGURED_OFFSET',
+  public static readonly USE_CONFIGURED_OFFSET = new MsSmoothTimestampOffsetMode('USE_CONFIGURED_OFFSET');
   /** Use event start date */
-  USE_EVENT_START_DATE = 'USE_EVENT_START_DATE',
+  public static readonly USE_EVENT_START_DATE = new MsSmoothTimestampOffsetMode('USE_EVENT_START_DATE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): MsSmoothTimestampOffsetMode {
+    return new MsSmoothTimestampOffsetMode(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** CMAF Ingest ID3 behavior. */
-export enum Id3Behavior {
+export class Id3Behavior {
   /** No passthrough */
-  NO_PASSTHROUGH = 'NO_PASSTHROUGH',
+  public static readonly NO_PASSTHROUGH = new Id3Behavior('NO_PASSTHROUGH');
   /** Passthrough */
-  PASSTHROUGH = 'PASSTHROUGH',
+  public static readonly PASSTHROUGH = new Id3Behavior('PASSTHROUGH');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Id3Behavior {
+    return new Id3Behavior(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** CMAF Ingest KLV behavior. */
-export enum KlvBehavior {
+export class KlvBehavior {
   /** No passthrough */
-  NO_PASSTHROUGH = 'NO_PASSTHROUGH',
+  public static readonly NO_PASSTHROUGH = new KlvBehavior('NO_PASSTHROUGH');
   /** Passthrough */
-  PASSTHROUGH = 'PASSTHROUGH',
+  public static readonly PASSTHROUGH = new KlvBehavior('PASSTHROUGH');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): KlvBehavior {
+    return new KlvBehavior(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** CMAF Ingest Nielsen ID3 behavior. */
-export enum NielsenId3Behavior {
+export class NielsenId3Behavior {
   /** No passthrough */
-  NO_PASSTHROUGH = 'NO_PASSTHROUGH',
+  public static readonly NO_PASSTHROUGH = new NielsenId3Behavior('NO_PASSTHROUGH');
   /** Passthrough */
-  PASSTHROUGH = 'PASSTHROUGH',
+  public static readonly PASSTHROUGH = new NielsenId3Behavior('PASSTHROUGH');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): NielsenId3Behavior {
+    return new NielsenId3Behavior(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** CMAF Ingest SCTE-35 type. */
-export enum Scte35Type {
+export class Scte35Type {
   /** None */
-  NONE = 'NONE',
+  public static readonly NONE = new Scte35Type('NONE');
   /** SCTE-35 without segmentation */
-  SCTE_35_WITHOUT_SEGMENTATION = 'SCTE_35_WITHOUT_SEGMENTATION',
+  public static readonly SCTE_35_WITHOUT_SEGMENTATION = new Scte35Type('SCTE_35_WITHOUT_SEGMENTATION');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Scte35Type {
+    return new Scte35Type(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -448,41 +1036,89 @@ export enum SegmentLengthUnits {
 }
 
 /** CMAF Ingest timed metadata ID3 frame. */
-export enum TimedMetadataId3Frame {
+export class TimedMetadataId3Frame {
   /** None */
-  NONE = 'NONE',
+  public static readonly NONE = new TimedMetadataId3Frame('NONE');
   /** PRIV */
-  PRIV = 'PRIV',
+  public static readonly PRIV = new TimedMetadataId3Frame('PRIV');
   /** TDRL */
-  TDRL = 'TDRL',
+  public static readonly TDRL = new TimedMetadataId3Frame('TDRL');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): TimedMetadataId3Frame {
+    return new TimedMetadataId3Frame(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** CMAF Ingest timed metadata passthrough. */
-export enum TimedMetadataPassthrough {
+export class TimedMetadataPassthrough {
   /** Disabled */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new TimedMetadataPassthrough('DISABLED');
   /** Enabled */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new TimedMetadataPassthrough('ENABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): TimedMetadataPassthrough {
+    return new TimedMetadataPassthrough(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * S3 canned ACL for output destinations.
  */
-export enum S3CannedAcl {
+export class S3CannedAcl {
   /** Grants the owner full control and authenticated AWS users read access. */
-  AUTHENTICATED_READ = 'AUTHENTICATED_READ',
+  public static readonly AUTHENTICATED_READ = new S3CannedAcl('AUTHENTICATED_READ');
   /** Grants the object owner and bucket owner full control. */
-  BUCKET_OWNER_FULL_CONTROL = 'BUCKET_OWNER_FULL_CONTROL',
+  public static readonly BUCKET_OWNER_FULL_CONTROL = new S3CannedAcl('BUCKET_OWNER_FULL_CONTROL');
   /** Grants the owner full control and the bucket owner read access. */
-  BUCKET_OWNER_READ = 'BUCKET_OWNER_READ',
+  public static readonly BUCKET_OWNER_READ = new S3CannedAcl('BUCKET_OWNER_READ');
   /** Grants the owner full control and all users read access. */
-  PUBLIC_READ = 'PUBLIC_READ',
+  public static readonly PUBLIC_READ = new S3CannedAcl('PUBLIC_READ');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): S3CannedAcl {
+    return new S3CannedAcl(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** H.265 packaging type for HLS/MS Smooth outputs. */
-export enum H265PackagingType {
+export class H265PackagingType {
   /** HEV1 packaging */
-  HEV1 = 'HEV1',
+  public static readonly HEV1 = new H265PackagingType('HEV1');
   /** HVC1 packaging */
-  HVC1 = 'HVC1',
+  public static readonly HVC1 = new H265PackagingType('HVC1');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): H265PackagingType {
+    return new H265PackagingType(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }

@@ -188,9 +188,6 @@ export interface SrtCallerDestinationProps {
   /**
    * The Secrets Manager secret containing the encryption passphrase.
    *
-   * SRT output is always encrypted — MediaLive rejects an SRT output destination without a
-   * passphrase at deploy time ("Encryption Passphrase Secret Arn ... should not be empty").
-   *
    * [disable-awslint:prefer-ref-interface]
    */
   readonly encryptionPassphraseSecret: ISecret;
@@ -207,9 +204,6 @@ export interface SrtCallerUrlOptions {
   readonly streamId?: string;
   /**
    * The Secrets Manager secret containing the encryption passphrase.
-   *
-   * SRT output is always encrypted — MediaLive rejects an SRT output destination without a
-   * passphrase at deploy time ("Encryption Passphrase Secret Arn ... should not be empty").
    *
    * [disable-awslint:prefer-ref-interface]
    */
@@ -233,9 +227,6 @@ export interface SrtListenerDestinationProps {
   readonly streamId?: string;
   /**
    * The Secrets Manager secret containing the encryption passphrase.
-   *
-   * SRT output is always encrypted — MediaLive rejects an SRT output destination without a
-   * passphrase at deploy time ("Encryption Passphrase Secret Arn ... should not be empty").
    *
    * [disable-awslint:prefer-ref-interface]
    */

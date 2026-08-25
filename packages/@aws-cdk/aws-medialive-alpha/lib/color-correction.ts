@@ -3,15 +3,27 @@ import type { Lut } from './file-location';
 /**
  * A color space supported for 3D-LUT color conversion in a color-correction rule.
  */
-export enum ColorSpace {
+export class ColorSpace {
   /** HDR10. */
-  HDR10 = 'HDR10',
+  public static readonly HDR10 = new ColorSpace('HDR10');
   /** HLG (Rec. 2020). */
-  HLG_2020 = 'HLG_2020',
+  public static readonly HLG_2020 = new ColorSpace('HLG_2020');
   /** Rec. 601 (SD). */
-  REC_601 = 'REC_601',
+  public static readonly REC_601 = new ColorSpace('REC_601');
   /** Rec. 709 (HD). */
-  REC_709 = 'REC_709',
+  public static readonly REC_709 = new ColorSpace('REC_709');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): ColorSpace {
+    return new ColorSpace(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**

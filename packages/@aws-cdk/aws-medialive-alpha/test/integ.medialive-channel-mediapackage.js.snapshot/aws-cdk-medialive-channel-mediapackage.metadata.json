@@ -38,38 +38,6 @@
           "assumeRoleAction": "*"
         }
       }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
     }
   ],
   "/aws-cdk-medialive-channel-mediapackage/LiveChannel": [
@@ -126,54 +94,10 @@
       "data": "MediaLiveRole1149D189"
     }
   ],
-  "/aws-cdk-medialive-channel-mediapackage/MediaLiveRole/DefaultPolicy": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    }
-  ],
   "/aws-cdk-medialive-channel-mediapackage/LiveChannel/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "LiveChannel5ABEA596"
-    }
-  ],
-  "/aws-cdk-medialive-channel-mediapackage/MediaLiveRole/DefaultPolicy/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "MediaLiveRoleDefaultPolicyE1F33973"
     }
   ]
 }

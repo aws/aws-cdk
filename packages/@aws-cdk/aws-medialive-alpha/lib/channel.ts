@@ -2,10 +2,11 @@ import type { Duration, IResource } from 'aws-cdk-lib';
 import { Resource, Lazy, Names, Aws, ArnFormat, Stack, ValidationError } from 'aws-cdk-lib';
 import type { MetricOptions } from 'aws-cdk-lib/aws-cloudwatch';
 import { Metric } from 'aws-cdk-lib/aws-cloudwatch';
-import type { ISecurityGroup, ISubnet } from 'aws-cdk-lib/aws-ec2';
+import type { ISubnetRef } from 'aws-cdk-lib/aws-ec2';
+import type { ISecurityGroupRef } from 'aws-cdk-lib/aws-elasticache';
 import type { IRole } from 'aws-cdk-lib/aws-iam';
 import { Grant, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import type { IChannelRef, ChannelReference, IInputSecurityGroupRef } from 'aws-cdk-lib/aws-medialive';
+import type { IChannelRef, ChannelReference, IInputSecurityGroupRef, IClusterRef, IChannelPlacementGroupRef } from 'aws-cdk-lib/aws-medialive';
 import { CfnChannel } from 'aws-cdk-lib/aws-medialive';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
@@ -13,8 +14,6 @@ import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import { AvailBlankingState, BlackoutSlateState, NetworkEndBlackout, type AvailBlanking, type AvailSettings, type Scte35SegmentationScope, type BlackoutSlate } from './avail-settings';
 import { ThumbnailState, MotionGraphicsInsertion, type FeatureActivations, type MotionGraphicsConfiguration, type NielsenConfiguration, type ThumbnailConfiguration } from './channel-features';
-import type { IChannelPlacementGroup } from './channel-placement-group';
-import type { ICluster } from './cluster';
 import type { ColorCorrection } from './color-correction';
 import type { FileLocation } from './file-location';
 import { InputType } from './input';
@@ -460,7 +459,7 @@ export interface ChannelProps {
    * An AWS Elemental Inference feed to send this channel's media to for inference
    * processing.
    *
-   * Future breaking change: When Elemental Inference is released as an L2 construct.
+   * Future breaking change: this will change when Elemental Inference is released as an L2 construct.
    *
    * @default - the channel is not associated to an inference feed
    */
@@ -470,11 +469,23 @@ export interface ChannelProps {
 /**
  * Action to take when the current input completes.
  */
-export enum InputEndAction {
+export class InputEndAction {
   /** Restart at the beginning of the first input */
-  SWITCH_AND_LOOP_INPUTS = 'SWITCH_AND_LOOP_INPUTS',
+  public static readonly SWITCH_AND_LOOP_INPUTS = new InputEndAction('SWITCH_AND_LOOP_INPUTS');
   /** Do nothing — show slate or black until next input switch */
-  NONE = 'NONE',
+  public static readonly NONE = new InputEndAction('NONE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): InputEndAction {
+    return new InputEndAction(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -502,11 +513,23 @@ export enum OutputTimingSource {
 }
 
 /** The image MediaLive substitutes into the output on input loss. */
-export enum InputLossImageType {
+export class InputLossImageType {
   /** Substitute a solid color. */
-  COLOR = 'COLOR',
+  public static readonly COLOR = new InputLossImageType('COLOR');
   /** Substitute a slate image. */
-  SLATE = 'SLATE',
+  public static readonly SLATE = new InputLossImageType('SLATE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): InputLossImageType {
+    return new InputLossImageType(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -560,14 +583,26 @@ export interface EpochOutputLockingProps {
 }
 
 /** The method MediaLive uses to synchronise pipelines for pipeline output locking. */
-export enum PipelineLockingMethod {
+export class PipelineLockingMethod {
   /** Use the timecode in the source (the default). Requires reliable embedded timecodes. */
-  SOURCE_TIMECODE = 'SOURCE_TIMECODE',
+  public static readonly SOURCE_TIMECODE = new PipelineLockingMethod('SOURCE_TIMECODE');
   /**
    * Lock frames the encoder identifies as having matching content (visual signature comparison).
    * Does not require embedded timecodes; existing timecodes are ignored for locking decisions.
    */
-  VIDEO_ALIGNMENT = 'VIDEO_ALIGNMENT',
+  public static readonly VIDEO_ALIGNMENT = new PipelineLockingMethod('VIDEO_ALIGNMENT');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): PipelineLockingMethod {
+    return new PipelineLockingMethod(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Properties for pipeline output locking. */
@@ -646,7 +681,7 @@ class EpochOutputLocking extends OutputLocking {
 class PipelineOutputLocking extends OutputLocking {
   constructor(private readonly props: PipelineOutputLockingProps) { super(); }
   public _bind(): CfnChannel.OutputLockingSettingsProperty {
-    return { pipelineLockingSettings: { customEpoch: this.props.customEpoch, pipelineLockingMethod: this.props.method } };
+    return { pipelineLockingSettings: { customEpoch: this.props.customEpoch, pipelineLockingMethod: this.props.method?.value } };
   }
   public _mode(): OutputLockingMode | undefined {
     return OutputLockingMode.PIPELINE_LOCKING;
@@ -734,18 +769,14 @@ export interface MaintenanceSettings {
 export interface AnywhereSettings {
   /**
    * The cluster for this channel.
-   *
-   * [disable-awslint:prefer-ref-interface]
    */
-  readonly cluster: ICluster;
+  readonly cluster: IClusterRef;
   /**
    * The channel placement group for this channel.
    *
-   * [disable-awslint:prefer-ref-interface]
-   *
    * @default - no placement group
    */
-  readonly channelPlacementGroup?: IChannelPlacementGroup;
+  readonly channelPlacementGroup?: IChannelPlacementGroupRef;
 }
 
 /**
@@ -817,18 +848,14 @@ export interface VpcOutputSettings {
    * The subnets to use for the channel's output endpoints.
    * For STANDARD channels, provide subnets in two different availability zones.
    * For SINGLE_PIPELINE channels, provide at least one subnet.
-   *
-   * [disable-awslint:prefer-ref-interface]
    */
-  readonly subnets: ISubnet[];
+  readonly subnets: ISubnetRef[];
   /**
    * The security groups to attach to the output VPC network interfaces.
    *
-   * [disable-awslint:prefer-ref-interface]
-   *
    * @default - VPC default security group
    */
-  readonly securityGroups?: ISecurityGroup[];
+  readonly securityGroups?: ISecurityGroupRef[];
   /**
    * Public address allocation IDs to associate with ENIs created in the output VPC.
    * Must specify one for SINGLE_PIPELINE, two for STANDARD channels.
@@ -866,8 +893,9 @@ abstract class ChannelBase extends Resource implements IChannel {
     return new Metric({
       metricName,
       namespace: 'AWS/MediaLive',
-      dimensionsMap: { ...props?.dimensionsMap, ChannelId: this.channelId, Pipeline: pipeline.toString() },
       ...props,
+      // Required dimensions applied last so a caller's dimensionsMap can't drop ChannelId/Pipeline.
+      dimensionsMap: { ...props?.dimensionsMap, ChannelId: this.channelId, Pipeline: pipeline.toString() },
     });
   }
 
@@ -947,6 +975,12 @@ export class Channel extends ChannelBase {
 
   private readonly inputAttachments: CfnChannel.InputAttachmentProperty[] = [];
   private readonly outputGroups: OutputGroup[] = [];
+
+  /**
+   * Whether the caller supplied their own `role`. When true, the channel makes no automatic
+   * grants.
+   */
+  private readonly userProvidedRole: boolean;
 
   constructor(scope: Construct, id: string, props: ChannelProps) {
     super(scope, id, {
@@ -1042,7 +1076,9 @@ export class Channel extends ChannelBase {
       );
     }
 
-    // Create a default role if not provided
+    // Create a default role if not provided. When the caller brings their own role, the channel
+    // makes no automatic grants.
+    this.userProvidedRole = props.role !== undefined;
     const channelRole = props.role ?? new Role(this, 'Role', {
       assumedBy: new ServicePrincipal('medialive.amazonaws.com', {
         conditions: {
@@ -1090,56 +1126,56 @@ export class Channel extends ChannelBase {
         },
         globalConfiguration: props.globalConfiguration ? {
           initialAudioGain: props.globalConfiguration.initialAudioGain,
-          inputEndAction: props.globalConfiguration.inputEndAction,
+          inputEndAction: props.globalConfiguration.inputEndAction?.value,
           outputLockingMode: props.globalConfiguration.outputLocking?._mode(),
           outputTimingSource: props.globalConfiguration.outputTimingSource,
           supportLowFramerateInputs: props.globalConfiguration.supportLowFramerateInputs ? 'ENABLED' : 'DISABLED',
           inputLossBehavior: props.globalConfiguration.inputLossBehavior ? {
             blackFrameMsec: props.globalConfiguration.inputLossBehavior.blackFrame?.toMilliseconds(),
             repeatFrameMsec: props.globalConfiguration.inputLossBehavior.repeatFrame?.toMilliseconds(),
-            inputLossImageType: props.globalConfiguration.inputLossBehavior.imageType,
+            inputLossImageType: props.globalConfiguration.inputLossBehavior.imageType?.value,
             inputLossImageColor: props.globalConfiguration.inputLossBehavior.imageColor,
             inputLossImageSlate: props.globalConfiguration.inputLossBehavior.imageSlate?._bind(),
           } : undefined,
           outputLockingSettings: props.globalConfiguration.outputLocking?._bind(),
         } : undefined,
         availBlanking: props.availBlanking ? {
-          state: props.availBlanking.state
-            ?? (props.availBlanking.image ? AvailBlankingState.ENABLED : AvailBlankingState.DISABLED),
+          state: (props.availBlanking.state
+            ?? (props.availBlanking.image ? AvailBlankingState.ENABLED : AvailBlankingState.DISABLED)).value,
           availBlankingImage: props.availBlanking.image?._bind(),
         } : undefined,
         availConfiguration: (props.availSettings || props.scte35SegmentationScope) ? {
           availSettings: props.availSettings?._bind(),
-          scte35SegmentationScope: props.scte35SegmentationScope,
+          scte35SegmentationScope: props.scte35SegmentationScope?.value,
         } : undefined,
         featureActivations: props.featureActivations ? {
-          inputPrepareScheduleActions: props.featureActivations.inputPrepareScheduleActions,
-          outputStaticImageOverlayScheduleActions: props.featureActivations.outputStaticImageOverlayScheduleActions,
+          inputPrepareScheduleActions: props.featureActivations.inputPrepareScheduleActions?.value,
+          outputStaticImageOverlayScheduleActions: props.featureActivations.outputStaticImageOverlayScheduleActions?.value,
         } : undefined,
         motionGraphicsConfiguration: props.motionGraphicsConfiguration ? {
-          motionGraphicsInsertion: props.motionGraphicsConfiguration.motionGraphicsInsertion ?? MotionGraphicsInsertion.DISABLED,
+          motionGraphicsInsertion: (props.motionGraphicsConfiguration.motionGraphicsInsertion ?? MotionGraphicsInsertion.DISABLED).value,
           motionGraphicsSettings: { htmlMotionGraphicsSettings: {} },
         } : undefined,
         nielsenConfiguration: props.nielsenConfiguration ? {
           distributorId: props.nielsenConfiguration.distributorId,
-          nielsenPcmToId3Tagging: props.nielsenConfiguration.nielsenPcmToId3Tagging,
+          nielsenPcmToId3Tagging: props.nielsenConfiguration.nielsenPcmToId3Tagging?.value,
         } : undefined,
         thumbnailConfiguration: props.thumbnailConfiguration ? {
           state: props.thumbnailConfiguration.state ?? ThumbnailState.AUTO,
         } : undefined,
         blackoutSlate: props.blackoutSlate ? {
-          state: props.blackoutSlate.state
-            ?? (props.blackoutSlate.image ? BlackoutSlateState.ENABLED : BlackoutSlateState.DISABLED),
+          state: (props.blackoutSlate.state
+            ?? (props.blackoutSlate.image ? BlackoutSlateState.ENABLED : BlackoutSlateState.DISABLED)).value,
           blackoutSlateImage: props.blackoutSlate.image?._bind(),
-          networkEndBlackout: props.blackoutSlate.networkEndBlackout
-            ?? (props.blackoutSlate.networkEndBlackoutImage ? NetworkEndBlackout.ENABLED : NetworkEndBlackout.DISABLED),
+          networkEndBlackout: (props.blackoutSlate.networkEndBlackout
+            ?? (props.blackoutSlate.networkEndBlackoutImage ? NetworkEndBlackout.ENABLED : NetworkEndBlackout.DISABLED)).value,
           networkEndBlackoutImage: props.blackoutSlate.networkEndBlackoutImage?._bind(),
           networkId: props.blackoutSlate.networkId,
         } : undefined,
         colorCorrectionSettings: props.colorCorrections ? {
           globalColorCorrections: props.colorCorrections.map(c => ({
-            inputColorSpace: c.inputColorSpace,
-            outputColorSpace: c.outputColorSpace,
+            inputColorSpace: c.inputColorSpace.value,
+            outputColorSpace: c.outputColorSpace.value,
             uri: c.lut?._bind(),
           })),
         } : undefined,
@@ -1176,13 +1212,13 @@ export class Channel extends ChannelBase {
         outputGroups: Lazy.any({ produce: () => this.outputGroups.map(og => og._bind()) }, { omitEmptyArray: true }),
       },
       vpc: props.vpc ? {
-        subnetIds: props.vpc.subnets.map(s => s.subnetId),
-        securityGroupIds: props.vpc.securityGroups?.map(sg => sg.securityGroupId),
+        subnetIds: props.vpc.subnets.map(s => s.subnetRef.subnetId),
+        securityGroupIds: props.vpc.securityGroups?.map(sg => sg.securityGroupRef.securityGroupId),
         publicAddressAllocationIds: props.vpc.publicAddressAllocationIds,
       } : undefined,
       anywhereSettings: props.anywhereSettings ? {
-        channelPlacementGroupId: props.anywhereSettings.channelPlacementGroup?.channelPlacementGroupId,
-        clusterId: props.anywhereSettings.cluster.clusterId,
+        channelPlacementGroupId: props.anywhereSettings.channelPlacementGroup?.channelPlacementGroupRef.channelPlacementGroupId,
+        clusterId: props.anywhereSettings.cluster.clusterRef.clusterId,
       } : undefined,
       channelEngineVersion: props.channelEngineVersion ? {
         version: props.channelEngineVersion,
@@ -1193,18 +1229,22 @@ export class Channel extends ChannelBase {
     });
 
     this.channelArn = resource.attrArn;
-    this.channelId = resource.attrId;
+    this.channelId = resource.ref;
     this.channelInputs = resource.attrInputs;
     this.role = channelRole;
 
-    // Auto-grant permissions for S3 destinations and S3 input sources
-    this.outputGroups.forEach(og => og._grantPermissions(channelRole));
-    props.inputs.forEach(attachment => {
-      attachment.input._grantPermissions(channelRole);
-      attachment.automaticInputFailover?.secondaryInput._grantPermissions(channelRole);
-    });
-    // Grant the service-role permissions implied by channel-level features (logging, VPC output).
-    this.grantServiceRolePermissions(channelRole, props, resource);
+    // Auto-grant permissions only for the channel-managed role. When the caller brings their own
+    // role, they define every permission (principal and resource side).
+    if (!this.userProvidedRole) {
+      // Auto-grant permissions for S3 destinations and S3 input sources
+      this.outputGroups.forEach(og => og._grantPermissions(channelRole));
+      props.inputs.forEach(attachment => {
+        attachment.input._grantPermissions(channelRole);
+        attachment.automaticInputFailover?.secondaryInput._grantPermissions(channelRole);
+      });
+      // Grant the service-role permissions implied by channel-level features (logging, VPC output).
+      this.grantServiceRolePermissions(channelRole, props, resource);
+    }
   }
 
   /**
@@ -1230,9 +1270,17 @@ export class Channel extends ChannelBase {
     }
 
     // CloudWatch Logs — required when logging is enabled.
-    // See https://docs.aws.amazon.com/medialive/latest/ug/trusted-entity-requirements.html
+    // MediaLive always writes to the fixed log group `ElementalMediaLive`.
+    // See https://docs.aws.amazon.com/medialive/latest/ug/working-with-logs.html
     if ((props.logLevel ?? LogLevel.DISABLED) !== LogLevel.DISABLED) {
-      role.addToPrincipalPolicy(new PolicyStatement({
+      const logGroupArn = stack.formatArn({
+        service: 'logs',
+        resource: 'log-group',
+        resourceName: 'ElementalMediaLive',
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      });
+      Grant.addToPrincipal({
+        grantee: role,
         actions: [
           'logs:CreateLogGroup',
           'logs:CreateLogStream',
@@ -1242,18 +1290,17 @@ export class Channel extends ChannelBase {
           'logs:DescribeLogStreams',
           'logs:DescribeLogGroups',
         ],
-        resources: [
-          `arn:${Aws.PARTITION}:logs:*`,
-          `arn:${Aws.PARTITION}:log-group:*`,
-        ],
-      }));
+        // The group ARN covers group-level actions; the `:*` variant covers the log streams.
+        resourceArns: [logGroupArn, `${logGroupArn}:*`],
+      });
     }
 
     // EC2 — required for VPC output. Uses .applyBefore() because MediaLive validates
     // permissions at channel creation time.
     if (props.vpc) {
-      const subnetArns = props.vpc.subnets.map(s => stack.formatArn({ service: 'ec2', resource: 'subnet', resourceName: s.subnetId }));
-      const securityGroupArns = (props.vpc.securityGroups ?? []).map(sg => stack.formatArn({ service: 'ec2', resource: 'security-group', resourceName: sg.securityGroupId }));
+      const subnetArns = props.vpc.subnets.map(s => stack.formatArn({ service: 'ec2', resource: 'subnet', resourceName: s.subnetRef.subnetId }));
+      const securityGroupArns = (props.vpc.securityGroups ?? []).map(sg => stack.formatArn({ service: 'ec2', resource: 'security-group', resourceName: sg.securityGroupRef.securityGroupId }));
+      // ENI IDs are generated at runtime — wildcarded but scoped to region/account.
       const networkInterfaceArn = stack.formatArn({ service: 'ec2', resource: 'network-interface', resourceName: '*' });
 
       // Create/Delete scope to the ENIs plus the subnets and security groups they attach to.
@@ -1268,6 +1315,7 @@ export class Channel extends ChannelBase {
       }).applyBefore(resource);
 
       // Describe* actions don't support resource-level permissions — EC2 requires `*`.
+      // See https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-policies-ec2-console.html
       Grant.addToPrincipal({
         grantee: role,
         actions: [
@@ -1309,8 +1357,11 @@ export class Channel extends ChannelBase {
    */
   public addInput(attachment: InputAttachment): void {
     this.inputAttachments.push(this.buildInputAttachment(attachment));
-    attachment.input._grantPermissions(this.role);
-    attachment.automaticInputFailover?.secondaryInput._grantPermissions(this.role);
+    // Skip auto-grants when the caller owns the role.
+    if (!this.userProvidedRole) {
+      attachment.input._grantPermissions(this.role);
+      attachment.automaticInputFailover?.secondaryInput._grantPermissions(this.role);
+    }
   }
 
   /**
@@ -1362,24 +1413,24 @@ export class Channel extends ChannelBase {
       inputAttachmentName: attachment.inputAttachmentName,
       automaticInputFailoverSettings: failover ? {
         secondaryInputId: failover.secondaryInput.inputId,
-        inputPreference: failover.inputPreference,
+        inputPreference: failover.inputPreference?.value,
         errorClearTimeMsec: failover.errorClearTime?.toMilliseconds(),
         // MediaLive requires at least one failover condition — default to input loss.
         failoverConditions: (failover.failoverConditions ?? [FailoverCondition.inputLoss()]).map(c => c._bind()),
       } : undefined,
       inputSettings: {
-        sourceEndBehavior,
-        inputFilter: attachment.inputFilter ?? InputFilter.AUTO,
+        sourceEndBehavior: sourceEndBehavior.value,
+        inputFilter: (attachment.inputFilter ?? InputFilter.AUTO).value,
         filterStrength: attachment.filterStrength ?? 1,
         deblockFilter: attachment.deblockFilter ? 'ENABLED' : 'DISABLED',
         denoiseFilter: attachment.denoiseFilter ? 'ENABLED' : 'DISABLED',
-        smpte2038DataPreference: attachment.smpte2038DataPreference ?? Smpte2038DataPreference.IGNORE,
+        smpte2038DataPreference: (attachment.smpte2038DataPreference ?? Smpte2038DataPreference.IGNORE).value,
         audioSelectors: attachment.audioSelectors?.map(s => s._bind()),
         captionSelectors: attachment.captionSelectors?.map(s => s._bind()),
         scte35Pid: attachment.scte35Pid,
         videoSelector: attachment.videoSelector ? {
-          colorSpace: attachment.videoSelector.colorSpace,
-          colorSpaceUsage: attachment.videoSelector.colorSpaceUsage,
+          colorSpace: attachment.videoSelector.colorSpace?.value,
+          colorSpaceUsage: attachment.videoSelector.colorSpaceUsage?.value,
           colorSpaceSettings: attachment.videoSelector.hdr10 ? {
             hdr10Settings: {
               maxCll: attachment.videoSelector.hdr10.maxContentLightLevel,
@@ -1389,13 +1440,13 @@ export class Channel extends ChannelBase {
           selectorSettings: attachment.videoSelector.selectBy?._bind(),
         } : undefined,
         networkInputSettings: attachment.networkInputSettings ? {
-          serverValidation: attachment.networkInputSettings.serverValidation,
+          serverValidation: attachment.networkInputSettings.serverValidation?.value,
           hlsInputSettings: attachment.networkInputSettings.hlsInputSettings ? {
             bandwidth: attachment.networkInputSettings.hlsInputSettings.bandwidth?.toBps(),
             bufferSegments: attachment.networkInputSettings.hlsInputSettings.bufferSegments,
             retries: attachment.networkInputSettings.hlsInputSettings.retries,
             retryInterval: attachment.networkInputSettings.hlsInputSettings.retryInterval?.toSeconds(),
-            scte35Source: attachment.networkInputSettings.hlsInputSettings.scte35Source,
+            scte35Source: attachment.networkInputSettings.hlsInputSettings.scte35Source?.value,
           } : undefined,
           multicastInputSettings: attachment.networkInputSettings.multicastSourceIp
             ? { sourceIpAddress: attachment.networkInputSettings.multicastSourceIp }
@@ -1414,6 +1465,9 @@ export class Channel extends ChannelBase {
   public addOutputGroup(config: OutputGroupConfiguration): void {
     const outputGroup = new OutputGroup(config);
     this.outputGroups.push(outputGroup);
-    outputGroup._grantPermissions(this.role);
+    // Skip auto-grants when the caller owns the role.
+    if (!this.userProvidedRole) {
+      outputGroup._grantPermissions(this.role);
+    }
   }
 }

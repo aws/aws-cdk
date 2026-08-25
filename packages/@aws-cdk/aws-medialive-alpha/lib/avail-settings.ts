@@ -7,11 +7,23 @@ import type { FileLocation } from './file-location';
 /**
  * Avail blanking state.
  */
-export enum AvailBlankingState {
+export class AvailBlankingState {
   /** Enable blanking during ad avails */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new AvailBlankingState('ENABLED');
   /** Disable blanking during ad avails */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new AvailBlankingState('DISABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): AvailBlankingState {
+    return new AvailBlankingState(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -35,11 +47,23 @@ export interface AvailBlanking {
 /**
  * How to handle SCTE-35 regional blackout and web delivery flags.
  */
-export enum Scte35FlagBehavior {
+export class Scte35FlagBehavior {
   /** Follow the flag — trigger blackouts/slates when the flag is set */
-  FOLLOW = 'FOLLOW',
+  public static readonly FOLLOW = new Scte35FlagBehavior('FOLLOW');
   /** Ignore the flag */
-  IGNORE = 'IGNORE',
+  public static readonly IGNORE = new Scte35FlagBehavior('IGNORE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Scte35FlagBehavior {
+    return new Scte35FlagBehavior(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -53,12 +77,14 @@ export interface Scte35SpliceInsertSettings {
    */
   readonly adAvailOffset?: number;
   /**
-   * How to handle the noRegionalBlackoutFlag.
+   * When set to `IGNORE`, segment descriptors with `noRegionalBlackoutFlag` set to 0 no longer
+   * trigger blackouts or ad avail slates.
    * @default - service default
    */
   readonly noRegionalBlackoutFlag?: Scte35FlagBehavior;
   /**
-   * How to handle the webDeliveryAllowedFlag.
+   * When set to `IGNORE`, segment descriptors with `webDeliveryAllowedFlag` set to 0 no longer
+   * trigger blackouts or ad avail slates.
    * @default - service default
    */
   readonly webDeliveryAllowedFlag?: Scte35FlagBehavior;
@@ -75,12 +101,14 @@ export interface Scte35TimeSignalAposSettings {
    */
   readonly adAvailOffset?: number;
   /**
-   * How to handle the noRegionalBlackoutFlag.
+   * When set to `IGNORE`, segment descriptors with `noRegionalBlackoutFlag` set to 0 no longer
+   * trigger blackouts or ad avail slates.
    * @default - service default
    */
   readonly noRegionalBlackoutFlag?: Scte35FlagBehavior;
   /**
-   * How to handle the webDeliveryAllowedFlag.
+   * When set to `IGNORE`, segment descriptors with `webDeliveryAllowedFlag` set to 0 no longer
+   * trigger blackouts or ad avail slates.
    * @default - service default
    */
   readonly webDeliveryAllowedFlag?: Scte35FlagBehavior;
@@ -89,11 +117,23 @@ export interface Scte35TimeSignalAposSettings {
 /**
  * Controls which output groups receive SCTE-35 segmentation cues.
  */
-export enum Scte35SegmentationScope {
+export class Scte35SegmentationScope {
   /** Insert segment breaks in all output groups. */
-  ALL_OUTPUT_GROUPS = 'ALL_OUTPUT_GROUPS',
+  public static readonly ALL_OUTPUT_GROUPS = new Scte35SegmentationScope('ALL_OUTPUT_GROUPS');
   /** Insert segment breaks only in output groups with SCTE-35 passthrough enabled (recommended). */
-  SCTE35_ENABLED_OUTPUT_GROUPS = 'SCTE35_ENABLED_OUTPUT_GROUPS',
+  public static readonly SCTE35_ENABLED_OUTPUT_GROUPS = new Scte35SegmentationScope('SCTE35_ENABLED_OUTPUT_GROUPS');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Scte35SegmentationScope {
+    return new Scte35SegmentationScope(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -186,8 +226,8 @@ class Scte35SpliceInsertAvailSettings extends AvailSettings {
     return {
       scte35SpliceInsert: {
         adAvailOffset: this.props.adAvailOffset,
-        noRegionalBlackoutFlag: this.props.noRegionalBlackoutFlag,
-        webDeliveryAllowedFlag: this.props.webDeliveryAllowedFlag,
+        noRegionalBlackoutFlag: this.props.noRegionalBlackoutFlag?.value,
+        webDeliveryAllowedFlag: this.props.webDeliveryAllowedFlag?.value,
       },
     };
   }
@@ -200,8 +240,8 @@ class Scte35TimeSignalAposAvailSettings extends AvailSettings {
     return {
       scte35TimeSignalApos: {
         adAvailOffset: this.props.adAvailOffset,
-        noRegionalBlackoutFlag: this.props.noRegionalBlackoutFlag,
-        webDeliveryAllowedFlag: this.props.webDeliveryAllowedFlag,
+        noRegionalBlackoutFlag: this.props.noRegionalBlackoutFlag?.value,
+        webDeliveryAllowedFlag: this.props.webDeliveryAllowedFlag?.value,
       },
     };
   }
@@ -234,21 +274,45 @@ class EsamAvailSettings extends AvailSettings {
 /**
  * Blackout slate state.
  */
-export enum BlackoutSlateState {
+export class BlackoutSlateState {
   /** Enable blackout slate */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new BlackoutSlateState('ENABLED');
   /** Disable blackout slate */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new BlackoutSlateState('DISABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): BlackoutSlateState {
+    return new BlackoutSlateState(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * Network end blackout state.
  */
-export enum NetworkEndBlackout {
+export class NetworkEndBlackout {
   /** Enable network end blackout */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new NetworkEndBlackout('ENABLED');
   /** Disable network end blackout */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new NetworkEndBlackout('DISABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): NetworkEndBlackout {
+    return new NetworkEndBlackout(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**

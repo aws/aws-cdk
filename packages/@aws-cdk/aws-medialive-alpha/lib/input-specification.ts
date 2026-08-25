@@ -3,51 +3,99 @@ import type { CfnChannel } from 'aws-cdk-lib/aws-medialive';
 /**
  * The codec for the input specification.
  */
-export enum InputCodec {
+export class InputCodec {
   /** AVC (H.264) */
-  AVC = 'AVC',
+  public static readonly AVC = new InputCodec('AVC');
   /** HEVC (H.265) */
-  HEVC = 'HEVC',
+  public static readonly HEVC = new InputCodec('HEVC');
   /** MPEG2 */
-  MPEG2 = 'MPEG2',
+  public static readonly MPEG2 = new InputCodec('MPEG2');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): InputCodec {
+    return new InputCodec(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * The maximum input bitrate for the input specification.
  */
-export enum InputMaximumBitrate {
+export class InputMaximumBitrate {
   /** Max 10 Mbps */
-  MAX_10_MBPS = 'MAX_10_MBPS',
+  public static readonly MAX_10_MBPS = new InputMaximumBitrate('MAX_10_MBPS');
   /** Max 20 Mbps */
-  MAX_20_MBPS = 'MAX_20_MBPS',
+  public static readonly MAX_20_MBPS = new InputMaximumBitrate('MAX_20_MBPS');
   /** Max 50 Mbps */
-  MAX_50_MBPS = 'MAX_50_MBPS',
+  public static readonly MAX_50_MBPS = new InputMaximumBitrate('MAX_50_MBPS');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): InputMaximumBitrate {
+    return new InputMaximumBitrate(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * The resolution for the input specification.
  */
-export enum InputResolution {
+export class InputResolution {
   /** SD */
-  SD = 'SD',
+  public static readonly SD = new InputResolution('SD');
   /** HD */
-  HD = 'HD',
+  public static readonly HD = new InputResolution('HD');
   /** UHD */
-  UHD = 'UHD',
+  public static readonly UHD = new InputResolution('UHD');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): InputResolution {
+    return new InputResolution(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * Maximum CDI input resolution.
  */
-export enum CdiInputResolution {
+export class CdiInputResolution {
   /** SD resolution */
-  SD = 'SD',
+  public static readonly SD = new CdiInputResolution('SD');
   /** HD resolution */
-  HD = 'HD',
+  public static readonly HD = new CdiInputResolution('HD');
   /** Full HD resolution */
-  FHD = 'FHD',
+  public static readonly FHD = new CdiInputResolution('FHD');
   /** UHD resolution */
-  UHD = 'UHD',
+  public static readonly UHD = new CdiInputResolution('UHD');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): CdiInputResolution {
+    return new CdiInputResolution(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -114,9 +162,9 @@ export abstract class InputSpecification {
 /** @internal */
 function bindStandardSpec(props: StandardInputSpecificationProps): CfnChannel.InputSpecificationProperty {
   return {
-    codec: props.codec ?? InputCodec.AVC,
-    maximumBitrate: props.maximumBitrate ?? InputMaximumBitrate.MAX_20_MBPS,
-    resolution: props.resolution ?? InputResolution.HD,
+    codec: (props.codec ?? InputCodec.AVC).value,
+    maximumBitrate: (props.maximumBitrate ?? InputMaximumBitrate.MAX_20_MBPS).value,
+    resolution: (props.resolution ?? InputResolution.HD).value,
   };
 }
 
@@ -138,7 +186,7 @@ class CdiInputSpecification extends InputSpecification {
     return bindStandardSpec(this.props);
   }
   public _bindCdiInputSpecification(): CfnChannel.CdiInputSpecificationProperty {
-    return { resolution: this.props.cdiResolution ?? CdiInputResolution.HD };
+    return { resolution: (this.props.cdiResolution ?? CdiInputResolution.HD).value };
   }
 }
 

@@ -67,21 +67,45 @@ export interface SdiSourceProps {
 /**
  * The type of SDI input.
  */
-export enum SdiType {
+export class SdiType {
   /** Single SDI input */
-  SINGLE = 'SINGLE',
+  public static readonly SINGLE = new SdiType('SINGLE');
   /** Quad SDI input */
-  QUAD = 'QUAD',
+  public static readonly QUAD = new SdiType('QUAD');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): SdiType {
+    return new SdiType(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * Mode when quad SDI input is selected.
  */
-export enum SdiMode {
+export class SdiMode {
   /** Interleave mode */
-  INTERLEAVE = 'INTERLEAVE',
+  public static readonly INTERLEAVE = new SdiMode('INTERLEAVE');
   /** Quadrant mode */
-  QUADRANT = 'QUADRANT',
+  public static readonly QUADRANT = new SdiMode('QUADRANT');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): SdiMode {
+    return new SdiMode(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -151,7 +175,7 @@ export class SdiSource extends Resource implements ISdiSource {
       physicalName: props.sdiSourceName ?? Lazy.string({ produce: () => Names.uniqueId(this) }),
     });
 
-    if (props.mode && props.type !== SdiType.QUAD) {
+    if (props.mode && props.type.value !== SdiType.QUAD.value) {
       throw new ValidationError(lit`SdiModeOnlyForQuad`, 'mode is only valid when type is QUAD', this);
     }
 
@@ -159,8 +183,8 @@ export class SdiSource extends Resource implements ISdiSource {
 
     const resource = new CfnSdiSource(this, 'Resource', {
       name: this.physicalName,
-      type: props.type,
-      mode: props.mode,
+      type: props.type?.value,
+      mode: props.mode?.value,
       tags: props.tags ? Object.entries(props.tags).map(([key, value]) => ({ key, value })) : undefined,
     });
 

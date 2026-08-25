@@ -783,6 +783,20 @@ describe('Channel metrics', () => {
     expect(metric.statistic).toBe('Sum');
   });
 
+  test('a caller-supplied dimensionsMap cannot drop the required ChannelId/Pipeline dimensions', () => {
+    const imported = Channel.fromChannelArn(stack, 'DimMetric', 'arn:aws:medialive:us-east-1:123456789012:channel:1234567');
+
+    const metric = imported.metric('NetworkIn', Pipeline.PIPELINE_0, {
+      dimensionsMap: { CustomDimension: 'value' },
+    });
+    // Caller's extra dimension is kept, but ChannelId/Pipeline are applied last and survive.
+    expect(metric.dimensions).toEqual({
+      CustomDimension: 'value',
+      ChannelId: '1234567',
+      Pipeline: '0',
+    });
+  });
+
   test('SINGLE_PIPELINE channels reject Pipeline.PIPELINE_1', () => {
     const video = EncodeConfiguration.video({
       name: 'video', width: 1920, height: 1080, codecSettings: VideoCodecSettings.h264(),
@@ -2670,7 +2684,7 @@ describe('NielsenConfiguration and thumbnails', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::MediaLive::Channel', {
       EncoderSettings: Match.objectLike({
-        NielsenConfiguration: Match.objectLike({ NielsenPcmToId3Tagging: nielsenPcmToId3Tagging }),
+        NielsenConfiguration: Match.objectLike({ NielsenPcmToId3Tagging: nielsenPcmToId3Tagging.value }),
       }),
     });
   });
@@ -3644,7 +3658,7 @@ describe('SRT output settings', () => {
         OutputGroups: Match.arrayWith([
           Match.objectLike({
             OutputGroupSettings: {
-              SrtGroupSettings: { InputLossAction: inputLossAction },
+              SrtGroupSettings: { InputLossAction: inputLossAction.value },
             },
           }),
         ]),
@@ -4118,6 +4132,78 @@ describe('S3 destination and source helpers', () => {
   });
 });
 
+describe('Bring-your-own role: no automatic grants', () => {
+  function userRole(): Role {
+    return new Role(stack, 'UserRole', {
+      assumedBy: new ServicePrincipal('medialive.amazonaws.com'),
+    });
+  }
+
+  test('a user-provided role receives no auto-grants, even with S3 destinations, S3 input sources, and logging', () => {
+    const role = userRole();
+    const bucket = new s3.Bucket(stack, 'OutputBucket');
+    const sourceBucket = new s3.Bucket(stack, 'SourceBucket');
+    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720 });
+    const fileInput = new Input(stack, 'FileInput', {
+      inputName: 'file-input',
+      input: InputConfiguration.mp4File([
+        InputSource.fromBucket(sourceBucket, 'videos/test.mp4'),
+      ]),
+    });
+
+    new Channel(stack, 'ByoChannel', {
+      role,
+      logLevel: LogLevel.INFO,
+      inputs: [{ input: fileInput }],
+      outputGroups: [
+        OutputGroupConfiguration.hls({
+          name: 'hls',
+          destinations: [OutputDestination.toBucket(bucket, 'live/stream')],
+          outputs: [{ encodes: [video], outputName: 'out' }],
+        }),
+      ],
+    });
+
+    // The user owns the role, so the channel attaches no inline policy to it at all — no S3
+    // read/write, no CloudWatch Logs, nothing.
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
+  });
+
+  test('addInput and addOutputGroup add no grants when the role is user-provided', () => {
+    const role = userRole();
+    const outBucket = new s3.Bucket(stack, 'AddedOutputBucket');
+    const srcBucket = new s3.Bucket(stack, 'AddedSourceBucket');
+    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720 });
+
+    const channel = new Channel(stack, 'ByoChannel', {
+      role,
+      inputs: [{ input: defaultInput }],
+      outputGroups: [
+        OutputGroupConfiguration.hls({
+          name: 'hls',
+          destinations: [OutputDestination.url('s3ssl://bucket/live/stream')],
+          outputs: [{ encodes: [video], outputName: 'out' }],
+        }),
+      ],
+    });
+
+    const addedInput = new Input(stack, 'AddedInput', {
+      inputName: 'added-input',
+      input: InputConfiguration.mp4File([InputSource.fromBucket(srcBucket, 'videos/added.mp4')]),
+    });
+    channel.addInput({ input: addedInput, inputAttachmentName: 'added' });
+    channel.addOutputGroup(
+      OutputGroupConfiguration.hls({
+        name: 'hls-2',
+        destinations: [OutputDestination.toBucket(outBucket, 'live/added')],
+        outputs: [{ encodes: [video], outputName: 'added-out' }],
+      }),
+    );
+
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
+  });
+});
+
 describe('Auto-grant: service-role permissions', () => {
   function minimalChannel(props: { logLevel?: LogLevel; thumbnailState?: ThumbnailState; vpc?: VpcOutputSettings } = {}) {
     const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720 });
@@ -4259,8 +4345,18 @@ describe('Auto-grant: MediaPackage V2 ingest', () => {
       ],
     });
 
-    // The channel should synth without error; the ingest grant is applied to the MediaPackage channel
-    Template.fromStack(stack);
+    // The MediaPackage V2 ingest grant must land on the channel role. Assert the actual actions
+    // (not just that synth succeeds) so a change to the ingest action set is caught here.
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Effect: 'Allow',
+            Action: ['mediapackagev2:GetChannel', 'mediapackagev2:PutObject'],
+          }),
+        ]),
+      },
+    });
   });
 });
 

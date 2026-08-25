@@ -113,37 +113,6 @@
     }
    }
   },
-  "MediaLiveRoleDefaultPolicyE1F33973": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "mediapackagev2:PutObject",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "EmpChannel894EADAC",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": "s3:PutObject",
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "MediaLiveRoleDefaultPolicyE1F33973",
-    "Roles": [
-     {
-      "Ref": "MediaLiveRole1149D189"
-     }
-    ]
-   }
-  },
   "LiveChannel5ABEA596": {
    "Type": "AWS::MediaLive::Channel",
    "Properties": {

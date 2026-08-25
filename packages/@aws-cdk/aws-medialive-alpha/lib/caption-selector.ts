@@ -5,39 +5,75 @@ import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 /**
  * The OCR language to use when converting an image-based caption source to text.
  */
-export enum OcrLanguage {
+export class OcrLanguage {
   /** German */
-  DEU = 'DEU',
+  public static readonly DEU = new OcrLanguage('DEU');
   /** English */
-  ENG = 'ENG',
+  public static readonly ENG = new OcrLanguage('ENG');
   /** French */
-  FRA = 'FRA',
+  public static readonly FRA = new OcrLanguage('FRA');
   /** Dutch */
-  NLD = 'NLD',
+  public static readonly NLD = new OcrLanguage('NLD');
   /** Portuguese */
-  POR = 'POR',
+  public static readonly POR = new OcrLanguage('POR');
   /** Spanish */
-  SPA = 'SPA',
+  public static readonly SPA = new OcrLanguage('SPA');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): OcrLanguage {
+    return new OcrLanguage(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * Whether to upconvert 608 captions to 708.
  */
-export enum Convert608To708 {
+export class Convert608To708 {
   /** Pass through 608 captions without upconverting. */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new Convert608To708('DISABLED');
   /** Upconvert 608 captions to 708 (608 data is also passed through). */
-  UPCONVERT = 'UPCONVERT',
+  public static readonly UPCONVERT = new Convert608To708('UPCONVERT');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Convert608To708 {
+    return new Convert608To708(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * SCTE-20 detection mode for an embedded caption source.
  */
-export enum Scte20Detection {
+export class Scte20Detection {
   /** Handle streams with intermittent or non-aligned SCTE-20 and embedded captions. */
-  AUTO = 'AUTO',
+  public static readonly AUTO = new Scte20Detection('AUTO');
   /** Do not detect SCTE-20 captions. */
-  OFF = 'OFF',
+  public static readonly OFF = new Scte20Detection('OFF');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Scte20Detection {
+    return new Scte20Detection(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -157,11 +193,23 @@ export interface TeletextCaptionSourceOptions {
 /**
  * Controls whether MediaLive delays video to synchronize captions with audio and video output.
  */
-export enum CaptionSynchronizationMode {
+export class CaptionSynchronizationMode {
   /** MediaLive does not delay video for caption alignment. */
-  NO_VIDEO_DELAY = 'NO_VIDEO_DELAY',
+  public static readonly NO_VIDEO_DELAY = new CaptionSynchronizationMode('NO_VIDEO_DELAY');
   /** MediaLive delays video to ensure captions are synchronized with audio and video. */
-  VIDEO_ALIGNED_CAPTIONS = 'VIDEO_ALIGNED_CAPTIONS',
+  public static readonly VIDEO_ALIGNED_CAPTIONS = new CaptionSynchronizationMode('VIDEO_ALIGNED_CAPTIONS');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): CaptionSynchronizationMode {
+    return new CaptionSynchronizationMode(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -287,8 +335,8 @@ class EmbeddedCaptionSelector extends CaptionSelector {
       name: this.name,
       selectorSettings: hasSettings ? {
         embeddedSourceSettings: {
-          convert608To708: this.options.convert608To708 ?? Convert608To708.DISABLED,
-          scte20Detection: this.options.scte20Detection ?? Scte20Detection.OFF,
+          convert608To708: (this.options.convert608To708 ?? Convert608To708.DISABLED).value,
+          scte20Detection: (this.options.scte20Detection ?? Scte20Detection.OFF).value,
           source608ChannelNumber: this.options.source608ChannelNumber,
         },
       } : undefined,
@@ -330,7 +378,7 @@ class DvbSubCaptionSelector extends CaptionSelector {
     return {
       name: this.name,
       selectorSettings: {
-        dvbSubSourceSettings: { pid: this.options.pid, ocrLanguage: this.options.ocrLanguage },
+        dvbSubSourceSettings: { pid: this.options.pid, ocrLanguage: this.options.ocrLanguage?.value },
       },
     };
   }
@@ -350,7 +398,7 @@ class Scte20CaptionSelector extends CaptionSelector {
       name: this.name,
       selectorSettings: {
         scte20SourceSettings: {
-          convert608To708: this.options.convert608To708 ?? Convert608To708.DISABLED,
+          convert608To708: (this.options.convert608To708 ?? Convert608To708.DISABLED).value,
           source608ChannelNumber: this.options.source608ChannelNumber,
         },
       },
@@ -365,7 +413,7 @@ class Scte27CaptionSelector extends CaptionSelector {
     return {
       name: this.name,
       selectorSettings: {
-        scte27SourceSettings: { pid: this.options.pid, ocrLanguage: this.options.ocrLanguage },
+        scte27SourceSettings: { pid: this.options.pid, ocrLanguage: this.options.ocrLanguage?.value },
       },
     };
   }
@@ -424,7 +472,7 @@ class SmartSubtitleCaptionSelector extends CaptionSelector {
       selectorSettings: {
         smartSubtitleSourceSettings: {
           inferenceFeedOutput: this.options.inferenceFeedOutput,
-          captionSynchronizationMode: this.options.captionSynchronizationMode,
+          captionSynchronizationMode: this.options.captionSynchronizationMode?.value,
         },
       },
     };

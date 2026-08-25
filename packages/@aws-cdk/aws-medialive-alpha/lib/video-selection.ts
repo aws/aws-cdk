@@ -3,30 +3,54 @@ import type { CfnChannel } from 'aws-cdk-lib/aws-medialive';
 /**
  * Video color space.
  */
-export enum VideoColorSpace {
+export class VideoColorSpace {
   /** Follow the source color space */
-  FOLLOW = 'FOLLOW',
+  public static readonly FOLLOW = new VideoColorSpace('FOLLOW');
   /** Rec. 601 */
-  REC_601 = 'REC_601',
+  public static readonly REC_601 = new VideoColorSpace('REC_601');
   /** Rec. 709 */
-  REC_709 = 'REC_709',
+  public static readonly REC_709 = new VideoColorSpace('REC_709');
   /** HDR10 */
-  HDR10 = 'HDR10',
+  public static readonly HDR10 = new VideoColorSpace('HDR10');
   /** HLG 2020 */
-  HLG_2020 = 'HLG_2020',
+  public static readonly HLG_2020 = new VideoColorSpace('HLG_2020');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): VideoColorSpace {
+    return new VideoColorSpace(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * Controls how the `colorSpace` value is used when it is not `FOLLOW`.
  */
-export enum VideoColorSpaceUsage {
+export class VideoColorSpaceUsage {
   /**
    * Use the input's color space data when present; fall back to `colorSpace` only when the
    * input has none.
    */
-  FALLBACK = 'FALLBACK',
+  public static readonly FALLBACK = new VideoColorSpaceUsage('FALLBACK');
   /** Always use `colorSpace`, ignoring any color space data in the input. */
-  FORCE = 'FORCE',
+  public static readonly FORCE = new VideoColorSpaceUsage('FORCE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): VideoColorSpaceUsage {
+    return new VideoColorSpaceUsage(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**

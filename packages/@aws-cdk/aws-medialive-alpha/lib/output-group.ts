@@ -5,7 +5,7 @@ export * from './outputs';
 import type { IChannel as IMediaPackageV2Channel } from '@aws-cdk/aws-mediapackagev2-alpha';
 import type { Duration, SecretValue } from 'aws-cdk-lib';
 import { UnscopedValidationError, Token } from 'aws-cdk-lib';
-import type { IRole } from 'aws-cdk-lib/aws-iam';
+import type { IRole, IRoleRef } from 'aws-cdk-lib/aws-iam';
 import type { CfnChannel } from 'aws-cdk-lib/aws-medialive';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type {
@@ -186,7 +186,7 @@ export abstract class OutputGroupConfiguration {
   /** @internal */
   public abstract _bindDestination(channelClass: string): CfnChannel.OutputDestinationProperty[];
   /** @internal - Grant permissions to the channel role for resources referenced by destinations. */
-  public _grantPermissions(_role: IRole): void {}
+  public _grantPermissions(_role: IRoleRef): void {}
   /** @internal - Create the initial Output instances from the config's output definitions. */
   public abstract _createInitialOutputs(): Output[];
   /**
@@ -315,7 +315,7 @@ export class HlsKeyProviderSettings {
 export class HlsCdnSettings {
   /** Use Amazon S3 as the CDN for HLS output. */
   public static s3(props?: HlsS3CdnProps): HlsCdnSettings {
-    return new HlsCdnSettings({ hlsS3Settings: { cannedAcl: props?.cannedAcl } });
+    return new HlsCdnSettings({ hlsS3Settings: { cannedAcl: props?.cannedAcl?.value } });
   }
   /** Use a basic HTTP PUT for HLS output. */
   public static basicPut(props?: HlsBasicPutCdnProps): HlsCdnSettings {
@@ -336,7 +336,7 @@ export class HlsCdnSettings {
         filecacheDuration: props?.filecacheDuration?.toSeconds() ?? 300,
         numRetries: props?.numRetries ?? 10,
         restartDelay: props?.restartDelay ?? 15,
-        httpTransferMode: props?.httpTransferMode ?? HttpTransferMode.NON_CHUNKED,
+        httpTransferMode: (props?.httpTransferMode ?? HttpTransferMode.NON_CHUNKED).value,
         salt: props?.salt,
         token: props?.token,
       },
@@ -350,7 +350,7 @@ export class HlsCdnSettings {
         filecacheDuration: props?.filecacheDuration?.toSeconds() ?? 300,
         numRetries: props?.numRetries ?? 10,
         restartDelay: props?.restartDelay ?? 15,
-        httpTransferMode: props?.httpTransferMode ?? HttpTransferMode.NON_CHUNKED,
+        httpTransferMode: (props?.httpTransferMode ?? HttpTransferMode.NON_CHUNKED).value,
       },
     });
   }
@@ -1185,13 +1185,13 @@ class MediaPackageV2OutputGroupConfiguration extends OutputGroupConfiguration {
             : undefined,
           segmentLength: this.props.segment?._length(),
           segmentLengthUnits: this.props.segment?._units(),
-          id3Behavior: this.props.id3Behavior,
-          klvBehavior: this.props.klvBehavior,
-          nielsenId3Behavior: this.props.nielsenId3Behavior,
-          scte35Type: this.props.scte35Type,
-          timedMetadataId3Frame: this.props.timedMetadataId3Frame,
+          id3Behavior: this.props.id3Behavior?.value,
+          klvBehavior: this.props.klvBehavior?.value,
+          nielsenId3Behavior: this.props.nielsenId3Behavior?.value,
+          scte35Type: this.props.scte35Type?.value,
+          timedMetadataId3Frame: this.props.timedMetadataId3Frame?.value,
           timedMetadataId3Period: this.props.timedMetadataId3Period?.toSeconds(),
-          timedMetadataPassthrough: this.props.timedMetadataPassthrough,
+          timedMetadataPassthrough: this.props.timedMetadataPassthrough?.value,
           captionLanguageMappings: this.props.captionLanguageMappings,
         },
       },
@@ -1295,43 +1295,43 @@ class HlsOutputGroupConfiguration extends OutputGroupConfiguration {
         indexNSegments: this.props.indexNSegments ?? 10,
         mode: this.props.mode ?? HlsMode.LIVE,
         minSegmentLength: this.props.minSegment?._toSeconds(),
-        inputLossAction: this.props.inputLossAction ?? HlsInputLossAction.EMIT_OUTPUT,
-        adMarkers: this.props.adMarkers,
+        inputLossAction: (this.props.inputLossAction ?? HlsInputLossAction.EMIT_OUTPUT).value,
+        adMarkers: this.props.adMarkers?.map(m => m.value),
         baseUrlContent: this.props.baseUrlContent,
         baseUrlContent1: this.props.baseUrlContent1,
         baseUrlManifest: this.props.baseUrlManifest,
         baseUrlManifest1: this.props.baseUrlManifest1,
         captionLanguageMappings: this.props.captionLanguageMappings,
-        captionLanguageSetting: this.props.captionLanguageSetting,
-        clientCache: this.props.clientCache ?? HlsClientCache.ENABLED,
-        codecSpecification: this.props.codecSpecification ?? HlsCodecSpecification.RFC_4281,
+        captionLanguageSetting: this.props.captionLanguageSetting?.value,
+        clientCache: (this.props.clientCache ?? HlsClientCache.ENABLED).value,
+        codecSpecification: (this.props.codecSpecification ?? HlsCodecSpecification.RFC_4281).value,
         constantIv: this.props.constantIv,
-        directoryStructure: this.props.directoryStructure ?? HlsDirectoryStructure.SINGLE_DIRECTORY,
-        discontinuityTags: this.props.discontinuityTags ?? HlsDiscontinuityTags.INSERT,
-        encryptionType: this.props.encryptionType,
+        directoryStructure: (this.props.directoryStructure ?? HlsDirectoryStructure.SINGLE_DIRECTORY).value,
+        discontinuityTags: (this.props.discontinuityTags ?? HlsDiscontinuityTags.INSERT).value,
+        encryptionType: this.props.encryptionType?.value,
         hlsCdnSettings: this.props.hlsCdnSettings?._bind(),
-        hlsId3SegmentTagging: this.props.hlsId3SegmentTagging ?? HlsId3SegmentTaggingState.DISABLED,
-        iFrameOnlyPlaylists: this.props.iFrameOnlyPlaylists ?? HlsIFrameOnlyPlaylists.DISABLED,
-        incompleteSegmentBehavior: this.props.incompleteSegmentBehavior ?? HlsIncompleteSegmentBehavior.AUTO,
-        ivInManifest: this.props.ivInManifest,
-        ivSource: this.props.ivSource,
+        hlsId3SegmentTagging: (this.props.hlsId3SegmentTagging ?? HlsId3SegmentTaggingState.DISABLED).value,
+        iFrameOnlyPlaylists: (this.props.iFrameOnlyPlaylists ?? HlsIFrameOnlyPlaylists.DISABLED).value,
+        incompleteSegmentBehavior: (this.props.incompleteSegmentBehavior ?? HlsIncompleteSegmentBehavior.AUTO).value,
+        ivInManifest: this.props.ivInManifest?.value,
+        ivSource: this.props.ivSource?.value,
         keyFormat: this.props.keyFormat,
         keyFormatVersions: this.props.keyFormatVersions,
         keyProviderSettings: this.props.keyProviderSettings?._bind(),
-        manifestCompression: this.props.manifestCompression ?? HlsManifestCompression.NONE,
-        manifestDurationFormat: this.props.manifestDurationFormat ?? HlsManifestDurationFormat.FLOATING_POINT,
-        outputSelection: this.props.outputSelection ?? HlsOutputSelection.MANIFESTS_AND_SEGMENTS,
-        programDateTime: this.props.programDateTime ?? HlsProgramDateTime.EXCLUDE,
-        programDateTimeClock: this.props.programDateTimeClock ?? HlsProgramDateTimeClock.INITIALIZE_FROM_OUTPUT_TIMECODE,
+        manifestCompression: (this.props.manifestCompression ?? HlsManifestCompression.NONE).value,
+        manifestDurationFormat: (this.props.manifestDurationFormat ?? HlsManifestDurationFormat.FLOATING_POINT).value,
+        outputSelection: (this.props.outputSelection ?? HlsOutputSelection.MANIFESTS_AND_SEGMENTS).value,
+        programDateTime: (this.props.programDateTime ?? HlsProgramDateTime.EXCLUDE).value,
+        programDateTimeClock: (this.props.programDateTimeClock ?? HlsProgramDateTimeClock.INITIALIZE_FROM_OUTPUT_TIMECODE).value,
         programDateTimePeriod: this.props.programDateTimePeriod?.toSeconds() ?? 600,
-        redundantManifest: this.props.redundantManifest ?? HlsRedundantManifest.DISABLED,
-        segmentationMode: this.props.segmentationMode ?? HlsSegmentationMode.USE_SEGMENT_DURATION,
+        redundantManifest: (this.props.redundantManifest ?? HlsRedundantManifest.DISABLED).value,
+        segmentationMode: (this.props.segmentationMode ?? HlsSegmentationMode.USE_SEGMENT_DURATION).value,
         segmentsPerSubdirectory: this.props.segmentsPerSubdirectory ?? 10_000,
-        streamInfResolution: this.props.streamInfResolution ?? HlsStreamInfResolution.INCLUDE,
-        timedMetadataId3Frame: this.props.timedMetadataId3Frame ?? HlsTimedMetadataId3Frame.PRIV,
+        streamInfResolution: (this.props.streamInfResolution ?? HlsStreamInfResolution.INCLUDE).value,
+        timedMetadataId3Frame: (this.props.timedMetadataId3Frame ?? HlsTimedMetadataId3Frame.PRIV).value,
         timedMetadataId3Period: this.props.timedMetadataId3Period?.toSeconds() ?? 10,
         timestampDeltaMilliseconds: this.props.timestampDelta?.toMilliseconds(),
-        tsFileMode: this.props.tsFileMode ?? HlsTsFileMode.SEGMENTED_FILES,
+        tsFileMode: (this.props.tsFileMode ?? HlsTsFileMode.SEGMENTED_FILES).value,
       },
     };
   }
@@ -1367,8 +1367,8 @@ class UdpOutputGroupConfiguration extends OutputGroupConfiguration {
   public _bind(): CfnChannel.OutputGroupSettingsProperty {
     return {
       udpGroupSettings: {
-        inputLossAction: this.props.inputLossAction ?? UdpInputLossAction.EMIT_PROGRAM,
-        timedMetadataId3Frame: this.props.timedMetadataId3Frame,
+        inputLossAction: (this.props.inputLossAction ?? UdpInputLossAction.EMIT_PROGRAM).value,
+        timedMetadataId3Frame: this.props.timedMetadataId3Frame?.value,
         timedMetadataId3Period: this.props.timedMetadataId3Period?.toSeconds(),
       },
     };
@@ -1408,7 +1408,7 @@ class ArchiveOutputGroupConfiguration extends OutputGroupConfiguration {
         destination: { destinationRefId: toDestinationId(this.props.name) },
         rolloverInterval: this.props.rolloverInterval?.toSeconds() ?? 300,
         archiveCdnSettings: this.props.archiveS3CannedAcl ? {
-          archiveS3Settings: { cannedAcl: this.props.archiveS3CannedAcl },
+          archiveS3Settings: { cannedAcl: this.props.archiveS3CannedAcl.value },
         } : undefined,
       },
     };
@@ -1436,14 +1436,14 @@ class RtmpOutputGroupConfiguration extends OutputGroupConfiguration {
   public _bind(): CfnChannel.OutputGroupSettingsProperty {
     return {
       rtmpGroupSettings: {
-        authenticationScheme: this.props.authenticationScheme ?? RtmpAuthenticationScheme.COMMON,
+        authenticationScheme: (this.props.authenticationScheme ?? RtmpAuthenticationScheme.COMMON).value,
         restartDelay: this.props.restartDelay?.toSeconds() ?? 15,
-        adMarkers: this.props.adMarkers,
-        cacheFullBehavior: this.props.cacheFullBehavior,
+        adMarkers: this.props.adMarkers?.map(m => m.value),
+        cacheFullBehavior: this.props.cacheFullBehavior?.value,
         cacheLength: this.props.cacheLength?.toSeconds(),
-        captionData: this.props.captionData,
-        includeFillerNalUnits: this.props.includeFillerNalUnits,
-        inputLossAction: this.props.inputLossAction,
+        captionData: this.props.captionData?.value,
+        includeFillerNalUnits: this.props.includeFillerNalUnits?.value,
+        inputLossAction: this.props.inputLossAction?.value,
       },
     };
   }
@@ -1494,7 +1494,7 @@ class SrtOutputGroupConfiguration extends OutputGroupConfiguration {
   public _bind(): CfnChannel.OutputGroupSettingsProperty {
     return {
       srtGroupSettings: {
-        inputLossAction: this.props.inputLossAction,
+        inputLossAction: this.props.inputLossAction?.value,
       },
     };
   }
@@ -1559,19 +1559,19 @@ class CmafIngestOutputGroupConfiguration extends OutputGroupConfiguration {
       cmafIngestGroupSettings: {
         destination: { destinationRefId: toDestinationId(this.props.name) },
         segmentLength: this.props.segment?._length() ?? 6,
-        id3Behavior: this.props.id3Behavior,
+        id3Behavior: this.props.id3Behavior?.value,
         id3NameModifier: this.props.id3NameModifier,
-        klvBehavior: this.props.klvBehavior,
+        klvBehavior: this.props.klvBehavior?.value,
         klvNameModifier: this.props.klvNameModifier,
-        nielsenId3Behavior: this.props.nielsenId3Behavior,
+        nielsenId3Behavior: this.props.nielsenId3Behavior?.value,
         nielsenId3NameModifier: this.props.nielsenId3NameModifier,
         scte35NameModifier: this.props.scte35NameModifier,
-        scte35Type: this.props.scte35Type,
+        scte35Type: this.props.scte35Type?.value,
         segmentLengthUnits: this.props.segment?._units(),
         sendDelayMs: this.props.sendDelayMs,
-        timedMetadataId3Frame: this.props.timedMetadataId3Frame,
+        timedMetadataId3Frame: this.props.timedMetadataId3Frame?.value,
         timedMetadataId3Period: this.props.timedMetadataId3Period?.toSeconds(),
-        timedMetadataPassthrough: this.props.timedMetadataPassthrough,
+        timedMetadataPassthrough: this.props.timedMetadataPassthrough?.value,
         captionLanguageMappings: this.props.captionLanguageMappings,
       },
     };
@@ -1614,7 +1614,7 @@ class FrameCaptureOutputGroupConfiguration extends OutputGroupConfiguration {
       frameCaptureGroupSettings: {
         destination: { destinationRefId: toDestinationId(this.props.name) },
         frameCaptureCdnSettings: this.props.frameCaptureS3CannedAcl ? {
-          frameCaptureS3Settings: { cannedAcl: this.props.frameCaptureS3CannedAcl },
+          frameCaptureS3Settings: { cannedAcl: this.props.frameCaptureS3CannedAcl.value },
         } : undefined,
       },
     };
@@ -1669,23 +1669,23 @@ class MsSmoothOutputGroupConfiguration extends OutputGroupConfiguration {
       msSmoothGroupSettings: {
         destination: { destinationRefId: toDestinationId(this.props.name) },
         acquisitionPointId: this.props.acquisitionPointId,
-        audioOnlyTimecodeControl: this.props.audioOnlyTimecodeControl,
-        certificateMode: this.props.certificateMode,
+        audioOnlyTimecodeControl: this.props.audioOnlyTimecodeControl?.value,
+        certificateMode: this.props.certificateMode?.value,
         connectionRetryInterval: this.props.connectionRetryInterval?.toSeconds(),
         eventId: this.props.eventId,
-        eventIdMode: this.props.eventIdMode,
-        eventStopBehavior: this.props.eventStopBehavior,
+        eventIdMode: this.props.eventIdMode?.value,
+        eventStopBehavior: this.props.eventStopBehavior?.value,
         filecacheDuration: this.props.filecacheDuration?.toSeconds(),
         fragmentLength: this.props.fragmentLength?.toSeconds(),
-        inputLossAction: this.props.inputLossAction,
+        inputLossAction: this.props.inputLossAction?.value,
         numRetries: this.props.numRetries,
         restartDelay: this.props.restartDelay?.toSeconds(),
-        segmentationMode: this.props.segmentationMode,
+        segmentationMode: this.props.segmentationMode?.value,
         sendDelayMs: this.props.sendDelayMs,
-        sparseTrackType: this.props.sparseTrackType,
-        streamManifestBehavior: this.props.streamManifestBehavior,
+        sparseTrackType: this.props.sparseTrackType?.value,
+        streamManifestBehavior: this.props.streamManifestBehavior?.value,
         timestampOffset: this.props.timestampOffset,
-        timestampOffsetMode: this.props.timestampOffsetMode,
+        timestampOffsetMode: this.props.timestampOffsetMode?.value,
       },
     };
   }
@@ -1735,7 +1735,7 @@ export class OutputGroup {
   }
 
   /** @internal */
-  public _grantPermissions(role: IRole): void {
+  public _grantPermissions(role: IRoleRef): void {
     this.config._grantPermissions(role);
     // Grant read access to any external files referenced by the outputs (burn-in caption fonts,
     // audio-only cover-art images) sourced from S3 buckets.

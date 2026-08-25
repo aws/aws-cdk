@@ -114,7 +114,10 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "mediapackagev2:PutObject",
+       "Action": [
+        "mediapackagev2:GetChannel",
+        "mediapackagev2:PutObject"
+       ],
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [

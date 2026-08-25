@@ -1,6 +1,6 @@
 import type { Duration } from 'aws-cdk-lib';
 import { UnscopedValidationError, Token } from 'aws-cdk-lib';
-import type { IRole } from 'aws-cdk-lib/aws-iam';
+import type { IRole, IRoleRef } from 'aws-cdk-lib/aws-iam';
 import type { CfnChannel } from 'aws-cdk-lib/aws-medialive';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { AudioCodecType } from './audio-codec-settings';
@@ -161,7 +161,7 @@ export abstract class Output {
    * override to add output-type-specific files (e.g. audio-only cover art).
    * @internal
    */
-  public _grantPermissions(role: IRole): void {
+  public _grantPermissions(role: IRoleRef): void {
     this.encodes.forEach(e => e._grantRead(role));
   }
 
@@ -590,8 +590,8 @@ export class MediaPackageV2Output extends Output {
         mediaPackageV2DestinationSettings: {
           audioGroupId: this.def.audioGroupId,
           audioRenditionSets: this.def.audioRenditionSets,
-          hlsAutoSelect: this.def.hlsAutoSelect ?? MediaPackageV2HlsSetting.OMIT,
-          hlsDefault: this.def.hlsDefault ?? MediaPackageV2HlsSetting.OMIT,
+          hlsAutoSelect: (this.def.hlsAutoSelect ?? MediaPackageV2HlsSetting.OMIT).value,
+          hlsDefault: (this.def.hlsDefault ?? MediaPackageV2HlsSetting.OMIT).value,
         },
       },
     };
@@ -619,7 +619,7 @@ export class HlsOutput extends Output {
       hlsOutputSettings: {
         nameModifier: this.def.nameModifier,
         segmentModifier: this.def.segmentModifier,
-        h265PackagingType: this.def.h265PackagingType,
+        h265PackagingType: this.def.h265PackagingType?.value,
         hlsSettings: (this.def.hlsSettings ?? HlsSettings.standard())._bind(),
       },
     };
@@ -664,7 +664,7 @@ export class UdpOutput extends Output {
           m2TsSettings: this.def.m2tsSettings?._bind() ?? {},
         },
         fecOutputSettings: this.def.fec ? {
-          includeFec: this.def.fec.mode,
+          includeFec: this.def.fec.mode?.value,
           columnDepth: this.def.fec.columnDepth,
           rowLength: this.def.fec.rowLength,
         } : undefined,
@@ -745,7 +745,7 @@ export class RtmpOutput extends Output {
   protected _bindOutputSettings(): CfnChannel.OutputSettingsProperty {
     return {
       rtmpOutputSettings: {
-        certificateMode: this.def.certificateMode,
+        certificateMode: this.def.certificateMode?.value,
         connectionRetryInterval: this.def.connectionRetryInterval?.toSeconds(),
         numRetries: this.def.numRetries,
         destination: {
@@ -901,7 +901,7 @@ export class MsSmoothOutput extends Output {
     return {
       msSmoothOutputSettings: {
         nameModifier: this.def.nameModifier,
-        h265PackagingType: this.def.h265PackagingType,
+        h265PackagingType: this.def.h265PackagingType?.value,
       },
     };
   }

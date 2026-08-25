@@ -11,15 +11,27 @@ import { extractResourceId } from './shared';
 /**
  * The hardware type for the cluster.
  */
-export enum ClusterType {
+export class ClusterType {
   /** On-premises cluster */
-  ON_PREMISES = 'ON_PREMISES',
+  public static readonly ON_PREMISES = new ClusterType('ON_PREMISES');
   /** AWS Outposts rack */
-  OUTPOSTS_RACK = 'OUTPOSTS_RACK',
+  public static readonly OUTPOSTS_RACK = new ClusterType('OUTPOSTS_RACK');
   /** AWS Outposts server */
-  OUTPOSTS_SERVER = 'OUTPOSTS_SERVER',
+  public static readonly OUTPOSTS_SERVER = new ClusterType('OUTPOSTS_SERVER');
   /** Amazon EC2 */
-  EC2 = 'EC2',
+  public static readonly EC2 = new ClusterType('EC2');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): ClusterType {
+    return new ClusterType(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -163,7 +175,7 @@ export class Cluster extends Resource implements ICluster {
 
     const resource = new CfnCluster(this, 'Resource', {
       name: this.physicalName,
-      clusterType: props.clusterType ?? ClusterType.ON_PREMISES,
+      clusterType: (props.clusterType ?? ClusterType.ON_PREMISES).value,
       instanceRoleArn: props.instanceRole.roleArn,
       networkSettings: props.networkSettings ? {
         defaultRoute: props.networkSettings.defaultRoute,

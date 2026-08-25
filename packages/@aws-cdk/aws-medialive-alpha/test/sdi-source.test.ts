@@ -37,8 +37,29 @@ describe('SdiSource', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::MediaLive::SdiSource', {
       Type: 'QUAD',
-      Mode: mode,
+      Mode: mode.value,
     });
+  });
+
+  test('allows mode when type is QUAD via the of() escape hatch', () => {
+    new SdiSource(stack, 'Sdi', {
+      sdiSourceName: 'quad-cam',
+      type: SdiType.of('QUAD'),
+      mode: SdiMode.INTERLEAVE,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::MediaLive::SdiSource', {
+      Type: 'QUAD',
+      Mode: 'INTERLEAVE',
+    });
+  });
+
+  test('fails when mode is set but type is not QUAD', () => {
+    expect(() => new SdiSource(stack, 'Sdi', {
+      sdiSourceName: 'single-cam',
+      type: SdiType.SINGLE,
+      mode: SdiMode.INTERLEAVE,
+    })).toThrow('mode is only valid when type is QUAD');
   });
 
   test('omits mode for a SINGLE source', () => {

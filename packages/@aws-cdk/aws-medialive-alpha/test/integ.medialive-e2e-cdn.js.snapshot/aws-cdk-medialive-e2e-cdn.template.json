@@ -292,7 +292,10 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "mediapackagev2:PutObject",
+       "Action": [
+        "mediapackagev2:GetChannel",
+        "mediapackagev2:PutObject"
+       ],
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
@@ -363,7 +366,15 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":log-group:*"
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:ElementalMediaLive"
           ]
          ]
         },
@@ -375,7 +386,15 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":logs:*"
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:ElementalMediaLive:*"
           ]
          ]
         }

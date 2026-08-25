@@ -1090,9 +1090,9 @@ new medialive.Channel(stack, 'Channel', {
 
 ## Auto-Created Role and Grants
 
-When no `role` is provided, the channel auto-creates an IAM role with the `medialive.amazonaws.com` service principal and grants it only the permissions your configuration actually needs.
+When no `role` is provided, the channel auto-creates an IAM role with the `medialive.amazonaws.com` service principal and grants it only the permissions your configuration actually needs. These automatic grants apply **only** to the channel-managed role; if you bring your own `role`, none are added.
 
-**Channel role grants** — wired based on what you configure:
+**Channel role grants** — wired based on what you configure (channel-managed role only):
 
 | Configuration | Grant | Scope |
 |---|---|---|
@@ -1102,10 +1102,10 @@ When no `role` is provided, the channel auto-creates an IAM role with the `media
 | `SrtDestination` with an encryption secret | Secrets Manager read | The secret |
 | URL pull input with a password parameter | SSM parameter read | The parameter |
 | Thumbnails (on by default) | `s3:PutObject` | `*` — uploads to an AWS service-owned bucket |
-| Channel logging (`logLevel` set) | CloudWatch Logs write | `arn:<partition>:logs:*` |
+| Channel logging (`logLevel` set) | CloudWatch Logs write | The `ElementalMediaLive` log group in your account/region |
 | VPC output (`vpc` set) | EC2 ENI create/delete + describe | Scoped to your subnets/SGs; `Describe*` requires `*` |
 
-**Input role grants** — separate from the channel role, used at input create/delete time:
+**Input role grants** — separate from the channel role, used at input create/delete time. Like the channel role, these are added only when the input auto-creates its role; pass a `role` to `mediaConnect()` or `cdi()` and no grants are added:
 
 | Input type | Grant | Scope |
 |---|---|---|
@@ -1114,7 +1114,11 @@ When no `role` is provided, the channel auto-creates an IAM role with the `media
 
 Both channel and input auto-created roles include confused-deputy prevention (`aws:SourceAccount` + `aws:SourceArn` conditions). For the full list of trusted-entity requirements, see [the documentation](https://docs.aws.amazon.com/medialive/latest/ug/trusted-entity-requirements.html).
 
-The auto-created role is available on `channel.role` if you need to add further permissions. To pin an exact policy yourself, pass your own `role` — or attach the AWS-managed `MediaLiveAccessRole`.
+The auto-created role is available on `channel.role` if you need to add further permissions.
+
+### Bringing your pre-defined role
+
+When you pass a `role`, the channel makes **no** automatic grants — you will need to add the permissions that role needs. That covers both the principal policy and any referenced resource policies: S3 output destinations and input sources, Secrets Manager and SSM reads, MediaPackage V2 ingest, CloudWatch Logs, and VPC output ENI management. See the [trusted-entity requirements](https://docs.aws.amazon.com/medialive/latest/ug/trusted-entity-requirements.html), or pass the account's `MediaLiveAccessRole` — an IAM role that MediaLive can assume.
 
 ## CloudWatch Metrics
 

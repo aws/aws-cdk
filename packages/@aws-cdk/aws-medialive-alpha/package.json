@@ -125,9 +125,11 @@
       "no-unused-type:@aws-cdk/aws-medialive-alpha.VideoCodecType",
       "props-no-arn-refs:@aws-cdk/aws-medialive-alpha.ChannelProps.inferenceFeedArn",
       "props-physical-name:@aws-cdk/aws-medialive-alpha.InputSecurityGroupProps",
-      "props-physical-name:@aws-cdk/aws-medialive-alpha.MultiplexProgramProps",
-      "prefer-ref-interface:@aws-cdk/aws-medialive-alpha.MultiplexProgramProps.multiplex",
-      "prefer-ref-interface:aws-cdk-lib.aws_ec2.ISubnet.associateNetworkAcl.acl"
+      "prefer-ref-interface:aws-cdk-lib.aws_ec2.ISubnet.associateNetworkAcl.acl",
+      "duration-prop-type:@aws-cdk/aws-medialive-alpha.HlsSegmentationMode.USE_SEGMENT_DURATION",
+      "duration-prop-type:@aws-cdk/aws-medialive-alpha.M2tsPcrControl.CONFIGURED_PCR_PERIOD",
+      "duration-prop-type:@aws-cdk/aws-medialive-alpha.M3u8PcrControl.CONFIGURED_PCR_PERIOD",
+      "duration-prop-type:@aws-cdk/aws-medialive-alpha.MsSmoothSegmentationMode.USE_SEGMENT_DURATION"
     ]
   }
 }

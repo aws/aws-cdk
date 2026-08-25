@@ -1,11 +1,10 @@
 import type { IResource } from 'aws-cdk-lib';
 import { Lazy, Names, Resource } from 'aws-cdk-lib';
-import type { ChannelPlacementGroupReference, IChannelPlacementGroupRef } from 'aws-cdk-lib/aws-medialive';
+import type { ChannelPlacementGroupReference, IChannelPlacementGroupRef, IClusterRef } from 'aws-cdk-lib/aws-medialive';
 import { CfnChannelPlacementGroup } from 'aws-cdk-lib/aws-medialive';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
-import type { ICluster } from './cluster';
 
 /**
  * Represents a MediaLive Channel Placement Group.
@@ -34,10 +33,8 @@ export interface ChannelPlacementGroupProps {
   readonly channelPlacementGroupName?: string;
   /**
    * The cluster this channel placement group belongs to.
-   *
-   * [disable-awslint:prefer-ref-interface]
    */
-  readonly cluster: ICluster;
+  readonly cluster: IClusterRef;
   /**
    * List of node IDs for the channel placement group.
    * @default - no nodes
@@ -90,14 +87,13 @@ export class ChannelPlacementGroup extends Resource implements IChannelPlacement
 
   public readonly channelPlacementGroupArn: string;
   public readonly channelPlacementGroupId: string;
-
-  private readonly cluster: ICluster;
+  private readonly clusterId: string;
 
   /** A reference to this Channel Placement Group resource. */
   public get channelPlacementGroupRef(): ChannelPlacementGroupReference {
     return {
       channelPlacementGroupId: this.channelPlacementGroupId,
-      clusterId: this.cluster.clusterId,
+      clusterId: this.clusterId,
       channelPlacementGroupArn: this.channelPlacementGroupArn,
     };
   }
@@ -109,11 +105,11 @@ export class ChannelPlacementGroup extends Resource implements IChannelPlacement
 
     addConstructMetadata(this, props);
 
-    this.cluster = props.cluster;
+    this.clusterId = props.cluster.clusterRef.clusterId;
 
     const resource = new CfnChannelPlacementGroup(this, 'Resource', {
       name: this.physicalName,
-      clusterId: props.cluster.clusterId,
+      clusterId: props.cluster.clusterRef.clusterId,
       nodes: props.nodes,
       tags: props.tags ? Object.entries(props.tags).map(([key, value]) => ({ key, value })) : undefined,
     });

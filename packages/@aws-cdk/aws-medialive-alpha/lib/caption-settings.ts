@@ -5,105 +5,225 @@ import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { FileLocation } from './file-location';
 
 /** Caption alignment for burn-in and DVB-Sub outputs. */
-export enum CaptionAlignment {
+export class CaptionAlignment {
   /** Center the captions. */
-  CENTERED = 'CENTERED',
+  public static readonly CENTERED = new CaptionAlignment('CENTERED');
   /** Left-align the captions. */
-  LEFT = 'LEFT',
+  public static readonly LEFT = new CaptionAlignment('LEFT');
   /** Smart: left-justify live subtitles, center-justify pre-recorded subtitles. */
-  SMART = 'SMART',
+  public static readonly SMART = new CaptionAlignment('SMART');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): CaptionAlignment {
+    return new CaptionAlignment(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Font color for burn-in and DVB-Sub captions. */
-export enum CaptionFontColor {
+export class CaptionFontColor {
   /** Black. */
-  BLACK = 'BLACK',
+  public static readonly BLACK = new CaptionFontColor('BLACK');
   /** Blue. */
-  BLUE = 'BLUE',
+  public static readonly BLUE = new CaptionFontColor('BLUE');
   /** Green. */
-  GREEN = 'GREEN',
+  public static readonly GREEN = new CaptionFontColor('GREEN');
   /** Red. */
-  RED = 'RED',
+  public static readonly RED = new CaptionFontColor('RED');
   /** White. */
-  WHITE = 'WHITE',
+  public static readonly WHITE = new CaptionFontColor('WHITE');
   /** Yellow. */
-  YELLOW = 'YELLOW',
+  public static readonly YELLOW = new CaptionFontColor('YELLOW');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): CaptionFontColor {
+    return new CaptionFontColor(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Font outline color for burn-in and DVB-Sub captions. */
-export enum CaptionOutlineColor {
+export class CaptionOutlineColor {
   /** Black. */
-  BLACK = 'BLACK',
+  public static readonly BLACK = new CaptionOutlineColor('BLACK');
   /** Blue. */
-  BLUE = 'BLUE',
+  public static readonly BLUE = new CaptionOutlineColor('BLUE');
   /** Green. */
-  GREEN = 'GREEN',
+  public static readonly GREEN = new CaptionOutlineColor('GREEN');
   /** Red. */
-  RED = 'RED',
+  public static readonly RED = new CaptionOutlineColor('RED');
   /** White. */
-  WHITE = 'WHITE',
+  public static readonly WHITE = new CaptionOutlineColor('WHITE');
   /** Yellow. */
-  YELLOW = 'YELLOW',
+  public static readonly YELLOW = new CaptionOutlineColor('YELLOW');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): CaptionOutlineColor {
+    return new CaptionOutlineColor(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Background color for burn-in and DVB-Sub captions. */
-export enum CaptionBackgroundColor {
+export class CaptionBackgroundColor {
   /** Black. */
-  BLACK = 'BLACK',
+  public static readonly BLACK = new CaptionBackgroundColor('BLACK');
   /** None (transparent). */
-  NONE = 'NONE',
+  public static readonly NONE = new CaptionBackgroundColor('NONE');
   /** White. */
-  WHITE = 'WHITE',
+  public static readonly WHITE = new CaptionBackgroundColor('WHITE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): CaptionBackgroundColor {
+    return new CaptionBackgroundColor(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Shadow color for burn-in and DVB-Sub captions. */
-export enum CaptionShadowColor {
+export class CaptionShadowColor {
   /** Black. */
-  BLACK = 'BLACK',
+  public static readonly BLACK = new CaptionShadowColor('BLACK');
   /** None (transparent). */
-  NONE = 'NONE',
+  public static readonly NONE = new CaptionShadowColor('NONE');
   /** White. */
-  WHITE = 'WHITE',
+  public static readonly WHITE = new CaptionShadowColor('WHITE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): CaptionShadowColor {
+    return new CaptionShadowColor(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Controls whether a fixed grid is used to generate the subtitle bitmap (Teletext input). */
-export enum CaptionTeletextGridControl {
+export class CaptionTeletextGridControl {
   /** Fixed grid. */
-  FIXED = 'FIXED',
+  public static readonly FIXED = new CaptionTeletextGridControl('FIXED');
   /** Scaled grid. */
-  SCALED = 'SCALED',
+  public static readonly SCALED = new CaptionTeletextGridControl('SCALED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): CaptionTeletextGridControl {
+    return new CaptionTeletextGridControl(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Whether EBU-TT-D fills the gap between multi-line captions. */
-export enum EbuTtDFillLineGap {
+export class EbuTtDFillLineGap {
   /** Leave the gap unfilled. */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new EbuTtDFillLineGap('DISABLED');
   /** Fill with the captions background color. */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new EbuTtDFillLineGap('ENABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): EbuTtDFillLineGap {
+    return new EbuTtDFillLineGap(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Whether EBU-TT-D includes source style information. */
-export enum EbuTtDStyleControl {
+export class EbuTtDStyleControl {
   /** Set the font family to monospaced and exclude other style info. */
-  EXCLUDE = 'EXCLUDE',
+  public static readonly EXCLUDE = new EbuTtDStyleControl('EXCLUDE');
   /** Include source style (color, position) in the font data. */
-  INCLUDE = 'INCLUDE',
+  public static readonly INCLUDE = new EbuTtDStyleControl('INCLUDE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): EbuTtDStyleControl {
+    return new EbuTtDStyleControl(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Whether TTML passes through source style/position. */
-export enum TtmlStyleControl {
+export class TtmlStyleControl {
   /** Pass through style and position from a TTML-like source. */
-  PASSTHROUGH = 'PASSTHROUGH',
+  public static readonly PASSTHROUGH = new TtmlStyleControl('PASSTHROUGH');
   /** Use the configured style. */
-  USE_CONFIGURED = 'USE_CONFIGURED',
+  public static readonly USE_CONFIGURED = new TtmlStyleControl('USE_CONFIGURED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): TtmlStyleControl {
+    return new TtmlStyleControl(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Whether WebVTT passes through source style/position. */
-export enum WebvttStyleControl {
+export class WebvttStyleControl {
   /** Do not pass through style; output contains no font styling. */
-  NO_STYLE_DATA = 'NO_STYLE_DATA',
+  public static readonly NO_STYLE_DATA = new WebvttStyleControl('NO_STYLE_DATA');
   /** Pass through style (valid only for EMBEDDED or TELETEXT sources). */
-  PASSTHROUGH = 'PASSTHROUGH',
+  public static readonly PASSTHROUGH = new WebvttStyleControl('PASSTHROUGH');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): WebvttStyleControl {
+    return new WebvttStyleControl(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -137,12 +257,9 @@ export class CaptionFontSize {
 }
 
 /**
- * Font and positioning settings shared by burn-in and DVB-Sub caption outputs.
- *
- * The AWS service requires all burn-in and DVB-Sub font settings to match, so both output types
- * use the same set of options.
+ * Font and positioning settings for a rendered caption output (burn-in or DVB-Sub).
  */
-export interface CaptionBurnInStyleProps {
+export interface CaptionFontStyleProps {
   /**
    * Caption alignment. With explicit x/y positions, the font is justified relative to them.
    * @default CaptionAlignment.CENTERED
@@ -238,6 +355,16 @@ export interface CaptionBurnInStyleProps {
   readonly yPosition?: number;
 }
 
+/**
+ * Properties for burn-in captions.
+ */
+export interface BurnInDestinationProps extends CaptionFontStyleProps {}
+
+/**
+ * Properties for DVB-Sub captions.
+ */
+export interface DvbSubDestinationProps extends CaptionFontStyleProps {}
+
 /** Properties for EBU-TT-D caption output. */
 export interface EbuTtDDestinationProps {
   /**
@@ -297,11 +424,11 @@ export interface WebvttDestinationProps {
  */
 export abstract class CaptionDestination {
   /** Burned-in captions rendered into the video. */
-  public static burnIn(props: CaptionBurnInStyleProps = {}): CaptionDestination {
+  public static burnIn(props: BurnInDestinationProps = {}): CaptionDestination {
     return new BurnInCaptionDestination(props);
   }
   /** DVB-Sub bitmap captions. */
-  public static dvbSub(props: CaptionBurnInStyleProps = {}): CaptionDestination {
+  public static dvbSub(props: DvbSubDestinationProps = {}): CaptionDestination {
     return new DvbSubCaptionDestination(props);
   }
   /** EBU-TT-D sidecar captions. */
@@ -376,24 +503,24 @@ export abstract class CaptionDestination {
 }
 
 /** @internal */
-function bindBurnInStyle(p: CaptionBurnInStyleProps): CfnChannel.BurnInDestinationSettingsProperty {
+function bindFontStyle(p: CaptionFontStyleProps): CfnChannel.BurnInDestinationSettingsProperty {
   return {
-    alignment: p.alignment ?? CaptionAlignment.CENTERED,
-    backgroundColor: p.backgroundColor,
+    alignment: (p.alignment ?? CaptionAlignment.CENTERED).value,
+    backgroundColor: p.backgroundColor?.value,
     backgroundOpacity: p.backgroundOpacity ?? 0,
     font: p.font?._bind(),
-    fontColor: p.fontColor ?? CaptionFontColor.WHITE,
+    fontColor: (p.fontColor ?? CaptionFontColor.WHITE).value,
     fontOpacity: p.fontOpacity ?? 255,
     fontResolution: p.fontResolution ?? 96,
     fontSize: (p.fontSize ?? CaptionFontSize.AUTO)._bind(),
-    outlineColor: p.outlineColor ?? CaptionOutlineColor.BLACK,
+    outlineColor: (p.outlineColor ?? CaptionOutlineColor.BLACK).value,
     outlineSize: p.outlineSize ?? 2,
-    shadowColor: p.shadowColor ?? CaptionShadowColor.NONE,
+    shadowColor: (p.shadowColor ?? CaptionShadowColor.NONE).value,
     shadowOpacity: p.shadowOpacity ?? 0,
     shadowXOffset: p.shadowXOffset,
     shadowYOffset: p.shadowYOffset,
     subtitleRows: p.subtitleRows,
-    teletextGridControl: p.teletextGridControl ?? CaptionTeletextGridControl.FIXED,
+    teletextGridControl: (p.teletextGridControl ?? CaptionTeletextGridControl.FIXED).value,
     xPosition: p.xPosition,
     yPosition: p.yPosition,
   };
@@ -401,9 +528,9 @@ function bindBurnInStyle(p: CaptionBurnInStyleProps): CfnChannel.BurnInDestinati
 
 /** @internal */
 class BurnInCaptionDestination extends CaptionDestination {
-  constructor(private readonly props: CaptionBurnInStyleProps) { super(); }
+  constructor(private readonly props: BurnInDestinationProps) { super(); }
   public _bind(): CfnChannel.CaptionDestinationSettingsProperty {
-    return { burnInDestinationSettings: bindBurnInStyle(this.props) };
+    return { burnInDestinationSettings: bindFontStyle(this.props) };
   }
   public override _isInBand(): boolean {
     return true;
@@ -415,9 +542,9 @@ class BurnInCaptionDestination extends CaptionDestination {
 
 /** @internal */
 class DvbSubCaptionDestination extends CaptionDestination {
-  constructor(private readonly props: CaptionBurnInStyleProps) { super(); }
+  constructor(private readonly props: DvbSubDestinationProps) { super(); }
   public _bind(): CfnChannel.CaptionDestinationSettingsProperty {
-    return { dvbSubDestinationSettings: bindBurnInStyle(this.props) };
+    return { dvbSubDestinationSettings: bindFontStyle(this.props) };
   }
   public override _grantRead(role: IRole): void {
     this.props.font?._grantRead(role);
@@ -433,9 +560,9 @@ class EbuTtDCaptionDestination extends CaptionDestination {
         copyrightHolder: this.props.copyrightHolder,
         defaultFontSize: this.props.defaultFontSize,
         defaultLineHeight: this.props.defaultLineHeight,
-        fillLineGap: this.props.fillLineGap,
+        fillLineGap: this.props.fillLineGap?.value,
         fontFamily: this.props.fontFamily,
-        styleControl: this.props.styleControl,
+        styleControl: this.props.styleControl?.value,
       },
     };
   }
@@ -445,7 +572,7 @@ class EbuTtDCaptionDestination extends CaptionDestination {
 class TtmlCaptionDestination extends CaptionDestination {
   constructor(private readonly props: TtmlDestinationProps) { super(); }
   public _bind(): CfnChannel.CaptionDestinationSettingsProperty {
-    return { ttmlDestinationSettings: { styleControl: this.props.styleControl ?? TtmlStyleControl.PASSTHROUGH } };
+    return { ttmlDestinationSettings: { styleControl: (this.props.styleControl ?? TtmlStyleControl.PASSTHROUGH).value } };
   }
 }
 
@@ -453,7 +580,7 @@ class TtmlCaptionDestination extends CaptionDestination {
 class WebvttCaptionDestination extends CaptionDestination {
   constructor(private readonly props: WebvttDestinationProps) { super(); }
   public _bind(): CfnChannel.CaptionDestinationSettingsProperty {
-    return { webvttDestinationSettings: { styleControl: this.props.styleControl ?? WebvttStyleControl.NO_STYLE_DATA } };
+    return { webvttDestinationSettings: { styleControl: (this.props.styleControl ?? WebvttStyleControl.NO_STYLE_DATA).value } };
   }
 }
 

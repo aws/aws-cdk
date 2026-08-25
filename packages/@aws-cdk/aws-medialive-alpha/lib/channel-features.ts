@@ -1,11 +1,23 @@
 /**
  * Feature activation state.
  */
-export enum FeatureActivationState {
+export class FeatureActivationState {
   /** Enable the feature */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new FeatureActivationState('ENABLED');
   /** Disable the feature */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new FeatureActivationState('DISABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): FeatureActivationState {
+    return new FeatureActivationState(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -27,11 +39,23 @@ export interface FeatureActivations {
 /**
  * Motion graphics insertion state.
  */
-export enum MotionGraphicsInsertion {
+export class MotionGraphicsInsertion {
   /** Enable motion graphics overlay */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new MotionGraphicsInsertion('ENABLED');
   /** Disable motion graphics overlay */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new MotionGraphicsInsertion('DISABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): MotionGraphicsInsertion {
+    return new MotionGraphicsInsertion(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -48,11 +72,23 @@ export interface MotionGraphicsConfiguration {
 /**
  * Whether Nielsen PCM to ID3 tagging is enabled.
  */
-export enum NielsenPcmToId3TaggingState {
+export class NielsenPcmToId3TaggingState {
   /** Disabled. */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new NielsenPcmToId3TaggingState('DISABLED');
   /** Enabled. */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new NielsenPcmToId3TaggingState('ENABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): NielsenPcmToId3TaggingState {
+    return new NielsenPcmToId3TaggingState(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**

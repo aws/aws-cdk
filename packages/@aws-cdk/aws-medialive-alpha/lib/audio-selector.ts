@@ -7,17 +7,29 @@ import type { AudioNormalizationSettings, RemixSettings } from './encode-configu
  * Policy for how MediaLive identifies the audio stream when selecting by language, on a
  * transport-stream PMT update.
  */
-export enum AudioLanguageSelectionPolicy {
+export class AudioLanguageSelectionPolicy {
   /**
    * Strictly identify audio by its language descriptor. If the matching language is no
    * longer present after a PMT update, mute is encoded until the language returns.
    */
-  STRICT = 'STRICT',
+  public static readonly STRICT = new AudioLanguageSelectionPolicy('STRICT');
   /**
    * On a PMT update, fall back to another audio stream of the same type in the program if a
    * stream with the same language can't be found.
    */
-  LOOSE = 'LOOSE',
+  public static readonly LOOSE = new AudioLanguageSelectionPolicy('LOOSE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): AudioLanguageSelectionPolicy {
+    return new AudioLanguageSelectionPolicy(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -33,25 +45,37 @@ export interface HlsRenditionSelectionOptions {
 /**
  * Which Dolby E program to decode from a selected audio track.
  */
-export enum DolbyEProgramSelection {
+export class DolbyEProgramSelection {
   /** Decode all channels. */
-  ALL_CHANNELS = 'ALL_CHANNELS',
+  public static readonly ALL_CHANNELS = new DolbyEProgramSelection('ALL_CHANNELS');
   /** Decode Dolby E program 1. */
-  PROGRAM_1 = 'PROGRAM_1',
+  public static readonly PROGRAM_1 = new DolbyEProgramSelection('PROGRAM_1');
   /** Decode Dolby E program 2. */
-  PROGRAM_2 = 'PROGRAM_2',
+  public static readonly PROGRAM_2 = new DolbyEProgramSelection('PROGRAM_2');
   /** Decode Dolby E program 3. */
-  PROGRAM_3 = 'PROGRAM_3',
+  public static readonly PROGRAM_3 = new DolbyEProgramSelection('PROGRAM_3');
   /** Decode Dolby E program 4. */
-  PROGRAM_4 = 'PROGRAM_4',
+  public static readonly PROGRAM_4 = new DolbyEProgramSelection('PROGRAM_4');
   /** Decode Dolby E program 5. */
-  PROGRAM_5 = 'PROGRAM_5',
+  public static readonly PROGRAM_5 = new DolbyEProgramSelection('PROGRAM_5');
   /** Decode Dolby E program 6. */
-  PROGRAM_6 = 'PROGRAM_6',
+  public static readonly PROGRAM_6 = new DolbyEProgramSelection('PROGRAM_6');
   /** Decode Dolby E program 7. */
-  PROGRAM_7 = 'PROGRAM_7',
+  public static readonly PROGRAM_7 = new DolbyEProgramSelection('PROGRAM_7');
   /** Decode Dolby E program 8. */
-  PROGRAM_8 = 'PROGRAM_8',
+  public static readonly PROGRAM_8 = new DolbyEProgramSelection('PROGRAM_8');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): DolbyEProgramSelection {
+    return new DolbyEProgramSelection(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -116,10 +140,10 @@ export class AudioPreMixerSettings {
         channelsOut: this.props.remixSettings.channelsOut,
       } : undefined,
       audioNormalizationSettings: this.props.audioNormalizationSettings ? {
-        algorithm: this.props.audioNormalizationSettings.algorithm,
-        algorithmControl: this.props.audioNormalizationSettings.algorithmControl,
+        algorithm: this.props.audioNormalizationSettings.algorithm?.value,
+        algorithmControl: this.props.audioNormalizationSettings.algorithmControl?.value,
         targetLkfs: this.props.audioNormalizationSettings.targetLkfs,
-        peakCalculation: this.props.audioNormalizationSettings.peakCalculation,
+        peakCalculation: this.props.audioNormalizationSettings.peakCalculation?.value,
         peakLimiterThreshold: this.props.audioNormalizationSettings.peakLimiterThreshold,
       } : undefined,
     };
@@ -228,7 +252,7 @@ class LanguageAudioSelector extends AudioSelector {
       selectorSettings: {
         audioLanguageSelection: {
           languageCode: this.languageCode,
-          languageSelectionPolicy: this.policy,
+          languageSelectionPolicy: this.policy?.value,
         },
       },
     };
@@ -250,7 +274,7 @@ class PidAudioSelector extends AudioSelector {
         audioPidSelection: {
           pids: this.pids.map(p => ({
             pid: p.pid,
-            dolbyEDecode: p.dolbyEDecode ? { programSelection: p.dolbyEDecode } : undefined,
+            dolbyEDecode: p.dolbyEDecode ? { programSelection: p.dolbyEDecode.value } : undefined,
             premixSettings: p.premixSettings?._bind(),
           })),
         },
@@ -277,7 +301,7 @@ class TrackAudioSelector extends AudioSelector {
             track: t.track,
             premixSettings: t.premixSettings?._bind(),
           })),
-          dolbyEDecode: this.dolbyEProgramSelection ? { programSelection: this.dolbyEProgramSelection } : undefined,
+          dolbyEDecode: this.dolbyEProgramSelection ? { programSelection: this.dolbyEProgramSelection.value } : undefined,
         },
       },
     };

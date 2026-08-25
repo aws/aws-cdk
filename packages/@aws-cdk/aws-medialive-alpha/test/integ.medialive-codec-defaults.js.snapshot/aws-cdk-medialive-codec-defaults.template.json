@@ -47,27 +47,6 @@
     }
    }
   },
-  "RoleDefaultPolicy5FFB7DAB": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "s3:PutObject",
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "RoleDefaultPolicy5FFB7DAB",
-    "Roles": [
-     {
-      "Ref": "Role1ABCC5F0"
-     }
-    ]
-   }
-  },
   "H264Channel904D09DF": {
    "Type": "AWS::MediaLive::Channel",
    "Properties": {

@@ -4,43 +4,103 @@ import type { CfnChannel } from 'aws-cdk-lib/aws-medialive';
 import type { FileLocation } from './file-location';
 
 /** Controls insertion of the Program Clock Reference (PCR) in an M3U8 container. */
-export enum M3u8PcrControl {
+export class M3u8PcrControl {
   /** Insert PCR at the configured `pcrPeriod`. */
-  CONFIGURED_PCR_PERIOD = 'CONFIGURED_PCR_PERIOD',
+  public static readonly CONFIGURED_PCR_PERIOD = new M3u8PcrControl('CONFIGURED_PCR_PERIOD');
   /** Insert a PCR for every Packetized Elementary Stream (PES) header. */
-  PCR_EVERY_PES_PACKET = 'PCR_EVERY_PES_PACKET',
+  public static readonly PCR_EVERY_PES_PACKET = new M3u8PcrControl('PCR_EVERY_PES_PACKET');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): M3u8PcrControl {
+    return new M3u8PcrControl(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** SCTE-35 passthrough behavior for an M3U8 container. */
-export enum M3u8Scte35Behavior {
+export class M3u8Scte35Behavior {
   /** Do not pass SCTE-35 signals through. */
-  NO_PASSTHROUGH = 'NO_PASSTHROUGH',
+  public static readonly NO_PASSTHROUGH = new M3u8Scte35Behavior('NO_PASSTHROUGH');
   /** Pass SCTE-35 signals from the input through to the output. */
-  PASSTHROUGH = 'PASSTHROUGH',
+  public static readonly PASSTHROUGH = new M3u8Scte35Behavior('PASSTHROUGH');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): M3u8Scte35Behavior {
+    return new M3u8Scte35Behavior(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Timed-metadata passthrough behavior for an M3U8 container. */
-export enum M3u8TimedMetadataBehavior {
+export class M3u8TimedMetadataBehavior {
   /** Do not pass timed metadata through. */
-  NO_PASSTHROUGH = 'NO_PASSTHROUGH',
+  public static readonly NO_PASSTHROUGH = new M3u8TimedMetadataBehavior('NO_PASSTHROUGH');
   /** Pass timed metadata from the input through to the output. */
-  PASSTHROUGH = 'PASSTHROUGH',
+  public static readonly PASSTHROUGH = new M3u8TimedMetadataBehavior('PASSTHROUGH');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): M3u8TimedMetadataBehavior {
+    return new M3u8TimedMetadataBehavior(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Nielsen ID3 passthrough behavior for an M3U8 container. */
-export enum M3u8NielsenId3Behavior {
+export class M3u8NielsenId3Behavior {
   /** Do not insert Nielsen ID3 tags. */
-  NO_PASSTHROUGH = 'NO_PASSTHROUGH',
+  public static readonly NO_PASSTHROUGH = new M3u8NielsenId3Behavior('NO_PASSTHROUGH');
   /** Nielsen inaudible tones for media tracking will be detected in the input audio and an equivalent ID3 tag will be inserted in the output. */
-  PASSTHROUGH = 'PASSTHROUGH',
+  public static readonly PASSTHROUGH = new M3u8NielsenId3Behavior('PASSTHROUGH');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): M3u8NielsenId3Behavior {
+    return new M3u8NielsenId3Behavior(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** KLV data passthrough behavior for an M3U8 container. */
-export enum M3u8KlvBehavior {
+export class M3u8KlvBehavior {
   /** Do not pass KLV data through. */
-  NONE = 'NONE',
+  public static readonly NONE = new M3u8KlvBehavior('NONE');
   /** Pass KLV data from the input through to the output. */
-  PASSTHROUGH = 'PASSTHROUGH',
+  public static readonly PASSTHROUGH = new M3u8KlvBehavior('PASSTHROUGH');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): M3u8KlvBehavior {
+    return new M3u8KlvBehavior(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -164,19 +224,19 @@ export class M3u8Settings {
     return {
       audioFramesPerPes: p.audioFramesPerPes,
       audioPids: p.audioPids,
-      klvBehavior: p.klvBehavior,
+      klvBehavior: p.klvBehavior?.value,
       klvDataPids: p.klvDataPids,
-      nielsenId3Behavior: p.nielsenId3Behavior,
+      nielsenId3Behavior: p.nielsenId3Behavior?.value,
       patInterval: p.patInterval?.toMilliseconds(),
-      pcrControl: p.pcrControl,
+      pcrControl: p.pcrControl?.value,
       pcrPeriod: p.pcrPeriod?.toMilliseconds(),
       pcrPid: p.pcrPid,
       pmtInterval: p.pmtInterval?.toMilliseconds(),
       pmtPid: p.pmtPid,
       programNum: p.programNum,
-      scte35Behavior: p.scte35Behavior,
+      scte35Behavior: p.scte35Behavior?.value,
       scte35Pid: p.scte35Pid,
-      timedMetadataBehavior: p.timedMetadataBehavior,
+      timedMetadataBehavior: p.timedMetadataBehavior?.value,
       timedMetadataPid: p.timedMetadataPid,
       transportStreamId: p.transportStreamId,
       videoPid: p.videoPid,
@@ -185,23 +245,47 @@ export class M3u8Settings {
 }
 
 /** The audio track type for an audio-only HLS output. */
-export enum HlsAudioTrackType {
+export class HlsAudioTrackType {
   /** A playable audio-only variant stream (EXT-X-STREAM-INF). */
-  AUDIO_ONLY_VARIANT_STREAM = 'AUDIO_ONLY_VARIANT_STREAM',
+  public static readonly AUDIO_ONLY_VARIANT_STREAM = new HlsAudioTrackType('AUDIO_ONLY_VARIANT_STREAM');
   /** Alternate rendition, auto-select, default (DEFAULT=YES, AUTOSELECT=YES). */
-  ALTERNATE_AUDIO_AUTO_SELECT_DEFAULT = 'ALTERNATE_AUDIO_AUTO_SELECT_DEFAULT',
+  public static readonly ALTERNATE_AUDIO_AUTO_SELECT_DEFAULT = new HlsAudioTrackType('ALTERNATE_AUDIO_AUTO_SELECT_DEFAULT');
   /** Alternate rendition, auto-select, not default (DEFAULT=NO, AUTOSELECT=YES). */
-  ALTERNATE_AUDIO_AUTO_SELECT = 'ALTERNATE_AUDIO_AUTO_SELECT',
+  public static readonly ALTERNATE_AUDIO_AUTO_SELECT = new HlsAudioTrackType('ALTERNATE_AUDIO_AUTO_SELECT');
   /** Alternate rendition, not auto-select (DEFAULT=NO, AUTOSELECT=NO). */
-  ALTERNATE_AUDIO_NOT_AUTO_SELECT = 'ALTERNATE_AUDIO_NOT_AUTO_SELECT',
+  public static readonly ALTERNATE_AUDIO_NOT_AUTO_SELECT = new HlsAudioTrackType('ALTERNATE_AUDIO_NOT_AUTO_SELECT');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsAudioTrackType {
+    return new HlsAudioTrackType(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** The segment container type for an audio-only HLS output. */
-export enum HlsAudioOnlySegmentType {
+export class HlsAudioOnlySegmentType {
   /** AAC segments. */
-  AAC = 'AAC',
+  public static readonly AAC = new HlsAudioOnlySegmentType('AAC');
   /** fMP4 segments. */
-  FMP4 = 'FMP4',
+  public static readonly FMP4 = new HlsAudioOnlySegmentType('FMP4');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsAudioOnlySegmentType {
+    return new HlsAudioOnlySegmentType(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Properties for standard (video) HLS settings. */
@@ -317,8 +401,8 @@ class AudioOnlyHlsSettings extends HlsSettings {
       audioOnlyHlsSettings: {
         audioGroupId: this.props.audioGroupId,
         audioOnlyImage: this.props.audioOnlyImage?._bind(),
-        audioTrackType: this.props.audioTrackType,
-        segmentType: this.props.segmentType,
+        audioTrackType: this.props.audioTrackType?.value,
+        segmentType: this.props.segmentType?.value,
       },
     };
   }
@@ -334,8 +418,8 @@ class Fmp4HlsSettings extends HlsSettings {
     return {
       fmp4HlsSettings: {
         audioRenditionSets: this.props.audioRenditionSets,
-        nielsenId3Behavior: this.props.nielsenId3Behavior,
-        timedMetadataBehavior: this.props.timedMetadataBehavior,
+        nielsenId3Behavior: this.props.nielsenId3Behavior?.value,
+        timedMetadataBehavior: this.props.timedMetadataBehavior?.value,
       },
     };
   }

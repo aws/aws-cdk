@@ -1,7 +1,7 @@
 import type { Duration, IResource } from 'aws-cdk-lib';
 import { Resource, Lazy, Names, Stack, Aws, ArnFormat, UnscopedValidationError, ValidationError } from 'aws-cdk-lib';
-import type { ISecurityGroup, ISubnet } from 'aws-cdk-lib/aws-ec2';
-import type { IRole } from 'aws-cdk-lib/aws-iam';
+import type { ISecurityGroupRef, ISubnetRef } from 'aws-cdk-lib/aws-ec2';
+import type { IRole, IRoleRef } from 'aws-cdk-lib/aws-iam';
 import { Grant, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import type { IFlowRef } from 'aws-cdk-lib/aws-mediaconnect';
 import type { IInputRef, InputReference, IInputSecurityGroupRef, INetworkRef } from 'aws-cdk-lib/aws-medialive';
@@ -67,7 +67,7 @@ export interface IInput extends IResource, IInputRef {
    *
    * @internal
    */
-  _grantPermissions(role: IRole): void;
+  _grantPermissions(role: IRoleRef): void;
 }
 
 /**
@@ -246,7 +246,9 @@ export interface MediaConnectInputProps {
   readonly flows: IFlowRef[];
   /**
    * The IAM role MediaLive uses to manage the output it adds to the flow for this input.
-   * The required managed flow-management actions are granted automatically.
+   *
+   * When omitted, a role is created and granted the required permissions.
+   * When you provide a role, no permissions are added — you own all the permissions it needs.
    *
    * @default - a role is created with the medialive.amazonaws.com service principal
    *
@@ -409,20 +411,18 @@ export interface Smpte2110InputProps {
 export interface CdiInputProps {
   /**
    * Two VPC subnets, in two different availability zones, for the CDI input network interfaces.
-   *
-   * [disable-awslint:prefer-ref-interface]
    */
-  readonly subnets: ISubnet[];
+  readonly subnets: ISubnetRef[];
   /**
    * Security groups to attach to the CDI input network interfaces.
    * @default - VPC default security group
-   *
-   * [disable-awslint:prefer-ref-interface]
    */
-  readonly securityGroups?: ISecurityGroup[];
+  readonly securityGroups?: ISecurityGroupRef[];
   /**
-   * The IAM role MediaLive assumes to create network interfaces in the VPC. The required
-   * EC2 permissions are granted automatically.
+   * The IAM role MediaLive assumes to create network interfaces in the VPC.
+   *
+   * When omitted, a role is created and granted the required permissions.
+   * When you provide a role, no permissions are added — you own all the permissions it needs.
    *
    * @default - a role is created with the medialive.amazonaws.com service principal
    *
@@ -688,9 +688,9 @@ export class InputConfiguration {
         inputClass: props.flows.length === 2 ? 'STANDARD' : 'SINGLE_PIPELINE',
         mediaConnectFlows: props.flows.map(f => ({ flowArn: f.flowRef.flowArn })),
         roleArn: role.roleArn,
-        // MediaLive assumes this input role to add/remove the outputs it creates on the
-        // flows, so grant the managed flow-management actions.
-        mediaConnectFlowGrant: { role },
+        // Only auto-grant actions with auto-created role. A user-provided role
+        // is left alone — the caller adds its permissions.
+        mediaConnectFlowGrant: props.role === undefined ? { role } : undefined,
       };
     });
   }
@@ -727,8 +727,8 @@ export class InputConfiguration {
     if (props.subnets.length !== 2) {
       throw new UnscopedValidationError(lit`CdiSubnetCount`, 'CDI inputs require exactly 2 subnets in two different availability zones.');
     }
-    const subnetIds = props.subnets.map(s => s.subnetId);
-    const securityGroupIds = props.securityGroups?.map(sg => sg.securityGroupId);
+    const subnetIds = props.subnets.map(s => s.subnetRef.subnetId);
+    const securityGroupIds = props.securityGroups?.map(sg => sg.securityGroupRef.securityGroupId);
     return new InputConfiguration((scope) => {
       const role = props.role ?? createInputRole(scope, 'CdiRole');
       return {
@@ -736,7 +736,9 @@ export class InputConfiguration {
         inputClass: 'STANDARD',
         roleArn: role.roleArn,
         vpc: { subnetIds, securityGroupIds },
-        vpcRoleGrant: { role, subnetIds, securityGroupIds: securityGroupIds ?? [] },
+        // Only auto-grant actions with auto-created role. A user-provided role
+        // is left alone — the caller adds its permissions.
+        vpcRoleGrant: props.role === undefined ? { role, subnetIds, securityGroupIds: securityGroupIds ?? [] } : undefined,
       };
     });
   }

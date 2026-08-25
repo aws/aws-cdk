@@ -171,7 +171,10 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "mediapackagev2:PutObject",
+       "Action": [
+        "mediapackagev2:GetChannel",
+        "mediapackagev2:PutObject"
+       ],
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
@@ -179,49 +182,6 @@
          "Arn"
         ]
        }
-      },
-      {
-       "Action": "s3:PutObject",
-       "Effect": "Allow",
-       "Resource": "*"
-      },
-      {
-       "Action": [
-        "logs:CreateLogGroup",
-        "logs:CreateLogStream",
-        "logs:DescribeLogGroups",
-        "logs:DescribeLogStreams",
-        "logs:PutLogEvents",
-        "logs:PutMetricFilter",
-        "logs:PutRetentionPolicy"
-       ],
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":log-group:*"
-          ]
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":logs:*"
-          ]
-         ]
-        }
-       ]
       }
      ],
      "Version": "2012-10-17"

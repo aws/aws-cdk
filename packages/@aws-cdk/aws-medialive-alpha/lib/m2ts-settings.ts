@@ -2,175 +2,415 @@ import type { Bitrate, Duration } from 'aws-cdk-lib';
 import type { CfnChannel } from 'aws-cdk-lib/aws-medialive';
 
 /** The output bitrate mode of the transport stream. */
-export enum M2tsRateMode {
+export class M2tsRateMode {
   /** Constant bitrate — inserts null packets to fill the configured bitrate. */
-  CBR = 'CBR',
+  public static readonly CBR = new M2tsRateMode('CBR');
   /** Variable bitrate — the configured bitrate acts as the maximum. */
-  VBR = 'VBR',
+  public static readonly VBR = new M2tsRateMode('VBR');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): M2tsRateMode {
+    return new M2tsRateMode(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** The buffer model used for the transport stream. */
-export enum M2tsBufferModel {
+export class M2tsBufferModel {
   /** Uses the multiplex buffer model for accurate interleaving. */
-  MULTIPLEX = 'MULTIPLEX',
+  public static readonly MULTIPLEX = new M2tsBufferModel('MULTIPLEX');
   /** Can lead to lower latency, but low-memory devices might not be able to play back the stream without interruptions. */
-  NONE = 'NONE',
+  public static readonly NONE = new M2tsBufferModel('NONE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): M2tsBufferModel {
+    return new M2tsBufferModel(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** The buffer model used for Dolby Digital audio. */
-export enum M2tsAudioBufferModel {
+export class M2tsAudioBufferModel {
   /** ATSC buffer model. */
-  ATSC = 'ATSC',
+  public static readonly ATSC = new M2tsAudioBufferModel('ATSC');
   /** DVB buffer model. */
-  DVB = 'DVB',
+  public static readonly DVB = new M2tsAudioBufferModel('DVB');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): M2tsAudioBufferModel {
+    return new M2tsAudioBufferModel(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** The stream type used for audio elementary streams. */
-export enum M2tsAudioStreamType {
+export class M2tsAudioStreamType {
   /** ATSC — stream type 0x81 for AC3, 0x87 for EAC3. */
-  ATSC = 'ATSC',
+  public static readonly ATSC = new M2tsAudioStreamType('ATSC');
   /** DVB — stream type 0x06. */
-  DVB = 'DVB',
+  public static readonly DVB = new M2tsAudioStreamType('DVB');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): M2tsAudioStreamType {
+    return new M2tsAudioStreamType(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Controls insertion of the Program Clock Reference (PCR). */
-export enum M2tsPcrControl {
+export class M2tsPcrControl {
   /** Insert PCR at the configured `pcrPeriod`. */
-  CONFIGURED_PCR_PERIOD = 'CONFIGURED_PCR_PERIOD',
+  public static readonly CONFIGURED_PCR_PERIOD = new M2tsPcrControl('CONFIGURED_PCR_PERIOD');
   /** Insert a PCR for every Packetized Elementary Stream (PES) header. */
-  PCR_EVERY_PES_PACKET = 'PCR_EVERY_PES_PACKET',
+  public static readonly PCR_EVERY_PES_PACKET = new M2tsPcrControl('PCR_EVERY_PES_PACKET');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): M2tsPcrControl {
+    return new M2tsPcrControl(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Whether to include the ES Rate field in the PES header. */
-export enum M2tsEsRateInPes {
+export class M2tsEsRateInPes {
   /** Exclude the ES Rate field. */
-  EXCLUDE = 'EXCLUDE',
+  public static readonly EXCLUDE = new M2tsEsRateInPes('EXCLUDE');
   /** Include the ES Rate field. */
-  INCLUDE = 'INCLUDE',
+  public static readonly INCLUDE = new M2tsEsRateInPes('INCLUDE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): M2tsEsRateInPes {
+    return new M2tsEsRateInPes(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** ARIB-compliant field muxing. */
-export enum M2tsArib {
+export class M2tsArib {
   /** Disabled. */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new M2tsArib('DISABLED');
   /** Enabled — uses ARIB-compliant field muxing and removes the video descriptor. */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new M2tsArib('ENABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): M2tsArib {
+    return new M2tsArib(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** How the ARIB Captions PID is selected. */
-export enum M2tsAribCaptionsPidControl {
+export class M2tsAribCaptionsPidControl {
   /** Auto-select the PID from unused PIDs. */
-  AUTO = 'AUTO',
+  public static readonly AUTO = new M2tsAribCaptionsPidControl('AUTO');
   /** Use the configured `aribCaptionsPid`. */
-  USE_CONFIGURED = 'USE_CONFIGURED',
+  public static readonly USE_CONFIGURED = new M2tsAribCaptionsPidControl('USE_CONFIGURED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): M2tsAribCaptionsPidControl {
+    return new M2tsAribCaptionsPidControl(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** KLV data passthrough behavior. */
-export enum M2tsKlv {
+export class M2tsKlv {
   /** Do not pass KLV data through. */
-  NONE = 'NONE',
+  public static readonly NONE = new M2tsKlv('NONE');
   /** Pass KLV data from the input through to the output. */
-  PASSTHROUGH = 'PASSTHROUGH',
+  public static readonly PASSTHROUGH = new M2tsKlv('PASSTHROUGH');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): M2tsKlv {
+    return new M2tsKlv(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** EBIF data passthrough behavior. */
-export enum M2tsEbif {
+export class M2tsEbif {
   /** Do not pass EBIF data through. */
-  NONE = 'NONE',
+  public static readonly NONE = new M2tsEbif('NONE');
   /** Pass EBIF data from the input through to the output. */
-  PASSTHROUGH = 'PASSTHROUGH',
+  public static readonly PASSTHROUGH = new M2tsEbif('PASSTHROUGH');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): M2tsEbif {
+    return new M2tsEbif(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Nielsen ID3 passthrough behavior. */
-export enum M2tsNielsenId3Behavior {
+export class M2tsNielsenId3Behavior {
   /** Do not insert Nielsen ID3 tags. */
-  NO_PASSTHROUGH = 'NO_PASSTHROUGH',
+  public static readonly NO_PASSTHROUGH = new M2tsNielsenId3Behavior('NO_PASSTHROUGH');
   /** Nielsen inaudible tones for media tracking will be detected in the input audio and an equivalent ID3 tag will be inserted in the output. */
-  PASSTHROUGH = 'PASSTHROUGH',
+  public static readonly PASSTHROUGH = new M2tsNielsenId3Behavior('PASSTHROUGH');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): M2tsNielsenId3Behavior {
+    return new M2tsNielsenId3Behavior(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Whether to generate the captionServiceDescriptor in the PMT. */
-export enum M2tsCcDescriptor {
+export class M2tsCcDescriptor {
   /** Disabled. */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new M2tsCcDescriptor('DISABLED');
   /** Enabled. */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new M2tsCcDescriptor('ENABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): M2tsCcDescriptor {
+    return new M2tsCcDescriptor(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Behavior when the selected input audio stream is removed from the input. */
-export enum M2tsAbsentInputAudioBehavior {
+export class M2tsAbsentInputAudioBehavior {
   /** Remove the output audio streams from the program. */
-  DROP = 'DROP',
+  public static readonly DROP = new M2tsAbsentInputAudioBehavior('DROP');
   /** Output encoded silence when not connected to an active input stream. */
-  ENCODE_SILENCE = 'ENCODE_SILENCE',
+  public static readonly ENCODE_SILENCE = new M2tsAbsentInputAudioBehavior('ENCODE_SILENCE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): M2tsAbsentInputAudioBehavior {
+    return new M2tsAbsentInputAudioBehavior(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Controls placement of audio Encoder Boundary Point (EBP) markers. */
-export enum M2tsEbpAudioInterval {
+export class M2tsEbpAudioInterval {
   /** Add audio EBP markers to partitions 3 and 4 at a fixed interval. */
-  VIDEO_AND_FIXED_INTERVALS = 'VIDEO_AND_FIXED_INTERVALS',
+  public static readonly VIDEO_AND_FIXED_INTERVALS = new M2tsEbpAudioInterval('VIDEO_AND_FIXED_INTERVALS');
   /** Follow the video EBP interval. */
-  VIDEO_INTERVAL = 'VIDEO_INTERVAL',
+  public static readonly VIDEO_INTERVAL = new M2tsEbpAudioInterval('VIDEO_INTERVAL');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): M2tsEbpAudioInterval {
+    return new M2tsEbpAudioInterval(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Controls placement of EBP markers on audio PIDs. */
-export enum M2tsEbpPlacement {
+export class M2tsEbpPlacement {
   /** Place EBP markers on the video PID and all audio PIDs. */
-  VIDEO_AND_AUDIO_PIDS = 'VIDEO_AND_AUDIO_PIDS',
+  public static readonly VIDEO_AND_AUDIO_PIDS = new M2tsEbpPlacement('VIDEO_AND_AUDIO_PIDS');
   /** Place EBP markers only on the video PID. */
-  VIDEO_PID = 'VIDEO_PID',
+  public static readonly VIDEO_PID = new M2tsEbpPlacement('VIDEO_PID');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): M2tsEbpPlacement {
+    return new M2tsEbpPlacement(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** SCTE-35 passthrough behavior. */
-export enum M2tsScte35Control {
+export class M2tsScte35Control {
   /** Do not pass SCTE-35 signals through. */
-  NONE = 'NONE',
+  public static readonly NONE = new M2tsScte35Control('NONE');
   /** Pass SCTE-35 signals from the input through to the output. */
-  PASSTHROUGH = 'PASSTHROUGH',
+  public static readonly PASSTHROUGH = new M2tsScte35Control('PASSTHROUGH');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): M2tsScte35Control {
+    return new M2tsScte35Control(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** The type of segmentation markers to insert. */
-export enum M2tsSegmentationMarkers {
+export class M2tsSegmentationMarkers {
   /** No segmentation markers. */
-  NONE = 'NONE',
+  public static readonly NONE = new M2tsSegmentationMarkers('NONE');
   /** Set the Random Access Indicator (RAI) bit in the adaptation field. */
-  RAI_SEGSTART = 'RAI_SEGSTART',
+  public static readonly RAI_SEGSTART = new M2tsSegmentationMarkers('RAI_SEGSTART');
   /** Set the RAI bit and add the current timecode in the private data bytes. */
-  RAI_ADAPT = 'RAI_ADAPT',
+  public static readonly RAI_ADAPT = new M2tsSegmentationMarkers('RAI_ADAPT');
   /** Insert PAT and PMT tables at the start of segments. */
-  PSI_SEGSTART = 'PSI_SEGSTART',
+  public static readonly PSI_SEGSTART = new M2tsSegmentationMarkers('PSI_SEGSTART');
   /** Add Encoder Boundary Point information (OC-SP-EBP-I01-130118). */
-  EBP = 'EBP',
+  public static readonly EBP = new M2tsSegmentationMarkers('EBP');
   /** Add Encoder Boundary Point information using the legacy proprietary format. */
-  EBP_LEGACY = 'EBP_LEGACY',
+  public static readonly EBP_LEGACY = new M2tsSegmentationMarkers('EBP_LEGACY');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): M2tsSegmentationMarkers {
+    return new M2tsSegmentationMarkers(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** How segmentation markers respond to avails truncating a segment. */
-export enum M2tsSegmentationStyle {
+export class M2tsSegmentationStyle {
   /** Do not reset the segmentation cadence after a truncated segment. */
-  MAINTAIN_CADENCE = 'MAINTAIN_CADENCE',
+  public static readonly MAINTAIN_CADENCE = new M2tsSegmentationStyle('MAINTAIN_CADENCE');
   /** Reset the segmentation cadence after a truncated segment. */
-  RESET_CADENCE = 'RESET_CADENCE',
+  public static readonly RESET_CADENCE = new M2tsSegmentationStyle('RESET_CADENCE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): M2tsSegmentationStyle {
+    return new M2tsSegmentationStyle(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Timed metadata passthrough behavior. */
-export enum M2tsTimedMetadataBehavior {
+export class M2tsTimedMetadataBehavior {
   /** Do not pass timed metadata through. */
-  NO_PASSTHROUGH = 'NO_PASSTHROUGH',
+  public static readonly NO_PASSTHROUGH = new M2tsTimedMetadataBehavior('NO_PASSTHROUGH');
   /** Pass timed metadata from the input through to the output. */
-  PASSTHROUGH = 'PASSTHROUGH',
+  public static readonly PASSTHROUGH = new M2tsTimedMetadataBehavior('PASSTHROUGH');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): M2tsTimedMetadataBehavior {
+    return new M2tsTimedMetadataBehavior(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** How DVB Service Description Table (SDT) information is inserted. */
-export enum DvbSdtOutputMode {
+export class DvbSdtOutputMode {
   /** Copy SDT information from the input stream to the output stream. */
-  SDT_FOLLOW = 'SDT_FOLLOW',
+  public static readonly SDT_FOLLOW = new DvbSdtOutputMode('SDT_FOLLOW');
   /** Copy SDT from the input if present, otherwise use the configured values. */
-  SDT_FOLLOW_IF_PRESENT = 'SDT_FOLLOW_IF_PRESENT',
+  public static readonly SDT_FOLLOW_IF_PRESENT = new DvbSdtOutputMode('SDT_FOLLOW_IF_PRESENT');
   /** Use the user-defined SDT information. */
-  SDT_MANUAL = 'SDT_MANUAL',
+  public static readonly SDT_MANUAL = new DvbSdtOutputMode('SDT_MANUAL');
   /** Do not include SDT information in the output. */
-  SDT_NONE = 'SDT_NONE',
+  public static readonly SDT_NONE = new DvbSdtOutputMode('SDT_NONE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): DvbSdtOutputMode {
+    return new DvbSdtOutputMode(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Settings for inserting a DVB Network Information Table (NIT). */
@@ -351,24 +591,24 @@ export class M2tsSettings {
   public _bind(): CfnChannel.M2tsSettingsProperty {
     const p = this.props;
     return {
-      absentInputAudioBehavior: p.absentInputAudioBehavior,
-      arib: p.arib,
+      absentInputAudioBehavior: p.absentInputAudioBehavior?.value,
+      arib: p.arib?.value,
       aribCaptionsPid: p.aribCaptionsPid,
-      aribCaptionsPidControl: p.aribCaptionsPidControl,
-      audioBufferModel: p.audioBufferModel,
+      aribCaptionsPidControl: p.aribCaptionsPidControl?.value,
+      audioBufferModel: p.audioBufferModel?.value,
       audioFramesPerPes: p.audioFramesPerPes,
       audioPids: p.audioPids,
-      audioStreamType: p.audioStreamType,
+      audioStreamType: p.audioStreamType?.value,
       bitrate: p.bitrate?.toBps(),
-      bufferModel: p.bufferModel,
-      ccDescriptor: p.ccDescriptor,
+      bufferModel: p.bufferModel?.value,
+      ccDescriptor: p.ccDescriptor?.value,
       dvbNitSettings: p.dvbNitSettings ? {
         networkId: p.dvbNitSettings.networkId,
         networkName: p.dvbNitSettings.networkName,
         repInterval: p.dvbNitSettings.repInterval?.toMilliseconds(),
       } : undefined,
       dvbSdtSettings: p.dvbSdtSettings ? {
-        outputSdt: p.dvbSdtSettings.outputSdt,
+        outputSdt: p.dvbSdtSettings.outputSdt?.value,
         repInterval: p.dvbSdtSettings.repInterval?.toMilliseconds(),
         serviceName: p.dvbSdtSettings.serviceName,
         serviceProviderName: p.dvbSdtSettings.serviceProviderName,
@@ -378,34 +618,34 @@ export class M2tsSettings {
         repInterval: p.dvbTdtSettings.repInterval?.toMilliseconds(),
       } : undefined,
       dvbTeletextPid: p.dvbTeletextPid,
-      ebif: p.ebif,
-      ebpAudioInterval: p.ebpAudioInterval,
+      ebif: p.ebif?.value,
+      ebpAudioInterval: p.ebpAudioInterval?.value,
       ebpLookaheadMs: p.ebpLookahead?.toMilliseconds(),
-      ebpPlacement: p.ebpPlacement,
-      esRateInPes: p.esRateInPes,
+      ebpPlacement: p.ebpPlacement?.value,
+      esRateInPes: p.esRateInPes?.value,
       etvPlatformPid: p.etvPlatformPid,
       etvSignalPid: p.etvSignalPid,
       fragmentTime: p.fragmentTime?.toSeconds(),
-      klv: p.klv,
+      klv: p.klv?.value,
       klvDataPids: p.klvDataPids,
-      nielsenId3Behavior: p.nielsenId3Behavior,
+      nielsenId3Behavior: p.nielsenId3Behavior?.value,
       nullPacketBitrate: p.nullPacketBitrate?.toBps(),
       patInterval: p.patInterval?.toMilliseconds(),
-      pcrControl: p.pcrControl,
+      pcrControl: p.pcrControl?.value,
       pcrPeriod: p.pcrPeriod?.toMilliseconds(),
       pcrPid: p.pcrPid,
       pmtInterval: p.pmtInterval?.toMilliseconds(),
       pmtPid: p.pmtPid,
       programNum: p.programNum,
-      rateMode: p.rateMode,
+      rateMode: p.rateMode?.value,
       scte27Pids: p.scte27Pids,
-      scte35Control: p.scte35Control,
+      scte35Control: p.scte35Control?.value,
       scte35Pid: p.scte35Pid,
       scte35PrerollPullupMilliseconds: p.scte35PrerollPullup?.toMilliseconds(),
-      segmentationMarkers: p.segmentationMarkers,
-      segmentationStyle: p.segmentationStyle,
+      segmentationMarkers: p.segmentationMarkers?.value,
+      segmentationStyle: p.segmentationStyle?.value,
       segmentationTime: p.segmentationTime?.toSeconds(),
-      timedMetadataBehavior: p.timedMetadataBehavior,
+      timedMetadataBehavior: p.timedMetadataBehavior?.value,
       timedMetadataPid: p.timedMetadataPid,
       transportStreamId: p.transportStreamId,
       videoPid: p.videoPid,

@@ -8,149 +8,209 @@ import { PixelAspectRatio } from './shared';
 /**
  * H.264 profile.
  */
-export enum H264Profile {
+export class H264Profile {
   /** Baseline profile */
-  BASELINE = 'BASELINE',
+  public static readonly BASELINE = new H264Profile('BASELINE');
   /** Main profile */
-  MAIN = 'MAIN',
+  public static readonly MAIN = new H264Profile('MAIN');
   /** High profile */
-  HIGH = 'HIGH',
+  public static readonly HIGH = new H264Profile('HIGH');
   /** High 10-bit profile */
-  HIGH_10BIT = 'HIGH_10BIT',
+  public static readonly HIGH_10BIT = new H264Profile('HIGH_10BIT');
   /** High 4:2:2 profile */
-  HIGH_422 = 'HIGH_422',
+  public static readonly HIGH_422 = new H264Profile('HIGH_422');
   /** High 4:2:2 10-bit profile */
-  HIGH_422_10BIT = 'HIGH_422_10BIT',
+  public static readonly HIGH_422_10BIT = new H264Profile('HIGH_422_10BIT');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): H264Profile {
+    return new H264Profile(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * H.264 level.
  */
-export enum H264Level {
+export class H264Level {
   /** Level 1 */
-  H264_LEVEL_1 = 'H264_LEVEL_1',
+  public static readonly H264_LEVEL_1 = new H264Level('H264_LEVEL_1');
   /** Level 1.1 */
-  H264_LEVEL_1_1 = 'H264_LEVEL_1_1',
+  public static readonly H264_LEVEL_1_1 = new H264Level('H264_LEVEL_1_1');
   /** Level 1.2 */
-  H264_LEVEL_1_2 = 'H264_LEVEL_1_2',
+  public static readonly H264_LEVEL_1_2 = new H264Level('H264_LEVEL_1_2');
   /** Level 1.3 */
-  H264_LEVEL_1_3 = 'H264_LEVEL_1_3',
+  public static readonly H264_LEVEL_1_3 = new H264Level('H264_LEVEL_1_3');
   /** Level 2 */
-  H264_LEVEL_2 = 'H264_LEVEL_2',
+  public static readonly H264_LEVEL_2 = new H264Level('H264_LEVEL_2');
   /** Level 2.1 */
-  H264_LEVEL_2_1 = 'H264_LEVEL_2_1',
+  public static readonly H264_LEVEL_2_1 = new H264Level('H264_LEVEL_2_1');
   /** Level 2.2 */
-  H264_LEVEL_2_2 = 'H264_LEVEL_2_2',
+  public static readonly H264_LEVEL_2_2 = new H264Level('H264_LEVEL_2_2');
   /** Level 3 */
-  H264_LEVEL_3 = 'H264_LEVEL_3',
+  public static readonly H264_LEVEL_3 = new H264Level('H264_LEVEL_3');
   /** Level 3.1 */
-  H264_LEVEL_3_1 = 'H264_LEVEL_3_1',
+  public static readonly H264_LEVEL_3_1 = new H264Level('H264_LEVEL_3_1');
   /** Level 3.2 */
-  H264_LEVEL_3_2 = 'H264_LEVEL_3_2',
+  public static readonly H264_LEVEL_3_2 = new H264Level('H264_LEVEL_3_2');
   /** Level 4 */
-  H264_LEVEL_4 = 'H264_LEVEL_4',
+  public static readonly H264_LEVEL_4 = new H264Level('H264_LEVEL_4');
   /** Level 4.1 */
-  H264_LEVEL_4_1 = 'H264_LEVEL_4_1',
+  public static readonly H264_LEVEL_4_1 = new H264Level('H264_LEVEL_4_1');
   /** Level 4.2 */
-  H264_LEVEL_4_2 = 'H264_LEVEL_4_2',
+  public static readonly H264_LEVEL_4_2 = new H264Level('H264_LEVEL_4_2');
   /** Level 5 */
-  H264_LEVEL_5 = 'H264_LEVEL_5',
+  public static readonly H264_LEVEL_5 = new H264Level('H264_LEVEL_5');
   /** Level 5.1 */
-  H264_LEVEL_5_1 = 'H264_LEVEL_5_1',
+  public static readonly H264_LEVEL_5_1 = new H264Level('H264_LEVEL_5_1');
   /** Level 5.2 */
-  H264_LEVEL_5_2 = 'H264_LEVEL_5_2',
+  public static readonly H264_LEVEL_5_2 = new H264Level('H264_LEVEL_5_2');
   /** Auto-select the level based on the encode configuration */
-  H264_LEVEL_AUTO = 'H264_LEVEL_AUTO',
+  public static readonly H264_LEVEL_AUTO = new H264Level('H264_LEVEL_AUTO');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): H264Level {
+    return new H264Level(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * H.265 level.
  */
-export enum H265Level {
+export class H265Level {
   /** Level 1 */
-  H265_LEVEL_1 = 'H265_LEVEL_1',
+  public static readonly H265_LEVEL_1 = new H265Level('H265_LEVEL_1');
   /** Level 2 */
-  H265_LEVEL_2 = 'H265_LEVEL_2',
+  public static readonly H265_LEVEL_2 = new H265Level('H265_LEVEL_2');
   /** Level 2.1 */
-  H265_LEVEL_2_1 = 'H265_LEVEL_2_1',
+  public static readonly H265_LEVEL_2_1 = new H265Level('H265_LEVEL_2_1');
   /** Level 3 */
-  H265_LEVEL_3 = 'H265_LEVEL_3',
+  public static readonly H265_LEVEL_3 = new H265Level('H265_LEVEL_3');
   /** Level 3.1 */
-  H265_LEVEL_3_1 = 'H265_LEVEL_3_1',
+  public static readonly H265_LEVEL_3_1 = new H265Level('H265_LEVEL_3_1');
   /** Level 4 */
-  H265_LEVEL_4 = 'H265_LEVEL_4',
+  public static readonly H265_LEVEL_4 = new H265Level('H265_LEVEL_4');
   /** Level 4.1 */
-  H265_LEVEL_4_1 = 'H265_LEVEL_4_1',
+  public static readonly H265_LEVEL_4_1 = new H265Level('H265_LEVEL_4_1');
   /** Level 5 */
-  H265_LEVEL_5 = 'H265_LEVEL_5',
+  public static readonly H265_LEVEL_5 = new H265Level('H265_LEVEL_5');
   /** Level 5.1 */
-  H265_LEVEL_5_1 = 'H265_LEVEL_5_1',
+  public static readonly H265_LEVEL_5_1 = new H265Level('H265_LEVEL_5_1');
   /** Level 5.2 */
-  H265_LEVEL_5_2 = 'H265_LEVEL_5_2',
+  public static readonly H265_LEVEL_5_2 = new H265Level('H265_LEVEL_5_2');
   /** Level 6 */
-  H265_LEVEL_6 = 'H265_LEVEL_6',
+  public static readonly H265_LEVEL_6 = new H265Level('H265_LEVEL_6');
   /** Level 6.1 */
-  H265_LEVEL_6_1 = 'H265_LEVEL_6_1',
+  public static readonly H265_LEVEL_6_1 = new H265Level('H265_LEVEL_6_1');
   /** Level 6.2 */
-  H265_LEVEL_6_2 = 'H265_LEVEL_6_2',
+  public static readonly H265_LEVEL_6_2 = new H265Level('H265_LEVEL_6_2');
   /** Auto-select the level based on the encode configuration */
-  H265_LEVEL_AUTO = 'H265_LEVEL_AUTO',
+  public static readonly H265_LEVEL_AUTO = new H265Level('H265_LEVEL_AUTO');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): H265Level {
+    return new H265Level(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * AV1 level.
  */
-export enum Av1Level {
+export class Av1Level {
   /** Level 2 */
-  AV1_LEVEL_2 = 'AV1_LEVEL_2',
+  public static readonly AV1_LEVEL_2 = new Av1Level('AV1_LEVEL_2');
   /** Level 2.1 */
-  AV1_LEVEL_2_1 = 'AV1_LEVEL_2_1',
+  public static readonly AV1_LEVEL_2_1 = new Av1Level('AV1_LEVEL_2_1');
   /** Level 3 */
-  AV1_LEVEL_3 = 'AV1_LEVEL_3',
+  public static readonly AV1_LEVEL_3 = new Av1Level('AV1_LEVEL_3');
   /** Level 3.1 */
-  AV1_LEVEL_3_1 = 'AV1_LEVEL_3_1',
+  public static readonly AV1_LEVEL_3_1 = new Av1Level('AV1_LEVEL_3_1');
   /** Level 4 */
-  AV1_LEVEL_4 = 'AV1_LEVEL_4',
+  public static readonly AV1_LEVEL_4 = new Av1Level('AV1_LEVEL_4');
   /** Level 4.1 */
-  AV1_LEVEL_4_1 = 'AV1_LEVEL_4_1',
+  public static readonly AV1_LEVEL_4_1 = new Av1Level('AV1_LEVEL_4_1');
   /** Level 5 */
-  AV1_LEVEL_5 = 'AV1_LEVEL_5',
+  public static readonly AV1_LEVEL_5 = new Av1Level('AV1_LEVEL_5');
   /** Level 5.1 */
-  AV1_LEVEL_5_1 = 'AV1_LEVEL_5_1',
+  public static readonly AV1_LEVEL_5_1 = new Av1Level('AV1_LEVEL_5_1');
   /** Level 5.2 */
-  AV1_LEVEL_5_2 = 'AV1_LEVEL_5_2',
+  public static readonly AV1_LEVEL_5_2 = new Av1Level('AV1_LEVEL_5_2');
   /** Level 5.3 */
-  AV1_LEVEL_5_3 = 'AV1_LEVEL_5_3',
+  public static readonly AV1_LEVEL_5_3 = new Av1Level('AV1_LEVEL_5_3');
   /** Level 6 */
-  AV1_LEVEL_6 = 'AV1_LEVEL_6',
+  public static readonly AV1_LEVEL_6 = new Av1Level('AV1_LEVEL_6');
   /** Level 6.1 */
-  AV1_LEVEL_6_1 = 'AV1_LEVEL_6_1',
+  public static readonly AV1_LEVEL_6_1 = new Av1Level('AV1_LEVEL_6_1');
   /** Level 6.2 */
-  AV1_LEVEL_6_2 = 'AV1_LEVEL_6_2',
+  public static readonly AV1_LEVEL_6_2 = new Av1Level('AV1_LEVEL_6_2');
   /** Level 6.3 */
-  AV1_LEVEL_6_3 = 'AV1_LEVEL_6_3',
+  public static readonly AV1_LEVEL_6_3 = new Av1Level('AV1_LEVEL_6_3');
   /** Auto-select the level based on the encode configuration */
-  AV1_LEVEL_AUTO = 'AV1_LEVEL_AUTO',
+  public static readonly AV1_LEVEL_AUTO = new Av1Level('AV1_LEVEL_AUTO');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Av1Level {
+    return new Av1Level(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * H.264 adaptive quantization strength.
  */
-export enum H264AdaptiveQuantization {
+export class H264AdaptiveQuantization {
   /** Auto */
-  AUTO = 'AUTO',
+  public static readonly AUTO = new H264AdaptiveQuantization('AUTO');
   /** High */
-  HIGH = 'HIGH',
+  public static readonly HIGH = new H264AdaptiveQuantization('HIGH');
   /** Higher */
-  HIGHER = 'HIGHER',
+  public static readonly HIGHER = new H264AdaptiveQuantization('HIGHER');
   /** Low */
-  LOW = 'LOW',
+  public static readonly LOW = new H264AdaptiveQuantization('LOW');
   /** Max */
-  MAX = 'MAX',
+  public static readonly MAX = new H264AdaptiveQuantization('MAX');
   /** Medium */
-  MEDIUM = 'MEDIUM',
+  public static readonly MEDIUM = new H264AdaptiveQuantization('MEDIUM');
   /** Off */
-  OFF = 'OFF',
+  public static readonly OFF = new H264AdaptiveQuantization('OFF');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): H264AdaptiveQuantization {
+    return new H264AdaptiveQuantization(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -199,65 +259,137 @@ export class GopSize {
 /**
  * AFD signaling mode.
  */
-export enum AfdSignaling {
+export class AfdSignaling {
   /** Auto — preserve input AFD value */
-  AUTO = 'AUTO',
+  public static readonly AUTO = new AfdSignaling('AUTO');
   /** Fixed — use the value from fixedAfd */
-  FIXED = 'FIXED',
+  public static readonly FIXED = new AfdSignaling('FIXED');
   /** None — do not write AFD */
-  NONE = 'NONE',
+  public static readonly NONE = new AfdSignaling('NONE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): AfdSignaling {
+    return new AfdSignaling(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * Color metadata inclusion.
  */
-export enum ColorMetadata {
+export class ColorMetadata {
   /** Ignore — do not include color metadata */
-  IGNORE = 'IGNORE',
+  public static readonly IGNORE = new ColorMetadata('IGNORE');
   /** Insert — include color metadata */
-  INSERT = 'INSERT',
+  public static readonly INSERT = new ColorMetadata('INSERT');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): ColorMetadata {
+    return new ColorMetadata(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * Scan type for the output video.
  */
-export enum ScanType {
+export class ScanType {
   /** Interlaced (top field first) */
-  INTERLACED = 'INTERLACED',
+  public static readonly INTERLACED = new ScanType('INTERLACED');
   /** Progressive */
-  PROGRESSIVE = 'PROGRESSIVE',
+  public static readonly PROGRESSIVE = new ScanType('PROGRESSIVE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): ScanType {
+    return new ScanType(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * Flicker adaptive quantization.
  */
-export enum FlickerAq {
+export class FlickerAq {
   /** Enabled */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new FlickerAq('ENABLED');
   /** Disabled */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new FlickerAq('DISABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): FlickerAq {
+    return new FlickerAq(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * GOP B-frame reference.
  */
-export enum GopBReference {
+export class GopBReference {
   /** Enabled */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new GopBReference('ENABLED');
   /** Disabled */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new GopBReference('DISABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): GopBReference {
+    return new GopBReference(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * Lookahead rate control.
  */
-export enum LookAheadRateControl {
+export class LookAheadRateControl {
   /** High — better quality, more latency and memory */
-  HIGH = 'HIGH',
+  public static readonly HIGH = new LookAheadRateControl('HIGH');
   /** Low — less latency and memory */
-  LOW = 'LOW',
+  public static readonly LOW = new LookAheadRateControl('LOW');
   /** Medium */
-  MEDIUM = 'MEDIUM',
+  public static readonly MEDIUM = new LookAheadRateControl('MEDIUM');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): LookAheadRateControl {
+    return new LookAheadRateControl(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -266,21 +398,45 @@ export enum LookAheadRateControl {
  * @remarks This controls timecode insertion in the output elementary stream.
  * To preserve source timecodes, set `TimecodeSource.EMBEDDED` on the channel's `timecodeConfig`.
  */
-export enum TimecodeInsertion {
+export class TimecodeInsertion {
   /** Disabled — do not include timecodes */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new TimecodeInsertion('DISABLED');
   /** PIC_TIMING_SEI — pass through picture timing SEI messages */
-  PIC_TIMING_SEI = 'PIC_TIMING_SEI',
+  public static readonly PIC_TIMING_SEI = new TimecodeInsertion('PIC_TIMING_SEI');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): TimecodeInsertion {
+    return new TimecodeInsertion(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * Sub-GOP length mode.
  */
-export enum SubgopLength {
+export class SubgopLength {
   /** Dynamic — let MediaLive optimize B-frames per sub-GOP */
-  DYNAMIC = 'DYNAMIC',
+  public static readonly DYNAMIC = new SubgopLength('DYNAMIC');
   /** Fixed — use gopNumBFrames in each sub-GOP */
-  FIXED = 'FIXED',
+  public static readonly FIXED = new SubgopLength('FIXED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): SubgopLength {
+    return new SubgopLength(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 // =============================================================================
@@ -290,41 +446,89 @@ export enum SubgopLength {
 /**
  * H.264 entropy encoding mode.
  */
-export enum H264EntropyEncoding {
+export class H264EntropyEncoding {
   /** CABAC (requires Main or High profile) */
-  CABAC = 'CABAC',
+  public static readonly CABAC = new H264EntropyEncoding('CABAC');
   /** CAVLC */
-  CAVLC = 'CAVLC',
+  public static readonly CAVLC = new H264EntropyEncoding('CAVLC');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): H264EntropyEncoding {
+    return new H264EntropyEncoding(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * H.264 force field pictures.
  */
-export enum H264ForceFieldPictures {
+export class H264ForceFieldPictures {
   /** Enabled — force coding on a field basis */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new H264ForceFieldPictures('ENABLED');
   /** Disabled — let encoder decide */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new H264ForceFieldPictures('DISABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): H264ForceFieldPictures {
+    return new H264ForceFieldPictures(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * H.264 syntax mode.
  */
-export enum H264Syntax {
+export class H264Syntax {
   /** Default */
-  DEFAULT = 'DEFAULT',
+  public static readonly DEFAULT = new H264Syntax('DEFAULT');
   /** RP-2027 compliant */
-  RP2027 = 'RP2027',
+  public static readonly RP2027 = new H264Syntax('RP2027');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): H264Syntax {
+    return new H264Syntax(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * H.264 quality level.
  */
-export enum H264QualityLevel {
+export class H264QualityLevel {
   /** Enhanced quality (may incur additional cost) */
-  ENHANCED_QUALITY = 'ENHANCED_QUALITY',
+  public static readonly ENHANCED_QUALITY = new H264QualityLevel('ENHANCED_QUALITY');
   /** Standard quality */
-  STANDARD_QUALITY = 'STANDARD_QUALITY',
+  public static readonly STANDARD_QUALITY = new H264QualityLevel('STANDARD_QUALITY');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): H264QualityLevel {
+    return new H264QualityLevel(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 // =============================================================================
@@ -334,81 +538,165 @@ export enum H264QualityLevel {
 /**
  * H.265 adaptive quantization.
  */
-export enum H265AdaptiveQuantization {
+export class H265AdaptiveQuantization {
   /** Auto */
-  AUTO = 'AUTO',
+  public static readonly AUTO = new H265AdaptiveQuantization('AUTO');
   /** High */
-  HIGH = 'HIGH',
+  public static readonly HIGH = new H265AdaptiveQuantization('HIGH');
   /** Higher */
-  HIGHER = 'HIGHER',
+  public static readonly HIGHER = new H265AdaptiveQuantization('HIGHER');
   /** Low */
-  LOW = 'LOW',
+  public static readonly LOW = new H265AdaptiveQuantization('LOW');
   /** Max */
-  MAX = 'MAX',
+  public static readonly MAX = new H265AdaptiveQuantization('MAX');
   /** Medium */
-  MEDIUM = 'MEDIUM',
+  public static readonly MEDIUM = new H265AdaptiveQuantization('MEDIUM');
   /** Off */
-  OFF = 'OFF',
+  public static readonly OFF = new H265AdaptiveQuantization('OFF');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): H265AdaptiveQuantization {
+    return new H265AdaptiveQuantization(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * H.265 alternative transfer function.
  */
-export enum H265AlternativeTransferFunction {
+export class H265AlternativeTransferFunction {
   /** Insert */
-  INSERT = 'INSERT',
+  public static readonly INSERT = new H265AlternativeTransferFunction('INSERT');
   /** Omit */
-  OMIT = 'OMIT',
+  public static readonly OMIT = new H265AlternativeTransferFunction('OMIT');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): H265AlternativeTransferFunction {
+    return new H265AlternativeTransferFunction(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * H.265 deblocking filter.
  */
-export enum H265Deblocking {
+export class H265Deblocking {
   /** Disabled */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new H265Deblocking('DISABLED');
   /** Enabled */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new H265Deblocking('ENABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): H265Deblocking {
+    return new H265Deblocking(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * H.265 motion vector over picture boundaries.
  */
-export enum H265MvOverPictureBoundaries {
+export class H265MvOverPictureBoundaries {
   /** Disabled */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new H265MvOverPictureBoundaries('DISABLED');
   /** Enabled */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new H265MvOverPictureBoundaries('ENABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): H265MvOverPictureBoundaries {
+    return new H265MvOverPictureBoundaries(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * H.265 motion vector temporal predictor.
  */
-export enum H265MvTemporalPredictor {
+export class H265MvTemporalPredictor {
   /** Disabled */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new H265MvTemporalPredictor('DISABLED');
   /** Enabled */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new H265MvTemporalPredictor('ENABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): H265MvTemporalPredictor {
+    return new H265MvTemporalPredictor(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * H.265 tile padding.
  */
-export enum H265TilePadding {
+export class H265TilePadding {
   /** None */
-  NONE = 'NONE',
+  public static readonly NONE = new H265TilePadding('NONE');
   /** Padded */
-  PADDED = 'PADDED',
+  public static readonly PADDED = new H265TilePadding('PADDED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): H265TilePadding {
+    return new H265TilePadding(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * H.265 treeblock size.
  */
-export enum H265TreeblockSize {
+export class H265TreeblockSize {
   /** Auto */
-  AUTO = 'AUTO',
+  public static readonly AUTO = new H265TreeblockSize('AUTO');
   /** 32x32 */
-  TREE_SIZE_32X32 = 'TREE_SIZE_32X32',
+  public static readonly TREE_SIZE_32X32 = new H265TreeblockSize('TREE_SIZE_32X32');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): H265TreeblockSize {
+    return new H265TreeblockSize(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 // =============================================================================
@@ -418,94 +706,202 @@ export enum H265TreeblockSize {
 /**
  * AV1 bit depth.
  */
-export enum Av1BitDepth {
+export class Av1BitDepth {
   /** 8-bit */
-  BIT_DEPTH_8 = 'DEPTH_8',
+  public static readonly BIT_DEPTH_8 = new Av1BitDepth('DEPTH_8');
   /** 10-bit */
-  BIT_DEPTH_10 = 'DEPTH_10',
+  public static readonly BIT_DEPTH_10 = new Av1BitDepth('DEPTH_10');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Av1BitDepth {
+    return new Av1BitDepth(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * AV1 scene change detection.
  */
-export enum Av1SceneChangeDetect {
+export class Av1SceneChangeDetect {
   /** Disabled */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new Av1SceneChangeDetect('DISABLED');
   /** Enabled */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new Av1SceneChangeDetect('ENABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Av1SceneChangeDetect {
+    return new Av1SceneChangeDetect(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * AV1 spatial adaptive quantization.
  */
-export enum Av1SpatialAq {
+export class Av1SpatialAq {
   /** Disabled */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new Av1SpatialAq('DISABLED');
   /** Enabled */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new Av1SpatialAq('ENABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Av1SpatialAq {
+    return new Av1SpatialAq(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * AV1 temporal adaptive quantization.
  */
-export enum Av1TemporalAq {
+export class Av1TemporalAq {
   /** Disabled */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new Av1TemporalAq('DISABLED');
   /** Enabled */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new Av1TemporalAq('ENABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Av1TemporalAq {
+    return new Av1TemporalAq(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * H.264 scene change detection.
  */
-export enum H264SceneChangeDetect {
+export class H264SceneChangeDetect {
   /** Disabled */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new H264SceneChangeDetect('DISABLED');
   /** Enabled */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new H264SceneChangeDetect('ENABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): H264SceneChangeDetect {
+    return new H264SceneChangeDetect(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * H.264 spatial adaptive quantization.
  */
-export enum H264SpatialAq {
+export class H264SpatialAq {
   /** Disabled */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new H264SpatialAq('DISABLED');
   /** Enabled */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new H264SpatialAq('ENABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): H264SpatialAq {
+    return new H264SpatialAq(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * H.264 temporal adaptive quantization.
  */
-export enum H264TemporalAq {
+export class H264TemporalAq {
   /** Disabled */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new H264TemporalAq('DISABLED');
   /** Enabled */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new H264TemporalAq('ENABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): H264TemporalAq {
+    return new H264TemporalAq(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * H.265 scene change detection.
  */
-export enum H265SceneChangeDetect {
+export class H265SceneChangeDetect {
   /** Disabled */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new H265SceneChangeDetect('DISABLED');
   /** Enabled */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new H265SceneChangeDetect('ENABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): H265SceneChangeDetect {
+    return new H265SceneChangeDetect(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * AV1 timecode insertion.
  */
-export enum Av1TimecodeInsertion {
+export class Av1TimecodeInsertion {
   /** Disabled — do not insert timecodes */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new Av1TimecodeInsertion('DISABLED');
   /**
    * Include timecodes as a metadata OBU (Open Bitstream Unit) of type
    * `METADATA_TYPE_TIMECODE`, based on the source specified in the channel's timecode config.
    */
-  METADATA_OBU = 'METADATA_OBU',
+  public static readonly METADATA_OBU = new Av1TimecodeInsertion('METADATA_OBU');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Av1TimecodeInsertion {
+    return new Av1TimecodeInsertion(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 // =============================================================================
@@ -515,39 +911,63 @@ export enum Av1TimecodeInsertion {
 /**
  * Font size for timecode burn-in.
  */
-export enum TimecodeBurninFontSize {
+export class TimecodeBurninFontSize {
   /** Extra small */
-  EXTRA_SMALL_10 = 'EXTRA_SMALL_10',
+  public static readonly EXTRA_SMALL_10 = new TimecodeBurninFontSize('EXTRA_SMALL_10');
   /** Large */
-  LARGE_48 = 'LARGE_48',
+  public static readonly LARGE_48 = new TimecodeBurninFontSize('LARGE_48');
   /** Medium */
-  MEDIUM_32 = 'MEDIUM_32',
+  public static readonly MEDIUM_32 = new TimecodeBurninFontSize('MEDIUM_32');
   /** Small */
-  SMALL_16 = 'SMALL_16',
+  public static readonly SMALL_16 = new TimecodeBurninFontSize('SMALL_16');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): TimecodeBurninFontSize {
+    return new TimecodeBurninFontSize(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * Position for timecode burn-in overlay.
  */
-export enum TimecodeBurninPosition {
+export class TimecodeBurninPosition {
   /** Bottom center */
-  BOTTOM_CENTER = 'BOTTOM_CENTER',
+  public static readonly BOTTOM_CENTER = new TimecodeBurninPosition('BOTTOM_CENTER');
   /** Bottom left */
-  BOTTOM_LEFT = 'BOTTOM_LEFT',
+  public static readonly BOTTOM_LEFT = new TimecodeBurninPosition('BOTTOM_LEFT');
   /** Bottom right */
-  BOTTOM_RIGHT = 'BOTTOM_RIGHT',
+  public static readonly BOTTOM_RIGHT = new TimecodeBurninPosition('BOTTOM_RIGHT');
   /** Middle center */
-  MIDDLE_CENTER = 'MIDDLE_CENTER',
+  public static readonly MIDDLE_CENTER = new TimecodeBurninPosition('MIDDLE_CENTER');
   /** Middle left */
-  MIDDLE_LEFT = 'MIDDLE_LEFT',
+  public static readonly MIDDLE_LEFT = new TimecodeBurninPosition('MIDDLE_LEFT');
   /** Middle right */
-  MIDDLE_RIGHT = 'MIDDLE_RIGHT',
+  public static readonly MIDDLE_RIGHT = new TimecodeBurninPosition('MIDDLE_RIGHT');
   /** Top center */
-  TOP_CENTER = 'TOP_CENTER',
+  public static readonly TOP_CENTER = new TimecodeBurninPosition('TOP_CENTER');
   /** Top left */
-  TOP_LEFT = 'TOP_LEFT',
+  public static readonly TOP_LEFT = new TimecodeBurninPosition('TOP_LEFT');
   /** Top right */
-  TOP_RIGHT = 'TOP_RIGHT',
+  public static readonly TOP_RIGHT = new TimecodeBurninPosition('TOP_RIGHT');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): TimecodeBurninPosition {
+    return new TimecodeBurninPosition(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -818,83 +1238,131 @@ export class Av1ColorSpaceSettings {
 /**
  * Post-filter sharpening for temporal filter.
  */
-export enum TemporalFilterPostFilterSharpening {
+export class TemporalFilterPostFilterSharpening {
   /** Auto */
-  AUTO = 'AUTO',
+  public static readonly AUTO = new TemporalFilterPostFilterSharpening('AUTO');
   /** Disabled */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new TemporalFilterPostFilterSharpening('DISABLED');
   /** Enabled */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new TemporalFilterPostFilterSharpening('ENABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): TemporalFilterPostFilterSharpening {
+    return new TemporalFilterPostFilterSharpening(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * Temporal filter strength.
  */
-export enum TemporalFilterStrength {
+export class TemporalFilterStrength {
   /** Auto */
-  AUTO = 'AUTO',
+  public static readonly AUTO = new TemporalFilterStrength('AUTO');
   /** Strength 1 (recommended) */
-  STRENGTH_1 = 'STRENGTH_1',
+  public static readonly STRENGTH_1 = new TemporalFilterStrength('STRENGTH_1');
   /** Strength 2 (recommended) */
-  STRENGTH_2 = 'STRENGTH_2',
+  public static readonly STRENGTH_2 = new TemporalFilterStrength('STRENGTH_2');
   /** Strength 3 */
-  STRENGTH_3 = 'STRENGTH_3',
+  public static readonly STRENGTH_3 = new TemporalFilterStrength('STRENGTH_3');
   /** Strength 4 */
-  STRENGTH_4 = 'STRENGTH_4',
+  public static readonly STRENGTH_4 = new TemporalFilterStrength('STRENGTH_4');
   /** Strength 5 */
-  STRENGTH_5 = 'STRENGTH_5',
+  public static readonly STRENGTH_5 = new TemporalFilterStrength('STRENGTH_5');
   /** Strength 6 */
-  STRENGTH_6 = 'STRENGTH_6',
+  public static readonly STRENGTH_6 = new TemporalFilterStrength('STRENGTH_6');
   /** Strength 7 */
-  STRENGTH_7 = 'STRENGTH_7',
+  public static readonly STRENGTH_7 = new TemporalFilterStrength('STRENGTH_7');
   /** Strength 8 */
-  STRENGTH_8 = 'STRENGTH_8',
+  public static readonly STRENGTH_8 = new TemporalFilterStrength('STRENGTH_8');
   /** Strength 9 */
-  STRENGTH_9 = 'STRENGTH_9',
+  public static readonly STRENGTH_9 = new TemporalFilterStrength('STRENGTH_9');
   /** Strength 10 */
-  STRENGTH_10 = 'STRENGTH_10',
+  public static readonly STRENGTH_10 = new TemporalFilterStrength('STRENGTH_10');
   /** Strength 11 */
-  STRENGTH_11 = 'STRENGTH_11',
+  public static readonly STRENGTH_11 = new TemporalFilterStrength('STRENGTH_11');
   /** Strength 12 */
-  STRENGTH_12 = 'STRENGTH_12',
+  public static readonly STRENGTH_12 = new TemporalFilterStrength('STRENGTH_12');
   /** Strength 13 */
-  STRENGTH_13 = 'STRENGTH_13',
+  public static readonly STRENGTH_13 = new TemporalFilterStrength('STRENGTH_13');
   /** Strength 14 */
-  STRENGTH_14 = 'STRENGTH_14',
+  public static readonly STRENGTH_14 = new TemporalFilterStrength('STRENGTH_14');
   /** Strength 15 */
-  STRENGTH_15 = 'STRENGTH_15',
+  public static readonly STRENGTH_15 = new TemporalFilterStrength('STRENGTH_15');
   /** Strength 16 */
-  STRENGTH_16 = 'STRENGTH_16',
+  public static readonly STRENGTH_16 = new TemporalFilterStrength('STRENGTH_16');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): TemporalFilterStrength {
+    return new TemporalFilterStrength(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * Post-filter sharpening for bandwidth reduction filter.
  */
-export enum BandwidthReductionPostFilterSharpening {
+export class BandwidthReductionPostFilterSharpening {
   /** Disabled */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new BandwidthReductionPostFilterSharpening('DISABLED');
   /** Sharpening level 1 */
-  SHARPENING_1 = 'SHARPENING_1',
+  public static readonly SHARPENING_1 = new BandwidthReductionPostFilterSharpening('SHARPENING_1');
   /** Sharpening level 2 */
-  SHARPENING_2 = 'SHARPENING_2',
+  public static readonly SHARPENING_2 = new BandwidthReductionPostFilterSharpening('SHARPENING_2');
   /** Sharpening level 3 */
-  SHARPENING_3 = 'SHARPENING_3',
+  public static readonly SHARPENING_3 = new BandwidthReductionPostFilterSharpening('SHARPENING_3');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): BandwidthReductionPostFilterSharpening {
+    return new BandwidthReductionPostFilterSharpening(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * Bandwidth reduction filter strength.
  */
-export enum BandwidthReductionStrength {
+export class BandwidthReductionStrength {
   /** Auto */
-  AUTO = 'AUTO',
+  public static readonly AUTO = new BandwidthReductionStrength('AUTO');
   /** Strength 1 */
-  STRENGTH_1 = 'STRENGTH_1',
+  public static readonly STRENGTH_1 = new BandwidthReductionStrength('STRENGTH_1');
   /** Strength 2 */
-  STRENGTH_2 = 'STRENGTH_2',
+  public static readonly STRENGTH_2 = new BandwidthReductionStrength('STRENGTH_2');
   /** Strength 3 */
-  STRENGTH_3 = 'STRENGTH_3',
+  public static readonly STRENGTH_3 = new BandwidthReductionStrength('STRENGTH_3');
   /** Strength 4 */
-  STRENGTH_4 = 'STRENGTH_4',
+  public static readonly STRENGTH_4 = new BandwidthReductionStrength('STRENGTH_4');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): BandwidthReductionStrength {
+    return new BandwidthReductionStrength(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -941,8 +1409,8 @@ export class H264FilterSettings {
   public static temporalFilter(props?: TemporalFilterProps): H264FilterSettings {
     return new H264FilterSettings({
       temporalFilterSettings: props ? {
-        postFilterSharpening: props.postFilterSharpening,
-        strength: props.strength,
+        postFilterSharpening: props.postFilterSharpening?.value,
+        strength: props.strength?.value,
       } : {},
     });
   }
@@ -950,8 +1418,8 @@ export class H264FilterSettings {
   public static bandwidthReductionFilter(props?: BandwidthReductionFilterProps): H264FilterSettings {
     return new H264FilterSettings({
       bandwidthReductionFilterSettings: props ? {
-        postFilterSharpening: props.postFilterSharpening,
-        strength: props.strength,
+        postFilterSharpening: props.postFilterSharpening?.value,
+        strength: props.strength?.value,
       } : {},
     });
   }
@@ -971,8 +1439,8 @@ export class H265FilterSettings {
   public static temporalFilter(props?: TemporalFilterProps): H265FilterSettings {
     return new H265FilterSettings({
       temporalFilterSettings: props ? {
-        postFilterSharpening: props.postFilterSharpening,
-        strength: props.strength,
+        postFilterSharpening: props.postFilterSharpening?.value,
+        strength: props.strength?.value,
       } : {},
     });
   }
@@ -980,8 +1448,8 @@ export class H265FilterSettings {
   public static bandwidthReductionFilter(props?: BandwidthReductionFilterProps): H265FilterSettings {
     return new H265FilterSettings({
       bandwidthReductionFilterSettings: props ? {
-        postFilterSharpening: props.postFilterSharpening,
-        strength: props.strength,
+        postFilterSharpening: props.postFilterSharpening?.value,
+        strength: props.strength?.value,
       } : {},
     });
   }
@@ -1202,21 +1670,45 @@ export interface H264SettingsProps {
 /**
  * H.265 profile.
  */
-export enum H265Profile {
+export class H265Profile {
   /** Main profile */
-  MAIN = 'MAIN',
+  public static readonly MAIN = new H265Profile('MAIN');
   /** Main 10-bit profile */
-  MAIN_10BIT = 'MAIN_10BIT',
+  public static readonly MAIN_10BIT = new H265Profile('MAIN_10BIT');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): H265Profile {
+    return new H265Profile(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * H.265 tier.
  */
-export enum H265Tier {
+export class H265Tier {
   /** Main tier */
-  MAIN = 'MAIN',
+  public static readonly MAIN = new H265Tier('MAIN');
   /** High tier */
-  HIGH = 'HIGH',
+  public static readonly HIGH = new H265Tier('HIGH');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): H265Tier {
+    return new H265Tier(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -1608,50 +2100,50 @@ class H264VideoCodecSettings extends VideoCodecSettings {
         maxBitrate: rc?._maxBitrate?.toBps(),
         rateControlMode: rc?._mode,
         qvbrQualityLevel: rc?._qvbrQualityLevel,
-        profile: p.profile ?? H264Profile.MAIN,
+        profile: (p.profile ?? H264Profile.MAIN).value,
         gopSize: p.gopSize?._value ?? 2,
         gopSizeUnits: p.gopSize?._units ?? 'SECONDS',
         gopNumBFrames: p.gopNumBFrames,
-        adaptiveQuantization: p.adaptiveQuantization ?? H264AdaptiveQuantization.AUTO,
+        adaptiveQuantization: (p.adaptiveQuantization ?? H264AdaptiveQuantization.AUTO).value,
         framerateControl: p.framerate ? 'SPECIFIED' : 'INITIALIZE_FROM_SOURCE',
         framerateNumerator: p.framerate?._numerator(),
         framerateDenominator: p.framerate?._denominator(),
         parControl: (p.pixelAspectRatio || p.framerate) ? 'SPECIFIED' : 'INITIALIZE_FROM_SOURCE',
         parNumerator: p.pixelAspectRatio?._numerator() ?? (p.framerate ? PixelAspectRatio.SQUARE._numerator() : undefined),
         parDenominator: p.pixelAspectRatio?._denominator() ?? (p.framerate ? PixelAspectRatio.SQUARE._denominator() : undefined),
-        sceneChangeDetect: p.sceneChangeDetect ?? H264SceneChangeDetect.ENABLED,
-        spatialAq: p.spatialAq ?? H264SpatialAq.ENABLED,
-        temporalAq: p.temporalAq ?? H264TemporalAq.ENABLED,
+        sceneChangeDetect: (p.sceneChangeDetect ?? H264SceneChangeDetect.ENABLED).value,
+        spatialAq: (p.spatialAq ?? H264SpatialAq.ENABLED).value,
+        temporalAq: (p.temporalAq ?? H264TemporalAq.ENABLED).value,
         timecodeBurninSettings: p.timecodeBurnin ? {
-          fontSize: p.timecodeBurnin.fontSize,
-          position: p.timecodeBurnin.position,
+          fontSize: p.timecodeBurnin.fontSize?.value,
+          position: p.timecodeBurnin.position?.value,
           prefix: p.timecodeBurnin.prefix,
         } : undefined,
-        afdSignaling: p.afdSignaling ?? AfdSignaling.NONE,
+        afdSignaling: (p.afdSignaling ?? AfdSignaling.NONE).value,
         bufFillPct: p.bufFillPct,
         bufSize: p.bufSize,
-        colorMetadata: p.colorMetadata,
+        colorMetadata: p.colorMetadata?.value,
         colorSpaceSettings: p.colorSpaceSettings?._bind(),
-        entropyEncoding: p.entropyEncoding,
+        entropyEncoding: p.entropyEncoding?.value,
         filterSettings: p.filterSettings?._bind(),
         fixedAfd: p.fixedAfd,
-        flickerAq: p.flickerAq ?? FlickerAq.ENABLED,
-        forceFieldPictures: p.forceFieldPictures,
-        gopBReference: p.gopBReference,
+        flickerAq: (p.flickerAq ?? FlickerAq.ENABLED).value,
+        forceFieldPictures: p.forceFieldPictures?.value,
+        gopBReference: p.gopBReference?.value,
         gopClosedCadence: p.gopClosedCadence,
-        level: p.level ?? H264Level.H264_LEVEL_AUTO,
-        lookAheadRateControl: p.lookAheadRateControl ?? LookAheadRateControl.MEDIUM,
+        level: (p.level ?? H264Level.H264_LEVEL_AUTO).value,
+        lookAheadRateControl: (p.lookAheadRateControl ?? LookAheadRateControl.MEDIUM).value,
         minIInterval: p.minIInterval,
         numRefFrames: p.numRefFrames,
-        scanType: p.scanType ?? ScanType.PROGRESSIVE,
+        scanType: (p.scanType ?? ScanType.PROGRESSIVE).value,
         slices: p.slices,
         softness: p.softness,
-        syntax: p.syntax ?? H264Syntax.DEFAULT,
-        timecodeInsertion: p.timecodeInsertion,
+        syntax: (p.syntax ?? H264Syntax.DEFAULT).value,
+        timecodeInsertion: p.timecodeInsertion?.value,
         minQp: p.minQp,
         minBitrate: p.minBitrate,
-        qualityLevel: p.qualityLevel,
-        subgopLength: p.subgopLength,
+        qualityLevel: p.qualityLevel?.value,
+        subgopLength: p.subgopLength?.value,
       },
     };
   }
@@ -1675,48 +2167,48 @@ class H265VideoCodecSettings extends VideoCodecSettings {
         maxBitrate: rc?._maxBitrate?.toBps(),
         rateControlMode: rc?._mode,
         qvbrQualityLevel: rc?._qvbrQualityLevel,
-        profile: p.profile ?? H265Profile.MAIN,
-        tier: p.tier ?? H265Tier.MAIN,
-        level: p.level,
+        profile: (p.profile ?? H265Profile.MAIN).value,
+        tier: (p.tier ?? H265Tier.MAIN).value,
+        level: p.level?.value,
         gopSize: p.gopSize?._value ?? 2,
         gopSizeUnits: p.gopSize?._units ?? 'SECONDS',
         framerateNumerator: p.framerate._numerator(),
         framerateDenominator: p.framerate._denominator(),
         parNumerator: p.pixelAspectRatio?._numerator() ?? PixelAspectRatio.SQUARE._numerator(),
         parDenominator: p.pixelAspectRatio?._denominator() ?? PixelAspectRatio.SQUARE._denominator(),
-        sceneChangeDetect: p.sceneChangeDetect ?? H265SceneChangeDetect.ENABLED,
+        sceneChangeDetect: (p.sceneChangeDetect ?? H265SceneChangeDetect.ENABLED).value,
         timecodeBurninSettings: p.timecodeBurnin ? {
-          fontSize: p.timecodeBurnin.fontSize,
-          position: p.timecodeBurnin.position,
+          fontSize: p.timecodeBurnin.fontSize?.value,
+          position: p.timecodeBurnin.position?.value,
           prefix: p.timecodeBurnin.prefix,
         } : undefined,
-        adaptiveQuantization: p.adaptiveQuantization ?? H265AdaptiveQuantization.AUTO,
-        afdSignaling: p.afdSignaling ?? AfdSignaling.NONE,
-        alternativeTransferFunction: p.alternativeTransferFunction,
+        adaptiveQuantization: (p.adaptiveQuantization ?? H265AdaptiveQuantization.AUTO).value,
+        afdSignaling: (p.afdSignaling ?? AfdSignaling.NONE).value,
+        alternativeTransferFunction: p.alternativeTransferFunction?.value,
         bufSize: p.bufSize,
-        colorMetadata: p.colorMetadata,
+        colorMetadata: p.colorMetadata?.value,
         colorSpaceSettings: p.colorSpaceSettings?._bind(),
-        deblocking: p.deblocking,
+        deblocking: p.deblocking?.value,
         filterSettings: p.filterSettings?._bind(),
         fixedAfd: p.fixedAfd,
-        flickerAq: p.flickerAq,
-        gopBReference: p.gopBReference,
+        flickerAq: p.flickerAq?.value,
+        gopBReference: p.gopBReference?.value,
         gopClosedCadence: p.gopClosedCadence,
         gopNumBFrames: p.gopNumBFrames,
-        lookAheadRateControl: p.lookAheadRateControl,
+        lookAheadRateControl: p.lookAheadRateControl?.value,
         minIInterval: p.minIInterval,
-        scanType: p.scanType ?? ScanType.PROGRESSIVE,
+        scanType: (p.scanType ?? ScanType.PROGRESSIVE).value,
         slices: p.slices,
-        timecodeInsertion: p.timecodeInsertion,
+        timecodeInsertion: p.timecodeInsertion?.value,
         minQp: p.minQp,
         minBitrate: p.minBitrate,
-        mvOverPictureBoundaries: p.mvOverPictureBoundaries,
-        mvTemporalPredictor: p.mvTemporalPredictor,
-        subgopLength: p.subgopLength,
+        mvOverPictureBoundaries: p.mvOverPictureBoundaries?.value,
+        mvTemporalPredictor: p.mvTemporalPredictor?.value,
+        subgopLength: p.subgopLength?.value,
         tileHeight: p.tileHeight,
-        tilePadding: p.tilePadding,
+        tilePadding: p.tilePadding?.value,
         tileWidth: p.tileWidth,
-        treeblockSize: p.treeblockSize,
+        treeblockSize: p.treeblockSize?.value,
       },
     };
   }
@@ -1745,25 +2237,25 @@ class Av1VideoCodecSettings extends VideoCodecSettings {
         framerateNumerator: p.framerate?._numerator(),
         framerateDenominator: p.framerate?._denominator(),
         timecodeBurninSettings: p.timecodeBurnin ? {
-          fontSize: p.timecodeBurnin.fontSize,
-          position: p.timecodeBurnin.position,
+          fontSize: p.timecodeBurnin.fontSize?.value,
+          position: p.timecodeBurnin.position?.value,
           prefix: p.timecodeBurnin.prefix,
         } : undefined,
-        afdSignaling: p.afdSignaling ?? AfdSignaling.NONE,
-        bitDepth: p.bitDepth,
+        afdSignaling: (p.afdSignaling ?? AfdSignaling.NONE).value,
+        bitDepth: p.bitDepth?.value,
         bufSize: p.bufSize,
         colorSpaceSettings: p.colorSpaceSettings?._bind(),
         fixedAfd: p.fixedAfd,
-        level: p.level ?? Av1Level.AV1_LEVEL_AUTO,
+        level: (p.level ?? Av1Level.AV1_LEVEL_AUTO).value,
         minBitrate: p.minBitrate,
         minIInterval: p.minIInterval,
         parNumerator: p.pixelAspectRatio?._numerator(),
         parDenominator: p.pixelAspectRatio?._denominator(),
-        sceneChangeDetect: p.sceneChangeDetect ?? Av1SceneChangeDetect.ENABLED,
-        spatialAq: p.spatialAq ?? Av1SpatialAq.ENABLED,
-        temporalAq: p.temporalAq ?? Av1TemporalAq.ENABLED,
-        lookAheadRateControl: p.lookAheadRateControl ?? LookAheadRateControl.HIGH,
-        timecodeInsertion: p.timecodeInsertion,
+        sceneChangeDetect: (p.sceneChangeDetect ?? Av1SceneChangeDetect.ENABLED).value,
+        spatialAq: (p.spatialAq ?? Av1SpatialAq.ENABLED).value,
+        temporalAq: (p.temporalAq ?? Av1TemporalAq.ENABLED).value,
+        lookAheadRateControl: (p.lookAheadRateControl ?? LookAheadRateControl.HIGH).value,
+        timecodeInsertion: p.timecodeInsertion?.value,
       },
     };
   }
@@ -1787,8 +2279,8 @@ class FrameCaptureVideoCodecSettings extends VideoCodecSettings {
         captureInterval: wholeSeconds ? intervalMs / 1000 : intervalMs,
         captureIntervalUnits: wholeSeconds ? 'SECONDS' : 'MILLISECONDS',
         timecodeBurninSettings: p.timecodeBurnin ? {
-          fontSize: p.timecodeBurnin.fontSize,
-          position: p.timecodeBurnin.position,
+          fontSize: p.timecodeBurnin.fontSize?.value,
+          position: p.timecodeBurnin.position?.value,
           prefix: p.timecodeBurnin.prefix,
         } : undefined,
       },

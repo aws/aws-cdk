@@ -14,30 +14,6 @@
           "assumeRoleAction": "*"
         }
       }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
     }
   ],
   "/aws-cdk-medialive-channel-rtmp/RtmpChannel": [
@@ -70,46 +46,10 @@
       "data": "MediaLiveRole1149D189"
     }
   ],
-  "/aws-cdk-medialive-channel-rtmp/MediaLiveRole/DefaultPolicy": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    }
-  ],
   "/aws-cdk-medialive-channel-rtmp/RtmpChannel/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "RtmpChannelFD816251"
-    }
-  ],
-  "/aws-cdk-medialive-channel-rtmp/MediaLiveRole/DefaultPolicy/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "MediaLiveRoleDefaultPolicyE1F33973"
     }
   ]
 }

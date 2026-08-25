@@ -20,38 +20,6 @@
           "assumeRoleAction": "*"
         }
       }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
     }
   ],
   "/aws-cdk-medialive-codec-defaults/H264Channel": [
@@ -96,44 +64,6 @@
       "data": "Role1ABCC5F0"
     }
   ],
-  "/aws-cdk-medialive-codec-defaults/Role/DefaultPolicy": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    }
-  ],
   "/aws-cdk-medialive-codec-defaults/H264Channel/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -144,12 +74,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "H265Channel54392912"
-    }
-  ],
-  "/aws-cdk-medialive-codec-defaults/Role/DefaultPolicy/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "RoleDefaultPolicy5FFB7DAB"
     }
   ]
 }

@@ -94,83 +94,167 @@ export enum AudioCodecType {
 /**
  * AAC profile.
  */
-export enum AacProfile {
+export class AacProfile {
   /** HEV1 */
-  HEV1 = 'HEV1',
+  public static readonly HEV1 = new AacProfile('HEV1');
   /** HEV2 */
-  HEV2 = 'HEV2',
+  public static readonly HEV2 = new AacProfile('HEV2');
   /** LC (Low Complexity) */
-  LC = 'LC',
+  public static readonly LC = new AacProfile('LC');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): AacProfile {
+    return new AacProfile(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * AAC coding mode.
  */
-export enum AacCodingMode {
+export class AacCodingMode {
   /** Ad receiver mix — receives stereo audio description + control track per ETSI TS 101 154 Annex E. */
-  AD_RECEIVER_MIX = 'AD_RECEIVER_MIX',
+  public static readonly AD_RECEIVER_MIX = new AacCodingMode('AD_RECEIVER_MIX');
   /** 1.0 (mono) */
-  CODING_MODE_1_0 = 'CODING_MODE_1_0',
+  public static readonly CODING_MODE_1_0 = new AacCodingMode('CODING_MODE_1_0');
   /** 1+1 (dual mono) */
-  CODING_MODE_1_1 = 'CODING_MODE_1_1',
+  public static readonly CODING_MODE_1_1 = new AacCodingMode('CODING_MODE_1_1');
   /** 2.0 (stereo) */
-  CODING_MODE_2_0 = 'CODING_MODE_2_0',
+  public static readonly CODING_MODE_2_0 = new AacCodingMode('CODING_MODE_2_0');
   /** 5.1 surround */
-  CODING_MODE_5_1 = 'CODING_MODE_5_1',
+  public static readonly CODING_MODE_5_1 = new AacCodingMode('CODING_MODE_5_1');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): AacCodingMode {
+    return new AacCodingMode(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * AAC rate control mode.
  */
-export enum AacRateControlMode {
+export class AacRateControlMode {
   /** Constant bitrate */
-  CBR = 'CBR',
+  public static readonly CBR = new AacRateControlMode('CBR');
   /** Variable bitrate */
-  VBR = 'VBR',
+  public static readonly VBR = new AacRateControlMode('VBR');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): AacRateControlMode {
+    return new AacRateControlMode(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * AAC raw format.
  */
-export enum AacRawFormat {
+export class AacRawFormat {
   /** LATM/LOAS */
-  LATM_LOAS = 'LATM_LOAS',
+  public static readonly LATM_LOAS = new AacRawFormat('LATM_LOAS');
   /** None */
-  NONE = 'NONE',
+  public static readonly NONE = new AacRawFormat('NONE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): AacRawFormat {
+    return new AacRawFormat(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * AAC specification.
  */
-export enum AacSpec {
+export class AacSpec {
   /** MPEG-2 AAC */
-  MPEG2 = 'MPEG2',
+  public static readonly MPEG2 = new AacSpec('MPEG2');
   /** MPEG-4 AAC */
-  MPEG4 = 'MPEG4',
+  public static readonly MPEG4 = new AacSpec('MPEG4');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): AacSpec {
+    return new AacSpec(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * AAC input type.
  */
-export enum AacInputType {
+export class AacInputType {
   /** Broadcaster mixed AD */
-  BROADCASTER_MIXED_AD = 'BROADCASTER_MIXED_AD',
+  public static readonly BROADCASTER_MIXED_AD = new AacInputType('BROADCASTER_MIXED_AD');
   /** Normal */
-  NORMAL = 'NORMAL',
+  public static readonly NORMAL = new AacInputType('NORMAL');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): AacInputType {
+    return new AacInputType(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * AAC VBR quality level.
  */
-export enum AacVbrQuality {
+export class AacVbrQuality {
   /** High */
-  HIGH = 'HIGH',
+  public static readonly HIGH = new AacVbrQuality('HIGH');
   /** Low */
-  LOW = 'LOW',
+  public static readonly LOW = new AacVbrQuality('LOW');
   /** Medium high */
-  MEDIUM_HIGH = 'MEDIUM_HIGH',
+  public static readonly MEDIUM_HIGH = new AacVbrQuality('MEDIUM_HIGH');
   /** Medium low */
-  MEDIUM_LOW = 'MEDIUM_LOW',
+  public static readonly MEDIUM_LOW = new AacVbrQuality('MEDIUM_LOW');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): AacVbrQuality {
+    return new AacVbrQuality(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 // =============================================================================
@@ -180,77 +264,149 @@ export enum AacVbrQuality {
 /**
  * AC3 attenuation control.
  */
-export enum Ac3AttenuationControl {
+export class Ac3AttenuationControl {
   /** Apply 3 dB attenuation to surround channels */
-  ATTENUATE_3_DB = 'ATTENUATE_3_DB',
+  public static readonly ATTENUATE_3_DB = new Ac3AttenuationControl('ATTENUATE_3_DB');
   /** No attenuation */
-  NONE = 'NONE',
+  public static readonly NONE = new Ac3AttenuationControl('NONE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Ac3AttenuationControl {
+    return new Ac3AttenuationControl(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * AC3 bitstream mode.
  */
-export enum Ac3BitstreamMode {
+export class Ac3BitstreamMode {
   /** Commentary */
-  COMMENTARY = 'COMMENTARY',
+  public static readonly COMMENTARY = new Ac3BitstreamMode('COMMENTARY');
   /** Complete main */
-  COMPLETE_MAIN = 'COMPLETE_MAIN',
+  public static readonly COMPLETE_MAIN = new Ac3BitstreamMode('COMPLETE_MAIN');
   /** Dialogue */
-  DIALOGUE = 'DIALOGUE',
+  public static readonly DIALOGUE = new Ac3BitstreamMode('DIALOGUE');
   /** Emergency */
-  EMERGENCY = 'EMERGENCY',
+  public static readonly EMERGENCY = new Ac3BitstreamMode('EMERGENCY');
   /** Hearing impaired */
-  HEARING_IMPAIRED = 'HEARING_IMPAIRED',
+  public static readonly HEARING_IMPAIRED = new Ac3BitstreamMode('HEARING_IMPAIRED');
   /** Music and effects */
-  MUSIC_AND_EFFECTS = 'MUSIC_AND_EFFECTS',
+  public static readonly MUSIC_AND_EFFECTS = new Ac3BitstreamMode('MUSIC_AND_EFFECTS');
   /** Visually impaired */
-  VISUALLY_IMPAIRED = 'VISUALLY_IMPAIRED',
+  public static readonly VISUALLY_IMPAIRED = new Ac3BitstreamMode('VISUALLY_IMPAIRED');
   /** Voice over */
-  VOICE_OVER = 'VOICE_OVER',
+  public static readonly VOICE_OVER = new Ac3BitstreamMode('VOICE_OVER');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Ac3BitstreamMode {
+    return new Ac3BitstreamMode(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * AC3 coding mode.
  */
-export enum Ac3CodingMode {
+export class Ac3CodingMode {
   /** 1.0 (mono) */
-  CODING_MODE_1_0 = 'CODING_MODE_1_0',
+  public static readonly CODING_MODE_1_0 = new Ac3CodingMode('CODING_MODE_1_0');
   /** 1+1 (dual mono) */
-  CODING_MODE_1_1 = 'CODING_MODE_1_1',
+  public static readonly CODING_MODE_1_1 = new Ac3CodingMode('CODING_MODE_1_1');
   /** 2.0 (stereo) */
-  CODING_MODE_2_0 = 'CODING_MODE_2_0',
+  public static readonly CODING_MODE_2_0 = new Ac3CodingMode('CODING_MODE_2_0');
   /** 3/2 (5.0 surround) */
-  CODING_MODE_3_2_LFE = 'CODING_MODE_3_2_LFE',
+  public static readonly CODING_MODE_3_2_LFE = new Ac3CodingMode('CODING_MODE_3_2_LFE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Ac3CodingMode {
+    return new Ac3CodingMode(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * AC3 DRC profile.
  */
-export enum Ac3DrcProfile {
+export class Ac3DrcProfile {
   /** Film standard */
-  FILM_STANDARD = 'FILM_STANDARD',
+  public static readonly FILM_STANDARD = new Ac3DrcProfile('FILM_STANDARD');
   /** None */
-  NONE = 'NONE',
+  public static readonly NONE = new Ac3DrcProfile('NONE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Ac3DrcProfile {
+    return new Ac3DrcProfile(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * AC3 LFE filter.
  */
-export enum Ac3LfeFilter {
+export class Ac3LfeFilter {
   /** Disabled */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new Ac3LfeFilter('DISABLED');
   /** Enabled */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new Ac3LfeFilter('ENABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Ac3LfeFilter {
+    return new Ac3LfeFilter(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * AC3 metadata control.
  */
-export enum Ac3MetadataControl {
+export class Ac3MetadataControl {
   /** Follow input */
-  FOLLOW_INPUT = 'FOLLOW_INPUT',
+  public static readonly FOLLOW_INPUT = new Ac3MetadataControl('FOLLOW_INPUT');
   /** Use configured */
-  USE_CONFIGURED = 'USE_CONFIGURED',
+  public static readonly USE_CONFIGURED = new Ac3MetadataControl('USE_CONFIGURED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Ac3MetadataControl {
+    return new Ac3MetadataControl(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 // =============================================================================
@@ -260,173 +416,341 @@ export enum Ac3MetadataControl {
 /**
  * EAC3 attenuation control.
  */
-export enum Eac3AttenuationControl {
+export class Eac3AttenuationControl {
   /** Apply 3 dB attenuation to surround channels */
-  ATTENUATE_3_DB = 'ATTENUATE_3_DB',
+  public static readonly ATTENUATE_3_DB = new Eac3AttenuationControl('ATTENUATE_3_DB');
   /** No attenuation */
-  NONE = 'NONE',
+  public static readonly NONE = new Eac3AttenuationControl('NONE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Eac3AttenuationControl {
+    return new Eac3AttenuationControl(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * EAC3 bitstream mode.
  */
-export enum Eac3BitstreamMode {
+export class Eac3BitstreamMode {
   /** Commentary */
-  COMMENTARY = 'COMMENTARY',
+  public static readonly COMMENTARY = new Eac3BitstreamMode('COMMENTARY');
   /** Complete main */
-  COMPLETE_MAIN = 'COMPLETE_MAIN',
+  public static readonly COMPLETE_MAIN = new Eac3BitstreamMode('COMPLETE_MAIN');
   /** Emergency */
-  EMERGENCY = 'EMERGENCY',
+  public static readonly EMERGENCY = new Eac3BitstreamMode('EMERGENCY');
   /** Hearing impaired */
-  HEARING_IMPAIRED = 'HEARING_IMPAIRED',
+  public static readonly HEARING_IMPAIRED = new Eac3BitstreamMode('HEARING_IMPAIRED');
   /** Visually impaired */
-  VISUALLY_IMPAIRED = 'VISUALLY_IMPAIRED',
+  public static readonly VISUALLY_IMPAIRED = new Eac3BitstreamMode('VISUALLY_IMPAIRED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Eac3BitstreamMode {
+    return new Eac3BitstreamMode(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * EAC3 coding mode.
  */
-export enum Eac3CodingMode {
+export class Eac3CodingMode {
   /** 1.0 (mono) */
-  CODING_MODE_1_0 = 'CODING_MODE_1_0',
+  public static readonly CODING_MODE_1_0 = new Eac3CodingMode('CODING_MODE_1_0');
   /** 2.0 (stereo) */
-  CODING_MODE_2_0 = 'CODING_MODE_2_0',
+  public static readonly CODING_MODE_2_0 = new Eac3CodingMode('CODING_MODE_2_0');
   /** 3/2 (5.0 surround) */
-  CODING_MODE_3_2 = 'CODING_MODE_3_2',
+  public static readonly CODING_MODE_3_2 = new Eac3CodingMode('CODING_MODE_3_2');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Eac3CodingMode {
+    return new Eac3CodingMode(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * EAC3 DC filter.
  */
-export enum Eac3DcFilter {
+export class Eac3DcFilter {
   /** Disabled */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new Eac3DcFilter('DISABLED');
   /** Enabled */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new Eac3DcFilter('ENABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Eac3DcFilter {
+    return new Eac3DcFilter(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * EAC3 DRC line mode profile.
  */
-export enum Eac3DrcLine {
+export class Eac3DrcLine {
   /** Film light */
-  FILM_LIGHT = 'FILM_LIGHT',
+  public static readonly FILM_LIGHT = new Eac3DrcLine('FILM_LIGHT');
   /** Film standard */
-  FILM_STANDARD = 'FILM_STANDARD',
+  public static readonly FILM_STANDARD = new Eac3DrcLine('FILM_STANDARD');
   /** Music light */
-  MUSIC_LIGHT = 'MUSIC_LIGHT',
+  public static readonly MUSIC_LIGHT = new Eac3DrcLine('MUSIC_LIGHT');
   /** Music standard */
-  MUSIC_STANDARD = 'MUSIC_STANDARD',
+  public static readonly MUSIC_STANDARD = new Eac3DrcLine('MUSIC_STANDARD');
   /** None */
-  NONE = 'NONE',
+  public static readonly NONE = new Eac3DrcLine('NONE');
   /** Speech */
-  SPEECH = 'SPEECH',
+  public static readonly SPEECH = new Eac3DrcLine('SPEECH');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Eac3DrcLine {
+    return new Eac3DrcLine(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * EAC3 DRC RF mode profile.
  */
-export enum Eac3DrcRf {
+export class Eac3DrcRf {
   /** Film light */
-  FILM_LIGHT = 'FILM_LIGHT',
+  public static readonly FILM_LIGHT = new Eac3DrcRf('FILM_LIGHT');
   /** Film standard */
-  FILM_STANDARD = 'FILM_STANDARD',
+  public static readonly FILM_STANDARD = new Eac3DrcRf('FILM_STANDARD');
   /** Music light */
-  MUSIC_LIGHT = 'MUSIC_LIGHT',
+  public static readonly MUSIC_LIGHT = new Eac3DrcRf('MUSIC_LIGHT');
   /** Music standard */
-  MUSIC_STANDARD = 'MUSIC_STANDARD',
+  public static readonly MUSIC_STANDARD = new Eac3DrcRf('MUSIC_STANDARD');
   /** None */
-  NONE = 'NONE',
+  public static readonly NONE = new Eac3DrcRf('NONE');
   /** Speech */
-  SPEECH = 'SPEECH',
+  public static readonly SPEECH = new Eac3DrcRf('SPEECH');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Eac3DrcRf {
+    return new Eac3DrcRf(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * EAC3 LFE control.
  */
-export enum Eac3LfeControl {
+export class Eac3LfeControl {
   /** LFE */
-  LFE = 'LFE',
+  public static readonly LFE = new Eac3LfeControl('LFE');
   /** No LFE */
-  NO_LFE = 'NO_LFE',
+  public static readonly NO_LFE = new Eac3LfeControl('NO_LFE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Eac3LfeControl {
+    return new Eac3LfeControl(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * EAC3 LFE filter.
  */
-export enum Eac3LfeFilter {
+export class Eac3LfeFilter {
   /** Disabled */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new Eac3LfeFilter('DISABLED');
   /** Enabled */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new Eac3LfeFilter('ENABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Eac3LfeFilter {
+    return new Eac3LfeFilter(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * EAC3 metadata control.
  */
-export enum Eac3MetadataControl {
+export class Eac3MetadataControl {
   /** Follow input */
-  FOLLOW_INPUT = 'FOLLOW_INPUT',
+  public static readonly FOLLOW_INPUT = new Eac3MetadataControl('FOLLOW_INPUT');
   /** Use configured */
-  USE_CONFIGURED = 'USE_CONFIGURED',
+  public static readonly USE_CONFIGURED = new Eac3MetadataControl('USE_CONFIGURED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Eac3MetadataControl {
+    return new Eac3MetadataControl(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * EAC3 passthrough control.
  */
-export enum Eac3PassthroughControl {
+export class Eac3PassthroughControl {
   /** No passthrough */
-  NO_PASSTHROUGH = 'NO_PASSTHROUGH',
+  public static readonly NO_PASSTHROUGH = new Eac3PassthroughControl('NO_PASSTHROUGH');
   /** When possible */
-  WHEN_POSSIBLE = 'WHEN_POSSIBLE',
+  public static readonly WHEN_POSSIBLE = new Eac3PassthroughControl('WHEN_POSSIBLE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Eac3PassthroughControl {
+    return new Eac3PassthroughControl(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * EAC3 phase control.
  */
-export enum Eac3PhaseControl {
+export class Eac3PhaseControl {
   /** No shift */
-  NO_SHIFT = 'NO_SHIFT',
+  public static readonly NO_SHIFT = new Eac3PhaseControl('NO_SHIFT');
   /** Shift 90 degrees */
-  SHIFT_90_DEGREES = 'SHIFT_90_DEGREES',
+  public static readonly SHIFT_90_DEGREES = new Eac3PhaseControl('SHIFT_90_DEGREES');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Eac3PhaseControl {
+    return new Eac3PhaseControl(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * EAC3 stereo downmix preference.
  */
-export enum Eac3StereoDownmix {
+export class Eac3StereoDownmix {
   /** DPL2 */
-  DPL2 = 'DPL2',
+  public static readonly DPL2 = new Eac3StereoDownmix('DPL2');
   /** Lo/Ro */
-  LO_RO = 'LO_RO',
+  public static readonly LO_RO = new Eac3StereoDownmix('LO_RO');
   /** Lt/Rt */
-  LT_RT = 'LT_RT',
+  public static readonly LT_RT = new Eac3StereoDownmix('LT_RT');
   /** Not indicated */
-  NOT_INDICATED = 'NOT_INDICATED',
+  public static readonly NOT_INDICATED = new Eac3StereoDownmix('NOT_INDICATED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Eac3StereoDownmix {
+    return new Eac3StereoDownmix(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * EAC3 surround ex mode.
  */
-export enum Eac3SurroundExMode {
+export class Eac3SurroundExMode {
   /** Disabled */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new Eac3SurroundExMode('DISABLED');
   /** Enabled */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new Eac3SurroundExMode('ENABLED');
   /** Not indicated */
-  NOT_INDICATED = 'NOT_INDICATED',
+  public static readonly NOT_INDICATED = new Eac3SurroundExMode('NOT_INDICATED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Eac3SurroundExMode {
+    return new Eac3SurroundExMode(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * EAC3 surround mode.
  */
-export enum Eac3SurroundMode {
+export class Eac3SurroundMode {
   /** Disabled */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new Eac3SurroundMode('DISABLED');
   /** Enabled */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new Eac3SurroundMode('ENABLED');
   /** Not indicated */
-  NOT_INDICATED = 'NOT_INDICATED',
+  public static readonly NOT_INDICATED = new Eac3SurroundMode('NOT_INDICATED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Eac3SurroundMode {
+    return new Eac3SurroundMode(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 // =============================================================================
@@ -436,49 +760,85 @@ export enum Eac3SurroundMode {
 /**
  * EAC3 Atmos coding mode.
  */
-export enum Eac3AtmosCodingMode {
+export class Eac3AtmosCodingMode {
   /** 5.1.4 surround */
-  CODING_MODE_5_1_4 = 'CODING_MODE_5_1_4',
+  public static readonly CODING_MODE_5_1_4 = new Eac3AtmosCodingMode('CODING_MODE_5_1_4');
   /** 7.1.4 surround */
-  CODING_MODE_7_1_4 = 'CODING_MODE_7_1_4',
+  public static readonly CODING_MODE_7_1_4 = new Eac3AtmosCodingMode('CODING_MODE_7_1_4');
   /** 9.1.6 surround */
-  CODING_MODE_9_1_6 = 'CODING_MODE_9_1_6',
+  public static readonly CODING_MODE_9_1_6 = new Eac3AtmosCodingMode('CODING_MODE_9_1_6');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Eac3AtmosCodingMode {
+    return new Eac3AtmosCodingMode(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * EAC3 Atmos DRC line mode profile.
  */
-export enum Eac3AtmosDrcLine {
+export class Eac3AtmosDrcLine {
   /** Film light */
-  FILM_LIGHT = 'FILM_LIGHT',
+  public static readonly FILM_LIGHT = new Eac3AtmosDrcLine('FILM_LIGHT');
   /** Film standard */
-  FILM_STANDARD = 'FILM_STANDARD',
+  public static readonly FILM_STANDARD = new Eac3AtmosDrcLine('FILM_STANDARD');
   /** Music light */
-  MUSIC_LIGHT = 'MUSIC_LIGHT',
+  public static readonly MUSIC_LIGHT = new Eac3AtmosDrcLine('MUSIC_LIGHT');
   /** Music standard */
-  MUSIC_STANDARD = 'MUSIC_STANDARD',
+  public static readonly MUSIC_STANDARD = new Eac3AtmosDrcLine('MUSIC_STANDARD');
   /** None */
-  NONE = 'NONE',
+  public static readonly NONE = new Eac3AtmosDrcLine('NONE');
   /** Speech */
-  SPEECH = 'SPEECH',
+  public static readonly SPEECH = new Eac3AtmosDrcLine('SPEECH');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Eac3AtmosDrcLine {
+    return new Eac3AtmosDrcLine(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * EAC3 Atmos DRC RF mode profile.
  */
-export enum Eac3AtmosDrcRf {
+export class Eac3AtmosDrcRf {
   /** Film light */
-  FILM_LIGHT = 'FILM_LIGHT',
+  public static readonly FILM_LIGHT = new Eac3AtmosDrcRf('FILM_LIGHT');
   /** Film standard */
-  FILM_STANDARD = 'FILM_STANDARD',
+  public static readonly FILM_STANDARD = new Eac3AtmosDrcRf('FILM_STANDARD');
   /** Music light */
-  MUSIC_LIGHT = 'MUSIC_LIGHT',
+  public static readonly MUSIC_LIGHT = new Eac3AtmosDrcRf('MUSIC_LIGHT');
   /** Music standard */
-  MUSIC_STANDARD = 'MUSIC_STANDARD',
+  public static readonly MUSIC_STANDARD = new Eac3AtmosDrcRf('MUSIC_STANDARD');
   /** None */
-  NONE = 'NONE',
+  public static readonly NONE = new Eac3AtmosDrcRf('NONE');
   /** Speech */
-  SPEECH = 'SPEECH',
+  public static readonly SPEECH = new Eac3AtmosDrcRf('SPEECH');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Eac3AtmosDrcRf {
+    return new Eac3AtmosDrcRf(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 // =============================================================================
@@ -488,11 +848,23 @@ export enum Eac3AtmosDrcRf {
 /**
  * MP2 coding mode.
  */
-export enum Mp2CodingMode {
+export class Mp2CodingMode {
   /** 1.0 (mono) */
-  CODING_MODE_1_0 = 'CODING_MODE_1_0',
+  public static readonly CODING_MODE_1_0 = new Mp2CodingMode('CODING_MODE_1_0');
   /** 2.0 (stereo) */
-  CODING_MODE_2_0 = 'CODING_MODE_2_0',
+  public static readonly CODING_MODE_2_0 = new Mp2CodingMode('CODING_MODE_2_0');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): Mp2CodingMode {
+    return new Mp2CodingMode(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 // =============================================================================
@@ -502,15 +874,27 @@ export enum Mp2CodingMode {
 /**
  * WAV coding mode.
  */
-export enum WavCodingMode {
+export class WavCodingMode {
   /** 1.0 (mono) */
-  CODING_MODE_1_0 = 'CODING_MODE_1_0',
+  public static readonly CODING_MODE_1_0 = new WavCodingMode('CODING_MODE_1_0');
   /** 2.0 (stereo) */
-  CODING_MODE_2_0 = 'CODING_MODE_2_0',
+  public static readonly CODING_MODE_2_0 = new WavCodingMode('CODING_MODE_2_0');
   /** 4.0 */
-  CODING_MODE_4_0 = 'CODING_MODE_4_0',
+  public static readonly CODING_MODE_4_0 = new WavCodingMode('CODING_MODE_4_0');
   /** 8.0 */
-  CODING_MODE_8_0 = 'CODING_MODE_8_0',
+  public static readonly CODING_MODE_8_0 = new WavCodingMode('CODING_MODE_8_0');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): WavCodingMode {
+    return new WavCodingMode(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 // =============================================================================
@@ -557,7 +941,10 @@ export interface AacSettingsProps {
    */
   readonly rawFormat?: AacRawFormat;
   /**
-   * Uses MPEG-2 AAC audio instead of MPEG-4 AAC audio for raw or MPEG-2 Transport Stream containers.
+   * The AAC specification (MPEG-4 or MPEG-2) used to encode the audio.
+   *
+   * Set to `AacSpec.MPEG2` to emit MPEG-2 AAC instead of MPEG-4 AAC for raw or MPEG-2 Transport
+   * Stream containers.
    * @default AacSpec.MPEG4
    */
   readonly spec?: AacSpec;
@@ -880,14 +1267,14 @@ class AacAudioCodecSettings extends AudioCodecSettings {
     return {
       aacSettings: {
         bitrate: p.bitrate?.toBps() ?? 192000,
-        profile: p.profile ?? AacProfile.LC,
-        codingMode: p.codingMode ?? AacCodingMode.CODING_MODE_2_0,
-        rateControlMode: p.rateControlMode ?? AacRateControlMode.CBR,
+        profile: (p.profile ?? AacProfile.LC).value,
+        codingMode: (p.codingMode ?? AacCodingMode.CODING_MODE_2_0).value,
+        rateControlMode: (p.rateControlMode ?? AacRateControlMode.CBR).value,
         sampleRate: (p.sampleRate ?? AudioSampleRate.HZ_48000)._toHz(),
-        rawFormat: p.rawFormat ?? AacRawFormat.NONE,
-        spec: p.spec ?? AacSpec.MPEG4,
-        inputType: p.inputType ?? AacInputType.NORMAL,
-        vbrQuality: p.vbrQuality,
+        rawFormat: (p.rawFormat ?? AacRawFormat.NONE).value,
+        spec: (p.spec ?? AacSpec.MPEG4).value,
+        inputType: (p.inputType ?? AacInputType.NORMAL).value,
+        vbrQuality: p.vbrQuality?.value,
       },
     };
   }
@@ -905,13 +1292,13 @@ class Ac3AudioCodecSettings extends AudioCodecSettings {
     return {
       ac3Settings: {
         bitrate: p.bitrate?.toBps(),
-        codingMode: p.codingMode ?? Ac3CodingMode.CODING_MODE_2_0,
+        codingMode: (p.codingMode ?? Ac3CodingMode.CODING_MODE_2_0).value,
         dialnorm: p.dialNorm,
-        attenuationControl: p.attenuationControl,
-        bitstreamMode: p.bitstreamMode ?? Ac3BitstreamMode.COMPLETE_MAIN,
-        drcProfile: p.drcProfile,
-        lfeFilter: p.lfeFilter ?? Ac3LfeFilter.DISABLED,
-        metadataControl: p.metadataControl,
+        attenuationControl: p.attenuationControl?.value,
+        bitstreamMode: (p.bitstreamMode ?? Ac3BitstreamMode.COMPLETE_MAIN).value,
+        drcProfile: p.drcProfile?.value,
+        lfeFilter: (p.lfeFilter ?? Ac3LfeFilter.DISABLED).value,
+        metadataControl: p.metadataControl?.value,
       },
     };
   }
@@ -929,25 +1316,25 @@ class Eac3AudioCodecSettings extends AudioCodecSettings {
     return {
       eac3Settings: {
         bitrate: p.bitrate?.toBps(),
-        codingMode: p.codingMode ?? Eac3CodingMode.CODING_MODE_3_2,
+        codingMode: (p.codingMode ?? Eac3CodingMode.CODING_MODE_3_2).value,
         dialnorm: p.dialNorm,
-        attenuationControl: p.attenuationControl ?? Eac3AttenuationControl.NONE,
-        bitstreamMode: p.bitstreamMode ?? Eac3BitstreamMode.COMPLETE_MAIN,
-        dcFilter: p.dcFilter,
-        drcLine: p.drcLine,
-        drcRf: p.drcRf,
-        lfeControl: p.lfeControl,
-        lfeFilter: p.lfeFilter,
+        attenuationControl: (p.attenuationControl ?? Eac3AttenuationControl.NONE).value,
+        bitstreamMode: (p.bitstreamMode ?? Eac3BitstreamMode.COMPLETE_MAIN).value,
+        dcFilter: p.dcFilter?.value,
+        drcLine: p.drcLine?.value,
+        drcRf: p.drcRf?.value,
+        lfeControl: p.lfeControl?.value,
+        lfeFilter: p.lfeFilter?.value,
         loRoCenterMixLevel: p.loRoCenterMixLevel,
         loRoSurroundMixLevel: p.loRoSurroundMixLevel,
         ltRtCenterMixLevel: p.ltRtCenterMixLevel,
         ltRtSurroundMixLevel: p.ltRtSurroundMixLevel,
-        metadataControl: p.metadataControl,
-        passthroughControl: p.passthroughControl,
-        phaseControl: p.phaseControl,
-        stereoDownmix: p.stereoDownmix,
-        surroundExMode: p.surroundExMode,
-        surroundMode: p.surroundMode,
+        metadataControl: p.metadataControl?.value,
+        passthroughControl: p.passthroughControl?.value,
+        phaseControl: p.phaseControl?.value,
+        stereoDownmix: p.stereoDownmix?.value,
+        surroundExMode: p.surroundExMode?.value,
+        surroundMode: p.surroundMode?.value,
       },
     };
   }
@@ -965,10 +1352,10 @@ class Eac3AtmosAudioCodecSettings extends AudioCodecSettings {
     return {
       eac3AtmosSettings: {
         bitrate: p.bitrate?.toBps(),
-        codingMode: p.codingMode ?? Eac3AtmosCodingMode.CODING_MODE_5_1_4,
+        codingMode: (p.codingMode ?? Eac3AtmosCodingMode.CODING_MODE_5_1_4).value,
         dialnorm: p.dialNorm,
-        drcLine: p.drcLine,
-        drcRf: p.drcRf,
+        drcLine: p.drcLine?.value,
+        drcRf: p.drcRf?.value,
         heightTrim: p.heightTrim,
         surroundTrim: p.surroundTrim,
       },
@@ -988,7 +1375,7 @@ class Mp2AudioCodecSettings extends AudioCodecSettings {
     return {
       mp2Settings: {
         bitrate: p.bitrate?.toBps(),
-        codingMode: p.codingMode ?? Mp2CodingMode.CODING_MODE_2_0,
+        codingMode: (p.codingMode ?? Mp2CodingMode.CODING_MODE_2_0).value,
         sampleRate: (p.sampleRate ?? AudioSampleRate.HZ_48000)._toHz(),
       },
     };
@@ -1007,7 +1394,7 @@ class WavAudioCodecSettings extends AudioCodecSettings {
     return {
       wavSettings: {
         bitDepth: (p.bitDepth ?? AudioBitDepth.DEPTH_16)._toBits(),
-        codingMode: p.codingMode ?? WavCodingMode.CODING_MODE_2_0,
+        codingMode: (p.codingMode ?? WavCodingMode.CODING_MODE_2_0).value,
         sampleRate: (p.sampleRate ?? AudioSampleRate.HZ_48000)._toHz(),
       },
     };

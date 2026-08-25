@@ -1,5 +1,5 @@
 import { Token, UnscopedValidationError } from 'aws-cdk-lib';
-import type { IRole } from 'aws-cdk-lib/aws-iam';
+import type { IRole, IRoleRef } from 'aws-cdk-lib/aws-iam';
 import type { CfnChannel } from 'aws-cdk-lib/aws-medialive';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { AudioCodecSettings } from './audio-codec-settings';
@@ -61,7 +61,7 @@ export abstract class EncodeConfiguration {
    * burn-in caption font in S3). Default is a no-op; caption encodes override it.
    * @internal
    */
-  public _grantRead(_role: IRole): void {}
+  public _grantRead(_role: IRoleRef): void {}
 
   /**
    * Whether this is an in-band caption encode (burn-in, embedded) that does not produce a
@@ -84,25 +84,49 @@ export abstract class EncodeConfiguration {
 /**
  * How to respond to AFD values in the input stream.
  */
-export enum RespondToAfd {
+export class RespondToAfd {
   /** Clip input video based on AFD values */
-  RESPOND = 'RESPOND',
+  public static readonly RESPOND = new RespondToAfd('RESPOND');
   /** Pass AFD values through without clipping */
-  PASSTHROUGH = 'PASSTHROUGH',
+  public static readonly PASSTHROUGH = new RespondToAfd('PASSTHROUGH');
   /** Ignore AFD values */
-  NONE = 'NONE',
+  public static readonly NONE = new RespondToAfd('NONE');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): RespondToAfd {
+    return new RespondToAfd(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * Video scaling behavior.
  */
-export enum ScalingBehavior {
+export class ScalingBehavior {
   /** May insert black boxes to match output resolution */
-  DEFAULT = 'DEFAULT',
+  public static readonly DEFAULT = new ScalingBehavior('DEFAULT');
   /** Stretch video to fill the output resolution */
-  STRETCH_TO_OUTPUT = 'STRETCH_TO_OUTPUT',
+  public static readonly STRETCH_TO_OUTPUT = new ScalingBehavior('STRETCH_TO_OUTPUT');
   /** Intelligently crop the video to focus on key subjects (9:16 vertical). Requires an Elemental Inference feed on the channel via `inferenceFeed`. Do NOT include `FeedOutput.cropping()` on the feed — MediaLive auto-inserts it. */
-  SMART_CROP = 'SMART_CROP',
+  public static readonly SMART_CROP = new ScalingBehavior('SMART_CROP');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): ScalingBehavior {
+    return new ScalingBehavior(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -146,29 +170,65 @@ export interface VideoEncodeProps {
 /**
  * Audio normalization algorithm.
  */
-export enum AudioNormalizationAlgorithm {
+export class AudioNormalizationAlgorithm {
   /** CALM Act specification (ITU-R BS.1770-1) */
-  ITU_1770_1 = 'ITU_1770_1',
+  public static readonly ITU_1770_1 = new AudioNormalizationAlgorithm('ITU_1770_1');
   /** EBU R-128 specification (ITU-R BS.1770-2) */
-  ITU_1770_2 = 'ITU_1770_2',
+  public static readonly ITU_1770_2 = new AudioNormalizationAlgorithm('ITU_1770_2');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): AudioNormalizationAlgorithm {
+    return new AudioNormalizationAlgorithm(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * Audio normalization algorithm control.
  */
-export enum AudioNormalizationAlgorithmControl {
+export class AudioNormalizationAlgorithmControl {
   /** Correct the audio using the chosen algorithm */
-  CORRECT_AUDIO = 'CORRECT_AUDIO',
+  public static readonly CORRECT_AUDIO = new AudioNormalizationAlgorithmControl('CORRECT_AUDIO');
   /** Measure audio but do not adjust */
-  MEASURE_ONLY = 'MEASURE_ONLY',
+  public static readonly MEASURE_ONLY = new AudioNormalizationAlgorithmControl('MEASURE_ONLY');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): AudioNormalizationAlgorithmControl {
+    return new AudioNormalizationAlgorithmControl(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * Peak calculation method for audio normalization.
  */
-export enum AudioNormalizationPeakCalculation {
+export class AudioNormalizationPeakCalculation {
   /** Calculate and log the TruePeak for each audio track. */
-  TRUE_PEAK = 'TRUE_PEAK',
+  public static readonly TRUE_PEAK = new AudioNormalizationPeakCalculation('TRUE_PEAK');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): AudioNormalizationPeakCalculation {
+    return new AudioNormalizationPeakCalculation(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -254,42 +314,66 @@ export interface RemixSettings {
 /**
  * CBET insertion behavior when prior encoding is detected on the same layer.
  */
-export enum NielsenCbetStepaside {
+export class NielsenCbetStepaside {
   /**
    * Existing Nielsen watermarks are removed. New watermarks are inserted throughout the audio.
    */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new NielsenCbetStepaside('DISABLED');
   /**
    * Existing Nielsen watermarks are left intact. New watermarks are inserted only in portions
    * of the audio where there are no existing watermarks.
    */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new NielsenCbetStepaside('ENABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): NielsenCbetStepaside {
+    return new NielsenCbetStepaside(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * Timezone applied to the timestamps in a Nielsen NAES II/NW watermark.
  */
-export enum NielsenWatermarkTimezone {
+export class NielsenWatermarkTimezone {
   /** America/Puerto Rico */
-  AMERICA_PUERTO_RICO = 'AMERICA_PUERTO_RICO',
+  public static readonly AMERICA_PUERTO_RICO = new NielsenWatermarkTimezone('AMERICA_PUERTO_RICO');
   /** US Alaska */
-  US_ALASKA = 'US_ALASKA',
+  public static readonly US_ALASKA = new NielsenWatermarkTimezone('US_ALASKA');
   /** US Arizona */
-  US_ARIZONA = 'US_ARIZONA',
+  public static readonly US_ARIZONA = new NielsenWatermarkTimezone('US_ARIZONA');
   /** US Central */
-  US_CENTRAL = 'US_CENTRAL',
+  public static readonly US_CENTRAL = new NielsenWatermarkTimezone('US_CENTRAL');
   /** US Eastern */
-  US_EASTERN = 'US_EASTERN',
+  public static readonly US_EASTERN = new NielsenWatermarkTimezone('US_EASTERN');
   /** US Hawaii */
-  US_HAWAII = 'US_HAWAII',
+  public static readonly US_HAWAII = new NielsenWatermarkTimezone('US_HAWAII');
   /** US Mountain */
-  US_MOUNTAIN = 'US_MOUNTAIN',
+  public static readonly US_MOUNTAIN = new NielsenWatermarkTimezone('US_MOUNTAIN');
   /** US Pacific */
-  US_PACIFIC = 'US_PACIFIC',
+  public static readonly US_PACIFIC = new NielsenWatermarkTimezone('US_PACIFIC');
   /** US Samoa */
-  US_SAMOA = 'US_SAMOA',
+  public static readonly US_SAMOA = new NielsenWatermarkTimezone('US_SAMOA');
   /** Coordinated Universal Time */
-  UTC = 'UTC',
+  public static readonly UTC = new NielsenWatermarkTimezone('UTC');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): NielsenWatermarkTimezone {
+    return new NielsenWatermarkTimezone(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -333,11 +417,23 @@ export interface NielsenNaesIiNwSettings {
 /**
  * Nielsen watermark distribution type.
  */
-export enum NielsenDistributionType {
+export class NielsenDistributionType {
   /** Program content */
-  PROGRAM_CONTENT = 'PROGRAM_CONTENT',
+  public static readonly PROGRAM_CONTENT = new NielsenDistributionType('PROGRAM_CONTENT');
   /** Final distributor */
-  FINAL_DISTRIBUTOR = 'FINAL_DISTRIBUTOR',
+  public static readonly FINAL_DISTRIBUTOR = new NielsenDistributionType('FINAL_DISTRIBUTOR');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): NielsenDistributionType {
+    return new NielsenDistributionType(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -375,86 +471,146 @@ export interface AudioWatermarkSettings {
 /**
  * Determines how the audio type is signaled in the output.
  */
-export enum AudioTypeControl {
+export class AudioTypeControl {
   /**
    * If the input contains an ISO 639 audioType it is passed through; otherwise the
    * configured `audioType` is used.
    */
-  FOLLOW_INPUT = 'FOLLOW_INPUT',
+  public static readonly FOLLOW_INPUT = new AudioTypeControl('FOLLOW_INPUT');
   /** The configured `audioType` is always used. */
-  USE_CONFIGURED = 'USE_CONFIGURED',
+  public static readonly USE_CONFIGURED = new AudioTypeControl('USE_CONFIGURED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): AudioTypeControl {
+    return new AudioTypeControl(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * Determines how the audio language code is signaled in the output.
  */
-export enum AudioLanguageCodeControl {
+export class AudioLanguageCodeControl {
   /**
    * If the input contains a language code it is passed through; otherwise the configured
    * `languageCode` is used as a fallback.
    */
-  FOLLOW_INPUT = 'FOLLOW_INPUT',
+  public static readonly FOLLOW_INPUT = new AudioLanguageCodeControl('FOLLOW_INPUT');
   /** The configured `languageCode` is always used. */
-  USE_CONFIGURED = 'USE_CONFIGURED',
+  public static readonly USE_CONFIGURED = new AudioLanguageCodeControl('USE_CONFIGURED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): AudioLanguageCodeControl {
+    return new AudioLanguageCodeControl(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * The audio type, as defined in ISO/IEC 13818-1.
  */
-export enum AudioType {
+export class AudioType {
   /** Clean effects (no dialogue). */
-  CLEAN_EFFECTS = 'CLEAN_EFFECTS',
+  public static readonly CLEAN_EFFECTS = new AudioType('CLEAN_EFFECTS');
   /** Hearing impaired. */
-  HEARING_IMPAIRED = 'HEARING_IMPAIRED',
+  public static readonly HEARING_IMPAIRED = new AudioType('HEARING_IMPAIRED');
   /** Undefined. */
-  UNDEFINED = 'UNDEFINED',
+  public static readonly UNDEFINED = new AudioType('UNDEFINED');
   /** Visual impaired commentary. */
-  VISUAL_IMPAIRED_COMMENTARY = 'VISUAL_IMPAIRED_COMMENTARY',
+  public static readonly VISUAL_IMPAIRED_COMMENTARY = new AudioType('VISUAL_IMPAIRED_COMMENTARY');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): AudioType {
+    return new AudioType(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * DVB DASH accessibility signaling for an audio output.
  */
-export enum DvbDashAccessibility {
+export class DvbDashAccessibility {
   /** Visually impaired. */
-  VISUALLY_IMPAIRED = 'DVBDASH_1_VISUALLY_IMPAIRED',
+  public static readonly VISUALLY_IMPAIRED = new DvbDashAccessibility('DVBDASH_1_VISUALLY_IMPAIRED');
   /** Hard of hearing. */
-  HARD_OF_HEARING = 'DVBDASH_2_HARD_OF_HEARING',
+  public static readonly HARD_OF_HEARING = new DvbDashAccessibility('DVBDASH_2_HARD_OF_HEARING');
   /** Supplemental commentary. */
-  SUPPLEMENTAL_COMMENTARY = 'DVBDASH_3_SUPPLEMENTAL_COMMENTARY',
+  public static readonly SUPPLEMENTAL_COMMENTARY = new DvbDashAccessibility('DVBDASH_3_SUPPLEMENTAL_COMMENTARY');
   /** Director's commentary. */
-  DIRECTORS_COMMENTARY = 'DVBDASH_4_DIRECTORS_COMMENTARY',
+  public static readonly DIRECTORS_COMMENTARY = new DvbDashAccessibility('DVBDASH_4_DIRECTORS_COMMENTARY');
   /** Educational notes. */
-  EDUCATIONAL_NOTES = 'DVBDASH_5_EDUCATIONAL_NOTES',
+  public static readonly EDUCATIONAL_NOTES = new DvbDashAccessibility('DVBDASH_5_EDUCATIONAL_NOTES');
   /** Main program. */
-  MAIN_PROGRAM = 'DVBDASH_6_MAIN_PROGRAM',
+  public static readonly MAIN_PROGRAM = new DvbDashAccessibility('DVBDASH_6_MAIN_PROGRAM');
   /** Clean feed. */
-  CLEAN_FEED = 'DVBDASH_7_CLEAN_FEED',
+  public static readonly CLEAN_FEED = new DvbDashAccessibility('DVBDASH_7_CLEAN_FEED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): DvbDashAccessibility {
+    return new DvbDashAccessibility(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * A DASH role to assign to an audio output (used when the output carries DVB DASH accessibility
  * signaling).
  */
-export enum AudioDashRole {
+export class AudioDashRole {
   /** Alternate. */
-  ALTERNATE = 'ALTERNATE',
+  public static readonly ALTERNATE = new AudioDashRole('ALTERNATE');
   /** Commentary. */
-  COMMENTARY = 'COMMENTARY',
+  public static readonly COMMENTARY = new AudioDashRole('COMMENTARY');
   /** Description. */
-  DESCRIPTION = 'DESCRIPTION',
+  public static readonly DESCRIPTION = new AudioDashRole('DESCRIPTION');
   /** Dub. */
-  DUB = 'DUB',
+  public static readonly DUB = new AudioDashRole('DUB');
   /** Emergency. */
-  EMERGENCY = 'EMERGENCY',
+  public static readonly EMERGENCY = new AudioDashRole('EMERGENCY');
   /** Enhanced audio intelligibility. */
-  ENHANCED_AUDIO_INTELLIGIBILITY = 'ENHANCED-AUDIO-INTELLIGIBILITY',
+  public static readonly ENHANCED_AUDIO_INTELLIGIBILITY = new AudioDashRole('ENHANCED-AUDIO-INTELLIGIBILITY');
   /** Karaoke. */
-  KARAOKE = 'KARAOKE',
+  public static readonly KARAOKE = new AudioDashRole('KARAOKE');
   /** Main. */
-  MAIN = 'MAIN',
+  public static readonly MAIN = new AudioDashRole('MAIN');
   /** Supplementary. */
-  SUPPLEMENTARY = 'SUPPLEMENTARY',
+  public static readonly SUPPLEMENTARY = new AudioDashRole('SUPPLEMENTARY');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): AudioDashRole {
+    return new AudioDashRole(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -557,8 +713,8 @@ class VideoEncodeConfiguration extends EncodeConfiguration {
       name: this.name,
       width: this.props.width,
       height: this.props.height,
-      respondToAfd: this.props.respondToAfd ?? RespondToAfd.NONE,
-      scalingBehavior: this.props.scalingBehavior ?? ScalingBehavior.DEFAULT,
+      respondToAfd: (this.props.respondToAfd ?? RespondToAfd.NONE).value,
+      scalingBehavior: (this.props.scalingBehavior ?? ScalingBehavior.DEFAULT).value,
       sharpness: this.props.sharpness ?? 50,
       codecSettings: this.props.codecSettings?._bind(),
     };
@@ -605,21 +761,21 @@ class AudioEncodeConfiguration extends EncodeConfiguration {
     return {
       name: this.name,
       audioSelectorName: this.props.audioSelectorName,
-      audioTypeControl: this.props.audioTypeControl
-        ?? (this.props.audioType !== undefined ? AudioTypeControl.USE_CONFIGURED : AudioTypeControl.FOLLOW_INPUT),
+      audioTypeControl: this.props.audioTypeControl?.value
+        ?? (this.props.audioType !== undefined ? AudioTypeControl.USE_CONFIGURED : AudioTypeControl.FOLLOW_INPUT).value,
       languageCode: this.props.languageCode,
-      languageCodeControl: this.props.languageCodeControl
-        ?? (this.props.languageCode !== undefined ? AudioLanguageCodeControl.USE_CONFIGURED : AudioLanguageCodeControl.FOLLOW_INPUT),
+      languageCodeControl: this.props.languageCodeControl?.value
+        ?? (this.props.languageCode !== undefined ? AudioLanguageCodeControl.USE_CONFIGURED : AudioLanguageCodeControl.FOLLOW_INPUT).value,
       streamName: this.props.streamName,
-      audioType: this.props.audioType,
-      audioDashRoles: this.props.audioDashRoles,
-      dvbDashAccessibility: this.props.dvbDashAccessibility,
+      audioType: this.props.audioType?.value,
+      audioDashRoles: this.props.audioDashRoles?.map(r => r.value),
+      dvbDashAccessibility: this.props.dvbDashAccessibility?.value,
       codecSettings: codecSettings._bind(),
       audioNormalizationSettings: this.props.audioNormalization ? {
-        algorithm: this.props.audioNormalization.algorithm,
-        algorithmControl: this.props.audioNormalization.algorithmControl,
+        algorithm: this.props.audioNormalization.algorithm?.value,
+        algorithmControl: this.props.audioNormalization.algorithmControl?.value,
         targetLkfs: this.props.audioNormalization.targetLkfs,
-        peakCalculation: this.props.audioNormalization.peakCalculation,
+        peakCalculation: this.props.audioNormalization.peakCalculation?.value,
         peakLimiterThreshold: this.props.audioNormalization.peakLimiterThreshold,
       } : undefined,
       remixSettings: this.props.remixSettings ? {
@@ -635,16 +791,16 @@ class AudioEncodeConfiguration extends EncodeConfiguration {
       } : undefined,
       audioWatermarkingSettings: this.props.audioWatermarkSettings ? {
         nielsenWatermarksSettings: this.props.audioWatermarkSettings.nielsenWatermarks ? {
-          nielsenDistributionType: this.props.audioWatermarkSettings.nielsenWatermarks.distributionType,
+          nielsenDistributionType: this.props.audioWatermarkSettings.nielsenWatermarks.distributionType?.value,
           nielsenCbetSettings: this.props.audioWatermarkSettings.nielsenWatermarks.cbetSettings ? {
             cbetCheckDigitString: this.props.audioWatermarkSettings.nielsenWatermarks.cbetSettings.cbetCheckDigitString,
-            cbetStepaside: this.props.audioWatermarkSettings.nielsenWatermarks.cbetSettings.cbetStepaside,
+            cbetStepaside: this.props.audioWatermarkSettings.nielsenWatermarks.cbetSettings.cbetStepaside?.value,
             csid: this.props.audioWatermarkSettings.nielsenWatermarks.cbetSettings.csid,
           } : undefined,
           nielsenNaesIiNwSettings: this.props.audioWatermarkSettings.nielsenWatermarks.naesIiNwSettings ? {
             checkDigitString: this.props.audioWatermarkSettings.nielsenWatermarks.naesIiNwSettings.checkDigitString,
             sid: this.props.audioWatermarkSettings.nielsenWatermarks.naesIiNwSettings.sid,
-            timezone: this.props.audioWatermarkSettings.nielsenWatermarks.naesIiNwSettings.timezone,
+            timezone: this.props.audioWatermarkSettings.nielsenWatermarks.naesIiNwSettings.timezone?.value,
           } : undefined,
         } : undefined,
       } : undefined,
@@ -669,44 +825,68 @@ class AudioEncodeConfiguration extends EncodeConfiguration {
  * Whether a caption track implements accessibility features (written descriptions of dialog,
  * music, and sounds). Signaled in HLS and MediaPackage output groups.
  */
-export enum CaptionAccessibility {
+export class CaptionAccessibility {
   /** The captions do not implement accessibility features. */
-  DOES_NOT_IMPLEMENT_ACCESSIBILITY_FEATURES = 'DOES_NOT_IMPLEMENT_ACCESSIBILITY_FEATURES',
+  public static readonly DOES_NOT_IMPLEMENT_ACCESSIBILITY_FEATURES = new CaptionAccessibility('DOES_NOT_IMPLEMENT_ACCESSIBILITY_FEATURES');
   /** The captions implement accessibility features. */
-  IMPLEMENTS_ACCESSIBILITY_FEATURES = 'IMPLEMENTS_ACCESSIBILITY_FEATURES',
+  public static readonly IMPLEMENTS_ACCESSIBILITY_FEATURES = new CaptionAccessibility('IMPLEMENTS_ACCESSIBILITY_FEATURES');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): CaptionAccessibility {
+    return new CaptionAccessibility(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * A DASH role to assign to a captions output (used when the output carries DVB DASH accessibility
  * signaling).
  */
-export enum CaptionDashRole {
+export class CaptionDashRole {
   /** Alternate. */
-  ALTERNATE = 'ALTERNATE',
+  public static readonly ALTERNATE = new CaptionDashRole('ALTERNATE');
   /** Caption. */
-  CAPTION = 'CAPTION',
+  public static readonly CAPTION = new CaptionDashRole('CAPTION');
   /** Commentary. */
-  COMMENTARY = 'COMMENTARY',
+  public static readonly COMMENTARY = new CaptionDashRole('COMMENTARY');
   /** Description. */
-  DESCRIPTION = 'DESCRIPTION',
+  public static readonly DESCRIPTION = new CaptionDashRole('DESCRIPTION');
   /** Dub. */
-  DUB = 'DUB',
+  public static readonly DUB = new CaptionDashRole('DUB');
   /** Easy reader. */
-  EASYREADER = 'EASYREADER',
+  public static readonly EASYREADER = new CaptionDashRole('EASYREADER');
   /** Emergency. */
-  EMERGENCY = 'EMERGENCY',
+  public static readonly EMERGENCY = new CaptionDashRole('EMERGENCY');
   /** Forced subtitle. */
-  FORCED_SUBTITLE = 'FORCED-SUBTITLE',
+  public static readonly FORCED_SUBTITLE = new CaptionDashRole('FORCED-SUBTITLE');
   /** Karaoke. */
-  KARAOKE = 'KARAOKE',
+  public static readonly KARAOKE = new CaptionDashRole('KARAOKE');
   /** Main. */
-  MAIN = 'MAIN',
+  public static readonly MAIN = new CaptionDashRole('MAIN');
   /** Metadata. */
-  METADATA = 'METADATA',
+  public static readonly METADATA = new CaptionDashRole('METADATA');
   /** Subtitle. */
-  SUBTITLE = 'SUBTITLE',
+  public static readonly SUBTITLE = new CaptionDashRole('SUBTITLE');
   /** Supplementary. */
-  SUPPLEMENTARY = 'SUPPLEMENTARY',
+  public static readonly SUPPLEMENTARY = new CaptionDashRole('SUPPLEMENTARY');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): CaptionDashRole {
+    return new CaptionDashRole(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -784,9 +964,9 @@ class CaptionEncodeConfiguration extends EncodeConfiguration {
       destinationSettings: this.props.destination._bind(),
       languageCode: this.props.languageCode,
       languageDescription: this.props.languageDescription,
-      accessibility: this.props.accessibility ?? CaptionAccessibility.DOES_NOT_IMPLEMENT_ACCESSIBILITY_FEATURES,
-      captionDashRoles: this.props.captionDashRoles,
-      dvbDashAccessibility: this.props.dvbDashAccessibility,
+      accessibility: (this.props.accessibility ?? CaptionAccessibility.DOES_NOT_IMPLEMENT_ACCESSIBILITY_FEATURES).value,
+      captionDashRoles: this.props.captionDashRoles?.map(r => r.value),
+      dvbDashAccessibility: this.props.dvbDashAccessibility?.value,
     };
   }
 
