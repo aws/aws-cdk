@@ -1,0 +1,21 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "4944f03ab2a6ab2705774ba43886cb53e9040ce1d0a356cd1312d8deea5a8436": {
+      "displayName": "ReplicaStack Template",
+      "source": {
+        "path": "ReplicaStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "222222222222-ca-central-1-164a12a4": {
+          "bucketName": "cdk-hnb659fds-assets-222222222222-ca-central-1",
+          "objectKey": "4944f03ab2a6ab2705774ba43886cb53e9040ce1d0a356cd1312d8deea5a8436.json",
+          "region": "ca-central-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::222222222222:role/cdk-hnb659fds-file-publishing-role-222222222222-ca-central-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

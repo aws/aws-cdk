@@ -1,0 +1,93 @@
+{
+  "/ReplicaStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/sanya/Documents/opensource/aws-cdk/packages/@aws-cdk-testing/framework-integ/synth-partial-arn.js:11:22)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicaStack/Replica": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "The source table is imported without a resource policy and cannot be granted multi-account replication permissions. You must manually configure multi-account replication permissions on the source table. Call sourceTable.grants.multiAccountReplicationTo('${Token[TOKEN.23]}') on the actual source table stack. [ack: @aws-cdk/aws-dynamodb:multiAccountReplicaSourceWithoutPolicy]",
+      "trace": [
+        "Annotations.addMessage (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:234:29)",
+        "Annotations.addWarningV2 (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:103:18)",
+        "new TableV2MultiAccountReplica (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table-v2.js:943:45)",
+        "new TableV2MultiAccountReplica (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/Users/sanya/Documents/opensource/aws-cdk/packages/@aws-cdk-testing/framework-integ/synth-partial-arn.js:22:1)",
+        "Module._compile (node:internal/modules/cjs/loader:1871:14)",
+        "Object..js (node:internal/modules/cjs/loader:2002:10)",
+        "Module.load (node:internal/modules/cjs/loader:1594:32)",
+        "Module._load (node:internal/modules/cjs/loader:1396:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    },
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "ReplicaDDFB2A87"
+      }
+    }
+  ],
+  "/ReplicaStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:222:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:140:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:260:18)",
+        "/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:307: (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:307:3)",
+        "visit (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:347:9)",
+        "visit (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:344:9)",
+        "synthesizeTree (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:300:5)",
+        "synthesize (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:76:5)",
+        "App.synth (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:192:92)",
+        "App.synth (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:187:27)"
+      ]
+    }
+  ],
+  "/ReplicaStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:230:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:140:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:260:18)",
+        "/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:307: (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:307:3)",
+        "visit (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:347:9)",
+        "visit (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:344:9)",
+        "synthesizeTree (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:300:5)",
+        "synthesize (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:76:5)",
+        "App.synth (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:192:92)",
+        "App.synth (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:187:27)"
+      ]
+    }
+  ],
+  "/ReplicaStack/Replica/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ReplicaDDFB2A87"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TableV2MultiAccountReplica (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table-v2.js:905:30)",
+        "<anonymous> (/Users/sanya/Documents/opensource/aws-cdk/packages/@aws-cdk-testing/framework-integ/synth-partial-arn.js:22:1)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

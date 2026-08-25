@@ -1,0 +1,56 @@
+{
+  "/ImportedReplicaPartialArnTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/Users/sanya/Documents/opensource/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:39:38)",
+        "new IntegTestCase (/Users/sanya/Documents/opensource/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/Users/sanya/Documents/opensource/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/Users/sanya/Documents/opensource/aws-cdk/packages/@aws-cdk-testing/framework-integ/synth-partial-arn.js:29:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ImportedReplicaPartialArnTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:222:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:140:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:260:18)",
+        "/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:307: (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:307:3)",
+        "visit (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:347:9)",
+        "visit (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:344:9)",
+        "visit (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:344:9)",
+        "visit (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:344:9)",
+        "synthesizeTree (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:300:5)",
+        "synthesize (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:76:5)"
+      ]
+    }
+  ],
+  "/ImportedReplicaPartialArnTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:230:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:140:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:260:18)",
+        "/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:307: (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:307:3)",
+        "visit (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:347:9)",
+        "visit (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:344:9)",
+        "visit (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:344:9)",
+        "visit (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:344:9)",
+        "synthesizeTree (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:300:5)",
+        "synthesize (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:76:5)"
+      ]
+    }
+  ]
+}
