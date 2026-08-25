@@ -984,7 +984,7 @@ export class Channel extends ChannelBase {
 
   constructor(scope: Construct, id: string, props: ChannelProps) {
     super(scope, id, {
-      physicalName: props.channelName ?? Lazy.string({ produce: () => Names.uniqueId(this) }),
+      physicalName: props.channelName ?? Lazy.string({ produce: () => Names.uniqueResourceName(this, { maxLength: 256 }) }),
     });
 
     addConstructMetadata(this, props);

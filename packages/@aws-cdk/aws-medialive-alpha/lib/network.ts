@@ -110,7 +110,7 @@ export class Network extends Resource implements INetwork {
 
   constructor(scope: Construct, id: string, props: NetworkProps) {
     super(scope, id, {
-      physicalName: props.networkName ?? Lazy.string({ produce: () => Names.uniqueId(this) }),
+      physicalName: props.networkName ?? Lazy.string({ produce: () => Names.uniqueResourceName(this, { maxLength: 256 }) }),
     });
 
     if (props.ipPools.length === 0) {

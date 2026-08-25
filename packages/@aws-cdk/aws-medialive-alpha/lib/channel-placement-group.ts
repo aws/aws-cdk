@@ -100,7 +100,7 @@ export class ChannelPlacementGroup extends Resource implements IChannelPlacement
 
   constructor(scope: Construct, id: string, props: ChannelPlacementGroupProps) {
     super(scope, id, {
-      physicalName: props.channelPlacementGroupName ?? Lazy.string({ produce: () => Names.uniqueId(this) }),
+      physicalName: props.channelPlacementGroupName ?? Lazy.string({ produce: () => Names.uniqueResourceName(this, { maxLength: 256 }) }),
     });
 
     addConstructMetadata(this, props);

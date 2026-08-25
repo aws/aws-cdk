@@ -172,7 +172,7 @@ export class SdiSource extends Resource implements ISdiSource {
 
   constructor(scope: Construct, id: string, props: SdiSourceProps) {
     super(scope, id, {
-      physicalName: props.sdiSourceName ?? Lazy.string({ produce: () => Names.uniqueId(this) }),
+      physicalName: props.sdiSourceName ?? Lazy.string({ produce: () => Names.uniqueResourceName(this, { maxLength: 256 }) }),
     });
 
     if (props.mode && props.type.value !== SdiType.QUAD.value) {

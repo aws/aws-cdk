@@ -168,7 +168,7 @@ export class Cluster extends Resource implements ICluster {
 
   constructor(scope: Construct, id: string, props: ClusterProps) {
     super(scope, id, {
-      physicalName: props.clusterName ?? Lazy.string({ produce: () => Names.uniqueId(this) }),
+      physicalName: props.clusterName ?? Lazy.string({ produce: () => Names.uniqueResourceName(this, { maxLength: 256 }) }),
     });
 
     addConstructMetadata(this, props);

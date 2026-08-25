@@ -931,7 +931,7 @@ export class Input extends Resource implements IInput {
 
   constructor(scope: Construct, id: string, props: InputProps) {
     super(scope, id, {
-      physicalName: props.inputName ?? Lazy.string({ produce: () => Names.uniqueId(this) }),
+      physicalName: props.inputName ?? Lazy.string({ produce: () => Names.uniqueResourceName(this, { maxLength: 256 }) }),
     });
 
     addConstructMetadata(this, props);
