@@ -4,7 +4,7 @@
   "pluginReports": [
     {
       "pluginName": "CloudFormation Validate",
-      "pluginVersion": "1.6.0",
+      "pluginVersion": "1.7.0",
       "conclusion": "success",
       "violations": [
         {
@@ -17,8 +17,8 @@
           "violatingConstructs": [
             {
               "constructPath": "BedrockAgentCoreBrowser/DefaultTest/DeployAssert",
-              "constructFqn": "constructs.Construct",
-              "libraryVersion": "10.6.0"
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
             }
           ]
         }

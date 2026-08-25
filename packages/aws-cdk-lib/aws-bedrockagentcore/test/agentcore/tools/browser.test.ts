@@ -1206,6 +1206,96 @@ describe('BrowserCustom grant method tests', () => {
   });
 });
 
+describe('BrowserCustom granted actions tests', () => {
+  let stack: cdk.Stack;
+  let browser: BrowserCustom;
+  let role: iam.Role;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    browser = new BrowserCustom(stack, 'test-browser', {
+      browserCustomName: 'test_browser',
+      networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
+    });
+
+    role = new iam.Role(stack, 'TestRole', {
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+    });
+  });
+
+  test('grantUse grants the actions required to start and drive a browser session', () => {
+    browser.grantUse(role);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: [
+              'bedrock-agentcore:StartBrowserSession',
+              'bedrock-agentcore:UpdateBrowserStream',
+              'bedrock-agentcore:ConnectBrowserAutomationStream',
+              'bedrock-agentcore:StopBrowserSession',
+            ],
+            Effect: 'Allow',
+            Resource: stack.resolve(browser.browserArn),
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('grantUse grants ConnectBrowserAutomationStream, which the automation stream connection requires', () => {
+    const grant = browser.grantUse(role);
+
+    const actions = grant.principalStatements.flatMap(s => s.actions);
+    expect(actions).toContain('bedrock-agentcore:ConnectBrowserAutomationStream');
+  });
+
+  test('grantRead grants read actions on the browser and list actions on all resources', () => {
+    browser.grantRead(role);
+
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: [
+              'bedrock-agentcore:GetBrowser',
+              'bedrock-agentcore:GetBrowserSession',
+            ],
+            Effect: 'Allow',
+            Resource: stack.resolve(browser.browserArn),
+          }),
+        ]),
+      },
+    });
+
+    // List actions do not support resource-level permissions.
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: [
+              'bedrock-agentcore:ListBrowsers',
+              'bedrock-agentcore:ListBrowserSessions',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          }),
+        ]),
+      },
+    });
+  });
+});
+
 describe('BrowserCustom recording configuration with S3 location tests', () => {
   test('Should grant S3 permissions when recording is enabled with S3 location', () => {
     const app = new cdk.App();
