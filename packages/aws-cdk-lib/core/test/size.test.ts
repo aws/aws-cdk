@@ -112,6 +112,13 @@ describe('size', () => {
     expect(lazySize.isUnresolved()).toEqual(true);
     expect(Size.mebibytes(10).isUnresolved()).toEqual(false);
   });
+
+  test('stringification of Size objects', () => {
+    expect(String(Size.bytes(123))).toEqual('123 bytes');
+    expect(String(Size.bytes(1000000))).toEqual('976.56 KiB');
+    expect(String(Size.bytes(1024 * 1024 * 1024))).toEqual('1 GiB');
+    expect(String(Size.gibibytes(1))).toEqual('1 GiB');
+  });
 });
 
 function floatEqual(actual: number, expected: number) {
