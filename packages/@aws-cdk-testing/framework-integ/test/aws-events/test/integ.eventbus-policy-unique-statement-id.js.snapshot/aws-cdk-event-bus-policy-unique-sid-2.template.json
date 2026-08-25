@@ -1,0 +1,120 @@
+{
+ "Resources": {
+  "EventBus7B8748AA": {
+   "Type": "AWS::Events::EventBus",
+   "Properties": {
+    "Name": "awscdkeventbuspolicyuniquesid2EventBusF2022CD0"
+   }
+  },
+  "EventBuscdkAllowAccountToPutEventsF0975EE6": {
+   "Type": "AWS::Events::EventBusPolicy",
+   "Properties": {
+    "EventBusName": {
+     "Ref": "EventBus7B8748AA"
+    },
+    "Statement": {
+     "Action": "events:PutEvents",
+     "Effect": "Allow",
+     "Principal": {
+      "AWS": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":iam::",
+         {
+          "Ref": "AWS::AccountId"
+         },
+         ":root"
+        ]
+       ]
+      }
+     },
+     "Resource": {
+      "Fn::GetAtt": [
+       "EventBus7B8748AA",
+       "Arn"
+      ]
+     },
+     "Sid": "cdk-AllowAccountToPutEvents-2ff7bff1"
+    },
+    "StatementId": "cdk-AllowAccountToPutEvents-2ff7bff1"
+   }
+  },
+  "EventBuscdkStatement0E3C3EC90": {
+   "Type": "AWS::Events::EventBusPolicy",
+   "Properties": {
+    "EventBusName": {
+     "Ref": "EventBus7B8748AA"
+    },
+    "Statement": {
+     "Action": "events:PutEvents",
+     "Effect": "Allow",
+     "Principal": {
+      "AWS": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":iam::",
+         {
+          "Ref": "AWS::AccountId"
+         },
+         ":root"
+        ]
+       ]
+      }
+     },
+     "Resource": {
+      "Fn::GetAtt": [
+       "EventBus7B8748AA",
+       "Arn"
+      ]
+     },
+     "Sid": "cdk-Statement0-2ff7bff1"
+    },
+    "StatementId": "cdk-Statement0-2ff7bff1"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
