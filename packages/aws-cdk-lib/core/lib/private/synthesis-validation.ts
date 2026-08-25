@@ -459,9 +459,20 @@ function collectFilePaths(dir: string): string[] {
         // through symlinks (avoids following links out of the cloud assembly / cycles).
         walk(full);
       } else if (entry.isFile() || entry.isSymbolicLink()) {
-        // Collect regular files and symlinks (including symlink-to-directory). The
-        // symlink is hashed by its target path in hashFile(), never dereferenced.
-        results.push(full);
+        // On Windows, readdir classifies every reparse point as a symlink, but lstat only
+        // agrees for the tags libuv can readlink() (regular symlinks, junctions with a
+        // drive-letter target, WSL/AppExec links). Cloud placeholders (OneDrive/Dropbox
+        // IO_REPARSE_TAG_CLOUD_*), ProjFS, dedup, WCI, and volume-GUID junctions come
+        // back from lstat as plain directories: there is nothing to hash and a
+        // validation plugin cannot meaningfully "modify" one, so skip them. Enumerating
+        // reparse tags is not viable — the tag namespace is vendor-defined and
+        // open-ended — so we gate on what lstat says the entry actually is.
+        const st = fs.lstatSync(full);
+        if (st.isFile() || st.isSymbolicLink()) {
+          // Regular files and real symlinks (including symlink-to-directory). The
+          // symlink is hashed by its target path in hashFile(), never dereferenced.
+          results.push(full);
+        }
       }
     }
   }
