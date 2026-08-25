@@ -126,25 +126,42 @@ export interface BackupPlanIndexActionProps {
   /**
    * Specifies the resource types to include in the index action.
    *
-   * @default - no resource types are specified
+   * A backup index is only created when this is set, so at least one resource
+   * type must be provided.
    */
-  readonly resourceTypes?: IndexActionResourceType[];
+  readonly resourceTypes: IndexActionResourceType[];
 }
 
 /**
  * The resource type to index.
  *
+ * This is implemented as an enum-like class so that resource types the AWS Backup
+ * service adds in the future can be used before they are added to the CDK, e.g.
+ * `new IndexActionResourceType('EFS')`.
+ *
  * @see https://docs.aws.amazon.com/aws-backup/latest/devguide/API_IndexAction.html
  */
-export enum IndexActionResourceType {
+export class IndexActionResourceType {
   /**
-   * Simple Storage Service (S3)
+   * Amazon Simple Storage Service (Amazon S3)
    */
-  S3 = 'S3',
+  public static readonly S3 = new IndexActionResourceType('S3');
+
   /**
-   * Elastic Block Store (EBS)
+   * Amazon Elastic Block Store (Amazon EBS)
    */
-  EBS = 'EBS',
+  public static readonly EBS = new IndexActionResourceType('EBS');
+
+  /**
+   * A custom resource type not yet supported as a static member of this class.
+   *
+   * @param value the resource type string value, e.g. `S3` or `EBS`
+   */
+  public constructor(public readonly value: string) {}
+
+  public toString(): string {
+    return this.value;
+  }
 }
 
 /**
