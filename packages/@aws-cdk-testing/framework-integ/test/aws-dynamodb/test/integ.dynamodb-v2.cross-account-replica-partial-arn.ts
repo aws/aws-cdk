@@ -28,10 +28,9 @@
  * 4. Before you commit, set both accounts to dummy values, run integ test in dry run mode, and then push the snapshot.
  */
 
-import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { App, Lazy, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
-import { Lazy } from 'aws-cdk-lib';
 
 const account = process.env.CDK_INTEG_ACCOUNT || '111111111111';
 const multiAccount = process.env.CDK_INTEG_MULTI_ACCOUNT || '222222222222';

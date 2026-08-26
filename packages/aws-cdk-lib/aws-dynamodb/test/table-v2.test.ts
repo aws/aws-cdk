@@ -3,7 +3,7 @@ import { ArnPrincipal, PolicyDocument, PolicyStatement } from '../../aws-iam';
 import * as iam from '../../aws-iam';
 import { Stream } from '../../aws-kinesis';
 import { Key } from '../../aws-kms';
-import { App, CfnDeletionPolicy, Fn, Lazy, RemovalPolicy, Stack, Tags } from '../../core';
+import { App, CfnDeletionPolicy, Fn, Lazy, RemovalPolicy, Stack, Tags, Token } from '../../core';
 import type {
   GlobalSecondaryIndexPropsV2,
   LocalSecondaryIndexProps,
@@ -4241,23 +4241,91 @@ test('TableV2MultiAccountReplica on imported table does not throw', () => {
   expect(warnings[0].entry.data).toContain('manually configure multi-account replication permissions');
 });
 
-test('TableV2MultiAccountReplica does not throw with partially tokenized source ARN', () => {
+test('TableV2MultiAccountReplica on imported table with partially tokenized ARN does not throw', () => {
   const app = new App();
   const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
 
-  // Source ARN has concrete account (`111111111111`) and region (`us-east-2`),
-  // but a tokenized table name. `Token.isUnresolved(tableArn)` returns true for
-  // the whole ARN (because the resourceName is a token), but `splitArn`
-  // correctly extracts the concrete account/region components. The
-  // validation must use those extracted components, not fall back to the
-  // replica stack's own account/region — that fallback would falsely trigger
-  // "must be in a different account" because the fallback equals
-  // `this.stack.account`.
-  const dynamicTableName = Lazy.string({ produce: () => 'dynamic-source-table' });
+  // Table name is a token, but account and region are concrete and different
+  // from the replica stack
+  const tableName = Token.asString({ Ref: 'SourceTableName' });
   const importedTable = TableV2.fromTableArn(
     replicaStack,
     'ImportedTable',
-    `arn:aws:dynamodb:us-east-2:111111111111:table/${dynamicTableName}`,
+    `arn:aws:dynamodb:us-west-2:111111111111:table/${tableName}`,
+  );
+
+  expect(() => {
+    new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+      replicaSourceTable: importedTable,
+    });
+  }).not.toThrow();
+});
+
+test('TableV2MultiAccountReplica on imported table with partially tokenized ARN still throws for same account', () => {
+  const app = new App();
+  const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '111111111111', region: 'us-east-1' } });
+
+  const tableName = Token.asString({ Ref: 'SourceTableName' });
+  const importedTable = TableV2.fromTableArn(
+    replicaStack,
+    'ImportedTable',
+    `arn:aws:dynamodb:us-west-2:111111111111:table/${tableName}`,
+  );
+
+  expect(() => {
+    new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+      replicaSourceTable: importedTable,
+    });
+  }).toThrow('Multi-account replica must be in a different account than the source table. For same-account replication, use addReplica() instead.');
+});
+
+test('TableV2MultiAccountReplica on imported table with partially tokenized ARN still throws for same region', () => {
+  const app = new App();
+  const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-west-2' } });
+
+  const tableName = Token.asString({ Ref: 'SourceTableName' });
+  const importedTable = TableV2.fromTableArn(
+    replicaStack,
+    'ImportedTable',
+    `arn:aws:dynamodb:us-west-2:111111111111:table/${tableName}`,
+  );
+
+  expect(() => {
+    new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+      replicaSourceTable: importedTable,
+    });
+  }).toThrow('Multi-account replica must be in a different region than the source table.');
+});
+
+test('TableV2MultiAccountReplica on imported table with tokenized account component does not throw', () => {
+  const app = new App();
+  const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+
+  // Account component is a token; the per-field check skips account validation
+  const account = Token.asString({ Ref: 'SourceAccount' });
+  const importedTable = TableV2.fromTableArn(
+    replicaStack,
+    'ImportedTable',
+    `arn:aws:dynamodb:us-west-2:${account}:table/SourceTable`,
+  );
+
+  expect(() => {
+    new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+      replicaSourceTable: importedTable,
+    });
+  }).not.toThrow();
+});
+
+test('TableV2MultiAccountReplica on imported table with fully opaque token ARN does not throw', () => {
+  const app = new App();
+  const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+
+  // The whole ARN is a single deploy-time token; every component resolves to a
+  // token and the per-field checks skip both validations
+  const importedTable = TableV2.fromTableArn(
+    replicaStack,
+    'ImportedTable',
+    Token.asString({ 'Fn::ImportValue': 'SharedTableArn' }),
   );
 
   expect(() => {
