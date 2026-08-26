@@ -61,6 +61,7 @@
     "./aws-autoscaling": "./lib/services/aws-autoscaling/index.js",
     "./aws-bedrock": "./lib/services/aws-bedrock/index.js",
     "./aws-cloudfront": "./lib/services/aws-cloudfront/index.js",
+    "./aws-cloudhsm": "./lib/services/aws-cloudhsm/index.js",
     "./aws-cloudwatch": "./lib/services/aws-cloudwatch/index.js",
     "./aws-codebuild": "./lib/services/aws-codebuild/index.js",
     "./aws-codepipeline": "./lib/services/aws-codepipeline/index.js",
