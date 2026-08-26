@@ -4426,7 +4426,7 @@ test('throws with the received size in MiB if ephemeral storage size is specifie
     handler: 'bar',
     runtime: lambda.Runtime.NODEJS_LATEST,
     ephemeralStorageSize: Size.gibibytes(11),
-  })).toThrow(/Ephemeral storage size must be between 512 and 10240 MB, received 11264 MiB/);
+  })).toThrow(/Ephemeral storage size must be between 512 and 10240 MB, received 11264 MB/);
 });
 
 test('set ephemeral storage to desired size', () => {
