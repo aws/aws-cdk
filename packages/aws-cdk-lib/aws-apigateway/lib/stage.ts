@@ -1,20 +1,27 @@
-import { Construct } from 'constructs';
-import { AccessLogFormat, IAccessLogDestination } from './access-log';
-import { IApiKey, ApiKeyOptions, ApiKey } from './api-key';
+import type { Construct } from 'constructs';
+import type { IAccessLogDestination } from './access-log';
+import { AccessLogFormat } from './access-log';
+import type { ApiKeyOptions, IApiKey } from './api-key';
+import { ApiKey } from './api-key';
 import { ApiGatewayMetrics } from './apigateway-canned-metrics.generated';
+import type { IStageRef, StageReference } from './apigateway.generated';
 import { CfnStage } from './apigateway.generated';
-import { Deployment } from './deployment';
-import { IRestApi, RestApiBase } from './restapi';
+import type { Deployment } from './deployment';
+import type { IRestApi } from './restapi';
+import { RestApiBase } from './restapi';
 import { parseMethodOptionsPath } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
-import { ArnFormat, Duration, IResource, Resource, Stack, Token } from '../../core';
+import type { Duration, IResource } from '../../core';
+import { ArnFormat, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents an APIGateway Stage.
  */
-export interface IStage extends IResource {
+export interface IStage extends IResource, IStageRef {
   /**
    * Name of this stage.
    * @attribute
@@ -243,7 +250,7 @@ export abstract class StageBase extends Resource implements IStage {
    */
   public urlForPath(path: string = '/') {
     if (!path.startsWith('/')) {
-      throw new ValidationError(`Path must begin with "/": ${path}`, this);
+      throw new ValidationError(lit`MustBePathBegin`, `Path must begin with "/": ${path}`, this);
     }
     return `https://${this.restApi.restApiId}.execute-api.${Stack.of(this).region}.${Stack.of(this).urlSuffix}/${this.stageName}${path}`;
   }
@@ -356,9 +363,22 @@ export abstract class StageBase extends Resource implements IStage {
       ...props,
     }).attachTo(this);
   }
+
+  public get stageRef(): StageReference {
+    return {
+      stageName: this.stageName,
+      restApiId: this.restApi.restApiId,
+    };
+  }
 }
 
+@propertyInjectable
 export class Stage extends StageBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.Stage';
+
   /**
    * Import a Stage by its attributes
    */
@@ -394,10 +414,10 @@ export class Stage extends StageBase {
       if (accessLogFormat !== undefined &&
         !Token.isUnresolved(accessLogFormat.toString()) &&
         !/.*\$context.(requestId|extendedRequestId)\b.*/.test(accessLogFormat.toString())) {
-        throw new ValidationError('Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`', this);
+        throw new ValidationError(lit`AccessIncludeEither`, 'Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`', this);
       }
       if (accessLogFormat !== undefined && accessLogDestination === undefined) {
-        throw new ValidationError('Access log format is specified without a destination', this);
+        throw new ValidationError(lit`AccessLogFormatSpecifiedWithout`, 'Access log format is specified without a destination', this);
       }
 
       accessLogSetting = {
@@ -411,7 +431,7 @@ export class Stage extends StageBase {
       if (this.enableCacheCluster === undefined) {
         this.enableCacheCluster = true;
       } else if (this.enableCacheCluster === false) {
-        throw new ValidationError(`Cannot set "cacheClusterSize" to ${props.cacheClusterSize} and "cacheClusterEnabled" to "false"`, this);
+        throw new ValidationError(lit`CannotSetCacheClusterSize`, `Cannot set "cacheClusterSize" to ${props.cacheClusterSize} and "cacheClusterEnabled" to "false"`, this);
       }
     }
 
@@ -474,7 +494,7 @@ export class Stage extends StageBase {
         if (self.enableCacheCluster === undefined) {
           self.enableCacheCluster = true;
         } else if (self.enableCacheCluster === false) {
-          throw new ValidationError(`Cannot enable caching for method ${path} since cache cluster is disabled on stage`, self);
+          throw new ValidationError(lit`CannotEnableCachingMethod`, `Cannot enable caching for method ${path} since cache cluster is disabled on stage`, self);
         }
       }
 

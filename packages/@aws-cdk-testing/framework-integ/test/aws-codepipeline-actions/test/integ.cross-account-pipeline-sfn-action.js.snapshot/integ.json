@@ -1,0 +1,16 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "integ-cross-account-pipeline-sfn-action/DefaultTest": {
+      "stacks": [
+        "CrossAccountStepFunctionStack",
+        "CdkPipelineStepFunctionsActionStack"
+      ],
+      "diffAssets": true,
+      "assertionStack": "integ-cross-account-pipeline-sfn-action/DefaultTest/DeployAssert",
+      "assertionStackName": "integcrossaccountpipelinesfnactionDefaultTestDeployAssert199363B6"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}

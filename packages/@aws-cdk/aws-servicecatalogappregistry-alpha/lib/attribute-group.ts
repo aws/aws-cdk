@@ -1,11 +1,13 @@
 import { CfnResourceShare } from 'aws-cdk-lib/aws-ram';
-import * as cdk from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import { IApplication } from './application';
-import { getPrincipalsforSharing, hashValues, ShareOptions, SharePermission } from './common';
-import { InputValidator } from './private/validation';
 import { CfnAttributeGroup, CfnAttributeGroupAssociation } from 'aws-cdk-lib/aws-servicecatalogappregistry';
+import * as cdk from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import type { IApplication } from './application';
+import type { ShareOptions } from './common';
+import { getPrincipalsforSharing, hashValues, SharePermission } from './common';
+import { InputValidator } from './private/validation';
 
 const ATTRIBUTE_GROUP_READ_ONLY_RAM_PERMISSION_ARN = `arn:${cdk.Aws.PARTITION}:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly`;
 const ATTRIBUTE_GROUP_ALLOW_ACCESS_RAM_PERMISSION_ARN = `arn:${cdk.Aws.PARTITION}:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupAllowAssociation`;
@@ -115,7 +117,11 @@ abstract class AttributeGroupBase extends cdk.Resource implements IAttributeGrou
 /**
  * A Service Catalog AppRegistry Attribute Group.
  */
+@propertyInjectable
 export class AttributeGroup extends AttributeGroupBase implements IAttributeGroup {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-servicecatalogappregistry-alpha.AttributeGroup';
+
   /**
    * Imports an attribute group construct that represents an external attribute group.
    *

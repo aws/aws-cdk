@@ -1,9 +1,11 @@
-import { StateMachine } from './state-machine';
+import type { StateMachine } from './state-machine';
 import { DistributedMap } from './states/distributed-map';
-import { State } from './states/state';
-import { QueryLanguage } from './types';
+import type { State } from './states/state';
+import type { QueryLanguage } from './types';
 import * as iam from '../../aws-iam';
-import { Duration } from '../../core';
+import type { Duration } from '../../core';
+import { Arn, ArnFormat, Stack, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * A collection of connected states
@@ -96,7 +98,7 @@ export class StateGraph {
   public registerSuperGraph(graph: StateGraph) {
     if (this.superGraph === graph) { return; }
     if (this.superGraph) {
-      throw new Error('Every StateGraph can only be registered into one other StateGraph');
+      throw new UnscopedValidationError(lit`StateGraphAlreadyRegistered`, 'Every StateGraph can only be registered into one other StateGraph');
     }
     this.superGraph = graph;
     this.pushContainedStatesUp(graph);
@@ -137,7 +139,7 @@ export class StateGraph {
     } else {
       const existingGraph = this.allContainedStates.get(stateId);
       if (existingGraph) {
-        throw new Error(`State with name '${stateId}' occurs in both ${graph} and ${existingGraph}. All states must have unique names.`);
+        throw new UnscopedValidationError(lit`DuplicateStateId`, `State with name '${stateId}' occurs in both ${graph} and ${existingGraph}. All states must have unique names.` );
       }
 
       this.allContainedStates.set(stateId, graph);
@@ -163,28 +165,69 @@ export class StateGraph {
   }
 
   /**
-   * Binds this StateGraph to the StateMachine it defines and updates state machine permissions
+   * Binds this StateGraph to the StateMachine it defines and updates state machine permissions if there are DistributedMap states.
    */
   public bind(stateMachine: StateMachine) {
-    for (const state of this.allStates) {
-      if (DistributedMap.isDistributedMap(state)) {
-        stateMachine.role.attachInlinePolicy(new iam.Policy(stateMachine, 'DistributedMapPolicy', {
-          document: new iam.PolicyDocument({
-            statements: [
-              new iam.PolicyStatement({
-                actions: ['states:StartExecution'],
-                resources: [stateMachine.stateMachineArn],
-              }),
-              new iam.PolicyStatement({
-                actions: ['states:DescribeExecution', 'states:StopExecution'],
-                resources: [`${stateMachine.stateMachineArn}:*`],
-              }),
-            ],
-          }),
-        }));
+    const distributedMapStates = this.getAllStatesInThisAndChildStateGraphs()
+      .filter(state => DistributedMap.isDistributedMap(state))
+      .map(state => state.toStateJson() as any);
 
-        break;
-      }
+    if (distributedMapStates.length === 0) return;
+
+    const distributedMapPolicy = new iam.Policy(stateMachine, 'DistributedMapPolicy');
+    stateMachine.role.attachInlinePolicy(distributedMapPolicy);
+    stateMachine.grantStartExecution(distributedMapPolicy);
+    stateMachine.grantExecution(distributedMapPolicy, 'states:DescribeExecution', 'states:StopExecution');
+
+    const hasAnyUnlabeledDistributedMapStates = distributedMapStates.find(stateJson => stateJson.Label === undefined);
+    if (hasAnyUnlabeledDistributedMapStates) {
+      iam.Grant.addToPrincipal({
+        grantee: distributedMapPolicy,
+        actions: ['states:RedriveExecution'],
+        resourceArns: [this.getStateMachineExecutionArnWithLabel(stateMachine, '*')],
+      });
+      return;
     }
+
+    const distributedMapLabeledExecutionArns = distributedMapStates
+      .map(stateJson => this.getStateMachineExecutionArnWithLabel(stateMachine, stateJson.Label));
+    iam.Grant.addToPrincipal({
+      grantee: distributedMapPolicy,
+      actions: ['states:RedriveExecution'],
+      resourceArns: distributedMapLabeledExecutionArns,
+    });
+  }
+
+  /**
+   * Helper method for returning executionArn with mapRunLabel
+   */
+  private getStateMachineExecutionArnWithLabel(stateMachine: StateMachine, mapRunLabel: string) {
+    return Stack.of(stateMachine).formatArn({
+      resource: 'execution',
+      service: 'states',
+      resourceName: `${Arn.split(stateMachine.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME).resourceName}/${mapRunLabel}:*`,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
+
+  /**
+   * Returns all the states referenced in this StateGraph and all child StateGraphs
+   */
+  private getAllStatesInThisAndChildStateGraphs(): State[] {
+    const discoveredStateGraphs = new Set<StateGraph>();
+    const stateGraphsToSearch: StateGraph[] = [this];
+
+    // Do a BFS of all sub graphs
+    while (stateGraphsToSearch.length > 0) {
+      const stateGraph = stateGraphsToSearch.pop()!;
+
+      discoveredStateGraphs.add(stateGraph);
+      Array.from(stateGraph.allContainedStates.values())
+        .filter(subGraph => !discoveredStateGraphs.has(subGraph))
+        .forEach(subGraph => stateGraphsToSearch.push(subGraph));
+    }
+
+    return Array.from(discoveredStateGraphs)
+      .flatMap(stateGraph => Array.from(stateGraph.allStates));
   }
 }

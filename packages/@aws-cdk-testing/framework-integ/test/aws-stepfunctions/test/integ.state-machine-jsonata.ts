@@ -39,10 +39,12 @@ const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
     jsonPathPass // 1 -> 2
       .next(jsonataPass) // 2 -> 3
       .next(choice
-        .when(sfn.Condition.jsonata('{% $states.input.count % 2 = 1 %}'),
-          wait // 3 -> 4
-            .next(succeed),
-          increment, // 4 -> 5
+        .when(sfn.Condition.jsonata(`{%
+          $states.input.count % 2 = 1
+        %}`),
+        wait // 3 -> 4
+          .next(succeed),
+        increment, // 4 -> 5
         )
         .otherwise(succeed), // 5 -> 6
       ),

@@ -1,6 +1,6 @@
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as glue from '../lib';
 
 const app = new cdk.App();
@@ -31,9 +31,9 @@ const partitionKeys = [{
   type: glue.Schema.BIG_INT,
 }];
 
-const csvTable = new glue.Table(stack, 'CSVTable', {
+const csvTable = new glue.S3Table(stack, 'CSVTable', {
   database,
-  bucket,
+  storage: glue.S3TableStorage.fromBucket(bucket),
   tableName: 'csv_table',
   columns,
   partitionKeys,
@@ -44,7 +44,7 @@ new glue.DataQualityRuleset(stack, 'DataQualityRuleset', {
   clientToken: 'client_token',
   description: 'my description',
   rulesetName: 'my_ruleset',
-  rulesetDqdl: 'Rules = [RowCount > 10]',
+  dqdl: glue.Dqdl.fromString('Rules = [RowCount > 10]'),
   tags: {
     key1: 'value1',
     key2: 'value2',

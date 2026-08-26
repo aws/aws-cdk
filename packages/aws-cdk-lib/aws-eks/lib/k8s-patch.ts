@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
-import { ICluster } from './cluster';
+import type { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
+import type { RemovalPolicy } from '../../core';
 import { CustomResource, Stack } from '../../core';
 
 /**
@@ -42,6 +43,20 @@ export interface KubernetesPatchProps {
    * @default PatchType.STRATEGIC
    */
   readonly patchType?: PatchType;
+
+  /**
+   * The removal policy applied to the custom resource that manages the Kubernetes patch.
+   *
+   * The removal policy controls what happens to the resource if it stops being managed by CloudFormation.
+   * This can happen in one of three situations:
+   *
+   * - The resource is removed from the template, so CloudFormation stops managing it
+   * - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it
+   * - The stack is deleted, so CloudFormation stops managing all resources in it
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -77,6 +92,7 @@ export class KubernetesPatch extends Construct {
     new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
       resourceType: 'Custom::AWSCDK-EKS-KubernetesPatch',
+      removalPolicy: props.removalPolicy,
       properties: {
         ResourceName: props.resourceName,
         ResourceNamespace: props.resourceNamespace ?? 'default',

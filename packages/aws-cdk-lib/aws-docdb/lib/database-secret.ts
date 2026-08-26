@@ -1,8 +1,10 @@
-import { Construct } from 'constructs';
-import { IKey } from '../../aws-kms';
-import { ISecret, Secret } from '../../aws-secretsmanager';
+import type { Construct } from 'constructs';
+import type { IKey } from '../../aws-kms';
+import type { ISecret } from '../../aws-secretsmanager';
+import { Secret } from '../../aws-secretsmanager';
 import { Aws } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Construction properties for a DatabaseSecret.
@@ -48,7 +50,10 @@ export interface DatabaseSecretProps {
  *
  * @resource AWS::SecretsManager::Secret
  */
+@propertyInjectable
 export class DatabaseSecret extends Secret {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-docdb.DatabaseSecret';
   /**
    * the excluded characters for this Secret
    * @internal

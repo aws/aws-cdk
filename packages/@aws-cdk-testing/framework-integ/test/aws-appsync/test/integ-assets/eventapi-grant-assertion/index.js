@@ -225,10 +225,12 @@ async function getPublishAuthHeader(authMode, event={}, authToken='') {
  * @param {string} authMode the authorization mode for the request
  * @param {string} authToken the token used for Lambda auth mode
  * @param {boolean} triggerPub whether to also publish in the method
+ * @param {array} eventPayload the payload to publish
  * @returns {Object}
  */
-async function subscribe(channel, authMode, authToken, triggerPub=false) {
+async function subscribe(channel, authMode, authToken, triggerPub=false, eventPayload=[]) {
   const response = {};
+  const pubMsg = [];
   const authHeader = await getPublishAuthHeader(authMode, {}, authToken);
   const auth = getAuthProtocolForIAM(authHeader);
   const socket = await new Promise((resolve, reject) => {
@@ -255,7 +257,7 @@ async function subscribe(channel, authMode, authToken, triggerPub=false) {
       } else if (payload.type === 'data') {
         console.log('Data received');
         response.pubStatusCode = 200;
-        response.pubMsg = JSON.parse(payload.event).message;
+        pubMsg.push(JSON.parse(payload.event));
       } else if (payload.type === 'subscribe_error') {
         console.log(payload);
         if (payload.errors.some((error) => error.errorType === 'UnauthorizedException')) {
@@ -276,7 +278,7 @@ async function subscribe(channel, authMode, authToken, triggerPub=false) {
     socket.onerror = (event) => console.log(event)
   });
 
-  const subChannel = `/${channel}/*`;
+  const subChannel = `${channel}/*`;
   socket.send(JSON.stringify({
     type: 'subscribe',
     id: crypto.randomUUID(),
@@ -285,10 +287,15 @@ async function subscribe(channel, authMode, authToken, triggerPub=false) {
   }));
 
   if (triggerPub) {
-    await sleep(1000);
-    await publish(channel, authMode, authToken);
+    await sleep(2000);
+    console.log("Hello in here for publishing")
+    await publish(channel, eventPayload, authMode, authToken);
   }
   await sleep(3000);
+
+  if (pubMsg.length > 0)
+    response.pubMsg = pubMsg;
+
   return response;
 }
 
@@ -296,24 +303,23 @@ async function subscribe(channel, authMode, authToken, triggerPub=false) {
  * Publishes to a channel and returns the response
  *
  * @param {string} channel the channel to publish to
+ * @param {array} eventPayload the payload to publish
  * @param {string} authMode the auth mode to use for publishing
  * @param {string} authToken the auth token to use for Lambda auth mode
  * @returns {Object}
  */
-async function publish(channel, authMode, authToken) {
+async function publish(channel, eventPayload, authMode, authToken) {
   const event = {
-    'channel': `/${channel}/test`,
-    'events': [
-      JSON.stringify({message:'Hello World!'})
-    ]
-  }
-  
+    'channel': `${channel}/test`,
+    'events': eventPayload.map((_payload) => JSON.stringify(_payload))
+  };
+
   const response = await fetch(`${httpUrl}`, {
     method: 'POST',
     headers: await getPublishAuthHeader(authMode, event, authToken),
     body: JSON.stringify(event)
   });
-  
+
   if (!response.ok) {
     return {
       statusCode: response.status,
@@ -323,7 +329,7 @@ async function publish(channel, authMode, authToken) {
   const output = await response.json();
   return {
     statusCode: 200,
-    msg: output.successful.length == 1 ? 'publish_success' : 'publish_fail',
+    msg: output.successful.length == eventPayload.length ? 'publish_success' : 'publish_fail',
   }
 }
 
@@ -337,6 +343,7 @@ exports.handler = async function(event) {
   const channel = event.channel;
   const authMode = event.authMode;
   const authToken = event.authToken ?? '';
+  const eventPayload = event.eventPayload ?? [{message:'Hello World!'}];
   const isCustomEndpoint = event.customEndpoint ?? false;
 
   // If custom endpoint, wait for 60 seconds for DNS to propagate
@@ -350,13 +357,13 @@ exports.handler = async function(event) {
 
   let res;
   if (pubSubAction === 'publish') {
-    res = await publish(channel, authMode, authToken);
+    res = await publish(channel, eventPayload, authMode, authToken);
     console.log(res);
   } else if (pubSubAction === 'subscribe') {
     res = await subscribe(channel, authMode, authToken, false);
     console.log(res);
   } else if (pubSubAction === 'pubSub') {
-    res = await subscribe(channel, authMode, authToken, true);
+    res = await subscribe(channel, authMode, authToken, true, eventPayload);
     console.log(res);
   }
 

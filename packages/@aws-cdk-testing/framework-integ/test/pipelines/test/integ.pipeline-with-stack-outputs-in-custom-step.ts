@@ -1,13 +1,15 @@
 /// !cdk-integ StackOutputPipelineStack pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true
-import { IStage } from 'aws-cdk-lib/aws-codepipeline';
+import type { IStage } from 'aws-cdk-lib/aws-codepipeline';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { App, Stack, StackProps, CfnOutput, Stage, StageProps, RemovalPolicy } from 'aws-cdk-lib';
+import type { StackProps, StageProps } from 'aws-cdk-lib';
+import { App, Stack, CfnOutput, Stage, RemovalPolicy } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as pipelines from 'aws-cdk-lib/pipelines';
-import { ICodePipelineActionFactory, Step } from 'aws-cdk-lib/pipelines';
+import type { ICodePipelineActionFactory } from 'aws-cdk-lib/pipelines';
+import { Step } from 'aws-cdk-lib/pipelines';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class CustomStep extends Step implements ICodePipelineActionFactory {
@@ -79,6 +81,7 @@ class PipelineStack extends Stack {
 
 const app = new App({
   postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/core:newStyleStackSynthesis': '1',
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,

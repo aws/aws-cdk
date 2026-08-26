@@ -1,10 +1,14 @@
-import { Construct } from 'constructs';
-import { BaseInstanceProps, InstanceBase } from './instance';
+import type { Construct } from 'constructs';
+import type { BaseInstanceProps } from './instance';
+import { InstanceBase } from './instance';
 import { NamespaceType } from './namespace';
-import { DnsRecordType, IService, RoutingPolicy } from './service';
+import type { IService } from './service';
+import { DnsRecordType, RoutingPolicy } from './service';
 import { CfnInstance } from './servicediscovery.generated';
-import { Names } from '../../core';
+import { Names, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /*
  * Properties for an AliasTargetInstance
@@ -27,7 +31,10 @@ export interface AliasTargetInstanceProps extends BaseInstanceProps {
  *
  * @resource AWS::ServiceDiscovery::Instance
  */
+@propertyInjectable
 export class AliasTargetInstance extends InstanceBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-servicediscovery.AliasTargetInstance';
   /**
    * The Id of the instance
    */
@@ -49,7 +56,7 @@ export class AliasTargetInstance extends InstanceBase {
     addConstructMetadata(this, props);
 
     if (props.service.namespace.type === NamespaceType.HTTP) {
-      throw new Error('Namespace associated with Service must be a DNS Namespace.');
+      throw new ValidationError(lit`NamespaceAssociatedServiceNamespace`, 'Namespace associated with Service must be a DNS Namespace.', this);
     }
 
     // Should already be enforced when creating service, but validates if service is not instantiated with #createService
@@ -57,11 +64,11 @@ export class AliasTargetInstance extends InstanceBase {
     if (dnsRecordType !== DnsRecordType.A
       && dnsRecordType !== DnsRecordType.AAAA
       && dnsRecordType !== DnsRecordType.A_AAAA) {
-      throw new Error('Service must use `A` or `AAAA` records to register an AliasRecordTarget.');
+      throw new ValidationError(lit`ServiceRecordsRegisterAliasRecord`, 'Service must use `A` or `AAAA` records to register an AliasRecordTarget.', this);
     }
 
     if (props.service.routingPolicy !== RoutingPolicy.WEIGHTED) {
-      throw new Error('Service must use `WEIGHTED` routing policy.');
+      throw new ValidationError(lit`ServiceRoutingPolicy`, 'Service must use `WEIGHTED` routing policy.', this);
     }
 
     const resource = new CfnInstance(this, 'Resource', {

@@ -22,12 +22,12 @@
      "DedicatedMasterEnabled": false,
      "InstanceCount": 1,
      "InstanceType": "r5.large.search",
-     "ZoneAwarenessEnabled": false,
-     "MultiAZWithStandbyEnabled": false
+     "MultiAZWithStandbyEnabled": false,
+     "ZoneAwarenessEnabled": false
     },
     "DomainEndpointOptions": {
      "EnforceHTTPS": true,
-     "TLSSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"
+     "TLSSecurityPolicy": "Policy-Min-TLS-1-2-2019-07"
     },
     "EBSOptions": {
      "EBSEnabled": true,
@@ -155,7 +155,6 @@
      ]
     },
     "Name": "ds",
-    "Type": "AMAZON_OPENSEARCH_SERVICE",
     "OpenSearchServiceConfig": {
      "AwsRegion": {
       "Ref": "AWS::Region"
@@ -180,7 +179,8 @@
       "apidsServiceRoleBDB08107",
       "Arn"
      ]
-    }
+    },
+    "Type": "AMAZON_OPENSEARCH_SERVICE"
    }
   },
   "apiQueryGetTests5F79F353": {
@@ -192,12 +192,12 @@
       "ApiId"
      ]
     },
-    "FieldName": "getTests",
-    "TypeName": "Query",
     "DataSourceName": "ds",
+    "FieldName": "getTests",
     "Kind": "UNIT",
     "RequestMappingTemplate": "{\"version\":\"2017-02-28\",\"operation\":\"GET\",\"path\":\"/id/post/_search\",\"params\":{\"headers\":{},\"queryString\":{},\"body\":{\"from\":0,\"size\":50}}}",
-    "ResponseMappingTemplate": "{\"version\":\"2017-02-28\",\"operation\":\"GET\",\"path\":\"/id/post/_search\",\"params\":{\"headers\":{},\"queryString\":{},\"body\":{\"from\":0,\"size\":50,\"query\":{\"term\":{\"author\":\"$util.toJson($context.arguments.author)\"}}}}}"
+    "ResponseMappingTemplate": "{\"version\":\"2017-02-28\",\"operation\":\"GET\",\"path\":\"/id/post/_search\",\"params\":{\"headers\":{},\"queryString\":{},\"body\":{\"from\":0,\"size\":50,\"query\":{\"term\":{\"author\":\"$util.toJson($context.arguments.author)\"}}}}}",
+    "TypeName": "Query"
    },
    "DependsOn": [
     "apids4328272F",

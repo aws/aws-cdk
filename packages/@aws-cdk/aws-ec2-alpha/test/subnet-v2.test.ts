@@ -1,10 +1,10 @@
-import { Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
-import * as vpc from '../lib/vpc-v2';
-import * as subnet from '../lib/subnet-v2';
+import { Template } from 'aws-cdk-lib/assertions';
 import { NetworkAcl, SubnetType } from 'aws-cdk-lib/aws-ec2';
-import { AddressFamily, AwsServiceName, Ipam, IpamPoolPublicIpSource } from '../lib/ipam';
 import { createTestSubnet } from './subnet-test-util';
+import { AddressFamily, AwsServiceName, Ipam, IpamPoolPublicIpSource } from '../lib/ipam';
+import * as subnet from '../lib/subnet-v2';
+import * as vpc from '../lib/vpc-v2';
 
 /**
  * Test suite for the SubnetV2 class.
@@ -375,7 +375,6 @@ describe('Subnet V2 with custom IP and routing', () => {
     };
     createTestSubnet(stack, subnetConfig);
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
-      AssignIpv6AddressOnCreation: false,
       Ipv6CidrBlock: '2001:db8:1::/64',
     });
   });

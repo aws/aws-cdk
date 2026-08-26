@@ -1,7 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
-import { AwsApiCall, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import type { AwsApiCall } from '@aws-cdk/integ-tests-alpha';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { SET_UNIQUE_REPLICATION_ROLE_NAME } from 'aws-cdk-lib/cx-api';
 
 /**
@@ -35,8 +36,8 @@ const app = new cdk.App({
   },
 });
 
-const account = process.env.CDK_INTEG_ACCOUNT || '123456789012';
-const crossAccount = process.env.CDK_INTEG_CROSS_ACCOUNT || '234567890123';
+const destinationAccount = process.env.CDK_INTEG_ACCOUNT || '123456789012';
+const sourceAccount = process.env.CDK_INTEG_CROSS_ACCOUNT || '234567890123';
 
 class DestinationBucketStack extends cdk.Stack {
   public readonly bucket: s3.IBucket;
@@ -46,6 +47,7 @@ class DestinationBucketStack extends cdk.Stack {
       versioned: true,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       bucketName: cdk.PhysicalName.GENERATE_IF_NEEDED,
+      objectOwnership: s3.ObjectOwnership.OBJECT_WRITER,
     });
   }
 }
@@ -67,6 +69,7 @@ class SourceBucketStack extends cdk.Stack {
         {
           destination: props.bucket,
           priority: 1,
+          accessControlTransition: true,
           replicationTimeControl: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
           metrics: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
           storageClass: s3.StorageClass.INFREQUENT_ACCESS,
@@ -81,24 +84,28 @@ class SourceBucketStack extends cdk.Stack {
 
 const destinationBucketStack = new DestinationBucketStack(app, 'parent-stack', {
   env: {
-    account: account,
+    account: destinationAccount,
     region: 'us-east-1',
   },
 });
 
 const sourceBucketStack = new SourceBucketStack(app, 'child-stack', {
   env: {
-    account: crossAccount,
+    account: sourceAccount,
     region: 'us-east-1',
   },
   bucket: destinationBucketStack.bucket,
 });
 
-sourceBucketStack.addDependency(destinationBucketStack);
-// Add permissions policy on the source only after replication role is created
+sourceBucketStack.addStackDependency(destinationBucketStack);
+// Add permissions to the destination bucket policy after the replication role is created
 // Comment these lines while deploying this integ test for the first time to avoid failure
 if (sourceBucketStack.bucket.replicationRoleArn) {
-  destinationBucketStack.bucket.addReplicationPolicy(sourceBucketStack.bucket.replicationRoleArn);
+  destinationBucketStack.bucket.addReplicationPolicy(
+    sourceBucketStack.bucket.replicationRoleArn,
+    true,
+    sourceAccount,
+  );
 }
 
 const integ = new IntegTest(app, 'ReplicationInteg', {
@@ -122,4 +129,3 @@ firstAssertion.waiterProvider?.addToRolePolicy({
   Action: ['kms:*'],
   Resource: ['*'],
 });
-

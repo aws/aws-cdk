@@ -18,7 +18,7 @@
 
 ## Overview
 
-This library is meant to be used in combination with the [integ-runner](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/integ-runner) CLI
+This library is meant to be used in combination with the [integ-runner](https://github.com/aws/aws-cdk-cli/tree/main/packages/%40aws-cdk/integ-runner) CLI
 to enable users to write and execute integration tests for AWS CDK Constructs.
 
 An integration test should be defined as a CDK application, and
@@ -475,6 +475,22 @@ const integ = new IntegTest(app, 'IntegTest', {
 const invoke = integ.assertions.invokeFunction({
   functionName: lambdaFunction.functionName,
   logRetention: logs.RetentionDays.ONE_WEEK,
+});
+```
+
+#### Provider Log Level
+
+By default, the assertion provider lambda function has its log level set to `FATAL`.
+If you need to debug assertion failures, you can increase the log level by setting
+`providerLogLevel` on the `IntegTest` construct:
+
+```ts
+declare const app: App;
+declare const stack: Stack;
+
+const integ = new IntegTest(app, 'IntegTest', {
+  testCases: [stack],
+  providerLogLevel: lambda.ApplicationLogLevel.INFO,
 });
 ```
 

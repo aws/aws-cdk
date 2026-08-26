@@ -1,4 +1,5 @@
-import { IPipe, ISource, Pipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
+import type { IPipe, ISource, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
+import { Pipe } from '@aws-cdk/aws-pipes-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
@@ -6,7 +7,11 @@ import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { ApiDestinationTarget } from '../lib/api-destination';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-cdk-pipes-targets-api-dest');
 const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
 

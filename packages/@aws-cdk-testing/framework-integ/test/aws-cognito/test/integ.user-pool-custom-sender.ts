@@ -9,7 +9,11 @@ import { STANDARD_NODEJS_RUNTIME } from '../../config';
  * * Sign up to the created user pool using an email address as the username, and password.
  * * Verify the CustomEmailSender lambda was called via logged message in CloudWatch.
  */
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new Stack(app, 'integ-user-pool-custom-sender');
 
 const customSenderLambda = new lambda.Function(stack, 'emailLambda', {

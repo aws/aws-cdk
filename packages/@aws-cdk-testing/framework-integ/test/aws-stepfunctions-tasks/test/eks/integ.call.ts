@@ -21,6 +21,7 @@ import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 const app = new cdk.App({
   postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
@@ -49,7 +50,7 @@ const callJob = new EksCall(stack, 'Call a EKS Endpoint', {
 const chain = sfn.Chain.start(callJob);
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
-  definition: chain,
+  definitionBody: sfn.DefinitionBody.fromChainable(chain),
   role: executionRole,
   timeout: cdk.Duration.seconds(30),
 });

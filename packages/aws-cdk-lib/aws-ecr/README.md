@@ -39,7 +39,7 @@ repository.onImageScanCompleted('ImageScanComplete')
 Besides the Amazon ECR APIs, ECR also allows the Docker CLI or a language-specific Docker library to push and pull
 images from an ECR repository. However, the Docker CLI does not support native IAM authentication methods and
 additional steps must be taken so that Amazon ECR can authenticate and authorize Docker push and pull requests.
-More information can be found at at [Registry Authentication](https://docs.aws.amazon.com/AmazonECR/latest/userguide/Registries.html#registry_auth).
+More information can be found at [Registry Authentication](https://docs.aws.amazon.com/AmazonECR/latest/userguide/Registries.html#registry_auth).
 
 A Docker authorization token can be obtained using the `GetAuthorizationToken` ECR API. The following code snippets
 grants an IAM user access to call this API.
@@ -121,11 +121,50 @@ By using these methods, you can grant specific operational permissions on the EC
 
 ### Image tag immutability
 
-You can set tag immutability on images in our repository using the `imageTagMutability` construct prop.
+You can set tag immutability on images in your repository using the `imageTagMutability` construct prop.
 
 ```ts
 new ecr.Repository(this, 'Repo', { imageTagMutability: ecr.TagMutability.IMMUTABLE });
 ```
+
+#### Image tag mutability with exclusion filters
+
+ECR supports more granular control over image tag mutability by allowing you to specify exclusion filters. This enables you to make your repository immutable while allowing specific tag patterns to remain mutable (or vice versa).
+
+There are two new mutability options that work with exclusion filters:
+
+- `MUTABLE_WITH_EXCLUSION`: Tags are mutable by default, except those matching the exclusion filters
+- `IMMUTABLE_WITH_EXCLUSION`: Tags are immutable by default, except those matching the exclusion filters
+
+Use `ImageTagMutabilityExclusionFilter.wildcard()` to create filters with wildcard patterns:
+
+```ts
+// Make all tags immutable except for those starting with 'dev-' or 'test-'
+new ecr.Repository(this, 'Repo', {
+  imageTagMutability: ecr.TagMutability.IMMUTABLE_WITH_EXCLUSION,
+  imageTagMutabilityExclusionFilters: [
+    ecr.ImageTagMutabilityExclusionFilter.wildcard('dev-*'),
+    ecr.ImageTagMutabilityExclusionFilter.wildcard('test-*'),
+  ],
+});
+```
+
+```ts
+// Make all tags mutable except for production releases
+new ecr.Repository(this, 'Repo', {
+  imageTagMutability: ecr.TagMutability.MUTABLE_WITH_EXCLUSION,
+  imageTagMutabilityExclusionFilters: [
+    ecr.ImageTagMutabilityExclusionFilter.wildcard('prod-*'),
+    ecr.ImageTagMutabilityExclusionFilter.wildcard('release-v*'),
+  ],
+});
+```
+
+##### Exclusion filter pattern rules
+
+- Patterns can contain alphanumeric characters, dots (.), underscores (_), hyphens (-), and asterisks (*) as wildcards
+- Maximum pattern length is 128 characters
+- You can specify up to 5 exclusion filters per repository
 
 ### Encryption
 
@@ -209,7 +248,7 @@ repository.addToResourcePolicy(new iam.PolicyStatement({
 }));
 ```
 
-## import existing repository
+## Import existing repository
 
 You can import an existing repository into your CDK app using the `Repository.fromRepositoryArn`, `Repository.fromRepositoryName` or `Repository.fromLookup` method.
 These methods take the ARN or the name of the repository and returns an `IRepository` object.
@@ -247,4 +286,17 @@ const lambdaHandler = new lambda.Function(this, 'LambdaFunction', {
 repo.onEvent('OnEventTargetLambda', {
   target: new LambdaFunction(lambdaHandler),
 });
+```
+
+## Mixins
+
+ECR provides [mixins](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#mixins) that can be applied to L1 and L2 constructs.
+
+### RepositoryAutoDeleteImages
+
+Automatically deletes all images from a repository when it is removed from the stack or when the stack is deleted. Requires the repository's removal policy to be set to `DESTROY`:
+
+```ts
+new ecr.CfnRepository(this, 'Repo')
+  .with(new ecr.mixins.RepositoryAutoDeleteImages());
 ```

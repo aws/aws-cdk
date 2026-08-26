@@ -11,11 +11,13 @@ export * from './identity-base';
 export * from './grant';
 export * from './unknown-principal';
 export * from './oidc-provider';
+export * from './oidc-provider-native';
 export * from './permissions-boundary';
 export * from './saml-provider';
 export * from './access-key';
 export * from './utils';
 export * from './instance-profile';
+export * from './role-grants';
 
 // AWS::IAM CloudFormation Resources:
 export * from './iam.generated';

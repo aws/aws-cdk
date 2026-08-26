@@ -6,7 +6,7 @@ import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 export type CrossAccountZoneDelegationEvent = AWSLambda.CloudFormationCustomResourceEvent & {
   ResourceProperties: ResourceProperties;
   OldResourceProperties?: ResourceProperties;
-}
+};
 
 interface ResourceProperties {
   AssumeRoleArn: string;
@@ -106,7 +106,7 @@ async function getHostedZoneIdByName(name: string, route53: Route53): Promise<st
  * By default, STS AssumeRole will call the STS endpoint for the same region
  * as the Lambda runs in. Normally, this is all good. However, when the AssumeRole
  * is used to assume a role in a different account A, the AssumeRole will fail if the
- * Lambda is executing in an an opt-in region R to which account A has not been opted in.
+ * Lambda is executing in an opt-in region R to which account A has not been opted in.
  *
  * To solve this, we will always AssumeRole in the same region as the Route53 call will
  * resolve to.
@@ -119,6 +119,7 @@ function route53Region(region: string) {
     'us-isob': 'us-isob-east-1',
     'eu-isoe': 'eu-isoe-west-1',
     'us-isof': 'us-isof-south-1',
+    'eusc-de': 'eusc-de-east-1',
   };
 
   for (const [prefix, mainRegion] of Object.entries(partitions)) {

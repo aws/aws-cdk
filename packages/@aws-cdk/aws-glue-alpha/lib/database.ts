@@ -1,18 +1,19 @@
-import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
 import { CfnDatabase } from 'aws-cdk-lib/aws-glue';
+import type { IResource } from 'aws-cdk-lib/core';
+import { ArnFormat, Lazy, Names, RemovalPolicy, Resource, Stack, UnscopedValidationError } from 'aws-cdk-lib/core';
+import { lit, memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import type { ICatalog } from './catalog';
+import { Catalog } from './catalog';
 
 export interface IDatabase extends IResource {
-  /**
-   * The ARN of the catalog.
-   */
-  readonly catalogArn: string;
 
   /**
-   * The catalog id of the database (usually, the AWS account id)
+   * The catalog this database belongs to.
    */
-  readonly catalogId: string;
+  readonly catalog: ICatalog;
 
   /**
    * The ARN of the database.
@@ -51,49 +52,59 @@ export interface DatabaseProps {
    * @default - no database description
    */
   readonly description?: string;
+
+  /**
+   * The catalog in which the database will be placed.
+   *
+   * @default The default, account-wide catalog.
+   */
+  readonly catalog?: ICatalog;
+
+  /**
+   * Policy to apply when the database is removed from the stack.
+   *
+   * A database is a container for tables and their metadata, so it is retained
+   * by default to avoid accidental data loss when it is removed from a stack.
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
  * A Glue database.
  */
+@propertyInjectable
 export class Database extends Resource implements IDatabase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.Database';
+
   public static fromDatabaseArn(scope: Construct, id: string, databaseArn: string): IDatabase {
     const stack = Stack.of(scope);
 
     class Import extends Resource implements IDatabase {
       public databaseArn = databaseArn;
       public databaseName = stack.splitArn(databaseArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
-      public catalogArn = stack.formatArn({ service: 'glue', resource: 'catalog' });
-      public catalogId = stack.account;
+
+      // Materialize the account catalog only on access, so importing a database
+      // does not pre-empt Catalog.encryptAccount() for the stack.
+      @memoizedGetter
+      public get catalog(): ICatalog {
+        return Catalog.forAccount(this);
+      }
     }
 
     return new Import(scope, id);
   }
 
   /**
-   * ARN of the Glue catalog in which this database is stored.
-   */
-  public readonly catalogArn: string;
-
-  /**
-   * The catalog id of the database (usually, the AWS account id).
-   */
-  public readonly catalogId: string;
-
-  /**
-   * ARN of this database.
-   */
-  public readonly databaseArn: string;
-
-  /**
-   * Name of this database.
-   */
-  public readonly databaseName: string;
-
-  /**
    * Location URI of this database.
    */
   public readonly locationUri?: string;
+
+  private readonly _catalog?: ICatalog;
+
+  private resource: CfnDatabase;
 
   constructor(scope: Construct, id: string, props: DatabaseProps = {}) {
     super(scope, id, {
@@ -123,36 +134,56 @@ export class Database extends Resource implements IDatabase {
       };
     }
 
-    this.catalogId = Stack.of(this).account;
-    const resource = new CfnDatabase(this, 'Resource', {
-      catalogId: this.catalogId,
+    this._catalog = props.catalog;
+
+    // When the database uses the implicit account catalog, its id is the
+    // account id. Reference that directly rather than materializing the account
+    // catalog singleton, so a plain `new Database()` does not pre-empt
+    // `Catalog.encryptAccount()` for the stack.
+    this.resource = new CfnDatabase(this, 'Resource', {
+      catalogId: this._catalog?.catalogId ?? Stack.of(this).account,
       databaseInput,
     });
 
-    // see https://docs.aws.amazon.com/glue/latest/dg/glue-specifying-resource-arns.html#data-catalog-resource-arns
-    this.databaseName = this.getResourceNameAttribute(resource.ref);
-    this.databaseArn = this.stack.formatArn({
+    this.resource.applyRemovalPolicy(props.removalPolicy, {
+      default: RemovalPolicy.RETAIN,
+    });
+  }
+
+  /**
+   * The catalog this database belongs to.
+   *
+   * Defaults to the implicit, account-wide catalog, materialized on first
+   * access.
+   */
+  @memoizedGetter
+  public get catalog(): ICatalog {
+    return this._catalog ?? Catalog.forAccount(this);
+  }
+
+  @memoizedGetter
+  public get databaseName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get databaseArn(): string {
+    return this.stack.formatArn({
       service: 'glue',
       resource: 'database',
       resourceName: this.databaseName,
-    });
-
-    // catalogId is implicitly the accountId, which is why we don't pass the catalogId here
-    this.catalogArn = Stack.of(this).formatArn({
-      service: 'glue',
-      resource: 'catalog',
     });
   }
 }
 
 function validateLocationUri(locationUri: string): void {
   if (locationUri.length < 1 || locationUri.length > 1024) {
-    throw new Error(`locationUri length must be (inclusively) between 1 and 1024, got ${locationUri.length}`);
+    throw new UnscopedValidationError(lit`InvalidLocationUriLength`, `locationUri length must be (inclusively) between 1 and 1024, got ${locationUri.length}`);
   }
 }
 
 function validateDescription(description: string): void {
   if (description.length > 2048) {
-    throw new Error(`description length must be less than or equal to 2048, got ${description.length}`);
+    throw new UnscopedValidationError(lit`InvalidDescriptionLength`, `description length must be less than or equal to 2048, got ${description.length}`);
   }
 }

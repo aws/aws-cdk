@@ -8,8 +8,10 @@ import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
+import * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
 import { UnscopedValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 import * as cxapi from '../../cx-api';
 import * as s3deploy from '../lib';
 
@@ -74,6 +76,21 @@ test('deploy from local directory asset', () => {
     DestinationBucketName: {
       Ref: 'DestC383B82A',
     },
+  });
+});
+
+test('empty sources array is preserved', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app);
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  new s3deploy.BucketDeployment(stack, 'EmptyDeployment', {
+    destinationBucket: bucket,
+    sources: [],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    SourceBucketNames: [],
   });
 });
 
@@ -792,6 +809,22 @@ test('lambda execution role gets putObjectAcl permission when deploying with acc
   });
 });
 
+test('default memory limit is 1024MB', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    // memoryLimit not specified - should default to 1024MB
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', { MemorySize: 1024 });
+});
+
 test('memoryLimit can be used to specify the memory limit for the deployment resource handler', () => {
   // GIVEN
   const stack = new cdk.Stack();
@@ -1123,6 +1156,43 @@ test('deployment allows vpc and subnets to be implicitly supplied to lambda', ()
   });
 });
 
+test('deployment allows security groups to be implicitly supplied to lambda', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const vpc: ec2.IVpc = new ec2.Vpc(stack, 'SomeVpc', {});
+  const securityGroups: ec2.SecurityGroup = new ec2.SecurityGroup(stack, 'SomeSecurityGroup', {
+    vpc: vpc,
+    securityGroupName: 'SomeSecurityGroup',
+  });
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc1', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    vpc,
+    securityGroups: [securityGroups],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    VpcConfig: {
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            Match.stringLikeRegexp('SomeSecurityGroup'),
+            'GroupId',
+          ],
+        },
+      ],
+      SubnetIds: Match.arrayWith([
+        { Ref: Match.stringLikeRegexp('SomeVpc.*Subnet.*') },
+        { Ref: Match.stringLikeRegexp('SomeVpc.*Subnet.*') },
+      ]),
+    },
+  });
+});
+
 test('s3 deployment bucket is identical to destination bucket', () => {
   // GIVEN
   const stack = new cdk.Stack();
@@ -1359,6 +1429,7 @@ test('"SourceMarkers" is not included if none of the sources have markers', () =
     'SourceBucketNames',
     'SourceObjectKeys',
     'DestinationBucketName',
+    'WaitForDistributionInvalidation',
     'Prune',
     'OutputObjectKeys',
   ]);
@@ -1389,8 +1460,52 @@ test('Source.jsonData() can be used to create a file with a JSON object', () => 
 
   const config = {
     foo: 'bar',
+    baz: null,
     sub: {
       hello: bucket.bucketArn,
+    },
+    [bucket.bucketName]: 'Token can be a key as well!',
+  };
+
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc3', {
+    sources: [s3deploy.Source.jsonData('app-config.json', config)],
+    destinationBucket: bucket,
+  });
+
+  const result = app.synth();
+  expect(readDataFile(result, 'app-config.json')).toBe('{"foo":"bar","baz":null,"sub":{"hello":<<marker:0xbaba:0>>},"<<marker:0xbaba:1>>":"Token can be a key as well!"}');
+
+  // verify marker is mapped to the bucket ARN in the resource props
+  Template.fromJSON(result.stacks[0].template).hasResourceProperties('Custom::CDKBucketDeployment', {
+    SourceMarkers: [
+      {
+        '<<marker:0xbaba:0>>': {
+          'Fn::Join': ['', ['"',
+            { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] },
+            '"']],
+        },
+        '<<marker:0xbaba:1>>': {
+          Ref: 'Bucket83908E77',
+        },
+      },
+    ],
+  });
+});
+
+test('Source.jsonData() can be used with list tokens', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+  const readParam = ssm.StringListParameter.fromStringListParameterName(
+    stack,
+    'ReadParam',
+    '/repro/subnets',
+  );
+
+  const config = {
+    foo: 'bar',
+    sub: {
+      hello: readParam.stringListValue,
     },
   };
 
@@ -1400,18 +1515,16 @@ test('Source.jsonData() can be used to create a file with a JSON object', () => 
   });
 
   const result = app.synth();
-  const obj = JSON.parse(readDataFile(result, 'app-config.json'));
-  expect(obj).toStrictEqual({
-    foo: 'bar',
-    sub: {
-      hello: '<<marker:0xbaba:0>>',
-    },
-  });
+  expect(readDataFile(result, 'app-config.json')).toBe('{"foo":"bar","sub":{"hello":<<marker:0xbaba:0>>}}');
 
   // verify marker is mapped to the bucket ARN in the resource props
   Template.fromJSON(result.stacks[0].template).hasResourceProperties('Custom::CDKBucketDeployment', {
     SourceMarkers: [
-      { '<<marker:0xbaba:0>>': { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] } },
+      {
+        '<<marker:0xbaba:0>>': {
+          'Fn::GetAtt': ['CdkJsonStringifyFnSplitresolvessmreprosubnets67ED8B00', 'Value'],
+        },
+      },
     ],
   });
 });
@@ -1555,14 +1668,14 @@ test('DeployTimeSubstitutedFile throws error when source file path is invalid', 
 
   expect(() => {
     new s3deploy.DeployTimeSubstitutedFile(stack, 'MyFile', {
-      source: path.join(__dirname, 'non-existant-file.yaml'),
+      source: path.join(__dirname, 'non-existent-file.yaml'),
       destinationBucket: bucket,
       substitutions: {
         testMethod: 'changedTestMethodSuccess',
         mock: 'changedMockTypeSuccess',
       },
     });
-  }).toThrow(`No file found at 'source' path ${path.join(__dirname, 'non-existant-file.yaml')}`);
+  }).toThrow(`No file found at 'source' path ${path.join(__dirname, 'non-existent-file.yaml')}`);
 });
 
 test('DeployTimeSubstitutedFile does not make substitutions when no substitutions are passed in', () => {
@@ -1662,7 +1775,7 @@ function readDataFile(casm: cxapi.CloudAssembly, relativePath: string): string {
     }
   }
 
-  throw new UnscopedValidationError(`File ${relativePath} not found in any of the assets of the assembly`);
+  throw new UnscopedValidationError(lit`FileFoundAssetsAssembly`, `File ${relativePath} not found in any of the assets of the assembly`);
 }
 
 test('DeployTimeSubstitutedFile allows custom role to be supplied', () => {

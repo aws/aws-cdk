@@ -2,7 +2,11 @@ import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'stack');
 
@@ -51,7 +55,6 @@ new lambda.Function(stack, 'MyFunc6', {
 
 app.synth();
 
-/* eslint-disable no-console */
 function handler(event: any, _context: any, callback: any) {
   console.log(JSON.stringify(event, undefined, 2));
   return callback();

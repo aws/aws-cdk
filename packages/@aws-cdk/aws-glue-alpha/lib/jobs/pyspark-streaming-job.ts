@@ -1,9 +1,12 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
-import { Construct } from 'constructs';
-import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType } from '../constants';
-import { Code } from '../code';
-import { SparkJob, SparkJobProps } from './spark-job';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import type { Code } from '../code';
+import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType } from '../constants';
+import type { SparkJobProps } from './spark-job';
+import { SparkJob } from './spark-job';
 
 /**
  * Properties for creating a Python Spark ETL job
@@ -65,11 +68,14 @@ export interface PySparkStreamingJobProps extends SparkJobProps {
  * Similar to ETL jobs, streaming job supports Scala and Python languages. Similar to ETL,
  * it supports G1 and G2 worker type and 2.0, 3.0 and 4.0 version. We’ll default to G2 worker
  * and 4.0 version for streaming jobs which developers can override.
- * We will enable —enable-metrics, —enable-spark-ui, —enable-continuous-cloudwatch-log.
+ * We will enable --enable-metrics, --enable-continuous-cloudwatch-log. The Spark UI
+ * (--enable-spark-ui) is off by default; enable it by setting the `sparkUI` prop.
  */
+@propertyInjectable
 export class PySparkStreamingJob extends SparkJob {
-  public readonly jobArn: string;
-  public readonly jobName: string;
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.PySparkStreamingJob';
+  private resource: CfnJob;
 
   /**
    * PySparkStreamingJob constructor
@@ -85,7 +91,7 @@ export class PySparkStreamingJob extends SparkJob {
       ...this.nonExecutableCommonArguments(props),
     };
 
-    const jobResource = new CfnJob(this, 'Resource', {
+    this.resource = new CfnJob(this, 'Resource', {
       name: props.jobName,
       description: props.description,
       role: this.role.roleArn,
@@ -95,8 +101,8 @@ export class PySparkStreamingJob extends SparkJob {
         pythonVersion: PythonVersion.THREE,
       },
       glueVersion: props.glueVersion ? props.glueVersion : GlueVersion.V4_0,
-      workerType: props.workerType ? props.workerType : WorkerType.G_1X,
-      numberOfWorkers: props.numberOfWorkers ? props.numberOfWorkers : 10,
+      workerType: props.workerConfiguration?.workerType ?? WorkerType.G_1X,
+      numberOfWorkers: props.workerConfiguration?.numberOfWorkers ?? 10,
       maxRetries: props.jobRunQueuingEnabled ? 0 : props.maxRetries,
       jobRunQueuingEnabled: props.jobRunQueuingEnabled ? props.jobRunQueuingEnabled : false,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
@@ -106,10 +112,16 @@ export class PySparkStreamingJob extends SparkJob {
       tags: props.tags,
       defaultArguments,
     });
+  }
 
-    const resourceName = this.getResourceNameAttribute(jobResource.ref);
-    this.jobArn = this.buildJobArn(this, resourceName);
-    this.jobName = resourceName;
+  @memoizedGetter
+  public get jobArn(): string {
+    return this.buildJobArn(this, this.jobName);
+  }
+
+  @memoizedGetter
+  public get jobName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
   }
 
   /**

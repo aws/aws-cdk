@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "testCases": {
     "ApiGatewayTarget/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "ApiGatewayTarget/DefaultTest/DeployAssert",
       "assertionStackName": "ApiGatewayTargetDefaultTestDeployAssert33F7AF34"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

@@ -1,7 +1,8 @@
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { Stack, App, StackProps } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { Stack, App } from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import type { Construct } from 'constructs';
 import * as redshift from '../lib';
 
 class RedshiftRA3LargeTestStack extends Stack {
@@ -27,7 +28,10 @@ class RedshiftRA3LargeTestStack extends Stack {
 }
 
 const app = new App();
+const stack = new Stack(app, 'MultiAzRedshift');
+
+new RedshiftRA3LargeTestStack(stack, 'redshift-ra3-large-integ');
 
 new integ.IntegTest(app, 'RA3LargeNodeIntegTest', {
-  testCases: [new RedshiftRA3LargeTestStack(app, 'redshift-ra3-large-integ')],
+  testCases: [stack],
 });

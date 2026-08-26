@@ -1,6 +1,7 @@
 import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { AccountRootPrincipal, Grant, Policy, PolicyStatement, Role, User } from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 const app = new App();
 
@@ -20,6 +21,14 @@ const role = new Role(stack, 'Role', { assumedBy: new AccountRootPrincipal() });
 role.grantAssumeRole(user);
 
 Grant.addToPrincipal({ actions: ['iam:*'], resourceArns: [role.roleArn], grantee: policy2 });
+
+// Can be passed to grantInvoke, see https://github.com/aws/aws-cdk/issues/32980
+const func = new lambda.Function(stack, 'Function', {
+  runtime: lambda.Runtime.NODEJS_LATEST,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('export const handler = async () => null'),
+});
+func.grantInvoke(policy);
 
 new IntegTest(app, 'PolicyInteg', {
   testCases: [stack],

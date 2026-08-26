@@ -13,6 +13,7 @@ const defaultFeatureFlag = {
   [CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME]: true,
   [CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2]: false,
   [PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE]: false,
+  '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
 };
 const app = new cdk.App({ postCliContext: defaultFeatureFlag });
 
@@ -23,16 +24,16 @@ const repo = new codecommit.Repository(stack, 'MyRepo', {
 });
 
 const eventPattern
-      = {
-        'detail-type': ['CodeCommit Repository State Change'],
-        'resources': [repo.repositoryArn],
-        'source': ['aws.codecommit'],
-        'detail': {
-          referenceType: ['branch'],
-          event: ['referenceCreated', 'referenceUpdated'],
-          referenceName: [branch],
-        },
-      };
+  = {
+    'detail-type': ['CodeCommit Repository State Change'],
+    'resources': [repo.repositoryArn],
+    'source': ['aws.codecommit'],
+    'detail': {
+      referenceType: ['branch'],
+      event: ['referenceCreated', 'referenceUpdated'],
+      referenceName: [branch],
+    },
+  };
 
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
   pipelineName: 'IntegCustomEventPipeline',

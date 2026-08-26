@@ -1,5 +1,5 @@
 {
-  "version": "29.0.0",
+  "version": "54.0.0",
   "testCases": {
     "pipenv/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "pipenv/DefaultTest/DeployAssert",
       "assertionStackName": "pipenvDefaultTestDeployAssertF8231517"
     }
-  }
+  },
+  "minimumCliVersion": "2.1126.0"
 }

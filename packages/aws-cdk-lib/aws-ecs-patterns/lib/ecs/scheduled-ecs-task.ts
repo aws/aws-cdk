@@ -1,7 +1,10 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Ec2TaskDefinition } from '../../../aws-ecs';
-import { EcsTask } from '../../../aws-events-targets';
-import { ScheduledTaskBase, ScheduledTaskBaseProps, ScheduledTaskImageProps } from '../base/scheduled-task-base';
+import type { EcsTask } from '../../../aws-events-targets';
+import { ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
+import type { ScheduledTaskBaseProps, ScheduledTaskImageProps } from '../base/scheduled-task-base';
+import { ScheduledTaskBase } from '../base/scheduled-task-base';
 
 /**
  * The properties for the ScheduledEc2Task task.
@@ -97,7 +100,7 @@ export class ScheduledEc2Task extends ScheduledTaskBase {
     super(scope, id, props);
 
     if (props.scheduledEc2TaskDefinitionOptions && props.scheduledEc2TaskImageOptions) {
-      throw new Error('You must specify either a scheduledEc2TaskDefinitionOptions or scheduledEc2TaskOptions, not both.');
+      throw new ValidationError(lit`SpecifyScheduledEcTaskDefinition`, 'You must specify either a scheduledEc2TaskDefinitionOptions or scheduledEc2TaskOptions, not both.', this);
     } else if (props.scheduledEc2TaskDefinitionOptions) {
       this.taskDefinition = props.scheduledEc2TaskDefinitionOptions.taskDefinition;
     } else if (props.scheduledEc2TaskImageOptions) {
@@ -117,7 +120,7 @@ export class ScheduledEc2Task extends ScheduledTaskBase {
         logging: taskImageOptions.logDriver ?? this.createAWSLogDriver(this.node.id),
       });
     } else {
-      throw new Error('You must specify a taskDefinition or image');
+      throw new ValidationError(lit`SpecifyTaskDefinitionImage`, 'You must specify a taskDefinition or image', this);
     }
 
     this.task = this.addTaskDefinitionToEventTarget(this.taskDefinition);

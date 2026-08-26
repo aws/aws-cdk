@@ -1,28 +1,30 @@
 {
-  "version": "34.0.0",
+  "version": "52.0.0",
   "files": {
     "f38244b9028d22d4e265a5b466bdba928d93b5a4ac2b4bbf583309b3f027f044": {
+      "displayName": "testQuery/Code",
       "source": {
         "path": "asset.f38244b9028d22d4e265a5b466bdba928d93b5a4ac2b4bbf583309b3f027f044",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-632d50e8": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "f38244b9028d22d4e265a5b466bdba928d93b5a4ac2b4bbf583309b3f027f044.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "ac1cd45551354e19396e523e6ff39a7b2db14882046e0a2f4f8540cebf4f244b": {
+    "fe5c36267d441642e257a05b2cb2d7d249ffd680fec621f4ff04a7a483d10605": {
+      "displayName": "aws-appsync-integ Template",
       "source": {
         "path": "aws-appsync-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-6f33d734": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "ac1cd45551354e19396e523e6ff39a7b2db14882046e0a2f4f8540cebf4f244b.json",
+          "objectKey": "fe5c36267d441642e257a05b2cb2d7d249ffd680fec621f4ff04a7a483d10605.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1,0 +1,70 @@
+{
+ "Resources": {
+  "Repository22E53BBD": {
+   "Type": "AWS::ECR::Repository",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ContainerRecipe8A7CC9ED": {
+   "Type": "AWS::ImageBuilder::ContainerRecipe",
+   "Properties": {
+    "ContainerType": "DOCKER",
+    "DockerfileTemplateUri": {
+     "Fn::Join": [
+      "",
+      [
+       "s3://",
+       {
+        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+       },
+       "/2c4690a423fb29c09c3fa969e7c7e6e5e2d612e0d354bee3fab6945e833ebe8e.2c4690a423fb29c09c3fa969e7c7e6e5e2d612e0d354bee3fab6945e833ebe8e"
+      ]
+     ]
+    },
+    "Name": "aws-cdk-imagebuilder-container-recipe-s3-containerrecipe-b3c588a7",
+    "ParentImage": "amazonlinux:latest",
+    "TargetRepository": {
+     "RepositoryName": {
+      "Ref": "Repository22E53BBD"
+     },
+     "Service": "ECR"
+    },
+    "Version": "1.0.x"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

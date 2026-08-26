@@ -6,7 +6,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 
 interface AwsCdkSdkJsStackProps {
@@ -70,7 +70,10 @@ class AwsCdkSdkJsStack extends cdk.Stack {
         effect: iam.Effect.ALLOW,
         resources: ['*'],
         actions: [
-          'ssm:*',
+          'ssm:GetParameter',
+          'ssm:GetParameters',
+          'ssm:GetParametersByPath',
+          'ssm:DescribeParameters',
         ],
       }),
     );
@@ -115,9 +118,13 @@ class AwsCdkSdkJsStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const testStack = new AwsCdkSdkJsStack(app, 'aws-cdk-sdk-js-v3', {
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_20_X,
 });
 const integTest = new integ.IntegTest(app, 'AwsCustomResourceTest', {
   testCases: [testStack],

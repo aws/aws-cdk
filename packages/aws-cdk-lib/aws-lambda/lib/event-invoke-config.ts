@@ -1,10 +1,14 @@
-import { Construct } from 'constructs';
-import { DestinationType, IDestination } from './destination';
-import { IFunction } from './function-base';
+import type { Construct } from 'constructs';
+import type { IDestination } from './destination';
+import { DestinationType } from './destination';
+import type { IFunction } from './function-base';
 import { CfnEventInvokeConfig } from './lambda.generated';
-import { Duration, Resource } from '../../core';
+import type { Duration } from '../../core';
+import { Resource, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Options to add an EventInvokeConfig to a function.
@@ -71,18 +75,22 @@ export interface EventInvokeConfigProps extends EventInvokeConfigOptions {
  * event fails all processing attempts or stays in the asynchronous invocation
  * queue for too long, Lambda discards it.
  */
+@propertyInjectable
 export class EventInvokeConfig extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.EventInvokeConfig';
+
   constructor(scope: Construct, id: string, props: EventInvokeConfigProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    if (props.maxEventAge && (props.maxEventAge.toSeconds() < 60 || props.maxEventAge.toSeconds() > 21600)) {
-      throw new ValidationError('`maximumEventAge` must represent a `Duration` that is between 60 and 21600 seconds.', this);
+    if (props.maxEventAge && !props.maxEventAge.isUnresolved() && (props.maxEventAge.toSeconds() < 60 || props.maxEventAge.toSeconds() > 21600)) {
+      throw new ValidationError(lit`RepresentBetween21600Seconds`, '`maximumEventAge` must represent a `Duration` that is between 60 and 21600 seconds.', this);
     }
 
-    if (props.retryAttempts && (props.retryAttempts < 0 || props.retryAttempts > 2)) {
-      throw new ValidationError('`retryAttempts` must be between 0 and 2.', this);
+    if (props.retryAttempts && !Token.isUnresolved(props.retryAttempts) && (props.retryAttempts < 0 || props.retryAttempts > 2)) {
+      throw new ValidationError(lit`MustBeBetween`, '`retryAttempts` must be between 0 and 2.', this);
     }
 
     new CfnEventInvokeConfig(this, 'Resource', {

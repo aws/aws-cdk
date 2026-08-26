@@ -1,11 +1,14 @@
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import * as constructs from 'constructs';
-import { Code } from '../code';
-import { Job, JobProps } from './job';
-import { Token } from 'aws-cdk-lib';
 import { EOL } from 'os';
+import { Token, UnscopedValidationError } from 'aws-cdk-lib';
+import type * as iam from 'aws-cdk-lib/aws-iam';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import type * as constructs from 'constructs';
+import type { Code } from '../code';
+import type { WorkerType } from '../constants';
+import type { JobProps } from './job';
+import { Job } from './job';
 
 /**
  * Code props for different {@link Code} assets used by different types of Spark jobs.
@@ -89,9 +92,37 @@ export interface SparkUILoggingLocation {
 }
 
 /**
+ * The worker configuration for a Spark job.
+ *
+ * The worker type and the number of workers are set together: providing this
+ * configuration requires both values, so a Spark job can never be given one
+ * without the other.
+ */
+export interface WorkerConfiguration {
+  /**
+   * The type of predefined worker that is allocated when a job runs.
+   *
+   * Enum options: Standard, G_1X, G_2X, G_025X, G_4X, G_8X, Z_2X
+   */
+  readonly workerType: WorkerType;
+
+  /**
+   * The number of workers of the given `workerType` that are allocated when a job runs.
+   */
+  readonly numberOfWorkers: number;
+}
+
+/**
  * Common properties for different types of Spark jobs.
  */
 export interface SparkJobProps extends JobProps {
+  /**
+   * The worker type and the number of workers allocated when a job runs.
+   *
+   * @default - the job runs with the G_1X worker type and 10 workers.
+   */
+  readonly workerConfiguration?: WorkerConfiguration;
+
   /**
    * Enables the Spark UI debugging and monitoring with the specified props.
    *
@@ -101,6 +132,24 @@ export interface SparkJobProps extends JobProps {
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   readonly sparkUI?: SparkUIProps;
+
+  /**
+   * Enable profiling metrics for the Glue job.
+   *
+   * When enabled, adds '--enable-metrics' to job arguments.
+   *
+   * @default true
+   */
+  readonly enableMetrics?: boolean;
+
+  /**
+   * Enable observability metrics for the Glue job.
+   *
+   * When enabled, adds '--enable-observability-metrics': 'true' to job arguments.
+   *
+   * @default true
+   */
+  readonly enableObservabilityMetrics?: boolean;
 }
 
 /**
@@ -134,8 +183,10 @@ export abstract class SparkJob extends Job {
   protected nonExecutableCommonArguments(props: SparkJobProps): {[key: string]: string} {
     // Enable CloudWatch metrics and continuous logging by default as a best practice
     const continuousLoggingArgs = this.setupContinuousLogging(this.role, props.continuousLogging);
-    const profilingMetricsArgs = { '--enable-metrics': '' };
-    const observabilityMetricsArgs = { '--enable-observability-metrics': 'true' };
+
+    // Conditionally include metrics arguments (default to enabled for backward compatibility)
+    const profilingMetricsArgs = (props.enableMetrics ?? true) ? { '--enable-metrics': '' } : {};
+    const observabilityMetricsArgs = (props.enableObservabilityMetrics ?? true) ? { '--enable-observability-metrics': 'true' } : {};
 
     // Set spark ui args, if spark ui logging had been setup
     const sparkUIArgs = this.sparkUILoggingLocation ? ({
@@ -198,7 +249,7 @@ function validateSparkUiPrefix(prefix?: string): void {
   }
 
   if (errors.length > 0) {
-    throw new Error(`Invalid prefix format (value: ${prefix})${EOL}${errors.join(EOL)}`);
+    throw new UnscopedValidationError(lit`InvalidSparkUiPrefix`, `Invalid prefix format (value: ${prefix})${EOL}${errors.join(EOL)}`);
   }
 }
 

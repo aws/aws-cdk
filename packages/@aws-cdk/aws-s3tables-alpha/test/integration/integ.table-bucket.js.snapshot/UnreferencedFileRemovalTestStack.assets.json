@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "7296fc85250c6ea094169bc1ad390fd24dd33788120dadc33792c0f85aa4ddbb": {
+      "displayName": "UnreferencedFileRemovalTestStack Template",
+      "source": {
+        "path": "UnreferencedFileRemovalTestStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-4cba637e": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7296fc85250c6ea094169bc1ad390fd24dd33788120dadc33792c0f85aa4ddbb.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

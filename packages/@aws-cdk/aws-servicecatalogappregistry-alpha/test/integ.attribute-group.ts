@@ -1,4 +1,4 @@
-import * as iam from 'aws-cdk-lib/aws-iam';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as appreg from '../lib';
 
@@ -29,15 +29,8 @@ const attributeGroup = new appreg.AttributeGroup(stack, 'TestAttributeGroup', {
 
 attributeGroup.associateWith(application);
 
-const myRole = new iam.Role(stack, 'MyRole', {
-  assumedBy: new iam.AccountPrincipal(stack.account),
-});
-const mySecondRole = new iam.Role(stack, 'MySecondRole', {
-  assumedBy: new iam.AccountPrincipal(stack.account),
-});
-attributeGroup.shareAttributeGroup('MyShareId', {
-  name: 'MyShare',
-  roles: [myRole, mySecondRole],
+new integ.IntegTest(app, 'AttributeGroupIntegTest', {
+  testCases: [stack],
 });
 
 app.synth();

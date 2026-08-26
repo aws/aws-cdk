@@ -1,9 +1,13 @@
-import { Construct } from 'constructs';
-import { ILogGroup, MetricFilterOptions } from './log-group';
+import type { Construct } from 'constructs';
+import type { MetricFilterOptions } from './log-group';
 import { CfnMetricFilter } from './logs.generated';
-import { Metric, MetricOptions } from '../../aws-cloudwatch';
+import type { MetricOptions } from '../../aws-cloudwatch';
+import { Metric } from '../../aws-cloudwatch';
 import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
  * Properties for a MetricFilter
@@ -12,13 +16,16 @@ export interface MetricFilterProps extends MetricFilterOptions {
   /**
    * The log group to create the filter on.
    */
-  readonly logGroup: ILogGroup;
+  readonly logGroup: ILogGroupRef;
 }
 
 /**
  * A filter that extracts information from CloudWatch Logs and emits to CloudWatch Metrics
  */
+@propertyInjectable
 export class MetricFilter extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-logs.MetricFilter';
   private readonly metricName: string;
   private readonly metricNamespace: string;
 
@@ -34,7 +41,7 @@ export class MetricFilter extends Resource {
 
     const numberOfDimensions = Object.keys(props.dimensions ?? {}).length;
     if (numberOfDimensions > 3) {
-      throw new ValidationError(`MetricFilter only supports a maximum of 3 dimensions but received ${numberOfDimensions}.`, this);
+      throw new ValidationError(lit`MetricFilterSupportsMaximumDimensions`, `MetricFilter only supports a maximum of 3 dimensions but received ${numberOfDimensions}.`, this);
     }
 
     // It looks odd to map this object to a singleton list, but that's how
@@ -46,7 +53,7 @@ export class MetricFilter extends Resource {
     //
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html
     new CfnMetricFilter(this, 'Resource', {
-      logGroupName: props.logGroup.logGroupName,
+      logGroupName: props.logGroup.logGroupRef.logGroupName,
       filterName: this.physicalName,
       filterPattern: props.filterPattern.logPatternString,
       metricTransformations: [{
@@ -57,6 +64,7 @@ export class MetricFilter extends Resource {
         dimensions: props.dimensions ? Object.entries(props.dimensions).map(([key, value]) => ({ key, value })) : undefined,
         unit: props.unit,
       }],
+      applyOnTransformedLogs: props.applyOnTransformedLogs,
     });
   }
 

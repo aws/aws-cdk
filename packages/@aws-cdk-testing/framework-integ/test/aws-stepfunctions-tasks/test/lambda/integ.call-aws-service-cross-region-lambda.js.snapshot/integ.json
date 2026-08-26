@@ -1,0 +1,17 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "IntegTest/DefaultTest": {
+      "stacks": [
+        "aws-sfn-call-aws-service-cross-region-lambda"
+      ],
+      "regions": [
+        "us-east-1",
+        "us-west-2"
+      ],
+      "assertionStack": "AssertionStack",
+      "assertionStackName": "AssertionStack"
+    }
+  },
+  "minimumCliVersion": "2.1123.0"
+}

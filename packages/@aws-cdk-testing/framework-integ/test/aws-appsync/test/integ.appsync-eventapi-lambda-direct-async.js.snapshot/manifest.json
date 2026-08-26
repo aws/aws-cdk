@@ -1,0 +1,417 @@
+{
+  "version": "42.0.0",
+  "artifacts": {
+    "EventApiLambdaDirectAsyncStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "EventApiLambdaDirectAsyncStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "EventApiLambdaDirectAsyncStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "EventApiLambdaDirectAsyncStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/804bce587c291f9b3a50537eb7f9dc85b8ebde6d6a41ca1bce93538aaeda4df1.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "EventApiLambdaDirectAsyncStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "EventApiLambdaDirectAsyncStack.assets"
+      ],
+      "metadata": {
+        "/EventApiLambdaDirectAsyncStack/EventApiLambdaAsync": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "apiName": "*"
+            }
+          }
+        ],
+        "/EventApiLambdaDirectAsyncStack/EventApiLambdaAsync/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiLambdaAsync39F54423"
+          }
+        ],
+        "/EventApiLambdaDirectAsyncStack/EventApiLambdaAsync/DefaultApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiLambdaAsyncDefaultApiKey926C392C"
+          }
+        ],
+        "/EventApiLambdaDirectAsyncStack/EventApiLambdaAsync/lambdadirectasync/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/EventApiLambdaDirectAsyncStack/EventApiLambdaAsync/lambdadirectasync/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EventApiLambdaDirectAsyncStack/EventApiLambdaAsync/lambdadirectasync/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiLambdaAsynclambdadirectasyncServiceRoleA064AA07"
+          }
+        ],
+        "/EventApiLambdaDirectAsyncStack/EventApiLambdaAsync/lambdadirectasync/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/EventApiLambdaDirectAsyncStack/EventApiLambdaAsync/lambdadirectasync/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiLambdaAsynclambdadirectasyncServiceRoleDefaultPolicy87574849"
+          }
+        ],
+        "/EventApiLambdaDirectAsyncStack/EventApiLambdaAsync/lambdadirectasync/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiLambdaAsynclambdadirectasync00C4E557"
+          }
+        ],
+        "/EventApiLambdaDirectAsyncStack/EventApiLambdaAsync/chat": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "api": "*",
+              "channelNamespaceName": "*"
+            }
+          }
+        ],
+        "/EventApiLambdaDirectAsyncStack/EventApiLambdaAsync/chat/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiLambdaAsyncchat3355D522"
+          }
+        ],
+        "/EventApiLambdaDirectAsyncStack/LambdaDirectAsync": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "entry": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "entry": "*",
+              "handler": "*"
+            }
+          }
+        ],
+        "/EventApiLambdaDirectAsyncStack/LambdaDirectAsync/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/EventApiLambdaDirectAsyncStack/LambdaDirectAsync/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EventApiLambdaDirectAsyncStack/LambdaDirectAsync/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaDirectAsyncServiceRole16DEBE9D"
+          }
+        ],
+        "/EventApiLambdaDirectAsyncStack/LambdaDirectAsync/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaDirectAsync0F8EF519"
+          }
+        ],
+        "/EventApiLambdaDirectAsyncStack/EventApiLambdaAsyncTestFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "environment": "*",
+              "bundling": {
+                "bundleAwsSDK": true
+              },
+              "entry": "*",
+              "handler": "*",
+              "timeout": "*",
+              "code": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "environment": "*",
+              "bundling": {
+                "bundleAwsSDK": true
+              },
+              "entry": "*",
+              "handler": "*",
+              "timeout": "*"
+            }
+          }
+        ],
+        "/EventApiLambdaDirectAsyncStack/EventApiLambdaAsyncTestFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/EventApiLambdaDirectAsyncStack/EventApiLambdaAsyncTestFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EventApiLambdaDirectAsyncStack/EventApiLambdaAsyncTestFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiLambdaAsyncTestFunctionServiceRole2FD3B1F1"
+          }
+        ],
+        "/EventApiLambdaDirectAsyncStack/EventApiLambdaAsyncTestFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiLambdaAsyncTestFunction9CC266EB"
+          }
+        ],
+        "/EventApiLambdaDirectAsyncStack/Exports/Output{\"Ref\":\"EventApiLambdaAsyncTestFunction9CC266EB\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefEventApiLambdaAsyncTestFunction9CC266EB68532C94"
+          }
+        ],
+        "/EventApiLambdaDirectAsyncStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/EventApiLambdaDirectAsyncStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "EventApiLambdaDirectAsyncStack"
+    },
+    "appsynceventapilambdadirectasynctestDefaultTestDeployAssert214BB74C.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "appsynceventapilambdadirectasynctestDefaultTestDeployAssert214BB74C.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "appsynceventapilambdadirectasynctestDefaultTestDeployAssert214BB74C": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "appsynceventapilambdadirectasynctestDefaultTestDeployAssert214BB74C.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/db974a74047332a1c04431bdc3302b27d7f8ad3e991124a20be43c01a4b1ca7f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "appsynceventapilambdadirectasynctestDefaultTestDeployAssert214BB74C.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "EventApiLambdaDirectAsyncStack",
+        "appsynceventapilambdadirectasynctestDefaultTestDeployAssert214BB74C.assets"
+      ],
+      "metadata": {
+        "/appsync-eventapi-lambda-direct-async-test/DefaultTest/DeployAssert/LambdaInvoke3053dadd49a6b29780e31c938ae2d141/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/appsync-eventapi-lambda-direct-async-test/DefaultTest/DeployAssert/LambdaInvoke3053dadd49a6b29780e31c938ae2d141/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke3053dadd49a6b29780e31c938ae2d141"
+          }
+        ],
+        "/appsync-eventapi-lambda-direct-async-test/DefaultTest/DeployAssert/LambdaInvoke3053dadd49a6b29780e31c938ae2d141/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke3053dadd49a6b29780e31c938ae2d141InvokeC6A059A8"
+          }
+        ],
+        "/appsync-eventapi-lambda-direct-async-test/DefaultTest/DeployAssert/LambdaInvoke3053dadd49a6b29780e31c938ae2d141/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvoke3053dadd49a6b29780e31c938ae2d141"
+          }
+        ],
+        "/appsync-eventapi-lambda-direct-async-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/appsync-eventapi-lambda-direct-async-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/appsync-eventapi-lambda-direct-async-test/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/appsync-eventapi-lambda-direct-async-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/appsync-eventapi-lambda-direct-async-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "appsync-eventapi-lambda-direct-async-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1006.0"
+}

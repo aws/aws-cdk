@@ -1,9 +1,9 @@
-import { IConstruct } from 'constructs';
-import { CfnLaunchTemplate, LaunchTemplate } from '../../../aws-ec2';
+import type { IConstruct } from 'constructs';
+import type { CfnLaunchTemplate, LaunchTemplate } from '../../../aws-ec2';
 import * as cdk from '../../../core';
 import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../../cx-api';
 import { AutoScalingGroup } from '../auto-scaling-group';
-import { CfnLaunchConfiguration } from '../autoscaling.generated';
+import type { CfnLaunchConfiguration } from '../autoscaling.generated';
 
 /**
  * Aspect that makes IMDSv2 required on instances deployed by AutoScalingGroups.

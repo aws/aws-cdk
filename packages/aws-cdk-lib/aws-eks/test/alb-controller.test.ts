@@ -4,6 +4,7 @@ import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { testFixture } from './util';
 import { Template, Match } from '../../assertions';
 import * as iam from '../../aws-iam';
+import { RemovalPolicy } from '../../core';
 import { Cluster, KubernetesVersion, AlbController, AlbControllerVersion, HelmChart, KubernetesManifest, AuthenticationMode } from '../lib';
 
 const versions = Object.values(AlbControllerVersion);
@@ -157,6 +158,46 @@ test('correct helm chart version is set for selected alb controller version', ()
   });
 });
 
+test.each([
+  { setting: 'enableWaf', value: false },
+  { setting: 'enableWafv2', value: false },
+  { setting: 'enableWaf', value: true },
+  { setting: 'enableWafv2', value: true },
+])('custom WAF settings - $setting', ({ setting, value }) => {
+  // GIVEN
+  const { stack } = testFixture();
+  const cluster = new Cluster(stack, 'Cluster', {
+    version: KubernetesVersion.V1_27,
+    kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+  });
+
+  // WHEN
+  new AlbController(stack, 'AlbController', {
+    cluster,
+    version: AlbControllerVersion.V2_4_1,
+    additionalHelmChartValues: {
+      [setting]: value,
+    },
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties(HelmChart.RESOURCE_TYPE, {
+    Values: {
+      'Fn::Join': [
+        '',
+        Match.arrayWith([
+          '{"clusterName":"',
+          { Ref: 'Cluster9EE0221C' },
+          '","serviceAccount":{"create":false,"name":"aws-load-balancer-controller"},"region":"us-east-1","vpcId":"',
+          { Ref: 'ClusterDefaultVpcFA9F2722' },
+          `","image":{"repository":"602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller","tag":"v2.4.1"},"${setting}":${value}}`,
+        ]),
+      ],
+    },
+  });
+});
+
 describe('AlbController AwsAuth creation', () => {
   const setupTest = (authenticationMode?: AuthenticationMode) => {
     const { stack } = testFixture();
@@ -202,5 +243,45 @@ describe('AlbController AwsAuth creation', () => {
   ])('will create AwsAuth when the authenticationMode is %p', (authenticationMode) => {
     const stack = setupTest(authenticationMode);
     Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, awsAuthManifest);
+  });
+});
+
+test('should pass overwriteServiceAccount to service account', () => {
+  // GIVEN
+  const { stack } = testFixture();
+  const cluster = new Cluster(stack, 'Cluster', {
+    version: KubernetesVersion.V1_27,
+    kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+  });
+  // WHEN
+  AlbController.create(stack, {
+    cluster,
+    version: AlbControllerVersion.V2_6_2,
+    overwriteServiceAccount: true,
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, {
+    Overwrite: true,
+  });
+});
+
+test('supports custom removal policy', () => {
+  const { stack } = testFixture();
+  const cluster = new Cluster(stack, 'Cluster', {
+    version: KubernetesVersion.V1_27,
+    kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+  });
+
+  AlbController.create(stack, {
+    cluster,
+    version: AlbControllerVersion.V2_6_2,
+    removalPolicy: RemovalPolicy.RETAIN,
+  });
+
+  Template.fromStack(stack).hasResource(HelmChart.RESOURCE_TYPE, {
+    DeletionPolicy: 'Retain',
+  });
+  Template.fromStack(stack).hasResource(KubernetesManifest.RESOURCE_TYPE, {
+    DeletionPolicy: 'Retain',
   });
 });

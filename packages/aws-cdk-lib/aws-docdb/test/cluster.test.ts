@@ -617,13 +617,142 @@ describe('DatabaseCluster', () => {
       },
       vpc,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
-      preferredMaintenanceWindow: '07:34-08:04',
+      preferredMaintenanceWindow: 'tue:07:34-tue:08:04',
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
-      PreferredMaintenanceWindow: '07:34-08:04',
+      PreferredMaintenanceWindow: 'tue:07:34-tue:08:04',
     });
+  });
+
+  test('instanceMaintenanceWindow propagates to all auto-created instances', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+      },
+      vpc,
+      preferredMaintenanceWindow: 'tue:04:17-tue:04:47',
+      instances: 2,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
+      instanceMaintenanceWindow: 'sat:09:00-sat:09:30',
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::DocDB::DBCluster', {
+      PreferredMaintenanceWindow: 'tue:04:17-tue:04:47',
+    });
+    template.resourceCountIs('AWS::DocDB::DBInstance', 2);
+    template.allResources('AWS::DocDB::DBInstance', {
+      Properties: Match.objectLike({
+        PreferredMaintenanceWindow: 'sat:09:00-sat:09:30',
+      }),
+    });
+  });
+
+  test('maintenance window is omitted on instances when instanceMaintenanceWindow is not set', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+      },
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBInstance', {
+      PreferredMaintenanceWindow: Match.absent(),
+    });
+  });
+
+  test.each([
+    'mon:00:00-mon:00:30',
+    'sun:23:45-mon:00:15',
+    'wed:12:00-thu:11:59',
+    'SAT:09:00-SAT:09:30', // case-insensitive
+  ])('accepts valid maintenance window %s', (window) => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN / THEN
+    expect(() => new DatabaseCluster(stack, 'Database', {
+      masterUser: { username: 'admin' },
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
+      preferredMaintenanceWindow: window,
+      instanceMaintenanceWindow: window,
+    })).not.toThrow();
+  });
+
+  test.each([
+    ['07:34-08:04', 'missing day prefix'],
+    ['tue:04:17', 'missing end range'],
+    ['funday:04:17-tue:04:47', 'invalid day'],
+    ['tue:24:00-tue:24:30', 'invalid hour'],
+    ['tue:04:60-tue:05:30', 'invalid minute'],
+    ['tue:04:17-tue:04:47 ', 'trailing whitespace'],
+    ['', 'empty string'],
+  ])('fails for invalid preferredMaintenanceWindow %s (%s)', (window, _reason) => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN / THEN
+    expect(() => new DatabaseCluster(stack, 'Database', {
+      masterUser: { username: 'admin' },
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
+      preferredMaintenanceWindow: window,
+    })).toThrow(/preferredMaintenanceWindow must be in the format ddd:hh24:mi-ddd:hh24:mi/);
+  });
+
+  test.each([
+    ['07:34-08:04', 'missing day prefix'],
+    ['funday:04:17-tue:04:47', 'invalid day'],
+    ['tue:24:00-tue:24:30', 'invalid hour'],
+    ['tue:04:60-tue:05:30', 'invalid minute'],
+    ['', 'empty string'],
+  ])('fails for invalid instanceMaintenanceWindow %s (%s)', (window, _reason) => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN / THEN
+    expect(() => new DatabaseCluster(stack, 'Database', {
+      masterUser: { username: 'admin' },
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
+      instanceMaintenanceWindow: window,
+    })).toThrow(/instanceMaintenanceWindow must be in the format ddd:hh24:mi-ddd:hh24:mi/);
+  });
+
+  test('skips maintenance window validation for tokenized values', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const clusterWindow = new cdk.CfnParameter(stack, 'ClusterWindow', { type: 'String' }).valueAsString;
+    const instanceWindow = new cdk.CfnParameter(stack, 'InstanceWindow', { type: 'String' }).valueAsString;
+
+    // WHEN / THEN
+    expect(() => new DatabaseCluster(stack, 'Database', {
+      masterUser: { username: 'admin' },
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
+      preferredMaintenanceWindow: clusterWindow,
+      instanceMaintenanceWindow: instanceWindow,
+    })).not.toThrow();
   });
 
   test('can configure CloudWatchLogs for audit', () => {
@@ -1245,6 +1374,307 @@ describe('DatabaseCluster', () => {
           engineVersion: '3.6.0',
         });
       }).toThrow("I/O-optimized storage is supported starting with engine version 5.0.0, got '3.6.0'");
+    });
+  });
+
+  describe('serverless clusters', () => {
+    test('can create a serverless cluster', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        masterUser: {
+          username: 'admin',
+          password: cdk.SecretValue.unsafePlainText('tooshort'),
+        },
+        vpc,
+        serverlessV2ScalingConfiguration: {
+          minCapacity: 0.5,
+          maxCapacity: 1,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
+        ServerlessV2ScalingConfiguration: {
+          MinCapacity: 0.5,
+          MaxCapacity: 1,
+        },
+      });
+      // Should not create any instances
+      Template.fromStack(stack).resourceCountIs('AWS::DocDB::DBInstance', 0);
+    });
+
+    test('serverless cluster has empty instance arrays', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      const cluster = new DatabaseCluster(stack, 'Database', {
+        masterUser: {
+          username: 'admin',
+        },
+        vpc,
+        serverlessV2ScalingConfiguration: {
+          minCapacity: 0.5,
+          maxCapacity: 2,
+        },
+      });
+
+      // THEN
+      expect(cluster.instanceIdentifiers).toEqual([]);
+      expect(cluster.instanceEndpoints).toEqual([]);
+    });
+
+    test('cannot specify instanceType with serverless configuration', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN/THEN
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          masterUser: {
+            username: 'admin',
+          },
+          vpc,
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+          serverlessV2ScalingConfiguration: {
+            minCapacity: 0.5,
+            maxCapacity: 1,
+          },
+        });
+      }).toThrow('Cannot specify both instanceType and serverlessV2ScalingConfiguration');
+    });
+
+    test('provisioned cluster requires instanceType', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN/THEN
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          masterUser: {
+            username: 'admin',
+          },
+          vpc,
+        });
+      }).toThrow('Either instanceType (for provisioned clusters) or serverlessV2ScalingConfiguration (for serverless clusters) must be specified');
+    });
+
+    test('serverless cluster with all configuration options', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        masterUser: {
+          username: 'admin',
+        },
+        vpc,
+        serverlessV2ScalingConfiguration: {
+          minCapacity: 1,
+          maxCapacity: 4,
+        },
+        engineVersion: '5.0.0',
+        deletionProtection: true,
+        exportAuditLogsToCloudWatch: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
+        ServerlessV2ScalingConfiguration: {
+          MinCapacity: 1,
+          MaxCapacity: 4,
+        },
+        EngineVersion: '5.0.0',
+        DeletionProtection: true,
+        EnableCloudwatchLogsExports: ['audit'],
+      });
+    });
+
+    test('serverless cluster requires engine version 5.0.0 or higher', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN/THEN
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          masterUser: {
+            username: 'admin',
+          },
+          vpc,
+          serverlessV2ScalingConfiguration: {
+            minCapacity: 0.5,
+            maxCapacity: 1,
+          },
+          engineVersion: '4.0.0',
+        });
+      }).toThrow("DocumentDB serverless requires engine version 5.0.0 or higher, got '4.0.0'");
+    });
+
+    test('serverless cluster allows engine version 5.0.0', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        masterUser: {
+          username: 'admin',
+        },
+        vpc,
+        serverlessV2ScalingConfiguration: {
+          minCapacity: 0.5,
+          maxCapacity: 1,
+        },
+        engineVersion: '5.0.0',
+      });
+
+      // THEN - should not throw
+      Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
+        EngineVersion: '5.0.0',
+        ServerlessV2ScalingConfiguration: {
+          MinCapacity: 0.5,
+          MaxCapacity: 1,
+        },
+      });
+    });
+  });
+
+  describe('manageMasterUserPassword', () => {
+    test('can create cluster with manageMasterUserPassword enabled', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        manageMasterUserPassword: true,
+        masterUser: {
+          username: 'admin',
+        },
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
+        ManageMasterUserPassword: true,
+        MasterUsername: 'admin',
+        MasterUserPassword: Match.absent(),
+      });
+      // The construct must not create its own secret when the password is managed by the service
+      Template.fromStack(stack).resourceCountIs('AWS::SecretsManager::Secret', 0);
+    });
+
+    test('can specify KMS key for managed master user password', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const key = new kms.Key(stack, 'Key');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        manageMasterUserPassword: true,
+        masterUser: {
+          username: 'admin',
+        },
+        masterUserSecretKmsKey: key,
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
+        ManageMasterUserPassword: true,
+        MasterUserSecretKmsKeyId: {
+          'Fn::GetAtt': ['Key961B73FD', 'Arn'],
+        },
+      });
+    });
+
+    test('throws error when manageMasterUserPassword is true but masterUser.password is specified', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN/THEN
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          manageMasterUserPassword: true,
+          masterUser: {
+            username: 'admin',
+            password: cdk.SecretValue.unsafePlainText('password'),
+          },
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+          vpc,
+        });
+      }).toThrow('You can\'t manage the master user password with AWS Secrets Manager if masterUser.password is specified');
+    });
+
+    test('throws error when masterUserSecretKmsKey is specified but manageMasterUserPassword is false', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const key = new kms.Key(stack, 'Key');
+
+      // WHEN/THEN
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          masterUser: {
+            username: 'admin',
+          },
+          masterUserSecretKmsKey: key,
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+          vpc,
+        });
+      }).toThrow('masterUserSecretKmsKey is valid only if manageMasterUserPassword is true');
+    });
+
+    test('fails when addRotationSingleUser is called with manageMasterUserPassword enabled', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const cluster = new DatabaseCluster(stack, 'Database', {
+        manageMasterUserPassword: true,
+        masterUser: {
+          username: 'admin',
+        },
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      });
+
+      // WHEN/THEN
+      expect(() => {
+        cluster.addRotationSingleUser();
+      }).toThrow('Cannot add rotation when `manageMasterUserPassword` is enabled. Amazon DocumentDB automatically rotates the master password when it manages the secret.');
+    });
+
+    test('fails when addRotationMultiUser is called with manageMasterUserPassword enabled', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const cluster = new DatabaseCluster(stack, 'Database', {
+        manageMasterUserPassword: true,
+        masterUser: {
+          username: 'admin',
+        },
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      });
+      const userSecret = new DatabaseSecret(stack, 'UserSecret', { username: 'myuser' });
+
+      // WHEN/THEN
+      expect(() => {
+        cluster.addRotationMultiUser('MyUser', { secret: userSecret });
+      }).toThrow('Cannot add rotation when `manageMasterUserPassword` is enabled. Amazon DocumentDB automatically rotates the master password when it manages the secret.');
     });
   });
 });

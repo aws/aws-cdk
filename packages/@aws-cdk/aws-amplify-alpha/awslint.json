@@ -1,5 +1,19 @@
 {
-    "exclude": [
-        "construct-ctor-props-optional:@aws-cdk/aws-amplify-alpha.App"
-    ]
+  "exclude": [
+    "construct-ctor-props-optional:@aws-cdk/aws-amplify-alpha.App",
+    "prefer-ref-interface:@aws-cdk/aws-amplify-alpha.BranchOptions.computeRole",
+    "prefer-ref-interface:@aws-cdk/aws-amplify-alpha.DomainOptions.customCertificate",
+    "prefer-ref-interface:@aws-cdk/aws-amplify-alpha.SubDomain.branch",
+    "prefer-ref-interface:@aws-cdk/aws-amplify-alpha.AppProps.computeRole",
+    "prefer-ref-interface:@aws-cdk/aws-amplify-alpha.AppProps.role",
+    "prefer-ref-interface:@aws-cdk/aws-amplify-alpha.BranchProps.computeRole",
+    "prefer-ref-interface:@aws-cdk/aws-amplify-alpha.BranchProps.app",
+    "prefer-ref-interface:@aws-cdk/aws-amplify-alpha.Domain.mapRoot.branch",
+    "prefer-ref-interface:@aws-cdk/aws-amplify-alpha.Domain.mapSubDomain.branch",
+    "prefer-ref-interface:@aws-cdk/aws-amplify-alpha.DomainProps.customCertificate",
+    "prefer-ref-interface:@aws-cdk/aws-amplify-alpha.DomainProps.app",
+    "prefer-ref-interface:@aws-cdk/aws-amplify-alpha.DomainProps.autoSubDomainIamRole",
+    "interface-extends-ref:@aws-cdk/aws-amplify-alpha.IApp",
+    "interface-extends-ref:@aws-cdk/aws-amplify-alpha.IBranch"
+  ]
 }

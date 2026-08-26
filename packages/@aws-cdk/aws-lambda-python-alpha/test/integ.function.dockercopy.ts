@@ -2,10 +2,11 @@
 // python bundling changes the asset hash pretty frequently
 /// !cdk-integ pragma:disable-update-workflow
 import * as path from 'path';
-import { Runtime } from 'aws-cdk-lib/aws-lambda';
-import { App, CfnOutput, Stack, StackProps, BundlingFileAccess } from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, CfnOutput, Stack, BundlingFileAccess } from 'aws-cdk-lib';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import type { Construct } from 'constructs';
 import * as lambda from '../lib';
 
 /*
@@ -20,7 +21,7 @@ class TestStack extends Stack {
 
     const fn = new lambda.PythonFunction(this, 'my_handler', {
       entry: path.join(__dirname, 'lambda-handler-dockercopy'),
-      runtime: Runtime.PYTHON_3_9,
+      runtime: Runtime.PYTHON_3_10,
       bundling: {
         bundlingFileAccess: BundlingFileAccess.VOLUME_COPY,
       },
@@ -33,7 +34,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const testCase = new TestStack(app, 'integ-lambda-python-function-dockercopy');
 const integ = new IntegTest(app, 'lambda-python-function-dockercopy', {
   testCases: [testCase],

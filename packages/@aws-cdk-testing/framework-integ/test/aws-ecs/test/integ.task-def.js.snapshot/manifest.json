@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "aws-ecs-task-def.assets": {
       "type": "cdk:asset-manifest",
@@ -47,7 +47,12 @@
         "/aws-ecs-task-def/TaskDef/TaskRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
           }
         ],
         "/aws-ecs-task-def/TaskDef/TaskRole/ImportTaskRole": [
@@ -137,5 +142,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

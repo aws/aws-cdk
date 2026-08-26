@@ -1,12 +1,16 @@
 import { Construct } from 'constructs';
-import { IWebSocketApi } from './api';
-import { IWebSocketRouteAuthorizer, WebSocketNoneAuthorizer } from './authorizer';
-import { WebSocketRouteIntegration } from './integration';
+import type { IWebSocketApi } from './api';
+import type { IWebSocketRouteAuthorizer } from './authorizer';
+import { WebSocketNoneAuthorizer } from './authorizer';
+import type { WebSocketRouteIntegration } from './integration';
+import type { RouteReference } from '.././index';
 import { CfnRoute, CfnRouteResponse } from '.././index';
 import { Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
-import { IRoute } from '../common';
+import { lit } from '../../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import type { IRoute } from '../common';
 
 /**
  * Represents a Route for an WebSocket API.
@@ -73,7 +77,13 @@ export interface WebSocketRouteProps extends WebSocketRouteOptions {
  * Route class that creates the Route for API Gateway WebSocket API
  * @resource AWS::ApiGatewayV2::Route
  */
+@propertyInjectable
 export class WebSocketRoute extends Resource implements IWebSocketRoute {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.WebSocketRoute';
+
   public readonly routeId: string;
   public readonly webSocketApi: IWebSocketApi;
   public readonly routeKey: string;
@@ -89,7 +99,7 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
     addConstructMetadata(this, props);
 
     if (props.routeKey != '$connect' && props.authorizer) {
-      throw new ValidationError('You can only set a WebSocket authorizer to a $connect route.', scope);
+      throw new ValidationError(lit`SetWebSocketAuthorizerConnect`, 'You can only set a WebSocket authorizer to a $connect route.', scope);
     }
 
     this.webSocketApi = props.webSocketApi;
@@ -123,5 +133,12 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
         routeResponseKey: '$default',
       });
     }
+  }
+
+  public get routeRef(): RouteReference {
+    return {
+      apiId: this.webSocketApi.apiRef.apiId,
+      routeId: this.routeId,
+    };
   }
 }

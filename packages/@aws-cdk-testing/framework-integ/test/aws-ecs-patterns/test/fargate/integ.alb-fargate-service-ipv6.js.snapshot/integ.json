@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "testCases": {
     "albFargateServiceTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "albFargateServiceTest/DefaultTest/DeployAssert",
       "assertionStackName": "albFargateServiceTestDefaultTestDeployAssert11CD2C41"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

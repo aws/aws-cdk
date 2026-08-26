@@ -1,13 +1,29 @@
 /* eslint no-bitwise: ["error", { "allow": ["~", "|", "<<", "&"] }] */
 
-import { ISubnet } from 'aws-cdk-lib/aws-ec2';
+import type { ISubnet, ISubnetRef } from 'aws-cdk-lib/aws-ec2';
+import { SubnetType } from 'aws-cdk-lib/aws-ec2';
+
+/**
+ * The default names for every subnet type
+ */
+export function defaultSubnetName(type: SubnetType) {
+  switch (type) {
+    case SubnetType.PUBLIC: return 'Public';
+    case SubnetType.PRIVATE_WITH_NAT:
+    case SubnetType.PRIVATE_WITH_EGRESS:
+      return 'Private';
+    case SubnetType.PRIVATE_ISOLATED:
+      return 'Isolated';
+  }
+  return undefined;
+}
 
 /**
  * Return a subnet name from its construct ID
  *
  * All subnet names look like NAME <> "Subnet" <> INDEX
  */
-export function subnetGroupNameFromConstructId(subnet: ISubnet) {
+export function subnetGroupNameFromConstructId(subnet: ISubnetRef) {
   return subnet.node.id.replace(/Subnet\d+$/, '');
 }
 
@@ -200,8 +216,8 @@ export class CidrBlock {
    * then the next available block will be returned. For example, if
    * `10.0.3.1/28` is given the returned block will represent `10.0.3.16/28`.
    */
-  constructor(cidr: string)
-  constructor(ipAddress: number, mask: number)
+  constructor(cidr: string);
+  constructor(ipAddress: number, mask: number);
   constructor(ipAddressOrCidr: string | number, mask?: number) {
     if (typeof ipAddressOrCidr === 'string') {
       this.mask = parseInt(ipAddressOrCidr.split('/')[1], 10);
@@ -423,7 +439,6 @@ export class CidrBlockIpv6 {
     const blocks = this.parseBigIntParts(ipv6Address);
     let ipv6Number = BigInt(0);
     for (const block of blocks) {
-      /* tslint:disable:no-bitwise */
       ipv6Number = (ipv6Number << BigInt(16)) + block;
     }
     return ipv6Number;

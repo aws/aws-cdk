@@ -1,0 +1,34 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f": {
+      "displayName": "integ-aurora-serverlessv2-cluster-autopause/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
+      "source": {
+        "path": "asset.55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-65a3ca72": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "c437370792e7f3153e7b8a05d6b36bcd6e17d36ccdb54de0ea11e46a2c6c6b66": {
+      "displayName": "integ-aurora-serverlessv2-cluster-autopause Template",
+      "source": {
+        "path": "integ-aurora-serverlessv2-cluster-autopause.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-7cb341e5": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c437370792e7f3153e7b8a05d6b36bcd6e17d36ccdb54de0ea11e46a2c6c6b66.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

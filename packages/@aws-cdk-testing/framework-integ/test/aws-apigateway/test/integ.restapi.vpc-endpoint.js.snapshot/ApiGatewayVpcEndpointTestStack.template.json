@@ -931,7 +931,10 @@
    },
    "DependsOn": [
     "ApiGET9257B917"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "ApiDeploymentStageprod3EB9684E": {
    "Type": "AWS::ApiGateway::Stage",

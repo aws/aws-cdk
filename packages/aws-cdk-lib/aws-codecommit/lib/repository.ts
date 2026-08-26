@@ -1,12 +1,20 @@
-import { Construct } from 'constructs';
-import { Code } from './code';
+import type { Construct } from 'constructs';
+import type { Code } from './code';
+import { RepositoryGrants } from './codecommit-grants.generated';
+import type { IRepositoryRef, RepositoryReference } from './codecommit.generated';
 import { CfnRepository } from './codecommit.generated';
 import * as notifications from '../../aws-codestarnotifications';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { ArnFormat, IResource, Lazy, Resource, Stack, ValidationError } from '../../core';
+import type * as kms from '../../aws-kms';
+import type { IResource } from '../../core';
+import { ArnFormat, Resource, Stack, ValidationError } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Additional options to pass to the notification rule.
@@ -20,7 +28,7 @@ export interface RepositoryNotifyOnOptions extends notifications.NotificationRul
   readonly events: RepositoryNotificationEvents[];
 }
 
-export interface IRepository extends IResource, notifications.INotificationRuleSource {
+export interface IRepository extends IResource, notifications.INotificationRuleSource, IRepositoryRef {
   /**
    * The ARN of this Repository.
    * @attribute
@@ -132,7 +140,7 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
    * events specified by you are emitted. Similar to `onEvent` API.
    *
    * You can also use the methods to define rules for the specific event emitted.
-   * eg: `notifyOnPullRequstCreated`.
+   * e.g. `notifyOnPullRequestCreated`.
    *
    * @returns CodeStar Notifications rule associated with this repository.
    */
@@ -253,6 +261,18 @@ abstract class RepositoryBase extends Resource implements IRepository {
   public abstract readonly repositoryCloneUrlGrc: string;
 
   /**
+   * Collection of grant methods for a Repository
+   */
+  public readonly grants = RepositoryGrants.fromRepository(this);
+
+  public get repositoryRef(): RepositoryReference {
+    return {
+      repositoryId: this.repositoryName,
+      repositoryArn: this.repositoryArn,
+    };
+  }
+
+  /**
    * Defines a CloudWatch event rule which triggers for repository events. Use
    * `rule.addEventPattern(pattern)` to specify a filter.
    */
@@ -346,6 +366,9 @@ abstract class RepositoryBase extends Resource implements IRepository {
     return rule;
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee,
@@ -354,22 +377,34 @@ abstract class RepositoryBase extends Resource implements IRepository {
     });
   }
 
+  /**
+   *
+   * The use of this method is discouraged. Please use `grants.pull()` instead.
+   *
+   * [disable-awslint:no-grants]
+   */
   public grantPull(grantee: iam.IGrantable) {
-    return this.grant(grantee, 'codecommit:GitPull');
+    return this.grants.pull(grantee);
   }
 
+  /**
+   *
+   * The use of this method is discouraged. Please use `grants.pullPush()` instead.
+   *
+   * [disable-awslint:no-grants]
+   */
   public grantPullPush(grantee: iam.IGrantable) {
-    this.grantPull(grantee);
-    return this.grant(grantee, 'codecommit:GitPush');
+    return this.grants.pullPush(grantee);
   }
 
+  /**
+   *
+   * The use of this method is discouraged. Please use `grants.read()` instead.
+   *
+   * [disable-awslint:no-grants]
+   */
   public grantRead(grantee: iam.IGrantable) {
-    this.grantPull(grantee);
-    return this.grant(grantee,
-      'codecommit:EvaluatePullRequestApprovalRules',
-      'codecommit:Get*',
-      'codecommit:Describe*',
-    );
+    return this.grants.read(grantee);
   }
 
   public notifyOn(
@@ -504,13 +539,18 @@ export interface RepositoryProps {
    *
    * @default - Use an AWS managed key
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKeyRef;
 }
 
 /**
  * Provides a CodeCommit Repository.
  */
+@propertyInjectable
+@noBoxStackTraces
 export class Repository extends RepositoryBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codecommit.Repository';
+
   /**
    * Imports a codecommit repository.
    * @param repositoryArn (e.g. `arn:aws:codecommit:us-east-1:123456789012:MyDemoRepo`)
@@ -552,12 +592,36 @@ export class Repository extends RepositoryBase {
     return new Import(scope, id);
   }
 
-  public readonly repositoryArn: string;
-  public readonly repositoryName: string;
-  public readonly repositoryCloneUrlHttp: string;
-  public readonly repositoryCloneUrlSsh: string;
-  public readonly repositoryCloneUrlGrc: string;
-  private readonly triggers = new Array<CfnRepository.RepositoryTriggerProperty>();
+  private readonly resource: CfnRepository;
+  private readonly _triggers: IArrayBox<CfnRepository.RepositoryTriggerProperty>;
+
+  @memoizedGetter
+  public get repositoryArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'codecommit',
+      resource: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get repositoryName(): string {
+    return this.getResourceNameAttribute(this.resource.attrName);
+  }
+
+  @memoizedGetter
+  public get repositoryCloneUrlHttp(): string {
+    return this.resource.attrCloneUrlHttp;
+  }
+
+  @memoizedGetter
+  public get repositoryCloneUrlSsh(): string {
+    return this.resource.attrCloneUrlSsh;
+  }
+
+  @memoizedGetter
+  public get repositoryCloneUrlGrc(): string {
+    return makeCloneUrl(Stack.of(this), this.repositoryName, 'grc');
+  }
 
   constructor(scope: Construct, id: string, props: RepositoryProps) {
     super(scope, id, {
@@ -566,22 +630,15 @@ export class Repository extends RepositoryBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    const repository = new CfnRepository(this, 'Resource', {
+    this._triggers = Box.fromArray();
+
+    this.resource = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,
       repositoryDescription: props.description,
-      triggers: Lazy.any({ produce: () => this.triggers }, { omitEmptyArray: true }),
+      triggers: this._triggers,
       code: (props.code?.bind(this))?.code,
-      kmsKeyId: props.kmsKey?.keyArn,
+      kmsKeyId: props.kmsKey?.keyRef.keyArn,
     });
-
-    this.repositoryName = this.getResourceNameAttribute(repository.attrName);
-    this.repositoryArn = this.getResourceArnAttribute(repository.attrArn, {
-      service: 'codecommit',
-      resource: this.physicalName,
-    });
-    this.repositoryCloneUrlHttp = repository.attrCloneUrlHttp;
-    this.repositoryCloneUrlSsh = repository.attrCloneUrlSsh;
-    this.repositoryCloneUrlGrc = makeCloneUrl(Stack.of(this), this.repositoryName, 'grc');
   }
 
   /**
@@ -604,11 +661,11 @@ export class Repository extends RepositoryBase {
       name = this.node.path + '/' + arn;
     }
 
-    if (this.triggers.find(prop => prop.name === name)) {
-      throw new ValidationError(`Unable to set repository trigger named ${name} because trigger names must be unique`, this);
+    if (this._triggers.find(prop => prop.name === name)) {
+      throw new ValidationError(lit`UnableSetRepositoryTriggerNamed`, `Unable to set repository trigger named ${name} because trigger names must be unique`, this);
     }
 
-    this.triggers.push({
+    this._triggers.push({
       destinationArn: arn,
       name,
       customData,

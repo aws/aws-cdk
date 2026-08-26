@@ -1,0 +1,183 @@
+{
+ "Resources": {
+  "ImageRecipe8C789631": {
+   "Type": "AWS::ImageBuilder::ImageRecipe",
+   "Properties": {
+    "Components": [
+     {
+      "ComponentArn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":imagebuilder:",
+         {
+          "Ref": "AWS::Region"
+         },
+         ":aws:component/simple-boot-test-linux/x.x.x"
+        ]
+       ]
+      }
+     }
+    ],
+    "Name": "aws-cdk-imagebuilder-image-ami-default-parameters-imagerecipe-4dc7de1d",
+    "ParentImage": "ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-x86_64",
+    "Version": "1.0.x"
+   }
+  },
+  "ImageAMIInfrastructureConfigurationInstanceProfileRole0924B388": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonSSMManagedInstanceCore"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/EC2InstanceProfileForImageBuilder"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "ImageAMIInfrastructureConfigurationInstanceProfile86F81848": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "ImageAMIInfrastructureConfigurationInstanceProfileRole0924B388"
+     }
+    ]
+   }
+  },
+  "ImageAMIInfrastructureConfigurationF8DF3185": {
+   "Type": "AWS::ImageBuilder::InfrastructureConfiguration",
+   "Properties": {
+    "InstanceMetadataOptions": {
+     "HttpPutResponseHopLimit": 2,
+     "HttpTokens": "required"
+    },
+    "InstanceProfileName": {
+     "Ref": "ImageAMIInfrastructureConfigurationInstanceProfile86F81848"
+    },
+    "Name": "aws-cdk-imagebuilder-image-ami-default-parameters-image-ami-infrastructureconfiguration-c64a3a03"
+   }
+  },
+  "ImageAMI977A6808": {
+   "Type": "AWS::ImageBuilder::Image",
+   "Properties": {
+    "ImageRecipeArn": {
+     "Fn::GetAtt": [
+      "ImageRecipe8C789631",
+      "Arn"
+     ]
+    },
+    "InfrastructureConfigurationArn": {
+     "Fn::GetAtt": [
+      "ImageAMIInfrastructureConfigurationF8DF3185",
+      "Arn"
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ImageArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ImageAMI977A6808",
+     "Arn"
+    ]
+   }
+  },
+  "ImageName": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ImageAMI977A6808",
+     "Name"
+    ]
+   }
+  },
+  "ImageVersion": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ImageRecipe8C789631",
+     "Version"
+    ]
+   }
+  },
+  "ImageId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ImageAMI977A6808",
+     "ImageId"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

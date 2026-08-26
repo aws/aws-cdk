@@ -1,12 +1,17 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { KinesisMetrics } from './kinesis-fixed-canned-metrics';
 import { CfnStream } from './kinesis.generated';
 import { ResourcePolicy } from './resource-policy';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, Aws, CfnCondition, Duration, Fn, IResolvable, IResource, RemovalPolicy, Resource, ResourceProps, Stack, Token } from '../../core';
+import type { Duration, IResolvable, IResource, RemovalPolicy, ResourceProps } from '../../core';
+import { ArnFormat, Aws, CfnCondition, Fn, Resource, Stack, Token, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IStreamRef, StreamReference } from '../../interfaces/generated/aws-kinesis-interfaces.generated';
 
 const READ_OPERATIONS = [
   'kinesis:DescribeStreamSummary',
@@ -32,9 +37,56 @@ const WRITE_OPERATIONS = [
 ];
 
 /**
+ * Enhanced shard-level metrics
+ *
+ * @see https://docs.aws.amazon.com/streams/latest/dev/monitoring-with-cloudwatch.html#kinesis-metrics-shard
+ */
+export enum ShardLevelMetrics {
+  /**
+   * The number of bytes successfully put to the shard over the specified time period.
+   */
+  INCOMING_BYTES = 'IncomingBytes',
+
+  /**
+   * The number of records successfully put to the shard over the specified time period.
+   */
+  INCOMING_RECORDS = 'IncomingRecords',
+
+  /**
+   * The age of the last record in all GetRecords calls made against a shard, measured over the specified time period.
+   */
+  ITERATOR_AGE_MILLISECONDS = 'IteratorAgeMilliseconds',
+
+  /**
+   * The number of bytes retrieved from the shard, measured over the specified time period.
+   */
+  OUTGOING_BYTES = 'OutgoingBytes',
+
+  /**
+   * The number of records retrieved from the shard, measured over the specified time period.
+   */
+  OUTGOING_RECORDS = 'OutgoingRecords',
+
+  /**
+   * The number of GetRecords calls throttled for the shard over the specified time period.
+   */
+  READ_PROVISIONED_THROUGHPUT_EXCEEDED = 'ReadProvisionedThroughputExceeded',
+
+  /**
+   * The number of records rejected due to throttling for the shard over the specified time period.
+   */
+  WRITE_PROVISIONED_THROUGHPUT_EXCEEDED = 'WriteProvisionedThroughputExceeded',
+
+  /**
+   * All metrics
+   */
+  ALL = 'ALL',
+}
+
+/**
  * A Kinesis Stream
  */
-export interface IStream extends IResource {
+export interface IStream extends IResource, IStreamRef {
   /**
    * The ARN of the stream.
    *
@@ -346,6 +398,16 @@ abstract class StreamBase extends Resource implements IStream {
   public abstract readonly encryptionKey?: kms.IKey;
 
   /**
+   * A reference to this stream.
+   */
+  public get streamRef(): StreamReference {
+    return {
+      streamName: this.streamName,
+      streamArn: this.streamArn,
+    };
+  }
+
+  /**
    * Indicates if a stream resource policy should automatically be created upon
    * the first call to `addToResourcePolicy`.
    *
@@ -386,6 +448,8 @@ abstract class StreamBase extends Resource implements IStream {
    *
    * If an encryption key is used, permission to ues the key to decrypt the
    * contents of the stream will also be granted.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantRead(grantee: iam.IGrantable) {
     const ret = this.grant(grantee, ...READ_OPERATIONS);
@@ -403,6 +467,8 @@ abstract class StreamBase extends Resource implements IStream {
    *
    * If an encryption key is used, permission to ues the key to encrypt the
    * contents of the stream will also be granted.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantWrite(grantee: iam.IGrantable) {
     const ret = this.grant(grantee, ...WRITE_OPERATIONS);
@@ -417,6 +483,8 @@ abstract class StreamBase extends Resource implements IStream {
    *
    * If an encryption key is used, permission to use the key for
    * encrypt/decrypt will also be granted.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantReadWrite(grantee: iam.IGrantable) {
     const ret = this.grant(grantee, ...Array.from(new Set([...READ_OPERATIONS, ...WRITE_OPERATIONS])));
@@ -427,6 +495,8 @@ abstract class StreamBase extends Resource implements IStream {
 
   /**
    * Grant the indicated permissions on this stream to the given IAM principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipalOrResource({
@@ -445,10 +515,7 @@ abstract class StreamBase extends Resource implements IStream {
           }
           return { statementAdded: false };
         },
-        node: this.node,
-        stack: this.stack,
         env: this.env,
-        applyRemovalPolicy: x => this.applyRemovalPolicy(x),
       },
     });
   }
@@ -784,12 +851,27 @@ export interface StreamProps {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * A list of shard-level metrics in properties to enable enhanced monitoring mode.
+   *
+   * @see https://docs.aws.amazon.com/streams/latest/dev/monitoring-with-cloudwatch.html#kinesis-metrics-shard
+   *
+   * @default undefined - AWS Kinesis default is disabled
+   */
+  readonly shardLevelMetrics?: ShardLevelMetrics[];
 }
 
 /**
  * A Kinesis stream. Can be encrypted with a KMS key.
  */
+@propertyInjectable
 export class Stream extends StreamBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-kinesis.Stream';
+
   /**
    * Import an existing Kinesis Stream provided an ARN
    *
@@ -822,13 +904,25 @@ export class Stream extends StreamBase {
     });
   }
 
-  public readonly streamArn: string;
-  public readonly streamName: string;
-  public readonly encryptionKey?: kms.IKey;
-
   private readonly stream: CfnStream;
 
+  public readonly encryptionKey?: kms.IKey;
+
   protected readonly autoCreatePolicy = true;
+
+  @memoizedGetter
+  public get streamArn(): string {
+    return this.getResourceArnAttribute(this.stream.attrArn, {
+      service: 'kinesis',
+      resource: 'stream',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get streamName(): string {
+    return this.getResourceNameAttribute(this.stream.ref);
+  }
 
   constructor(scope: Construct, id: string, props: StreamProps = {}) {
     super(scope, id, {
@@ -841,7 +935,7 @@ export class Stream extends StreamBase {
     const streamMode = props.streamMode;
 
     if (streamMode === StreamMode.ON_DEMAND && shardCount !== undefined) {
-      throw new Error(`streamMode must be set to ${StreamMode.PROVISIONED} (default) when specifying shardCount`);
+      throw new ValidationError(lit`StreamModeSet`, `streamMode must be set to ${StreamMode.PROVISIONED} (default) when specifying shardCount`, this);
     }
     if ((streamMode === StreamMode.PROVISIONED || streamMode === undefined) && shardCount === undefined) {
       shardCount = 1;
@@ -850,17 +944,29 @@ export class Stream extends StreamBase {
     const retentionPeriodHours = props.retentionPeriod?.toHours() ?? 24;
     if (!Token.isUnresolved(retentionPeriodHours)) {
       if (retentionPeriodHours < 24 || retentionPeriodHours > 8760) {
-        throw new Error(`retentionPeriod must be between 24 and 8760 hours. Received ${retentionPeriodHours}`);
+        throw new ValidationError(lit`RetentionPeriodHoursReceived`, `retentionPeriod must be between 24 and 8760 hours. Received ${retentionPeriodHours}`, this);
       }
     }
 
     const { streamEncryption, encryptionKey } = this.parseEncryption(props);
+
+    if (props.shardLevelMetrics) {
+      if (props.shardLevelMetrics.includes(ShardLevelMetrics.ALL) && props.shardLevelMetrics.length > 1) {
+        throw new ValidationError(lit`ShardLevelMetricsCannotInclude`, '`shardLevelMetrics` cannot include `ShardLevelMetrics.ALL` together with individual metrics, use either `ShardLevelMetrics.ALL` alone or specify individual metrics.', this);
+      }
+      // Check for duplicate items in shardLevelMetrics
+      const uniqueMetrics = new Set(props.shardLevelMetrics);
+      if (uniqueMetrics.size !== props.shardLevelMetrics.length) {
+        throw new ValidationError(lit`ShardLevelMetricsCannotContain`, 'shardLevelMetrics cannot contain duplicate items.', this);
+      }
+    }
 
     this.stream = new CfnStream(this, 'Resource', {
       name: this.physicalName,
       retentionPeriodHours,
       shardCount,
       streamEncryption,
+      desiredShardLevelMetrics: props.shardLevelMetrics,
       ...(props.streamMode !== undefined
         ? {
           streamModeDetails: { streamMode: props.streamMode },
@@ -868,13 +974,6 @@ export class Stream extends StreamBase {
         : undefined),
     });
     this.stream.applyRemovalPolicy(props.removalPolicy);
-
-    this.streamArn = this.getResourceArnAttribute(this.stream.attrArn, {
-      service: 'kinesis',
-      resource: 'stream',
-      resourceName: this.physicalName,
-    });
-    this.streamName = this.getResourceNameAttribute(this.stream.ref);
 
     this.encryptionKey = encryptionKey;
   }
@@ -915,7 +1014,7 @@ export class Stream extends StreamBase {
 
     // if encryption key is set, encryption must be set to KMS.
     if (encryptionType !== StreamEncryption.KMS && props.encryptionKey) {
-      throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
+      throw new ValidationError(lit`EncryptionkeySpecified`, `encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`, this);
     }
 
     if (encryptionType === StreamEncryption.UNENCRYPTED) {
@@ -939,7 +1038,7 @@ export class Stream extends StreamBase {
       return { encryptionKey, streamEncryption };
     }
 
-    throw new Error(`Unexpected 'encryptionType': ${encryptionType}`);
+    throw new ValidationError(lit`UnexpectedEncryptionType`, `Unexpected 'encryptionType': ${encryptionType}`, this);
   }
 }
 

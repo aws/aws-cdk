@@ -21,3 +21,10 @@ fi
 if ! (cd $cachedir && aws s3 cp ${S3_BUILD_CACHE} - | tar xzv); then
     echo "🧳⚠️  Something went wrong fetching the cache. Continuing anyway."
 fi
+
+if [ -f "$cachedir/build-info.json" ]; then
+    echo "🧳 Cache provenance"
+    cat "$cachedir/build-info.json"
+else
+    echo "🧳⚠️ No provenance attached to cache"
+fi

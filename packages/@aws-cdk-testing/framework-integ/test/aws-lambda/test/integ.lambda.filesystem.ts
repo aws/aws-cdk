@@ -1,9 +1,9 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as efs from 'aws-cdk-lib/aws-efs';
 import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-// eslint-disable-next-line import/no-extraneous-dependencies
+
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
 class EfsStack extends cdk.Stack {
@@ -148,7 +148,11 @@ class LambdaStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const efsStack = new EfsStack(app, 'aws-cdk-efs');
 

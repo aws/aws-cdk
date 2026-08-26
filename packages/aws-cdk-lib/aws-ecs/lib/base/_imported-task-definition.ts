@@ -1,10 +1,14 @@
-import { Construct } from 'constructs';
-import { Compatibility, NetworkMode, isEc2Compatible, isFargateCompatible, isExternalCompatible } from './task-definition';
-import { IRole } from '../../../aws-iam';
-import { Resource } from '../../../core';
+import type { Construct } from 'constructs';
+import type { NetworkMode } from './task-definition';
+import { Compatibility, isEc2Compatible, isFargateCompatible, isExternalCompatible, isManagedInstancesCompatible } from './task-definition';
+import type { IRole } from '../../../aws-iam';
+import { Resource, ValidationError } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
-import { IEc2TaskDefinition } from '../ec2/ec2-task-definition';
-import { IFargateTaskDefinition } from '../fargate/fargate-task-definition';
+import { lit } from '../../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import type { IEc2TaskDefinition } from '../ec2/ec2-task-definition';
+import type { TaskDefinitionReference } from '../ecs.generated';
+import type { IFargateTaskDefinition } from '../fargate/fargate-task-definition';
 
 /**
  * The properties of ImportedTaskDefinition
@@ -49,7 +53,10 @@ export interface ImportedTaskDefinitionProps {
 /**
  * Task definition reference of an imported task
  */
+@propertyInjectable
 export class ImportedTaskDefinition extends Resource implements IEc2TaskDefinition, IFargateTaskDefinition {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs.ImportedTaskDefinition';
   /**
    * What launch types this task definition should be compatible with.
    */
@@ -89,8 +96,8 @@ export class ImportedTaskDefinition extends Resource implements IEc2TaskDefiniti
 
   public get networkMode(): NetworkMode {
     if (this._networkMode == undefined) {
-      throw new Error('This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
-        'Add the \'networkMode\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
+      throw new ValidationError(lit`NetworkModeRequired`, 'This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
+        'Add the \'networkMode\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition', this);
     } else {
       return this._networkMode;
     }
@@ -98,8 +105,8 @@ export class ImportedTaskDefinition extends Resource implements IEc2TaskDefiniti
 
   public get taskRole(): IRole {
     if (this._taskRole == undefined) {
-      throw new Error('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
-        'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
+      throw new ValidationError(lit`TaskRoleRequired`, 'This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+        'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition', this);
     } else {
       return this._taskRole;
     }
@@ -124,5 +131,21 @@ export class ImportedTaskDefinition extends Resource implements IEc2TaskDefiniti
    */
   public get isExternalCompatible(): boolean {
     return isExternalCompatible(this.compatibility);
+  }
+
+  /**
+   * Return true if the task definition can be run on Managed Instances
+   */
+  public get isManagedInstancesCompatible(): boolean {
+    return isManagedInstancesCompatible(this.compatibility);
+  }
+
+  /**
+   * A reference to this task definition.
+   */
+  public get taskDefinitionRef(): TaskDefinitionReference {
+    return {
+      taskDefinitionArn: this.taskDefinitionArn,
+    };
   }
 }

@@ -1,8 +1,10 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { IResource, RemovalPolicy, Resource } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
 import { CfnDBSubnetGroup } from 'aws-cdk-lib/aws-neptune';
+import type { IResource, RemovalPolicy } from 'aws-cdk-lib/core';
+import { Resource } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
 
 /**
  * Interface for a subnet group.
@@ -59,7 +61,11 @@ export interface SubnetGroupProps {
  *
  * @resource AWS::Neptune::DBSubnetGroup
  */
+@propertyInjectable
 export class SubnetGroup extends Resource implements ISubnetGroup {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-neptune-alpha.SubnetGroup';
+
   /**
    * Imports an existing subnet group by name.
    */

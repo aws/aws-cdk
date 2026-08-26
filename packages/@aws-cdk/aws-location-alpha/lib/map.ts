@@ -1,9 +1,12 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { ArnFormat, IResource, Lazy, Resource, Stack, Token } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
 import { CfnMap } from 'aws-cdk-lib/aws-location';
-import { generateUniqueId } from './util';
+import type { IResource } from 'aws-cdk-lib/core';
+import { ArnFormat, Lazy, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import { generateUniqueId } from './util';
 
 /**
  * Represents the Amazon Location Service Map
@@ -220,7 +223,11 @@ export enum PoliticalView {
  *
  * @see https://docs.aws.amazon.com/location/latest/developerguide/map-concepts.html
  */
+@propertyInjectable
 export class Map extends Resource implements IMap {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-location-alpha.Map';
+
   /**
    * Use an existing map by name
    */
@@ -241,7 +248,7 @@ export class Map extends Resource implements IMap {
     const parsedArn = Stack.of(scope).splitArn(mapArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
-      throw new Error(`Map Arn ${mapArn} does not have a resource name.`);
+      throw new UnscopedValidationError(lit`MapArnMissingResourceName`, `Map Arn ${mapArn} does not have a resource name.`);
     }
 
     class Import extends Resource implements IMap {
@@ -274,25 +281,25 @@ export class Map extends Resource implements IMap {
   public readonly mapUpdateTime: string;
 
   constructor(scope: Construct, id: string, props: MapProps) {
-    if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
-      throw new Error(`\`description\` must be between 0 and 1000 characters, got: ${props.description.length} characters.`);
-    }
-
-    if (props.mapName !== undefined && !Token.isUnresolved(props.mapName)) {
-      if (props.mapName.length < 1 || props.mapName.length > 100) {
-        throw new Error(`\`mapName\` must be between 1 and 100 characters, got: ${props.mapName.length} characters.`);
-      }
-
-      if (!/^[-._\w]+$/.test(props.mapName)) {
-        throw new Error(`\`mapName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.mapName}.`);
-      }
-    }
-
     super(scope, id, {
       physicalName: props.mapName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
+      throw new ValidationError(lit`MapDescriptionTooLong`, `\`description\` must be between 0 and 1000 characters, got: ${props.description.length} characters.`, this);
+    }
+
+    if (props.mapName !== undefined && !Token.isUnresolved(props.mapName)) {
+      if (props.mapName.length < 1 || props.mapName.length > 100) {
+        throw new ValidationError(lit`MapNameInvalidLength`, `\`mapName\` must be between 1 and 100 characters, got: ${props.mapName.length} characters.`, this);
+      }
+
+      if (!/^[-._\w]+$/.test(props.mapName)) {
+        throw new ValidationError(lit`MapNameInvalidCharacters`, `\`mapName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.mapName}.`, this);
+      }
+    }
 
     const map = new CfnMap(this, 'Resource', {
       configuration: {
@@ -312,6 +319,7 @@ export class Map extends Resource implements IMap {
 
   /**
    * Grant the given principal identity permissions to perform the actions on this map.
+   * [disable-awslint:no-grants]
    */
   @MethodMetadata()
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
@@ -324,6 +332,7 @@ export class Map extends Resource implements IMap {
 
   /**
    * Grant the given identity permissions to rendering a map resource
+   * [disable-awslint:no-grants]
    * @See https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-get-map-tiles
    */
   @MethodMetadata()

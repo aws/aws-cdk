@@ -3,25 +3,41 @@ import { Function, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as path from 'path';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new Stack(app, 'aws-cdk-lambda-runtime-fromasset');
 
-const lambdaFunction = new Function(stack, 'MyFunction', {
-  runtime: Runtime.JAVA_21,
-  handler: 'com.mycompany.app.LambdaMethodHandler::handleRequest',
-  code: Code.fromAsset(path.join(__dirname, 'my-app-1.0-SNAPSHOT.zip')),
+const runtimes = [
+  Runtime.JAVA_21,
+  Runtime.JAVA_25,
+  Runtime.JAVA_8_AL2023,
+  Runtime.JAVA_11_AL2023,
+  Runtime.JAVA_17_AL2023,
+];
+
+const functions = runtimes.map((runtime) => {
+  return new Function(stack, `MyFunction-${runtime.name}`, {
+    runtime,
+    handler: 'com.mycompany.app.LambdaMethodHandler::handleRequest',
+    code: Code.fromAsset(path.join(__dirname, 'my-app-1.0-SNAPSHOT.zip')),
+  });
 });
 
 const integTest = new integ.IntegTest(app, 'Integ', { testCases: [stack] });
 
-const invoke = integTest.assertions.invokeFunction({
-  functionName: lambdaFunction.functionName,
-  payload: '123',
-});
+for (const fn of functions) {
+  const invoke = integTest.assertions.invokeFunction({
+    functionName: fn.functionName,
+    payload: '123',
+  });
 
-invoke.expect(integ.ExpectedResult.objectLike({
-  Payload: '"123"',
-}));
+  invoke.expect(integ.ExpectedResult.objectLike({
+    Payload: '"123"',
+  }));
+}
 
 app.synth();
 

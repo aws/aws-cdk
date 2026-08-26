@@ -1,12 +1,16 @@
 import { Match, Template } from '../../../assertions';
 import { Certificate } from '../../../aws-certificatemanager';
-import { Metric } from '../../../aws-cloudwatch';
+import type { Metric } from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import { Duration, Stack } from '../../../core';
+import type {
+  HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig,
+  HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer,
+} from '../../lib';
 import {
   CorsHttpMethod, DomainName,
-  HttpApi, HttpAuthorizer, HttpIntegrationType, HttpMethod, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig,
-  HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer, HttpRouteIntegration, HttpNoneAuthorizer, PayloadFormatVersion,
+  HttpApi, HttpAuthorizer, HttpIntegrationType, HttpMethod, HttpRouteIntegration, HttpNoneAuthorizer, PayloadFormatVersion,
+  IpAddressType,
 } from '../../lib';
 
 describe('HttpApi', () => {
@@ -205,6 +209,19 @@ describe('HttpApi', () => {
       expect(countMetric.metricName).toEqual(metricName);
       expect(countMetric.dimensions).toEqual({ ApiId: apiId });
       expect(countMetric.statistic).toEqual(statistic);
+    });
+  });
+
+  test.each([IpAddressType.IPV4, IpAddressType.DUAL_STACK])('ipAddressType is set', (ipAddressType) => {
+    const stack = new Stack();
+    new HttpApi(stack, 'api', {
+      ipAddressType,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
+      Name: 'api',
+      ProtocolType: 'HTTP',
+      IpAddressType: ipAddressType,
     });
   });
 

@@ -1,10 +1,14 @@
-import { Construct } from 'constructs';
-import { Bucket, IBucket } from './bucket';
+import type { Construct } from 'constructs';
+import type { IBucket } from './bucket';
+import { Bucket } from './bucket';
+import type { BucketPolicyReference, IBucketPolicyRef } from './s3.generated';
 import { CfnBucket, CfnBucketPolicy } from './s3.generated';
 import { PolicyDocument } from '../../aws-iam';
-import { RemovalPolicy, Resource, Token, Tokenization } from '../../core';
+import type { RemovalPolicy } from '../../core';
+import { Resource, Token, Tokenization, Validations } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface BucketPolicyProps {
   /**
@@ -18,6 +22,13 @@ export interface BucketPolicyProps {
    * @default - RemovalPolicy.DESTROY.
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Policy document to apply to the bucket.
+   *
+   * @default - A new empty PolicyDocument will be created.
+   */
+  readonly document?: PolicyDocument;
 }
 
 /**
@@ -47,7 +58,11 @@ export interface BucketPolicyProps {
  * new permissions to existing policy.
  *
  */
-export class BucketPolicy extends Resource {
+@propertyInjectable
+export class BucketPolicy extends Resource implements IBucketPolicyRef {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-s3.BucketPolicy';
+
   /**
    * Create a mutable `BucketPolicy` from a `CfnBucketPolicy`.
    */
@@ -78,22 +93,25 @@ export class BucketPolicy extends Resource {
       bucket = Bucket.fromBucketName(cfnBucketPolicy, '@FromCfnBucket', cfnBucketPolicy.bucket);
     }
 
-    const ret = new class extends BucketPolicy {
-      public readonly document = PolicyDocument.fromJson(cfnBucketPolicy.policyDocument);
-    }(cfnBucketPolicy, id, {
+    const ret = new BucketPolicy(cfnBucketPolicy, id, {
       bucket,
+      document: PolicyDocument.fromJson(cfnBucketPolicy.policyDocument),
     });
+    Validations.of(ret).acknowledge({ id: 'CloudFormation-Validate::E3019', reason: 'We are intentionally creating a duplicate resource' });
+
     // mark the Bucket as having this Policy
     bucket.policy = ret;
     return ret;
   }
+
+  public readonly bucketPolicyRef: BucketPolicyReference;
 
   /**
    * A policy document containing permissions to add to the specified bucket.
    * For more information, see Access Policy Language Overview in the Amazon
    * Simple Storage Service Developer Guide.
    */
-  public readonly document = new PolicyDocument();
+  public readonly document: PolicyDocument;
 
   /** The Bucket this Policy applies to. */
   public readonly bucket: IBucket;
@@ -106,11 +124,13 @@ export class BucketPolicy extends Resource {
     addConstructMetadata(this, props);
 
     this.bucket = props.bucket;
+    this.document = props.document ?? new PolicyDocument();
 
     this.resource = new CfnBucketPolicy(this, 'Resource', {
       bucket: this.bucket.bucketName,
       policyDocument: this.document,
     });
+    this.bucketPolicyRef = this.resource.bucketPolicyRef;
 
     if (props.removalPolicy) {
       this.resource.applyRemovalPolicy(props.removalPolicy);

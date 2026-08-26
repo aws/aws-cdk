@@ -1,21 +1,46 @@
+
 import * as fs from 'fs';
 import * as path from 'path';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Template } from '../../../assertions';
 import * as cxapi from '../../../cx-api';
-import { App, AssetStaging, CustomResourceProvider, DockerImageAssetLocation, DockerImageAssetSource, Duration, FileAssetLocation, FileAssetSource, ISynthesisSession, Size, Stack, CfnResource, determineLatestNodeRuntimeName, CustomResourceProviderBase, CustomResourceProviderBaseProps, CustomResourceProviderOptions, CustomResourceProviderRuntime } from '../../lib';
+import type {
+  AssetStaging,
+  DockerImageAssetLocation,
+  DockerImageAssetSource,
+  FileAssetLocation,
+  FileAssetSource,
+  ISynthesisSession,
+  CustomResourceProviderOptions,
+} from '../../lib';
+import {
+  Validations,
+  App,
+  CustomResourceProvider,
+  Duration,
+  Size,
+  Stack,
+  CfnResource,
+  determineLatestNodeRuntimeName,
+  CustomResourceProviderBase,
+  CustomResourceProviderRuntime,
+} from '../../lib';
 import { CUSTOMIZE_ROLES_CONTEXT_KEY } from '../../lib/helpers-internal';
 import { toCloudFormation } from '../util';
 
 const TEST_HANDLER = `${__dirname}/mock-provider`;
 // current node runtime available in ALL AWS regions
-const DEFAULT_PROVIDER_RUNTIME = CustomResourceProviderRuntime.NODEJS_18_X;
+const DEFAULT_PROVIDER_RUNTIME = CustomResourceProviderRuntime.NODEJS_20_X;
 
 describe('custom resource provider', () => {
   describe('customize roles', () => {
     test('role is not created if preventSynthesis!=false', () => {
       // GIVEN
       const app = new App();
+      Validations.of(app).acknowledge({
+        id: 'CloudFormation-Validate::W2531',
+        reason: 'The specific Node.js version used as the runtime for the custom resource does not matter for this test',
+      });
       const stack = new Stack(app, 'MyStack');
       stack.node.setContext(CUSTOMIZE_ROLES_CONTEXT_KEY, {
         usePrecreatedRoles: {
@@ -95,6 +120,10 @@ describe('custom resource provider', () => {
     test('role is created if preventSynthesis=false', () => {
       // GIVEN
       const app = new App();
+      Validations.of(app).acknowledge({
+        id: 'CloudFormation-Validate::W2531',
+        reason: 'The specific Node.js version used as the runtime for the custom resource does not matter for this test',
+      });
       const stack = new Stack(app, 'MyStack');
       stack.node.setContext(CUSTOMIZE_ROLES_CONTEXT_KEY, {
         preventSynthesis: false,
@@ -178,7 +207,6 @@ describe('custom resource provider', () => {
     // it up from the output.
     const staging = stack.node.tryFindChild('Custom:MyResourceTypeCustomResourceProvider')?.node.tryFindChild('Staging') as AssetStaging;
     const assetHash = staging.assetHash;
-    const sourcePath = staging.sourcePath;
     const paramNames = Object.keys(cfn.Parameters);
     const bucketParam = paramNames[0];
     const keyParam = paramNames[1];
@@ -463,124 +491,11 @@ describe('latest Lambda node runtime', () => {
     TestCustomResourceProvider.getOrCreateProvider(stack, 'TestCrProvider');
 
     // THEN
-    Template.fromStack(stack).hasMapping('LatestNodeRuntimeMap', {
-      'af-south-1': {
-        value: 'nodejs20.x',
-      },
-      'ap-east-1': {
-        value: 'nodejs20.x',
-      },
-      'ap-northeast-1': {
-        value: 'nodejs20.x',
-      },
-      'ap-northeast-2': {
-        value: 'nodejs20.x',
-      },
-      'ap-northeast-3': {
-        value: 'nodejs20.x',
-      },
-      'ap-south-1': {
-        value: 'nodejs20.x',
-      },
-      'ap-south-2': {
-        value: 'nodejs20.x',
-      },
-      'ap-southeast-1': {
-        value: 'nodejs20.x',
-      },
-      'ap-southeast-2': {
-        value: 'nodejs20.x',
-      },
-      'ap-southeast-3': {
-        value: 'nodejs20.x',
-      },
-      'ap-southeast-4': {
-        value: 'nodejs20.x',
-      },
-      'ca-central-1': {
-        value: 'nodejs20.x',
-      },
-      'cn-north-1': {
-        value: 'nodejs20.x',
-      },
-      'cn-northwest-1': {
-        value: 'nodejs20.x',
-      },
-      'eu-central-1': {
-        value: 'nodejs20.x',
-      },
-      'eu-central-2': {
-        value: 'nodejs20.x',
-      },
-      'eu-north-1': {
-        value: 'nodejs20.x',
-      },
-      'eu-south-1': {
-        value: 'nodejs20.x',
-      },
-      'eu-south-2': {
-        value: 'nodejs20.x',
-      },
-      'eu-west-1': {
-        value: 'nodejs20.x',
-      },
-      'eu-west-2': {
-        value: 'nodejs20.x',
-      },
-      'eu-west-3': {
-        value: 'nodejs20.x',
-      },
-      'il-central-1': {
-        value: 'nodejs20.x',
-      },
-      'me-central-1': {
-        value: 'nodejs20.x',
-      },
-      'me-south-1': {
-        value: 'nodejs20.x',
-      },
-      'sa-east-1': {
-        value: 'nodejs20.x',
-      },
-      'us-east-1': {
-        value: 'nodejs20.x',
-      },
-      'us-east-2': {
-        value: 'nodejs20.x',
-      },
-      'us-gov-east-1': {
-        value: 'nodejs20.x',
-      },
-      'us-gov-west-1': {
-        value: 'nodejs20.x',
-      },
-      'us-iso-east-1': {
-        value: 'nodejs18.x',
-      },
-      'us-iso-west-1': {
-        value: 'nodejs18.x',
-      },
-      'us-isob-east-1': {
-        value: 'nodejs18.x',
-      },
-      'us-west-1': {
-        value: 'nodejs20.x',
-      },
-      'us-west-2': {
-        value: 'nodejs20.x',
-      },
-    });
+    // Since all regions now have the same latest Node.js runtime (nodejs24.x),
+    // the CDK optimizes by using the literal value instead of creating a mapping
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: {
-          'Fn::FindInMap': [
-            'LatestNodeRuntimeMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'value',
-          ],
-        },
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -595,7 +510,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs20.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -610,7 +525,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs20.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -625,7 +540,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs20.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -638,9 +553,10 @@ describe('latest Lambda node runtime', () => {
     TestCustomResourceProvider.getOrCreateProvider(stack, 'TestCrProvider');
 
     // THEN
+    // ADC regions now also use nodejs24.x as the latest runtime
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs18.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -655,7 +571,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs18.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });

@@ -1,5 +1,5 @@
-import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as ivs from '../lib';
 
@@ -67,6 +67,7 @@ new AllProperties(stack, 'AllProperties');
 
 new IntegTest(app, 'ivs-test', {
   testCases: [stack],
+  regions: ['us-east-1', 'us-west-2', 'eu-west-1', 'eu-central-1', 'ap-northeast-1', 'ap-northeast-2', 'ap-south-1'], // IVS is only available in these regions
 });
 
 app.synth();

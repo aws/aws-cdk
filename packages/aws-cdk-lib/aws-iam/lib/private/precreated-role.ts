@@ -1,14 +1,17 @@
-import { Construct, Dependable, DependencyGroup } from 'constructs';
+import type { Construct } from 'constructs';
+import { Dependable, DependencyGroup } from 'constructs';
 import { Resource, Stack } from '../../../core';
 import { PolicySynthesizer } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
-import { Grant } from '../grant';
-import { IManagedPolicy } from '../managed-policy';
-import { Policy } from '../policy';
-import { PolicyDocument } from '../policy-document';
-import { PolicyStatement } from '../policy-statement';
-import { AddToPrincipalPolicyResult, IPrincipal, PrincipalPolicyFragment } from '../principals';
-import { IRole } from '../role';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import type { Grant } from '../grant';
+import type { RoleReference } from '../iam.generated';
+import type { IManagedPolicy } from '../managed-policy';
+import type { Policy } from '../policy';
+import type { PolicyDocument } from '../policy-document';
+import type { PolicyStatement } from '../policy-statement';
+import type { AddToPrincipalPolicyResult, IPrincipal, PrincipalPolicyFragment } from '../principals';
+import type { IRole } from '../role';
 
 /**
  * Options for a precreated role
@@ -56,14 +59,17 @@ export interface PrecreatedRoleProps {
  * synthesized into a separate report and will _not_ be synthesized in
  * the CloudFormation template.
  */
+@propertyInjectable
 export class PrecreatedRole extends Resource implements IRole {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.PrecreatedRole';
   public readonly assumeRoleAction: string;
   public readonly policyFragment: PrincipalPolicyFragment;
   public readonly grantPrincipal = this;
   public readonly principalAccount?: string;
   public readonly roleArn: string;
   public readonly roleName: string;
-  public readonly stack: Stack;
+  private readonly _stack: Stack;
 
   private readonly policySynthesizer: PolicySynthesizer;
   private readonly policyStatements: string[] = [];
@@ -83,7 +89,7 @@ export class PrecreatedRole extends Resource implements IRole {
     this.principalAccount = this.role.principalAccount;
     this.roleArn = this.role.roleArn;
     this.roleName = this.role.roleName;
-    this.stack = this.role.stack;
+    this._stack = this.role.stack;
     const rolePath = props.rolePath ?? this.node.path;
 
     Dependable.implement(this, {
@@ -99,6 +105,17 @@ export class PrecreatedRole extends Resource implements IRole {
       assumeRolePolicy: Stack.of(this).resolve(props.assumeRolePolicy?.toJSON()?.Statement),
       missing: props.missing,
     });
+  }
+
+  public get stack() {
+    return this._stack;
+  }
+
+  public get roleRef(): RoleReference {
+    return {
+      roleName: this.roleName,
+      roleArn: this.roleArn,
+    };
   }
 
   @MethodMetadata()

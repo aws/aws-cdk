@@ -1,11 +1,13 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as cdk from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import { ContainerImage } from './container-image';
-import { ModelData } from './model-data';
 import { CfnModel } from 'aws-cdk-lib/aws-sagemaker';
+import * as cdk from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import type { ContainerImage } from './container-image';
+import type { ModelData } from './model-data';
 
 /**
  * Interface that defines a Model resource.
@@ -223,7 +225,11 @@ export interface ModelProps {
 /**
  * Defines a SageMaker Model.
  */
+@propertyInjectable
 export class Model extends ModelBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-sagemaker-alpha.Model';
+
   /**
    * Imports a Model defined either outside the CDK or in a different CDK stack.
    * @param scope the Construct scope.
@@ -284,16 +290,6 @@ export class Model extends ModelBase {
   }
 
   /**
-   * Returns the ARN of this model.
-   * @attribute
-   */
-  public readonly modelArn: string;
-  /**
-   * Returns the name of the model.
-   * @attribute
-   */
-  public readonly modelName: string;
-  /**
    * Execution role for SageMaker Model
    */
   public readonly role?: iam.IRole;
@@ -303,6 +299,7 @@ export class Model extends ModelBase {
   public readonly grantPrincipal: iam.IPrincipal;
   private readonly subnets: ec2.SelectedSubnets | undefined;
   private readonly containers: CfnModel.ContainerDefinitionProperty[] = [];
+  private readonly resource: CfnModel;
 
   constructor(scope: Construct, id: string, props: ModelProps = {}) {
     super(scope, id, {
@@ -320,19 +317,13 @@ export class Model extends ModelBase {
 
     (props.containers || []).map(c => this.addContainer(c));
 
-    const model = new CfnModel(this, 'Model', {
+    this.resource = new CfnModel(this, 'Model', {
       executionRoleArn: this.role.roleArn,
       modelName: this.physicalName,
       primaryContainer: cdk.Lazy.any({ produce: () => this.renderPrimaryContainer() }),
       vpcConfig: cdk.Lazy.any({ produce: () => this.renderVpcConfig() }),
       containers: cdk.Lazy.any({ produce: () => this.renderContainers() }),
       enableNetworkIsolation: props.networkIsolation,
-    });
-    this.modelName = this.getResourceNameAttribute(model.attrModelName);
-    this.modelArn = this.getResourceArnAttribute(model.ref, {
-      service: 'sagemaker',
-      resource: 'model',
-      resourceName: this.physicalName,
     });
 
     /*
@@ -341,7 +332,29 @@ export class Model extends ModelBase {
      * to attach inline policies to IAM roles, the following line ensures that the role and its
      * AWS::IAM::Policy resource are deployed prior to model creation.
      */
-    model.node.addDependency(this.role);
+    this.resource.node.addDependency(this.role);
+  }
+
+  /**
+   * Returns the name of the model.
+   * @attribute
+   */
+  @memoizedGetter
+  public get modelName(): string {
+    return this.getResourceNameAttribute(this.resource.attrModelName);
+  }
+
+  /**
+   * Returns the ARN of this model.
+   * @attribute
+   */
+  @memoizedGetter
+  public get modelArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
+      service: 'sagemaker',
+      resource: 'model',
+      resourceName: this.physicalName,
+    });
   }
 
   /**

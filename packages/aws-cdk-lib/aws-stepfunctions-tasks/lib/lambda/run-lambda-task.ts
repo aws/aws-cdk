@@ -1,6 +1,8 @@
 import * as iam from '../../../aws-iam';
-import * as lambda from '../../../aws-lambda';
+import type * as lambda from '../../../aws-lambda';
 import * as sfn from '../../../aws-stepfunctions';
+import { ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { getResourceArn } from '../resource-arn-suffix';
 
 /**
@@ -75,12 +77,12 @@ export class RunLambdaTask implements sfn.IStepFunctionsTask {
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call Lambda.`);
+      throw new ValidationError(lit`InvalidServiceIntegrationPattern`, `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call Lambda.`, lambdaFunction);
     }
 
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
         && !sfn.FieldUtils.containsTaskToken(props.payload)) {
-      throw new Error('Task Token is missing in payload (pass JsonPath.taskToken somewhere in payload)');
+      throw new ValidationError(lit`TaskTokenMissingPayloadPass`, 'Task Token is missing in payload (pass JsonPath.taskToken somewhere in payload)', lambdaFunction);
     }
   }
 

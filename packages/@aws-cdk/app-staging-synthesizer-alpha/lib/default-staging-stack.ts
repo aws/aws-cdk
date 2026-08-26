@@ -4,24 +4,26 @@ import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import type {
+  DockerImageAssetSource,
+  FileAssetSource,
+  ISynthesisSession,
+  StackProps,
+} from 'aws-cdk-lib/core';
 import {
   App,
   ArnFormat,
   BootstraplessSynthesizer,
-  DockerImageAssetSource,
   Duration,
-  FileAssetSource,
-  ISynthesisSession,
   RemovalPolicy,
   Stack,
-  StackProps,
   INLINE_CUSTOM_RESOURCE_CONTEXT,
 } from 'aws-cdk-lib/core';
 import { StringSpecializer } from 'aws-cdk-lib/core/lib/helpers-internal';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 import { Construct } from 'constructs';
-import { BootstrapRole } from './bootstrap-roles';
-import { FileStagingLocation, IStagingResources, IStagingResourcesFactory, ImageStagingLocation } from './staging-stack';
+import type { BootstrapRole } from './bootstrap-roles';
+import type { FileStagingLocation, IStagingResources, IStagingResourcesFactory, ImageStagingLocation } from './staging-stack';
 
 export const DEPLOY_TIME_PREFIX = 'deploy-time/';
 
@@ -155,7 +157,7 @@ export interface DefaultStagingStackProps extends DefaultStagingStackOptions, St
   /**
    * The qualifier used to specialize strings
    *
-   * Shouldn't be necessary but who knows what people might do.
+   * Can be used to specify custom bootstrapped role names
    */
   readonly qualifier: string;
 }
@@ -259,10 +261,13 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
   constructor(scope: App, id: string, private readonly props: DefaultStagingStackProps) {
     super(scope, id, {
       ...props,
-      synthesizer: new BootstraplessSynthesizer(),
+      synthesizer: new BootstraplessSynthesizer({
+        qualifier: props.qualifier,
+      }),
       description: `This stack includes resources needed to deploy the AWS CDK app ${props.appId} into this environment`,
       analyticsReporting: false, // removing AWS::CDK::Metadata construct saves ~3KB
     });
+
     // removing path metadata saves ~2KB
     this.node.setContext(cxapi.PATH_METADATA_ENABLE_CONTEXT, false);
 
@@ -283,7 +288,6 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
     this.stagingBucketEncryption = props.stagingBucketEncryption;
 
     const specializer = new StringSpecializer(this, props.qualifier);
-
     this.providedFileRole = props.fileAssetPublishingRole?._specialize(specializer);
     this.providedImageRole = props.imageAssetPublishingRole?._specialize(specializer);
     this.stagingRepos = {};

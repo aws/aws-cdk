@@ -1,8 +1,12 @@
 import * as path from 'path';
-import { Architecture, AssetCode, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { AssetStaging, BundlingFileAccess, BundlingOptions as CdkBundlingOptions, DockerImage, DockerVolume } from 'aws-cdk-lib/core';
+import type { AssetCode, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Architecture, Code } from 'aws-cdk-lib/aws-lambda';
+import type { BundlingFileAccess, BundlingOptions as CdkBundlingOptions, DockerVolume } from 'aws-cdk-lib/core';
+import { AssetStaging, DockerImage, PERF_BUNDLING_SRC_SYM } from 'aws-cdk-lib/core';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit, posixShellEscape, profileSpan } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { Packaging, DependenciesFile } from './packaging';
-import { BundlingOptions, ICommandHooks } from './types';
+import type { BundlingOptions, ICommandHooks } from './types';
 
 /**
  * Dependency files to exclude from the asset hash.
@@ -54,6 +58,8 @@ export interface BundlingProps extends BundlingOptions {
  */
 export class Bundling implements CdkBundlingOptions {
   public static bundle(options: BundlingProps): AssetCode {
+    validateOutputPathSuffix(options.outputPathSuffix ?? '');
+
     return Code.fromAsset(options.entry, {
       assetHash: options.assetHash,
       assetHashType: options.assetHashType,
@@ -62,6 +68,7 @@ export class Bundling implements CdkBundlingOptions {
     });
   }
 
+  public readonly [PERF_BUNDLING_SRC_SYM] = 'PythonFunction';
   public readonly image: DockerImage;
   public readonly entrypoint?: string[];
   public readonly command: string[];
@@ -99,13 +106,24 @@ export class Bundling implements CdkBundlingOptions {
       assetExcludes,
     });
 
-    this.image = image ?? DockerImage.fromBuild(path.join(__dirname, '..', 'lib'), {
-      buildArgs: {
-        ...props.buildArgs,
-        IMAGE: runtime.bundlingImage.image,
-      },
-      platform: architecture.dockerPlatform,
-    });
+    if (image) {
+      // Use the user's image
+      this.image = image;
+    } else {
+      // Build our own image to do the build in in. We do some counter trickery here: we do want to count
+      // the time spent here as part of 'bundle:PythonFunction', but by default only the RUNNING of the Docker
+      // image would count as that. So we add an additional timer span just for the building of the runner image.
+      using _span = profileSpan(`bundle:${this[PERF_BUNDLING_SRC_SYM]}`, { telemetry: true, skipCount: true });
+      this.image = DockerImage.fromBuild(path.join(__dirname, 'docker'), {
+        buildArgs: {
+          ...props.buildArgs,
+          IMAGE: runtime.bundlingImage.image,
+        },
+        platform: architecture.dockerPlatform,
+        network: props.network,
+      });
+    }
+
     this.command = props.command ?? ['bash', '-c', chain(bundlingCommands)];
     this.entrypoint = props.entrypoint;
     this.volumes = props.volumes;
@@ -122,15 +140,25 @@ export class Bundling implements CdkBundlingOptions {
     const packaging = Packaging.fromEntry(options.entry, options.poetryIncludeHashes, options.poetryWithoutUrls);
     let bundlingCommands: string[] = [];
     bundlingCommands.push(...options.commandHooks?.beforeBundling(options.inputDir, options.outputDir) ?? []);
-    const exclusionStr = options.assetExcludes?.map(item => `--exclude='${item}'`).join(' ');
-    bundlingCommands.push([
-      'rsync', '-rLv', exclusionStr ?? '', `${options.inputDir}/`, options.outputDir,
-    ].filter(item => item).join(' '));
-    bundlingCommands.push(`cd ${options.outputDir}`);
-    bundlingCommands.push(packaging.exportCommand ?? '');
-    if (packaging.dependenciesFile) {
-      bundlingCommands.push(`python -m pip install -r ${DependenciesFile.PIP} -t ${options.outputDir}`);
+
+    const excludes = [...(options.assetExcludes ?? [])];
+    if (packaging.dependenciesFile == DependenciesFile.UV && !excludes.includes('.python-version')) {
+      excludes.push('.python-version');
     }
+
+    const exclusionStr = excludes.map(item => `--exclude=${posixShellEscape(item)}`).join(' ');
+    bundlingCommands.push([
+      'rsync', '-rLv', exclusionStr ?? '', posixShellEscape(`${options.inputDir}/`), posixShellEscape(options.outputDir),
+    ].filter(item => item).join(' '));
+    bundlingCommands.push(`cd ${posixShellEscape(options.outputDir)}`);
+    bundlingCommands.push(packaging.exportCommand ?? '');
+
+    if (packaging.dependenciesFile == DependenciesFile.UV) {
+      bundlingCommands.push(`uv pip install -r ${DependenciesFile.PIP} --target ${posixShellEscape(options.outputDir)}`);
+    } else if (packaging.dependenciesFile) {
+      bundlingCommands.push(`python -m pip install -r ${DependenciesFile.PIP} -t ${posixShellEscape(options.outputDir)}`);
+    }
+
     bundlingCommands.push(...options.commandHooks?.afterBundling(options.inputDir, options.outputDir) ?? []);
     return bundlingCommands;
   }
@@ -151,4 +179,18 @@ interface BundlingCommandOptions {
  */
 function chain(commands: string[]): string {
   return commands.filter(c => !!c).join(' && ');
+}
+
+function validateOutputPathSuffix(outputPathSuffix: string): void {
+  const outputPath = path.posix.join(AssetStaging.BUNDLING_OUTPUT_DIR, outputPathSuffix);
+  if (pathEscapesRoot(path.posix.relative(AssetStaging.BUNDLING_OUTPUT_DIR, outputPath))) {
+    throw new UnscopedValidationError(
+      lit`OutputPathSuffixEscapesOutputDir`,
+      `outputPathSuffix (${outputPathSuffix}) should not escape ${AssetStaging.BUNDLING_OUTPUT_DIR}`,
+    );
+  }
+}
+
+function pathEscapesRoot(relativePath: string): boolean {
+  return path.posix.isAbsolute(relativePath) || relativePath === '..' || relativePath.startsWith('../');
 }

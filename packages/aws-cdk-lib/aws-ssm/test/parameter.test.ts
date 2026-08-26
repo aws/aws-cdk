@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template, Annotations } from '../../assertions';
@@ -754,6 +753,32 @@ test('fromLookup will return defaultValue when it is provided', () => {
         dummyValue: 'some-default-value',
         region: 'us-east-1',
         parameterName: 'my-param-name',
+      },
+      provider: 'ssm',
+    },
+  ]);
+});
+
+test('fromLookup will use the SSM context provider to read value during synthesis when linked to scope', () => {
+  // GIVEN
+  const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+  const stack = new cdk.Stack(app, 'my-staq', { env: { region: 'us-east-1', account: '12344' } });
+
+  // WHEN
+  const value = ssm.StringParameter.valueFromLookup(stack, 'my-param-name', undefined, { additionalCacheKey: 'extraKey' });
+
+  // THEN
+  expect(value).toEqual('dummy-value-for-my-param-name');
+  expect(app.synth().manifest.missing).toEqual([
+    {
+      key: 'ssm:account=12344:additionalCacheKey=extraKey:parameterName=my-param-name:region=us-east-1',
+      props: {
+        account: '12344',
+        region: 'us-east-1',
+        parameterName: 'my-param-name',
+        dummyValue: 'dummy-value-for-my-param-name',
+        ignoreErrorOnMissingContext: false,
+        additionalCacheKey: 'extraKey',
       },
       provider: 'ssm',
     },

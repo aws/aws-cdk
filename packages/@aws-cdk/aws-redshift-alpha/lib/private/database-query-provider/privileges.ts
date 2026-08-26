@@ -1,8 +1,9 @@
-/* eslint-disable-next-line import/no-unresolved */
-import * as AWSLambda from 'aws-lambda';
-import { TablePrivilege, UserTablePrivilegesHandlerProps } from '../handler-props';
+
+import type * as AWSLambda from 'aws-lambda';
+import type { TablePrivilege, UserTablePrivilegesHandlerProps } from '../handler-props';
+import { quoteIdentifier, quoteQualifiedIdentifier } from './escape';
 import { executeStatement } from './redshift-data';
-import { ClusterProps } from './types';
+import type { ClusterProps } from './types';
 import { makePhysicalId } from './util';
 
 export async function handler(props: UserTablePrivilegesHandlerProps & ClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
@@ -42,7 +43,7 @@ async function revokePrivileges(
   // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
   await Promise.all(tablePrivileges.map(({ tableName, actions }) => {
     return executeStatement(
-      `REVOKE ${actions.join(', ')} ON ${normalizedTableName(tableName, stackId)} FROM ${username}`,
+      `REVOKE ${actions.join(', ')} ON ${quoteQualifiedIdentifier(normalizedTableName(tableName, stackId))} FROM ${quoteIdentifier(username)}`,
       clusterProps,
     );
   }));
@@ -58,7 +59,7 @@ async function grantPrivileges(
   // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
   await Promise.all(tablePrivileges.map(({ tableName, actions }) => {
     return executeStatement(
-      `GRANT ${actions.join(', ')} ON ${normalizedTableName(tableName, stackId)} TO ${username}`,
+      `GRANT ${actions.join(', ')} ON ${quoteQualifiedIdentifier(normalizedTableName(tableName, stackId))} TO ${quoteIdentifier(username)}`,
       clusterProps,
     );
   }));

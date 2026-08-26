@@ -4,7 +4,11 @@ import * as cdk from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const customOacStack = new cdk.Stack(app, 'integ-cloudfront-function-url-origin-custom-oac');
 

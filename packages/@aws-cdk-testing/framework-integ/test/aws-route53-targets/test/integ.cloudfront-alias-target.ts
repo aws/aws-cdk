@@ -3,6 +3,7 @@ import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
@@ -31,4 +32,18 @@ new route53.ARecord(zone, 'Alias', {
   target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
 });
 
-app.synth();
+new route53.AaaaRecord(zone, 'AaaaAlias', {
+  zone,
+  recordName: '_foo',
+  target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
+});
+
+new route53.HttpsRecord(zone, 'HttpsAlias', {
+  zone,
+  recordName: '_foo',
+  target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
+});
+
+new IntegTest(app, 'aws-cdk-route53-cloudfront-alias-integ-test', {
+  testCases: [stack],
+});

@@ -1,58 +1,58 @@
 {
-  "version": "41.0.0",
+  "version": "53.0.0",
   "files": {
-    "beee194466d406430def0e84ec8b17a0aeb98fe29f5660882cb01e9db355d7c8": {
+    "4d2c2c30987e559ad00cb6dfc2aae9a6cc6a9174835e3ff830903eefe6346e1c": {
       "displayName": "@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/Code",
       "source": {
-        "path": "asset.beee194466d406430def0e84ec8b17a0aeb98fe29f5660882cb01e9db355d7c8",
+        "path": "asset.4d2c2c30987e559ad00cb6dfc2aae9a6cc6a9174835e3ff830903eefe6346e1c",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-b32873df": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "beee194466d406430def0e84ec8b17a0aeb98fe29f5660882cb01e9db355d7c8.zip",
+          "objectKey": "4d2c2c30987e559ad00cb6dfc2aae9a6cc6a9174835e3ff830903eefe6346e1c.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6": {
+    "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e": {
       "displayName": "@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/Code",
       "source": {
-        "path": "asset.39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6",
+        "path": "asset.d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-9e5c0bf1": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip",
+          "objectKey": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "e508fdc33083ad1a2d5239497e03863a26e96cd6cd3455082de4d9315c636d45": {
-      "displayName": "${Token[TOKEN.35]} Template",
+    "1a8e06347fbd971fff6c2f52664a3384e8677d83d4b0f3ed3d078025938345a8": {
+      "displayName": "@aws-cdk--aws-dynamodb.ReplicaProvider Nested Stack Template",
       "source": {
         "path": "cdkdynamodbskipreplicadeletionawscdkawsdynamodbReplicaProvider76996739.nested.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-7a9fec97": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e508fdc33083ad1a2d5239497e03863a26e96cd6cd3455082de4d9315c636d45.json",
+          "objectKey": "1a8e06347fbd971fff6c2f52664a3384e8677d83d4b0f3ed3d078025938345a8.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "f30c6bed38c69fa1027bc379d54d35ed8990dbf66e32e9c8e563ca78c30ae690": {
+    "0f706572e30c0e202ac59501fd717b320b35ac9c00fd8e2ffd85fc87a84efb72": {
       "displayName": "cdk-dynamodb-skip-replica-deletion Template",
       "source": {
         "path": "cdk-dynamodb-skip-replica-deletion.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-4bf67bd3": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f30c6bed38c69fa1027bc379d54d35ed8990dbf66e32e9c8e563ca78c30ae690.json",
+          "objectKey": "0f706572e30c0e202ac59501fd717b320b35ac9c00fd8e2ffd85fc87a84efb72.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

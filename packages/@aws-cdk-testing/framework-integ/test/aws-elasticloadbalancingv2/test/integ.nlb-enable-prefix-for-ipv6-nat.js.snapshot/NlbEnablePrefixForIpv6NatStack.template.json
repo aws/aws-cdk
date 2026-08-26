@@ -141,7 +141,8 @@
     }
    },
    "DependsOn": [
-    "Vpcipv6cidr40D3CB78"
+    "Vpcipv6cidr40D3CB78",
+    "VpcVPCGWBF912B6E"
    ]
   },
   "VpcPublicSubnet2Subnet691E08A3": {
@@ -261,7 +262,8 @@
     }
    },
    "DependsOn": [
-    "Vpcipv6cidr40D3CB78"
+    "Vpcipv6cidr40D3CB78",
+    "VpcVPCGWBF912B6E"
    ]
   },
   "VpcIsolatedSubnet1SubnetE48C5737": {
@@ -459,14 +461,6 @@
     "InternetGatewayId": {
      "Ref": "VpcIGWD7BA715C"
     },
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
-   }
-  },
-  "VpcEIGW61416F369": {
-   "Type": "AWS::EC2::EgressOnlyInternetGateway",
-   "Properties": {
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }

@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import { IFunction } from './function-base';
+import type { Construct } from 'constructs';
+import type { IFunction } from './function-base';
 
 /**
  * A destination configuration

@@ -1,16 +1,20 @@
 import * as iot from '@aws-cdk/aws-iot-alpha';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as actions from '../../lib';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     const func = new lambda.Function(this, 'MyFunction', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`
         exports.handler = (event) => {

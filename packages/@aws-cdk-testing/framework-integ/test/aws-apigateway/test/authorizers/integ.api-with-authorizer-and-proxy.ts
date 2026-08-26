@@ -10,7 +10,11 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
  * * `curl -i <CFN output PetsURL>` should return HTTP code 200
  */
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'integtest-restapi-with-authorizer-and-proxy');
 
 // create a cognito user pool
@@ -38,7 +42,7 @@ const sendResource = root.addResource('InitiateAction');
 const myfunc = new lambda.Function(stack, 'lambda-s3', {
   code: lambda.AssetCode.fromAsset(path.join(__dirname, 'assets')),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_20_X,
 });
 
 const sendLambdaIntegration = new agw.LambdaIntegration(myfunc);

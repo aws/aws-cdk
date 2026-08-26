@@ -1,0 +1,315 @@
+{
+  "version": "42.0.0",
+  "artifacts": {
+    "efs-from-imported-subnet.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "efs-from-imported-subnet.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "efs-from-imported-subnet": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "efs-from-imported-subnet.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2a39fbf7192f71f2ade2c1ddeba447fe088dc986596356a56b2871ac5c8325a7.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "efs-from-imported-subnet.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "efs-from-imported-subnet.assets"
+      ],
+      "metadata": {
+        "/efs-from-imported-subnet/Vpc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "natGateways": "*",
+              "restrictDefaultSecurityGroup": false,
+              "subnetConfiguration": [
+                {
+                  "name": "*",
+                  "subnetType": "Public"
+                }
+              ]
+            }
+          }
+        ],
+        "/efs-from-imported-subnet/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/efs-from-imported-subnet/Vpc/testSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/efs-from-imported-subnet/Vpc/testSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpctestSubnet1Subnet43126774"
+          }
+        ],
+        "/efs-from-imported-subnet/Vpc/testSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpctestSubnet1RouteTableF77D2377"
+          }
+        ],
+        "/efs-from-imported-subnet/Vpc/testSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpctestSubnet1RouteTableAssociationE292CAA1"
+          }
+        ],
+        "/efs-from-imported-subnet/Vpc/testSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpctestSubnet1DefaultRouteA2DE75B7"
+          }
+        ],
+        "/efs-from-imported-subnet/Vpc/testSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpctestSubnet1EIPEE8206FB"
+          }
+        ],
+        "/efs-from-imported-subnet/Vpc/testSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpctestSubnet1NATGateway4E5EAED1"
+          }
+        ],
+        "/efs-from-imported-subnet/Vpc/testSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/efs-from-imported-subnet/Vpc/testSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpctestSubnet2Subnet3B2E5192"
+          }
+        ],
+        "/efs-from-imported-subnet/Vpc/testSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpctestSubnet2RouteTable25D207BE"
+          }
+        ],
+        "/efs-from-imported-subnet/Vpc/testSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpctestSubnet2RouteTableAssociationFA920AD0"
+          }
+        ],
+        "/efs-from-imported-subnet/Vpc/testSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpctestSubnet2DefaultRoute31936D04"
+          }
+        ],
+        "/efs-from-imported-subnet/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/efs-from-imported-subnet/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/efs-from-imported-subnet/Subnet": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "No routeTableId was provided to the subnet at 'efs-from-imported-subnet/Subnet'. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171) [ack: @aws-cdk/aws-ec2:noSubnetRouteTableId]"
+          }
+        ],
+        "/efs-from-imported-subnet/FileSystem": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "vpcSubnets": {
+                "subnets": [
+                  "*"
+                ]
+              },
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
+        "/efs-from-imported-subnet/FileSystem/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FileSystem8A8E25C0"
+          }
+        ],
+        "/efs-from-imported-subnet/FileSystem/EfsSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*"
+            }
+          }
+        ],
+        "/efs-from-imported-subnet/FileSystem/EfsSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FileSystemEfsSecurityGroup212D3ACB"
+          }
+        ],
+        "/efs-from-imported-subnet/FileSystem/EfsMountTarget-Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FileSystemEfsMountTargetSubnetE0FBE03C"
+          }
+        ],
+        "/efs-from-imported-subnet/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/efs-from-imported-subnet/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "efs-from-imported-subnet"
+    },
+    "efsfromimportedsubnettestDefaultTestDeployAssertC5BA6A6C.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "efsfromimportedsubnettestDefaultTestDeployAssertC5BA6A6C.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "efsfromimportedsubnettestDefaultTestDeployAssertC5BA6A6C": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "efsfromimportedsubnettestDefaultTestDeployAssertC5BA6A6C.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "efsfromimportedsubnettestDefaultTestDeployAssertC5BA6A6C.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "efsfromimportedsubnettestDefaultTestDeployAssertC5BA6A6C.assets"
+      ],
+      "metadata": {
+        "/efs-from-imported-subnet-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/efs-from-imported-subnet-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "efs-from-imported-subnet-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1006.0"
+}

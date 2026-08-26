@@ -1,11 +1,18 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnTopic } from './sns.generated';
-import { ITopic, TopicBase } from './topic-base';
-import { IRole } from '../../aws-iam';
-import { IKey, Key } from '../../aws-kms';
-import { ArnFormat, Lazy, Names, Stack, Token } from '../../core';
+import type { ITopic } from './topic-base';
+import { TopicBase } from './topic-base';
+import type { IRoleRef } from '../../aws-iam';
+import type { IKey } from '../../aws-kms';
+import { Key } from '../../aws-kms';
+import { ArnFormat, Names, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { memoizedGetter, Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for a new SNS topic
@@ -146,14 +153,14 @@ export interface LoggingConfig {
    *
    * @default None
    */
-  readonly failureFeedbackRole?: IRole;
+  readonly failureFeedbackRole?: IRoleRef;
 
   /**
    * The IAM role to be used when logging successful message deliveries in Amazon CloudWatch.
    *
    * @default None
    */
-  readonly successFeedbackRole?: IRole;
+  readonly successFeedbackRole?: IRoleRef;
 
   /**
    * The percentage of successful message deliveries to be logged in Amazon CloudWatch.
@@ -238,7 +245,14 @@ export interface TopicAttributes {
 /**
  * A new SNS topic
  */
+@propertyInjectable
+@noBoxStackTraces
 export class Topic extends TopicBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-sns.Topic';
+
   /**
    * Import an existing SNS topic provided an ARN
    *
@@ -262,7 +276,7 @@ export class Topic extends TopicBase {
     const fifo = topicName.endsWith('.fifo');
 
     if (attrs.contentBasedDeduplication && !fifo) {
-      throw new ValidationError('Cannot import topic; contentBasedDeduplication is only available for FIFO SNS topics.', scope);
+      throw new ValidationError(lit`CannotImportTopicContentBased`, 'Cannot import topic; contentBasedDeduplication is only available for FIFO SNS topics.', scope);
     }
 
     class Import extends TopicBase {
@@ -281,15 +295,27 @@ export class Topic extends TopicBase {
     });
   }
 
-  public readonly topicArn: string;
-  public readonly topicName: string;
+  @memoizedGetter
+  public get topicArn(): string {
+    return this.getResourceArnAttribute(this._resource.ref, {
+      service: 'sns',
+      resource: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get topicName(): string {
+    return this.getResourceNameAttribute(this._resource.attrTopicName);
+  }
   public readonly masterKey?: IKey;
   public readonly contentBasedDeduplication: boolean;
   public readonly fifo: boolean;
 
   protected readonly autoCreatePolicy: boolean = true;
 
-  private readonly loggingConfigs: LoggingConfig[] = [];
+  private readonly _resource: CfnTopic;
+
+  private readonly loggingConfigs: IArrayBox<LoggingConfig> = Box.fromArray();
 
   constructor(scope: Construct, id: string, props: TopicProps = {}) {
     super(scope, id, {
@@ -301,20 +327,20 @@ export class Topic extends TopicBase {
     this.enforceSSL = props.enforceSSL;
 
     if (props.contentBasedDeduplication && !props.fifo) {
-      throw new ValidationError('Content based deduplication can only be enabled for FIFO SNS topics.', this);
+      throw new ValidationError(lit`ContentBasedDeduplicationEnabledTopics`, 'Content based deduplication can only be enabled for FIFO SNS topics.', this);
     }
     if (props.messageRetentionPeriodInDays && !props.fifo) {
-      throw new ValidationError('`messageRetentionPeriodInDays` is only valid for FIFO SNS topics.', this);
+      throw new ValidationError(lit`OnlyValidFifoTopics`, '`messageRetentionPeriodInDays` is only valid for FIFO SNS topics.', this);
     }
     if (props.fifoThroughputScope && !props.fifo) {
-      throw new ValidationError('`fifoThroughputScope` can only be set for FIFO SNS topics.', this);
+      throw new ValidationError(lit`OnlyFifoTopics`, '`fifoThroughputScope` can only be set for FIFO SNS topics.', this);
     }
     if (
       props.messageRetentionPeriodInDays !== undefined
       && !Token.isUnresolved(props.messageRetentionPeriodInDays)
       && (!Number.isInteger(props.messageRetentionPeriodInDays) || props.messageRetentionPeriodInDays > 365 || props.messageRetentionPeriodInDays < 1)
     ) {
-      throw new ValidationError('`messageRetentionPeriodInDays` must be an integer between 1 and 365', this);
+      throw new ValidationError(lit`MustBeIntegerBetween`, '`messageRetentionPeriodInDays` must be an integer between 1 and 365', this);
     }
 
     if (props.loggingConfigs) {
@@ -341,11 +367,11 @@ export class Topic extends TopicBase {
       props.signatureVersion !== '1' &&
       props.signatureVersion !== '2'
     ) {
-      throw new ValidationError(`signatureVersion must be "1" or "2", received: "${props.signatureVersion}"`, this);
+      throw new ValidationError(lit`SignatureVersionReceived`, `signatureVersion must be "1" or "2", received: "${props.signatureVersion}"`, this);
     }
 
     if (props.displayName && !Token.isUnresolved(props.displayName) && props.displayName.length > 100) {
-      throw new ValidationError(`displayName must be less than or equal to 100 characters, got ${props.displayName.length}`, this);
+      throw new ValidationError(lit`DisplayNameLessEqualCharacters`, `displayName must be less than or equal to 100 characters, got ${props.displayName.length}`, this);
     }
 
     const resource = new CfnTopic(this, 'Resource', {
@@ -358,16 +384,12 @@ export class Topic extends TopicBase {
       contentBasedDeduplication: props.contentBasedDeduplication,
       fifoTopic: props.fifo,
       signatureVersion: props.signatureVersion,
-      deliveryStatusLogging: Lazy.any({ produce: () => this.renderLoggingConfigs() }, { omitEmptyArray: true }),
+      deliveryStatusLogging: this.loggingConfigs.derive(cfgs => this.renderLoggingConfigs(cfgs)),
       tracingConfig: props.tracingConfig,
       fifoThroughputScope: props.fifoThroughputScope,
     });
 
-    this.topicArn = this.getResourceArnAttribute(resource.ref, {
-      service: 'sns',
-      resource: this.physicalName,
-    });
-    this.topicName = this.getResourceNameAttribute(resource.attrTopicName);
+    this._resource = resource;
     this.masterKey = props.masterKey;
     this.fifo = props.fifo || false;
     this.contentBasedDeduplication = props.contentBasedDeduplication || false;
@@ -377,23 +399,23 @@ export class Topic extends TopicBase {
     }
   }
 
-  private renderLoggingConfigs(): CfnTopic.LoggingConfigProperty[] {
+  private renderLoggingConfigs(loggingConfigs?: readonly LoggingConfig[]): CfnTopic.LoggingConfigProperty[] {
     const renderLoggingConfig = (spec: LoggingConfig): CfnTopic.LoggingConfigProperty => {
       if (spec.successFeedbackSampleRate !== undefined) {
         const rate = spec.successFeedbackSampleRate;
         if (!Number.isInteger(rate) || rate < 0 || rate > 100) {
-          throw new ValidationError('Success feedback sample rate must be an integer between 0 and 100', this);
+          throw new ValidationError(lit`SuccessFeedbackSampleRateInteger`, 'Success feedback sample rate must be an integer between 0 and 100', this);
         }
       }
       return {
         protocol: spec.protocol,
-        failureFeedbackRoleArn: spec.failureFeedbackRole?.roleArn,
-        successFeedbackRoleArn: spec.successFeedbackRole?.roleArn,
+        failureFeedbackRoleArn: spec.failureFeedbackRole?.roleRef.roleArn,
+        successFeedbackRoleArn: spec.successFeedbackRole?.roleRef.roleArn,
         successFeedbackSampleRate: spec.successFeedbackSampleRate?.toString(),
       };
     };
 
-    return this.loggingConfigs.map(renderLoggingConfig);
+    return (loggingConfigs ?? this.loggingConfigs.get()).map(renderLoggingConfig);
   }
 
   /**

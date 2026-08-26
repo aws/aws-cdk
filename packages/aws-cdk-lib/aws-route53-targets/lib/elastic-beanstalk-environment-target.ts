@@ -1,7 +1,8 @@
-import { IAliasRecordTargetProps } from './shared';
-import * as route53 from '../../aws-route53';
+import type { IAliasRecordTargetProps } from './shared';
+import type * as route53 from '../../aws-route53';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 import { RegionInfo } from '../../region-info';
 
 /**
@@ -12,26 +13,32 @@ import { RegionInfo } from '../../region-info';
  * Only supports Elastic Beanstalk environments created after 2016 that have a regional endpoint.
  */
 export class ElasticBeanstalkEnvironmentEndpointTarget implements route53.IAliasRecordTarget {
-  constructor( private readonly environmentEndpoint: string, private readonly props?: IAliasRecordTargetProps) {}
+  private hostedZoneId?: string;
+
+  constructor(private readonly environmentEndpoint: string, private readonly props?: IAliasRecordTargetProps) {
+    this.hostedZoneId = props?.hostedZoneId;
+  }
 
   public bind(record: route53.IRecordSet, _zone?: route53.IHostedZone): route53.AliasRecordTargetConfig {
-    if (cdk.Token.isUnresolved(this.environmentEndpoint)) {
-      throw new ValidationError('Cannot use an EBS alias as `environmentEndpoint`. You must find your EBS environment endpoint via the AWS console. See the Elastic Beanstalk developer guide: https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/customdomains.html', record);
+    if (!this.hostedZoneId) {
+      let { region } = cdk.Stack.of(record);
+
+      if (!cdk.Token.isUnresolved(this.environmentEndpoint)) {
+        const subDomains = cdk.Fn.split('.', this.environmentEndpoint);
+        const regionSubdomainIndex = subDomains.length - 3;
+        region = cdk.Fn.select(regionSubdomainIndex, subDomains);
+      }
+
+      this.hostedZoneId = RegionInfo.get(region).ebsEnvEndpointHostedZoneId;
     }
 
-    const dnsName = this.environmentEndpoint;
-    const subDomains = cdk.Fn.split('.', dnsName);
-    const regionSubdomainIndex = subDomains.length - 3;
-    const region = cdk.Fn.select(regionSubdomainIndex, subDomains);
-    const { ebsEnvEndpointHostedZoneId: hostedZoneId } = RegionInfo.get(region);
-
-    if (!hostedZoneId || !dnsName) {
-      throw new ValidationError(`Elastic Beanstalk environment target is not supported for the "${region}" region.`, record);
+    if (!this.hostedZoneId) {
+      throw new ValidationError(lit`CannotFindBeanstalkHostedZone`, 'Cannot find Beanstalk `hostedZoneId`. You must specify either `hostedZoneId` using `RegionInfo.get(yourRegion).ebsEnvEndpointHostedZoneId` or Stack region or find correct EBS environment endpoint via AWS console. See Elastic Beanstalk developer guide: https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/customdomains.html', record);
     }
 
     return {
-      hostedZoneId,
-      dnsName,
+      hostedZoneId: this.hostedZoneId,
+      dnsName: this.environmentEndpoint,
       evaluateTargetHealth: this.props?.evaluateTargetHealth,
     };
   }

@@ -58,25 +58,28 @@
   "BooksApiDeployment86CA39AF4ff82f86c127f53c9de94d266b1906be": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
+    "Description": "Automatically created by the RestApi construct",
     "RestApiId": {
      "Ref": "BooksApi60AC975F"
-    },
-    "Description": "Automatically created by the RestApi construct"
+    }
    },
    "DependsOn": [
     "BooksApiANY0C4EABE3",
     "BooksApibooksGET6066BF7E",
     "BooksApibooks1F745538"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "BooksApiDeploymentStageprod0693B760": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
-    "RestApiId": {
-     "Ref": "BooksApi60AC975F"
-    },
     "DeploymentId": {
      "Ref": "BooksApiDeployment86CA39AF4ff82f86c127f53c9de94d266b1906be"
+    },
+    "RestApiId": {
+     "Ref": "BooksApi60AC975F"
     },
     "StageName": "prod"
    },
@@ -87,7 +90,11 @@
   "BooksApiANY0C4EABE3": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
+    "AuthorizationType": "NONE",
     "HttpMethod": "ANY",
+    "Integration": {
+     "Type": "MOCK"
+    },
     "ResourceId": {
      "Fn::GetAtt": [
       "BooksApi60AC975F",
@@ -96,10 +103,6 @@
     },
     "RestApiId": {
      "Ref": "BooksApi60AC975F"
-    },
-    "AuthorizationType": "NONE",
-    "Integration": {
-     "Type": "MOCK"
     }
    }
   },
@@ -193,14 +196,8 @@
   "BooksApibooksGET6066BF7E": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "GET",
-    "ResourceId": {
-     "Ref": "BooksApibooks1F745538"
-    },
-    "RestApiId": {
-     "Ref": "BooksApi60AC975F"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
     "Integration": {
      "IntegrationHttpMethod": "POST",
      "Type": "AWS_PROXY",
@@ -224,6 +221,12 @@
        ]
       ]
      }
+    },
+    "ResourceId": {
+     "Ref": "BooksApibooks1F745538"
+    },
+    "RestApiId": {
+     "Ref": "BooksApi60AC975F"
     }
    }
   }

@@ -1,3 +1,6 @@
 #!/bin/bash
-set -eu
-npx integ-runner --directory packages/@aws-cdk-testing/framework-integ --update-on-failed --disable-update-workflow "$@"
+echo
+for dir in packages/@aws-cdk-testing/framework-integ packages/@aws-cdk/*; do
+    echo $dir
+    npx integ-runner --unstable=toolkit-lib-engine --directory $dir --update-on-failed --disable-update-workflow "$@"
+done

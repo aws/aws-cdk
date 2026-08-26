@@ -4,7 +4,9 @@ import * as route53 from 'aws-cdk-lib/aws-route53';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-route53-dnssec');
+const stack = new cdk.Stack(app, 'aws-cdk-route53-dnssec', {
+  env: { region: 'us-east-1' },
+});
 
 const kmsKey = new kms.Key(stack, 'KmsKskBase', {
   keySpec: kms.KeySpec.ECC_NIST_P256,
@@ -20,4 +22,5 @@ new IntegTest(app, 'integ-test', {
   testCases: [stack],
   diffAssets: true,
   enableLookups: true,
+  regions: ['us-east-1'],
 });

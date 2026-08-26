@@ -190,7 +190,7 @@ test('add s3 action', () => {
           Action: 's3:PutObject',
           Condition: {
             StringEquals: {
-              'aws:Referer': {
+              'aws:SourceAccount': {
                 Ref: 'AWS::AccountId',
               },
             },

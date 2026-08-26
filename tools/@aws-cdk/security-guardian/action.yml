@@ -1,0 +1,31 @@
+name: 'Security Guardian'
+description: 'Security Guardian for custom or granular guard rules'
+
+inputs:
+  base_sha:
+    description: "Base commit id"
+    required: false
+  head_sha:
+    description: "Current changes commit id"
+    required: false
+  rule_set_path:
+    description: "Path to a single .guard file locally"
+    required: true
+  enhance_xml:
+    description: "Enable XML enhancement for individual failure annotations"
+    required: false
+    default: 'true'
+
+outputs:
+  junit_files:
+    description: "Comma-separated list of JUnit XML files"
+  all_passed:
+    description: "Whether all validations passed"
+
+runs:
+  using: node20
+  main: dist/index.js
+
+branding:
+  icon: shield
+  color: red

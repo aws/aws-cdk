@@ -1,10 +1,14 @@
-import { Construct } from 'constructs';
-import { IEventBus } from './event-bus';
-import { EventPattern } from './event-pattern';
+import type { Construct } from 'constructs';
+import type { EventPattern } from './event-pattern';
+import type { IEventBusRef } from './events.generated';
 import { CfnArchive } from './events.generated';
 import { renderEventPattern } from './util';
-import { Duration, Resource } from '../../core';
+import * as iam from '../../aws-iam';
+import type * as kms from '../../aws-kms';
+import type { Duration } from '../../core';
+import { Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * The event archive base properties
@@ -31,6 +35,13 @@ export interface BaseArchiveProps {
    * @default - Infinite
    */
   readonly retention?: Duration;
+
+  /**
+   * The customer managed key that encrypts this archive
+   *
+   * @default - Use an AWS managed key
+   */
+  readonly kmsKey?: kms.IKey;
 }
 
 /**
@@ -40,7 +51,7 @@ export interface ArchiveProps extends BaseArchiveProps {
   /**
    * The event source associated with the archive.
    */
-  readonly sourceEventBus: IEventBus;
+  readonly sourceEventBus: IEventBusRef;
 }
 
 /**
@@ -48,7 +59,10 @@ export interface ArchiveProps extends BaseArchiveProps {
  *
  * @resource AWS::Events::Archive
  */
+@propertyInjectable
 export class Archive extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-events.Archive';
   /**
    * The archive name.
    * @attribute
@@ -66,12 +80,43 @@ export class Archive extends Resource {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    // Add the EventBridge in all stages policy statement if a customer key is supplied
+    if (props?.kmsKey) {
+      props?.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['kms:Decrypt', 'kms:GenerateDataKey', 'kms:ReEncrypt*'],
+        principals: [
+          new iam.ServicePrincipal('events.amazonaws.com'),
+        ],
+        sid: 'Allow EventBridge to use kms operations',
+        effect: iam.Effect.ALLOW,
+        conditions: {
+          StringEquals: {
+            'kms:EncryptionContext:aws:events:event-bus:arn': props.sourceEventBus.eventBusRef.eventBusArn,
+          },
+        },
+      }));
+
+      props?.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['kms:DescribeKey'],
+        principals: [
+          new iam.ServicePrincipal('events.amazonaws.com'),
+        ],
+        sid: 'Allow EventBridge to call kms:DescribeKey',
+        effect: iam.Effect.ALLOW,
+      }));
+    }
+
+    // When an empty string is supplied to the L1 template, it means to use an AWS managed key
+    // This empty string is necessary as the definitions in the L1 requires an empty string to enforce an update that removes any previously used CMK
     let archive = new CfnArchive(this, 'Archive', {
-      sourceArn: props.sourceEventBus.eventBusArn,
+      sourceArn: props.sourceEventBus.eventBusRef.eventBusArn,
       description: props.description,
       eventPattern: renderEventPattern(props.eventPattern),
       retentionDays: props.retention?.toDays({ integral: true }) || 0,
       archiveName: this.physicalName,
+      kmsKeyIdentifier: props?.kmsKey?.keyArn || '',
     });
 
     this.archiveArn = archive.attrArn;

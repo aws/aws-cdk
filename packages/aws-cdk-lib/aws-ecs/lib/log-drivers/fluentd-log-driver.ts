@@ -1,9 +1,10 @@
-import { Construct } from 'constructs';
-import { BaseLogDriverProps } from './base-log-driver';
-import { LogDriver, LogDriverConfig } from './log-driver';
+import type { Construct } from 'constructs';
+import type { BaseLogDriverProps } from './base-log-driver';
+import type { LogDriverConfig } from './log-driver';
+import { LogDriver } from './log-driver';
 import { renderCommonLogDriverOptions, stringifyOptions } from './utils';
-import { Duration } from '../../../core';
-import { ContainerDefinition } from '../container-definition';
+import type { Duration } from '../../../core';
+import type { ContainerDefinition } from '../container-definition';
 
 /**
  * Specifies the fluentd log driver configuration options.
@@ -25,8 +26,17 @@ export interface FluentdLogDriverProps extends BaseLogDriverProps {
    * the connection is established.
    *
    * @default - false
+   * @deprecated use `async` instead
    */
   readonly asyncConnect?: boolean;
+
+  /**
+   * Docker connects to Fluentd in the background. Messages are buffered until
+   * the connection is established.
+   *
+   * @default - false
+   */
+  readonly async?: boolean;
 
   /**
    * The amount of data to buffer before flushing to disk.
@@ -79,6 +89,7 @@ export class FluentdLogDriver extends LogDriver {
       options: stringifyOptions({
         'fluentd-address': this.props.address,
         'fluentd-async-connect': this.props.asyncConnect,
+        'fluentd-async': this.props.async,
         'fluentd-buffer-limit': this.props.bufferLimit,
         'fluentd-retry-wait': this.props.retryWait && this.props.retryWait.toSeconds(),
         'fluentd-max-retries': this.props.maxRetries,

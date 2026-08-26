@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "amplify-branch-skew-protection/DefaultTest": {
+      "stacks": [
+        "cdk-amplify-branch-skew-protection"
+      ],
+      "assertionStack": "amplify-branch-skew-protection/DefaultTest/DeployAssert",
+      "assertionStackName": "amplifybranchskewprotectionDefaultTestDeployAssertA3D6DFAB"
+    }
+  },
+  "minimumCliVersion": "2.1017.1"
+}

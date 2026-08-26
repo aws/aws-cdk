@@ -6,8 +6,9 @@
 
 import * as path from 'path';
 import { Template } from '../../assertions';
-import { StackSynthesizer, FileAssetSource, FileAssetLocation, DockerImageAssetSource, DockerImageAssetLocation, ISynthesisSession, App, Stack, AssetManifestBuilder, CfnParameter, CfnResource } from '../../core';
-import { AssetManifestArtifact } from '../../cx-api';
+import type { FileAssetSource, FileAssetLocation, DockerImageAssetSource, DockerImageAssetLocation, ISynthesisSession } from '../../core';
+import { StackSynthesizer, App, Stack, AssetManifestBuilder, CfnParameter, CfnResource } from '../../core';
+import type { AssetManifestArtifact } from '../../cx-api';
 import { DockerImageAsset, TarballImageAsset } from '../lib';
 
 test('use custom synthesizer', () => {
@@ -44,7 +45,7 @@ test('use custom synthesizer', () => {
     dockerImages: expect.objectContaining({
       '0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14': {
         destinations: {
-          'current_account-current_region': {
+          'current_account-current_region-2db33560': {
             repositoryName: 'write-repo',
             imageTag: '0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14',
           },

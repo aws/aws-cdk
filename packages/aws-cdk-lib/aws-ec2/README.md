@@ -245,7 +245,7 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
 const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
     securityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443));
 for (const gateway of provider.gatewayInstances) {
-  bucket.grantWrite(gateway);
+  bucket.grants.write(gateway);
   gateway.addSecurityGroup(securityGroup);
 }
 ```
@@ -415,7 +415,7 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
       // group of the same type.
       name: 'Ingress',
 
-      // 'cidrMask' specifies the IP addresses in the range of of individual
+      // 'cidrMask' specifies the IP addresses in the range of individual
       // subnets in the group. Each of the subnets in this group will contain
       // `2^(32 address bits - 24 subnet bits) - 2 reserved addresses = 254`
       // usable IP addresses.
@@ -608,10 +608,18 @@ instance around:
 
 [sharing VPCs between stacks](test/integ.share-vpcs.lit.ts)
 
+> Note: If you encounter an error like "Delete canceled. Cannot delete export ..."
+> when using a cross-stack reference to a VPC, it's likely due to CloudFormation
+> export/import constraints. In such cases, it's safer to use Vpc.fromLookup()
+> in the consuming stack instead of directly referencing the VPC object, more details
+> is provided in [Importing an existing VPC](#importing-an-existing-vpc). This
+> avoids creating CloudFormation exports and gives more flexibility, especially
+> when stacks need to be deleted or updated independently.
+
 ### Importing an existing VPC
 
 If your VPC is created outside your CDK app, you can use `Vpc.fromLookup()`.
-The CDK CLI will search for the specified VPC in the the stack's region and
+The CDK CLI will search for the specified VPC in the stack's region and
 account, and import the subnet configuration. Looking up can be done by VPC
 ID, but more flexibly by searching for a specific tag on the VPC.
 
@@ -763,7 +771,6 @@ let peer = ec2.Peer.ipv4('10.0.0.0/16');
 peer = ec2.Peer.anyIpv4();
 peer = ec2.Peer.ipv6('::0/0');
 peer = ec2.Peer.anyIpv6();
-peer = ec2.Peer.prefixList('pl-12345');
 appFleet.connections.allowTo(peer, ec2.Port.HTTPS, 'Allow outbound HTTPS');
 ```
 
@@ -779,6 +786,26 @@ fleet1.connections.allowTo(fleet2, ec2.Port.HTTP, 'Allow between fleets');
 
 appFleet.connections.allowFromAnyIpv4(ec2.Port.HTTP, 'Allow from load balancer');
 ```
+
+A managed prefix list is also a connection peer:
+
+``` ts
+declare const appFleet: autoscaling.AutoScalingGroup;
+
+const prefixList = new ec2.PrefixList(this, 'PrefixList', { maxEntries: 10 });
+appFleet.connections.allowFrom(prefixList, ec2.Port.HTTPS);
+```
+
+#### Rule Configuration Interfaces
+
+The `IPeer` interface provides type-safe methods for generating security group rule configurations.
+The `toIngressRuleConfig()` and `toEgressRuleConfig()` methods return strongly-typed interfaces
+instead of `any`, enabling better IDE autocompletion and compile-time type checking:
+
+- `IngressRuleConfig`: Configuration for ingress rules with properties like `cidrIp`, `cidrIpv6`,
+  `sourcePrefixListId`, `sourceSecurityGroupId`, and `sourceSecurityGroupOwnerId`
+- `EgressRuleConfig`: Configuration for egress rules with properties like `cidrIp`, `cidrIpv6`,
+  `destinationPrefixListId`, and `destinationSecurityGroupId`
 
 ### Port Ranges
 
@@ -866,7 +893,10 @@ If the security group ID is known and configuration details are unknown, use met
 const sg = ec2.SecurityGroup.fromLookupById(this, 'SecurityGroupLookup', 'sg-1234');
 ```
 
-The result of `SecurityGroup.fromLookupByName` and `SecurityGroup.fromLookupById` operations will be written to a file called `cdk.context.json`. You must commit this file to source control so that the lookup values are available in non-privileged environments such as CI build steps, and to ensure your template builds are repeatable.
+The result of `SecurityGroup.fromLookupByName` and `SecurityGroup.fromLookupById` operations will be
+written to a file called `cdk.context.json`.
+You must commit this file to source control so that the lookup values are available in non-privileged
+environments such as CI build steps, and to ensure your template builds are repeatable.
 
 ### Cross Stack Connections
 
@@ -953,6 +983,13 @@ examples of images you might want to use:
 > `cdk.context.json`, or use the `cdk context` command. For more information, see
 > [Runtime Context](https://docs.aws.amazon.com/cdk/latest/guide/context.html) in the CDK
 > developer guide.
+>
+> To customize the cache key, use the `additionalCacheKey` parameter.
+> This allows you to have multiple lookups with the same parameters
+> cache their values separately. This can be useful if you want to
+> scope the context variable to a construct (ie, using `additionalCacheKey: this.node.path`),
+> so that if the value in the cache needs to be updated, it does not need to be updated
+> for all constructs at the same time.
 >
 > `MachineImage.genericLinux()`, `MachineImage.genericWindows()` will use `CfnMapping` in
 > an agnostic stack.
@@ -1078,6 +1115,18 @@ new ec2.InterfaceVpcEndpoint(this, 'VPC Endpoint', {
 });
 ```
 
+For cross-region VPC endpoints, specify the `serviceRegion` parameter:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new ec2.InterfaceVpcEndpoint(this, 'CrossRegionEndpoint', {
+  vpc,
+  service: new ec2.InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-123456', 443),
+  serviceRegion: 'us-east-1', // Same region as the service endpoint above
+});
+```
+
 #### Security groups for interface VPC endpoints
 
 By default, interface VPC endpoints create a new security group and all traffic to the endpoint from within the VPC will be automatically allowed.
@@ -1091,6 +1140,40 @@ myEndpoint.connections.allowDefaultPortFromAnyIpv4();
 ```
 
 Alternatively, existing security groups can be used by specifying the `securityGroups` prop.
+
+#### IPv6 and Dualstack support
+
+As IPv4 addresses are running out, many AWS services are adding support for IPv6 or Dualstack (IPv4 and IPv6 support) for their VPC Endpoints.
+
+IPv6 and Dualstack address types can be configured for both interface and gateway endpoints using `ipAddressType` and `dnsRecordIpType`:
+
+```ts fixture=with-vpc
+// Interface endpoint with IPv6
+vpc.addInterfaceEndpoint('ExampleEndpoint', {
+  service: ec2.InterfaceVpcEndpointAwsService.ECR,
+  ipAddressType: ec2.VpcEndpointIpAddressType.IPV6,
+  dnsRecordIpType: ec2.VpcEndpointDnsRecordIpType.IPV6,
+});
+
+// Gateway endpoint with dualstack
+vpc.addGatewayEndpoint('S3DualstackEndpoint', {
+  service: ec2.GatewayVpcEndpointAwsService.S3,
+  ipAddressType: ec2.VpcEndpointIpAddressType.DUALSTACK,
+  dnsRecordIpType: ec2.VpcEndpointDnsRecordIpType.DUALSTACK,
+});
+```
+
+The possible values for `ipAddressType` are:
+* `IPV4` This option is supported only if all selected subnets have IPv4 address ranges and the endpoint service accepts IPv4 requests.
+* `IPV6` This option is supported only if all selected subnets are IPv6 only subnets and the endpoint service accepts IPv6 requests.
+* `DUALSTACK` Assign both IPv4 and IPv6 addresses to the endpoint network interfaces. This option is supported only if all selected subnets have both IPv4 and IPv6 address ranges and the endpoint service accepts both IPv4 and IPv6 requests.
+  The possible values for `dnsRecordIpType` are:
+* `IPV4` Create A records for the private, Regional, and zonal DNS names. `ipAddressType` MUST be `IPV4` or `DUALSTACK`
+* `IPV6` Create AAAA records for the private, Regional, and zonal DNS names. `ipAddressType` MUST be `IPV6` or `DUALSTACK`
+* `DUALSTACK` Create A and AAAA records for the private, Regional, and zonal DNS names. `ipAddressType` MUST be `DUALSTACK`
+* `SERVICE_DEFINED` Create A records for the private, Regional, and zonal DNS names and AAAA records for the Regional and zonal DNS names. `ipAddressType` MUST be `DUALSTACK`
+  We can only configure dnsRecordIpType when ipAddressType is specified and private DNS must be enabled to use any DNS related features. To avoid complications, it is recommended to always set `privateDnsEnabled` to true (defaults to true) and set the `ipAddressType` and `dnsRecordIpType` explicitly when needing specific IP type behavior. Furthermore, check that the VPC being used supports the IP address type that is being configued.
+  More documentation on compatibility and specifications can be found [here](https://docs.aws.amazon.com/vpc/latest/privatelink/create-endpoint-service.html#connect-to-endpoint-service)
 
 ### VPC endpoint services
 
@@ -1230,6 +1313,34 @@ endpoint.addRoute('Route', {
 
 Use the `connections` object of the endpoint to allow traffic to other security groups.
 
+To enable [client route enforcement](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-cre.html), configure the `clientRouteEnforcementOptions.enforced` prop to `true`:
+
+```ts fixture=client-vpn
+const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
+  cidr: '10.100.0.0/16',
+  serverCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/server-certificate-id',
+  clientCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/client-certificate-id',
+  clientRouteEnforcementOptions: {
+    enforced: true,
+  },
+});
+```
+
+To control whether clients are automatically disconnected when the maximum session duration is reached, use the `disconnectOnSessionTimeout` prop.
+By default (`true`), clients are disconnected and must manually reconnect.
+Set to `false` to allow automatic reconnection attempts:
+
+```ts fixture=client-vpn
+const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
+  cidr: '10.100.0.0/16',
+  serverCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/server-certificate-id',
+  clientCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/client-certificate-id',
+  disconnectOnSessionTimeout: false, // Allow automatic reconnection attempts
+});
+```
+
+Detail information about maximum VPN session duration timeout can be found in the [AWS documentation](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-max-duration.html).
+
 ## Instances
 
 You can use the `Instance` class to start up a single EC2 instance. For production setups, we recommend
@@ -1320,6 +1431,31 @@ new ec2.Instance(this, 'LatestAl2023', {
   // context cache is turned on by default
   machineImage: new ec2.AmazonLinux2023ImageSsmParameter(),
 });
+
+// or
+new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
+  machineImage: ec2.MachineImage.latestAmazonLinux2023({
+    cachedInContext: true,
+    // creates a distinct context variable for this image, instead of resolving to the same
+    // value anywhere this lookup is done in your app
+    additionalCacheKey: this.node.path,
+  }),
+});
+
+// or
+new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
+  // context cache is turned on by default
+  machineImage: new ec2.AmazonLinux2023ImageSsmParameter({
+    // creates a distinct context variable for this image, instead of resolving to the same
+    // value anywhere this lookup is done in your app
+    additionalCacheKey: this.node.path,
+  }),
+});
+
 ```
 
 #### Kernel Versions
@@ -1791,7 +1927,7 @@ You can configure [tag propagation on volume creation](https://docs.aws.amazon.c
 
 #### Throughput on GP3 Volumes
 
-You can specify the `throughput` of a GP3 volume from 125 (default) to 1000.
+You can specify the `throughput` of a GP3 volume from 125 (default) to 2000.
 
 ```ts
 new ec2.Volume(this, 'Volume', {
@@ -1802,15 +1938,60 @@ new ec2.Volume(this, 'Volume', {
 });
 ```
 
+#### Volume initialization rate
+
+When creating an EBS volume from a snapshot, you can specify the [volume initialization rate](https://docs.aws.amazon.com/ebs/latest/userguide/initalize-volume.html#volume-initialization-rate) at which the snapshot blocks are downloaded from Amazon S3 to the volume.
+Specifying a volume initialization rate ensures that the volume is initialized at a predictable and consistent rate after creation.
+
+```ts
+new ec2.Volume(this, 'Volume', {
+  availabilityZone: 'us-east-1a',
+  size: Size.gibibytes(500),
+  snapshotId: 'snap-1234567890abcdef0',
+  volumeInitializationRate: Size.mebibytes(250),
+});
+```
+
+The `volumeInitializationRate` must be:
+
+* Between 100 and 300 MiB/s
+* Only specified when creating a volume from a snapshot
+
 ### Configuring Instance Metadata Service (IMDS)
 
-#### Toggling IMDSv1
+#### Comprehensive Metadata Options
 
-You can configure [EC2 Instance Metadata Service](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html) options to either
-allow both IMDSv1 and IMDSv2 or enforce IMDSv2 when interacting with the IMDS.
+You can configure [EC2 Instance Metadata Service](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html) options using individual properties. This provides comprehensive control over all metadata service settings:
 
-To do this for a single `Instance`, you can use the `requireImdsv2` property.
-The example below demonstrates IMDSv2 being required on a single `Instance`:
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+// Example 1: Enforce IMDSv2 with comprehensive options
+new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType,
+  machineImage,
+  httpEndpoint: true,
+  httpProtocolIpv6: false,
+  httpPutResponseHopLimit: 2,
+  httpTokens: ec2.HttpTokens.REQUIRED,
+  instanceMetadataTags: true,
+});
+
+// Example 2: Enforce IMDSv2 with minimal configuration
+new ec2.Instance(this, 'SecureInstance', {
+  vpc,
+  instanceType,
+  machineImage,
+  httpTokens: ec2.HttpTokens.REQUIRED,
+});
+```
+
+#### Simple IMDSv2 Enforcement
+
+For simple IMDSv2 enforcement without additional configuration, you can use the `requireImdsv2` property:
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -1822,11 +2003,12 @@ new ec2.Instance(this, 'Instance', {
   instanceType,
   machineImage,
 
-  // ...
-
+  // Simple IMDSv2 enforcement
   requireImdsv2: true,
 });
 ```
+
+#### Applying to Multiple Instances
 
 You can also use the either the `InstanceRequireImdsv2Aspect` for EC2 instances or the `LaunchTemplateRequireImdsv2Aspect` for EC2 launch templates
 to apply the operation to multiple instances or launch templates, respectively.
@@ -2235,10 +2417,10 @@ new ec2.FlowLog(this, 'FlowLogWithKeyPrefix', {
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 
 declare const vpc: ec2.Vpc;
-declare const deliveryStream: firehose.CfnDeliveryStream;
+declare const deliveryStream: firehose.IDeliveryStream;
 
-vpc.addFlowLog('FlowLogsKinesisDataFirehose', {
-  destination: ec2.FlowLogDestination.toKinesisDataFirehoseDestination(deliveryStream.attrArn),
+vpc.addFlowLog('FlowLogsFirehose', {
+  destination: ec2.FlowLogDestination.toFirehose(deliveryStream),
 });
 ```
 
@@ -2454,6 +2636,23 @@ const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
 });
 ```
 
+To specify the EBS Provisioned Rate for Volume Initialization for a snapshot-backed EBS volume in a launch template, use the `volumeInitializationRate` property. The snapshot can be specified explicitly with `BlockDeviceVolume.ebsFromSnapshot(...)` or inherited from the AMI block device mapping when overriding an existing AMI device such as the root volume.
+
+```ts
+const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+  blockDevices: [
+    {
+      deviceName: 'deviceName',
+      volume: ec2.BlockDeviceVolume.ebsFromSnapshot('snap-1234567890abcdef0', {
+        volumeSize: 150,
+        volumeInitializationRate: Size.mebibytes(200),
+      }),
+    },
+  ],
+});
+
+```
+
 ### Placement Group
 
 Specify `placementGroup` to enable the placement group support:
@@ -2476,7 +2675,7 @@ Please note this feature does not support Launch Configurations.
 
 ## Detailed Monitoring
 
-The following demonstrates how to enable [Detailed Monitoring](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-cloudwatch-new.html) for an EC2 instance. Keep in mind that Detailed Monitoring results in [additional charges](http://aws.amazon.com/cloudwatch/pricing/).
+The following demonstrates how to enable [Detailed Monitoring](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-cloudwatch-new.html) for an EC2 instance. Keep in mind that Detailed Monitoring results in [additional charges](https://aws.amazon.com/cloudwatch/pricing/).
 
 ```ts
 declare const vpc: ec2.Vpc;

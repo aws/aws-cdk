@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "54.0.0",
   "testCases": {
     "poetry/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "poetry/DefaultTest/DeployAssert",
       "assertionStackName": "poetryDefaultTestDeployAssertE9C9CB8F"
     }
-  }
+  },
+  "minimumCliVersion": "2.1126.0"
 }

@@ -1,10 +1,11 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CallApiGatewayEndpointBase } from './base';
-import { CallApiGatewayEndpointBaseProps, CallApiGatewayEndpointJsonataBaseProps, CallApiGatewayEndpointJsonPathBaseProps } from './base-types';
-import * as apigateway from '../../../aws-apigateway';
-import * as iam from '../../../aws-iam';
+import type { CallApiGatewayEndpointBaseProps, CallApiGatewayEndpointJsonataBaseProps, CallApiGatewayEndpointJsonPathBaseProps } from './base-types';
+import type * as apigateway from '../../../aws-apigateway';
+import type * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
 /**
  * Base properties for calling an REST API Endpoint
@@ -67,7 +68,13 @@ export interface CallApiGatewayRestApiEndpointProps extends CallApiGatewayEndpoi
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-api-gateway.html
  */
+@propertyInjectable
 export class CallApiGatewayRestApiEndpoint extends CallApiGatewayEndpointBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-stepfunctions-tasks.CallApiGatewayRestApiEndpoint';
+
   /**
    * Call REST API endpoint as a Task  using JSONPath
    *
@@ -136,7 +143,11 @@ export class CallApiGatewayRestApiEndpoint extends CallApiGatewayEndpointBase {
     super(scope, id, props);
 
     this.apiEndpoint = this.getApiEndpoint(props.region);
-    this.arnForExecuteApi = props.api.arnForExecuteApi(props.method, props.apiPath, props.stageName);
+    this.arnForExecuteApi = props.api.arnForExecuteApi(
+      props.method,
+      (props.apiPath && /^{%(.*)%}$/s.test(props.apiPath)) ? '/*' : props.apiPath,
+      props.stageName,
+    );
     this.stageName = props.stageName;
 
     this.taskPolicies = this.createPolicyStatements();

@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "rest-api-stream/DefaultTest": {
+      "stacks": [
+        "RestApiStreamStack"
+      ],
+      "assertionStack": "rest-api-stream/DefaultTest/DeployAssert",
+      "assertionStackName": "restapistreamDefaultTestDeployAssert42111EE8"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

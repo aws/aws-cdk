@@ -1,11 +1,15 @@
-import { Construct } from 'constructs';
-import { IWebSocketApi } from './api';
+import type { Construct } from 'constructs';
+import type { IWebSocketApi } from './api';
 import { CfnStage } from '.././index';
-import { Grant, IGrantable } from '../../../aws-iam';
-import { Stack } from '../../../core';
+import { AccessLogField, AccessLogFormat } from '../../../aws-apigateway';
+import type { IGrantable } from '../../../aws-iam';
+import { Grant } from '../../../aws-iam';
+import { Lazy, Stack } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
-import { StageOptions, IApi, IStage, StageAttributes } from '../common';
+import { lit } from '../../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import type { StageOptions, IApi, IStage, StageAttributes } from '../common';
 import { StageBase } from '../common/base';
 
 /**
@@ -55,7 +59,11 @@ export interface WebSocketStageAttributes extends StageAttributes {
  * Represents a stage where an instance of the API is deployed.
  * @resource AWS::ApiGatewayV2::Stage
  */
+@propertyInjectable
 export class WebSocketStage extends StageBase implements IWebSocketStage {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.WebSocketStage';
+
   /**
    * Import an existing stage into this CDK app.
    */
@@ -66,11 +74,25 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
       public readonly api = attrs.api;
 
       get url(): string {
-        throw new ValidationError('url is not available for imported stages.', scope);
+        throw new ValidationError(lit`UrlAvailableImportedStages`, 'url is not available for imported stages.', scope);
       }
 
       get callbackUrl(): string {
-        throw new ValidationError('callback url is not available for imported stages.', scope);
+        throw new ValidationError(lit`CallbackUrlAvailableImportedStages`, 'callback url is not available for imported stages.', scope);
+      }
+
+      /**
+       * CLF Log format for WebSocket API Stage.
+       *
+       * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-logging.html
+       */
+      defaultAccessLogFormat(): AccessLogFormat {
+        const requester = [AccessLogField.contextIdentitySourceIp(), AccessLogField.contextIdentityCaller(), AccessLogField.contextIdentityUser()].join(' ');
+        const requestTime = AccessLogField.contextRequestTime();
+        const request = [AccessLogField.contextEventType(), AccessLogField.contextRouteKey(), AccessLogField.contextConnectionId()].join(' ');
+        const status = [AccessLogField.contextStatus(), AccessLogField.contextRequestId()].join(' ');
+
+        return new AccessLogFormat(`${requester} [${requestTime}] "${request}" ${status}`);
       }
     }
     return new Import(scope, id);
@@ -87,6 +109,12 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    if (props.stageVariables) {
+      Object.entries(props.stageVariables).forEach(([key, value]) => {
+        this.addStageVariable(key, value);
+      });
+    }
+
     this.baseApi = props.webSocketApi;
     this.api = props.webSocketApi;
     this.stageName = this.physicalName;
@@ -101,6 +129,8 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
         detailedMetricsEnabled: props.detailedMetricsEnabled,
       } : undefined,
       description: props.description,
+      stageVariables: Lazy.any({ produce: () => this._stageVariables }),
+      accessLogSettings: this._validateAccessLogSettings(props.accessLogSettings),
     });
 
     if (props.domainMapping) {
@@ -129,6 +159,7 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
   /**
    * Grant access to the API Gateway management API for this WebSocket API Stage to an IAM
    * principal (Role/Group/User).
+   * [disable-awslint:no-grants]
    *
    * @param identity The principal
    */
@@ -144,5 +175,19 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
       actions: ['execute-api:ManageConnections'],
       resourceArns: [`${arn}/${this.stageName}/*/@connections/*`],
     });
+  }
+
+  /**
+   * CLF Log format for WebSocket API Stage.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-logging.html
+   */
+  defaultAccessLogFormat(): AccessLogFormat {
+    const requester = [AccessLogField.contextIdentitySourceIp(), AccessLogField.contextIdentityCaller(), AccessLogField.contextIdentityUser()].join(' ');
+    const requestTime = AccessLogField.contextRequestTime();
+    const request = [AccessLogField.contextEventType(), AccessLogField.contextRouteKey(), AccessLogField.contextConnectionId()].join(' ');
+    const status = [AccessLogField.contextStatus(), AccessLogField.contextRequestId()].join(' ');
+
+    return new AccessLogFormat(`${requester} [${requestTime}] "${request}" ${status}`);
   }
 }

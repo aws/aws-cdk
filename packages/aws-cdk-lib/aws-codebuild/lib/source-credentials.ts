@@ -1,7 +1,9 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnSourceCredential } from './codebuild.generated';
-import { Resource, SecretValue } from '../../core';
+import type { SecretValue } from '../../core';
+import { Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Creation properties for `GitHubSourceCredentials`.
@@ -22,7 +24,11 @@ export interface GitHubSourceCredentialsProps {
  *
  * @resource AWS::CodeBuild::SourceCredential
  */
+@propertyInjectable
 export class GitHubSourceCredentials extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codebuild.GitHubSourceCredentials';
+
   constructor(scope: Construct, id: string, props: GitHubSourceCredentialsProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
@@ -56,7 +62,11 @@ export interface GitHubEnterpriseSourceCredentialsProps {
  *
  * @resource AWS::CodeBuild::SourceCredential
  */
+@propertyInjectable
 export class GitHubEnterpriseSourceCredentials extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codebuild.GitHubEnterpriseSourceCredentials';
+
   constructor(scope: Construct, id: string, props: GitHubEnterpriseSourceCredentialsProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
@@ -90,7 +100,11 @@ export interface BitBucketSourceCredentialsProps {
  *
  * @resource AWS::CodeBuild::SourceCredential
  */
+@propertyInjectable
 export class BitBucketSourceCredentials extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codebuild.BitBucketSourceCredentials';
+
   constructor(scope: Construct, id: string, props: BitBucketSourceCredentialsProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry

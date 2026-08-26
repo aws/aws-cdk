@@ -1,0 +1,132 @@
+{
+ "Resources": {
+  "ExplicitStream4F8E3AC9": {
+   "Type": "AWS::Kinesis::Stream",
+   "Properties": {
+    "DesiredShardLevelMetrics": [
+     "IncomingBytes",
+     "IncomingRecords",
+     "IteratorAgeMilliseconds",
+     "OutgoingBytes",
+     "OutgoingRecords",
+     "WriteProvisionedThroughputExceeded",
+     "ReadProvisionedThroughputExceeded"
+    ],
+    "RetentionPeriodHours": 24,
+    "ShardCount": 1,
+    "StreamEncryption": {
+     "Fn::If": [
+      "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+      {
+       "Ref": "AWS::NoValue"
+      },
+      {
+       "EncryptionType": "KMS",
+       "KeyId": "alias/aws/kinesis"
+      }
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AllStream21BE7EBF": {
+   "Type": "AWS::Kinesis::Stream",
+   "Properties": {
+    "DesiredShardLevelMetrics": [
+     "ALL"
+    ],
+    "RetentionPeriodHours": 24,
+    "ShardCount": 1,
+    "StreamEncryption": {
+     "Fn::If": [
+      "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+      {
+       "Ref": "AWS::NoValue"
+      },
+      {
+       "EncryptionType": "KMS",
+       "KeyId": "alias/aws/kinesis"
+      }
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Conditions": {
+  "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
+   "Fn::Or": [
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "cn-north-1"
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "cn-northwest-1"
+     ]
+    }
+   ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefExplicitStream4F8E3AC9309E615E": {
+   "Value": {
+    "Ref": "ExplicitStream4F8E3AC9"
+   },
+   "Export": {
+    "Name": "kinesis-stream-shard-level-monitoring-stack:ExportsOutputRefExplicitStream4F8E3AC9309E615E"
+   }
+  },
+  "ExportsOutputRefAllStream21BE7EBFB28F7444": {
+   "Value": {
+    "Ref": "AllStream21BE7EBF"
+   },
+   "Export": {
+    "Name": "kinesis-stream-shard-level-monitoring-stack:ExportsOutputRefAllStream21BE7EBFB28F7444"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

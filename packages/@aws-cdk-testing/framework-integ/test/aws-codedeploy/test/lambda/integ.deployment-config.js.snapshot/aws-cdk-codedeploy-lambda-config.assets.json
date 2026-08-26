@@ -1,28 +1,16 @@
 {
-  "version": "36.0.0",
+  "version": "53.0.0",
   "files": {
-    "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e": {
-      "source": {
-        "path": "asset.746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e",
-        "packaging": "zip"
-      },
-      "destinations": {
-        "current_account-current_region": {
-          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e.zip",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
-        }
-      }
-    },
-    "4586b74784fc3cee3fd820f2fd642874d89fc8bb3b9c33949869634d243bccbf": {
+    "a803b38da5f172c88624913124b130d0a220e56f567c5c86e816135ae6e5ea24": {
+      "displayName": "aws-cdk-codedeploy-lambda-config Template",
       "source": {
         "path": "aws-cdk-codedeploy-lambda-config.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-9e2e3418": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "4586b74784fc3cee3fd820f2fd642874d89fc8bb3b9c33949869634d243bccbf.json",
+          "objectKey": "a803b38da5f172c88624913124b130d0a220e56f567c5c86e816135ae6e5ea24.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

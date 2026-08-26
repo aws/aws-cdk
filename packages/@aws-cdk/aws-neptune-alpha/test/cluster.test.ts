@@ -1,10 +1,10 @@
+import * as cdk from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as logs from 'aws-cdk-lib/aws-logs';
-import * as cdk from 'aws-cdk-lib';
 
 import { ClusterParameterGroup, DatabaseCluster, EngineVersion, InstanceType, LogType } from '../lib';
 
@@ -121,6 +121,7 @@ describe('DatabaseCluster', () => {
 
   test.each([
     ['1.1.1.0', EngineVersion.V1_1_1_0], ['1.2.0.0', EngineVersion.V1_2_0_0], ['1.3.0.0', EngineVersion.V1_3_0_0],
+    ['1.4.0.0', EngineVersion.V1_4_0_0],
   ])('can create a cluster for engine version %s', (expected, version) => {
     // GIVEN
     const stack = testStack();

@@ -1,20 +1,19 @@
 import * as path from 'path';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
+import { acknowledgeTestWarnings } from './test-warnings';
 import { Template } from '../../assertions';
 import * as core from '../../core';
 import * as cxapi from '../../cx-api';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
 
-/* eslint-disable quote-props */
-/* eslint-disable quotes */
-
 describe('CDK Include for templates with SAM transform', () => {
   let stack: core.Stack;
 
   beforeEach(() => {
     const app = new core.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
-    stack = new core.Stack(app);
+    acknowledgeTestWarnings(app);
+    stack = new core.Stack(app, 'Stack');
   });
 
   test('can ingest a template with only a minimal SAM function using S3Location for CodeUri, and output it unchanged', () => {

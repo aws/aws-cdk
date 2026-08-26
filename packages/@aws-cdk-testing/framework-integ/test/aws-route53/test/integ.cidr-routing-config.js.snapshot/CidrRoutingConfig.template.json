@@ -1,0 +1,126 @@
+{
+ "Resources": {
+  "HostedZoneDB99F866": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "cdk.test."
+   }
+  },
+  "CidrCollection": {
+   "Type": "AWS::Route53::CidrCollection",
+   "Properties": {
+    "Locations": [
+     {
+      "CidrList": [
+       "192.168.1.0/24"
+      ],
+      "LocationName": "test_location"
+     }
+    ],
+    "Name": "test-collection"
+   }
+  },
+  "CidrRoutingConfig2AF5DEDB": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "CidrRoutingConfig": {
+     "CollectionId": {
+      "Fn::GetAtt": [
+       "CidrCollection",
+       "Id"
+      ]
+     },
+     "LocationName": "test_location"
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "cdk.test.",
+    "ResourceRecords": [
+     "1.2.3.4"
+    ],
+    "SetIdentifier": "test",
+    "TTL": "1800",
+    "Type": "A"
+   }
+  },
+  "HostedZone280C0117C": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "cdk.test2."
+   }
+  },
+  "DefaultCidrCollection": {
+   "Type": "AWS::Route53::CidrCollection",
+   "Properties": {
+    "Locations": [
+     {
+      "CidrList": [
+       "192.168.1.0/24"
+      ],
+      "LocationName": "default_location"
+     }
+    ],
+    "Name": "default-collection"
+   }
+  },
+  "DefaultCidrRoutingConfigF2FD2A05": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "CidrRoutingConfig": {
+     "CollectionId": {
+      "Fn::GetAtt": [
+       "DefaultCidrCollection",
+       "Id"
+      ]
+     },
+     "LocationName": "*"
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZone280C0117C"
+    },
+    "Name": "cdk.test2.",
+    "ResourceRecords": [
+     "5.6.7.8"
+    ],
+    "SetIdentifier": "test2",
+    "TTL": "1800",
+    "Type": "A"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

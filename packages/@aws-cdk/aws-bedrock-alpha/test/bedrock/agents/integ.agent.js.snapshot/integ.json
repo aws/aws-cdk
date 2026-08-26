@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "BedrockAgent/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-agent-1"
+      ],
+      "assertionStack": "BedrockAgent/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockAgentDefaultTestDeployAssertB292ADF7"
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

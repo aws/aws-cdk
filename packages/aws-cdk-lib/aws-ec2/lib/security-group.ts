@@ -1,13 +1,32 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Connections } from './connections';
+import type { ISecurityGroupRef, SecurityGroupReference } from './ec2.generated';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
-import { IPeer, Peer } from './peer';
+import type { EgressRuleConfig, IngressRuleConfig, IPeer } from './peer';
+import { Peer } from './peer';
 import { Port } from './port';
-import { IVpc } from './vpc';
+import type { IVpc } from './vpc';
 import * as cxschema from '../../cloud-assembly-schema';
-import { Annotations, ContextProvider, IResource, Lazy, Names, Resource, ResourceProps, Stack, Token } from '../../core';
+import type {
+  IResource,
+  ResourceProps,
+} from '../../core';
+import {
+  Annotations,
+  ContextProvider,
+  Names,
+  Resource,
+  Stack,
+  Token,
+  ValidationError,
+} from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import * as cxapi from '../../cx-api';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type * as cxapi from '../../cx-api';
 
 const SECURITY_GROUP_SYMBOL = Symbol.for('@aws-cdk/iam.SecurityGroup');
 
@@ -16,7 +35,7 @@ const SECURITY_GROUP_DISABLE_INLINE_RULES_CONTEXT_KEY = '@aws-cdk/aws-ec2.securi
 /**
  * Interface for security group-like objects
  */
-export interface ISecurityGroup extends IResource, IPeer {
+export interface ISecurityGroup extends IResource, IPeer, ISecurityGroupRef {
   /**
    * ID for the current security group
    * @attribute
@@ -78,6 +97,12 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
     Object.defineProperty(this, SECURITY_GROUP_SYMBOL, { value: true });
   }
 
+  public get securityGroupRef(): SecurityGroupReference {
+    return {
+      securityGroupId: this.securityGroupId,
+    };
+  }
+
   public get uniqueId() {
     return Names.nodeUniqueId(this.node);
   }
@@ -118,11 +143,11 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
     }
   }
 
-  public toIngressRuleConfig(): any {
+  public toIngressRuleConfig(): IngressRuleConfig {
     return { sourceSecurityGroupId: this.securityGroupId };
   }
 
-  public toEgressRuleConfig(): any {
+  public toEgressRuleConfig(): EgressRuleConfig {
     return { destinationSecurityGroupId: this.securityGroupId };
   }
 
@@ -363,7 +388,14 @@ export interface SecurityGroupImportOptions {
  * });
  * ```
  */
+@propertyInjectable
+@noBoxStackTraces
 export class SecurityGroup extends SecurityGroupBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.SecurityGroup';
+
   /**
    * Look up a security group by id.
    *
@@ -435,7 +467,7 @@ export class SecurityGroup extends SecurityGroupBase {
    */
   private static fromLookupAttributes(scope: Construct, id: string, options: SecurityGroupLookupOptions) {
     if (Token.isUnresolved(options.securityGroupId) || Token.isUnresolved(options.securityGroupName) || Token.isUnresolved(options.vpc?.vpcId)) {
-      throw new Error('All arguments to look up a security group must be concrete (no Tokens)');
+      throw new ValidationError(lit`ArgumentsLookUpSecurityGroup`, 'All arguments to look up a security group must be concrete (no Tokens)', scope);
     }
 
     const attributes: cxapi.SecurityGroupContextResponse = ContextProvider.getValue(scope, {
@@ -490,8 +522,8 @@ export class SecurityGroup extends SecurityGroupBase {
   public readonly allowAllIpv6Outbound: boolean;
 
   private readonly securityGroup: CfnSecurityGroup;
-  private readonly directIngressRules: CfnSecurityGroup.IngressProperty[] = [];
-  private readonly directEgressRules: CfnSecurityGroup.EgressProperty[] = [];
+  private readonly directIngressRules: IArrayBox<CfnSecurityGroup.IngressProperty>;
+  private readonly directEgressRules: IArrayBox<CfnSecurityGroup.EgressProperty>;
 
   /**
    * Whether to disable optimization for inline security group rules.
@@ -514,11 +546,14 @@ export class SecurityGroup extends SecurityGroupBase {
       !!props.disableInlineRules :
       !!this.node.tryGetContext(SECURITY_GROUP_DISABLE_INLINE_RULES_CONTEXT_KEY);
 
+    this.directIngressRules = Box.fromArray();
+    this.directEgressRules = Box.fromArray();
+
     this.securityGroup = new CfnSecurityGroup(this, 'Resource', {
       groupName: this.physicalName,
       groupDescription,
-      securityGroupIngress: Lazy.any({ produce: () => this.directIngressRules }, { omitEmptyArray: true }),
-      securityGroupEgress: Lazy.any({ produce: () => this.directEgressRules }, { omitEmptyArray: true }),
+      securityGroupIngress: this.directIngressRules,
+      securityGroupEgress: this.directEgressRules,
       vpcId: props.vpc.vpcId,
     });
 
@@ -598,7 +633,7 @@ export class SecurityGroup extends SecurityGroupBase {
       // to "allOutbound=true" mode, because we might have already emitted
       // EgressRule objects (which count as rules added later) and there's no way
       // to recall those. Better to prevent this for now.
-      throw new Error('Cannot add an "all traffic" egress rule in this way; set allowAllOutbound=true (for ipv6) or allowAllIpv6Outbound=true (for ipv6) on the SecurityGroup instead.');
+      throw new ValidationError(lit`CannotAddTrafficEgressRule`, 'Cannot add an "all traffic" egress rule in this way; set allowAllOutbound=true (for ipv4) or allowAllIpv6Outbound=true (for ipv6) on the SecurityGroup instead.', this);
     }
 
     this.addDirectEgressRule(rule);

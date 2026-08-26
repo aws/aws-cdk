@@ -22,6 +22,7 @@ test('Basic canary properties work', () => {
     failureRetentionPeriod: Duration.days(10),
     startAfterCreation: false,
     timeToLive: Duration.minutes(30),
+    maxRetries: 2,
     runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
   });
 
@@ -31,8 +32,42 @@ test('Basic canary properties work', () => {
     SuccessRetentionPeriod: 10,
     FailureRetentionPeriod: 10,
     StartCanaryAfterCreation: false,
-    Schedule: Match.objectLike({ DurationInSeconds: '1800' }),
+    Schedule: Match.objectLike({ DurationInSeconds: '1800', RetryConfig: { MaxRetries: 2 } }),
     RuntimeVersion: 'syn-nodejs-puppeteer-8.0',
+  });
+});
+
+describe('Performing safe canary updates', () => {
+  test('configure dryRunAndUpdate', () => {
+    const stack = new Stack();
+
+    new synthetics.Canary(stack, 'Canary', {
+      canaryName: 'mycanary',
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_5_1,
+      dryRunAndUpdate: true,
+    });
+  });
+
+  test.each([
+    synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_5_0,
+    synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_1,
+    synthetics.Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_1_0,
+  ])('dryRunAndUpdate is not supported for runtime %s', (runtime) => {
+    const stack = new Stack();
+
+    expect(() => new synthetics.Canary(stack, 'Canary', {
+      canaryName: 'mycanary',
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+      }),
+      runtime,
+      dryRunAndUpdate: true,
+    })).toThrow(`dryRunAndUpdate is only supported for canary runtime versions 'syn-nodejs-puppeteer-10.0+', 'syn-nodejs-playwright-2.0+', or 'syn-python-selenium-5.1+', got: ${runtime.name}`);
   });
 });
 
@@ -249,7 +284,7 @@ test('Python runtime can be specified', () => {
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_4_0,
+    runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_5_0,
     test: synthetics.Test.custom({
       handler: 'index.handler',
       code: synthetics.Code.fromInline('# Synthetics handler code'),
@@ -258,7 +293,7 @@ test('Python runtime can be specified', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
-    RuntimeVersion: 'syn-python-selenium-4.0',
+    RuntimeVersion: 'syn-python-selenium-5.0',
   });
 });
 
@@ -323,7 +358,11 @@ test('throw error for enabling both cleanup and provisionedResourceCleanup', () 
 
 test.each([
   synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_2_1,
+  synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_5_1,
+  synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_6_0,
+  synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_7_0,
   synthetics.Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_1_0,
+  synthetics.Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_2_0,
 ])('throws when activeTracing is enabled with an unsupported runtime', (runtime) => {
   // GIVEN
   const stack = new Stack();
@@ -1033,7 +1072,7 @@ describe('artifact encryption test', () => {
     const stack = new Stack();
 
     // WHEN
-    const canary = new synthetics.Canary(stack, 'Canary', {
+    new synthetics.Canary(stack, 'Canary', {
       test: synthetics.Test.custom({
         handler: 'index.handler',
         code: synthetics.Code.fromInline(`
@@ -1151,5 +1190,197 @@ describe('artifact encryption test', () => {
         artifactS3EncryptionMode: synthetics.ArtifactsEncryptionMode.S3_MANAGED,
       });
     }).toThrow('Artifact encryption is only supported for canaries that use Synthetics runtime version \`syn-nodejs-puppeteer-3.3\` or later and the Playwright runtime, got syn-python-selenium-3.0.');
+  });
+});
+
+test('can configure resourcesToReplicateTags', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    canaryName: 'mycanary',
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
+    resourcesToReplicateTags: [synthetics.ResourceToReplicateTags.LAMBDA_FUNCTION],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    Name: 'mycanary',
+    ResourcesToReplicateTags: ['lambda-function'],
+  });
+});
+
+test('resourcesToReplicateTags is not included when not specified', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    canaryName: 'mycanary',
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::Synthetics::Canary', {
+    Name: 'mycanary',
+  });
+
+  const canaryResource = template.findResources('AWS::Synthetics::Canary');
+  const canaryProps = canaryResource[Object.keys(canaryResource)[0]].Properties;
+  expect(canaryProps.ResourcesToReplicateTags).toBeUndefined();
+});
+
+test('resourcesToReplicateTags can be empty array', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    canaryName: 'mycanary',
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
+    resourcesToReplicateTags: [],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    Name: 'mycanary',
+    ResourcesToReplicateTags: [],
+  });
+});
+
+describe('Browser configurations', () => {
+  test('can set multiple browser configs', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new synthetics.Canary(stack, 'Canary', {
+      canaryName: 'mycanary',
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_2_0,
+      browserConfigs: [
+        synthetics.BrowserType.CHROME,
+        synthetics.BrowserType.FIREFOX,
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      BrowserConfigs: [
+        { BrowserType: 'CHROME' },
+        { BrowserType: 'FIREFOX' },
+      ],
+    });
+  });
+
+  test('throws error when more than 2 browser configs', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN/THEN
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary', {
+        canaryName: 'mycanary',
+        test: synthetics.Test.custom({
+          handler: 'index.handler',
+          code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_1,
+        browserConfigs: [
+          synthetics.BrowserType.CHROME,
+          synthetics.BrowserType.FIREFOX,
+          synthetics.BrowserType.CHROME, // 3rd config
+        ],
+      });
+    }).toThrow('You can specify up to 2 browser configurations, got: 3.');
+  });
+
+  test('throws error when empty array', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN/THEN
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary', {
+        canaryName: 'mycanary',
+        test: synthetics.Test.custom({
+          handler: 'index.handler',
+          code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_1,
+        browserConfigs: [],
+      });
+    }).toThrow('browserConfigs must contain at least one browser type if specified.');
+  });
+
+  test('throws error when Firefox is used with Python Selenium runtime', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN/THEN
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary', {
+        canaryName: 'mycanary',
+        test: synthetics.Test.custom({
+          handler: 'index.handler',
+          code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_7_0,
+        browserConfigs: [synthetics.BrowserType.FIREFOX],
+      });
+    }).toThrow('Firefox browser is not supported with Python Selenium runtimes. Use Chrome instead or switch to a Node.js runtime with Puppeteer or Playwright.');
+  });
+});
+
+describe('Canary import', () => {
+  test('can import canary by ARN', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'ImportStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    // WHEN
+    const canary = synthetics.Canary.fromCanaryArn(
+      stack,
+      'ImportedCanary',
+      'arn:aws:synthetics:us-east-1:123456789012:canary:my-canary',
+    );
+
+    // THEN
+    expect(canary.canaryName).toBe('my-canary');
+    expect(canary.canaryId).toBe('my-canary');
+    expect(canary.canaryArn).toBe(`arn:${stack.partition}:synthetics:us-east-1:123456789012:canary:my-canary`);
+  });
+
+  test('can import canary by name', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'ImportStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    // WHEN
+    const canary = synthetics.Canary.fromCanaryName(stack, 'ImportedCanary', 'my-canary');
+
+    // THEN
+    expect(canary.canaryName).toBe('my-canary');
+    expect(canary.canaryId).toBe('my-canary');
+    expect(canary.canaryArn).toBe(`arn:${stack.partition}:synthetics:us-east-1:123456789012:canary:my-canary`);
   });
 });

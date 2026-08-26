@@ -1,6 +1,7 @@
 export * from './engine';
 export * from './engine-version';
 export * from './ca-certificate';
+export * from './database-insights-mode';
 export * from './cluster';
 export * from './cluster-ref';
 export * from './cluster-engine';
@@ -12,6 +13,7 @@ export * from './endpoint';
 export * from './option-group';
 export * from './instance';
 export * from './proxy';
+export * from './proxy-endpoint';
 export * from './serverless-cluster';
 export * from './subnet-group';
 export * from './aurora-cluster-instance';

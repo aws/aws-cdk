@@ -2,13 +2,14 @@ import { Vpc } from '../../aws-ec2';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
-import { Lazy, Stack } from '../../core';
+import { Lazy, Stack, Tokenization } from '../../core';
 import { Source } from '../lib';
 import { renderData } from '../lib/render-data';
 
+const expectEqualIfResolved = (stack: Stack, a: any, b: any) => expect(stack.resolve(a)).toStrictEqual(stack.resolve(b));
+
 test('simple string', () => {
-  const stack = new Stack();
-  expect(renderData(stack, 'foo')).toStrictEqual({
+  expect(renderData('foo')).toStrictEqual({
     markers: {},
     text: 'foo',
   });
@@ -18,9 +19,9 @@ test('string with a "Ref" token', () => {
   const stack = new Stack();
   const bucket = new s3.Bucket(stack, 'Bucket');
 
-  expect(renderData(stack, `foo-${bucket.bucketName}`)).toStrictEqual({
+  expect(renderData(`foo-${bucket.bucketName}`)).toStrictEqual({
     text: 'foo-<<marker:0xbaba:0>>',
-    markers: { '<<marker:0xbaba:0>>': { Ref: 'Bucket83908E77' } },
+    markers: { '<<marker:0xbaba:0>>': bucket.bucketName },
   });
 });
 
@@ -28,49 +29,9 @@ test('string is a single "Ref" token', () => {
   const stack = new Stack();
   const bucket = new s3.Bucket(stack, 'Bucket');
 
-  expect(renderData(stack, bucket.bucketName)).toStrictEqual({
+  expect(renderData(bucket.bucketName)).toStrictEqual({
     text: '<<marker:0xbaba:0>>',
-    markers: { '<<marker:0xbaba:0>>': { Ref: 'Bucket83908E77' } },
-  });
-});
-
-test('string is a single "Fn::GetAtt" token', () => {
-  const stack = new Stack();
-  const bucket = new s3.Bucket(stack, 'Bucket');
-
-  expect(renderData(stack, bucket.bucketRegionalDomainName)).toStrictEqual({
-    text: '<<marker:0xbaba:0>>',
-    markers: { '<<marker:0xbaba:0>>': { 'Fn::GetAtt': ['Bucket83908E77', 'RegionalDomainName'] } },
-  });
-});
-
-test('string with a "Fn::GetAtt" token', () => {
-  const stack = new Stack();
-  const bucket = new s3.Bucket(stack, 'Bucket');
-
-  expect(renderData(stack, `foo-${bucket.bucketArn}`)).toStrictEqual({
-    text: 'foo-<<marker:0xbaba:0>>',
-    markers: { '<<marker:0xbaba:0>>': { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] } },
-  });
-});
-
-test('string is a single "Fn::Select" token', () => {
-  const stack = new Stack();
-  const bucket = new s3.Bucket(stack, 'Bucket');
-
-  expect(renderData(stack, bucket.bucketWebsiteDomainName)).toStrictEqual({
-    text: '<<marker:0xbaba:0>>',
-    markers: { '<<marker:0xbaba:0>>': { 'Fn::Select': [2, { 'Fn::Split': ['/', { 'Fn::GetAtt': ['Bucket83908E77', 'WebsiteURL'] }] }] } },
-  });
-});
-
-test('string with a "Fn::Select" token', () => {
-  const stack = new Stack();
-  const bucket = new s3.Bucket(stack, 'Bucket');
-
-  expect(renderData(stack, `test.${bucket.bucketWebsiteDomainName}`)).toStrictEqual({
-    text: 'test.<<marker:0xbaba:0>>',
-    markers: { '<<marker:0xbaba:0>>': { 'Fn::Select': [2, { 'Fn::Split': ['/', { 'Fn::GetAtt': ['Bucket83908E77', 'WebsiteURL'] }] }] } },
+    markers: { '<<marker:0xbaba:0>>': bucket.bucketName },
   });
 });
 
@@ -78,11 +39,11 @@ test('multiple markers', () => {
   const stack = new Stack();
   const bucket = new s3.Bucket(stack, 'Bucket');
 
-  expect(renderData(stack, `boom-${bucket.bucketName}-bam-${bucket.bucketArn}`)).toStrictEqual({
+  expect(renderData(`boom-${bucket.bucketName}-bam-${bucket.bucketArn}`)).toStrictEqual({
     text: 'boom-<<marker:0xbaba:0>>-bam-<<marker:0xbaba:1>>',
     markers: {
-      '<<marker:0xbaba:0>>': { Ref: 'Bucket83908E77' },
-      '<<marker:0xbaba:1>>': { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] },
+      '<<marker:0xbaba:0>>': bucket.bucketName,
+      '<<marker:0xbaba:1>>': bucket.bucketArn,
     },
   });
 });
@@ -98,23 +59,23 @@ test('json-encoded string', () => {
     BucketName: bucket.bucketName,
     ComplexFnSelect: tg.firstLoadBalancerFullName + '/' + tg.targetGroupFullName,
   };
+  const firstLoadBalancerFullNameTokens = Tokenization.reverseString(tg.firstLoadBalancerFullName).tokens;
 
   const expectedTextResult = {
     BucketArn: '<<marker:0xbaba:0>>',
     BucketName: '<<marker:0xbaba:1>>',
     ComplexFnSelect: '<<marker:0xbaba:2>>/<<marker:0xbaba:3>>/<<marker:0xbaba:4>>/<<marker:0xbaba:5>>',
   };
-  expect(renderData(stack, JSON.stringify(json))).toStrictEqual({
-    text: JSON.stringify(expectedTextResult),
-    markers: {
-      '<<marker:0xbaba:0>>': { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] },
-      '<<marker:0xbaba:1>>': { Ref: 'Bucket83908E77' },
-      '<<marker:0xbaba:2>>': { 'Fn::Select': [1, { 'Fn::Split': ['/', { Ref: 'LBListener49E825B4' }] }] },
-      '<<marker:0xbaba:3>>': { 'Fn::Select': [2, { 'Fn::Split': ['/', { Ref: 'LBListener49E825B4' }] }] },
-      '<<marker:0xbaba:4>>': { 'Fn::Select': [3, { 'Fn::Split': ['/', { Ref: 'LBListener49E825B4' }] }] },
-      '<<marker:0xbaba:5>>': { 'Fn::GetAtt': ['TargetGroup3D7CD9B8', 'TargetGroupFullName'] },
-    },
-  });
+
+  const renderedData = renderData(JSON.stringify(json));
+
+  expect(renderedData.text).toStrictEqual(JSON.stringify(expectedTextResult));
+  expect(renderedData.markers['<<marker:0xbaba:0>>']).toStrictEqual(bucket.bucketArn);
+  expect(renderedData.markers['<<marker:0xbaba:1>>']).toStrictEqual(bucket.bucketName);
+  expectEqualIfResolved(stack, renderedData.markers['<<marker:0xbaba:2>>'], firstLoadBalancerFullNameTokens[0].toString());
+  expectEqualIfResolved(stack, renderedData.markers['<<marker:0xbaba:3>>'], firstLoadBalancerFullNameTokens[1].toString());
+  expectEqualIfResolved(stack, renderedData.markers['<<marker:0xbaba:4>>'], firstLoadBalancerFullNameTokens[2].toString());
+  expect(renderedData.markers['<<marker:0xbaba:5>>']).toStrictEqual(tg.targetGroupFullName);
 });
 
 test('markers are returned in the source config', () => {
@@ -122,35 +83,54 @@ test('markers are returned in the source config', () => {
   const handler = new lambda.Function(stack, 'Handler', { runtime: lambda.Runtime.NODEJS_LATEST, code: lambda.Code.fromInline('foo'), handler: 'index.handler' });
   const actual = Source.data('file1.txt', `boom-${stack.account}`).bind(stack, { handlerRole: handler.role! });
   expect(actual.markers).toStrictEqual({
-    '<<marker:0xbaba:0>>': { Ref: 'AWS::AccountId' },
+    '<<marker:0xbaba:0>>': stack.account,
   });
 });
 
-test('lazy string which can be fully resolved', () => {
-  const stack = new Stack();
-
-  expect(renderData(stack, Lazy.string({ produce: () => 'resolved!' }))).toStrictEqual({
-    text: 'resolved!',
-    markers: { },
-  });
-});
-
-test('lazy within a string which can be fully resolved', () => {
-  const stack = new Stack();
+test('lazy string is not resolved', () => {
   const token = Lazy.string({ produce: () => 'resolved!' });
 
-  expect(renderData(stack, `hello, ${token}`)).toStrictEqual({
-    text: 'hello, resolved!',
-    markers: { },
+  expect(renderData(token)).toStrictEqual({
+    text: '<<marker:0xbaba:0>>',
+    markers: {
+      '<<marker:0xbaba:0>>': token,
+    },
   });
 });
 
-test('lazy string which resolves to something with a deploy-time value', () => {
-  const stack = new Stack();
+test('lazy within a string is not resolved', () => {
   const token = Lazy.string({ produce: () => 'resolved!' });
 
-  expect(renderData(stack, `hello, ${token}`)).toStrictEqual({
-    text: 'hello, resolved!',
-    markers: { },
+  expect(renderData(`hello, ${token}`)).toStrictEqual({
+    text: 'hello, <<marker:0xbaba:0>>',
+    markers: {
+      '<<marker:0xbaba:0>>': token,
+    },
   });
+});
+
+test('renderData can render empty string data', () => {
+  expect(renderData('')).toStrictEqual({
+    markers: {},
+    text: '',
+  });
+});
+
+test('Source.data with empty string does not throw error', () => {
+  const stack = new Stack();
+  const handler = new lambda.Function(stack, 'Handler', {
+    runtime: lambda.Runtime.NODEJS_LATEST,
+    code: lambda.Code.fromInline('foo'),
+    handler: 'index.handler',
+  });
+
+  // This is the exact reproduction case from issue #35809
+  // Before the fix, this would throw: "The "data" argument must be of type string... Received undefined"
+  expect(() => {
+    const source = Source.data('path/to/empty', '');
+    const actual = source.bind(stack, { handlerRole: handler.role! });
+    expect(actual.markers).toStrictEqual({});
+    expect(actual.bucket).toBeDefined();
+    expect(actual.zipObjectKey).toBeDefined();
+  }).not.toThrow();
 });

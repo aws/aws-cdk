@@ -1,6 +1,6 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { PublicHostedZone, VpcEndpointServiceDomainName } from 'aws-cdk-lib/aws-route53';
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 
@@ -30,7 +30,11 @@ class DummyEndpointLoadBalancer implements ec2.IVpcEndpointServiceLoadBalancer {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-cdk-vpc-endpoint-dns-integ');
 const vpc = new ec2.Vpc(stack, 'VPC', { restrictDefaultSecurityGroup: false });
 const nlb = new DummyEndpointLoadBalancer(stack, 'mylb', vpc);

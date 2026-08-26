@@ -1,7 +1,7 @@
 import { Code, Function } from 'aws-cdk-lib/aws-lambda';
 import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { LambdaRestApi, PassthroughBehavior } from 'aws-cdk-lib/aws-apigateway';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
@@ -34,7 +34,11 @@ class LambdaApiIntegrationOptionsNonProxyIntegrationStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const testCase = new LambdaApiIntegrationOptionsNonProxyIntegrationStack(app);
 new IntegTest(app, 'lambda-non-proxy-integration', {
   testCases: [testCase],

@@ -1,0 +1,193 @@
+{
+ "Resources": {
+  "modelschemaapi9C215193": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Name": "Model Schema Test API"
+   }
+  },
+  "modelschemaapiDeploymentC7D4982Cc02c0744ba09d7d641fdba42094183f8": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Automatically created by the RestApi construct",
+    "RestApiId": {
+     "Ref": "modelschemaapi9C215193"
+    }
+   },
+   "DependsOn": [
+    "modelschemaapiPOST5FB5AEAA",
+    "modelschemaapiTagsModelFCCA8255",
+    "modelschemaapiTagsValidatorB38D3476"
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
+  },
+  "modelschemaapiDeploymentStageprodEF543582": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "modelschemaapiDeploymentC7D4982Cc02c0744ba09d7d641fdba42094183f8"
+    },
+    "RestApiId": {
+     "Ref": "modelschemaapi9C215193"
+    },
+    "StageName": "prod"
+   }
+  },
+  "modelschemaapiPOST5FB5AEAA": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "StatusCode": "200"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ \"statusCode\": 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "StatusCode": "200"
+     }
+    ],
+    "RequestModels": {
+     "application/json": {
+      "Ref": "modelschemaapiTagsModelFCCA8255"
+     }
+    },
+    "RequestValidatorId": {
+     "Ref": "modelschemaapiTagsValidatorB38D3476"
+    },
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "modelschemaapi9C215193",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "modelschemaapi9C215193"
+    }
+   }
+  },
+  "modelschemaapiTagsModelFCCA8255": {
+   "Type": "AWS::ApiGateway::Model",
+   "Properties": {
+    "ContentType": "application/json",
+    "Name": "Tags",
+    "RestApiId": {
+     "Ref": "modelschemaapi9C215193"
+    },
+    "Schema": {
+     "type": "object",
+     "required": [
+      "tags"
+     ],
+     "properties": {
+      "tags": {
+       "type": "array",
+       "items": [
+        {
+         "type": "string",
+         "enum": [
+          "primary"
+         ]
+        },
+        {
+         "type": "string",
+         "enum": [
+          "secondary"
+         ]
+        }
+       ],
+       "additionalItems": {
+        "type": "string",
+        "pattern": "^[a-z0-9-]+$"
+       },
+       "minItems": 1,
+       "maxItems": 5
+      }
+     },
+     "$schema": "http://json-schema.org/draft-04/schema#"
+    }
+   }
+  },
+  "modelschemaapiTagsValidatorB38D3476": {
+   "Type": "AWS::ApiGateway::RequestValidator",
+   "Properties": {
+    "Name": "TagsValidator",
+    "RestApiId": {
+     "Ref": "modelschemaapi9C215193"
+    },
+    "ValidateRequestBody": true
+   }
+  }
+ },
+ "Outputs": {
+  "modelschemaapiEndpoint16CC9BD3": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "modelschemaapi9C215193"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "modelschemaapiDeploymentStageprodEF543582"
+      },
+      "/"
+     ]
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

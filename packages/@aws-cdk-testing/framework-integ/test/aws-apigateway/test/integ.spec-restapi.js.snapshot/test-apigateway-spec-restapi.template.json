@@ -3,6 +3,10 @@
   "myapi4C7BF186": {
    "Type": "AWS::ApiGateway::RestApi",
    "Properties": {
+    "BinaryMediaTypes": [
+     "image/png",
+     "application/pdf"
+    ],
     "BodyS3Location": {
      "Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
@@ -11,6 +15,7 @@
     },
     "DisableExecuteApiEndpoint": true,
     "MinimumCompressionSize": 1024,
+    "Mode": "merge",
     "Name": "my-api"
    }
   },
@@ -517,7 +522,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "myapiDeployment92F2CB492c49d8fa05ada8b5cddee1ce76138bd0": {
+  "myapiDeployment92F2CB49a6f2b34c48304b5ea39e505074a5a8ee": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "beta stage",
@@ -538,7 +543,10 @@
     "myapiv1toysA55FCBC4"
    ],
    "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "myapiDeploymentStagebeta96434BEB": {
    "Type": "AWS::ApiGateway::Stage",
@@ -546,7 +554,7 @@
     "CacheClusterEnabled": true,
     "CacheClusterSize": "0.5",
     "DeploymentId": {
-     "Ref": "myapiDeployment92F2CB492c49d8fa05ada8b5cddee1ce76138bd0"
+     "Ref": "myapiDeployment92F2CB49a6f2b34c48304b5ea39e505074a5a8ee"
     },
     "Description": "beta stage",
     "MethodSettings": [
@@ -674,7 +682,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "MyHandlerServiceRoleFFA06653"

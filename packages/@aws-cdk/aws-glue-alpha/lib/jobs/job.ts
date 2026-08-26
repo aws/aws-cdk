@@ -1,13 +1,16 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as logs from 'aws-cdk-lib/aws-logs';
+import type * as logs from 'aws-cdk-lib/aws-logs';
 import * as cdk from 'aws-cdk-lib/core';
-import * as constructs from 'constructs';
-import { Code } from '../code';
-import { MetricType, JobState, WorkerType, GlueVersion } from '../constants';
-import { IConnection } from '../connection';
-import { ISecurityConfiguration } from '../security-configuration';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+import type * as constructs from 'constructs';
+import type { Code } from '../code';
+import type { IConnection } from '../connection';
+import type { MetricType, GlueVersion } from '../constants';
+import { JobState } from '../constants';
+import { warnOnPlaintextSecrets } from '../private/secret-detection';
+import type { ISecurityConfiguration } from '../security-configuration';
 
 /**
  * Interface representing a new or an imported Glue Job
@@ -341,23 +344,6 @@ export interface JobProps {
   readonly description?: string;
 
   /**
-   * Number of Workers (optional)
-   * Number of workers for Glue to use during job execution
-   *
-   * @default 10
-   */
-  readonly numberOfWorkers?: number;
-
-  /**
-   * Worker Type (optional)
-   * Type of Worker for Glue to use during job execution
-   * Enum options: Standard, G_1X, G_2X, G_025X. G_4X, G_8X, Z_2X
-   *
-   * @default WorkerType.G_1X
-   */
-  readonly workerType?: WorkerType;
-
-  /**
    * Max Concurrent Runs (optional)
    * The maximum number of runs this Glue job can concurrently run
    *
@@ -372,6 +358,11 @@ export interface JobProps {
    * Default Arguments (optional)
    * The default arguments for every run of this Glue job,
    * specified as name-value pairs.
+   *
+   * These are emitted verbatim into the CloudFormation template, so avoid
+   * placing secrets here in plaintext. Pass secrets to the job at runtime
+   * through AWS Secrets Manager instead. A synthesis-time warning is emitted
+   * when an argument key looks like a credential and holds a plaintext literal.
    *
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    * for a list of reserved parameters
@@ -431,15 +422,6 @@ export interface JobProps {
   readonly glueVersion?: GlueVersion;
 
   /**
-   * Enables the collection of metrics for job profiling.
-   *
-   * @default - no profiling metrics emitted.
-   *
-   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  readonly enableProfilingMetrics? :boolean;
-
-  /**
    * Enables continuous logging with the specified props.
    *
    * @default - continuous logging is enabled.
@@ -488,10 +470,16 @@ export abstract class Job extends JobBase {
       const reservedArgs = new Set(['--debug', '--mode', '--JOB_NAME']);
       Object.keys(defaultArguments).forEach((arg) => {
         if (reservedArgs.has(arg)) {
-          throw new Error(`The ${arg} argument is reserved by Glue. Don't set it`);
+          throw new cdk.ValidationError(lit`ReservedArgumentUsed`, `The ${arg} argument is reserved by Glue. Don't set it`, this);
         }
       });
     }
+    warnOnPlaintextSecrets(
+      this,
+      defaultArguments,
+      '@aws-cdk/aws-glue-alpha:plaintextJobArgumentSecret',
+      'Pass secrets to the job at runtime through AWS Secrets Manager instead of embedding them in `defaultArguments`.',
+    );
     return defaultArguments;
   }
 

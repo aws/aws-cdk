@@ -4,7 +4,11 @@ import * as cognito from 'aws-cdk-lib/aws-cognito';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new Stack(app, 'UserPoolPreTokenGenerationStack');
 
 const triggerLambda = new lambda.Function(stack, 'PreTokenGenerationLambda', {

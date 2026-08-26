@@ -56,6 +56,9 @@
     "FunctionName": {
      "Ref": "MyFunction3BAA72D1"
     }
+   },
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
    }
   },
   "MyFunctionAliasLive372006BC": {

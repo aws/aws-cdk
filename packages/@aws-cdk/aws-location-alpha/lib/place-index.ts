@@ -1,9 +1,12 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { ArnFormat, IResource, Lazy, Resource, Stack, Token } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
 import { CfnPlaceIndex } from 'aws-cdk-lib/aws-location';
-import { DataSource, generateUniqueId } from './util';
+import type { IResource } from 'aws-cdk-lib/core';
+import { ArnFormat, Lazy, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import { DataSource, generateUniqueId } from './util';
 
 /**
  * A Place Index
@@ -80,7 +83,11 @@ export enum IntendedUse {
  *
  * @see https://docs.aws.amazon.com/location/latest/developerguide/places-concepts.html
  */
+@propertyInjectable
 export class PlaceIndex extends Resource implements IPlaceIndex {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-location-alpha.PlaceIndex';
+
   /**
    * Use an existing place index by name
    */
@@ -101,7 +108,7 @@ export class PlaceIndex extends Resource implements IPlaceIndex {
     const parsedArn = Stack.of(scope).splitArn(placeIndexArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
-      throw new Error(`Place Index Arn ${placeIndexArn} does not have a resource name.`);
+      throw new UnscopedValidationError(lit`PlaceIndexArnMissingResourceName`, `Place Index Arn ${placeIndexArn} does not have a resource name.`);
     }
 
     class Import extends Resource implements IPlaceIndex {
@@ -134,25 +141,25 @@ export class PlaceIndex extends Resource implements IPlaceIndex {
   public readonly placeIndexUpdateTime: string;
 
   constructor(scope: Construct, id: string, props: PlaceIndexProps = {}) {
-    if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
-      throw new Error(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`);
-    }
-
-    if (props.placeIndexName !== undefined && !Token.isUnresolved(props.placeIndexName)) {
-      if (props.placeIndexName.length < 1 || props.placeIndexName.length > 100) {
-        throw new Error(`\`placeIndexName\` must be between 1 and 100 characters, got: ${props.placeIndexName.length} characters.`);
-      }
-
-      if (!/^[-._\w]+$/.test(props.placeIndexName)) {
-        throw new Error(`\`placeIndexName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.placeIndexName}.`);
-      }
-    }
-
     super(scope, id, {
       physicalName: props.placeIndexName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
+      throw new ValidationError(lit`PlaceIndexDescriptionTooLong`, `\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`, this);
+    }
+
+    if (props.placeIndexName !== undefined && !Token.isUnresolved(props.placeIndexName)) {
+      if (props.placeIndexName.length < 1 || props.placeIndexName.length > 100) {
+        throw new ValidationError(lit`PlaceIndexNameInvalidLength`, `\`placeIndexName\` must be between 1 and 100 characters, got: ${props.placeIndexName.length} characters.`, this);
+      }
+
+      if (!/^[-._\w]+$/.test(props.placeIndexName)) {
+        throw new ValidationError(lit`PlaceIndexNameInvalidCharacters`, `\`placeIndexName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.placeIndexName}.`, this);
+      }
+    }
 
     const placeIndex = new CfnPlaceIndex(this, 'Resource', {
       indexName: this.physicalName,
@@ -171,6 +178,7 @@ export class PlaceIndex extends Resource implements IPlaceIndex {
 
   /**
    * Grant the given principal identity permissions to perform the actions on this place index.
+   * [disable-awslint:no-grants]
    */
   @MethodMetadata()
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
@@ -183,6 +191,7 @@ export class PlaceIndex extends Resource implements IPlaceIndex {
 
   /**
    * Grant the given identity permissions to search using this index
+   * [disable-awslint:no-grants]
    */
   @MethodMetadata()
   public grantSearch(grantee: iam.IGrantable): iam.Grant {

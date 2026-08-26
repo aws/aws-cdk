@@ -1,6 +1,7 @@
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
@@ -32,14 +33,14 @@ class TestStack extends Stack {
     });
 
     const statemachine = new sfn.StateMachine(this, 'StateMachine', {
-      definition: sum
+      definitionBody: sfn.DefinitionBody.fromChainable(sum
         .next(multiply)
         .next(
           new sfn.Wait(this, 'Wait', {
             time: sfn.WaitTime.secondsPath('$.d'),
           }),
         )
-        .next(now),
+        .next(now)),
     });
 
     new cdk.CfnOutput(this, 'StateMachineARN', {
@@ -48,7 +49,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 new integ.IntegTest(app, 'EvaluateExpressionInteg', {
   testCases: [new TestStack(app, 'cdk-sfn-evaluate-expression-default-runtime-integ')],

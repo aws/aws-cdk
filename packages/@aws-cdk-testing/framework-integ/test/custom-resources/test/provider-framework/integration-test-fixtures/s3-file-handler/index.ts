@@ -1,12 +1,11 @@
 /// <reference path="../../../../../../../../../node_modules/aws-cdk-lib/custom-resources/lib/provider-framework/types.d.ts" />
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable no-console */
+
 import { S3 } from '@aws-sdk/client-s3';
 import * as api from './api';
 
 const s3 = new S3();
 
-export async function onEvent(event: AWSCDKAsyncCustomResource.OnEventRequest) {
+export async function onEvent(event: AWSCDKAsyncCustomResource.OnEventRequest): Promise<AWSCDKAsyncCustomResource.OnEventResponse | void> {
   switch (event.RequestType) {
     case 'Create':
     case 'Update':

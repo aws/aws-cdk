@@ -1,17 +1,26 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { AppSyncEventResource } from './appsync-common';
 import { CfnChannelNamespace } from './appsync.generated';
-import { AppSyncAuthorizationType } from './auth-config';
-import { Code } from './code';
-import { IEventApi } from './eventapi';
-import { IGrantable } from '../../aws-iam';
-import { IResource, Resource, Token, ValidationError } from '../../core';
+import type { AppSyncAuthorizationType } from './auth-config';
+import type { Code } from './code';
+import type { AppSyncBackedDataSource } from './data-source-common';
+import {
+  AppSyncDataSourceType,
+  LambdaInvokeType,
+} from './data-source-common';
+import type { IEventApi } from './eventapi';
+import type { IGrantable } from '../../aws-iam';
+import type { IResource } from '../../core';
+import { Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IChannelNamespaceRef, ChannelNamespaceReference } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
 /**
  * An AppSync channel namespace
  */
-export interface IChannelNamespace extends IResource {
+export interface IChannelNamespace extends IResource, IChannelNamespaceRef {
   /**
    * The ARN of the AppSync channel namespace
    *
@@ -38,6 +47,46 @@ export interface NamespaceAuthConfig {
 }
 
 /**
+ * Enumerated type for the handler behavior for a channel namespace
+ */
+export enum HandlerBehavior {
+  /**
+   * Code handler
+   */
+  CODE = 'CODE',
+  /**
+   * Direct integration handler
+   */
+  DIRECT = 'DIRECT',
+}
+
+/**
+ * Handler configuration construct for onPublish and onSubscribe
+ */
+export interface HandlerConfig {
+  /**
+   * If the Event Handler should invoke the data source directly
+   *
+   * @default - false
+   */
+  readonly direct?: boolean;
+
+  /**
+   * The Event Handler data source
+   *
+   * @default - no data source is used
+   */
+  readonly dataSource?: AppSyncBackedDataSource;
+
+  /**
+   * The Lambda invocation type for direct integrations
+   *
+   * @default - LambdaInvokeType.REQUEST_RESPONSE
+   */
+  readonly lambdaInvokeType?: LambdaInvokeType;
+}
+
+/**
  * the base properties for a channel namespace
  */
 export interface BaseChannelNamespaceProps {
@@ -54,6 +103,20 @@ export interface BaseChannelNamespaceProps {
    * @default - no code is used
    */
   readonly code?: Code;
+
+  /**
+   * onPublish handler config
+   *
+   * @default - no handler config
+   */
+  readonly publishHandlerConfig?: HandlerConfig;
+
+  /**
+   * onSubscribe handler config
+   *
+   * @default - no handler config
+   */
+  readonly subscribeHandlerConfig?: HandlerConfig;
 
   /**
    * Authorization config for channel namespace
@@ -92,6 +155,20 @@ export interface ChannelNamespaceOptions {
   readonly code?: Code;
 
   /**
+   * onPublish handler config
+   *
+   * @default - no handler config
+   */
+  readonly publishHandlerConfig?: HandlerConfig;
+
+  /**
+   * onSubscribe handler config
+   *
+   * @default - no handler config
+   */
+  readonly subscribeHandlerConfig?: HandlerConfig;
+
+  /**
    * Authorization config for channel namespace
    *
    * @default - defaults to Event API default auth config
@@ -102,13 +179,22 @@ export interface ChannelNamespaceOptions {
 /**
  * A Channel Namespace
  */
+@propertyInjectable
 export class ChannelNamespace extends Resource implements IChannelNamespace {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appsync.ChannelNamespace';
+
   /**
    * Use an existing channel namespace by ARN
    */
   public static fromChannelNamespaceArn(scope: Construct, id: string, channelNamespaceArn: string): IChannelNamespace {
     class Import extends Resource implements IChannelNamespace {
       public readonly channelNamespaceArn = channelNamespaceArn;
+      public get channelNamespaceRef(): ChannelNamespaceReference {
+        return {
+          channelNamespaceArn: this.channelNamespaceArn,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -125,7 +211,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
   constructor(scope: Construct, id: string, props: ChannelNamespaceProps) {
     if (props.channelNamespaceName !== undefined && !Token.isUnresolved(props.channelNamespaceName)) {
       if (props.channelNamespaceName.length < 1 || props.channelNamespaceName.length > 50) {
-        throw new ValidationError(`\`channelNamespaceName\` must be between 1 and 50 characters, got: ${props.channelNamespaceName.length} characters.`, scope);
+        throw new ValidationError(lit`ChannelNamespaceLengthInvalid`, `\`channelNamespaceName\` must be between 1 and 50 characters, got: ${props.channelNamespaceName.length} characters.`, scope);
       }
     }
 
@@ -135,18 +221,55 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    this.validateHandlerConfig(props);
     const code = props.code?.bind(this);
+
+    let handlerConfig: { [key: string]: any } = {};
+
+    if (props.publishHandlerConfig) {
+      handlerConfig = {
+        onPublish: {
+          behavior: props.publishHandlerConfig?.direct ? HandlerBehavior.DIRECT : HandlerBehavior.CODE,
+          integration: {
+            dataSourceName: props.publishHandlerConfig?.dataSource?.name || '',
+          },
+        },
+      };
+
+      if (handlerConfig.onPublish.behavior === HandlerBehavior.DIRECT) {
+        handlerConfig.onPublish.integration.lambdaConfig = {
+          invokeType: props.publishHandlerConfig?.lambdaInvokeType || LambdaInvokeType.REQUEST_RESPONSE,
+        };
+      }
+    }
+
+    if (props.subscribeHandlerConfig) {
+      handlerConfig = {
+        ...handlerConfig,
+        onSubscribe: {
+          behavior: props.subscribeHandlerConfig?.direct ? HandlerBehavior.DIRECT : HandlerBehavior.CODE,
+          integration: {
+            dataSourceName: props.subscribeHandlerConfig?.dataSource?.name || '',
+          },
+        },
+      };
+
+      if (handlerConfig.onSubscribe.behavior === HandlerBehavior.DIRECT) {
+        handlerConfig.onSubscribe.integration.lambdaConfig = {
+          invokeType: props.subscribeHandlerConfig?.lambdaInvokeType || LambdaInvokeType.REQUEST_RESPONSE,
+        };
+      }
+    }
 
     this.validateAuthorizationConfig(props.api.authProviderTypes, props.authorizationConfig?.publishAuthModeTypes ?? []);
     this.validateAuthorizationConfig(props.api.authProviderTypes, props.authorizationConfig?.subscribeAuthModeTypes ?? []);
-
-    this.api = props.api;
 
     this.channelNamespace = new CfnChannelNamespace(this, 'Resource', {
       name: this.physicalName,
       apiId: props.api.apiId,
       codeHandlers: code?.inlineCode,
       codeS3Location: code?.s3Location,
+      handlerConfigs: handlerConfig,
       publishAuthModes: props.authorizationConfig?.publishAuthModeTypes?.map((mode) => ({
         authType: mode,
       })),
@@ -155,12 +278,20 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
       })),
     });
 
+    if (props.publishHandlerConfig?.dataSource) {
+      this.channelNamespace.addResourceDependency(props.publishHandlerConfig.dataSource.resource);
+    }
+    if (props.subscribeHandlerConfig?.dataSource) {
+      this.channelNamespace.addResourceDependency(props.subscribeHandlerConfig.dataSource.resource);
+    }
     this.channelNamespaceArn = this.channelNamespace.attrChannelNamespaceArn;
+    this.api = props.api;
   }
 
   /**
    * Adds an IAM policy statement for EventSubscribe access to this channel namespace to an IAM
    * principal's policy.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -172,6 +303,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
   /**
    * Adds an IAM policy statement for EventPublish access to this channel namespace to an IAM
    * principal's policy.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -183,6 +315,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
   /**
    * Adds an IAM policy statement for EventPublish and EventSubscribe access to this channel namespace to an IAM
    * principal's policy.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -194,8 +327,53 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
   private validateAuthorizationConfig(apiAuthProviders: AppSyncAuthorizationType[], channelAuthModeTypes: AppSyncAuthorizationType[]) {
     for (const mode of channelAuthModeTypes) {
       if (!apiAuthProviders.find((authProvider) => authProvider === mode)) {
-        throw new ValidationError(`API is missing authorization configuration for ${mode}`, this);
+        throw new ValidationError(lit`AuthorizationConfigurationMissing`, `API is missing authorization configuration for ${mode}`, this);
       }
     }
+  }
+
+  private validateHandlerConfig(props?: ChannelNamespaceProps) {
+    // Handle the case when no handler configs are defined for publish or subscribe
+    if (!props?.publishHandlerConfig && !props?.subscribeHandlerConfig) return undefined;
+
+    // Handle the case where behavior is direct but Lambda is not the data source
+    if (props.publishHandlerConfig?.direct) {
+      if (!props.publishHandlerConfig.dataSource) {
+        throw new ValidationError(lit`DataSourceRequired`, 'No data source provided. AWS_LAMBDA data source is required for Direct handler behavior type', this);
+      }
+      if (props.publishHandlerConfig.dataSource.resource.type !== AppSyncDataSourceType.LAMBDA) {
+        throw new ValidationError(lit`DirectIntegrationLambdaOnly`, 'Direct integration is only supported for AWS_LAMBDA data sources.', this);
+      }
+    }
+
+    if (props.subscribeHandlerConfig?.direct) {
+      if (!props.subscribeHandlerConfig.dataSource) {
+        throw new ValidationError(lit`DataSourceRequired`, 'No data source provided. AWS_LAMBDA data source is required for Direct handler behavior type', this);
+      }
+      if (props.subscribeHandlerConfig.dataSource.resource.type !== AppSyncDataSourceType.LAMBDA) {
+        throw new ValidationError(lit`DirectIntegrationLambdaOnly`, 'Direct integration is only supported for AWS_LAMBDA data sources.', this);
+      }
+    }
+
+    // Handle the case where behavior is direct for both publish and subscribe, but code handler is provided
+    if (props.publishHandlerConfig?.direct && props.subscribeHandlerConfig?.direct && props.code) {
+      throw new ValidationError(lit`CodeHandlersNotSupportedWithDirectBehavior`, 'Code handlers are not supported when both publish and subscribe use the Direct data source behavior', this);
+    }
+
+    // Handle the case where behavior is code and Lambda invoke type is specified
+    if (!props.publishHandlerConfig?.direct && props.publishHandlerConfig?.lambdaInvokeType) {
+      throw new ValidationError(lit`LambdaInvokeTypeDirectOnly`, 'LambdaInvokeType is only supported for Direct handler behavior type', this);
+    }
+
+    // Handle the case where behavior is code and Lambda invoke type is specified
+    if (!props.subscribeHandlerConfig?.direct && props.subscribeHandlerConfig?.lambdaInvokeType) {
+      throw new ValidationError(lit`LambdaInvokeTypeDirectOnly`, 'LambdaInvokeType is only supported for Direct handler behavior type', this);
+    }
+  }
+
+  public get channelNamespaceRef(): ChannelNamespaceReference {
+    return {
+      channelNamespaceArn: this.channelNamespaceArn,
+    };
   }
 }

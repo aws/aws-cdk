@@ -1,6 +1,7 @@
 import { Template } from '../../assertions';
-import { Duration, Stack } from '../../core';
-import { Alarm, GraphWidget, IWidget, MathExpression, Metric } from '../lib';
+import { Duration, Lazy, Stack } from '../../core';
+import type { IWidget } from '../lib';
+import { Alarm, GraphWidget, MathExpression, Metric } from '../lib';
 
 const a = new Metric({ namespace: 'Test', metricName: 'ACount' });
 const b = new Metric({ namespace: 'Test', metricName: 'BCount', statistic: 'Average' });
@@ -23,6 +24,44 @@ describe('Metric Math', () => {
         },
       });
     }).toThrow(/Invalid variable names in expression/);
+  });
+
+  test('can use tokens for variable names in MathExpression', () => {
+    const token = Lazy.string({
+      produce() {
+        return 'token';
+      },
+    });
+    const suffix = `_${token}`;
+    const metric = new MathExpression({
+      expression: `a${suffix} + b${suffix}`,
+      usingMetrics: {
+        [`a${suffix}`]: a,
+        [`b${suffix}`]: b,
+      },
+    });
+
+    new Alarm(stack, 'Alarm', {
+      threshold: 1,
+      evaluationPeriods: 1,
+      metric,
+    });
+    console.log({ resources: JSON.stringify(Template.fromStack(stack).findResources('AWS::CloudWatch::Alarm'), null, 2) });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      Metrics: [
+        {
+          Expression: 'a_token + b_token',
+          Id: 'expr_1',
+        },
+        {
+          Id: 'a_token',
+        },
+        {
+          Id: 'b_token',
+        },
+      ],
+    });
   });
 
   test('cannot reuse variable names in nested MathExpressions', () => {
@@ -71,6 +110,48 @@ describe('Metric Math', () => {
     });
   });
 
+  test('math expression with CDK token does not produce warning', () => {
+    const token = Lazy.string({ produce: () => 'metric1' });
+    const m = new MathExpression({
+      expression: `TIME_SERIES(${token})`,
+    });
+
+    expect(m.warningsV2).toBeUndefined();
+  });
+
+  test('math expression with multiple CDK tokens does not produce warning', () => {
+    const token1 = Lazy.string({ produce: () => 'metric1' });
+    const token2 = Lazy.string({ produce: () => 'metric2' });
+    const m = new MathExpression({
+      expression: `${token1} + ${token2}`,
+    });
+
+    expect(m.warningsV2).toBeUndefined();
+  });
+
+  test('math expression with CDK token and real identifier warns only about real identifier', () => {
+    const token = Lazy.string({ produce: () => 'metric1' });
+    const m = new MathExpression({
+      expression: `m1 + ${token}`,
+    });
+
+    expect(m.warningsV2).toMatchObject({
+      'CloudWatch:Math:UnknownIdentifier': expect.stringContaining('references unknown identifiers: m1'),
+    });
+    // Should NOT mention "oken" as an unknown identifier (only "m1" should be listed)
+    expect(m.warningsV2?.['CloudWatch:Math:UnknownIdentifier']).not.toMatch(/identifiers:.*oken/);
+  });
+
+  test('math expression with complex token pattern does not produce warning', () => {
+    const token1 = Lazy.string({ produce: () => 'metric1' });
+    const token2 = Lazy.string({ produce: () => 'metric2' });
+    const m = new MathExpression({
+      expression: `SUM([${token1}, ${token2}])`,
+    });
+
+    expect(m.warningsV2).toBeUndefined();
+  });
+
   test('metrics METRICS expression does not produce warning for unknown identifier', () => {
     const m = new MathExpression({
       expression: 'SUM(METRICS())',
@@ -113,6 +194,22 @@ describe('Metric Math', () => {
     });
 
     expect(m.warningsV2).toBeUndefined();
+  });
+
+  test('quoted strings in math expressions do not produce unknown identifier warnings', () => {
+    const m1 = new MathExpression({
+      expression: 'LAMBDA(\'myFunction\', "gc", \'count\')',
+      usingMetrics: {},
+    });
+
+    expect(m1.warningsV2).toBeUndefined();
+
+    const m2 = new MathExpression({
+      expression: 'DB_PERF_INSIGHTS("RDS", \'db-ABC123\', "os.cpuUtilization.user.avg")',
+      usingMetrics: {},
+    });
+
+    expect(m2.warningsV2).toBeUndefined();
   });
 
   test('math expression referring to unknown expressions produces a warning, even when nested', () => {

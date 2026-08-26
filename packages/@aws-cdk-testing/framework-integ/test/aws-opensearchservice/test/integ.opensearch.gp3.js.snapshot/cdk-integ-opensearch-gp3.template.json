@@ -4,15 +4,20 @@
    "Type": "AWS::OpenSearchService::Domain",
    "Properties": {
     "ClusterConfig": {
-     "DedicatedMasterEnabled": false,
-     "InstanceCount": 1,
-     "InstanceType": "r5.large.search",
+     "DedicatedMasterCount": 3,
+     "DedicatedMasterEnabled": true,
+     "DedicatedMasterType": "m7g.large.search",
+     "InstanceCount": 3,
+     "InstanceType": "m7g.medium.search",
      "MultiAZWithStandbyEnabled": true,
-     "ZoneAwarenessEnabled": false
+     "ZoneAwarenessConfig": {
+      "AvailabilityZoneCount": 3
+     },
+     "ZoneAwarenessEnabled": true
     },
     "DomainEndpointOptions": {
      "EnforceHTTPS": false,
-     "TLSSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"
+     "TLSSecurityPolicy": "Policy-Min-TLS-1-2-2019-07"
     },
     "EBSOptions": {
      "EBSEnabled": true,

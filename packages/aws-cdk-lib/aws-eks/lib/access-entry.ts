@@ -1,10 +1,15 @@
-import { Construct } from 'constructs';
-import { ICluster } from './cluster';
+import type { Construct } from 'constructs';
+import type { ICluster } from './cluster';
+import type { AccessEntryReference, IAccessEntryRef } from './eks.generated';
 import { CfnAccessEntry } from './eks.generated';
-import {
-  Resource, IResource, Aws, Lazy,
-} from '../../core';
+import type { IResource, RemovalPolicy } from '../../core';
+import { Resource, Aws, ValidationError, Token } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents an access entry in an Amazon EKS cluster.
@@ -16,7 +21,7 @@ import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-re
  * @property {string} accessEntryName - The name of the access entry.
  * @property {string} accessEntryArn - The Amazon Resource Name (ARN) of the access entry.
  */
-export interface IAccessEntry extends IResource {
+export interface IAccessEntry extends IResource, IAccessEntryRef {
   /**
    * The name of the access entry.
    * @attribute
@@ -239,23 +244,54 @@ export class AccessPolicy implements IAccessPolicy {
 export enum AccessEntryType {
   /**
    * Represents a standard access entry.
+   * Use this type for standard IAM principals that need cluster access with policies.
    */
   STANDARD = 'STANDARD',
 
   /**
    * Represents a Fargate Linux access entry.
+   * Use this type for AWS Fargate profiles running Linux containers.
    */
   FARGATE_LINUX = 'FARGATE_LINUX',
 
   /**
    * Represents an EC2 Linux access entry.
+   * Use this type for self-managed EC2 instances running Linux that join the cluster as worker nodes.
    */
   EC2_LINUX = 'EC2_LINUX',
 
   /**
    * Represents an EC2 Windows access entry.
+   * Use this type for self-managed EC2 instances running Windows that join the cluster as worker nodes.
    */
   EC2_WINDOWS = 'EC2_WINDOWS',
+
+  /**
+   * Represents an EC2 access entry for EKS Auto Mode.
+   * Use this type for node roles in EKS Auto Mode clusters where AWS automatically manages
+   * the compute infrastructure. This type cannot have access policies attached.
+   *
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/eks-auto-mode.html
+   */
+  EC2 = 'EC2',
+
+  /**
+   * Represents a Hybrid Linux access entry for EKS Hybrid Nodes.
+   * Use this type for on-premises or edge infrastructure running Linux that connects
+   * to your EKS cluster. This type cannot have access policies attached.
+   *
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes.html
+   */
+  HYBRID_LINUX = 'HYBRID_LINUX',
+
+  /**
+   * Represents a HyperPod Linux access entry for Amazon SageMaker HyperPod.
+   * Use this type for SageMaker HyperPod clusters that need access to your EKS cluster
+   * for distributed machine learning workloads. This type cannot have access policies attached.
+   *
+   * @see https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod.html
+   */
+  HYPERPOD_LINUX = 'HYPERPOD_LINUX',
 }
 
 /**
@@ -286,6 +322,20 @@ export interface AccessEntryProps {
    * The Amazon Resource Name (ARN) of the principal (user or role) to associate the access entry with.
    */
   readonly principal: string;
+
+  /**
+   * The removal policy applied to the access entry.
+   *
+   * The removal policy controls what happens to the resource if it stops being managed by CloudFormation.
+   * This can happen in one of three situations:
+   *
+   * - The resource is removed from the template, so CloudFormation stops managing it
+   * - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it
+   * - The stack is deleted, so CloudFormation stops managing all resources in it
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -295,7 +345,12 @@ export interface AccessEntryProps {
  *
  * @implements {IAccessEntry}
  */
+@propertyInjectable
+@noBoxStackTraces
 export class AccessEntry extends Resource implements IAccessEntry {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks.AccessEntry';
+
   /**
    * Imports an `AccessEntry` from its attributes.
    *
@@ -308,20 +363,41 @@ export class AccessEntry extends Resource implements IAccessEntry {
     class Import extends Resource implements IAccessEntry {
       public readonly accessEntryName = attrs.accessEntryName;
       public readonly accessEntryArn = attrs.accessEntryArn;
+
+      public get accessEntryRef(): AccessEntryReference {
+        return {
+          accessEntryArn: this.accessEntryArn,
+          // eslint-disable-next-line @cdklabs/no-throw-default-error
+          get clusterName(): string { throw new Error('Cannot access clusterName from this AccessEntry; it has been created without knowledge of it'); },
+          // eslint-disable-next-line @cdklabs/no-throw-default-error
+          get principalArn():string { throw new Error('Cannot access clusterName from this AccessEntry; it has been created without knowledge of it'); },
+        };
+      }
     }
     return new Import(scope, id);
   }
   /**
    * The name of the access entry.
    */
-  public readonly accessEntryName: string;
-  /**
-   * The Amazon Resource Name (ARN) of the access entry.
-   */
-  public readonly accessEntryArn: string;
   private cluster: ICluster;
   private principal: string;
-  private accessPolicies: IAccessPolicy[];
+  private _accessPolicies: IArrayBox<IAccessPolicy>;
+  private readonly accessEntryType?: AccessEntryType;
+  private readonly resource: CfnAccessEntry;
+
+  @memoizedGetter
+  public get accessEntryName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get accessEntryArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrAccessEntryArn, {
+      service: 'eks',
+      resource: 'accessentry',
+      resourceName: this.physicalName,
+    });
+  }
 
   constructor(scope: Construct, id: string, props: AccessEntryProps ) {
     super(scope, id);
@@ -330,29 +406,29 @@ export class AccessEntry extends Resource implements IAccessEntry {
 
     this.cluster = props.cluster;
     this.principal = props.principal;
-    this.accessPolicies = props.accessPolicies;
+    this._accessPolicies = Box.fromArray(props.accessPolicies, { omitEmpty: false });
+    this.accessEntryType = props.accessEntryType;
 
-    const resource = new CfnAccessEntry(this, 'Resource', {
+    // Validate that certain access entry types cannot have access policies
+    this.validateAccessPoliciesForRestrictedTypes(props.accessPolicies, props.accessEntryType);
+
+    this.resource = new CfnAccessEntry(this, 'Resource', {
       clusterName: this.cluster.clusterName,
       principalArn: this.principal,
       type: props.accessEntryType,
-      accessPolicies: Lazy.any({
-        produce: () => this.accessPolicies.map(p => ({
-          accessScope: {
-            type: p.accessScope.type,
-            namespaces: p.accessScope.namespaces,
-          },
-          policyArn: p.policy,
-        })),
-      }),
+      accessPolicies: this._accessPolicies.map(p => ({
+        accessScope: {
+          type: p.accessScope.type,
+          namespaces: p.accessScope.namespaces,
+        },
+        policyArn: p.policy,
+      })),
 
     });
-    this.accessEntryName = this.getResourceNameAttribute(resource.ref);
-    this.accessEntryArn = this.getResourceArnAttribute(resource.attrAccessEntryArn, {
-      service: 'eks',
-      resource: 'accessentry',
-      resourceName: this.physicalName,
-    });
+
+    if (props.removalPolicy) {
+      this.resource.applyRemovalPolicy(props.removalPolicy);
+    }
   }
   /**
    * Add the access policies for this entry.
@@ -360,7 +436,33 @@ export class AccessEntry extends Resource implements IAccessEntry {
    */
   @MethodMetadata()
   public addAccessPolicies(newAccessPolicies: IAccessPolicy[]): void {
+    // Validate that restricted access entry types cannot have access policies
+    this.validateAccessPoliciesForRestrictedTypes(newAccessPolicies, this.accessEntryType);
     // add newAccessPolicies to this.accessPolicies
-    this.accessPolicies.push(...newAccessPolicies);
+    this._accessPolicies.push(...newAccessPolicies);
+  }
+
+  /**
+   * Validates that restricted access entry types cannot have access policies attached.
+   *
+   * @param accessPolicies - The access policies to validate
+   * @param accessEntryType - The access entry type to check
+   * @throws {ValidationError} If a restricted access entry type has access policies
+   * @private
+   */
+  private validateAccessPoliciesForRestrictedTypes(accessPolicies: IAccessPolicy[], accessEntryType?: AccessEntryType): void {
+    const restrictedTypes = [AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX];
+    if (accessEntryType && restrictedTypes.includes(accessEntryType) &&
+        !Token.isUnresolved(accessPolicies) && accessPolicies.length > 0) {
+      throw new ValidationError(lit`AccessEntryTypeCannot`, `Access entry type '${accessEntryType}' cannot have access policies attached. Use AccessEntryType.STANDARD for access entries that require policies.`, this);
+    }
+  }
+
+  public get accessEntryRef(): AccessEntryReference {
+    return {
+      accessEntryArn: this.accessEntryArn,
+      clusterName: this.cluster.clusterName,
+      principalArn: this.principal,
+    };
   }
 }

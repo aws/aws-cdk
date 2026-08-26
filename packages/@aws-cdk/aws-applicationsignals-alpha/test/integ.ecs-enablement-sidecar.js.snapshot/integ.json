@@ -1,0 +1,17 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "ApplicationSignalsECSSidecarTest/DefaultTest": {
+      "stacks": [
+        "ApplicationSignalsInfra-Sidecar",
+        "ApplicationSignalsJavaApp-Sidecar",
+        "ApplicationSignalsPythonApp-Sidecar",
+        "ApplicationSignalsDotnetApp-Sidecar",
+        "ApplicationSignalsNodeApp-Sidecar"
+      ],
+      "assertionStack": "ApplicationSignalsECSSidecarTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ApplicationSignalsECSSidecarTestDefaultTestDeployAssert82C486F2"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "48.0.0",
   "testCases": {
     "elbv2-integ/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "elbv2-integ/DefaultTest/DeployAssert",
       "assertionStackName": "elbv2integDefaultTestDeployAssert6120E394"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

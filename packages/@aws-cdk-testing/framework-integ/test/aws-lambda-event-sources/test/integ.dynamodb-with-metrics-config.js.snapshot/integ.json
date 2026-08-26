@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "52.0.0",
   "testCases": {
     "lambda-event-source-dynamodb-with-metrics/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "lambda-event-source-dynamodb-with-metrics/DefaultTest/DeployAssert",
       "assertionStackName": "lambdaeventsourcedynamodbwithmetricsDefaultTestDeployAssertC1C197C4"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

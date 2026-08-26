@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "cdkinteg-logs-resource-policy.assets": {
       "type": "cdk:asset-manifest",
@@ -34,10 +34,24 @@
         "cdkinteg-logs-resource-policy.assets"
       ],
       "metadata": {
+        "/cdkinteg-logs-resource-policy/AppLogsGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
         "/cdkinteg-logs-resource-policy/AppLogsGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AppLogsGroupC90FBC0A"
+          }
+        ],
+        "/cdkinteg-logs-resource-policy/ResourcePolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/cdkinteg-logs-resource-policy/ResourcePolicy/ResourcePolicy": [
@@ -84,7 +98,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/de86b1eaf845dfa11f5301ca4a35cb0af9d1997e8a32182a6993e6206b5d0c53.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/620a8302099b2cbc1290bfa4d2bd03231006a35c80125b8e36a2ed554408d042.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -101,6 +115,22 @@
         "cdkinteg-opensearch-without-logs-resource-policy.assets"
       ],
       "metadata": {
+        "/cdkinteg-opensearch-without-logs-resource-policy/Domain": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "version": "*",
+              "removalPolicy": "destroy",
+              "logging": {
+                "appLogEnabled": true
+              },
+              "suppressLogsResourcePolicy": true,
+              "capacity": {
+                "multiAzWithStandbyEnabled": false
+              }
+            }
+          }
+        ],
         "/cdkinteg-opensearch-without-logs-resource-policy/Domain/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -176,5 +206,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

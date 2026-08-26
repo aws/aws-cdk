@@ -1,8 +1,8 @@
+import * as path from 'path';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import * as glue from '../lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as path from 'path';
+import * as glue from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'GlueWorkflowTriggerStack');
@@ -21,16 +21,14 @@ const OutboundJob = new glue.PySparkEtlJob(stack, 'OutboundJob', {
   script: script,
   role,
   glueVersion: glue.GlueVersion.V4_0,
-  workerType: glue.WorkerType.G_2X,
-  numberOfWorkers: 2,
+  workerConfiguration: { workerType: glue.WorkerType.G_2X, numberOfWorkers: 2 },
 });
 
 const InboundJob = new glue.PySparkEtlJob(stack, 'InboundJob', {
   script: script,
   role,
   glueVersion: glue.GlueVersion.V4_0,
-  workerType: glue.WorkerType.G_2X,
-  numberOfWorkers: 2,
+  workerConfiguration: { workerType: glue.WorkerType.G_2X, numberOfWorkers: 2 },
 });
 
 workflow.addOnDemandTrigger('OnDemandTrigger', {

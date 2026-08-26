@@ -88,7 +88,12 @@ describe('singleton lambda', () => {
 
   test('dependsOn are correctly added', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App({
+      postCliContext: {
+        '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+      },
+    });
+    const stack = new cdk.Stack(app);
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
       code: new lambda.InlineCode('def hello(): pass'),

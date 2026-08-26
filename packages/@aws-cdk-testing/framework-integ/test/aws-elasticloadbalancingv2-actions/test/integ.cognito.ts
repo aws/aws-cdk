@@ -2,7 +2,8 @@ import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import { App, CfnOutput, Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib/core';
+import type { StackProps } from 'aws-cdk-lib/core';
+import { App, CfnOutput, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib/core';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as actions from 'aws-cdk-lib/aws-elasticloadbalancingv2-actions';
@@ -11,6 +12,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as route53targets from 'aws-cdk-lib/aws-route53-targets';
+import * as path from 'path';
 
 interface CognitoUserProps {
   userPool: cognito.UserPool;
@@ -181,7 +183,11 @@ if (!hostedZoneName) throw new Error('For this test you must provide your own Ho
 const domainName = process.env.CDK_INTEG_DOMAIN_NAME ?? process.env.DOMAIN_NAME;
 if (!domainName) throw new Error('For this test you must provide your own DomainName as an env var "DOMAIN_NAME". See framework-integ/README.md for details.');
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const testCase = new CognitoStack(app, 'integ-cognito', {
   hostedZoneId,
   hostedZoneName,
@@ -200,9 +206,9 @@ const testUser = new CognitoUser(testCase, 'User', cognitoUserProps);
 // this function signs in to the website and returns text content of the authenticated page body
 const signinFunction = new lambda.Function(testCase, 'Signin', {
   functionName: 'cdk-integ-alb-cognito-signin-handler',
-  code: lambda.Code.fromAsset('alb-cognito-signin-handler', { exclude: ['*.ts'] }),
+  code: lambda.Code.fromAsset(path.join(__dirname, 'alb-cognito-signin-handler'), { exclude: ['*.ts'] }),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_20_X,
   environment: {
     TEST_USERNAME: testUser.username,
     TEST_PASSWORD: testUser.password,

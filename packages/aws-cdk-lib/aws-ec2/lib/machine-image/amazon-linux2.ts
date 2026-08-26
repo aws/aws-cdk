@@ -1,4 +1,5 @@
-import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxImageSsmParameterBase, AmazonLinuxImageSsmParameterCommonOptions, AmazonLinuxStorage, AmazonLinuxVirt } from './common';
+import type { AmazonLinuxImageSsmParameterCommonOptions } from './common';
+import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxImageSsmParameterBase, AmazonLinuxStorage, AmazonLinuxVirt } from './common';
 
 /**
  * Amazon Linux 2 kernel versions
@@ -103,6 +104,7 @@ export class AmazonLinux2ImageSsmParameter extends AmazonLinuxImageSsmParameterB
     super({
       parameterName: AmazonLinux2ImageSsmParameter.ssmParameterName(props),
       cachedInContext: props.cachedInContext,
+      additionalCacheKey: props.additionalCacheKey,
       userData: props.userData,
     });
   }

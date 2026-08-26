@@ -1,11 +1,13 @@
 {
-  "version": "20.0.0",
+  "version": "44.0.0",
   "testCases": {
     "MetricsTest/DefaultTest": {
       "stacks": [
         "restapi-metrics"
       ],
-      "assertionStack": "MetricsTest/DefaultTest/DeployAssert"
+      "assertionStack": "MetricsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "MetricsTestDefaultTestDeployAssertEA4ED73F"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

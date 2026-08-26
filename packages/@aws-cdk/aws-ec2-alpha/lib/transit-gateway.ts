@@ -1,13 +1,16 @@
 import { CfnTransitGateway, RouterType } from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import { ITransitGatewayRouteTable, TransitGatewayRouteTable } from './transit-gateway-route-table';
-import { TransitGatewayVpcAttachment, AttachVpcOptions, ITransitGatewayVpcAttachment } from './transit-gateway-vpc-attachment';
-import { IRouteTarget } from './route';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import type { IRouteTarget } from './route';
+import type { ITransitGatewayRouteTable } from './transit-gateway-route-table';
+import { TransitGatewayRouteTable } from './transit-gateway-route-table';
 import { TransitGatewayRouteTableAssociation } from './transit-gateway-route-table-association';
 import { TransitGatewayRouteTablePropagation } from './transit-gateway-route-table-propagation';
+import type { AttachVpcOptions, ITransitGatewayVpcAttachment } from './transit-gateway-vpc-attachment';
+import { TransitGatewayVpcAttachment } from './transit-gateway-vpc-attachment';
 import { getFeatureStatus, TransitGatewayFeatureStatus } from './util';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents a Transit Gateway.
@@ -210,7 +213,10 @@ abstract class TransitGatewayBase extends cdk.Resource implements ITransitGatewa
  *
  * @resource AWS::EC2::TransitGateway
  */
+@propertyInjectable
 export class TransitGateway extends TransitGatewayBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.TransitGateway';
   public readonly routerType: RouterType;
   public readonly routerTargetId: string;
   public readonly transitGatewayId: string;

@@ -1,11 +1,13 @@
-import { Construct } from 'constructs';
-import { ILogGroup } from './log-group';
+import type { Construct } from 'constructs';
+import type { ILogGroupRef } from './logs.generated';
 import { CfnDestination } from './logs.generated';
-import { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from './subscription-filter';
+import type { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from './subscription-filter';
 import * as iam from '../../aws-iam';
 import { ArnFormat } from '../../core';
 import * as cdk from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for a CrossAccountDestination
@@ -23,7 +25,7 @@ export interface CrossAccountDestinationProps {
    *
    * The role must be assumable by 'logs.{REGION}.amazonaws.com'.
    */
-  readonly role: iam.IRole;
+  readonly role: iam.IRoleRef;
 
   /**
    * The log destination target's ARN
@@ -37,35 +39,50 @@ export interface CrossAccountDestinationProps {
  * CrossAccountDestinations are used to subscribe a Kinesis stream in a
  * different account to a CloudWatch Subscription.
  *
- * Consumers will hardly ever need to use this class. Instead, directly
- * subscribe a Kinesis stream using the integration class in the
- * `aws-cdk-lib/aws-logs-destinations` package; if necessary, a
- * `CrossAccountDestination` will be created automatically.
+ * For cross-account scenarios, you need to manually create a
+ * `CrossAccountDestination` in the destination account. The integration
+ * classes in the `aws-cdk-lib/aws-logs-destinations` package (such as
+ * `KinesisDestination`) only handle same-account scenarios and do not
+ * automatically create `CrossAccountDestination` for cross-account usage.
  *
  * @resource AWS::Logs::Destination
  */
+@propertyInjectable
 export class CrossAccountDestination extends cdk.Resource implements ILogSubscriptionDestination {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-logs.CrossAccountDestination';
   /**
    * Policy object of this CrossAccountDestination object
    */
   public readonly policyDocument: iam.PolicyDocument = new iam.PolicyDocument();
 
   /**
+   * The inner resource
+   */
+  private readonly resource: CfnDestination;
+
+  /**
    * The name of this CrossAccountDestination object
    * @attribute
    */
-  public readonly destinationName: string;
+  @memoizedGetter
+  public get destinationName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   /**
    * The ARN of this CrossAccountDestination object
    * @attribute
    */
-  public readonly destinationArn: string;
-
-  /**
-   * The inner resource
-   */
-  private readonly resource: CfnDestination;
+  @memoizedGetter
+  public get destinationArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'logs',
+      resource: 'destination',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
 
   constructor(scope: Construct, id: string, props: CrossAccountDestinationProps) {
     super(scope, id, {
@@ -80,17 +97,9 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
       destinationName: this.physicalName!,
       // Must be stringified policy
       destinationPolicy: this.lazyStringifiedPolicyDocument(),
-      roleArn: props.role.roleArn,
+      roleArn: props.role.roleRef.roleArn,
       targetArn: props.targetArn,
     });
-
-    this.destinationArn = this.getResourceArnAttribute(this.resource.attrArn, {
-      service: 'logs',
-      resource: 'destination',
-      resourceName: this.physicalName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    });
-    this.destinationName = this.getResourceNameAttribute(this.resource.ref);
   }
 
   @MethodMetadata()
@@ -99,7 +108,7 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
   }
 
   @MethodMetadata()
-  public bind(_scope: Construct, _sourceLogGroup: ILogGroup): LogSubscriptionDestinationConfig {
+  public bind(_scope: Construct, _sourceLogGroup: ILogGroupRef): LogSubscriptionDestinationConfig {
     return { arn: this.destinationArn };
   }
 

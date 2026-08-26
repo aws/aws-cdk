@@ -1,9 +1,11 @@
 import * as path from 'path';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
-import * as lambda from '../lib';
-import { IFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
+import type { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import type { Construct } from 'constructs';
+import * as lambda from '../lib';
 
 class TestStack extends Stack {
   public readonly lambdaFunctions: IFunction[] = [];
@@ -28,7 +30,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new TestStack(app, 'cdk-integ-lambda-golang-provided-al2023');
 
 const integTest = new integ.IntegTest(app, 'lambda-go-runtime', {

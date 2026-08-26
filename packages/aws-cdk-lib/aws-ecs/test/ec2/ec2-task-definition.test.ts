@@ -8,12 +8,14 @@ import * as ssm from '../../../aws-ssm';
 import * as cdk from '../../../core';
 import * as cxapi from '../../../cx-api';
 import * as ecs from '../../lib';
+import { acknowledgeTestValidationRules } from '../util';
 
 describe('ec2 task definition', () => {
   describe('When creating an ECS TaskDefinition', () => {
     test('with only required properties set, it correctly sets default properties', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // THEN
@@ -21,6 +23,7 @@ describe('ec2 task definition', () => {
         Family: 'Ec2TaskDef',
         NetworkMode: ecs.NetworkMode.BRIDGE,
         RequiresCompatibilities: ['EC2'],
+        InferenceAccelerators: Match.absent(),
       });
 
       // test error if no container defs?
@@ -29,6 +32,7 @@ describe('ec2 task definition', () => {
     test('with all properties set', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         executionRole: new iam.Role(stack, 'ExecutionRole', {
           path: '/',
@@ -94,6 +98,7 @@ describe('ec2 task definition', () => {
     test('correctly sets placement constraint', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // WHEN
@@ -113,6 +118,7 @@ describe('ec2 task definition', () => {
     test('correctly sets network mode', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         networkMode: ecs.NetworkMode.AWS_VPC,
       });
@@ -126,6 +132,7 @@ describe('ec2 task definition', () => {
     test('correctly sets ipc mode', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         ipcMode: ecs.IpcMode.TASK,
       });
@@ -139,6 +146,7 @@ describe('ec2 task definition', () => {
     test('correctly sets pid mode', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         pidMode: ecs.PidMode.HOST,
       });
@@ -152,6 +160,7 @@ describe('ec2 task definition', () => {
     test('correctly sets containers', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
@@ -227,6 +236,7 @@ describe('ec2 task definition', () => {
       // GIVEN
       const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
       const stack = new cdk.Stack(app);
+      acknowledgeTestValidationRules(stack);
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
       const secret = new secretsmanager.Secret(stack, 'Secret');
@@ -433,6 +443,7 @@ describe('ec2 task definition', () => {
     test('correctly sets containers from ECR repository using all props', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
@@ -453,7 +464,7 @@ describe('ec2 task definition', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
         LifecyclePolicy: {
-          // eslint-disable-next-line max-len
+
           LifecyclePolicyText: '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
           RegistryId: '123456789101',
         },
@@ -522,6 +533,7 @@ describe('ec2 task definition', () => {
     test('correctly sets containers from ECR repository using an image tag', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
@@ -592,6 +604,7 @@ describe('ec2 task definition', () => {
     test('correctly sets containers from ECR repository using an image digest', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
@@ -662,6 +675,7 @@ describe('ec2 task definition', () => {
     test('correctly sets containers from ECR repository using default props', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
@@ -678,6 +692,7 @@ describe('ec2 task definition', () => {
     test('warns when setting containers from ECR repository using fromRegistry method', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
@@ -694,6 +709,7 @@ describe('ec2 task definition', () => {
     test('warns when setting containers from ECR repository by creating a RepositoryImage class', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
@@ -712,6 +728,7 @@ describe('ec2 task definition', () => {
     test('correctly sets containers from asset using all props', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
@@ -726,6 +743,7 @@ describe('ec2 task definition', () => {
     test('correctly sets scratch space', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       const container = taskDefinition.addContainer('web', {
@@ -764,6 +782,7 @@ describe('ec2 task definition', () => {
     test('correctly sets container dependenices', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       const dependency1 = taskDefinition.addContainer('dependency1', {
@@ -814,6 +833,7 @@ describe('ec2 task definition', () => {
 
     test('correctly sets links', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         networkMode: ecs.NetworkMode.BRIDGE,
@@ -860,6 +880,7 @@ describe('ec2 task definition', () => {
     test('correctly set policy statement to the task IAM role', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // WHEN
@@ -885,6 +906,7 @@ describe('ec2 task definition', () => {
 
     test('correctly sets volumes from', () => {
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {});
 
@@ -914,6 +936,7 @@ describe('ec2 task definition', () => {
     test('correctly set policy statement to the task execution IAM role', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // WHEN
@@ -940,6 +963,7 @@ describe('ec2 task definition', () => {
     test('correctly sets volumes', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const volume = {
         host: {
           sourcePath: '/tmp/cache',
@@ -988,6 +1012,7 @@ describe('ec2 task definition', () => {
     test('correctly sets placement constraints', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         placementConstraints: [
           ecs.PlacementConstraint.memberOf('attribute:ecs.instance-type =~ t2.*'),
@@ -1013,6 +1038,7 @@ describe('ec2 task definition', () => {
     test('correctly sets taskRole', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         taskRole: new iam.Role(stack, 'TaskRole', {
           assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
@@ -1033,6 +1059,7 @@ describe('ec2 task definition', () => {
     test('automatically sets taskRole by default', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // THEN
@@ -1044,6 +1071,7 @@ describe('ec2 task definition', () => {
     test('correctly sets dockerVolumeConfiguration', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const volume = {
         name: 'scratch',
         dockerVolumeConfiguration: {
@@ -1083,6 +1111,7 @@ describe('ec2 task definition', () => {
     test('correctly sets efsVolumeConfiguration', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const volume = {
         name: 'scratch',
         efsVolumeConfiguration: {
@@ -1114,6 +1143,7 @@ describe('ec2 task definition', () => {
     test('correctly sets env variables when using EC2 capacity provider with AWSVPC mode - with no other user-defined env variables', () => {
       // GIVEN AWS-VPC network mode
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const taskDefiniton = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         networkMode: ecs.NetworkMode.AWS_VPC,
       });
@@ -1142,6 +1172,7 @@ describe('ec2 task definition', () => {
     test('correctly sets env variables when using EC2 capacity provider with AWSVPC mode - with other user-defined env variables', () => {
       // GIVEN AWS-VPC network mode
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const taskDefiniton = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         networkMode: ecs.NetworkMode.AWS_VPC,
       });
@@ -1176,6 +1207,7 @@ describe('ec2 task definition', () => {
     test('correctly sets env variables when using EC2 capacity provider with HOST mode', () => {
       // GIVEN HOST network mode
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const taskDefiniton = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         networkMode: ecs.NetworkMode.HOST,
       });
@@ -1205,6 +1237,7 @@ describe('ec2 task definition', () => {
     test('correctly sets env variables when using EC2 capacity provider with BRIDGE mode', () => {
       // GIVEN HOST network mode
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const taskDefiniton = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         networkMode: ecs.NetworkMode.BRIDGE,
       });
@@ -1236,6 +1269,7 @@ describe('ec2 task definition', () => {
     test('correctly sets inferenceAccelerators using props', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const inferenceAccelerators = [{
         deviceName: 'device1',
         deviceType: 'eia2.medium',
@@ -1263,6 +1297,7 @@ describe('ec2 task definition', () => {
     test('correctly sets inferenceAccelerators using props and addInferenceAccelerator method', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const inferenceAccelerators = [{
         deviceName: 'device1',
         deviceType: 'eia2.medium',
@@ -1301,6 +1336,7 @@ describe('ec2 task definition', () => {
     test('can succeed using TaskDefinition Arn', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const expectTaskDefinitionArn = 'TD_ARN';
 
       // WHEN
@@ -1315,6 +1351,7 @@ describe('ec2 task definition', () => {
     test('can set the imported task attribuets successfully', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const expectTaskDefinitionArn = 'TD_ARN';
       const expectNetworkMode = ecs.NetworkMode.AWS_VPC;
       const expectTaskRole = new iam.Role(stack, 'TaskRole', {
@@ -1345,6 +1382,7 @@ describe('ec2 task definition', () => {
     test('returns an Ec2 TaskDefinition that will throw an error when trying to access its yet to defined networkMode', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const expectTaskDefinitionArn = 'TD_ARN';
       const expectTaskRole = new iam.Role(stack, 'TaskRole', {
         assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
@@ -1365,6 +1403,7 @@ describe('ec2 task definition', () => {
     test('returns an Ec2 TaskDefinition that will throw an error when trying to access its yet to defined taskRole', () => {
       // GIVEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const expectTaskDefinitionArn = 'TD_ARN';
       const expectNetworkMode = ecs.NetworkMode.AWS_VPC;
 

@@ -1,9 +1,9 @@
 import * as cdk from 'aws-cdk-lib';
-import * as vpc from '../lib/vpc-v2';
-import * as subnet from '../lib/subnet-v2';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import { CfnEIP, GatewayVpcEndpoint, GatewayVpcEndpointAwsService, SubnetType, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
 import * as route from '../lib/route';
-import { Match, Template } from 'aws-cdk-lib/assertions';
+import * as subnet from '../lib/subnet-v2';
+import * as vpc from '../lib/vpc-v2';
 
 describe('EC2 Routing', () => {
   let stack: cdk.Stack;
@@ -305,11 +305,7 @@ describe('EC2 Routing', () => {
       },
     });
     // EIP should be created when not provided
-    template.hasResource('AWS::EC2::EIP', {
-      DependsOn: [
-        'TestSubnetRouteTableAssociationFE267B30',
-      ],
-    });
+    template.hasResource('AWS::EC2::EIP', {});
   });
 
   test('Route to public NAT Gateway with provided EIP', () => {
@@ -398,11 +394,7 @@ describe('EC2 Routing', () => {
       },
     });
     // EIP should be created when not provided
-    template.hasResource('AWS::EC2::EIP', {
-      DependsOn: [
-        'TestSubnetRouteTableAssociationFE267B30',
-      ],
-    });
+    template.hasResource('AWS::EC2::EIP', {});
   });
 
   test('NatGW throws error if both VPC and allocationID is not provided', () => {

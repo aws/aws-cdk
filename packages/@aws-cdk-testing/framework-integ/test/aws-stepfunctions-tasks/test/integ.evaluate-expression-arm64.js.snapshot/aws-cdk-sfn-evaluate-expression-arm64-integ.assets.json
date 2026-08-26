@@ -1,0 +1,34 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "8cc26b8aeb8145a3a500f67fd5e2633d73635a841dbb7f4a9307e95b0c9959c6": {
+      "displayName": "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10/Code",
+      "source": {
+        "path": "asset.8cc26b8aeb8145a3a500f67fd5e2633d73635a841dbb7f4a9307e95b0c9959c6",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-ca7fcce8": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8cc26b8aeb8145a3a500f67fd5e2633d73635a841dbb7f4a9307e95b0c9959c6.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "31a0c7f2b781e3edcce57a7495b6c9d6c7daedfc8561a51259b1ba3cfbdd59a8": {
+      "displayName": "aws-cdk-sfn-evaluate-expression-arm64-integ Template",
+      "source": {
+        "path": "aws-cdk-sfn-evaluate-expression-arm64-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-4de60f12": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "31a0c7f2b781e3edcce57a7495b6c9d6c7daedfc8561a51259b1ba3cfbdd59a8.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

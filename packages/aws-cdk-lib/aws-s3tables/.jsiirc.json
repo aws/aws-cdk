@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.s3tables"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.S3Tables"
+      "namespace": "Amazon.CDK.AWS.S3Tables"
     },
     "python": {
       "module": "aws_cdk.aws_s3tables"

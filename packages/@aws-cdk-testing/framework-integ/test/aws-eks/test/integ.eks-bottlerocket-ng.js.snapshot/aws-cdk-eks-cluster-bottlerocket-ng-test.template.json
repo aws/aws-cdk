@@ -434,9 +434,9 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c475180f5b1bbabac165414da13a9b843b111cd3b6d5fae9c954c006640c4064.zip"
+     "S3Key": "7b1571a09ac85af63b34b2c5c884dd7cd2e5508e8a6e01b67b33597d8af176f4.zip"
     },
-    "Description": "/opt/kubectl/kubectl 1.24; /opt/helm/helm 3.9",
+    "Description": "/opt/kubectl/kubectl 1.36.2; /opt/helm/helm 4.2.2",
     "LicenseInfo": "Apache-2.0"
    }
   },
@@ -488,7 +488,7 @@
         {
          "Ref": "AWS::Partition"
         },
-        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+        ":iam::aws:policy/AmazonEC2ContainerRegistryPullOnly"
        ]
       ]
      },
@@ -755,7 +755,7 @@
      ]
     },
     "Config": {
-     "version": "1.24",
+     "version": "1.36",
      "roleArn": {
       "Fn::GetAtt": [
        "ClusterRoleFA261979",
@@ -799,7 +799,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 4
+    "AttributesRevision": 5
    },
    "DependsOn": [
     "ClusterCreationRoleDefaultPolicyE8BDFC7B",
@@ -1051,6 +1051,9 @@
      "Ref": "Cluster9EE0221C"
     },
     "ForceUpdateEnabled": true,
+    "InstanceTypes": [
+     "c6g.large"
+    ],
     "NodeRole": {
      "Fn::GetAtt": [
       "ClusterNodegroupBottlerocketNG2NodeGroupRole8BD62EDB",
@@ -1091,7 +1094,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/6eccfa6a92cc71dd88c7c2cb0e55fa70e512bbd581bba83e798dfb21037dd3c2.json"
+       "/17e323221445e4ff85734bf4fc72c05403700859fd6f7b78674d648a2abd56a9.json"
       ]
      ]
     }
@@ -1141,7 +1144,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/4db0899751ca9bd0598177a169df37433fa335f41ca7c3551b901fff8f840b91.json"
+       "/3ae9048e8f2a5519cc8348830cf51f04d0e328084a3053ba87679a76f638df4b.json"
       ]
      ]
     }

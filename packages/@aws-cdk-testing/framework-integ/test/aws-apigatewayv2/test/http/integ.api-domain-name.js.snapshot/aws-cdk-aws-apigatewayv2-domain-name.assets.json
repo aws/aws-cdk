@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "8909560a60ad50b4208fbb985f68fe0815611b01fcb43577364b170fa5fd45b0": {
+      "displayName": "aws-cdk-aws-apigatewayv2-domain-name Template",
+      "source": {
+        "path": "aws-cdk-aws-apigatewayv2-domain-name.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8909560a60ad50b4208fbb985f68fe0815611b01fcb43577364b170fa5fd45b0.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

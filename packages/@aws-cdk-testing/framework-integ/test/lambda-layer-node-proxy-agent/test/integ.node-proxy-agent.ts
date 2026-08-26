@@ -14,6 +14,7 @@ import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new cdk.App({
   postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
   },
 });

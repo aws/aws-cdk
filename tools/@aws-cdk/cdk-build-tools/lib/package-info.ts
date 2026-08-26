@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
-import type { BundleProps } from '@aws-cdk/node-bundle';
 
 const readdir = util.promisify(fs.readdir);
 const stat = util.promisify(fs.stat);
@@ -99,13 +98,18 @@ export interface CompilerOverrides {
  */
 export function packageCompiler(compilers: CompilerOverrides, options?: CDKBuildOptions): string[] {
   if (isJsii()) {
-    const args = ['--silence-warnings=reserved-word', '--add-deprecation-warnings'];
+    const args = [
+      '--Werr', // fail for all non-suppressed warnings; we want to enforce strict jsii
+      '--Wno=JSII5018', // ignore language-compatibility/reserved-word, this happens to often in generated code
+      '--Wno=JSII6', // ignore metadata/missing-dev-dependency, we use a slightly different strategy in this repo
+      '--add-deprecation-warnings',
+    ];
     if (options?.compressAssembly) {
       args.push('--compress-assembly');
     }
     if (options?.stripDeprecated) {
       // This package is not published to npm so the linter rule is invalid
-      // eslint-disable-next-line @cdklabs/no-invalid-path
+
       args.push(`--strip-deprecated ${path.join(__dirname, '..', '..', '..', '..', 'deprecated_apis.txt')}`);
     }
     return [compilers.jsii || require.resolve('jsii/bin/jsii'), ...args];
@@ -187,11 +191,6 @@ export interface CDKBuildOptions {
 
 export interface CDKPackageOptions {
   /**
-   *  Should this package be shrinkwrap
-   */
-  shrinkWrap?: boolean;
-
-  /**
    * Optional commands (formatted as a list of strings, which will be joined together with the && operator) to run before packaging
    */
   pre?: string[];
@@ -200,11 +199,6 @@ export interface CDKPackageOptions {
    * Optional commands (formatted as a list of strings, which will be joined together with the && operator) to run after packaging
   */
   post?: string[];
-
-  /**
-   * Should this package be bundled. (and if so, how)
-   */
-  bundle?: Omit<BundleProps, 'packageDir'>;
 
   /**
    * Also package private packages for local usage.

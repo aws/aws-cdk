@@ -13,6 +13,7 @@ import {
   Application,
   ConfigurationContent,
   ConfigurationSource,
+  DeletionProtectionCheck,
   DeploymentStrategy,
   HostedConfiguration,
   JsonSchemaValidator,
@@ -20,21 +21,23 @@ import {
   RolloutStrategy,
   SourcedConfiguration,
 } from 'aws-cdk-lib/aws-appconfig';
+import * as path from 'path';
 
 const SCHEMA_STR =
-`{
+  `{
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "string"
 }`;
 
 const LAMBDA_CODE =
-`
+  `
 def handler(event, context):
   print('This is my dummy validator')
 `;
 
 const app = new App({
   postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
   },
 });
@@ -56,7 +59,8 @@ const deploymentStrategy = new DeploymentStrategy(stack, 'MyDeployStrategy', {
 // hosted config from file
 new HostedConfiguration(stack, 'MyHostedConfigFromFile', {
   application: appConfigApp,
-  content: ConfigurationContent.fromFile('config.json'),
+  content: ConfigurationContent.fromFile(path.join(__dirname, 'config.json')),
+  deletionProtectionCheck: DeletionProtectionCheck.BYPASS,
 });
 
 // create basic config profile and add config version
@@ -67,7 +71,7 @@ new HostedConfiguration(stack, 'MyHostedConfig', {
   deployTo: [hostedEnv],
   validators: [
     JsonSchemaValidator.fromInline(SCHEMA_STR),
-    JsonSchemaValidator.fromFile('schema.json'),
+    JsonSchemaValidator.fromFile(path.join(__dirname, 'schema.json')),
   ],
   deploymentStrategy,
 });
@@ -110,6 +114,7 @@ new SourcedConfiguration(stack, 'MyConfigFromParameter', {
     LambdaValidator.fromFunction(func),
   ],
   deploymentStrategy,
+  deletionProtectionCheck: DeletionProtectionCheck.BYPASS,
 });
 
 // ssm document as configuration source

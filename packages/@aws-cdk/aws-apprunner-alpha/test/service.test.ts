@@ -1,15 +1,15 @@
 import * as path from 'path';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import * as cdk from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as ecr_assets from 'aws-cdk-lib/aws-ecr-assets';
-import * as kms from 'aws-cdk-lib/aws-kms';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import * as cdk from 'aws-cdk-lib';
 import * as apprunner from '../lib';
 
 test('create a service with ECR Public(image repository type: ECR_PUBLIC)', () => {
@@ -1819,4 +1819,94 @@ test.each([
       serviceName,
     });
   }).toThrow(`\`serviceName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${serviceName}.`);
+});
+
+test('create a service from GitHub with repository configuration', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  new apprunner.Service(stack, 'Service4', {
+    source: apprunner.Source.fromGitHub({
+      repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
+      branch: 'main',
+      configurationSource: apprunner.ConfigurationSourceType.REPOSITORY,
+      connection: apprunner.GitHubConnection.fromConnectionArn('arn:aws:apprunner:us-east-1:123456789012:connection/test-connection'),
+    }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    SourceConfiguration: {
+      AuthenticationConfiguration: {
+        ConnectionArn: 'arn:aws:apprunner:us-east-1:123456789012:connection/test-connection',
+      },
+      CodeRepository: {
+        CodeConfiguration: {
+          ConfigurationSource: 'REPOSITORY',
+        },
+        RepositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
+        SourceCodeVersion: {
+          Type: 'BRANCH',
+          Value: 'main',
+        },
+      },
+    },
+    NetworkConfiguration: {
+      EgressConfiguration: {
+        EgressType: 'DEFAULT',
+      },
+    },
+  });
+});
+
+test('create a service from GitHub with API configuration override', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  new apprunner.Service(stack, 'Service5', {
+    source: apprunner.Source.fromGitHub({
+      repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
+      branch: 'main',
+      configurationSource: apprunner.ConfigurationSourceType.API,
+      codeConfigurationValues: {
+        runtime: apprunner.Runtime.PYTHON_3,
+        port: '8000',
+        startCommand: 'python app.py',
+        buildCommand: 'yum install -y pycairo && pip install -r requirements.txt',
+      },
+      connection: apprunner.GitHubConnection.fromConnectionArn('arn:aws:apprunner:us-east-1:123456789012:connection/test-connection'),
+    }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    SourceConfiguration: {
+      AuthenticationConfiguration: {
+        ConnectionArn: 'arn:aws:apprunner:us-east-1:123456789012:connection/test-connection',
+      },
+      CodeRepository: {
+        CodeConfiguration: {
+          CodeConfigurationValues: {
+            Runtime: 'PYTHON_3',
+            Port: '8000',
+            StartCommand: 'python app.py',
+            BuildCommand: 'yum install -y pycairo && pip install -r requirements.txt',
+          },
+          ConfigurationSource: 'API',
+        },
+        RepositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
+        SourceCodeVersion: {
+          Type: 'BRANCH',
+          Value: 'main',
+        },
+      },
+    },
+    NetworkConfiguration: {
+      EgressConfiguration: {
+        EgressType: 'DEFAULT',
+      },
+    },
+  });
 });

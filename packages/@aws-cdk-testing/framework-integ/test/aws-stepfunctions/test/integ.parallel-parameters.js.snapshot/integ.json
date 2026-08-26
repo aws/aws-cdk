@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "ParallelParametersTest/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-integ"
+      ],
+      "assertionStack": "ParallelParametersTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ParallelParametersTestDefaultTestDeployAssert6493B6D6"
+    }
+  }
+}

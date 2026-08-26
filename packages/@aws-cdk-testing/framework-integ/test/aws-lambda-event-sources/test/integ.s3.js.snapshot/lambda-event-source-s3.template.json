@@ -44,7 +44,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "FServiceRole3AC82EE1"
@@ -134,6 +134,32 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "BNotificationsHandlerPolicy9B2034D5": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:PutBucketNotification",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "B08E7C7AF",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "BNotificationsHandlerPolicy9B2034D5",
+    "Roles": [
+     {
+      "Ref": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
+     }
+    ]
+   }
+  },
   "BNotificationsEB8DA980": {
    "Type": "Custom::S3BucketNotifications",
    "Properties": {
@@ -176,6 +202,7 @@
    },
    "DependsOn": [
     "BAllowBucketNotificationsTolambdaeventsources3F741608059EF9F709",
+    "BNotificationsHandlerPolicy9B2034D5",
     "BPolicy3F02723E"
    ]
   },
@@ -241,15 +268,7 @@
       "Arn"
      ]
     },
-    "Runtime": {
-     "Fn::FindInMap": [
-      "LatestNodeRuntimeMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    },
+    "Runtime": "nodejs24.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -298,27 +317,6 @@
     ]
    }
   },
-  "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "s3:PutBucketNotification",
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
-    "Roles": [
-     {
-      "Ref": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
-     }
-    ]
-   }
-  },
   "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -333,137 +331,12 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.11",
+    "Runtime": "python3.13",
     "Timeout": 300
    },
    "DependsOn": [
-    "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
     "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
    ]
-  }
- },
- "Mappings": {
-  "LatestNodeRuntimeMap": {
-   "af-south-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs20.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs20.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-4": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-5": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-7": {
-    "value": "nodejs20.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs20.x"
-   },
-   "ca-west-1": {
-    "value": "nodejs20.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs20.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs20.x"
-   },
-   "eu-isoe-west-1": {
-    "value": "nodejs18.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs20.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs20.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs20.x"
-   },
-   "il-central-1": {
-    "value": "nodejs20.x"
-   },
-   "me-central-1": {
-    "value": "nodejs20.x"
-   },
-   "me-south-1": {
-    "value": "nodejs20.x"
-   },
-   "mx-central-1": {
-    "value": "nodejs20.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs20.x"
-   },
-   "us-east-1": {
-    "value": "nodejs20.x"
-   },
-   "us-east-2": {
-    "value": "nodejs20.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs20.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs20.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-west-1": {
-    "value": "nodejs20.x"
-   },
-   "us-west-2": {
-    "value": "nodejs20.x"
-   }
   }
  },
  "Parameters": {

@@ -1,9 +1,12 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Resource, IResource } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
 import { CfnDetectorModel } from 'aws-cdk-lib/aws-iotevents';
-import { State } from './state';
+import type { IResource } from 'aws-cdk-lib/core';
+import { Resource } from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import type { State } from './state';
 
 /**
  * Represents an AWS IoT Events detector model.
@@ -93,7 +96,11 @@ export interface DetectorModelProps {
 /**
  * Defines an AWS IoT Events detector model in this stack.
  */
+@propertyInjectable
 export class DetectorModel extends Resource implements IDetectorModel {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-iotevents-alpha.DetectorModel';
+
   /**
    * Import an existing detector model.
    */
@@ -103,7 +110,7 @@ export class DetectorModel extends Resource implements IDetectorModel {
     }(scope, id);
   }
 
-  public readonly detectorModelName: string;
+  private resource: CfnDetectorModel;
 
   constructor(scope: Construct, id: string, props: DetectorModelProps) {
     super(scope, id, {
@@ -120,7 +127,7 @@ export class DetectorModel extends Resource implements IDetectorModel {
       assumedBy: new iam.ServicePrincipal('iotevents.amazonaws.com'),
     });
 
-    const resource = new CfnDetectorModel(this, 'Resource', {
+    this.resource = new CfnDetectorModel(this, 'Resource', {
       detectorModelName: this.physicalName,
       detectorModelDescription: props.description,
       evaluationMethod: props.evaluationMethod,
@@ -131,7 +138,10 @@ export class DetectorModel extends Resource implements IDetectorModel {
       },
       roleArn: role.roleArn,
     });
+  }
 
-    this.detectorModelName = this.getResourceNameAttribute(resource.ref);
+  @memoizedGetter
+  public get detectorModelName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
   }
 }

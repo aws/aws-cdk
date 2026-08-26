@@ -6,7 +6,7 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { App, Stack, RemovalPolicy } from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult, Match } from '@aws-cdk/integ-tests-alpha';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import { LambdaDestination } from 'aws-cdk-lib/aws-logs-destinations';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
@@ -16,7 +16,9 @@ class LambdaStack extends Stack {
   constructor(scope: constructs.Construct, id: string) {
     super(scope, id);
 
-    this.queue = new sqs.Queue(this, 'Queue');
+    this.queue = new sqs.Queue(this, 'Queue', {
+      encryption: sqs.QueueEncryption.SQS_MANAGED,
+    });
 
     const fn = new lambda.Function(this, 'MyFunction', {
       runtime: STANDARD_NODEJS_RUNTIME,
@@ -43,14 +45,18 @@ class LambdaStack extends Stack {
       },
     });
     customRule.addTarget(new CloudWatchLogGroup(logGroup, {
-      logEvent: LogGroupTargetInput.fromObject({
+      logEvent: LogGroupTargetInput.fromObjectV2({
         message: 'Howdy Ho!',
       }),
     }));
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new LambdaStack(app, 'lambda-logssubscription-integ');
 
 const integ = new IntegTest(app, 'LambdaInteg', {

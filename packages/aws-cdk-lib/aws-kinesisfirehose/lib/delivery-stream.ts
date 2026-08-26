@@ -1,26 +1,27 @@
-import { Construct, Node } from 'constructs';
-import { IDestination } from './destination';
-import { StreamEncryption } from './encryption';
+import type { Construct } from 'constructs';
+import { Node } from 'constructs';
+import type { IDestination } from './destination';
+import type { StreamEncryption } from './encryption';
 import { FirehoseMetrics } from './kinesisfirehose-canned-metrics.generated';
+import { DeliveryStreamGrants } from './kinesisfirehose-grants.generated';
+import type { DeliveryStreamReference, IDeliveryStreamRef } from './kinesisfirehose.generated';
 import { CfnDeliveryStream } from './kinesisfirehose.generated';
-import { ISource } from './source';
+import type { ISource } from './source';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { RegionInfo } from '../../region-info';
-
-const PUT_RECORD_ACTIONS = [
-  'firehose:PutRecord',
-  'firehose:PutRecordBatch',
-];
 
 /**
  * Represents an Amazon Data Firehose delivery stream.
  */
-export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.IConnectable {
+export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.IConnectable, IDeliveryStreamRef {
   /**
    * The ARN of the delivery stream.
    *
@@ -99,6 +100,11 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
   /**
+   * Collection of grant methods for a DeliveryStream
+   */
+  public readonly grants = DeliveryStreamGrants.fromDeliveryStream(this);
+
+  /**
    * Network connections between Amazon Data Firehose and other resources, i.e. Redshift cluster.
    */
   public readonly connections: ec2.Connections;
@@ -109,6 +115,16 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
     this.connections = setConnections(this);
   }
 
+  public get deliveryStreamRef(): DeliveryStreamReference {
+    return {
+      deliveryStreamArn: this.deliveryStreamArn,
+      deliveryStreamName: this.deliveryStreamName,
+    };
+  }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       resourceArns: [this.deliveryStreamArn],
@@ -117,8 +133,14 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
     });
   }
 
+  /**
+   *
+   * The use of this method is discouraged. Please use `grants.putRecords()` instead.
+   *
+   * [disable-awslint:no-grants]
+   */
   public grantPutRecords(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...PUT_RECORD_ACTIONS);
+    return this.grants.putRecords(grantee);
   }
 
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
@@ -257,7 +279,11 @@ export interface DeliveryStreamAttributes {
  *
  * @resource AWS::KinesisFirehose::DeliveryStream
  */
+@propertyInjectable
 export class DeliveryStream extends DeliveryStreamBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-kinesisfirehose.DeliveryStream';
+
   /**
    * Import an existing delivery stream from its name.
    */
@@ -277,13 +303,13 @@ export class DeliveryStream extends DeliveryStreamBase {
    */
   static fromDeliveryStreamAttributes(scope: Construct, id: string, attrs: DeliveryStreamAttributes): IDeliveryStream {
     if (!attrs.deliveryStreamName && !attrs.deliveryStreamArn) {
-      throw new cdk.ValidationError('Either deliveryStreamName or deliveryStreamArn must be provided in DeliveryStreamAttributes', scope);
+      throw new cdk.ValidationError(lit`DeliveryStreamNameOrArnRequired`, 'Either deliveryStreamName or deliveryStreamArn must be provided in DeliveryStreamAttributes', scope);
     }
     const deliveryStreamName = attrs.deliveryStreamName ??
       cdk.Stack.of(scope).splitArn(attrs.deliveryStreamArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
 
     if (!deliveryStreamName) {
-      throw new cdk.ValidationError(`No delivery stream name found in ARN: '${attrs.deliveryStreamArn}'`, scope);
+      throw new cdk.ValidationError(lit`DeliveryStreamNameNotFoundInArn`, `No delivery stream name found in ARN: '${attrs.deliveryStreamArn}'`, scope);
     }
     const deliveryStreamArn = attrs.deliveryStreamArn ?? cdk.Stack.of(scope).formatArn({
       service: 'firehose',
@@ -299,20 +325,30 @@ export class DeliveryStream extends DeliveryStreamBase {
     return new Import(scope, id);
   }
 
-  readonly deliveryStreamName: string;
-
-  readonly deliveryStreamArn: string;
+  private readonly resource: CfnDeliveryStream;
 
   private _role?: iam.IRole;
 
+  @memoizedGetter
+  public get deliveryStreamArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'kinesis',
+      resource: 'deliverystream',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get deliveryStreamName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
   public get grantPrincipal(): iam.IPrincipal {
-    if (this._role) {
-      return this._role;
-    }
-    // backwards compatibility
-    return new iam.Role(this, 'Service Role', {
+    // backwards compatibility - create role only once
+    this._role = this._role ?? new iam.Role(this, 'Service Role', {
       assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
     });
+    return this._role;
   }
 
   constructor(scope: Construct, id: string, props: DeliveryStreamProps) {
@@ -334,7 +370,7 @@ export class DeliveryStream extends DeliveryStreamBase {
       props.source &&
         (props.encryption?.type === StreamEncryptionType.AWS_OWNED || props.encryption?.type === StreamEncryptionType.CUSTOMER_MANAGED)
     ) {
-      throw new cdk.ValidationError('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.', this);
+      throw new cdk.ValidationError(lit`ServerSideEncryptionNotSupportedWithKinesisSource`, 'Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.', this);
     }
     const encryptionKey = props.encryption?.encryptionKey ?? (props.encryption?.type === StreamEncryptionType.CUSTOMER_MANAGED ? new kms.Key(this, 'Key') : undefined);
     const encryptionConfig = (encryptionKey || (props.encryption?.type === StreamEncryptionType.AWS_OWNED)) ? {
@@ -363,7 +399,7 @@ export class DeliveryStream extends DeliveryStreamBase {
     const destinationConfig = props.destination.bind(this, {});
     const sourceConfig = props.source?._bind(this, this._role?.roleArn);
 
-    const resource = new CfnDeliveryStream(this, 'Resource', {
+    this.resource = new CfnDeliveryStream(this, 'Resource', {
       deliveryStreamEncryptionConfigurationInput: encryptionConfig,
       deliveryStreamName: props.deliveryStreamName,
       deliveryStreamType: props.source ? 'KinesisStreamAsSource' : 'DirectPut',
@@ -371,18 +407,11 @@ export class DeliveryStream extends DeliveryStreamBase {
       ...destinationConfig,
     });
 
-    destinationConfig.dependables?.forEach(dependable => resource.node.addDependency(dependable));
+    destinationConfig.dependables?.forEach(dependable => this.resource.node.addDependency(dependable));
 
     if (readStreamGrant) {
-      resource.node.addDependency(readStreamGrant);
+      this.resource.node.addDependency(readStreamGrant);
     }
-
-    this.deliveryStreamArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'kinesis',
-      resource: 'deliverystream',
-      resourceName: this.physicalName,
-    });
-    this.deliveryStreamName = this.getResourceNameAttribute(resource.ref);
   }
 }
 

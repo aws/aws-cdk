@@ -1,13 +1,15 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { FargateService, FargateTaskDefinition } from '../../../aws-ecs';
-import { ApplicationTargetGroup } from '../../../aws-elasticloadbalancingv2';
-import { FeatureFlags } from '../../../core';
+import type { ApplicationTargetGroup } from '../../../aws-elasticloadbalancingv2';
+import { FeatureFlags, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
+import type { ApplicationMultipleTargetGroupsServiceBaseProps } from '../base/application-multiple-target-groups-service-base';
 import {
   ApplicationMultipleTargetGroupsServiceBase,
-  ApplicationMultipleTargetGroupsServiceBaseProps,
 } from '../base/application-multiple-target-groups-service-base';
-import { FargateServiceBaseProps } from '../base/fargate-service-base';
+import type { FargateServiceBaseProps } from '../base/fargate-service-base';
 
 /**
  * The properties for the ApplicationMultipleTargetGroupsFargateService service.
@@ -25,7 +27,13 @@ export interface ApplicationMultipleTargetGroupsFargateServiceProps extends Appl
 /**
  * A Fargate service running on an ECS cluster fronted by an application load balancer.
  */
+@propertyInjectable
 export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMultipleTargetGroupsServiceBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs-patterns.ApplicationMultipleTargetGroupsFargateService';
+
   /**
    * Determines whether the service will be assigned a public IP address.
    */
@@ -56,7 +64,7 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
     this.assignPublicIp = props.assignPublicIp ?? false;
 
     if (props.taskDefinition && props.taskImageOptions) {
-      throw new Error('You must specify only one of TaskDefinition or TaskImageOptions.');
+      throw new ValidationError(lit`SpecifyOneTaskDefinitionTask`, 'You must specify only one of TaskDefinition or TaskImageOptions.', this);
     } else if (props.taskDefinition) {
       this.taskDefinition = props.taskDefinition;
     } else if (props.taskImageOptions) {
@@ -87,10 +95,10 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
         }
       }
     } else {
-      throw new Error('You must specify one of: taskDefinition or image');
+      throw new ValidationError(lit`SpecifyOneTaskDefinitionImage`, 'You must specify one of: taskDefinition or image', this);
     }
     if (!this.taskDefinition.defaultContainer) {
-      throw new Error('At least one essential container must be specified');
+      throw new ValidationError(lit`LeastOneEssentialContainerSpecified`, 'At least one essential container must be specified', this);
     }
     if (this.taskDefinition.defaultContainer.portMappings.length === 0) {
       this.taskDefinition.defaultContainer.addPortMappings({

@@ -8,6 +8,7 @@ import { LogGroupTargetInput } from 'aws-cdk-lib/aws-events-targets';
 
 const app = new cdk.App({
   postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
@@ -41,12 +42,14 @@ const customRule = new events.Rule(stack, 'CustomRule', {
   },
 });
 customRule.addTarget(new targets.CloudWatchLogGroup(logGroup2, {
-  logEvent: LogGroupTargetInput.fromObject({
+  logEvent: LogGroupTargetInput.fromObjectV2({
     message: events.EventField.fromPath('$.detail.date'),
   }),
 }));
 
-const queue = new sqs.Queue(stack, 'dlq');
+const queue = new sqs.Queue(stack, 'dlq', {
+  encryption: sqs.QueueEncryption.SQS_MANAGED,
+});
 
 const timer3 = new events.Rule(stack, 'Timer3', {
   schedule: events.Schedule.rate(cdk.Duration.minutes(1)),

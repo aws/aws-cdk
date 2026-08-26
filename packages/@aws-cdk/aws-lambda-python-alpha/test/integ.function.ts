@@ -2,10 +2,11 @@
 // python bundling changes the asset hash pretty frequently
 /// !cdk-integ pragma:disable-update-workflow
 import * as path from 'path';
-import { Runtime } from 'aws-cdk-lib/aws-lambda';
-import { App, CfnOutput, Stack, StackProps } from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, CfnOutput, Stack } from 'aws-cdk-lib';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import type { Construct } from 'constructs';
 import * as lambda from '../lib';
 
 /*
@@ -20,7 +21,7 @@ class TestStack extends Stack {
 
     const defaultFunction = new lambda.PythonFunction(this, 'my_handler', {
       entry: path.join(__dirname, 'lambda-handler'),
-      runtime: Runtime.PYTHON_3_9,
+      runtime: Runtime.PYTHON_3_10,
     });
     this.functionNames.push(defaultFunction.functionName);
 
@@ -30,7 +31,7 @@ class TestStack extends Stack {
 
     const functionWithExcludes = new lambda.PythonFunction(this, 'my_handler_excludes', {
       entry: path.join(__dirname, 'lambda-handler'),
-      runtime: Runtime.PYTHON_3_9,
+      runtime: Runtime.PYTHON_3_10,
       bundling: {
         assetExcludes: ['.ignorefiles'],
       },
@@ -43,7 +44,7 @@ class TestStack extends Stack {
 
     const functionWithCustomPypi = new lambda.PythonFunction(this, 'my_handler_pypi', {
       entry: path.join(__dirname, 'lambda-handler'),
-      runtime: Runtime.PYTHON_3_9,
+      runtime: Runtime.PYTHON_3_10,
       bundling: {
         environment: {
           PIP_INDEX_URL: 'https://aws:SOME_SECRET_TOKEN@pypi.org/simple',
@@ -58,7 +59,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const testCase = new TestStack(app, 'integ-lambda-python-function');
 const integ = new IntegTest(app, 'lambda-python-function', {
   testCases: [testCase],

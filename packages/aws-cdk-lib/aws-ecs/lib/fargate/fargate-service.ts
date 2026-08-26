@@ -1,13 +1,18 @@
-import { Construct } from 'constructs';
-import * as ec2 from '../../../aws-ec2';
-import * as elb from '../../../aws-elasticloadbalancing';
+import type { Construct } from 'constructs';
+import type * as ec2 from '../../../aws-ec2';
+import type * as elb from '../../../aws-elasticloadbalancing';
 import * as cdk from '../../../core';
+import { ValidationError } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { AvailabilityZoneRebalancing } from '../availability-zone-rebalancing';
-import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType } from '../base/base-service';
+import type { BaseServiceOptions, IBaseService, IService } from '../base/base-service';
+import { BaseService, DeploymentControllerType, LaunchType } from '../base/base-service';
 import { fromServiceAttributes, extractServiceNameFromArn } from '../base/from-service-attributes';
-import { TaskDefinition } from '../base/task-definition';
-import { ICluster } from '../cluster';
+import type { TaskDefinition } from '../base/task-definition';
+import type { ICluster } from '../cluster';
+import type { ServiceReference } from '../ecs.generated';
 
 /**
  * The properties for defining a service using the Fargate launch type.
@@ -69,7 +74,7 @@ export interface FargateServiceProps extends BaseServiceOptions {
    * of a Classic Load Balancer.
    *
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-rebalancing.html
-   * @default AvailabilityZoneRebalancing.DISABLED
+   * @default AvailabilityZoneRebalancing.ENABLED
    */
   readonly availabilityZoneRebalancing?: AvailabilityZoneRebalancing;
 }
@@ -108,9 +113,18 @@ export interface FargateServiceAttributes {
 /**
  * This creates a service using the Fargate launch type on an ECS cluster.
  *
+ * Can also be used with Managed Instances compatible task definitions when using
+ * capacity provider strategies.
+ *
  * @resource AWS::ECS::Service
  */
+@propertyInjectable
 export class FargateService extends BaseService implements IFargateService {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs.FargateService';
+
   /**
    * Imports from the specified service ARN.
    */
@@ -118,6 +132,12 @@ export class FargateService extends BaseService implements IFargateService {
     class Import extends cdk.Resource implements IFargateService {
       public readonly serviceArn = fargateServiceArn;
       public readonly serviceName = extractServiceNameFromArn(this, fargateServiceArn);
+
+      public get serviceRef(): ServiceReference {
+        return {
+          serviceArn: this.serviceArn,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -135,18 +155,18 @@ export class FargateService extends BaseService implements IFargateService {
    * Constructs a new instance of the FargateService class.
    */
   constructor(scope: Construct, id: string, props: FargateServiceProps) {
-    if (!props.taskDefinition.isFargateCompatible) {
-      throw new Error('Supplied TaskDefinition is not configured for compatibility with Fargate');
+    if (!props.taskDefinition.isFargateCompatible && !props.taskDefinition.isManagedInstancesCompatible) {
+      throw new ValidationError(lit`SuppliedTaskDefinitionConfiguredCompatibility`, 'Supplied TaskDefinition is not configured for compatibility with Fargate or Managed Instances', scope);
     }
 
     if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
-      throw new Error('Only one of SecurityGroup or SecurityGroups can be populated.');
+      throw new ValidationError(lit`OnlySecurityGroupOrSecurityGroupsPopulated`, 'Only one of SecurityGroup or SecurityGroups can be populated.', scope);
     }
 
     if (props.availabilityZoneRebalancing === AvailabilityZoneRebalancing.ENABLED &&
       !cdk.Token.isUnresolved(props.maxHealthyPercent) &&
       props.maxHealthyPercent === 100) {
-      throw new Error('AvailabilityZoneRebalancing.ENABLED requires maxHealthyPercent > 100');
+      throw new ValidationError(lit`AvailabilityZoneRebalancing`, 'AvailabilityZoneRebalancing.ENABLED requires maxHealthyPercent > 100', scope);
     }
 
     // Platform versions not supporting referencesSecretJsonField, ephemeralStorageGiB, or pidMode on a task definition
@@ -159,11 +179,11 @@ export class FargateService extends BaseService implements IFargateService {
     const isUnsupportedPlatformVersion = props.platformVersion && unsupportedPlatformVersions.includes(props.platformVersion);
 
     if (props.taskDefinition.ephemeralStorageGiB && isUnsupportedPlatformVersion) {
-      throw new Error(`The ephemeralStorageGiB feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later, got ${props.platformVersion}.`);
+      throw new ValidationError(lit`EphemeralStorageGibFeatureRequires`, `The ephemeralStorageGiB feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later, got ${props.platformVersion}.`, scope);
     }
 
     if (props.taskDefinition.pidMode && isUnsupportedPlatformVersion) {
-      throw new Error(`The pidMode feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later, got ${props.platformVersion}.`);
+      throw new ValidationError(lit`PidModeFeatureRequires`, `The pidMode feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later, got ${props.platformVersion}.`, scope);
     }
 
     super(scope, id, {
@@ -217,7 +237,7 @@ export class FargateService extends BaseService implements IFargateService {
   @MethodMetadata()
   public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
     if (this.availabilityZoneRebalancingEnabled) {
-      throw new Error('AvailabilityZoneRebalancing.ENABLED disallows using the service as a target of a Classic Load Balancer');
+      throw new ValidationError(lit`AvailabilityZoneRebalancingDisallowsClassicLB`, 'AvailabilityZoneRebalancing.ENABLED disallows using the service as a target of a Classic Load Balancer', this);
     }
     super.attachToClassicLB(loadBalancer);
   }

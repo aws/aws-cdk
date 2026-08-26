@@ -2,7 +2,11 @@ import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as codedeploy from 'aws-cdk-lib/aws-codedeploy';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-cdk-codedeploy-lambda-config');
 
 new codedeploy.LambdaDeploymentConfig(stack, 'LinearConfig', {
@@ -12,10 +16,11 @@ new codedeploy.LambdaDeploymentConfig(stack, 'LinearConfig', {
   }),
 });
 
-new codedeploy.CustomLambdaDeploymentConfig(stack, 'CustomConfig', {
-  interval: cdk.Duration.minutes(1),
-  percentage: 5,
-  type: cdk.aws_codedeploy.CustomLambdaDeploymentConfigType.LINEAR,
+new codedeploy.LambdaDeploymentConfig(stack, 'CustomConfig', {
+  trafficRouting: codedeploy.TrafficRouting.timeBasedLinear({
+    interval: cdk.Duration.minutes(1),
+    percentage: 5,
+  }),
   deploymentConfigName: 'hello',
 });
 

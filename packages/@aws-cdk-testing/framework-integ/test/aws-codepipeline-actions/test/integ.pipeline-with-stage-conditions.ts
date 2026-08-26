@@ -10,9 +10,9 @@ import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new cdk.App({
   postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
-    '@aws-cdk/pipelines:reduceStageRoleTrustScope': false,
   },
 });
 
@@ -86,12 +86,11 @@ const lambdaStage = pipeline.addStage({
       result: codepipeline.Result.FAIL,
       rules: [new codepipeline.Rule({
         name: 'CloudWatchCheck',
-        provider: 'LambdaInvoke',
+        provider: 'CloudWatchAlarm',
         version: '1',
         configuration: {
           AlarmName: alarm.alarmName,
           WaitTime: '300', // 5 minutes
-          FunctionName: 'funcName2',
         },
       })],
     }],
@@ -102,12 +101,11 @@ const lambdaStage = pipeline.addStage({
       result: codepipeline.Result.ROLLBACK,
       rules: [new codepipeline.Rule({
         name: 'RollBackOnFailure',
-        provider: 'LambdaInvoke',
+        provider: 'CloudWatchAlarm',
         version: '1',
         configuration: {
           AlarmName: alarm.alarmName,
           WaitTime: '300', // 5 minutes
-          FunctionName: 'funcName1',
         },
       })],
     }],

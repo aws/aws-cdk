@@ -1,11 +1,14 @@
-import { Construct } from 'constructs';
-import { RestApi, RestApiProps } from '.';
-import { RequestContext } from './integrations';
+import type { Construct } from 'constructs';
+import type { RestApiProps } from '.';
+import { RestApi } from '.';
+import type { RequestContext } from './integrations';
 import { StepFunctionsIntegration } from './integrations/stepfunctions';
-import * as iam from '../../aws-iam';
+import type * as iam from '../../aws-iam';
 import * as sfn from '../../aws-stepfunctions';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for StepFunctionsRestApi
@@ -15,7 +18,7 @@ export interface StepFunctionsRestApiProps extends RestApiProps {
   /**
    * The default State Machine that handles all requests from this API.
    *
-   * This stateMachine will be used as a the default integration for all methods in
+   * This stateMachine will be used as the default integration for all methods in
    * this API, unless specified otherwise in `addMethod`.
    */
   readonly stateMachine: sfn.IStateMachine;
@@ -110,14 +113,20 @@ export interface StepFunctionsRestApiProps extends RestApiProps {
 /**
  * Defines an API Gateway REST API with a Synchrounous Express State Machine as a proxy integration.
  */
+@propertyInjectable
 export class StepFunctionsRestApi extends RestApi {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.StepFunctionsRestApi';
+
   constructor(scope: Construct, id: string, props: StepFunctionsRestApiProps) {
     if (props.defaultIntegration) {
-      throw new ValidationError('Cannot specify "defaultIntegration" since Step Functions integration is automatically defined', scope);
+      throw new ValidationError(lit`CannotSpecifyDefaultIntegrationSince`, 'Cannot specify "defaultIntegration" since Step Functions integration is automatically defined', scope);
     }
 
     if ((props.stateMachine.node.defaultChild as sfn.CfnStateMachine).stateMachineType !== sfn.StateMachineType.EXPRESS) {
-      throw new ValidationError('State Machine must be of type "EXPRESS". Please use StateMachineType.EXPRESS as the stateMachineType', scope);
+      throw new ValidationError(lit`MustBeStateMachineType`, 'State Machine must be of type "EXPRESS". Please use StateMachineType.EXPRESS as the stateMachineType', scope);
     }
 
     const stepfunctionsIntegration = StepFunctionsIntegration.startExecution(props.stateMachine, {

@@ -1,5 +1,13 @@
 {
  "Resources": {
+  "MyLogGroup5C0DAD85": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "HttpApiF5A9A8A7": {
    "Type": "AWS::ApiGatewayV2::Api",
    "Properties": {
@@ -10,6 +18,15 @@
   "HttpStageWithPropertiesC0AABA83": {
    "Type": "AWS::ApiGatewayV2::Stage",
    "Properties": {
+    "AccessLogSettings": {
+     "DestinationArn": {
+      "Fn::GetAtt": [
+       "MyLogGroup5C0DAD85",
+       "Arn"
+      ]
+     },
+     "Format": "{\"extendedRequestId\":\"$context.extendedRequestId\",\"requestTime\":\"$context.requestTime\"}"
+    },
     "ApiId": {
      "Ref": "HttpApiF5A9A8A7"
     },

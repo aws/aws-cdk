@@ -1,6 +1,8 @@
-import { ConventionalCommit } from '../lib/conventional-commits';
-import { changelog, ChangelogOptions, writeChangelogs } from '../lib/lifecycles/changelog';
-import { ExperimentalChangesTreatment, PackageInfo, Versions } from '../lib/types';
+import type { ConventionalCommit } from '../lib/conventional-commits';
+import type { ChangelogOptions } from '../lib/lifecycles/changelog';
+import { changelog, writeChangelogs } from '../lib/lifecycles/changelog';
+import type { PackageInfo, Versions } from '../lib/types';
+import { ExperimentalChangesTreatment } from '../lib/types';
 
 const args: ChangelogOptions = {
   changelogFile: 'CHANGELOG.md',
@@ -161,7 +163,7 @@ describe('changelog', () => {
     expect(changelogContents).toBe(
       `## [1.24.0](https://github.com/aws/aws-cdk/compare/v1.23.0...v1.24.0)
 
-### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+### ⚠ BREAKING CHANGES
 
 * this is a breaking change
 
@@ -187,6 +189,7 @@ function buildCommit(commit: PartialCommit): ConventionalCommit {
   return {
     notes: [],
     references: [],
+    // eslint-disable-next-line @cdklabs/no-evaluating-typeguard
     header: `${commit.type}${commit.scope ? '(' + commit.scope + ')' : ''}: ${commit.subject}`,
     ...commit,
   };

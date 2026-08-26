@@ -1,5 +1,5 @@
-import { Match, Template } from 'aws-cdk-lib/assertions';
 import { App, Stack } from 'aws-cdk-lib';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as ivs from '../lib';
 
 const publicKey = `-----BEGIN PUBLIC KEY-----

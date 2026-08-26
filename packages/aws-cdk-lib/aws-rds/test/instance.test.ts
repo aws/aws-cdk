@@ -9,6 +9,7 @@ import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as rds from '../lib';
+import { acknowledgeTestValidationRules } from './util';
 
 let stack: cdk.Stack;
 let vpc: ec2.Vpc;
@@ -16,6 +17,7 @@ let vpc: ec2.Vpc;
 describe('instance', () => {
   beforeEach(() => {
     stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     vpc = new ec2.Vpc(stack, 'VPC');
   });
 
@@ -596,6 +598,35 @@ describe('instance', () => {
         },
       });
     });
+
+    test('create an instance from clusterSnapshotIdentifier', () => {
+      new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        clusterSnapshotIdentifier: 'my-snapshot',
+        engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+        vpc,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterSnapshotIdentifier: 'my-snapshot',
+      });
+    });
+
+    test('throws when both snapshotIdentifier and clusterSnapshotIdentifier specified', () => {
+      expect(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        snapshotIdentifier: 'my-snapshot',
+        clusterSnapshotIdentifier: 'my-cluster-snapshot',
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+      })).toThrow(/You cannot specify both `snapshotIdentifier` and `clusterSnapshotIdentifier`/);
+    });
+
+    test('throws when none of snapshotIdentifier or clusterSnapshotIdentifier specified', () => {
+      expect(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+      })).toThrow(/You must specify `snapshotIdentifier` or `clusterSnapshotIdentifier`/);
+    });
   });
 
   test('create a read replica in the same region - with the subnet group name', () => {
@@ -748,6 +779,40 @@ describe('instance', () => {
       dimensions: { DBInstanceIdentifier: { Ref: 'InstanceC1063A87' } },
       namespace: 'AWS/RDS',
       metricName: 'CPUUtilization',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average',
+    });
+  });
+
+  test('can use metricReadIOPS', () => {
+    // WHEN
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      vpc,
+    });
+
+    // THEN
+    expect(stack.resolve(instance.metricReadIOPS())).toEqual({
+      dimensions: { DBInstanceIdentifier: { Ref: 'InstanceC1063A87' } },
+      namespace: 'AWS/RDS',
+      metricName: 'ReadIOPS',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average',
+    });
+  });
+
+  test('can use metricWriteIOPS', () => {
+    // WHEN
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      vpc,
+    });
+
+    // THEN
+    expect(stack.resolve(instance.metricWriteIOPS())).toEqual({
+      dimensions: { DBInstanceIdentifier: { Ref: 'InstanceC1063A87' } },
+      namespace: 'AWS/RDS',
+      metricName: 'WriteIOPS',
       period: cdk.Duration.minutes(5),
       statistic: 'Average',
     });
@@ -1375,7 +1440,6 @@ describe('instance', () => {
   });
 
   test('createGrant - creates IAM policy for instance replica when the USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY feature flag is enabled', () => {
-    const cloudwatchTraceLog = 'trace';
     const app = new cdk.App({ context: { [cxapi.USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY]: true } });
     stack = new cdk.Stack(app);
     vpc = new ec2.Vpc( stack, 'VPC' );
@@ -1438,7 +1502,6 @@ describe('instance', () => {
   });
 
   test('createGrant - creates IAM policy for instance replica when the USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY feature flag is disabled by default', () => {
-    const cloudwatchTraceLog = 'trace';
     const app = new cdk.App();
     stack = new cdk.Stack(app);
     vpc = new ec2.Vpc( stack, 'VPC' );
@@ -1462,7 +1525,6 @@ describe('instance', () => {
     replicaInstance.grantConnect(role, 'my-user');
 
     // THEN
-    app.synth();
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [{
@@ -1685,6 +1747,19 @@ describe('instance', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
         PerformanceInsightsRetentionPeriod: rds.PerformanceInsightRetention[performanceInsightRetentionKey],
+      });
+    });
+
+    test('explicitly disabling performance insights is respected', () => {
+      new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        snapshotIdentifier: 'my-snapshot',
+        enablePerformanceInsights: false,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        EnablePerformanceInsights: false,
       });
     });
 
@@ -1959,6 +2034,165 @@ describe('instance', () => {
     });
   });
 
+  describe('manageMasterUserPassword', () => {
+    test('with username and KMS encryption key', () => {
+      // GIVEN
+      const kmsKey = new kms.Key(stack, 'Key');
+
+      // WHEN
+      new rds.DatabaseInstance(stack, 'Database', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        manageMasterUserPassword: true,
+        credentials: {
+          username: 'testuser',
+          encryptionKey: kmsKey,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        Engine: 'mysql',
+        MasterUsername: 'testuser',
+        ManageMasterUserPassword: true,
+        MasterUserSecret: {
+          KmsKeyId: stack.resolve(kmsKey.keyArn),
+        },
+        MasterUserPassword: Match.absent(),
+      });
+
+      Template.fromStack(stack).resourceCountIs('AWS::SecretsManager::Secret', 0);
+    });
+
+    test('without username (uses engine default)', () => {
+      // WHEN
+      new rds.DatabaseInstance(stack, 'Database', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        manageMasterUserPassword: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        Engine: 'mysql',
+        MasterUsername: 'admin', // engine default username
+        ManageMasterUserPassword: true,
+        MasterUserPassword: Match.absent(),
+        MasterUserSecret: Match.absent(),
+      });
+
+      Template.fromStack(stack).resourceCountIs('AWS::SecretsManager::Secret', 0);
+    });
+
+    test('secret.grantRead() grants kms:Decrypt when a customer managed key is used', () => {
+      // GIVEN
+      const kmsKey = new kms.Key(stack, 'Key');
+      const instance = new rds.DatabaseInstance(stack, 'Database', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        manageMasterUserPassword: true,
+        credentials: {
+          username: 'testuser',
+          encryptionKey: kmsKey,
+        },
+      });
+      const role = new Role(stack, 'Role', {
+        assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+      });
+
+      // WHEN
+      instance.secret!.grantRead(role);
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+              Effect: 'Allow',
+            }),
+          ]),
+        },
+      });
+      template.hasResourceProperties('AWS::KMS::Key', {
+        KeyPolicy: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: 'kms:Decrypt',
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'kms:ViaService': {
+                    'Fn::Join': ['', ['secretsmanager.', { Ref: 'AWS::Region' }, '.amazonaws.com']],
+                  },
+                },
+              },
+            }),
+          ]),
+        },
+      });
+    });
+  });
+
+  describe('manageMasterUserPassword validation errors', () => {
+    test('should reject all unsupported credential properties', () => {
+      // THEN
+      expect(() => {
+        new rds.DatabaseInstance(stack, 'Database', {
+          engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+          vpc,
+          manageMasterUserPassword: true,
+          credentials: {
+            username: 'testuser',
+            password: cdk.SecretValue.unsafePlainText('password'),
+            excludeCharacters: '"@/\\',
+            secretName: 'my-secret',
+            replicaRegions: [{ region: 'us-west-2' }],
+            usernameAsString: true,
+          },
+        });
+      }).toThrow(/When manageMasterUserPassword is enabled, only 'username' and 'encryptionKey' are allowed in credentials\. Found unsupported properties: excludeCharacters, password, replicaRegions, secretName, usernameAsString\./);
+    });
+  });
+
+  describe('manageMasterUserPassword rotation conflict', () => {
+    test('addRotationSingleUser throws when manageMasterUserPassword is enabled', () => {
+      const instance = new rds.DatabaseInstance(stack, 'Database', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        manageMasterUserPassword: true,
+      });
+
+      expect(() => instance.addRotationSingleUser()).toThrow(/Cannot add rotation when `manageMasterUserPassword` is enabled\. RDS automatically rotates the master password when it manages the secret\./);
+    });
+
+    test('addRotationMultiUser throws when manageMasterUserPassword is enabled', () => {
+      const instance = new rds.DatabaseInstance(stack, 'Database', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        manageMasterUserPassword: true,
+      });
+      const userSecret = new rds.DatabaseSecret(stack, 'UserSecret', { username: 'user' });
+
+      expect(() => instance.addRotationMultiUser('user', { secret: userSecret.attach(instance) }))
+        .toThrow(/Cannot add rotation when `manageMasterUserPassword` is enabled\. RDS automatically rotates the master password when it manages the secret\./);
+    });
+
+    test('addRotationSingleUser works when manageMasterUserPassword is not enabled (regression)', () => {
+      const instance = new rds.DatabaseInstance(stack, 'Database', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+      });
+
+      // WHEN - should not throw
+      instance.addRotationSingleUser();
+
+      // THEN
+      Template.fromStack(stack).resourceCountIs('AWS::SecretsManager::RotationSchedule', 1);
+    });
+  });
+
   test('can set publiclyAccessible to false with public subnets', () => {
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.mysql({
@@ -2225,6 +2459,198 @@ describe('instance', () => {
       storageThroughput: 2500,
     })).toThrow(/maximum ratio of storage throughput to IOPS is 0.25/);
   });
+
+  test.each([
+    rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT,
+    rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+  ])('DatabaseInstance can specify engine lifecycle support %s', (engineLifecycleSupport) => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_5 }),
+      vpc,
+      engineLifecycleSupport,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EngineLifecycleSupport: engineLifecycleSupport,
+    });
+  });
+
+  test.each([
+    rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT,
+    rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+  ])('DatabaseInstanceFromSnapshot can specify engine lifecycle support %s', (engineLifecycleSupport) => {
+    // WHEN
+    new rds.DatabaseInstanceFromSnapshot(stack, 'Database', {
+      snapshotIdentifier: 'my-snapshot',
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_5 }),
+      vpc,
+      engineLifecycleSupport,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EngineLifecycleSupport: engineLifecycleSupport,
+    });
+  });
+
+  test.each([
+    rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT,
+    rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+  ])('DatabaseInstanceReadReplica can specify engine lifecycle support %s', (engineLifecycleSupport) => {
+    // GIVEN
+    const sourceInstance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_5 }),
+      vpc,
+    });
+
+    // WHEN
+    new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
+      sourceDatabaseInstance: sourceInstance,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+      engineLifecycleSupport,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      SourceDBInstanceIdentifier: {
+        'Fn::Join': ['', [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':rds:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':db:',
+          { Ref: 'DatabaseB269D8BB' },
+        ]],
+      },
+      EngineLifecycleSupport: engineLifecycleSupport,
+    });
+  });
+
+  test.each([
+    rds.DatabaseInstanceEngine.oracleEe({ version: rds.OracleEngineVersion.VER_19 }),
+    rds.DatabaseInstanceEngine.mariaDb({ version: rds.MariaDbEngineVersion.VER_10_6 }),
+    rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_16_00_4185_3_V1 }),
+  ])('DatabaseInstance cannot specify engine lifecycle support for engine %s', (engine) => {
+    expect(() => new rds.DatabaseInstance(stack, 'Database', {
+      engine,
+      vpc,
+      engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+    })).toThrow(/'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL/);
+  });
+
+  test.each([
+    rds.DatabaseInstanceEngine.oracleEe({ version: rds.OracleEngineVersion.VER_19 }),
+    rds.DatabaseInstanceEngine.mariaDb({ version: rds.MariaDbEngineVersion.VER_10_6 }),
+    rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_16_00_4185_3_V1 }),
+  ])('DatabaseInstanceFromSnapshot cannot specify engine lifecycle support for engine %s', (engine) => {
+    expect(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Database', {
+      snapshotIdentifier: 'my-snapshot',
+      engine,
+      vpc,
+      engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+    })).toThrow(/'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL/);
+  });
+
+  test.each([
+    rds.DatabaseInstanceEngine.oracleEe({ version: rds.OracleEngineVersion.VER_19 }),
+    rds.DatabaseInstanceEngine.mariaDb({ version: rds.MariaDbEngineVersion.VER_10_6 }),
+    rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_16_00_4185_3_V1 }),
+  ])('DatabaseInstanceReadReplica cannot specify engine lifecycle support for engine %s', (engine) => {
+    // GIVEN
+    const sourceInstance = new rds.DatabaseInstance(stack, 'Database', {
+      engine,
+      vpc,
+    });
+
+    expect(() => new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
+      sourceDatabaseInstance: sourceInstance,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+      engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+    })).toThrow(/'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL/);
+  });
+
+  test.each([
+    rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_5 }),
+    rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_5_7 }),
+    rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+    rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15 }),
+  ])('DatabaseInstance can specify engine lifecycle support for engine %s', (engine) => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine,
+      vpc,
+      engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EngineLifecycleSupport: 'open-source-rds-extended-support-disabled',
+    });
+  });
+
+  test.each([
+    rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_5 }),
+    rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_5_7 }),
+    rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+    rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15 }),
+  ])('DatabaseInstanceFromSnapshot can specify engine lifecycle support for engine %s', (engine) => {
+    // WHEN
+    new rds.DatabaseInstanceFromSnapshot(stack, 'Database', {
+      snapshotIdentifier: 'my-snapshot',
+      engine,
+      vpc,
+      engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EngineLifecycleSupport: 'open-source-rds-extended-support-disabled',
+    });
+  });
+
+  test.each([
+    rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_5 }),
+    rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_5_7 }),
+    rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+    rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15 }),
+  ])('DatabaseInstanceReadReplica can specify engine lifecycle support for engine %s', (engine) => {
+    // GIVEN
+    const sourceInstance = new rds.DatabaseInstance(stack, 'Database', {
+      engine,
+      vpc,
+    });
+
+    // WHEN
+    new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
+      sourceDatabaseInstance: sourceInstance,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+      engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      SourceDBInstanceIdentifier: {
+        'Fn::Join': ['', [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':rds:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':db:',
+          { Ref: 'DatabaseB269D8BB' },
+        ]],
+      },
+      EngineLifecycleSupport: 'open-source-rds-extended-support-disabled',
+    });
+  });
 });
 
 test.each([
@@ -2264,6 +2690,7 @@ describe('cross-account instance', () => {
     ['PhysicalName.GENERATE_IF_NEEDED', cdk.PhysicalName.GENERATE_IF_NEEDED, 'instancestackncestackinstancec830ba83756a6dfc7154'],
   ])("with database identifier '%s' can be referenced from a Stack in a different account", (_, providedInstanceId, expectedInstanceId) => {
     const app = new cdk.App();
+    acknowledgeTestValidationRules(app);
     const instanceStack = new cdk.Stack(app, 'InstanceStack', {
       env: { account: '123', region: 'my-region' },
     });
@@ -2300,5 +2727,85 @@ describe('cross-account instance', () => {
         },
       },
     });
+  });
+});
+
+describe('database insights for instance', () => {
+  test('instance with the advanced mode of database insights', () => {
+    // GIVEN
+    stack = new cdk.Stack();
+    vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_13_7 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
+      vpc,
+      databaseInsightsMode: rds.DatabaseInsightsMode.ADVANCED,
+      performanceInsightRetention: rds.PerformanceInsightRetention.MONTHS_15,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EnablePerformanceInsights: true,
+      PerformanceInsightsRetentionPeriod: 465,
+      DatabaseInsightsMode: 'advanced',
+    });
+  });
+
+  test.each([true, false])('instance with the standard mode of database insights when enablePerformanceInsights is %s', (enablePerformanceInsights) => {
+    // GIVEN
+    stack = new cdk.Stack();
+    vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_17_5 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
+      vpc,
+      enablePerformanceInsights,
+      databaseInsightsMode: rds.DatabaseInsightsMode.STANDARD,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EnablePerformanceInsights: enablePerformanceInsights,
+      DatabaseInsightsMode: 'standard',
+    });
+  });
+
+  test('throw if performance insights is disabled and the advanced mode of database insights is set', () => {
+    // GIVEN
+    stack = new cdk.Stack();
+    vpc = new ec2.Vpc(stack, 'VPC');
+
+    // THEN
+    expect(() => {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_17_5 }),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+        vpc,
+        enablePerformanceInsights: false,
+        databaseInsightsMode: rds.DatabaseInsightsMode.ADVANCED,
+        performanceInsightRetention: rds.PerformanceInsightRetention.MONTHS_15,
+      });
+    }).toThrow(/`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set, or `databaseInsightsMode` was set to '\${DatabaseInsightsMode.ADVANCED}'/);
+  });
+
+  test('throw if the advanced mode of database insights is set and any retention other than MONTHS_15 is set for performanceInsightRetention', () => {
+    // GIVEN
+    stack = new cdk.Stack();
+    vpc = new ec2.Vpc(stack, 'VPC');
+
+    // THEN
+    expect(() => {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_17_5 }),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+        vpc,
+        performanceInsightRetention: rds.PerformanceInsightRetention.LONG_TERM,
+        databaseInsightsMode: rds.DatabaseInsightsMode.ADVANCED,
+      });
+    }).toThrow(/`performanceInsightRetention` must be set to '\${PerformanceInsightRetention.MONTHS_15}' when `databaseInsightsMode` is set to '\${DatabaseInsightsMode.ADVANCED}'/);
   });
 });

@@ -1,10 +1,13 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
-import { Construct } from 'constructs';
-import { JobType, GlueVersion, JobLanguage, WorkerType, ExecutionClass } from '../constants';
-import * as cdk from 'aws-cdk-lib/core';
-import { Code } from '../code';
-import { SparkJob, SparkJobProps } from './spark-job';
+import type * as cdk from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import type { Code } from '../code';
+import { JobType, GlueVersion, JobLanguage, WorkerType, ExecutionClass } from '../constants';
+import type { SparkJobProps } from './spark-job';
+import { SparkJob } from './spark-job';
 
 /**
  * Flex Jobs class
@@ -72,9 +75,11 @@ export interface ScalaSparkFlexEtlJobProps extends SparkJobProps {
  * You can find more details about version, worker type and other features
  * in Glue's public documentation.
  */
+@propertyInjectable
 export class ScalaSparkFlexEtlJob extends SparkJob {
-  public readonly jobArn: string;
-  public readonly jobName: string;
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.ScalaSparkFlexEtlJob';
+  private resource: CfnJob;
 
   /**
    * ScalaSparkFlexEtlJob constructor
@@ -90,7 +95,7 @@ export class ScalaSparkFlexEtlJob extends SparkJob {
       ...this.nonExecutableCommonArguments(props),
     };
 
-    const jobResource = new CfnJob(this, 'Resource', {
+    this.resource = new CfnJob(this, 'Resource', {
       name: props.jobName,
       description: props.description,
       role: this.role.roleArn,
@@ -98,9 +103,9 @@ export class ScalaSparkFlexEtlJob extends SparkJob {
         name: JobType.ETL,
         scriptLocation: this.codeS3ObjectUrl(props.script),
       },
-      glueVersion: props.glueVersion ? props.glueVersion : GlueVersion.V3_0,
-      workerType: props.workerType ? props.workerType : WorkerType.G_1X,
-      numberOfWorkers: props.numberOfWorkers ? props.numberOfWorkers : 10,
+      glueVersion: props.glueVersion ? props.glueVersion : GlueVersion.V5_0,
+      workerType: props.workerConfiguration?.workerType ?? WorkerType.G_1X,
+      numberOfWorkers: props.workerConfiguration?.numberOfWorkers ?? 10,
       maxRetries: props.maxRetries,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
       notificationProperty: props.notifyDelayAfter ? { notifyDelayAfter: props.notifyDelayAfter.toMinutes() } : undefined,
@@ -112,10 +117,16 @@ export class ScalaSparkFlexEtlJob extends SparkJob {
       jobRunQueuingEnabled: false,
       defaultArguments,
     });
+  }
 
-    const resourceName = this.getResourceNameAttribute(jobResource.ref);
-    this.jobArn = this.buildJobArn(this, resourceName);
-    this.jobName = resourceName;
+  @memoizedGetter
+  public get jobArn(): string {
+    return this.buildJobArn(this, this.jobName);
+  }
+
+  @memoizedGetter
+  public get jobName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
   }
 
   /**

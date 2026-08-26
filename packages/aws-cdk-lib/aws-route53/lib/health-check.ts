@@ -1,12 +1,15 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnHealthCheck } from './route53.generated';
-import { Duration, IResource, Resource } from '../../core';
+import type { IResource } from '../../core';
+import { Duration, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { HealthCheckReference, IHealthCheckRef } from '../../interfaces/generated/aws-route53-interfaces.generated';
 
 /**
  * Imported or created health check
  */
-export interface IHealthCheck extends IResource {
+export interface IHealthCheck extends IResource, IHealthCheckRef {
   /**
    * The ID of the health check.
    *
@@ -232,7 +235,13 @@ export interface HealthCheckProps {
  * - The CloudWatch alarm that you specify,
  * - The status of an Amazon Route 53 routing control.
  */
+@propertyInjectable
 export class HealthCheck extends Resource implements IHealthCheck {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.HealthCheck';
+
   /**
    * Import an existing health check into this CDK app.
    *
@@ -244,12 +253,24 @@ export class HealthCheck extends Resource implements IHealthCheck {
   public static fromHealthCheckId(scope: Construct, id: string, healthCheckId: string): IHealthCheck {
     class Import extends Resource implements IHealthCheck {
       public readonly healthCheckId = healthCheckId;
+
+      get healthCheckRef() {
+        return {
+          healthCheckId: this.healthCheckId,
+        };
+      }
     }
 
     return new Import(scope, id);
   }
 
   public readonly healthCheckId: string;
+
+  public get healthCheckRef(): HealthCheckReference {
+    return {
+      healthCheckId: this.healthCheckId,
+    };
+  }
 
   /**
    * Creates a new health check.
@@ -314,6 +335,7 @@ function getDefaultMeasureLatencyForType(type: HealthCheckType): boolean | undef
   switch (type) {
     case HealthCheckType.CALCULATED:
     case HealthCheckType.CLOUDWATCH_METRIC:
+    case HealthCheckType.RECOVERY_CONTROL:
       return undefined;
     default:
       return false;
@@ -332,6 +354,7 @@ function getDefaultFailureThresholdForType(type: HealthCheckType): number | unde
   switch (type) {
     case HealthCheckType.CALCULATED:
     case HealthCheckType.CLOUDWATCH_METRIC:
+    case HealthCheckType.RECOVERY_CONTROL:
       return undefined;
     default:
       return 3;
@@ -342,6 +365,7 @@ function getDefaultRequestIntervalForType(type: HealthCheckType): Duration | und
   switch (type) {
     case HealthCheckType.CALCULATED:
     case HealthCheckType.CLOUDWATCH_METRIC:
+    case HealthCheckType.RECOVERY_CONTROL:
       return undefined;
     default:
       return Duration.seconds(30);

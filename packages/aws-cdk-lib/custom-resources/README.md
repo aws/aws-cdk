@@ -121,6 +121,9 @@ def is_complete(event, context):
 > Do not use this library if your threat model requires that you cannot trust actors who are able
 > to list StepFunction executions in your account.
 
+
+> **Default behaviour change Note**: the Custom Resource Provider doesn't log anything by default. To enable logging for the Provider framework, toggle `disableWaiterStateMachineLogging` and `disableFrameworkLambdaLogging` depending on you requirement to see waiter state machine logs or provider framework lambda logs
+
 ### Handling Lifecycle Events: onEvent
 
 The user-defined `onEvent` AWS Lambda function is invoked whenever a resource
@@ -181,7 +184,7 @@ CloudFormation.
 
 The input event to `isComplete` includes all request fields, combined with all
 fields returned from `onEvent`. If `PhysicalResourceId` has not been explicitly
-returned from `onEvent`, it's value will be calculated based on the heuristics
+returned from `onEvent`, its value will be calculated based on the heuristics
 described above.
 
 The return value must be a JSON object with the following fields:
@@ -270,7 +273,7 @@ resource operation fails even though the operation technically succeeded (i.e.
 isComplete throws an error).
 
 When AWS CloudFormation receives a "FAILED" response, it will attempt to roll
-back the stack to it's last state. This has different meanings for different
+back the stack to its last state. This has different meanings for different
 lifecycle events:
 
 * If a `Create` event fails, the resource provider framework will automatically
@@ -279,7 +282,10 @@ lifecycle events:
   https://github.com/aws/aws-cdk/issues/5524).
 * If an `Update` event fails, CloudFormation will issue an additional `Update`
   with the previous properties.
-* If a `Delete` event fails, CloudFormation will abandon this resource.
+* If a `Delete` event fails during a `Stack Update`, CloudFormation will
+  report the error but succeed the `Update`, and abandon the resource.
+* If a `Delete` event fails during any other stack operation, CloudFormation
+  will fail and block the stack operation, requiring human intervention.
 
 ### Important cases to handle
 
@@ -297,8 +303,19 @@ make sure your custom resource behaves correctly in all cases:
     to roll back to the previous state (with `ResourceProperties` and
     `OldResourceProperties` reversed).
   * If you return a different `PhysicalResourceId`, you will subsequently
-    receive a `Delete` event to clean up the previous state of the resource.
+    receive a `Delete` event to clean up the previous instance of the resource.
 * During `Delete`:
+  * If your `Create` takes a long time to complete, it is possible **that
+    another resource may fail during this time**. If that happens, CloudFormation
+    will stop waiting for the Create call to complete and send you a `Delete`
+    event. Because the original Create event never finished, it doesn't know
+    about the resource's physical ID, and will invent one. The `PhysicalId` it
+    will send you in this call looks like `<stackname>-<logicalId>-<suffix>`.
+    The best you can do is ignore this event; since you cannot know the physical
+    ID of the resource in the `Create` call, there is no way to delete it. The
+    *provider framework* cannot help you with this, you have no choice but to
+    leak this resource.
+    ([CloudFormation roadmap issue](https://github.com/aws-cloudformation/cloudformation-coverage-roadmap/issues/1814)).
   * If the behavior of your custom resource is tied to another AWS resource
     (for example, it exists to clean the contents of a stateful resource), keep
     in mind that your custom resource may be deleted independently of the other
@@ -828,13 +845,69 @@ new cr.AwsCustomResource(this, 'CrossAccount', {
 });
 ```
 
+#### Using External IDs for Enhanced Security
+
+When assuming cross-account roles, you can specify an external ID to prevent the "confused deputy" problem. The external ID is a unique identifier provided by the third-party service that helps ensure the service is acting on behalf of the correct customer:
+
+```ts
+const crossAccountRoleArn = 'arn:aws:iam::OTHERACCOUNT:role/CrossAccountRoleName';
+const serviceExternalId = 'unique-secret-value-12345'; // External ID provided by the third party service. This value should be unique among the third-party service's customers.
+
+
+new cr.AwsCustomResource(this, 'SecureCrossAccount', {
+  onCreate: {
+    assumedRoleArn: crossAccountRoleArn,
+    externalId: serviceExternalId, // Prevents confused deputy attacks
+    service: 'sts',
+    action: 'GetCallerIdentity',
+    physicalResourceId: cr.PhysicalResourceId.of('id'),
+  },
+  policy: cr.AwsCustomResourcePolicy.fromStatements([iam.PolicyStatement.fromJson({
+    Effect: "Allow",
+    Action: "sts:AssumeRole",
+    Resource: crossAccountRoleArn,
+  })]),
+});
+```
+
+The external ID can also be different for each lifecycle operation:
+
+```ts
+declare const createRoleArn: string;
+declare const updateRoleArn: string;
+
+new cr.AwsCustomResource(this, 'MultiRoleSecure', {
+  onCreate: {
+    assumedRoleArn: createRoleArn,
+    externalId: 'create-secret-123',
+    service: 'ec2',
+    action: 'DescribeInstances',
+    physicalResourceId: cr.PhysicalResourceId.of('id'),
+  },
+  onUpdate: {
+    assumedRoleArn: updateRoleArn,
+    externalId: 'update-secret-456',
+    service: 'ec2',
+    action: 'DescribeInstances',
+  },
+  policy: cr.AwsCustomResourcePolicy.fromStatements([
+    new iam.PolicyStatement({
+      actions: ['sts:AssumeRole'],
+      resources: [createRoleArn, updateRoleArn],
+    }),
+  ]),
+});
+```
+
+For more information on external IDs and preventing confused deputy attacks, see the [AWS IAM User Guide](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_third-party.html).
+
 #### Custom Resource Config
 
 **This feature is currently experimental**
 
-You can configure every CDK-vended custom resource in a given scope with `CustomResourceConfig`. 
+You can configure every CDK-vended custom resource in a given scope with `CustomResourceConfig`.
 
-Note that `CustomResourceConfig` uses Aspects to modify your constructs. There is no guarantee in the order in which Aspects modify the construct tree, which means that adding the same Aspect more than once to a given scope produces undefined behavior. This example guarantees that every affected resource will have a log retention of ten years or one day, but you cannot know which:  
+Note that `CustomResourceConfig` uses Aspects to modify your constructs. There is no guarantee in the order in which Aspects modify the construct tree, which means that adding the same Aspect more than once to a given scope produces undefined behavior. This example guarantees that every affected resource will have a log retention of ten years or one day, but you cannot know which:
 CustomResourceConfig.of(App).addLogRetentionLifetime(logs.RetentionDays.TEN_YEARS);
 CustomResourceConfig.of(App).addLogRetentionLifetime(logs.RetentionDays.ONE_DAY);
 
@@ -927,7 +1000,7 @@ CustomResourceConfig.of(app).addRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 
 new ses.ReceiptRuleSet(app, 'RuleSet', {
   dropSpam: true,
-});    
+});
 ```
 
 ### Setting Lambda Runtimes

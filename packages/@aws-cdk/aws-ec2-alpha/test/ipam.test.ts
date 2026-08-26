@@ -1,5 +1,5 @@
-import { Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
 import * as vpc from '../lib';
 import { AddressFamily, Ipam, IpamPoolPublicIpSource } from '../lib';
 
@@ -237,7 +237,11 @@ describe('IPAM Test', () => {
       publicIpSource: IpamPoolPublicIpSource.AMAZON,
       locale: 'us-west-1', // Incorrect Region
     };
-    expect(() => ipamRegion.publicScope.addPool('TestPool', poolOptions)).toThrow("The provided locale 'us-west-1' is not in the operating regions.");
+    expect(() => ipamRegion.publicScope.addPool('TestPool', poolOptions))
+      .toThrow(
+        `The provided locale 'us-west-1' is not in the operating regions (${ipamRegion.operatingRegions}). ` +
+        'If specified, locale must be configured as an operating region for the IPAM.',
+      );
   });
 
   test('IPAM handles operating regions correctly', () => {

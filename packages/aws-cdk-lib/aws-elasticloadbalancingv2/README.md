@@ -137,7 +137,9 @@ Balancer that the other two convenience methods don't:
 * **Redirects**: use `ListenerAction.redirect()` to serve an HTTP
   redirect response (ALB only).
 * **Authentication**: use `ListenerAction.authenticateOidc()` to
-  perform OpenID authentication before serving a request (see the
+  perform OpenID authentication before serving a request, or
+  `ListenerAction.authenticateJwt()` to verify JSON Web Tokens (JWT)
+  for secure service-to-service communications (see the
   `aws-cdk-lib/aws-elasticloadbalancingv2-actions` package for direct authentication
   integration with Cognito) (ALB only).
 
@@ -175,6 +177,28 @@ listener.addAction('DefaultAction', {
     userInfoEndpoint: '...',
 
     // Next
+    next: elbv2.ListenerAction.forward([myTargetGroup]),
+  }),
+});
+```
+
+Here's an example of using JWT authentication for service-to-service communication:
+
+**Note:** JWT authentication requires an HTTPS listener. If you attempt to use it with an HTTP listener, a validation error will be thrown.
+
+```ts
+declare const lb: elbv2.ApplicationLoadBalancer;
+declare const certificate: elbv2.IListenerCertificate;
+declare const myTargetGroup: elbv2.ApplicationTargetGroup;
+
+// JWT authentication requires HTTPS
+const listener = lb.addListener('Listener', {
+  protocol: elbv2.ApplicationProtocol.HTTPS,
+  port: 443,
+  certificates: [certificate],
+  defaultAction: elbv2.ListenerAction.authenticateJwt({
+    issuer: 'https://issuer.example.com',
+    jwksEndpoint: 'https://issuer.example.com/.well-known/jwks.json',
     next: elbv2.ListenerAction.forward([myTargetGroup]),
   }),
 });
@@ -338,17 +362,13 @@ Balancers:
 ```ts
 declare const vpc: ec2.Vpc;
 declare const asg: autoscaling.AutoScalingGroup;
-declare const sg1: ec2.ISecurityGroup;
-declare const sg2: ec2.ISecurityGroup;
 
 // Create the load balancer in a VPC. 'internetFacing' is 'false'
 // by default, which creates an internal load balancer.
 const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
   vpc,
   internetFacing: true,
-  securityGroups: [sg1],
 });
-lb.addSecurityGroup(sg2);
 
 // Add a listener on a particular port.
 const listener = lb.addListener('Listener', {
@@ -360,6 +380,40 @@ listener.addTargets('AppFleet', {
   port: 443,
   targets: [asg]
 });
+```
+
+### Security Groups for Network Load Balancer
+
+By default, Network Load Balancers (NLB) have a security group associated with them.
+This is controlled by the feature flag `@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault`.
+When this flag is enabled (the default for new projects), a security group will be automatically created and attached to the NLB unless you explicitly provide your own security groups via the `securityGroups` property.
+
+If you wish to create an NLB without any security groups, you can set the `disableSecurityGroups` property to `true`. When this property is set, no security group will be associated with the NLB, regardless of the feature flag.
+
+```ts
+declare const vpc: ec2.IVpc;
+
+const nlb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  // To disable security groups for this NLB
+  disableSecurityGroups: true,
+});
+```
+
+If you want to use your own security groups, provide them via the `securityGroups` property:
+
+```ts
+declare const vpc: ec2.IVpc;
+declare const sg1: ec2.ISecurityGroup;
+declare const sg2: ec2.ISecurityGroup;
+
+const nlb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  // Provide your own security groups
+  securityGroups: [sg1],
+});
+// Add another security group to the NLB
+nlb.addSecurityGroup(sg2);
 ```
 
 ### Enforce security group inbound rules on PrivateLink traffic for a Network Load Balancer
@@ -415,6 +469,78 @@ const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
 const listener = lb.addListener('Listener', {
   port: 1229,
   protocol: elbv2.Protocol.UDP,
+});
+```
+
+### Configuring a subnet information for a Network Load Balancer
+
+You can specify the subnets for a Network Load Balancer easily by setting the `vpcSubnets` property.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  vpcSubnets: {
+    subnetType: ec2.SubnetType.PRIVATE,
+  },
+});
+```
+
+If you want to configure detailed information about the subnets, you can use the `subnetMappings` property as follows:
+
+```ts
+declare const vpc: ec2.IVpc;
+declare const dualstackVpc: ec2.IVpc;
+declare const subnet: ec2.ISubnet;
+declare const dualstackSubnet: ec2.ISubnet;
+declare const cfnEip: ec2.CfnEIP;
+
+// Internet facing Network Load Balancer with an Elastic IPv4 address
+new elbv2.NetworkLoadBalancer(this, 'InternetFacingLb', {
+  vpc,
+  internetFacing: true,
+  subnetMappings: [
+    {
+      subnet,
+      // The allocation ID of the Elastic IP address
+      allocationId: cfnEip.attrAllocationId,
+    },
+  ],
+});
+
+// Internal Network Load Balancer with a private IPv4 address
+new elbv2.NetworkLoadBalancer(this, 'InternalLb', {
+  vpc,
+  internetFacing: false,
+  subnetMappings: [
+    {
+      subnet,
+      // The private IPv4 address from the subnet
+      // The address must be in the subnet's CIDR range and
+      // can not be configured for a internet facing Network Load Balancer.
+      privateIpv4Address: '10.0.12.29',
+    },
+  ],
+});
+
+// Dualstack Network Load Balancer with an IPv6 address and prefix for source NAT
+new elbv2.NetworkLoadBalancer(this, 'DualstackLb', {
+  vpc: dualstackVpc,
+  // Configure the dualstack Network Load Balancer
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+  enablePrefixForIpv6SourceNat: true,
+  subnetMappings: [
+    {
+      subnet: dualstackSubnet,
+      // The IPv6 address from the subnet
+      // `ipAddresstype` must be `DUAL_STACK` or `DUAL_STACK_WITHOUT_PUBLIC_IPV4` to set the IPv6 address.
+      ipv6Address: '2001:db8:1234:1a00::10',
+      // The IPv6 prefix to use for source NAT
+      // `enablePrefixForIpv6SourceNat` must be `true` to set `sourceNatIpv6Prefix`.
+      sourceNatIpv6Prefix: elbv2.SourceNatIpv6Prefix.autoAssigned(),
+    },
+  ],
 });
 ```
 
@@ -674,6 +800,27 @@ const ipv6NetworkTargetGroup = new elbv2.NetworkTargetGroup(this, 'Ipv6NetworkTa
 });
 ```
 
+### Target Group level health setting for Application Load Balancers and Network Load Balancers
+
+You can set target group health setting at target group level by setting `targetGroupHealth` property.
+
+For more information, see [How Elastic Load Balancing works](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-attributes).
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const targetGroup = new elbv2.ApplicationTargetGroup(this, 'TargetGroup', {
+  vpc,
+  port: 80,
+  targetGroupHealth: {
+    dnsMinimumHealthyTargetCount: 3,
+    dnsMinimumHealthyTargetPercentage: 70,
+    routingMinimumHealthyTargetCount: 2,
+    routingMinimumHealthyTargetPercentage: 50,
+  },
+});
+```
+
 ## Using Lambda Targets
 
 To use a Lambda Function as a target, use the integration class in the
@@ -699,6 +846,30 @@ listener.addTargets('Targets', {
 ```
 
 Only a single Lambda function can be added to a single listener rule.
+
+### Multi-Value Headers with Lambda Targets
+
+When using a Lambda function as a target, you can enable [multi-value headers](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/lambda-functions.html#multi-value-headers) to allow the load balancer to send headers with multiple values:
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as targets from 'aws-cdk-lib/aws-elasticloadbalancingv2-targets';
+
+declare const vpc: ec2.Vpc;
+declare const lambdaFunction: lambda.Function;
+
+// Create a target group with multi-value headers enabled
+const targetGroup = new elbv2.ApplicationTargetGroup(this, 'LambdaTargetGroup', {
+  vpc,
+  targets: [new targets.LambdaTarget(lambdaFunction)],
+
+  // Enable multi-value headers
+  targetType: elbv2.TargetType.LAMBDA,
+  multiValueHeadersEnabled: true,
+});
+```
+
+When multi-value headers are enabled, the request and response headers exchanged between the load balancer and the Lambda function include headers with multiple values. If this option is disabled (the default) and the request contains a duplicate header field name, the load balancer uses the last value sent by the client.
 
 ## Using Application Load Balancer Targets
 

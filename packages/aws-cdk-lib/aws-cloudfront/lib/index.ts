@@ -19,3 +19,4 @@ export * as experimental from './experimental';
 
 // AWS::CloudFront CloudFormation Resources:
 export * from './cloudfront.generated';
+export * from './cloudfront-grants.generated';

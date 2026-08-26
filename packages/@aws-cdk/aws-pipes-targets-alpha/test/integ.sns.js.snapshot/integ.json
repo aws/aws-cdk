@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "integtest-pipe-target-sns/DefaultTest": {
+      "stacks": [
+        "aws-cdk-pipes-targets-sns"
+      ],
+      "assertionStack": "integtest-pipe-target-sns/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestpipetargetsnsDefaultTestDeployAssert1F2E3164"
+    }
+  },
+  "minimumCliVersion": "2.1123.0"
+}

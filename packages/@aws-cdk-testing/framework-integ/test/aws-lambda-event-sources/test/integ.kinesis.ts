@@ -21,6 +21,10 @@ class KinesisEventSourceTest extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 new KinesisEventSourceTest(app, 'lambda-event-source-kinesis');
 app.synth();

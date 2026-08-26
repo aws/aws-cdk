@@ -174,6 +174,9 @@
       },
       "GlobalSecondaryIndexes": [
        {
+        "ContributorInsightsSpecification": {
+         "Enabled": true
+        },
         "IndexName": "gsi1",
         "ReadProvisionedThroughputSettings": {
          "ReadCapacityUnits": 15
@@ -275,7 +278,6 @@
     "StreamSpecification": {
      "StreamViewType": "NEW_AND_OLD_IMAGES"
     },
-    "TableName": "my-global-table",
     "TimeToLiveSpecification": {
      "AttributeName": "attr",
      "Enabled": true

@@ -1,11 +1,16 @@
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Code } from 'aws-cdk-lib/aws-lambda';
-import { DynamicInput, EnrichmentParametersConfig, IEnrichment, IPipe, ISource, ITarget, InputTransformation, Pipe, SourceConfig, TargetConfig } from '../lib';
+import type { EnrichmentParametersConfig, IEnrichment, IPipe, ISource, ITarget, SourceConfig, TargetConfig } from '../lib';
+import { DynamicInput, InputTransformation, Pipe } from '../lib';
 import { name } from '../package.json';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-cdk-pipes');
 const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
 const targetQueue = new cdk.aws_sqs.Queue(stack, 'TargetQueue');

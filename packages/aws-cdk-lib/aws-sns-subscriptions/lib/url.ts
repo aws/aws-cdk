@@ -1,6 +1,7 @@
-import { SubscriptionProps } from './subscription';
+import type { SubscriptionProps } from './subscription';
 import * as sns from '../../aws-sns';
-import { Token } from '../../core';
+import { Token, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Options for URL subscriptions.
@@ -38,17 +39,22 @@ export interface UrlSubscriptionProps extends SubscriptionProps {
  * @see https://docs.aws.amazon.com/sns/latest/dg/sns-http-https-endpoint-as-subscriber.html
  */
 export class UrlSubscription implements sns.ITopicSubscription {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-sns-subscriptions.UrlSubscription';
+
   private readonly protocol: sns.SubscriptionProtocol;
   private readonly unresolvedUrl: boolean;
 
   constructor(private readonly url: string, private readonly props: UrlSubscriptionProps = {}) {
     this.unresolvedUrl = Token.isUnresolved(url);
     if (!this.unresolvedUrl && !url.startsWith('http://') && !url.startsWith('https://')) {
-      throw new Error('URL must start with either http:// or https://');
+      throw new UnscopedValidationError(lit`StartEitherHttpHttps`, 'URL must start with either http:// or https://');
     }
 
     if (this.unresolvedUrl && props.protocol === undefined) {
-      throw new Error('Must provide protocol if url is unresolved');
+      throw new UnscopedValidationError(lit`ProvideProtocolUnresolved`, 'Must provide protocol if url is unresolved');
     }
 
     if (this.unresolvedUrl) {

@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+
 /**
  * Verify that the two styles of imports we support:
  *
@@ -15,7 +15,6 @@ import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 import * as ts from 'typescript';
 
 async function main() {
@@ -136,7 +135,6 @@ export const STANDARD_COMPILER_OPTIONS: ts.CompilerOptions = {
 };
 
 main().catch((e) => {
-  // eslint-disable-next-line no-console
   console.error(e);
   process.exitCode = 1;
 });

@@ -1,12 +1,15 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "testCases": {
-    "Integ/DefaultTest": {
+    "integ.opensearch.disable-logging": {
       "stacks": [
         "cdk-integ-opensearch-with-logging-disabled"
       ],
-      "assertionStack": "Integ/DefaultTest/DeployAssert",
-      "assertionStackName": "IntegDefaultTestDeployAssert4E6713E1"
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
     }
-  }
+  },
+  "synthContext": {},
+  "enableLookups": false,
+  "minimumCliVersion": "2.1018.0"
 }

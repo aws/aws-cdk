@@ -1,8 +1,9 @@
 import * as path from 'path';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as apigw from 'aws-cdk-lib/aws-apigateway';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
@@ -30,7 +31,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const testCase = new TestStack(app, 'cors-twitch-test');
 new IntegTest(app, 'cors', {
   testCases: [testCase],

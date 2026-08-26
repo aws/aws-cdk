@@ -537,10 +537,10 @@ describe('IAM role', () => {
 
     const role = new Role(stack, 'MyRole', {
       assumedBy: new ServicePrincipal('test.service'),
-      managedPolicies: [{ managedPolicyArn: 'managed1' }, { managedPolicyArn: 'managed2' }],
+      managedPolicies: [{ managedPolicyArn: 'managed1' } as any, { managedPolicyArn: 'managed2' } as any],
     });
 
-    role.addManagedPolicy({ managedPolicyArn: 'managed3' });
+    role.addManagedPolicy({ managedPolicyArn: 'managed3' } as any);
     Template.fromStack(stack).templateMatches({
       Resources:
       {
@@ -961,7 +961,7 @@ describe('IAM role', () => {
     });
     role.assumeRolePolicy?.addStatements(new PolicyStatement({ actions: ['*'] }));
 
-    expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
+    expect(() => app.synth()).toThrow(/A PolicyStatement used in a trust policy must specify at least one IAM principal/);
   });
 });
 

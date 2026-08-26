@@ -1,0 +1,182 @@
+{
+  "version": "43.0.0",
+  "artifacts": {
+    "cdk-amplify-monorepo-custom-headers.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdk-amplify-monorepo-custom-headers.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cdk-amplify-monorepo-custom-headers": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-amplify-monorepo-custom-headers.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a3b05336289676323462d932f8157182992b5a12e2373dddb8571fc2afb90774.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdk-amplify-monorepo-custom-headers.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-amplify-monorepo-custom-headers.assets"
+      ],
+      "metadata": {
+        "/cdk-amplify-monorepo-custom-headers/App": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/cdk-amplify-monorepo-custom-headers/App/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/cdk-amplify-monorepo-custom-headers/App/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/cdk-amplify-monorepo-custom-headers/App/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppRole1AF9B530"
+          }
+        ],
+        "/cdk-amplify-monorepo-custom-headers/App/ComputeRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/cdk-amplify-monorepo-custom-headers/App/ComputeRole/ImportComputeRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/cdk-amplify-monorepo-custom-headers/App/ComputeRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppComputeRole426920E4"
+          }
+        ],
+        "/cdk-amplify-monorepo-custom-headers/App/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppF1B96344"
+          }
+        ],
+        "/cdk-amplify-monorepo-custom-headers/App/main": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/cdk-amplify-monorepo-custom-headers/App/main/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppmainF505BAED"
+          }
+        ],
+        "/cdk-amplify-monorepo-custom-headers/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-amplify-monorepo-custom-headers/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cdk-amplify-monorepo-custom-headers"
+    },
+    "amplifyappmonorepocustomheadersintegDefaultTestDeployAssert582B40C4.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "amplifyappmonorepocustomheadersintegDefaultTestDeployAssert582B40C4.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "amplifyappmonorepocustomheadersintegDefaultTestDeployAssert582B40C4": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "amplifyappmonorepocustomheadersintegDefaultTestDeployAssert582B40C4.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "amplifyappmonorepocustomheadersintegDefaultTestDeployAssert582B40C4.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "amplifyappmonorepocustomheadersintegDefaultTestDeployAssert582B40C4.assets"
+      ],
+      "metadata": {
+        "/amplify-app-monorepo-custom-headers-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/amplify-app-monorepo-custom-headers-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "amplify-app-monorepo-custom-headers-integ/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1016.1"
+}

@@ -1,0 +1,121 @@
+{
+ "Resources": {
+  "AppRole1AF9B530": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "amplify.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "AppComputeRole426920E4": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "amplify.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "AppF1B96344": {
+   "Type": "AWS::Amplify::App",
+   "Properties": {
+    "BasicAuthConfig": {
+     "EnableBasicAuth": false
+    },
+    "BuildSpec": "version: \"1.0\"\napplications:\n  - appRoot: frontend\n    frontend:\n      phases:\n        preBuild:\n          commands:\n            - npm install\n        build:\n          commands:\n            - npm run build\n  - appRoot: backend\n    backend:\n      phases:\n        preBuild:\n          commands:\n            - npm install\n        build:\n          commands:\n            - npm run build\n",
+    "ComputeRoleArn": {
+     "Fn::GetAtt": [
+      "AppComputeRole426920E4",
+      "Arn"
+     ]
+    },
+    "CustomHeaders": {
+     "Fn::Join": [
+      "",
+      [
+       "applications:\n  - appRoot: frontend\n    customHeaders:\n      - pattern: \"*.json\"\n        headers:\n          - key: \"custom-header-name-1\"\n            value: \"custom-header-value-1\"\n          - key: \"custom-header-name-2\"\n            value: \"custom-header-value-2\"\n  - appRoot: backend\n    customHeaders:\n      - pattern: \"/path/*\"\n        headers:\n          - key: \"custom-header-name-1\"\n            value: \"custom-header-value-2\"\n          - key: \"x-aws-url-suffix\"\n            value: \"this-is-the-suffix-",
+       {
+        "Ref": "AWS::URLSuffix"
+       },
+       "\"\n"
+      ]
+     ]
+    },
+    "IAMServiceRole": {
+     "Fn::GetAtt": [
+      "AppRole1AF9B530",
+      "Arn"
+     ]
+    },
+    "Name": "App",
+    "Platform": "WEB_COMPUTE"
+   }
+  },
+  "AppmainF505BAED": {
+   "Type": "AWS::Amplify::Branch",
+   "Properties": {
+    "AppId": {
+     "Fn::GetAtt": [
+      "AppF1B96344",
+      "AppId"
+     ]
+    },
+    "BranchName": "main",
+    "EnableAutoBuild": true,
+    "EnablePullRequestPreview": true
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

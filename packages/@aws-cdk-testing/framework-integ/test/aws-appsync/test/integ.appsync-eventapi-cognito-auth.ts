@@ -71,27 +71,16 @@ class EventApiCognitoAuthStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new EventApiCognitoAuthStack(app, 'EventApiCognitoAuthStack');
 
 const integTest = new IntegTest(app, 'appsync-event-api-cognito-auth', {
   testCases: [stack],
 });
-
-// Validate subscribe works with Cognito auth
-integTest.assertions.invokeFunction({
-  functionName: stack.lambdaTestFn.functionName,
-  payload: JSON.stringify({
-    action: 'subscribe',
-    channel: 'default',
-    authMode: 'USER_POOL',
-  }),
-}).expect(ExpectedResult.objectLike({
-  Payload: JSON.stringify({
-    statusCode: 200,
-    msg: 'subscribe_success',
-  }),
-}));
 
 // Validate publish works with Cognito auth
 integTest.assertions.invokeFunction({
@@ -105,6 +94,21 @@ integTest.assertions.invokeFunction({
   Payload: JSON.stringify({
     statusCode: 200,
     msg: 'publish_success',
+  }),
+}));
+
+// Validate subscribe works with Cognito auth
+integTest.assertions.invokeFunction({
+  functionName: stack.lambdaTestFn.functionName,
+  payload: JSON.stringify({
+    action: 'subscribe',
+    channel: 'default',
+    authMode: 'USER_POOL',
+  }),
+}).expect(ExpectedResult.objectLike({
+  Payload: JSON.stringify({
+    statusCode: 200,
+    msg: 'subscribe_success',
   }),
 }));
 

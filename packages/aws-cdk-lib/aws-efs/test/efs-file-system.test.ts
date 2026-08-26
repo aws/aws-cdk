@@ -615,6 +615,46 @@ test('mountTargetOrderInsensitiveLogicalId flag is true', () => {
   });
 });
 
+test('mountTargetOrderInsensitiveLogicalId flag is true with imported subnet', () => {
+  // WHEN
+  const customStack = new Stack();
+  customStack.node.setContext('@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId', true);
+
+  const customVpc = new ec2.Vpc(customStack, 'VPC');
+
+  new FileSystem(customVpc, 'EfsFileSystem', {
+    vpc: customVpc,
+    vpcSubnets: {
+      subnets: [
+        ec2.Subnet.fromSubnetAttributes(customStack, 'my-subnet-id', {
+          subnetId: 'subnet-0123456789abcdef0',
+        }),
+        ec2.Subnet.fromSubnetAttributes(customStack, 'my-other-subnet-id', {
+          subnetId: 'subnet-0123456789abcdef1',
+        }),
+      ],
+    },
+  });
+
+  // THEN
+  Template.fromStack(customStack).templateMatches({
+    Resources: {
+      VPCEfsFileSystemEfsMountTargetmyothersubnetidA1DA462D: {
+        Properties: {
+          SubnetId: 'subnet-0123456789abcdef1',
+        },
+        Type: 'AWS::EFS::MountTarget',
+      },
+      VPCEfsFileSystemEfsMountTargetmysubnetidED4A4CD9: {
+        Properties: {
+          SubnetId: 'subnet-0123456789abcdef0',
+        },
+        Type: 'AWS::EFS::MountTarget',
+      },
+    },
+  });
+});
+
 test('mountTargetOrderInsensitiveLogicalId flag is false', () => {
   // WHEN
   const customStack = new Stack();

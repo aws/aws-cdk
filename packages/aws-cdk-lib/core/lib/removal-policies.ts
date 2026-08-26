@@ -1,7 +1,9 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { Annotations } from './annotations';
-import { Aspects, IAspect, AspectPriority } from './aspect';
+import type { IAspect } from './aspect';
+import { Aspects, AspectPriority } from './aspect';
 import { CfnResource } from './cfn-resource';
+import { mutatingAspectPrio32333 } from './private/aspect-prio';
 import { RemovalPolicy } from './removal-policy';
 
 /**
@@ -137,7 +139,7 @@ export class RemovalPolicies {
    */
   public apply(policy: RemovalPolicy, props: RemovalPolicyProps = {}) {
     Aspects.of(this.scope).add(new RemovalPolicyAspect(policy, props), {
-      priority: props.priority ?? AspectPriority.MUTATING,
+      priority: props.priority ?? mutatingAspectPrio32333(this.scope),
     });
   }
 

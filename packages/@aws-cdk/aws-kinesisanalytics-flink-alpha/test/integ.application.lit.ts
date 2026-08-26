@@ -1,17 +1,13 @@
 import * as path from 'path';
-import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
-import * as core from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as core from 'aws-cdk-lib';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as flink from '../lib';
 
 const app = new core.App();
 const stack = new core.Stack(app, 'FlinkAppTest');
 
 const flinkRuntimes = [
-  flink.Runtime.FLINK_1_6,
-  flink.Runtime.FLINK_1_8,
-  flink.Runtime.FLINK_1_11,
-  flink.Runtime.FLINK_1_13,
   flink.Runtime.FLINK_1_15,
   flink.Runtime.FLINK_1_18,
   flink.Runtime.FLINK_1_19,

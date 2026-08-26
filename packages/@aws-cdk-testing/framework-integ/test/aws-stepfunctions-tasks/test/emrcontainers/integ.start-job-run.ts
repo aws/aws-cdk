@@ -1,6 +1,6 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as eks from 'aws-cdk-lib/aws-eks';
-import { AwsAuthMapping } from 'aws-cdk-lib/aws-eks';
+import type { AwsAuthMapping } from 'aws-cdk-lib/aws-eks';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
@@ -20,6 +20,7 @@ import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 const app = new cdk.App({
   postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
@@ -97,7 +98,7 @@ const startJobRunJob = new EmrContainersStartJobRun(stack, 'Start a Job Run', {
 const chain = sfn.Chain.start(startJobRunJob);
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
-  definition: chain,
+  definitionBody: sfn.DefinitionBody.fromChainable(chain),
   timeout: cdk.Duration.seconds(1000),
 });
 

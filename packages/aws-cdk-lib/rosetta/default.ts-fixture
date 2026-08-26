@@ -10,10 +10,18 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as api from 'aws-cdk-lib/aws-apigateway';
+import * as rds from 'aws-cdk-lib/aws-rds';
+import * as logs from 'aws-cdk-lib/aws-logs';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { InjectionContext, IPropertyInjector, PropertyInjectors } from 'aws-cdk-lib/core';
 import {
   Annotations,
   ArnFormat,
   App,
+  Aspects,
+  AspectApplication,
+  AspectPriority,
   Aws,
   CfnCondition,
   CfnDynamicReference,
@@ -25,15 +33,24 @@ import {
   CfnParameter,
   CfnResource,
   CfnResourceProps,
+  ConstructSelector,
   CustomResource,
   CustomResourceProvider,
   CustomResourceProviderRuntime,
   DefaultStackSynthesizer,
   Duration,
+  Bitrate,
   Fn,
+  IAspect,
   ITaggable,
   PermissionsBoundary,
+  CrossStackReferences,
+  ReferenceStrength,
   RemovalPolicy,
+  RemovalPolicies,
+  Mixin,
+  Mixins,
+  MissingRemovalPolicies,
   Resource,
   SecretValue,
   Size,
@@ -43,10 +60,13 @@ import {
   Stage,
   TagManager,
   TagType,
+  Tags,
   Token,
+  Validations,
 } from 'aws-cdk-lib';
 import {
   IConstruct,
+  IMixin,
   Construct,
   DependencyGroup,
 } from 'constructs';
@@ -81,6 +101,15 @@ class StackThatExpectsABucket extends Stack {
   constructor(scope: Construct, id: string, props: StackThatExpectsABucketProps) {
     super(scope, id, props);
   }
+}
+
+class MyAspect implements IAspect {
+  visit(node: IConstruct) {}
+}
+
+class MyMixin extends Mixin {
+  supports(_construct: IConstruct): boolean { return true; }
+  applyTo(_construct: IConstruct): void { }
 }
 
 class fixture$construct extends Construct {

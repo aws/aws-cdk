@@ -1,14 +1,26 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
-import { Construct } from 'constructs';
-import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType } from '../constants';
-import { Code } from '../code';
-import { SparkJob, SparkJobProps } from './spark-job';
+import type * as cdk from 'aws-cdk-lib/core';
+import { Annotations } from 'aws-cdk-lib/core';
+import { lit, memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import type { Code } from '../code';
+import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType } from '../constants';
+import type { SparkJobProps } from './spark-job';
+import { SparkJob } from './spark-job';
 
 /**
  * Properties for creating a Python Spark ETL job
  */
 export interface PySparkEtlJobProps extends SparkJobProps {
+  /**
+   * Specifies configuration properties of a notification (optional).
+   * After a job run starts, the number of minutes to wait before sending a job run delay notification.
+   * @default - undefined
+   */
+  readonly notifyDelayAfter?: cdk.Duration;
+
   /**
    * Extra Python Files S3 URL (optional)
    * S3 URL where additional python dependencies are located
@@ -63,13 +75,16 @@ export interface PySparkEtlJobProps extends SparkJobProps {
  * can override this default with other supported worker type values
  * (G1, G2, G4 and G8). ETL jobs defaults to Glue version 4.0, which you can
  * override to 3.0. The following ETL features are enabled by default:
- * —enable-metrics, —enable-spark-ui, —enable-continuous-cloudwatch-log.
+ * --enable-metrics, --enable-continuous-cloudwatch-log. The Spark UI
+ * (--enable-spark-ui) is off by default; enable it by setting the `sparkUI` prop.
  * You can find more details about version, worker type and other features
  * in Glue's public documentation.
  */
+@propertyInjectable
 export class PySparkEtlJob extends SparkJob {
-  public readonly jobArn: string;
-  public readonly jobName: string;
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.PySparkEtlJob';
+  private resource: CfnJob;
 
   /**
    * PySparkEtlJob constructor
@@ -85,7 +100,12 @@ export class PySparkEtlJob extends SparkJob {
       ...this.nonExecutableCommonArguments(props),
     };
 
-    const jobResource = new CfnJob(this, 'Resource', {
+    if (props.jobRunQueuingEnabled === true && props.maxRetries !== undefined && props.maxRetries > 0) {
+      Annotations.of(this).addWarningV2(lit`GlueMaxRetriesQueuingEnabled`,
+        `maxRetries was set to ${props.maxRetries}. Overriding it to 0 with since job run queuing is enabled (service constraint)`);
+    }
+
+    this.resource = new CfnJob(this, 'Resource', {
       name: props.jobName,
       description: props.description,
       role: this.role.roleArn,
@@ -95,10 +115,11 @@ export class PySparkEtlJob extends SparkJob {
         pythonVersion: PythonVersion.THREE,
       },
       glueVersion: props.glueVersion ?? GlueVersion.V4_0,
-      workerType: props.workerType ?? WorkerType.G_1X,
-      numberOfWorkers: props.numberOfWorkers ? props.numberOfWorkers : 10,
+      workerType: props.workerConfiguration?.workerType ?? WorkerType.G_1X,
+      numberOfWorkers: props.workerConfiguration?.numberOfWorkers ?? 10,
       maxRetries: props.jobRunQueuingEnabled ? 0 : props.maxRetries,
       jobRunQueuingEnabled: props.jobRunQueuingEnabled ? props.jobRunQueuingEnabled : false,
+      notificationProperty: props.notifyDelayAfter ? { notifyDelayAfter: props.notifyDelayAfter.toMinutes() } : undefined,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
       timeout: props.timeout?.toMinutes(),
       connections: props.connections ? { connections: props.connections.map((connection) => connection.connectionName) } : undefined,
@@ -106,10 +127,16 @@ export class PySparkEtlJob extends SparkJob {
       tags: props.tags,
       defaultArguments,
     });
+  }
 
-    const resourceName = this.getResourceNameAttribute(jobResource.ref);
-    this.jobArn = this.buildJobArn(this, resourceName);
-    this.jobName = resourceName;
+  @memoizedGetter
+  public get jobArn(): string {
+    return this.buildJobArn(this, this.jobName);
+  }
+
+  @memoizedGetter
+  public get jobName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
   }
 
   /**

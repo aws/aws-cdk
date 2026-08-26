@@ -1,12 +1,9 @@
-import { Annotations, Stack } from '../../core';
+import { Stack } from '../../core';
 import * as cdk from '../../core';
 import * as iam from '../lib';
 
 describe('OrganizationPrincipal', () => {
   test('accepts valid organization ID', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN / THEN
     expect(() => {
       new iam.OrganizationPrincipal('o-1234567890');
@@ -19,9 +16,6 @@ describe('OrganizationPrincipal', () => {
     ['too short', 'o-short'],
     ['too long', 'o-thisnameistoooooooooooooooooolong'],
   ])('throws error for non-compliant organization ID format: %s', (_, invalidId) => {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN / THEN
     expect(() => {
       new iam.OrganizationPrincipal(invalidId);
@@ -30,7 +24,6 @@ describe('OrganizationPrincipal', () => {
 
   test('allows token as organization ID without validation', () => {
     // GIVEN
-    const stack = new Stack();
     const orgIdToken = cdk.Token.asString({ Ref: 'OrgId' });
 
     // WHEN / THEN

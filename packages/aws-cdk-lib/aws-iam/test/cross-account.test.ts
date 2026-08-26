@@ -1,4 +1,4 @@
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import { Template } from '../../assertions';
 import * as cdk from '../../core';
 import * as iam from '../lib';

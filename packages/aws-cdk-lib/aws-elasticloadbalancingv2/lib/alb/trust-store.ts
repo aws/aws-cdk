@@ -1,14 +1,18 @@
-import { Construct } from 'constructs';
-import { IBucket } from '../../../aws-s3';
-import { IResource, Resource, Fn, Names, Lazy, Token } from '../../../core';
+import type { Construct } from 'constructs';
+import type { IBucketRef } from '../../../aws-s3';
+import type { IResource } from '../../../core';
+import { Fn, Lazy, Names, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { CfnTrustStore } from '../elasticloadbalancingv2.generated';
 
 /**
  * Represents a Trust Store
  */
-export interface ITrustStore extends IResource {
+export interface ITrustStore extends IResource, aws_elasticloadbalancingv2.ITrustStoreRef {
   /**
    * The name of the trust store
    * @attribute
@@ -37,7 +41,7 @@ export interface TrustStoreProps {
   /**
    * The bucket that the trust store is hosted in
    */
-  readonly bucket: IBucket;
+  readonly bucket: IBucketRef;
 
   /**
    * The key in S3 to look at for the trust store
@@ -56,7 +60,11 @@ export interface TrustStoreProps {
 /**
  * A new Trust Store
  */
+@propertyInjectable
 export class TrustStore extends Resource implements ITrustStore {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.TrustStore';
+
   /**
    * Import from ARN
    */
@@ -68,6 +76,12 @@ export class TrustStore extends Resource implements ITrustStore {
     class Import extends Resource implements ITrustStore {
       public readonly trustStoreArn = trustStoreArn;
       public readonly trustStoreName = trustStoreName;
+
+      public get trustStoreRef(): aws_elasticloadbalancingv2.TrustStoreReference {
+        return {
+          trustStoreArn: this.trustStoreArn,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -100,6 +114,15 @@ export class TrustStore extends Resource implements ITrustStore {
    */
   public readonly trustStoreArn: string;
 
+  /**
+   * A reference to this trust store
+   */
+  public get trustStoreRef(): aws_elasticloadbalancingv2.TrustStoreReference {
+    return {
+      trustStoreArn: this.trustStoreArn,
+    };
+  }
+
   constructor(scope: Construct, id: string, props: TrustStoreProps) {
     super(scope, id, {
       physicalName: props.trustStoreName ?? Lazy.string({
@@ -111,17 +134,17 @@ export class TrustStore extends Resource implements ITrustStore {
 
     if (props.trustStoreName !== undefined && !Token.isUnresolved(props.trustStoreName)) {
       if (props.trustStoreName.length < 1 || props.trustStoreName.length > 32) {
-        throw new ValidationError(`trustStoreName '${props.trustStoreName}' must be 1-32 characters long.`, this);
+        throw new ValidationError(lit`MustBeTruststorename132Characters`, `trustStoreName '${props.trustStoreName}' must be 1-32 characters long.`, this);
       }
       const validNameRegex = /^([a-zA-Z0-9]+-)*[a-zA-Z0-9]+$/;
       if (!validNameRegex.test(props.trustStoreName)) {
-        throw new ValidationError(`trustStoreName '${props.trustStoreName}' must contain only alphanumeric characters and hyphens, and cannot begin or end with a hyphen.`, this);
+        throw new ValidationError(lit`TruststorenameContainOnlyAlphanumeric`, `trustStoreName '${props.trustStoreName}' must contain only alphanumeric characters and hyphens, and cannot begin or end with a hyphen.`, this);
       }
     }
 
     const resource = new CfnTrustStore(this, 'Resource', {
       name: this.physicalName,
-      caCertificatesBundleS3Bucket: props.bucket.bucketName,
+      caCertificatesBundleS3Bucket: props.bucket.bucketRef.bucketName,
       caCertificatesBundleS3Key: props.key,
       caCertificatesBundleS3ObjectVersion: props.version,
     });

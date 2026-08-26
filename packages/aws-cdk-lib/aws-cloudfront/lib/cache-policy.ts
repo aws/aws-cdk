@@ -1,12 +1,25 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
+import type { CachePolicyReference, ICachePolicyRef } from './cloudfront.generated';
 import { CfnCachePolicy } from './cloudfront.generated';
-import { Duration, Names, Resource, Stack, Token, UnscopedValidationError, ValidationError, withResolved } from '../../core';
+import {
+  Duration,
+  Names,
+  Resource,
+  Stack,
+  Token,
+  UnscopedValidationError,
+  ValidationError,
+  withResolved,
+} from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { DetachedConstruct } from '../../core/lib/private/detached-construct';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents a Cache Policy
  */
-export interface ICachePolicy {
+export interface ICachePolicy extends ICachePolicyRef {
   /**
    * The ID of the cache policy
    * @attribute
@@ -91,7 +104,10 @@ export interface CachePolicyProps {
  * @resource AWS::CloudFront::CachePolicy
  * @link https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html
  */
+@propertyInjectable
 export class CachePolicy extends Resource implements ICachePolicy {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.CachePolicy';
   /**
    * This policy is designed for use with an origin that is an AWS Amplify web app.
    */
@@ -126,17 +142,28 @@ export class CachePolicy extends Resource implements ICachePolicy {
   public static fromCachePolicyId(scope: Construct, id: string, cachePolicyId: string): ICachePolicy {
     return new class extends Resource implements ICachePolicy {
       public readonly cachePolicyId = cachePolicyId;
+      public readonly cachePolicyRef = {
+        cachePolicyId: cachePolicyId,
+      };
     }(scope, id);
   }
 
   /** Use an existing managed cache policy. */
   private static fromManagedCachePolicy(managedCachePolicyId: string): ICachePolicy {
-    return new class implements ICachePolicy {
+    return new class extends DetachedConstruct implements ICachePolicy {
       public readonly cachePolicyId = managedCachePolicyId;
+      public readonly cachePolicyRef = {
+        cachePolicyId: managedCachePolicyId,
+      };
+      constructor() {
+        super('The result of fromManagedCachePolicy can not be used in this API');
+      }
     }();
   }
 
   public readonly cachePolicyId: string;
+
+  public readonly cachePolicyRef: CachePolicyReference;
 
   constructor(scope: Construct, id: string, props: CachePolicyProps = {}) {
     super(scope, id, {
@@ -148,15 +175,15 @@ export class CachePolicy extends Resource implements ICachePolicy {
     const cachePolicyName = props.cachePolicyName ?? `${Names.uniqueId(this).slice(0, 110)}-${Stack.of(this).region}`;
 
     if (!Token.isUnresolved(cachePolicyName) && !cachePolicyName.match(/^[\w-]+$/i)) {
-      throw new ValidationError(`'cachePolicyName' can only include '-', '_', and alphanumeric characters, got: '${cachePolicyName}'`, this);
+      throw new ValidationError(lit`CachepolicynameOnlyInclude`, `'cachePolicyName' can only include '-', '_', and alphanumeric characters, got: '${cachePolicyName}'`, this);
     }
 
-    if (cachePolicyName.length > 128) {
-      throw new ValidationError(`'cachePolicyName' cannot be longer than 128 characters, got: '${cachePolicyName.length}'`, this);
+    if (!Token.isUnresolved(cachePolicyName) && cachePolicyName.length > 128) {
+      throw new ValidationError(lit`CachepolicynameCannotLongerThan`, `'cachePolicyName' cannot be longer than 128 characters, got: '${cachePolicyName.length}'`, this);
     }
 
     if (props.comment && !Token.isUnresolved(props.comment) && props.comment.length > 128) {
-      throw new ValidationError(`'comment' cannot be longer than 128 characters, got: ${props.comment.length}`, this);
+      throw new ValidationError(lit`CommentCannotLongerThan`, `'comment' cannot be longer than 128 characters, got: ${props.comment.length}`, this);
     }
 
     const minTtl = (props.minTtl ?? Duration.seconds(0)).toSeconds();
@@ -181,6 +208,7 @@ export class CachePolicy extends Resource implements ICachePolicy {
       },
     });
 
+    this.cachePolicyRef = resource.cachePolicyRef;
     this.cachePolicyId = resource.ref;
   }
 
@@ -229,7 +257,7 @@ export class CacheCookieBehavior {
    */
   public static allowList(...cookies: string[]) {
     if (cookies.length === 0) {
-      throw new UnscopedValidationError('At least one cookie to allow must be provided');
+      throw new UnscopedValidationError(lit`AtLeastOneCookieToAllowMustBeProvided`, 'At least one cookie to allow must be provided');
     }
     return new CacheCookieBehavior('whitelist', cookies);
   }
@@ -240,7 +268,7 @@ export class CacheCookieBehavior {
    */
   public static denyList(...cookies: string[]) {
     if (cookies.length === 0) {
-      throw new UnscopedValidationError('At least one cookie to deny must be provided');
+      throw new UnscopedValidationError(lit`AtLeastOneCookieToDenyMustBeProvided`, 'At least one cookie to deny must be provided');
     }
     return new CacheCookieBehavior('allExcept', cookies);
   }
@@ -265,7 +293,7 @@ export class CacheHeaderBehavior {
   /** Listed headers are included in the cache key and are automatically included in requests that CloudFront sends to the origin. */
   public static allowList(...headers: string[]) {
     if (headers.length === 0) {
-      throw new UnscopedValidationError('At least one header to allow must be provided');
+      throw new UnscopedValidationError(lit`AtLeastOneHeaderToAllowMustBeProvided`, 'At least one header to allow must be provided');
     }
     return new CacheHeaderBehavior('whitelist', headers);
   }
@@ -302,7 +330,7 @@ export class CacheQueryStringBehavior {
    */
   public static allowList(...queryStrings: string[]) {
     if (queryStrings.length === 0) {
-      throw new UnscopedValidationError('At least one query string to allow must be provided');
+      throw new UnscopedValidationError(lit`AtLeastOneQueryStringToAllowMustBeProvided`, 'At least one query string to allow must be provided');
     }
     return new CacheQueryStringBehavior('whitelist', queryStrings);
   }
@@ -313,7 +341,7 @@ export class CacheQueryStringBehavior {
    */
   public static denyList(...queryStrings: string[]) {
     if (queryStrings.length === 0) {
-      throw new UnscopedValidationError('At least one query string to deny must be provided');
+      throw new UnscopedValidationError(lit`AtLeastOneQueryStringToDenyMustBeProvided`, 'At least one query string to deny must be provided');
     }
     return new CacheQueryStringBehavior('allExcept', queryStrings);
   }

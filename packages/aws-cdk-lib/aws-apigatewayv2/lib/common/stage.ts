@@ -1,11 +1,13 @@
-import { IDomainName } from './domain-name';
-import { Metric, MetricOptions } from '../../../aws-cloudwatch';
-import { IResource } from '../../../core';
+import type { IAccessLogDestination } from './access-log';
+import type { AccessLogFormat } from '../../../aws-apigateway/lib';
+import type { Metric, MetricOptions } from '../../../aws-cloudwatch';
+import type { IResource } from '../../../core';
+import type { IDomainNameRef, IStageRef } from '../apigatewayv2.generated';
 
 /**
  * Represents a Stage.
  */
-export interface IStage extends IResource {
+export interface IStage extends IResource, IStageRef {
   /**
    * The name of the stage; its primary identifier.
    * @attribute
@@ -23,6 +25,16 @@ export interface IStage extends IResource {
    * @default - average over 5 minutes
    */
   metric(metricName: string, props?: MetricOptions): Metric;
+
+  /**
+   * Adds a stage variable to this stage.
+   *
+   * @param name The name of the stage variable.
+   * @param value The value of the stage variable.
+   *
+   * The allowed characters for variable names and the required pattern for variable values are specified here: https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-apigateway-stage.html#cfn-apigateway-stage-variables
+   */
+  addStageVariable(name: string, value: string): void;
 }
 
 /**
@@ -33,7 +45,7 @@ export interface DomainMappingOptions {
    * The domain name for the mapping
    *
    */
-  readonly domainName: IDomainName;
+  readonly domainName: IDomainNameRef;
 
   /**
    * The API mapping key. Leave it undefined for the root path mapping.
@@ -80,6 +92,23 @@ export interface StageOptions {
    * @default false
    */
   readonly detailedMetricsEnabled?: boolean;
+
+  /**
+   * Settings for access logging.
+   *
+   * @default - No access logging
+   */
+  readonly accessLogSettings?: IAccessLogSettings;
+
+  /**
+   * Stage variables for the stage.
+   * These are key-value pairs that you can define and use in your API routes.
+   *
+   * The allowed characters for variable names and the required pattern for variable values are specified here: https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-apigateway-stage.html#cfn-apigateway-stage-variables
+   *
+   * @default - No stage variables
+   */
+  readonly stageVariables?: { [key: string]: string };
 }
 
 /**
@@ -107,4 +136,27 @@ export interface ThrottleSettings {
    * @default none
    */
   readonly burstLimit?: number;
+}
+
+/**
+ * Settings for access logging.
+ */
+export interface IAccessLogSettings {
+  /**
+   * The destination where to write access logs.
+   *
+   * @default - No destination
+   */
+  readonly destination: IAccessLogDestination;
+
+  /**
+   * A single line format of access logs of data, as specified by selected $context variables.
+   * The format must include either `AccessLogFormat.contextRequestId()`
+   * or `AccessLogFormat.contextExtendedRequestId()`.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-logging-variables.html
+   *
+   * @default - Common Log Format
+   */
+  readonly format?: AccessLogFormat;
 }

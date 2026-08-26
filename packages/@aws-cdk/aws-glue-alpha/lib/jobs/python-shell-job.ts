@@ -1,9 +1,13 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import { Job, JobProps } from './job';
-import { Construct } from 'constructs';
-import { JobType, GlueVersion, PythonVersion, MaxCapacity, JobLanguage } from '../constants';
+import type * as iam from 'aws-cdk-lib/aws-iam';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import type { JobProps } from './job';
+import { Job } from './job';
+import type { Code } from '../code';
+import { JobType, GlueVersion, PythonVersion, MaxCapacity, JobLanguage } from '../constants';
 
 /**
  * Properties for creating a Python Shell job
@@ -22,6 +26,17 @@ export interface PythonShellJobProps extends JobProps {
    * @default 0.0625
    */
   readonly maxCapacity?: MaxCapacity;
+
+  /**
+   * Additional Python files that AWS Glue adds to the Python path before executing your script.
+   * Only individual files are supported, directories are not supported.
+   * Equivalent to the `--extra-py-files` job argument.
+   *
+   * @default - no extra Python files
+   *
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  readonly extraPythonFiles?: Code[];
 
   /**
    * Specifies whether job run queuing is enabled for the job runs for this job.
@@ -43,11 +58,13 @@ export interface PythonShellJobProps extends JobProps {
  * depends on the AWS Glue version you are using.
  * This can be used to schedule and run tasks that don't require an Apache Spark environment.
  */
+@propertyInjectable
 export class PythonShellJob extends Job {
-  public readonly jobArn: string;
-  public readonly jobName: string;
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.PythonShellJob';
   public readonly role: iam.IRole;
   public readonly grantPrincipal: iam.IPrincipal;
+  private resource: CfnJob;
 
   /**
    * PythonShellJob constructor
@@ -69,16 +86,23 @@ export class PythonShellJob extends Job {
     // Gather executable arguments
     const executableArgs = this.executableArguments(props);
 
+    // Set up extra Python files argument
+    const extraPythonFilesArgs: {[key: string]: string} = {};
+    if (props.extraPythonFiles && props.extraPythonFiles.length > 0) {
+      extraPythonFilesArgs['--extra-py-files'] = props.extraPythonFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
+    }
+
     // Combine command line arguments into a single line item
     const defaultArguments = {
       ...executableArgs,
+      ...extraPythonFilesArgs,
       ...continuousLoggingArgs,
       ...profilingMetricsArgs,
       ...observabilityMetricsArgs,
       ...this.checkNoReservedArgs(props.defaultArguments),
     };
 
-    const jobResource = new CfnJob(this, 'Resource', {
+    this.resource = new CfnJob(this, 'Resource', {
       name: props.jobName,
       description: props.description,
       role: this.role.roleArn,
@@ -98,10 +122,16 @@ export class PythonShellJob extends Job {
       tags: props.tags,
       defaultArguments,
     });
+  }
 
-    const resourceName = this.getResourceNameAttribute(jobResource.ref);
-    this.jobArn = this.buildJobArn(this, resourceName);
-    this.jobName = resourceName;
+  @memoizedGetter
+  public get jobArn(): string {
+    return this.buildJobArn(this, this.jobName);
+  }
+
+  @memoizedGetter
+  public get jobName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
   }
 
   /**

@@ -1,28 +1,30 @@
 {
-  "version": "39.0.0",
+  "version": "53.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
+      "displayName": "aws-stepfunctions-aws-sdk-jsonata-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
       "source": {
         "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-094cbf39": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "fb43ef09d63c0d3c756c97f233b88a5f371b11c0a5e7cbce46f35b5cda7572ff": {
+    "c8b8727f2d92197a5b549845b33a7098aea6cd1d23b6df1cf3ffa105c00802c6": {
+      "displayName": "aws-stepfunctions-aws-sdk-jsonata-integ Template",
       "source": {
         "path": "aws-stepfunctions-aws-sdk-jsonata-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-96029f86": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "fb43ef09d63c0d3c756c97f233b88a5f371b11c0a5e7cbce46f35b5cda7572ff.json",
+          "objectKey": "c8b8727f2d92197a5b549845b33a7098aea6cd1d23b6df1cf3ffa105c00802c6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -5,6 +5,25 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "EventBusRole24766622": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Role for accessing EventBus",
+    "RoleName": "EventBusAccessRole"
+   }
+  },
   "BusEA82B648": {
    "Type": "AWS::Events::EventBus",
    "Properties": {
@@ -17,6 +36,10 @@
      }
     },
     "Description": "myEventBus",
+    "LogConfig": {
+     "IncludeDetail": "FULL",
+     "Level": "ERROR"
+    },
     "Name": "StackBusAA0A1E4B"
    }
   },
@@ -31,19 +54,9 @@
      "Effect": "Allow",
      "Principal": {
       "AWS": {
-       "Fn::Join": [
-        "",
-        [
-         "arn:",
-         {
-          "Ref": "AWS::Partition"
-         },
-         ":iam::",
-         {
-          "Ref": "AWS::AccountId"
-         },
-         ":root"
-        ]
+       "Fn::GetAtt": [
+        "EventBusRole24766622",
+        "Arn"
        ]
       }
      },
@@ -69,19 +82,9 @@
      "Effect": "Allow",
      "Principal": {
       "AWS": {
-       "Fn::Join": [
-        "",
-        [
-         "arn:",
-         {
-          "Ref": "AWS::Partition"
-         },
-         ":iam::",
-         {
-          "Ref": "AWS::AccountId"
-         },
-         ":root"
-        ]
+       "Fn::GetAtt": [
+        "EventBusRole24766622",
+        "Arn"
        ]
       }
      },

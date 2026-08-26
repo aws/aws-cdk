@@ -1,12 +1,16 @@
 import { Construct } from 'constructs';
-import { StreamEventSource, BaseStreamEventSourceProps } from './stream';
-import { ISecurityGroup, IVpc, SubnetSelection } from '../../aws-ec2';
+import type { BaseStreamEventSourceProps } from './stream';
+import { StreamEventSource } from './stream';
+import type { ISecurityGroup, IVpc, SubnetSelection } from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import { IKey } from '../../aws-kms';
+import type { IKey } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
-import * as secretsmanager from '../../aws-secretsmanager';
-import { Stack, Names, Annotations } from '../../core';
+import type { ISchemaRegistry } from '../../aws-lambda/lib/schema-registry';
+import type * as secretsmanager from '../../aws-secretsmanager';
+import type { Duration } from '../../core';
+import { Stack, Names, Annotations, UnscopedValidationError, ValidationError } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Properties for a Kafka event source
@@ -50,7 +54,13 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
   readonly filterEncryption?: IKey;
 
   /**
-   * Add an on Failure Destination for this Kafka event. SNS/SQS/S3 are supported
+   * Add an on Failure Destination for this Kafka event.
+   *
+   * Supported destinations:
+   * - {@link KafkaDlq} - Send failed records to a Kafka topic
+   * - SNS topics - Send failed records to an SNS topic
+   * - SQS queues - Send failed records to an SQS queue
+   * - S3 buckets - Send failed records to an S3 bucket
    *
    * @default - discarded records are ignored
    */
@@ -62,6 +72,60 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    * @default - no timestamp
    */
   readonly startingPositionTimestamp?: number;
+
+  /**
+   * Specific configuration settings for a Kafka schema registry.
+   *
+   * @default - none
+   */
+  readonly schemaRegistryConfig?: ISchemaRegistry;
+
+  /**
+   * Configuration for logging verbosity from the event source mapping poller
+   *
+   * @default - No logging
+   */
+  readonly logLevel?: lambda.EventSourceMappingLogLevel;
+
+  /**
+   * Configuration for enhanced monitoring metrics collection
+   *
+   * @default - Enhanced monitoring is disabled
+   */
+  readonly metricsConfig?: lambda.MetricsConfig;
+  /***
+   * If the function returns an error, split the batch in two and retry.
+   *
+   * @default false
+   */
+  readonly bisectBatchOnError?: boolean;
+
+  /**
+   * The maximum age of a record that Lambda sends to a function for processing.
+   *
+   * The default value is -1, which sets the maximum age to infinite.
+   * When the value is set to infinite, Lambda never discards old records.
+   * Record are valid until it expires in the event source.
+   *
+   * @default -1
+   */
+  readonly maxRecordAge?: Duration;
+
+  /***
+   * Maximum number of retry attempts.
+   *
+   * Set to -1 for infinite retries (until the record expires in the event source).
+   *
+   * @default -1 (infinite retries)
+   */
+  readonly retryAttempts?: number;
+
+  /***
+   * Allow functions to return partially successful responses for a batch of records.
+   *
+   * @default false
+   */
+  readonly reportBatchItemFailures?: boolean;
 }
 
 /**
@@ -146,6 +210,23 @@ export interface SelfManagedKafkaEventSourceProps extends KafkaEventSourceProps 
 
 /**
  * Use a MSK cluster as a streaming source for AWS Lambda
+ *
+ * @example
+ * import { ManagedKafkaEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+ * import { StartingPosition, Function } from 'aws-cdk-lib/aws-lambda';
+ *
+ * // With provisioned pollers and poller group for cost optimization
+ * declare const myFunction: Function;
+ * myFunction.addEventSource(new ManagedKafkaEventSource({
+ *   clusterArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/my-cluster/abcd1234-abcd-cafe-abab-9876543210ab-4',
+ *   topic: 'orders-topic',
+ *   startingPosition: StartingPosition.LATEST,
+ *   provisionedPollerConfig: {
+ *     minimumPollers: 2,
+ *     maximumPollers: 10,
+ *     pollerGroupName: 'shared-kafka-pollers',
+ *   },
+ * }));
  */
 export class ManagedKafkaEventSource extends StreamEventSource {
   // This is to work around JSII inheritance problems
@@ -156,6 +237,12 @@ export class ManagedKafkaEventSource extends StreamEventSource {
   constructor(props: ManagedKafkaEventSourceProps) {
     super(props);
     this.innerProps = props;
+
+    if (props.metricsConfig) {
+      if (!props.metricsConfig.metrics || props.metricsConfig.metrics.length === 0) {
+        throw new UnscopedValidationError(lit`MetricsconfigContainLeastMetric`, 'MetricsConfig must contain at least one metric type. Specify one or more metrics from lambda.MetricType (EVENT_COUNT, ERROR_COUNT, KAFKA_METRICS)');
+      }
+    }
   }
 
   public bind(target: lambda.IFunction) {
@@ -181,6 +268,13 @@ export class ManagedKafkaEventSource extends StreamEventSource {
         onFailure: this.innerProps.onFailure,
         supportS3OnFailureDestination: true,
         provisionedPollerConfig: this.innerProps.provisionedPollerConfig,
+        schemaRegistryConfig: this.innerProps.schemaRegistryConfig,
+        logLevel: this.innerProps.logLevel,
+        metricsConfig: this.innerProps.metricsConfig,
+        bisectBatchOnError: this.innerProps.bisectBatchOnError,
+        retryAttempts: this.innerProps.retryAttempts,
+        reportBatchItemFailures: this.innerProps.reportBatchItemFailures,
+        maxRecordAge: this.innerProps.maxRecordAge,
       }),
     );
 
@@ -221,7 +315,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
    */
   public get eventSourceMappingId(): string {
     if (!this._eventSourceMappingId) {
-      throw new Error('KafkaEventSource is not yet bound to an event source mapping');
+      throw new UnscopedValidationError(lit`KafkaEventSourceYetBound`, 'KafkaEventSource is not yet bound to an event source mapping');
     }
     return this._eventSourceMappingId;
   }
@@ -231,7 +325,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
    */
   public get eventSourceMappingArn(): string {
     if (!this._eventSourceMappingArn) {
-      throw new Error('KafkaEventSource is not yet bound to an event source mapping');
+      throw new UnscopedValidationError(lit`KafkaEventSourceYetBound`, 'KafkaEventSource is not yet bound to an event source mapping');
     }
     return this._eventSourceMappingArn;
   }
@@ -239,6 +333,27 @@ export class ManagedKafkaEventSource extends StreamEventSource {
 
 /**
  * Use a self hosted Kafka installation as a streaming source for AWS Lambda.
+ *
+ * @example
+ * import { SelfManagedKafkaEventSource, AuthenticationMethod } from 'aws-cdk-lib/aws-lambda-event-sources';
+ * import { StartingPosition, Function } from 'aws-cdk-lib/aws-lambda';
+ * import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
+ *
+ * // With provisioned pollers and poller group for cost optimization
+ * declare const myFunction: Function;
+ * declare const kafkaCredentials: ISecret;
+ * myFunction.addEventSource(new SelfManagedKafkaEventSource({
+ *   bootstrapServers: ['kafka-broker1.example.com:9092', 'kafka-broker2.example.com:9092'],
+ *   topic: 'events-topic',
+ *   secret: kafkaCredentials,
+ *   startingPosition: StartingPosition.LATEST,
+ *   authenticationMethod: AuthenticationMethod.SASL_SCRAM_512_AUTH,
+ *   provisionedPollerConfig: {
+ *     minimumPollers: 1,
+ *     maximumPollers: 8,
+ *     pollerGroupName: 'self-managed-kafka-group', // Group pollers to reduce costs
+ *   },
+ * }));
  */
 export class SelfManagedKafkaEventSource extends StreamEventSource {
   // This is to work around JSII inheritance problems
@@ -248,28 +363,34 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
     super(props);
     if (props.vpc) {
       if (!props.securityGroup) {
-        throw new Error('securityGroup must be set when providing vpc');
+        throw new UnscopedValidationError(lit`MustBeSecuritygroupProviding`, 'securityGroup must be set when providing vpc');
       }
       if (!props.vpcSubnets) {
-        throw new Error('vpcSubnets must be set when providing vpc');
+        throw new UnscopedValidationError(lit`MustBeVpcsubnetsProviding`, 'vpcSubnets must be set when providing vpc');
       }
     } else if (!props.secret) {
-      throw new Error('secret must be set if Kafka brokers accessed over Internet');
+      throw new UnscopedValidationError(lit`MustBeSecretKafkaBrokers`, 'secret must be set if Kafka brokers accessed over Internet');
     }
 
     if (props.startingPosition === lambda.StartingPosition.AT_TIMESTAMP && !props.startingPositionTimestamp) {
-      throw new Error('startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP');
+      throw new UnscopedValidationError(lit`StartingPositionTimestampProvidedStarting`, 'startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP');
     }
 
     if (props.startingPosition !== lambda.StartingPosition.AT_TIMESTAMP && props.startingPositionTimestamp) {
-      throw new Error('startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
+      throw new UnscopedValidationError(lit`StartingPositionTimestampStartingPosition`, 'startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
+    }
+
+    if (props.metricsConfig) {
+      if (!props.metricsConfig.metrics || props.metricsConfig.metrics.length === 0) {
+        throw new UnscopedValidationError(lit`MetricsconfigContainLeastMetric`, 'MetricsConfig must contain at least one metric type. Specify one or more metrics from lambda.MetricType (EVENT_COUNT, ERROR_COUNT, KAFKA_METRICS)');
+      }
     }
 
     this.innerProps = props;
   }
 
   public bind(target: lambda.IFunction) {
-    if (!(Construct.isConstruct(target))) { throw new Error('Function is not a construct. Unexpected error.'); }
+    if (!(Construct.isConstruct(target))) { throw new ValidationError(lit`FunctionConstructUnexpectedError`, 'Function is not a construct. Unexpected error.', target); }
     target.addEventSourceMapping(
       this.mappingId(target),
       this.enrichMappingOptions({
@@ -284,6 +405,13 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
         onFailure: this.innerProps.onFailure,
         supportS3OnFailureDestination: true,
         provisionedPollerConfig: this.innerProps.provisionedPollerConfig,
+        schemaRegistryConfig: this.innerProps.schemaRegistryConfig,
+        logLevel: this.innerProps.logLevel,
+        metricsConfig: this.innerProps.metricsConfig,
+        bisectBatchOnError: this.innerProps.bisectBatchOnError,
+        retryAttempts: this.innerProps.retryAttempts,
+        reportBatchItemFailures: this.innerProps.reportBatchItemFailures,
+        maxRecordAge: this.innerProps.maxRecordAge,
       }),
     );
 

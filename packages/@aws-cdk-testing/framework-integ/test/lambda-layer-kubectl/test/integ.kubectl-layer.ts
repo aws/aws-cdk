@@ -11,6 +11,7 @@ import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 
 const app = new cdk.App({
   postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
   },
 });

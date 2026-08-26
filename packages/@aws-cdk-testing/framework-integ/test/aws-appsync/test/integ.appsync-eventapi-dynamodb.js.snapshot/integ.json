@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "appsync-eventapi-dynamodb-test/DefaultTest": {
+      "stacks": [
+        "EventApiDynamoDBStack"
+      ],
+      "assertionStack": "appsync-eventapi-dynamodb-test/DefaultTest/DeployAssert",
+      "assertionStackName": "appsynceventapidynamodbtestDefaultTestDeployAssert08DEAAC3"
+    }
+  }
+}

@@ -12,6 +12,7 @@ const IMAGE_COPIES = Number(process.env.IMAGE_COPIES) ?? 1;
 const app = new App({
   context: {
     '@aws-cdk/aws-iam:minimizePolicies': true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },
 });
 

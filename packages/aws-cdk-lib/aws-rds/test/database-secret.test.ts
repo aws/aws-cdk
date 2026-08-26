@@ -1,5 +1,6 @@
 import { Template } from '../../assertions';
-import { CfnResource, Stack } from '../../core';
+import type { CfnResource } from '../../core';
+import { Stack } from '../../core';
 import { DatabaseSecret } from '../lib';
 import { DEFAULT_PASSWORD_EXCLUDE_CHARS } from '../lib/private/util';
 

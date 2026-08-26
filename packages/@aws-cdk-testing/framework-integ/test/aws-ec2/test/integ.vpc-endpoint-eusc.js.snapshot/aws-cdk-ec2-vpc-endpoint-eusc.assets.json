@@ -1,0 +1,21 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "333099f835ac695f603f622043a00058f8573cf39c57b47c63d0718e11b39912": {
+      "displayName": "aws-cdk-ec2-vpc-endpoint-eusc Template",
+      "source": {
+        "path": "aws-cdk-ec2-vpc-endpoint-eusc.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-eusc-de-east-1-63d22aff": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-eusc-de-east-1",
+          "objectKey": "333099f835ac695f603f622043a00058f8573cf39c57b47c63d0718e11b39912.json",
+          "region": "eusc-de-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eusc-de-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

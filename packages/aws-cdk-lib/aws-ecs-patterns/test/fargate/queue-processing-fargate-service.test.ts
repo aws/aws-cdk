@@ -9,10 +9,12 @@ import * as sqs from '../../../aws-sqs';
 import { Queue } from '../../../aws-sqs';
 import * as cdk from '../../../core';
 import * as ecsPatterns from '../../lib';
+import { acknowledgeTestValidationRules } from '../util';
 
 test('test fargate queue worker service construct - with only required props', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -111,6 +113,7 @@ test('test fargate queue worker service construct - with only required props', (
 test('test fargate queue worker service construct - with cooldown', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -141,6 +144,7 @@ test('test fargate queue worker service construct - with cooldown', () => {
 test('test fargate queue worker service construct - with no cooldown', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -169,6 +173,7 @@ test('test fargate queue worker service construct - with no cooldown', () => {
 test('test fargate queue worker service construct - with cooldown more than 999999999', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -192,6 +197,7 @@ test('test fargate queue worker service construct - with cooldown more than 9999
 test('test fargate queue worker service construct - with remove default desiredCount feature flag', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -212,6 +218,7 @@ test('test fargate queue worker service construct - with remove default desiredC
 test('test fargate queue worker service construct - with optional props for queues', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -314,6 +321,7 @@ test('test fargate queue worker service construct - with optional props for queu
 test('test Fargate queue worker service construct - with ECS Exec', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -385,6 +393,7 @@ test('test Fargate queue worker service construct - with ECS Exec', () => {
 test('test Fargate queue worker service construct - without desiredCount specified', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -480,6 +489,7 @@ test('test Fargate queue worker service construct - without desiredCount specifi
 testDeprecated('test Fargate queue worker service construct - with optional props', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -575,6 +585,7 @@ testDeprecated('test Fargate queue worker service construct - with optional prop
 test('test Fargate queue worker service construct - with cpu scaling strategy disabled', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -619,6 +630,7 @@ test('test Fargate queue worker service construct - with cpu scaling strategy di
 testDeprecated('test Fargate queue worker service construct - with custom cpu scaling target', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -669,6 +681,7 @@ testDeprecated('test Fargate queue worker service construct - with custom cpu sc
 test('can set custom containerName', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -697,6 +710,7 @@ test('can set custom containerName', () => {
 
 test('can set custom networking options', () => {
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC', {
     subnetConfiguration: [
       {
@@ -753,6 +767,7 @@ test('can set custom networking options', () => {
 
 test('can set use public IP', () => {
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC');
 
   // WHEN - Assign Public IP is set to True
@@ -793,6 +808,7 @@ test('can set use public IP', () => {
 test('can set capacity provider strategies', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'MyVpc', {});
   const cluster = new ecs.Cluster(stack, 'EcsCluster', {
     vpc,
@@ -834,6 +850,7 @@ test('can set capacity provider strategies', () => {
 it('can set queue props by queue construct', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const queue = new Queue(stack, 'Queue', {
     queueName: 'custom-queue',
     visibilityTimeout: cdk.Duration.seconds(200),
@@ -870,6 +887,7 @@ it('can set queue props by queue construct', () => {
 it('can set queue props by QueueProcessingServiceBaseProps', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
 
   // WHEN
   new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
@@ -897,6 +915,7 @@ it('can set queue props by QueueProcessingServiceBaseProps', () => {
 it('throws validation errors of the specific queue prop, when setting queue and queue related props at same time', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const queue = new Queue(stack, 'Queue');
 
   // Setting all retentionPeriod, visibilityTimeout and maxReceiveCount
@@ -923,6 +942,7 @@ it('throws validation errors of the specific queue prop, when setting queue and 
 test('test Fargate queue worker service construct - with task definition', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addAsgCapacityProvider(
@@ -972,6 +992,7 @@ test('test Fargate queue worker service construct - with task definition', () =>
 test('test Fargate queue worker service construct - with task definition and image', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC');
 
   // WHEN
@@ -996,6 +1017,7 @@ test('test Fargate queue worker service construct - with task definition and ima
 test('test Fargate queue worker service construct - with no taskDefinition or image', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC');
 
   expect(() => {
@@ -1005,3 +1027,24 @@ test('test Fargate queue worker service construct - with no taskDefinition or im
   }).toThrow(new Error('You must specify one of: taskDefinition or image'));
 });
 
+test('test Fargate queue worker service construct - with healthCheckGracePeriod', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  const queue = new sqs.Queue(stack, 'Queue');
+
+  // WHEN
+  new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    cluster,
+    queue,
+    image: ecs.ContainerImage.fromRegistry('test'),
+    healthCheckGracePeriod: cdk.Duration.seconds(120),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+    HealthCheckGracePeriodSeconds: 120,
+  });
+});

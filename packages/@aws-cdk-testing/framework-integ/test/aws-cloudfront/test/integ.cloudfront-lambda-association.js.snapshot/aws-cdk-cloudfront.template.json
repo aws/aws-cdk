@@ -52,7 +52,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "LambdaServiceRoleA8ED4D3B"
@@ -64,6 +64,9 @@
     "FunctionName": {
      "Ref": "LambdaD247545B"
     }
+   },
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
    }
   },
   "MyDistributionCFDistributionDE147309": {

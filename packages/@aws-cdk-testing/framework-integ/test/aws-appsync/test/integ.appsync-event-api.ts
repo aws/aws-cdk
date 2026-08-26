@@ -8,7 +8,7 @@ import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 import { CfnWebACL, CfnWebACLAssociation } from 'aws-cdk-lib/aws-wafv2';
 import * as path from 'path';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 interface EventApiStackProps extends cdk.StackProps {
@@ -225,7 +225,11 @@ if (!hostedZoneName) throw new Error('For this test you must provide your own Ho
 const domainName = process.env.CDK_INTEG_DOMAIN_NAME ?? process.env.DOMAIN_NAME;
 if (!domainName) throw new Error('For this test you must provide your own DomainName as an env var "DOMAIN_NAME". See framework-integ/README.md for details.');
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new EventApiStack(app, 'appsync-event-api-stack', {
   hostedZoneId,
   hostedZoneName,

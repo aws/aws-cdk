@@ -1,7 +1,8 @@
 import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { ComponentProps, ComponentType, Runtime } from '../../lib/custom-resources-framework/config';
+import type { ComponentProps } from '../../lib/custom-resources-framework/config';
+import { ComponentType, Runtime } from '../../lib/custom-resources-framework/config';
 import { HandlerFrameworkModule } from '../../lib/custom-resources-framework/framework';
 import { calculateOutfile } from '../../scripts/generate';
 
@@ -12,6 +13,10 @@ describe('framework', () => {
   let tmpDir: string;
   beforeEach(() => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-test'));
+  });
+
+  afterEach(() => {
+    fs.removeSync(tmpDir);
   });
 
   test('can codegen cdk function', () => {
@@ -168,6 +173,44 @@ describe('framework', () => {
     const result = fs.readFileSync(path.resolve(tmpDir, 'result.ts'), 'utf-8');
     const expected = fs.readFileSync(path.resolve(__dirname, 'expected', 'python-runtime', 'custom-resource-provider-core.ts'), 'utf-8');
     expect(result).toContain(expected);
+  });
+
+  test('codegen cdk function embeds the provided source hash as assetHash', () => {
+    // GIVEN
+    const module = new HandlerFrameworkModule('cdk-testing/test-provider');
+    const component: ComponentProps = {
+      type: ComponentType.FUNCTION,
+      sourceCode: sourceCodeTs,
+    };
+    const outfile = calculateOutfile(sourceCodeTs);
+    module.build(component, calculateCodeDirectory(path.dirname(outfile)), 'abc123');
+
+    // WHEN
+    module.renderTo(`${tmpDir}/result.ts`);
+
+    // THEN
+    const result = fs.readFileSync(path.resolve(tmpDir, 'result.ts'), 'utf-8');
+    expect(result).toContain('assetHash: "abc123"');
+    expect(result).toContain("lambda.Code.fromAsset(path.join(__dirname, 'my-handler')");
+  });
+
+  test('codegen cdk singleton function embeds the provided source hash as assetHash', () => {
+    // GIVEN
+    const module = new HandlerFrameworkModule('cdk-testing/test-provider');
+    const component: ComponentProps = {
+      type: ComponentType.SINGLETON_FUNCTION,
+      sourceCode: sourceCodeTs,
+    };
+    const outfile = calculateOutfile(sourceCodeTs);
+    module.build(component, calculateCodeDirectory(path.dirname(outfile)), 'deadbeef');
+
+    // WHEN
+    module.renderTo(`${tmpDir}/result.ts`);
+
+    // THEN
+    const result = fs.readFileSync(path.resolve(tmpDir, 'result.ts'), 'utf-8');
+    expect(result).toContain('assetHash: "deadbeef"');
+    expect(result).toContain("lambda.Code.fromAsset(path.join(__dirname, 'my-handler')");
   });
 
   test('codegen eval-nodejs-provider with exposed runtime property', () => {

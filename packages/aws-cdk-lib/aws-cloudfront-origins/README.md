@@ -577,14 +577,15 @@ const origin = new origins.LoadBalancerV2Origin(loadBalancer, {
   connectionAttempts: 3,
   connectionTimeout: Duration.seconds(5),
   readTimeout: Duration.seconds(45),
+  responseCompletionTimeout: Duration.seconds(120),
   keepaliveTimeout: Duration.seconds(45),
   protocolPolicy: cloudfront.OriginProtocolPolicy.MATCH_VIEWER,
 });
 ```
 
-Note that the `readTimeout` and `keepaliveTimeout` properties can extend their values over 60 seconds only if a limit increase request for CloudFront origin response timeout
-quota has been approved in the target account; otherwise, values over 60 seconds will produce an error at deploy time. Consider that this value is
-still limited to a maximum value of 180 seconds, which is a hard limit for that quota.
+Note that `readTimeout` and `keepaliveTimeout` are governed by two separate CloudFront service quotas: `Response timeout per origin`, which defaults to
+1-120 seconds, and `Keep-alive timeout per origin`, which defaults to 1-300 seconds. Neither is a hard limit. A value above the default requires an
+approved quota increase in the target account, and without one CloudFront rejects it at deploy time.
 
 ## From an HTTP endpoint
 
@@ -595,6 +596,36 @@ new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
 });
 ```
+
+You can specify the IP address type for connecting to the origin:
+
+```ts
+const origin = new origins.HttpOrigin('www.example.com', {
+  ipAddressType: cloudfront.OriginIpAddressType.IPV6, // IPv4, IPv6, or DUALSTACK
+});
+
+new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: { origin },
+});
+```
+
+The `ipAddressType` property allows you to specify whether CloudFront should use IPv4, IPv6, or both (dual-stack) when connecting to your origin.
+
+The origin can be customized with timeout settings to handle different response scenarios:
+
+```ts
+new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: {
+    origin: new origins.HttpOrigin('api.example.com', {
+      readTimeout: Duration.seconds(60),
+      responseCompletionTimeout: Duration.seconds(120),
+      keepaliveTimeout: Duration.seconds(45),
+    }),
+  },
+});
+```
+
+The `responseCompletionTimeout` property specifies the time that a request from CloudFront to the origin can stay open and wait for a response. If the complete response isn't received from the origin by this time, CloudFront ends the connection. Valid values are 1-3600 seconds, and if set, the value must be equal to or greater than the `readTimeout` value.
 
 See the documentation of `aws-cdk-lib/aws-cloudfront` for more information.
 
@@ -681,7 +712,7 @@ declare const alb: elbv2.ApplicationLoadBalancer;
 const cfOriginFacing = ec2.PrefixList.fromLookup(this, 'CloudFrontOriginFacing', {
   prefixListName: 'com.amazonaws.global.cloudfront.origin-facing',
 });
-alb.connections.allowFrom(ec2.Peer.prefixList(cfOriginFacing.prefixListId), ec2.Port.HTTP);
+alb.connections.allowFrom(cfOriginFacing, ec2.Port.HTTP);
 ```
 
 #### The VPC origin service security group
@@ -800,6 +831,58 @@ new cloudfront.Distribution(this, 'Distribution', {
   defaultBehavior: { origin: new origins.FunctionUrlOrigin(fnUrl) },
 });
 ```
+
+You can also configure timeout settings for Lambda Function URL origins:
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
+declare const fn: lambda.Function;
+const fnUrl = fn.addFunctionUrl({ authType: lambda.FunctionUrlAuthType.NONE });
+
+new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: {
+    origin: new origins.FunctionUrlOrigin(fnUrl, {
+      readTimeout: Duration.seconds(30),
+      responseCompletionTimeout: Duration.seconds(90),
+      keepaliveTimeout: Duration.seconds(45),
+    }),
+  },
+});
+```
+
+### Configuring IP Address Type
+
+You can specify which IP protocol CloudFront uses when connecting to your Lambda Function URL origin. By default, CloudFront uses IPv4 only.
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { OriginIpAddressType } from 'aws-cdk-lib/aws-cloudfront';
+
+declare const fn: lambda.Function;
+const fnUrl = fn.addFunctionUrl({ authType: lambda.FunctionUrlAuthType.NONE });
+
+// Uses default IPv4 only
+new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: { 
+    origin: new origins.FunctionUrlOrigin(fnUrl)
+  },
+});
+
+// Explicitly specify IP address type
+new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: { 
+    origin: new origins.FunctionUrlOrigin(fnUrl, {
+      ipAddressType: OriginIpAddressType.DUALSTACK, // Use both IPv4 and IPv6
+    })
+  },
+});
+```
+
+Supported values for `ipAddressType`:
+- `OriginIpAddressType.IPV4` - CloudFront uses IPv4 only to connect to the origin (default)
+- `OriginIpAddressType.IPV6` - CloudFront uses IPv6 only to connect to the origin  
+- `OriginIpAddressType.DUALSTACK` - CloudFront uses both IPv4 and IPv6 to connect to the origin
 
 ### Lambda Function URL with Origin Access Control (OAC)
 You can configure the Lambda Function URL with Origin Access Control (OAC) for enhanced security. When using OAC with Signing SIGV4_ALWAYS, it is recommended to set the Lambda Function URL authType to AWS_IAM to ensure proper authorization.

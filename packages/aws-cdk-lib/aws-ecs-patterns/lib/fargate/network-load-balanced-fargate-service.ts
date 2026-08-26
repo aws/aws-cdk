@@ -1,10 +1,13 @@
-import { Construct } from 'constructs';
-import { ISecurityGroup, SubnetSelection } from '../../../aws-ec2';
+import type { Construct } from 'constructs';
+import type { ISecurityGroup, SubnetSelection } from '../../../aws-ec2';
 import { FargateService, FargateTaskDefinition } from '../../../aws-ecs';
-import { FeatureFlags } from '../../../core';
+import { FeatureFlags, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
-import { FargateServiceBaseProps } from '../base/fargate-service-base';
-import { NetworkLoadBalancedServiceBase, NetworkLoadBalancedServiceBaseProps } from '../base/network-load-balanced-service-base';
+import type { FargateServiceBaseProps } from '../base/fargate-service-base';
+import type { NetworkLoadBalancedServiceBaseProps } from '../base/network-load-balanced-service-base';
+import { NetworkLoadBalancedServiceBase } from '../base/network-load-balanced-service-base';
 
 /**
  * The properties for the NetworkLoadBalancedFargateService service.
@@ -36,7 +39,13 @@ export interface NetworkLoadBalancedFargateServiceProps extends NetworkLoadBalan
 /**
  * A Fargate service running on an ECS cluster fronted by a network load balancer.
  */
+@propertyInjectable
 export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServiceBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs-patterns.NetworkLoadBalancedFargateService';
+
   public readonly assignPublicIp: boolean;
   /**
    * The Fargate service in this construct.
@@ -56,7 +65,7 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
     this.assignPublicIp = props.assignPublicIp ?? false;
 
     if (props.taskDefinition && props.taskImageOptions) {
-      throw new Error('You must specify either a taskDefinition or an image, not both.');
+      throw new ValidationError(lit`SpecifyTaskDefinitionImage`, 'You must specify either a taskDefinition or an image, not both.', this);
     } else if (props.taskDefinition) {
       this.taskDefinition = props.taskDefinition;
     } else if (props.taskImageOptions) {
@@ -87,7 +96,7 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
         containerPort: taskImageOptions.containerPort || 80,
       });
     } else {
-      throw new Error('You must specify one of: taskDefinition or image');
+      throw new ValidationError(lit`SpecifyOneTaskDefinitionImage`, 'You must specify one of: taskDefinition or image', this);
     }
 
     const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;

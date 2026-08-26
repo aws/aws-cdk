@@ -5,7 +5,11 @@ import { TestFunction } from './test-function';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'lambda-event-source-metrics-config-sqs');
 

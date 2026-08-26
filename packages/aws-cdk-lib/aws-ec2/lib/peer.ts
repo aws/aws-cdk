@@ -1,5 +1,75 @@
-import { Connections, IConnectable } from './connections';
-import { Token } from '../../core';
+import type { IConnectable } from './connections';
+import { Connections } from './connections';
+import { Token, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
+
+/**
+ * Common configuration properties shared by ingress and egress security group rules
+ */
+export interface RuleConfig {
+  /**
+   * The IPv4 address range, in CIDR format
+   *
+   * @default - No IPv4 CIDR
+   */
+  readonly cidrIp?: string;
+
+  /**
+   * The IPv6 address range, in CIDR format
+   *
+   * @default - No IPv6 CIDR
+   */
+  readonly cidrIpv6?: string;
+}
+
+/**
+ * Configuration for an ingress security group rule
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-ec2-securitygroup-ingress.html
+ */
+export interface IngressRuleConfig extends RuleConfig {
+  /**
+   * The ID of a source prefix list
+   *
+   * @default - No source prefix list
+   */
+  readonly sourcePrefixListId?: string;
+
+  /**
+   * The ID of a source security group
+   *
+   * @default - No source security group
+   */
+  readonly sourceSecurityGroupId?: string;
+
+  /**
+   * The AWS account ID of the owner of a source security group
+   *
+   * @default - No source security group owner ID
+   */
+  readonly sourceSecurityGroupOwnerId?: string;
+}
+
+/**
+ * Configuration for an egress security group rule
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-ec2-securitygroup-egress.html
+ */
+export interface EgressRuleConfig extends RuleConfig {
+  /**
+   * The ID of a destination prefix list
+   *
+   * @default - No destination prefix list
+   */
+  readonly destinationPrefixListId?: string;
+
+  /**
+   * The ID of a destination security group
+   *
+   * @default - No destination security group
+   */
+  readonly destinationSecurityGroupId?: string;
+}
 
 /**
  * Interface for classes that provide the peer-specification parts of a security group rule
@@ -18,12 +88,12 @@ export interface IPeer extends IConnectable {
   /**
    * Produce the ingress rule JSON for the given connection
    */
-  toIngressRuleConfig(): any;
+  toIngressRuleConfig(): IngressRuleConfig;
 
   /**
    * Produce the egress rule JSON for the given connection
    */
-  toEgressRuleConfig(): any;
+  toEgressRuleConfig(): EgressRuleConfig;
 }
 
 /**
@@ -99,11 +169,11 @@ class CidrIPv4 implements IPeer {
       const cidrMatch = cidrIp.match(/^(\d{1,3}\.){3}\d{1,3}(\/\d+)?$/);
 
       if (!cidrMatch) {
-        throw new Error(`Invalid IPv4 CIDR: "${cidrIp}"`);
+        throw new UnscopedValidationError(lit`InvalidPv`, `Invalid IPv4 CIDR: "${cidrIp}"`);
       }
 
       if (!cidrMatch[2]) {
-        throw new Error(`CIDR mask is missing in IPv4: "${cidrIp}". Did you mean "${cidrIp}/32"?`);
+        throw new UnscopedValidationError(lit`CidrMaskMissingIpv4`, `CIDR mask is missing in IPv4: "${cidrIp}". Did you mean "${cidrIp}/32"?`);
       }
     }
 
@@ -113,13 +183,13 @@ class CidrIPv4 implements IPeer {
   /**
    * Produce the ingress rule JSON for the given connection
    */
-  public toIngressRuleConfig(): any {
+  public toIngressRuleConfig(): IngressRuleConfig {
     return { cidrIp: this.cidrIp };
   }
   /**
    * Produce the egress rule JSON for the given connection
    */
-  public toEgressRuleConfig(): any {
+  public toEgressRuleConfig(): EgressRuleConfig {
     return { cidrIp: this.cidrIp };
   }
 }
@@ -146,11 +216,11 @@ class CidrIPv6 implements IPeer {
       const cidrMatch = cidrIpv6.match(/^([\da-f]{0,4}:){2,7}([\da-f]{0,4})?(\/\d+)?$/);
 
       if (!cidrMatch) {
-        throw new Error(`Invalid IPv6 CIDR: "${cidrIpv6}"`);
+        throw new UnscopedValidationError(lit`InvalidPv`, `Invalid IPv6 CIDR: "${cidrIpv6}"`);
       }
 
       if (!cidrMatch[3]) {
-        throw new Error(`CIDR mask is missing in IPv6: "${cidrIpv6}". Did you mean "${cidrIpv6}/128"?`);
+        throw new UnscopedValidationError(lit`CidrMaskMissingIpv6`, `CIDR mask is missing in IPv6: "${cidrIpv6}". Did you mean "${cidrIpv6}/128"?`);
       }
     }
 
@@ -160,13 +230,13 @@ class CidrIPv6 implements IPeer {
   /**
    * Produce the ingress rule JSON for the given connection
    */
-  public toIngressRuleConfig(): any {
+  public toIngressRuleConfig(): IngressRuleConfig {
     return { cidrIpv6: this.cidrIpv6 };
   }
   /**
    * Produce the egress rule JSON for the given connection
    */
-  public toEgressRuleConfig(): any {
+  public toEgressRuleConfig(): EgressRuleConfig {
     return { cidrIpv6: this.cidrIpv6 };
   }
 }
@@ -198,11 +268,11 @@ class PrefixList implements IPeer {
     this.uniqueId = prefixListId;
   }
 
-  public toIngressRuleConfig(): any {
+  public toIngressRuleConfig(): IngressRuleConfig {
     return { sourcePrefixListId: this.prefixListId };
   }
 
-  public toEgressRuleConfig(): any {
+  public toEgressRuleConfig(): EgressRuleConfig {
     return { destinationPrefixListId: this.prefixListId };
   }
 }
@@ -224,7 +294,7 @@ class SecurityGroupId implements IPeer {
       const securityGroupMatch = securityGroupId.match(/^sg-[a-z0-9]{8,17}$/);
 
       if (!securityGroupMatch) {
-        throw new Error(`Invalid security group ID: "${securityGroupId}"`);
+        throw new UnscopedValidationError(lit`InvalidSecurityGroup`, `Invalid security group ID: "${securityGroupId}"`);
       }
     }
 
@@ -232,7 +302,7 @@ class SecurityGroupId implements IPeer {
       const accountNumberMatch = sourceSecurityGroupOwnerId.match(/^[0-9]{12}$/);
 
       if (!accountNumberMatch) {
-        throw new Error(`Invalid security group owner ID: "${sourceSecurityGroupOwnerId}"`);
+        throw new UnscopedValidationError(lit`InvalidSecurityGroupOwner`, `Invalid security group owner ID: "${sourceSecurityGroupOwnerId}"`);
       }
     }
     this.uniqueId = securityGroupId;
@@ -241,7 +311,7 @@ class SecurityGroupId implements IPeer {
   /**
    * Produce the ingress rule JSON for the given connection
    */
-  public toIngressRuleConfig(): any {
+  public toIngressRuleConfig(): IngressRuleConfig {
     return {
       sourceSecurityGroupId: this.securityGroupId,
       ...(this.sourceSecurityGroupOwnerId && { sourceSecurityGroupOwnerId: this.sourceSecurityGroupOwnerId }),
@@ -251,7 +321,7 @@ class SecurityGroupId implements IPeer {
   /**
    * Produce the egress rule JSON for the given connection
    */
-  public toEgressRuleConfig(): any {
+  public toEgressRuleConfig(): EgressRuleConfig {
     return { destinationSecurityGroupId: this.securityGroupId };
   }
 }

@@ -1,0 +1,33 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5": {
+      "source": {
+        "path": "asset.642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-fc55a41a": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "30ae082f705e9a7bfaad07f96dae63f35399d63148829dab223146eb005eceff": {
+      "displayName": "DistributedMapDefaultTestDeployAssertFD6CBCC4 Template",
+      "source": {
+        "path": "DistributedMapDefaultTestDeployAssertFD6CBCC4.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-495dd812": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "30ae082f705e9a7bfaad07f96dae63f35399d63148829dab223146eb005eceff.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

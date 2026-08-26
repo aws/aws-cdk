@@ -1,8 +1,11 @@
 import * as cdk from 'aws-cdk-lib';
-import * as constructs from 'constructs';
-import { IResource, Resource } from 'aws-cdk-lib/core';
 import { CfnDataQualityRuleset } from 'aws-cdk-lib/aws-glue';
+import type { IResource, RemovalPolicy } from 'aws-cdk-lib/core';
+import { Resource } from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type * as constructs from 'constructs';
 
 /**
  * Properties of a DataQualityTargetTable.
@@ -21,6 +24,36 @@ export class DataQualityTargetTable {
   constructor(databaseName: string, tableName: string) {
     this.databaseName = databaseName;
     this.tableName = tableName;
+  }
+}
+
+/**
+ * The Data Quality Definition Language (DQDL) document for a `DataQualityRuleset`.
+ *
+ * DQDL is an authored string that Glue parses and validates at deploy time. Build
+ * one from a raw DQDL string with {@link Dqdl.fromString}.
+ *
+ * @see https://docs.aws.amazon.com/glue/latest/dg/dqdl.html
+ */
+export class Dqdl {
+  /**
+   * Create a `Dqdl` from a raw DQDL string.
+   *
+   * @param dqdl the DQDL document, e.g. `Rules = [ RowCount > 100 ]`.
+   */
+  public static fromString(dqdl: string): Dqdl {
+    return new Dqdl(dqdl);
+  }
+
+  private constructor(private readonly dqdl: string) {}
+
+  /**
+   * Render this DQDL to the string expected by the Glue ruleset resource.
+   *
+   * @internal
+   */
+  public _render(): string {
+    return this.dqdl;
   }
 }
 
@@ -61,10 +94,11 @@ export interface DataQualityRulesetProps {
   readonly description?: string;
 
   /**
-   * The dqdl of the ruleset
-   * @attribute
+   * The DQDL document defining the ruleset's data quality rules.
+   *
+   * Build it with `Dqdl.fromString(...)`.
    */
-  readonly rulesetDqdl: string;
+  readonly dqdl: Dqdl;
 
   /**
    *  Key-Value pairs that define tags for the ruleset.
@@ -77,12 +111,23 @@ export interface DataQualityRulesetProps {
    * @attribute
    */
   readonly targetTable: DataQualityTargetTable;
+
+  /**
+   * Policy to apply when the ruleset is removed from the stack.
+   *
+   * @default - resource will be destroyed
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
  * A Glue Data Quality ruleset.
  */
+@propertyInjectable
 export class DataQualityRuleset extends Resource implements IDataQualityRuleset {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.DataQualityRuleset';
+
   public static fromRulesetArn(scope: constructs.Construct, id: string, rulesetArn: string): IDataQualityRuleset {
     class Import extends Resource implements IDataQualityRuleset {
       public rulesetArn = rulesetArn;
@@ -109,15 +154,7 @@ export class DataQualityRuleset extends Resource implements IDataQualityRuleset 
     });
   }
 
-  /**
-   * Name of this ruleset.
-   */
-  public readonly rulesetName: string;
-
-  /**
-   * ARN of this ruleset.
-   */
-  public readonly rulesetArn: string;
+  private resource: CfnDataQualityRuleset;
 
   constructor(scope: constructs.Construct, id: string, props: DataQualityRulesetProps) {
     super(scope, id, {
@@ -126,17 +163,31 @@ export class DataQualityRuleset extends Resource implements IDataQualityRuleset 
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    const rulesetResource = new CfnDataQualityRuleset(this, 'Resource', {
+    this.resource = new CfnDataQualityRuleset(this, 'Resource', {
       clientToken: props.clientToken,
       description: props.description,
       name: props.rulesetName,
-      ruleset: props.rulesetDqdl,
+      ruleset: props.dqdl._render(),
       tags: props.tags,
       targetTable: props.targetTable,
     });
 
-    const resourceName = this.getResourceNameAttribute(rulesetResource.ref);
-    this.rulesetArn = DataQualityRuleset.buildRulesetArn(this, resourceName);
-    this.rulesetName = resourceName;
+    this.resource.applyRemovalPolicy(props.removalPolicy);
+  }
+
+  /**
+   * Name of this ruleset.
+   */
+  @memoizedGetter
+  public get rulesetName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  /**
+   * ARN of this ruleset.
+   */
+  @memoizedGetter
+  public get rulesetArn(): string {
+    return DataQualityRuleset.buildRulesetArn(this, this.rulesetName);
   }
 }

@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { CfnTable } from 'aws-cdk-lib/aws-glue';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import * as glue from '../lib';
 
 test('unpartitioned JSON table', () => {
@@ -17,7 +18,19 @@ test('unpartitioned JSON table', () => {
     }],
     dataFormat: glue.DataFormat.JSON,
   });
-  expect(table.encryption).toEqual(glue.TableEncryption.S3_MANAGED);
+  expect(table.bucket?.encryptionKey).toEqual(undefined);
+
+  Template.fromStack(tableStack).hasResourceProperties('AWS::S3::Bucket', {
+    BucketEncryption: {
+      ServerSideEncryptionConfiguration: [
+        {
+          ServerSideEncryptionByDefault: {
+            SSEAlgorithm: 'AES256',
+          },
+        },
+      ],
+    },
+  });
 
   Template.fromStack(tableStack).hasResource('AWS::S3::Bucket', {
     Type: 'AWS::S3::Bucket',
@@ -89,8 +102,6 @@ test('partitioned JSON table', () => {
     }],
     dataFormat: glue.DataFormat.JSON,
   });
-  expect(table.encryption).toEqual(glue.TableEncryption.S3_MANAGED);
-  expect(table.encryptionKey).toEqual(undefined);
   expect(table.bucket).not.toEqual(undefined);
   expect(table.bucket?.encryptionKey).toEqual(undefined);
 
@@ -159,7 +170,6 @@ test('compressed table', () => {
     compressed: true,
     dataFormat: glue.DataFormat.JSON,
   });
-  expect(table.encryptionKey).toEqual(undefined);
   expect(table.bucket?.encryptionKey).toEqual(undefined);
 
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
@@ -349,6 +359,190 @@ describe('parition indexes', () => {
         indexName: '',
         keyNames: ['part'],
       })).toThrow(/Index name must be between 1 and 255 characters, but got 0/);
+    });
+
+    test('auto-generated index name stays within the limit even for long key names', () => {
+      const stack = new cdk.Stack();
+      const database = new glue.Database(stack, 'Database');
+
+      const longKeys = ['a'.repeat(60), 'b'.repeat(60)];
+      const table = new glue.S3Table(stack, 'Table', {
+        database,
+        columns: [{ name: 'col', type: glue.Schema.STRING }],
+        partitionKeys: longKeys.map(name => ({ name, type: glue.Schema.STRING })),
+        dataFormat: glue.DataFormat.JSON,
+      });
+
+      // No indexName provided -> the name is generated from the (very long) keys.
+      table.addPartitionIndex({ keyNames: longKeys });
+
+      const resources = Template.fromStack(stack).findResources('Custom::GluePartitionIndex');
+      const indexNames = Object.values(resources).map((r: any) => r.Properties.IndexName as string);
+      expect(indexNames).toHaveLength(1);
+      expect(indexNames[0].length).toBeLessThanOrEqual(80);
+    });
+
+    test('fails to auto-generate a name when key names are tokenized', () => {
+      const stack = new cdk.Stack();
+      const database = new glue.Database(stack, 'Database');
+
+      const table = new glue.S3Table(stack, 'Table', {
+        database,
+        columns: [{ name: 'col', type: glue.Schema.STRING }],
+        partitionKeys: [{ name: 'part', type: glue.Schema.SMALL_INT }],
+        dataFormat: glue.DataFormat.JSON,
+      });
+
+      const tokenKey = cdk.Lazy.string({ produce: () => 'part' });
+
+      // No indexName provided + tokenized key -> nothing stable to generate from.
+      expect(() => table.addPartitionIndex({ keyNames: [tokenKey] }))
+        .toThrow(/cannot auto-generate a stable partition index name from tokenized key names/);
+    });
+
+    test('accepts tokenized key names when an explicit indexName is given', () => {
+      const stack = new cdk.Stack();
+      const database = new glue.Database(stack, 'Database');
+
+      const table = new glue.S3Table(stack, 'Table', {
+        database,
+        columns: [{ name: 'col', type: glue.Schema.STRING }],
+        partitionKeys: [{ name: 'part', type: glue.Schema.SMALL_INT }],
+        dataFormat: glue.DataFormat.JSON,
+      });
+
+      const tokenKey = cdk.Lazy.string({ produce: () => 'part' });
+
+      // An explicit indexName supplies the stable name generation cannot.
+      table.addPartitionIndex({ indexName: 'my-index', keyNames: [tokenKey] });
+
+      const resources = Template.fromStack(stack).findResources('Custom::GluePartitionIndex');
+      const indexNames = Object.values(resources).map((r: any) => r.Properties.IndexName as string);
+      expect(indexNames).toEqual(['my-index']);
+    });
+
+    test('distinct long key sets generate distinct auto-generated index names', () => {
+      const stack = new cdk.Stack();
+      const database = new glue.Database(stack, 'Database');
+
+      const keysA = ['a'.repeat(60), 'b'.repeat(60)];
+      const keysB = ['a'.repeat(60), 'c'.repeat(60)];
+      const table = new glue.S3Table(stack, 'Table', {
+        database,
+        columns: [{ name: 'col', type: glue.Schema.STRING }],
+        partitionKeys: [...keysA, 'c'.repeat(60)].map(name => ({ name, type: glue.Schema.STRING })),
+        dataFormat: glue.DataFormat.JSON,
+      });
+
+      table.addPartitionIndex({ keyNames: keysA });
+      table.addPartitionIndex({ keyNames: keysB });
+
+      const resources = Template.fromStack(stack).findResources('Custom::GluePartitionIndex');
+      const indexNames = Object.values(resources).map((r: any) => r.Properties.IndexName as string);
+      expect(indexNames).toHaveLength(2);
+      expect(indexNames[0]).not.toEqual(indexNames[1]);
+      indexNames.forEach(name => expect(name.length).toBeLessThanOrEqual(80));
+    });
+
+    test('each new partition index depends on the previous one', () => {
+      const stack = new cdk.Stack();
+      const database = new glue.Database(stack, 'Database');
+
+      const table = new glue.S3Table(stack, 'Table', {
+        database,
+        columns: [{ name: 'col', type: glue.Schema.STRING }],
+        partitionKeys: [
+          { name: 'year', type: glue.Schema.SMALL_INT },
+          { name: 'month', type: glue.Schema.SMALL_INT },
+        ],
+        dataFormat: glue.DataFormat.JSON,
+      });
+
+      table.addPartitionIndex({ indexName: 'index1', keyNames: ['year'] });
+      table.addPartitionIndex({ indexName: 'index2', keyNames: ['month'] });
+
+      const template = Template.fromStack(stack);
+      const resources = template.toJSON().Resources;
+
+      // Find the index2 custom resource by logical ID
+      const index2LogicalId = Object.keys(resources).find(k =>
+        k.includes('partitionindexindex2') && resources[k].Type === 'Custom::GluePartitionIndex',
+      )!;
+
+      // index2 should depend on index1 (not the other way around)
+      expect(resources[index2LogicalId].DependsOn).toEqual(
+        expect.arrayContaining([
+          expect.stringMatching(/partitionindexindex1/),
+        ]),
+      );
+    });
+
+    test('grants partition index permissions to the handler roles only once per table', () => {
+      const stack = new cdk.Stack();
+      const database = new glue.Database(stack, 'Database');
+
+      const table = new glue.S3Table(stack, 'Table', {
+        database,
+        columns: [{ name: 'col', type: glue.Schema.STRING }],
+        partitionKeys: [
+          { name: 'year', type: glue.Schema.SMALL_INT },
+          { name: 'month', type: glue.Schema.SMALL_INT },
+          { name: 'day', type: glue.Schema.SMALL_INT },
+        ],
+        dataFormat: glue.DataFormat.JSON,
+      });
+
+      table.addPartitionIndex({ indexName: 'index1', keyNames: ['year'] });
+      table.addPartitionIndex({ indexName: 'index2', keyNames: ['month'] });
+      table.addPartitionIndex({ indexName: 'index3', keyNames: ['day'] });
+
+      const template = Template.fromStack(stack);
+
+      // The permissions are granted once per table, not once per index. Both the
+      // onEvent and isComplete handler roles carry a CreatePartitionIndex statement
+      // (isComplete recreates the index when a key change is applied), so with three
+      // indexes we expect exactly two statements (one per handler role), not six.
+      const policies = template.findResources('AWS::IAM::Policy');
+      const createStatements = Object.values(policies).flatMap((policy: any) =>
+        policy.Properties.PolicyDocument.Statement.filter(
+          (s: any) => Array.isArray(s.Action) && s.Action.includes('glue:CreatePartitionIndex'),
+        ),
+      );
+      expect(createStatements).toHaveLength(2);
+    });
+
+    test('grants the catalog encryption key to the handler roles when the catalog is encrypted', () => {
+      const stack = new cdk.Stack();
+      const key = new kms.Key(stack, 'Key');
+      // Encryption is fixed at construction, so the account catalog must be
+      // encrypted before the database (which uses it by default) is created.
+      glue.Catalog.encryptAccount(stack, {
+        encryptionAtRest: glue.DataCatalogEncryptionAtRest.kms(key),
+      });
+      const database = new glue.Database(stack, 'Database');
+
+      const table = new glue.S3Table(stack, 'Table', {
+        database,
+        columns: [{ name: 'col', type: glue.Schema.STRING }],
+        partitionKeys: [{ name: 'year', type: glue.Schema.SMALL_INT }],
+        dataFormat: glue.DataFormat.JSON,
+      });
+      table.addPartitionIndex({ indexName: 'index1', keyNames: ['year'] });
+
+      const template = Template.fromStack(stack);
+
+      // Both handler roles (onEvent and isComplete) must be able to decrypt the
+      // catalog metadata they read. Only kms:Decrypt is granted - the index
+      // write happens asynchronously on the Glue backend, not under the
+      // handler's identity, so no write actions are needed.
+      const policies = template.findResources('AWS::IAM::Policy');
+      const kmsStatements = Object.values(policies).flatMap((policy: any) =>
+        policy.Properties.PolicyDocument.Statement.filter((s: any) => {
+          const actions = Array.isArray(s.Action) ? s.Action : [s.Action];
+          return actions.includes('kms:Decrypt');
+        }),
+      );
+      expect(kmsStatements).toHaveLength(2);
     });
   });
 });
@@ -581,6 +775,266 @@ test('can specify a description', () => {
       Name: 'my_table',
       Description: 'This is a test table.',
     },
+  });
+});
+
+describe('Partition Projection', () => {
+  test('creates table with INTEGER partition projection', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const database = new glue.Database(stack, 'Database');
+    new glue.S3Table(stack, 'Table', {
+      database,
+      columns: [{
+        name: 'col1',
+        type: glue.Schema.STRING,
+      }],
+      partitionKeys: [{
+        name: 'year',
+        type: glue.Schema.INTEGER,
+      }],
+      dataFormat: glue.DataFormat.JSON,
+      partitionProjection: {
+        year: glue.PartitionProjectionConfiguration.integer({
+          min: 2020,
+          max: 2023,
+          interval: 1,
+          digits: 4,
+        }),
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
+      TableInput: {
+        Parameters: {
+          'projection.enabled': 'true',
+          'projection.year.type': 'integer',
+          'projection.year.range': '2020,2023',
+          'projection.year.interval': '1',
+          'projection.year.digits': '4',
+        },
+      },
+    });
+  });
+
+  test('creates table with DATE partition projection', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const database = new glue.Database(stack, 'Database');
+    new glue.S3Table(stack, 'Table', {
+      database,
+      columns: [{
+        name: 'data',
+        type: glue.Schema.STRING,
+      }],
+      partitionKeys: [{
+        name: 'date',
+        type: glue.Schema.STRING,
+      }],
+      dataFormat: glue.DataFormat.JSON,
+      partitionProjection: {
+        date: glue.PartitionProjectionConfiguration.date({
+          min: '2020-01-01',
+          max: '2023-12-31',
+          format: 'yyyy-MM-dd',
+          interval: 1,
+          intervalUnit: glue.DateIntervalUnit.DAYS,
+        }),
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
+      TableInput: {
+        Parameters: {
+          'projection.enabled': 'true',
+          'projection.date.type': 'date',
+          'projection.date.range': '2020-01-01,2023-12-31',
+          'projection.date.format': 'yyyy-MM-dd',
+          'projection.date.interval': '1',
+          'projection.date.interval.unit': 'DAYS',
+        },
+      },
+    });
+  });
+
+  test('creates table with ENUM partition projection', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const database = new glue.Database(stack, 'Database');
+    new glue.S3Table(stack, 'Table', {
+      database,
+      columns: [{
+        name: 'data',
+        type: glue.Schema.STRING,
+      }],
+      partitionKeys: [{
+        name: 'region',
+        type: glue.Schema.STRING,
+      }],
+      dataFormat: glue.DataFormat.JSON,
+      partitionProjection: {
+        region: glue.PartitionProjectionConfiguration.enum({
+          values: ['us-east-1', 'us-west-2', 'eu-west-1'],
+        }),
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
+      TableInput: {
+        Parameters: {
+          'projection.enabled': 'true',
+          'projection.region.type': 'enum',
+          'projection.region.values': 'us-east-1,us-west-2,eu-west-1',
+        },
+      },
+    });
+  });
+
+  test('creates table with INJECTED partition projection', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const database = new glue.Database(stack, 'Database');
+    new glue.S3Table(stack, 'Table', {
+      database,
+      columns: [{
+        name: 'data',
+        type: glue.Schema.STRING,
+      }],
+      partitionKeys: [{
+        name: 'custom',
+        type: glue.Schema.STRING,
+      }],
+      dataFormat: glue.DataFormat.JSON,
+      partitionProjection: {
+        custom: glue.PartitionProjectionConfiguration.injected(),
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
+      TableInput: {
+        Parameters: {
+          'projection.enabled': 'true',
+          'projection.custom.type': 'injected',
+        },
+      },
+    });
+  });
+
+  test('creates table with multiple partition projections', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const database = new glue.Database(stack, 'Database');
+    new glue.S3Table(stack, 'Table', {
+      database,
+      columns: [{
+        name: 'data',
+        type: glue.Schema.STRING,
+      }],
+      partitionKeys: [
+        {
+          name: 'year',
+          type: glue.Schema.INTEGER,
+        },
+        {
+          name: 'month',
+          type: glue.Schema.INTEGER,
+        },
+        {
+          name: 'region',
+          type: glue.Schema.STRING,
+        },
+      ],
+      dataFormat: glue.DataFormat.JSON,
+      partitionProjection: {
+        year: glue.PartitionProjectionConfiguration.integer({
+          min: 2020,
+          max: 2023,
+        }),
+        month: glue.PartitionProjectionConfiguration.integer({
+          min: 1,
+          max: 12,
+          digits: 2,
+        }),
+        region: glue.PartitionProjectionConfiguration.enum({
+          values: ['us-east-1', 'us-west-2'],
+        }),
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
+      TableInput: {
+        Parameters: {
+          'projection.enabled': 'true',
+          'projection.year.type': 'integer',
+          'projection.year.range': '2020,2023',
+          'projection.month.type': 'integer',
+          'projection.month.range': '1,12',
+          'projection.month.digits': '2',
+          'projection.region.type': 'enum',
+          'projection.region.values': 'us-east-1,us-west-2',
+        },
+      },
+    });
+  });
+
+  test('throws when partition projection conflicts with manual parameters', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const database = new glue.Database(stack, 'Database');
+
+    expect(() => {
+      new glue.S3Table(stack, 'Table', {
+        database,
+        columns: [{
+          name: 'col1',
+          type: glue.Schema.STRING,
+        }],
+        partitionKeys: [{
+          name: 'year',
+          type: glue.Schema.INTEGER,
+        }],
+        dataFormat: glue.DataFormat.JSON,
+        parameters: {
+          'projection.year.type': 'integer',
+        },
+        partitionProjection: {
+          year: glue.PartitionProjectionConfiguration.integer({
+            min: 2020,
+            max: 2023,
+          }),
+        },
+      });
+    }).toThrow('Partition projection parameters conflict with manually specified parameters: projection.year.type. Use the partitionProjection property instead of manually specifying projection parameters.');
+  });
+
+  test('throws when projection.enabled conflicts with partitionProjection', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const database = new glue.Database(stack, 'Database');
+
+    expect(() => {
+      new glue.S3Table(stack, 'Table', {
+        database,
+        columns: [{
+          name: 'col1',
+          type: glue.Schema.STRING,
+        }],
+        partitionKeys: [{
+          name: 'year',
+          type: glue.Schema.INTEGER,
+        }],
+        dataFormat: glue.DataFormat.JSON,
+        parameters: {
+          'projection.enabled': 'true',
+        },
+        partitionProjection: {
+          year: glue.PartitionProjectionConfiguration.integer({
+            min: 2020,
+            max: 2023,
+          }),
+        },
+      });
+    }).toThrow('Parameter "projection.enabled" conflicts with partitionProjection configuration. Use the partitionProjection property instead of manually specifying projection.enabled.');
   });
 });
 

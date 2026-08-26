@@ -1,4 +1,5 @@
-import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxImageSsmParameterCommonOptions, AmazonLinuxImageSsmParameterBase } from './common';
+import type { AmazonLinuxImageSsmParameterCommonOptions } from './common';
+import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxImageSsmParameterBase } from './common';
 
 /**
  * Amazon Linux 2022 kernel versions
@@ -84,6 +85,7 @@ export class AmazonLinux2022ImageSsmParameter extends AmazonLinuxImageSsmParamet
     super({
       parameterName: AmazonLinux2022ImageSsmParameter.ssmParameterName(props),
       cachedInContext: props.cachedInContext,
+      additionalCacheKey: props.additionalCacheKey,
       userData: props.userData,
     });
   }
