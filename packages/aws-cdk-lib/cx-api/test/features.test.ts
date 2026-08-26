@@ -52,6 +52,7 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.EKS_DEFAULT_AL2023]: false,
     [feats.ANNOTATIONS_IN_VALIDATION_REPORT]: false,
     [feats.VALIDATE_AGAINST_DEFAULT_RULES]: false,
+    [feats.LOG_GROUP_GRANT_ENCRYPTION_KEY]: false,
 
   });
 });
