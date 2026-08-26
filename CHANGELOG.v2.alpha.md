@@ -2,6 +2,86 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.266.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.265.0-alpha.0...v2.266.0-alpha.0) (2026-08-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* **glue-alpha:** `DataQualityRulesetProps.rulesetDqdl: string` is replaced by
+`dqdl: Dqdl`. Build it with `Dqdl.fromString('Rules = [ ... ]')`.
+* **glue-alpha:** `s3Encryption`, `cloudWatchEncryption`, and `jobBookmarksEncryption` are no longer object literals. Use `S3Encryption.s3Managed()` / `S3Encryption.kms(key?)`, `CloudWatchEncryption.kms(key?)`, and `JobBookmarksEncryption.clientSideKms(key?)`. The `CloudWatchEncryptionMode` and `JobBookmarksEncryptionMode` enums are removed (their mode is now implicit); `S3EncryptionMode` is retained.
+* **glue-alpha:** this is a corrective breaking change. Apps that leaned on the bug, and did things like `InputFormat x = OutputFormat.AVRO;` will get a compilation error in other jsii languages. The intended usage, on the other hand, was broken before and works now.
+* **glue-alpha:** `workerType` and `numberOfWorkers` are no longer top-level job props. For Spark jobs, pass them together via `workerConfiguration: { workerType, numberOfWorkers }`. `PythonShellJob` no longer accepts them (it is sized by `maxCapacity`). `RayJob` no longer accepts `workerType` (it is fixed to `Z.2X`).
+* **glue-alpha:** `SparkJobProps.enableMetrics` removed, which will cause a compilation error for any app using it. But there is no behavior change, since this is a dead prop.
+* **glue-alpha:** a differing/tokenized `has_encrypted_data` supplied via `parameters` now throws.
+
+### Features
+
+* **glue-alpha:** add warning for maxRetries when job run queuing is enabled ([#38575](https://github.com/aws/aws-cdk/issues/38575)) ([09ae11e](https://github.com/aws/aws-cdk/commit/09ae11e81d44bd58059ac337d3c418254a6955a7))
+* **glue-alpha:** model SecurityConfiguration encryption as factory subtypes ([#38586](https://github.com/aws/aws-cdk/issues/38586)) ([e37e7a6](https://github.com/aws/aws-cdk/commit/e37e7a6ea3d525ca0b4048093416eac059272cdf))
+* **glue-alpha:** new `hasEncryptedData` property ([#38511](https://github.com/aws/aws-cdk/issues/38511)) ([c977e36](https://github.com/aws/aws-cdk/commit/c977e36c3aa43c0be3d043aef80775d9748477a6))
+* **glue-alpha:** pair workerType and numberOfWorkers into a required workerConfiguration ([#38576](https://github.com/aws/aws-cdk/issues/38576)) ([5f3b1b6](https://github.com/aws/aws-cdk/commit/5f3b1b6f3aa700d73fbc10c956ae53809af99047))
+* **glue-alpha:** wrap DataQualityRuleset DQDL in a typed value object ([#38587](https://github.com/aws/aws-cdk/issues/38587)) ([fd01268](https://github.com/aws/aws-cdk/commit/fd012680b1cff1905ad114082fc612ad7fb8992e))
+
+
+### Bug Fixes
+
+* **glue-alpha:** correct OutputFormat.AVRO/ORC type and tidy GA-hygiene items ([#38593](https://github.com/aws/aws-cdk/issues/38593)) ([35aefaf](https://github.com/aws/aws-cdk/commit/35aefaf5a72b89eda630de8cae38a1ed9c4c95ce))
+* **glue-alpha:** omit comments from struct type strings ([#38008](https://github.com/aws/aws-cdk/issues/38008)) ([5f16a86](https://github.com/aws/aws-cdk/commit/5f16a86dc8edefdb223260f8202acd272d43e643)), closes [#26935](https://github.com/aws/aws-cdk/issues/26935)
+* **mediapackagev2-alpha:** add GetChannel grant on MediaPackageV2 ([#38582](https://github.com/aws/aws-cdk/issues/38582)) ([74d922c](https://github.com/aws/aws-cdk/commit/74d922c4bf22fde05465f61c5dd19291b9db608f)), closes [#38581](https://github.com/aws/aws-cdk/issues/38581)
+
+## [2.265.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.264.0-alpha.0...v2.265.0-alpha.0) (2026-08-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* **glue-alpha:** PySparkFlexEtlJob and ScalaSparkFlexEtlJob now default to `GlueVersion.V5_0` instead of `V3_0`. Set `glueVersion` explicitly to keep the previous behavior.
+* **glue-alpha:** removal policy of existing `Database` resources will change to `RETAIN`.
+
+### Features
+
+* **glue-alpha:** default Flex jobs to Glue 5.0 ([#38543](https://github.com/aws/aws-cdk/issues/38543)) ([36d4976](https://github.com/aws/aws-cdk/commit/36d4976e9d6575debcf68b5e666a5920d53f69ab))
+* **glue-alpha:** removal policy is RETAIN for `Database` by default ([#38535](https://github.com/aws/aws-cdk/issues/38535)) ([9669928](https://github.com/aws/aws-cdk/commit/9669928f7837798e3e7169bea55c3907ce16f440))
+* **glue-alpha:** warn on plaintext secrets  ([#38538](https://github.com/aws/aws-cdk/issues/38538)) ([10bf0b5](https://github.com/aws/aws-cdk/commit/10bf0b596a06399271712987b0857df513b69ad5))
+
+
+### Bug Fixes
+
+* **glue-alpha:** warn when S3Table grants cover a shared bucket ([#38542](https://github.com/aws/aws-cdk/issues/38542)) ([d81d2d6](https://github.com/aws/aws-cdk/commit/d81d2d63613b5118ae3c7cc4c82b26aac2fd69f4))
+* **mediaconnect-alpha:** update validation to allow adding an underscore to name ([#38539](https://github.com/aws/aws-cdk/issues/38539)) ([7c85994](https://github.com/aws/aws-cdk/commit/7c85994cd1ee59204341ad7510124eafabe1eb6f))
+
+## [2.264.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.263.0-alpha.0...v2.264.0-alpha.0) (2026-08-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* **glue-alpha:** `IDatabase.catalogArn` and `IDatabase.catalogId` were removed in factor of a type
+safe `ICatalog`, which has  `catalogArn` and `catalogId`. Consumers and implementations were updated
+accordingly.
+
+### Features
+
+* **glue-alpha:** new `Catalog` L2 ([#38443](https://github.com/aws/aws-cdk/issues/38443)) ([6a8ba8e](https://github.com/aws/aws-cdk/commit/6a8ba8e6597dd73ab2e92ac2dbb688006bbb481b))
+* **glue-alpha:** strengthen data encryption for `S3Table` ([#38501](https://github.com/aws/aws-cdk/issues/38501)) ([eb81d5e](https://github.com/aws/aws-cdk/commit/eb81d5e68c429d33417a8609ddc1204e39102687)), closes [/docs.aws.amazon.com/securityhub/latest/userguide/s3-controls.html#s3-5](https://github.com/aws//docs.aws.amazon.com/securityhub/latest/userguide/s3-controls.html/issues/s3-5)
+
+
+### Bug Fixes
+
+* **glue-alpha:** enable key rotation for security configuration encryption ([#38512](https://github.com/aws/aws-cdk/issues/38512)) ([18560e0](https://github.com/aws/aws-cdk/commit/18560e001cffa882ac498b363fc3edc047fea118))
+* **mediaconnect-alpha:** addOutput options and simplified VPC interface referencing ([#38515](https://github.com/aws/aws-cdk/issues/38515)) ([3c71466](https://github.com/aws/aws-cdk/commit/3c7146693547b05e048ac93f60bf6ace845270fc)), closes [#38517](https://github.com/aws/aws-cdk/issues/38517)
+
+## [2.263.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.262.2-alpha.0...v2.263.0-alpha.0) (2026-07-31)
+
+### ⚠ BREAKING CHANGES
+
+* **mediaconnect:** `removalPolicy` prop removed from `FlowProps`, `GatewayProps`, and `BridgeProps`. These resources now follow CloudFormation's default deletion behaviour (Delete).
+
+### Bug Fixes
+
+* **glue-alpha:** race condition when creating mutiple indices ([#38016](https://github.com/aws/aws-cdk/issues/38016)) ([18b1947](https://github.com/aws/aws-cdk/commit/18b1947a9db0e695ec85888faf24939261ffbe30)), closes [#24813](https://github.com/aws/aws-cdk/issues/24813) [#34](https://github.com/aws/aws-cdk/issues/34) [#34](https://github.com/aws/aws-cdk/issues/34)
+* **mediaconnect:** jsdoc typo ([#38434](https://github.com/aws/aws-cdk/issues/38434)) ([7fe6d3d](https://github.com/aws/aws-cdk/commit/7fe6d3df03720b381bb989f289855557f2cd47ac))
+* **mediaconnect:** remove default removal policy ([#38437](https://github.com/aws/aws-cdk/issues/38437)) ([238193d](https://github.com/aws/aws-cdk/commit/238193de50910ac1da8fb9f31f01776863998989))
+
 ## [2.262.2-alpha.0](https://github.com/aws/aws-cdk/compare/v2.262.1-alpha.0...v2.262.2-alpha.0) (2026-07-29)
 
 ## [2.262.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.262.0-alpha.0...v2.262.1-alpha.0) (2026-07-23)
