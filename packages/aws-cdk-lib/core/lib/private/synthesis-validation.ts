@@ -208,8 +208,9 @@ function pluginsToEvaluate(root: IConstruct, stage: Stage): IPolicyValidationPlu
   // 1. User-registered plugins
   ret.push(...stage._validationPlugins);
 
-  // 2. Default validation engine (always runs, unless user registered one explicitly)
-  if (!hasUserRegisteredCloudFormationValidatePlugin(root)) {
+  // 2. Default validation engine (runs unless the user registered one explicitly,
+  // or disabled validation via the CDK_VALIDATION environment variable)
+  if (defaultValidationEnabled() && !hasUserRegisteredCloudFormationValidatePlugin(root)) {
     ret.push(CloudFormationValidatePlugin._singletonInstance());
   }
 
@@ -222,6 +223,19 @@ function pluginsToEvaluate(root: IConstruct, stage: Stage): IPolicyValidationPlu
   }
 
   return ret;
+}
+
+/**
+ * Whether the default (auto-registered) CloudFormation validation engine should run.
+ *
+ * Users can disable template validation by setting the `CDK_VALIDATION` environment
+ * variable to 'false'. This is the same environment variable that backs the CLI's
+ * `--no-validation` option, so the two validation layers are controlled consistently.
+ *
+ * Explicitly user-registered validation plugins are not affected by this setting.
+ */
+function defaultValidationEnabled(): boolean {
+  return process.env.CDK_VALIDATION !== 'false';
 }
 
 function downgradeCfnValidateErrorsToWarnings(reports: NamedValidationPluginReport[]) {
@@ -315,9 +329,22 @@ function doInvokeValidationPlugins(
   plugins: Array<[IPolicyValidationPlugin, Set<private_cxapi.CloudFormationStackArtifact>]>,
   root: App,
 ) {
-  const preExistingFileHashes = snapshotFileHashes(outdir);
+  const untrustedPlugins = new Set(Array.from(plugins.values())
+    .map(p => p[0])
+    .filter(p => !isTrustedPlugin(p)));
 
-  return plugins.flatMap(([plugin, stacks]) => invokeSinglePlugin(plugin, Array.from(stacks)));
+  const preExistingFileHashes = untrustedPlugins.size > 0 ? snapshotFileHashes(outdir) : undefined;
+
+  const ret = plugins.flatMap(([plugin, stacks]) => invokeSinglePlugin(plugin, Array.from(stacks)));
+
+  if (preExistingFileHashes) {
+    if (hasModifiedPreExistingFiles(preExistingFileHashes)) {
+      const pluginNames = Array.from(untrustedPlugins).map(p => p.name);
+      throw new AssumptionError(lit`IllegalPluginOperation`, `One of the validation plugins (${pluginNames.join(', ')}) modified the cloud assembly`);
+    }
+  }
+
+  return ret;
 
   function invokeSinglePlugin(
     plugin: IPolicyValidationPlugin,
@@ -335,10 +362,6 @@ function doInvokeValidationPlugins(
           accountId: accountId !== cxapi.UNKNOWN_ACCOUNT ? accountId : undefined,
           region: region !== cxapi.UNKNOWN_REGION ? region : undefined,
         }));
-
-        if (hasModifiedPreExistingFiles(preExistingFileHashes)) {
-          throw new AssumptionError(lit`IllegalPluginOperation`, `Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
-        }
 
         return { ...report, pluginName: plugin.name, pluginVersion: plugin.version } satisfies NamedValidationPluginReport;
       } catch (e: any) {
@@ -372,6 +395,10 @@ function doInvokeValidationPlugins(
 
     return report;
   }
+}
+
+function isTrustedPlugin(x: IPolicyValidationPlugin) {
+  return x instanceof CloudFormationValidatePlugin;
 }
 
 interface StacksByEnvironment {
