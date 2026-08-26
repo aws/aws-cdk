@@ -162,10 +162,11 @@ const noEscapeFileWithMarker = Source.jsonData('my-json/secret-config-no-escape.
   secret_value: param.stringValue,
 });
 
-// Deploy the large files
+const deploymentSources = [largeJsonSource, largeTextSource, fileWithMarker, noEscapeFileWithMarker];
+
 new BucketDeployment(stack, 'DeployWithLargeFiles', {
   destinationBucket: bucket,
-  sources: [largeJsonSource, largeTextSource, fileWithMarker, noEscapeFileWithMarker],
+  sources: deploymentSources,
   retainOnDelete: false,
 });
 
