@@ -168,6 +168,9 @@ export class IndexActionResourceType {
    */
   public constructor(public readonly value: string) {}
 
+  /**
+   * Returns the string representation of this resource type.
+   */
   public toString(): string {
     return this.value;
   }
