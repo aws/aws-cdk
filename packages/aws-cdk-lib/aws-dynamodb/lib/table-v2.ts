@@ -874,11 +874,12 @@ export class TableV2 extends TableBaseV2 {
 
     props.replicas?.forEach(replica => this.addReplica(replica));
 
-    // Initialize grants with replica regions for multi-account permissions
+    // Initialize grants with replica regions for multi-account permissions.
+    // `hasIndex` deliberately omitted: `TableGrants` resolves `table.hasIndex` lazily at synth
+    // time, so indexes added after construction (`addGlobalSecondaryIndex`) are included.
     this.grants = new TableGrants({
       table: this,
       regions: Array.from(this.replicaTables.keys()),
-      hasIndex: this.hasIndex,
       encryptedResource: this.encryptionKey ? this : undefined,
       policyResource: this,
     });
@@ -1421,7 +1422,7 @@ export class TableV2 extends TableBaseV2 {
  * It inherits the schema (partition key, sort key, and indexes) from the source table.
  *
  * Permissions on the replica side are automatically configured. You must manually add
- * permissions to the source table using `sourceTable.grants.nultiAccountReplicationTo(replica.tableArn)`.
+ * permissions to the source table using `sourceTable.grants.multiAccountReplicationTo(replica.tableArn)`.
  *
  * @resource AWS::DynamoDB::GlobalTable
  */
@@ -1533,8 +1534,6 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
     this.grants = new TableGrants({
       table: this,
       regions: [],
-      encryptedResource: this.encryptionKey ? this : undefined,
-      policyResource: this,
     });
 
     this.grants.multiAccountReplicationFrom(props.replicaSourceTable.tableArn);
