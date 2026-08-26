@@ -1,6 +1,7 @@
 import type { Resource, Service, SpecDatabase } from '@aws-cdk/service-spec-types';
 import { emptyDatabase } from '@aws-cdk/service-spec-types';
 import type { Plain } from '@cdklabs/tskb';
+import { ref } from '@cdklabs/tskb';
 import { TypeScriptRenderer } from '@cdklabs/typewriter';
 import { moduleForResource } from './util';
 import { AwsCdkLibBuilder } from '../lib/cdk/aws-cdk-lib';
@@ -222,6 +223,101 @@ test('resource interface with "<Resource>Arn"', () => {
   const rendered = renderer.render(module);
 
   expect(rendered).toMatchSnapshot();
+});
+
+test.each([
+  ['flat attribute first', ['CertificateAuthorityData', 'CertificateAuthority.Data']],
+  ['nested attribute first', ['CertificateAuthority.Data', 'CertificateAuthorityData']],
+])('colliding attributes are both exposed, the recorded one under its replacement name (%s)', (_name, attrNames) => {
+  // GIVEN - the conflict recorded for AWS::EKS::Cluster
+  givenResource({
+    ...BASE_RESOURCE,
+    cloudFormationType: 'AWS::EKS::Cluster',
+    attributes: {
+      [attrNames[0]]: {
+        type: { type: 'string' },
+        documentation: `The ${attrNames[0]} of the resource`,
+      },
+      [attrNames[1]]: {
+        type: { type: 'string' },
+        documentation: `The ${attrNames[1]} of the resource`,
+      },
+    },
+  });
+
+  // WHEN
+  const rendered = renderResource('AWS::EKS::Cluster');
+
+  // THEN - the released flat name does not move
+  expect(rendered.resources.match(/public get attrCertificateAuthorityData\(\)/g)).toHaveLength(1);
+  expect(rendered.resources).toContainCode(
+    `public get attrCertificateAuthorityData(): string {
+      return cdk.Token.asString(this.getAtt("CertificateAuthorityData", cdk.ResolutionTypeHint.STRING));
+    }`);
+
+  // THEN - the nested one is still exposed, under its recorded name
+  expect(rendered.resources).toContainCode(
+    `public get attrCertificateAuthorityCertificateData(): string {
+      return cdk.Token.asString(this.getAtt("CertificateAuthority.Data", cdk.ResolutionTypeHint.STRING));
+    }`);
+});
+
+test('an unrecorded attribute name conflict fails codegen', () => {
+  // GIVEN
+  givenResource({
+    ...BASE_RESOURCE,
+    attributes: {
+      'FooBar': {
+        type: { type: 'string' },
+        documentation: 'The FooBar of the resource',
+      },
+      'Foo.Bar': {
+        type: { type: 'string' },
+        documentation: 'The Foo.Bar of the resource',
+      },
+    },
+  });
+
+  // THEN
+  expect(() => renderResource()).toThrow(
+    "Attribute name conflict on AWS::Some::Resource between 'FooBar' and 'Foo.Bar', which both become 'attrFooBar'. Update attribute-name-conflict-resolutions.ts to rename the newer attribute to something else.",
+  );
+});
+
+test('a type referenced only by a renamed attribute is still emitted', () => {
+  // GIVEN
+  const detailType = db.allocate('typeDefinition', {
+    name: 'FooBarDetail',
+    properties: {
+      Reason: {
+        type: { type: 'string' },
+      },
+    },
+  });
+  const resource = db.allocate('resource', {
+    ...BASE_RESOURCE,
+    cloudFormationType: 'AWS::EKS::Cluster',
+    attributes: {
+      'CertificateAuthorityData': {
+        type: { type: 'string' },
+        documentation: 'The CertificateAuthorityData of the resource',
+      },
+      // Renamed by the collision, and the only reference to FooBarDetail.
+      'CertificateAuthority.Data': {
+        type: { type: 'ref', reference: ref(detailType) },
+        documentation: 'The CertificateAuthority.Data of the resource',
+      },
+    },
+  });
+  db.link('hasResource', service, resource);
+  db.link('usesType', resource, detailType);
+
+  // WHEN
+  const rendered = renderResource('AWS::EKS::Cluster');
+
+  // THEN
+  expect(rendered.resources).toContain('attrCertificateAuthorityCertificateData');
+  expect(rendered.resources).toContain('interface FooBarDetailProperty');
 });
 
 test('resource interface with Arn as a property and not a primaryIdentifier', () => {

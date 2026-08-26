@@ -2,6 +2,7 @@ import type { Property, Resource, TagVariant } from '@aws-cdk/service-spec-types
 import { Deprecation, RichProperty } from '@aws-cdk/service-spec-types';
 import type { Expression, PropertySpec } from '@cdklabs/typewriter';
 import { $E, $T, $this, Type, expr } from '@cdklabs/typewriter';
+import { attributePropertyNames } from './attribute-name-conflict-resolutions';
 import { CDK_CORE } from './cdk';
 import type { PropertyMapping } from './cloudformation-mapping';
 import type { RelationshipDecider } from './relationship-decider';
@@ -9,7 +10,7 @@ import { ResolverBuilder } from './resolver-builder';
 import type { TaggabilityStyle } from './tagging';
 import { NON_RESOLVABLE_PROPERTY_NAMES, resourceTaggabilityStyle } from './tagging';
 import type { TypeConverter } from './type-converter';
-import { attributePropertyName, camelcasedResourceName, cloudFormationDocLink, propertyNameFromCloudFormation } from '../naming';
+import { camelcasedResourceName, cloudFormationDocLink, propertyNameFromCloudFormation } from '../naming';
 import { splitDocumentation } from '../util';
 import { ResourceReference } from './reference-props';
 
@@ -273,6 +274,7 @@ export class ResourceDecider {
 
   private convertAttributes() {
     const $ResolutionTypeHint = $T(CDK_CORE.ResolutionTypeHint);
+    const propertyNames = attributePropertyNames(this.resource.cloudFormationType, Object.keys(this.resource.attributes));
 
     for (const [attrName, attr] of Object.entries(this.resource.attributes)) {
       // Just use the oldest type for now
@@ -303,7 +305,7 @@ export class ResourceDecider {
 
       this.classAttributeProperties.push({
         propertySpec: {
-          name: attributePropertyName(attrName),
+          name: propertyNames.get(attrName)!,
           type,
           immutable: true,
           docs: {
