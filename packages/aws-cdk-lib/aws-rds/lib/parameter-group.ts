@@ -2,8 +2,8 @@ import type { Construct } from 'constructs';
 import type { IEngine } from './engine';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated';
 import type { IResource } from '../../core';
-import { RemovalPolicy, Resource } from '../../core';
-import { ValidationError } from '../../core/lib/errors';
+import { ArnFormat, RemovalPolicy, Resource, Stack } from '../../core';
+import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import type { IMapBox, IReadableBox } from '../../core/lib/helpers-internal';
 import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -142,6 +142,12 @@ export class ParameterGroup extends Resource implements IParameterGroup {
       public get dbParameterGroupRef(): aws_rds.DBParameterGroupReference {
         return {
           dbParameterGroupName: parameterGroupName,
+          dbParameterGroupArn: Stack.of(scope).formatArn({
+            service: 'rds',
+            resource: 'pg',
+            resourceName: parameterGroupName,
+            arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+          }),
         };
       }
 
@@ -284,8 +290,16 @@ export class ParameterGroup extends Resource implements IParameterGroup {
    * A reference to this parameter group as a DB parameter group
    */
   public get dbParameterGroupRef(): aws_rds.DBParameterGroupReference {
+    const instanceCfnGroup = this.instanceCfnGroup;
     return {
-      dbParameterGroupName: this.instanceCfnGroup?.ref ?? this.name ?? '',
+      dbParameterGroupName: instanceCfnGroup?.ref ?? this.name ?? '',
+      get dbParameterGroupArn(): string {
+        if (!instanceCfnGroup) {
+          throw new UnscopedValidationError(lit`CannotAccessDbParameterGroupArnOfUnboundParameterGroup`,
+            'this ParameterGroup is not bound to a DB instance, so it has no DB parameter group ARN - bind it with bindToInstance() or create it with ParameterGroup.forInstance()');
+        }
+        return instanceCfnGroup.attrDbParameterGroupArn;
+      },
     };
   }
 
