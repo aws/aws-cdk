@@ -927,7 +927,7 @@ export class Stack extends Construct implements ITaggable {
    * To specify a different strategy for selecting availability zones override this method.
    */
   public get availabilityZones(): string[] {
-    this.silenceLiteralAzWarning();
+    this._silenceLiteralAzWarning();
 
     // if account/region are tokens, we can't obtain AZs through the context
     // provider, so we fallback to use Fn::GetAZs. the current lowest common
@@ -1585,8 +1585,10 @@ export class Stack extends Construct implements ITaggable {
    *
    * So once a user calls `stack.availabilityZones`, we will take that as a signal
    * they are "doing the right thing" and silencing this warning for them.
+   *
+   * @internal
    */
-  private silenceLiteralAzWarning() {
+  public _silenceLiteralAzWarning() {
     if (this.azLiteralWarningSilenced) {
       return;
     }

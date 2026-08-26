@@ -1,10 +1,12 @@
+import type { VpcContextResponse } from '@aws-cdk/cloud-assembly-api';
+import { VpcSubnetGroupType } from '@aws-cdk/cloud-assembly-api';
 import { AssemblyValidationReport } from '../../assertions/lib/helpers-internal';
 import * as cxschema from '../../cloud-assembly-schema';
 import { ContextProvider } from '../../core';
 import { App } from '../../core/lib/app';
 import { Stack } from '../../core/lib/stack';
 import { Validations } from '../../core/lib/validation/validations';
-import { CfnSubnet } from '../lib';
+import { CfnSubnet, Vpc } from '../lib';
 
 let previousAppHook: any;
 const APP_INIT_HOOK_SYMBOL = Symbol.for('@aws-cdk/core.App#initHook');
@@ -39,6 +41,24 @@ beforeEach(() => {
     }).key,
     ['us-east-1a', 'us-east-1b'],
   );
+
+  stack.node.setContext(
+    'vpc-provider:account=111111111111:filter.tag:Name=MyVpc:region=us-east-1:returnAsymmetricSubnets=true',
+    {
+      availabilityZones: ['us-east-1a', 'us-east-1b'],
+      vpcId: 'vpc-1234',
+      subnetGroups: [
+        {
+          name: 'Public',
+          subnets: [
+            { availabilityZone: 'us-east-1a', routeTableId: 'rt-1234', subnetId: 's-1' },
+            { availabilityZone: 'us-east-1b', routeTableId: 'rt-1234', subnetId: 's-2' },
+          ],
+          type: VpcSubnetGroupType.PUBLIC,
+        },
+      ],
+    } satisfies VpcContextResponse,
+  );
 });
 afterEach(() => {
   (globalThis as any)[APP_INIT_HOOK_SYMBOL] = previousAppHook;
@@ -69,6 +89,25 @@ test('using an AZ from stack.availabilityZones does not warn', () => {
     vpcId: 'vpc-1234',
     cidrBlock: '10.0.0.0/24',
     availabilityZone: stack.availabilityZones[0],
+  });
+
+  // THEN
+  AssemblyValidationReport.fromApp(app).hasNoViolation();
+});
+
+test('using AZs from a looked up VPC does not warn', () => {
+  const vpc = Vpc.fromLookup(stack, 'Vpc', {
+    vpcName: 'MyVpc',
+  });
+
+  // Did we do the seeding of the lookup correctly?
+  expect(vpc.availabilityZones[0]).toEqual('us-east-1a');
+
+  // WHEN
+  new CfnSubnet(stack, 'Subnet', {
+    vpcId: 'vpc-1234',
+    cidrBlock: '10.0.0.0/24',
+    availabilityZone: vpc.availabilityZones[0],
   });
 
   // THEN
