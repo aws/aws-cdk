@@ -33,6 +33,7 @@ export function acknowledgeTestWarnings(construct: IConstruct) {
     'W3011',
     'W3045',
     'W9003',
+    'W3010',
   ].map(code => ({
     id: `CloudFormation-Validate::${code}`,
     reason: 'These tests validate the ingestion of templates into CDK. Whether the properties are valid or not is irrelevant',
