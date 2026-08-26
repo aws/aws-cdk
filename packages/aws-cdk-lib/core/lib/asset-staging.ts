@@ -7,8 +7,8 @@ import { AssetHashType, FileAssetPackaging } from './assets';
 import type { BundlingOptions } from './bundling';
 import { BundlingFileAccess, BundlingOutput, PERF_BUNDLING_SRC_SYM } from './bundling';
 import { AssumptionError, ValidationError } from './errors';
-import { FingerprintOptions, IgnoreStrategy } from './fs';
-import { FileSystem, SymlinkFollowMode } from './fs';
+import type { FingerprintOptions } from './fs';
+import { FileSystem, SymlinkFollowMode, IgnoreStrategy } from './fs';
 import { clearLargeFileFingerprintCache } from './fs/fingerprint';
 import { Names } from './names';
 import { AssetBundlingVolumeCopy, AssetBundlingBindMount } from './private/asset-staging';
@@ -585,7 +585,13 @@ function determineHashType(scope: Construct, assetHashType?: AssetHashType, cust
  * @param root true root of the directory
  * @param subRoot used for walking subdirectories
  */
-function validateInternalSymlinks(root: string, scope: Construct, followMode: SymlinkFollowMode, ignoreStrat: IgnoreStrategy, subRoot: string = root) {
+function validateInternalSymlinks(
+  root: string,
+  scope: Construct,
+  followMode: SymlinkFollowMode,
+  ignoreStrat: IgnoreStrategy,
+  subRoot: string = root,
+) {
   const entries = fs.readdirSync(subRoot, { withFileTypes: true });
   for (const entry of entries) {
     const childPath = path.join(subRoot, entry.name);
@@ -696,7 +702,13 @@ interface BundledAsset {
  * Returns the bundled asset to use based on the content of the bundle directory
  * and the type of output.
  */
-function determineBundledAsset(scope: Construct, bundleDir: string, outputType: BundlingOutput, ignore: IgnoreStrategy, followMode?: SymlinkFollowMode): BundledAsset {
+function determineBundledAsset(
+  scope: Construct,
+  bundleDir: string,
+  outputType: BundlingOutput,
+  ignore: IgnoreStrategy,
+  followMode?: SymlinkFollowMode,
+): BundledAsset {
   const archiveFile = findSingleFile(scope, bundleDir, outputType !== BundlingOutput.SINGLE_FILE);
 
   // auto-discover means that if there is an archive file, we take it as the
