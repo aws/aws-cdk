@@ -224,7 +224,16 @@
              "DestinationRefId": "to-mediapackage-additional-0"
             }
            }
-          ]
+          ],
+          "Id3Behavior": "DISABLED",
+          "KlvBehavior": "NO_PASSTHROUGH",
+          "NielsenId3Behavior": "NO_PASSTHROUGH",
+          "Scte35Type": "SCTE_35_WITHOUT_SEGMENTATION",
+          "SegmentLength": 1,
+          "SegmentLengthUnits": "SECONDS",
+          "TimedMetadataId3Frame": "NONE",
+          "TimedMetadataId3Period": 10,
+          "TimedMetadataPassthrough": "DISABLED"
          }
         }
        },
@@ -275,7 +284,7 @@
          "GopSize": 2,
          "GopSizeUnits": "SECONDS",
          "Level": "H264_LEVEL_AUTO",
-         "LookAheadRateControl": "MEDIUM",
+         "LookAheadRateControl": "HIGH",
          "ParControl": "SPECIFIED",
          "ParDenominator": 1,
          "ParNumerator": 1,

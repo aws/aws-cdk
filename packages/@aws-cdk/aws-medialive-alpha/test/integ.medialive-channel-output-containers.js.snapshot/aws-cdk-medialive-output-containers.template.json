@@ -340,7 +340,9 @@
        "Name": "udp-fec",
        "OutputGroupSettings": {
         "UdpGroupSettings": {
-         "InputLossAction": "EMIT_PROGRAM"
+         "InputLossAction": "EMIT_PROGRAM",
+         "TimedMetadataId3Frame": "PRIV",
+         "TimedMetadataId3Period": 10
         }
        },
        "Outputs": [
@@ -379,7 +381,9 @@
        "Name": "udp-plain",
        "OutputGroupSettings": {
         "UdpGroupSettings": {
-         "InputLossAction": "EMIT_PROGRAM"
+         "InputLossAction": "EMIT_PROGRAM",
+         "TimedMetadataId3Frame": "PRIV",
+         "TimedMetadataId3Period": 10
         }
        },
        "Outputs": [
@@ -470,7 +474,7 @@
          "GopSize": 2,
          "GopSizeUnits": "SECONDS",
          "Level": "H264_LEVEL_AUTO",
-         "LookAheadRateControl": "MEDIUM",
+         "LookAheadRateControl": "HIGH",
          "ParControl": "SPECIFIED",
          "ParDenominator": 1,
          "ParNumerator": 1,

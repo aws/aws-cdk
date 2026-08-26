@@ -1,5 +1,5 @@
-import type { Bitrate } from 'aws-cdk-lib';
-import { Duration, Token, UnscopedValidationError } from 'aws-cdk-lib';
+import type { Bitrate, Duration } from 'aws-cdk-lib';
+import { Token, UnscopedValidationError } from 'aws-cdk-lib';
 import type { CfnChannel } from 'aws-cdk-lib/aws-medialive';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { Framerate } from './framerate';
@@ -1589,7 +1589,7 @@ export interface H264SettingsProps {
   readonly level?: H264Level;
   /**
    * Amount of lookahead. Low decreases latency/memory; high can produce better quality.
-   * @default LookAheadRateControl.MEDIUM
+   * @default LookAheadRateControl.HIGH
    */
   readonly lookAheadRateControl?: LookAheadRateControl;
   /**
@@ -2025,7 +2025,7 @@ export interface Av1SettingsProps {
 export interface FrameCaptureSettingsProps {
   /**
    * The interval between frame captures.
-   * @default Duration.seconds(10)
+   * @default - service default
    */
   readonly captureInterval?: Duration;
   /**
@@ -2134,7 +2134,7 @@ class H264VideoCodecSettings extends VideoCodecSettings {
         gopBReference: p.gopBReference?.value,
         gopClosedCadence: p.gopClosedCadence,
         level: (p.level ?? H264Level.H264_LEVEL_AUTO).value,
-        lookAheadRateControl: (p.lookAheadRateControl ?? LookAheadRateControl.MEDIUM).value,
+        lookAheadRateControl: (p.lookAheadRateControl ?? LookAheadRateControl.HIGH).value,
         minIInterval: p.minIInterval,
         numRefFrames: p.numRefFrames,
         scanType: (p.scanType ?? ScanType.PROGRESSIVE).value,
@@ -2272,14 +2272,13 @@ class FrameCaptureVideoCodecSettings extends VideoCodecSettings {
 
   public _bind(): CfnChannel.VideoCodecSettingsProperty {
     const p = this.props;
-    // Use SECONDS for whole-second intervals (the common case, and the historical default) and
-    // MILLISECONDS for sub-second intervals, so the full Duration range is expressible.
-    const intervalMs = (p.captureInterval ?? Duration.seconds(10)).toMilliseconds();
-    const wholeSeconds = intervalMs % 1000 === 0;
+    // Only emit an interval when set. Whole-second Durations render as SECONDS, sub-second as MILLISECONDS.
+    const intervalMs = p.captureInterval?.toMilliseconds();
+    const wholeSeconds = intervalMs !== undefined && intervalMs % 1000 === 0;
     return {
       frameCaptureSettings: {
-        captureInterval: wholeSeconds ? intervalMs / 1000 : intervalMs,
-        captureIntervalUnits: wholeSeconds ? 'SECONDS' : 'MILLISECONDS',
+        captureInterval: intervalMs === undefined ? undefined : (wholeSeconds ? intervalMs / 1000 : intervalMs),
+        captureIntervalUnits: intervalMs === undefined ? undefined : (wholeSeconds ? 'SECONDS' : 'MILLISECONDS'),
         timecodeBurninSettings: p.timecodeBurnin ? {
           fontSize: p.timecodeBurnin.fontSize?.value,
           position: p.timecodeBurnin.position?.value,

@@ -1,16 +1,16 @@
 {
   "version": "54.0.0",
   "files": {
-    "bb74b599024585901b5263e3da81f01743727f84f1b17d257e73eea441e77478": {
+    "32199c6099ad2e2b1f13342eff432087c776ce13c9c7fb52c7b1f4295f25e620": {
       "displayName": "aws-cdk-medialive-s3-to-s3 Template",
       "source": {
         "path": "aws-cdk-medialive-s3-to-s3.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-de9d54cd": {
+        "current_account-current_region-2b7aecea": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "bb74b599024585901b5263e3da81f01743727f84f1b17d257e73eea441e77478.json",
+          "objectKey": "32199c6099ad2e2b1f13342eff432087c776ce13c9c7fb52c7b1f4295f25e620.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

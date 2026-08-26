@@ -1,16 +1,16 @@
 {
   "version": "54.0.0",
   "files": {
-    "8453ce851fec0a871c41bcf9d4323af87913de76208965b5880bcb93f595982b": {
+    "81ff3742821f3f8ab44f56813da3c30401bf059034b89033b05ea05f1f750648": {
       "displayName": "aws-cdk-medialive-camera-to-mediapackage Template",
       "source": {
         "path": "aws-cdk-medialive-camera-to-mediapackage.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-e740031e": {
+        "current_account-current_region-6a7c3105": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "8453ce851fec0a871c41bcf9d4323af87913de76208965b5880bcb93f595982b.json",
+          "objectKey": "81ff3742821f3f8ab44f56813da3c30401bf059034b89033b05ea05f1f750648.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

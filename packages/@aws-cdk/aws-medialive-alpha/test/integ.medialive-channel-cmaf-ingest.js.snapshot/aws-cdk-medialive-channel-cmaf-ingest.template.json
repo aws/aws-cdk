@@ -135,8 +135,15 @@
          "Destination": {
           "DestinationRefId": "cmaf"
          },
+         "Id3Behavior": "DISABLED",
+         "KlvBehavior": "NO_PASSTHROUGH",
+         "NielsenId3Behavior": "NO_PASSTHROUGH",
+         "Scte35Type": "NONE",
          "SegmentLength": 6,
-         "SegmentLengthUnits": "SECONDS"
+         "SegmentLengthUnits": "SECONDS",
+         "TimedMetadataId3Frame": "NONE",
+         "TimedMetadataId3Period": 10,
+         "TimedMetadataPassthrough": "DISABLED"
         }
        },
        "Outputs": [

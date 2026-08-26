@@ -147,7 +147,9 @@
          "Destination": {
           "DestinationRefId": "smooth"
          },
-         "FragmentLength": 2
+         "FragmentLength": 2,
+         "NumRetries": 10,
+         "RestartDelay": 1
         }
        },
        "Outputs": [
@@ -205,7 +207,7 @@
          "GopSize": 2,
          "GopSizeUnits": "SECONDS",
          "Level": "H264_LEVEL_AUTO",
-         "LookAheadRateControl": "MEDIUM",
+         "LookAheadRateControl": "HIGH",
          "ParControl": "SPECIFIED",
          "ParDenominator": 1,
          "ParNumerator": 1,

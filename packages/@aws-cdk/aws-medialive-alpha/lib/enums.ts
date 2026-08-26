@@ -968,12 +968,12 @@ export class MsSmoothTimestampOffsetMode {
   }
 }
 
-/** CMAF Ingest ID3 behavior. */
+/** ID3 metadata insertion behavior (CMAF Ingest and MediaPackage V2 output groups). */
 export class Id3Behavior {
-  /** No passthrough */
-  public static readonly NO_PASSTHROUGH = new Id3Behavior('NO_PASSTHROUGH');
-  /** Passthrough */
-  public static readonly PASSTHROUGH = new Id3Behavior('PASSTHROUGH');
+  /** Do not insert ID3 metadata. */
+  public static readonly DISABLED = new Id3Behavior('DISABLED');
+  /** Enable ID3 metadata insertion. */
+  public static readonly ENABLED = new Id3Behavior('ENABLED');
 
   /** A value not yet modelled by AWS CDK. */
   public static of(value: string): Id3Behavior {

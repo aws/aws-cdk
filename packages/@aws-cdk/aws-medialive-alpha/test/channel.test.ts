@@ -1057,7 +1057,7 @@ describe('Default codec settings (golden)', () => {
   // through undefined (passthrough() emits an empty PassThroughSettings object), so there is no
   // golden default set to record for them.
 
-  test('frameCapture() emits only these defaults', () => {
+  test('frameCapture() forces no defaults (no fixed capture interval)', () => {
     const video = EncodeConfiguration.video({
       name: 'v',
       width: 1920,
@@ -1068,11 +1068,48 @@ describe('Default codec settings (golden)', () => {
       EncoderSettings: Match.objectLike({
         VideoDescriptions: [Match.objectLike({
           CodecSettings: {
-            // frameCapture() forces a 10-second capture interval (Duration.seconds(10)), emitted
-            // as SECONDS since it is a whole-second interval.
+            FrameCaptureSettings: Match.objectEquals({}),
+          },
+        })],
+      }),
+    });
+  });
+
+  test('frameCapture() with a whole-second interval emits SECONDS units', () => {
+    const video = EncodeConfiguration.video({
+      name: 'v',
+      width: 1920,
+      height: 1080,
+      codecSettings: VideoCodecSettings.frameCapture({ captureInterval: Duration.seconds(5) }),
+    });
+    goldenTemplate(video).hasResourceProperties('AWS::MediaLive::Channel', {
+      EncoderSettings: Match.objectLike({
+        VideoDescriptions: [Match.objectLike({
+          CodecSettings: {
             FrameCaptureSettings: Match.objectEquals({
-              CaptureInterval: 10,
+              CaptureInterval: 5,
               CaptureIntervalUnits: 'SECONDS',
+            }),
+          },
+        })],
+      }),
+    });
+  });
+
+  test('frameCapture() with a sub-second interval emits MILLISECONDS units', () => {
+    const video = EncodeConfiguration.video({
+      name: 'v',
+      width: 1920,
+      height: 1080,
+      codecSettings: VideoCodecSettings.frameCapture({ captureInterval: Duration.millis(500) }),
+    });
+    goldenTemplate(video).hasResourceProperties('AWS::MediaLive::Channel', {
+      EncoderSettings: Match.objectLike({
+        VideoDescriptions: [Match.objectLike({
+          CodecSettings: {
+            FrameCaptureSettings: Match.objectEquals({
+              CaptureInterval: 500,
+              CaptureIntervalUnits: 'MILLISECONDS',
             }),
           },
         })],
@@ -1169,7 +1206,7 @@ describe('Default configuration (golden)', () => {
           OutputGroupSettings: {
             HlsGroupSettings: Match.objectEquals({
               Destination: { DestinationRefId: 'hls' },
-              SegmentLength: 10,
+              SegmentLength: 6,
               KeepSegments: 21,
               IndexNSegments: 10,
               Mode: 'LIVE',
@@ -1221,7 +1258,7 @@ describe('Default configuration (golden)', () => {
           OutputGroupSettings: {
             RtmpGroupSettings: Match.objectEquals({
               AuthenticationScheme: 'COMMON',
-              RestartDelay: 15,
+              RestartDelay: 1,
             }),
           },
         })],
@@ -1274,7 +1311,7 @@ describe('VideoCodecSettings', () => {
               ScanType: 'PROGRESSIVE',
               FlickerAq: 'ENABLED',
               Level: 'H264_LEVEL_AUTO',
-              LookAheadRateControl: 'MEDIUM',
+              LookAheadRateControl: 'HIGH',
               Syntax: 'DEFAULT',
             }),
           },
@@ -1697,7 +1734,17 @@ describe('Full channel snapshot', () => {
                 Destination: {
                   DestinationRefId: 'mediapackage',
                 },
-                MediapackageV2GroupSettings: {},
+                MediapackageV2GroupSettings: {
+                  SegmentLength: 1,
+                  SegmentLengthUnits: 'SECONDS',
+                  Id3Behavior: 'DISABLED',
+                  KlvBehavior: 'NO_PASSTHROUGH',
+                  NielsenId3Behavior: 'NO_PASSTHROUGH',
+                  Scte35Type: 'SCTE_35_WITHOUT_SEGMENTATION',
+                  TimedMetadataId3Frame: 'NONE',
+                  TimedMetadataId3Period: 10,
+                  TimedMetadataPassthrough: 'DISABLED',
+                },
               },
             },
             Outputs: [
@@ -5077,7 +5124,7 @@ describe('MediaPackageV2GroupSettings', () => {
           name: 'emp',
           channel: empChannel,
           segment: Segment.seconds(4),
-          id3Behavior: Id3Behavior.PASSTHROUGH,
+          id3Behavior: Id3Behavior.ENABLED,
           klvBehavior: KlvBehavior.PASSTHROUGH,
           nielsenId3Behavior: NielsenId3Behavior.PASSTHROUGH,
           scte35Type: Scte35Type.NONE,
@@ -5103,7 +5150,7 @@ describe('MediaPackageV2GroupSettings', () => {
                 MediapackageV2GroupSettings: Match.objectLike({
                   SegmentLength: 4,
                   SegmentLengthUnits: 'SECONDS',
-                  Id3Behavior: 'PASSTHROUGH',
+                  Id3Behavior: 'ENABLED',
                   KlvBehavior: 'PASSTHROUGH',
                   NielsenId3Behavior: 'PASSTHROUGH',
                   Scte35Type: 'NONE',
@@ -5124,7 +5171,7 @@ describe('MediaPackageV2GroupSettings', () => {
     });
   });
 
-  test('defaults produce empty MediaPackageV2GroupSettings', () => {
+  test('defaults segment length to 1 second in MediaPackageV2GroupSettings', () => {
     const hd = EncodeConfiguration.video({
       name: 'hd',
       width: 1920,
@@ -5149,7 +5196,17 @@ describe('MediaPackageV2GroupSettings', () => {
           Match.objectLike({
             OutputGroupSettings: {
               MediaPackageGroupSettings: Match.objectLike({
-                MediapackageV2GroupSettings: {},
+                MediapackageV2GroupSettings: {
+                  SegmentLength: 1,
+                  SegmentLengthUnits: 'SECONDS',
+                  Id3Behavior: 'DISABLED',
+                  KlvBehavior: 'NO_PASSTHROUGH',
+                  NielsenId3Behavior: 'NO_PASSTHROUGH',
+                  Scte35Type: 'SCTE_35_WITHOUT_SEGMENTATION',
+                  TimedMetadataId3Frame: 'NONE',
+                  TimedMetadataId3Period: 10,
+                  TimedMetadataPassthrough: 'DISABLED',
+                },
               }),
             },
           }),

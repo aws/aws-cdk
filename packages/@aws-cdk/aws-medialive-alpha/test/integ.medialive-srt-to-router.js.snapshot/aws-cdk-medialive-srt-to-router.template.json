@@ -350,7 +350,7 @@
          "GopSize": 2,
          "GopSizeUnits": "SECONDS",
          "Level": "H264_LEVEL_AUTO",
-         "LookAheadRateControl": "MEDIUM",
+         "LookAheadRateControl": "HIGH",
          "ParControl": "SPECIFIED",
          "ParDenominator": 1,
          "ParNumerator": 1,

@@ -160,7 +160,17 @@
          "Destination": {
           "DestinationRefId": "emp-output"
          },
-         "MediapackageV2GroupSettings": {}
+         "MediapackageV2GroupSettings": {
+          "Id3Behavior": "DISABLED",
+          "KlvBehavior": "NO_PASSTHROUGH",
+          "NielsenId3Behavior": "NO_PASSTHROUGH",
+          "Scte35Type": "SCTE_35_WITHOUT_SEGMENTATION",
+          "SegmentLength": 1,
+          "SegmentLengthUnits": "SECONDS",
+          "TimedMetadataId3Frame": "NONE",
+          "TimedMetadataId3Period": 10,
+          "TimedMetadataPassthrough": "DISABLED"
+         }
         }
        },
        "Outputs": [
@@ -233,7 +243,7 @@
          "GopSize": 2,
          "GopSizeUnits": "SECONDS",
          "Level": "H264_LEVEL_AUTO",
-         "LookAheadRateControl": "MEDIUM",
+         "LookAheadRateControl": "HIGH",
          "MaxBitrate": 8000000,
          "ParControl": "SPECIFIED",
          "ParDenominator": 1,
@@ -268,7 +278,7 @@
          "GopSize": 2,
          "GopSizeUnits": "SECONDS",
          "Level": "H264_LEVEL_AUTO",
-         "LookAheadRateControl": "MEDIUM",
+         "LookAheadRateControl": "HIGH",
          "ParControl": "SPECIFIED",
          "ParDenominator": 1,
          "ParNumerator": 1,

@@ -37,23 +37,28 @@ import {
   HttpTransferMode,
   HlsTimedMetadataId3Frame,
   UdpInputLossAction,
+  SegmentLengthUnits,
+  Id3Behavior,
+  KlvBehavior,
+  NielsenId3Behavior,
+  Scte35Type,
+  TimedMetadataId3Frame,
+  TimedMetadataPassthrough,
+  UdpTimedMetadataId3Frame,
+  SrtInputLossAction,
 } from './enums';
 import type {
-  Id3Behavior, KlvBehavior, NielsenId3Behavior, Scte35Type,
-  TimedMetadataPassthrough, S3CannedAcl, SrtInputLossAction,
+  S3CannedAcl,
   HlsEncryptionType, HlsIvInManifest, HlsIvSource,
   HlsCaptionLanguageSetting,
   RtmpCacheFullBehavior, RtmpCaptionData, RtmpInputLossAction,
   RtmpIncludeFillerNalUnits,
-  UdpTimedMetadataId3Frame,
   MsSmoothAudioOnlyTimecodeControl, MsSmoothCertificateMode,
   MsSmoothEventIdMode, MsSmoothEventStopBehavior,
   MsSmoothInputLossAction, MsSmoothSegmentationMode,
   MsSmoothSparseTrackType, MsSmoothStreamManifestBehavior,
   MsSmoothTimestampOffsetMode,
   HlsAdMarkers, RtmpAdMarkers,
-
-  TimedMetadataId3Frame,
 } from './enums';
 import {
   MediaPackageV2Output, HlsOutput, UdpOutput, ArchiveOutput,
@@ -252,7 +257,7 @@ export interface HlsBasicPutCdnProps {
   readonly filecacheDuration?: Duration;
   /** The number of retry attempts. @default 10 */
   readonly numRetries?: number;
-  /** The number of seconds to wait before restarting after a failure. @default 15 */
+  /** The number of seconds to wait before restarting after a failure. @default 1 */
   readonly restartDelay?: number;
 }
 
@@ -266,7 +271,7 @@ export interface HlsAkamaiCdnProps {
   readonly httpTransferMode?: HttpTransferMode;
   /** The number of retry attempts. @default 10 */
   readonly numRetries?: number;
-  /** The number of seconds to wait before restarting after a failure. @default 15 */
+  /** The number of seconds to wait before restarting after a failure. @default 1 */
   readonly restartDelay?: number;
   /** The salt for Akamai authentication. @default - no salt */
   readonly salt?: string;
@@ -284,7 +289,7 @@ export interface HlsWebdavCdnProps {
   readonly httpTransferMode?: HttpTransferMode;
   /** The number of retry attempts. @default 10 */
   readonly numRetries?: number;
-  /** The number of seconds to wait before restarting after a failure. @default 15 */
+  /** The number of seconds to wait before restarting after a failure. @default 1 */
   readonly restartDelay?: number;
 }
 
@@ -324,7 +329,7 @@ export class HlsCdnSettings {
         connectionRetryInterval: props?.connectionRetryInterval ?? 1,
         filecacheDuration: props?.filecacheDuration?.toSeconds() ?? 300,
         numRetries: props?.numRetries ?? 10,
-        restartDelay: props?.restartDelay ?? 15,
+        restartDelay: props?.restartDelay ?? 1,
       },
     });
   }
@@ -335,7 +340,7 @@ export class HlsCdnSettings {
         connectionRetryInterval: props?.connectionRetryInterval ?? 1,
         filecacheDuration: props?.filecacheDuration?.toSeconds() ?? 300,
         numRetries: props?.numRetries ?? 10,
-        restartDelay: props?.restartDelay ?? 15,
+        restartDelay: props?.restartDelay ?? 1,
         httpTransferMode: (props?.httpTransferMode ?? HttpTransferMode.NON_CHUNKED).value,
         salt: props?.salt,
         token: props?.token,
@@ -349,7 +354,7 @@ export class HlsCdnSettings {
         connectionRetryInterval: props?.connectionRetryInterval ?? 1,
         filecacheDuration: props?.filecacheDuration?.toSeconds() ?? 300,
         numRetries: props?.numRetries ?? 10,
-        restartDelay: props?.restartDelay ?? 15,
+        restartDelay: props?.restartDelay ?? 1,
         httpTransferMode: (props?.httpTransferMode ?? HttpTransferMode.NON_CHUNKED).value,
       },
     });
@@ -382,42 +387,42 @@ export interface MediaPackageV2OutputGroupBaseProps {
   readonly additionalDestinations?: MediaPackageV2Destination[];
   /**
    * The length of each media segment.
-   * @default - service default
+   * @default - Segment.seconds(1)
    */
   readonly segment?: Segment;
   /**
    * The ID3 behavior.
-   * @default - service default
+   * @default Id3Behavior.DISABLED
    */
   readonly id3Behavior?: Id3Behavior;
   /**
    * The KLV behavior.
-   * @default - service default
+   * @default KlvBehavior.NO_PASSTHROUGH
    */
   readonly klvBehavior?: KlvBehavior;
   /**
    * The Nielsen ID3 behavior.
-   * @default - service default
+   * @default NielsenId3Behavior.NO_PASSTHROUGH
    */
   readonly nielsenId3Behavior?: NielsenId3Behavior;
   /**
    * The SCTE-35 type.
-   * @default - service default
+   * @default Scte35Type.SCTE_35_WITHOUT_SEGMENTATION
    */
   readonly scte35Type?: Scte35Type;
   /**
    * The timed metadata ID3 frame.
-   * @default - service default
+   * @default TimedMetadataId3Frame.NONE
    */
   readonly timedMetadataId3Frame?: TimedMetadataId3Frame;
   /**
    * The timed metadata interval.
-   * @default - service default
+   * @default Duration.seconds(10)
    */
   readonly timedMetadataId3Period?: Duration;
   /**
    * Whether timed metadata is passed through.
-   * @default - service default
+   * @default TimedMetadataPassthrough.DISABLED
    */
   readonly timedMetadataPassthrough?: TimedMetadataPassthrough;
   /**
@@ -523,7 +528,7 @@ export interface HlsOutputGroupProps {
   readonly destinations: OutputDestination[];
   /**
    * The length of each media segment. HLS supports whole-second segments only.
-   * @default - Segment.seconds(10)
+   * @default - Segment.seconds(6)
    */
   readonly segment?: Segment;
   /**
@@ -771,12 +776,12 @@ export interface UdpOutputGroupProps {
   readonly inputLossAction?: UdpInputLossAction;
   /**
    * Indicates the ID3 frame that has the timecode.
-   * @default - service default
+   * @default UdpTimedMetadataId3Frame.PRIV
    */
   readonly timedMetadataId3Frame?: UdpTimedMetadataId3Frame;
   /**
    * The timed metadata interval.
-   * @default - no timed metadata
+   * @default - Duration.seconds(10)
    */
   readonly timedMetadataId3Period?: Duration;
   /**
@@ -834,7 +839,7 @@ export interface RtmpOutputGroupProps {
   /**
    * The delay before restarting after a streaming output failure. A value of
    * `Duration.seconds(0)` means never restart.
-   * @default Duration.seconds(15)
+   * @default Duration.seconds(1)
    */
   readonly restartDelay?: Duration;
   /**
@@ -881,7 +886,7 @@ export interface SrtOutputGroupProps {
   readonly name: string;
   /**
    * Controls the behavior of this SRT group if the input becomes unavailable.
-   * @default - service default
+   * @default SrtInputLossAction.EMIT_PROGRAM
    */
   readonly inputLossAction?: SrtInputLossAction;
   /**
@@ -920,12 +925,12 @@ export interface CmafIngestOutputGroupProps {
   readonly additionalDestinations?: OutputDestination[];
   /**
    * The length of each media segment.
-   * @default - Segment.seconds(6)
+   * @default - Segment.seconds(1)
    */
   readonly segment?: Segment;
   /**
    * The ID3 behavior for the CMAF ingest output.
-   * @default - service default
+   * @default Id3Behavior.DISABLED
    */
   readonly id3Behavior?: Id3Behavior;
   /**
@@ -935,7 +940,7 @@ export interface CmafIngestOutputGroupProps {
   readonly id3NameModifier?: string;
   /**
    * The KLV behavior for the CMAF ingest output.
-   * @default - service default
+   * @default KlvBehavior.NO_PASSTHROUGH
    */
   readonly klvBehavior?: KlvBehavior;
   /**
@@ -945,7 +950,7 @@ export interface CmafIngestOutputGroupProps {
   readonly klvNameModifier?: string;
   /**
    * The Nielsen ID3 behavior for the CMAF ingest output.
-   * @default - service default
+   * @default NielsenId3Behavior.NO_PASSTHROUGH
    */
   readonly nielsenId3Behavior?: NielsenId3Behavior;
   /**
@@ -960,7 +965,7 @@ export interface CmafIngestOutputGroupProps {
   readonly scte35NameModifier?: string;
   /**
    * The SCTE-35 type for the CMAF ingest output.
-   * @default - service default
+   * @default Scte35Type.NONE
    */
   readonly scte35Type?: Scte35Type;
   /**
@@ -970,17 +975,17 @@ export interface CmafIngestOutputGroupProps {
   readonly sendDelayMs?: number;
   /**
    * Indicates the ID3 frame that has the timecode.
-   * @default - service default
+   * @default TimedMetadataId3Frame.NONE
    */
   readonly timedMetadataId3Frame?: TimedMetadataId3Frame;
   /**
    * The timed metadata interval.
-   * @default - service default
+   * @default - Duration.seconds(10)
    */
   readonly timedMetadataId3Period?: Duration;
   /**
    * Whether timed metadata is passed through.
-   * @default - service default
+   * @default TimedMetadataPassthrough.DISABLED
    */
   readonly timedMetadataPassthrough?: TimedMetadataPassthrough;
   /**
@@ -1092,12 +1097,12 @@ export interface MsSmoothOutputGroupProps {
   readonly inputLossAction?: MsSmoothInputLossAction;
   /**
    * The number of retry attempts.
-   * @default - service default
+   * @default 10
    */
   readonly numRetries?: number;
   /**
    * The number of seconds before initiating a restart due to output failure.
-   * @default - service default
+   * @default - Duration.seconds(1)
    */
   readonly restartDelay?: Duration;
   /**
@@ -1183,15 +1188,15 @@ class MediaPackageV2OutputGroupConfiguration extends OutputGroupConfiguration {
               destination: { destinationRefId: `${toDestinationId(this.props.name)}-additional-${i}` },
             }))
             : undefined,
-          segmentLength: this.props.segment?._length(),
-          segmentLengthUnits: this.props.segment?._units(),
-          id3Behavior: this.props.id3Behavior?.value,
-          klvBehavior: this.props.klvBehavior?.value,
-          nielsenId3Behavior: this.props.nielsenId3Behavior?.value,
-          scte35Type: this.props.scte35Type?.value,
-          timedMetadataId3Frame: this.props.timedMetadataId3Frame?.value,
-          timedMetadataId3Period: this.props.timedMetadataId3Period?.toSeconds(),
-          timedMetadataPassthrough: this.props.timedMetadataPassthrough?.value,
+          segmentLength: this.props.segment?._length() ?? 1,
+          segmentLengthUnits: this.props.segment?._units() ?? SegmentLengthUnits.SECONDS,
+          id3Behavior: (this.props.id3Behavior ?? Id3Behavior.DISABLED).value,
+          klvBehavior: (this.props.klvBehavior ?? KlvBehavior.NO_PASSTHROUGH).value,
+          nielsenId3Behavior: (this.props.nielsenId3Behavior ?? NielsenId3Behavior.NO_PASSTHROUGH).value,
+          scte35Type: (this.props.scte35Type ?? Scte35Type.SCTE_35_WITHOUT_SEGMENTATION).value,
+          timedMetadataId3Frame: (this.props.timedMetadataId3Frame ?? TimedMetadataId3Frame.NONE).value,
+          timedMetadataId3Period: this.props.timedMetadataId3Period?.toSeconds() ?? 10,
+          timedMetadataPassthrough: (this.props.timedMetadataPassthrough ?? TimedMetadataPassthrough.DISABLED).value,
           captionLanguageMappings: this.props.captionLanguageMappings,
         },
       },
@@ -1290,7 +1295,7 @@ class HlsOutputGroupConfiguration extends OutputGroupConfiguration {
     return {
       hlsGroupSettings: {
         destination: { destinationRefId: toDestinationId(this.props.name) },
-        segmentLength: this.props.segment?._toSeconds() ?? 10,
+        segmentLength: this.props.segment?._toSeconds() ?? 6,
         keepSegments: this.props.keepSegments ?? 21,
         indexNSegments: this.props.indexNSegments ?? 10,
         mode: (this.props.mode ?? HlsMode.LIVE).value,
@@ -1368,8 +1373,8 @@ class UdpOutputGroupConfiguration extends OutputGroupConfiguration {
     return {
       udpGroupSettings: {
         inputLossAction: (this.props.inputLossAction ?? UdpInputLossAction.EMIT_PROGRAM).value,
-        timedMetadataId3Frame: this.props.timedMetadataId3Frame?.value,
-        timedMetadataId3Period: this.props.timedMetadataId3Period?.toSeconds(),
+        timedMetadataId3Frame: (this.props.timedMetadataId3Frame ?? UdpTimedMetadataId3Frame.PRIV).value,
+        timedMetadataId3Period: this.props.timedMetadataId3Period?.toSeconds() ?? 10,
       },
     };
   }
@@ -1437,7 +1442,7 @@ class RtmpOutputGroupConfiguration extends OutputGroupConfiguration {
     return {
       rtmpGroupSettings: {
         authenticationScheme: (this.props.authenticationScheme ?? RtmpAuthenticationScheme.COMMON).value,
-        restartDelay: this.props.restartDelay?.toSeconds() ?? 15,
+        restartDelay: this.props.restartDelay?.toSeconds() ?? 1,
         adMarkers: this.props.adMarkers?.map(m => m.value),
         cacheFullBehavior: this.props.cacheFullBehavior?.value,
         cacheLength: this.props.cacheLength?.toSeconds(),
@@ -1494,7 +1499,7 @@ class SrtOutputGroupConfiguration extends OutputGroupConfiguration {
   public _bind(): CfnChannel.OutputGroupSettingsProperty {
     return {
       srtGroupSettings: {
-        inputLossAction: this.props.inputLossAction?.value,
+        inputLossAction: (this.props.inputLossAction ?? SrtInputLossAction.EMIT_PROGRAM).value,
       },
     };
   }
@@ -1558,20 +1563,20 @@ class CmafIngestOutputGroupConfiguration extends OutputGroupConfiguration {
     return {
       cmafIngestGroupSettings: {
         destination: { destinationRefId: toDestinationId(this.props.name) },
-        segmentLength: this.props.segment?._length() ?? 6,
-        id3Behavior: this.props.id3Behavior?.value,
+        segmentLength: this.props.segment?._length() ?? 1,
+        segmentLengthUnits: this.props.segment?._units() ?? SegmentLengthUnits.SECONDS,
+        id3Behavior: (this.props.id3Behavior ?? Id3Behavior.DISABLED).value,
         id3NameModifier: this.props.id3NameModifier,
-        klvBehavior: this.props.klvBehavior?.value,
+        klvBehavior: (this.props.klvBehavior ?? KlvBehavior.NO_PASSTHROUGH).value,
         klvNameModifier: this.props.klvNameModifier,
-        nielsenId3Behavior: this.props.nielsenId3Behavior?.value,
+        nielsenId3Behavior: (this.props.nielsenId3Behavior ?? NielsenId3Behavior.NO_PASSTHROUGH).value,
         nielsenId3NameModifier: this.props.nielsenId3NameModifier,
         scte35NameModifier: this.props.scte35NameModifier,
-        scte35Type: this.props.scte35Type?.value,
-        segmentLengthUnits: this.props.segment?._units(),
+        scte35Type: (this.props.scte35Type ?? Scte35Type.NONE).value,
         sendDelayMs: this.props.sendDelayMs,
-        timedMetadataId3Frame: this.props.timedMetadataId3Frame?.value,
-        timedMetadataId3Period: this.props.timedMetadataId3Period?.toSeconds(),
-        timedMetadataPassthrough: this.props.timedMetadataPassthrough?.value,
+        timedMetadataId3Frame: (this.props.timedMetadataId3Frame ?? TimedMetadataId3Frame.NONE).value,
+        timedMetadataId3Period: this.props.timedMetadataId3Period?.toSeconds() ?? 10,
+        timedMetadataPassthrough: (this.props.timedMetadataPassthrough ?? TimedMetadataPassthrough.DISABLED).value,
         captionLanguageMappings: this.props.captionLanguageMappings,
       },
     };
@@ -1678,8 +1683,8 @@ class MsSmoothOutputGroupConfiguration extends OutputGroupConfiguration {
         filecacheDuration: this.props.filecacheDuration?.toSeconds(),
         fragmentLength: this.props.fragmentLength?.toSeconds(),
         inputLossAction: this.props.inputLossAction?.value,
-        numRetries: this.props.numRetries,
-        restartDelay: this.props.restartDelay?.toSeconds(),
+        numRetries: this.props.numRetries ?? 10,
+        restartDelay: this.props.restartDelay?.toSeconds() ?? 1,
         segmentationMode: this.props.segmentationMode?.value,
         sendDelayMs: this.props.sendDelayMs,
         sparseTrackType: this.props.sparseTrackType?.value,
