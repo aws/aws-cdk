@@ -74,11 +74,23 @@ export interface IInput extends IResource, IInputRef {
  * The network location of a MediaLive input — the AWS cloud, or an on-premises network for
  * MediaLive Anywhere.
  */
-export enum InputNetworkLocation {
+export class InputNetworkLocation {
   /** The input exists in the AWS cloud (the default). */
-  AWS = 'AWS',
+  public static readonly AWS = new InputNetworkLocation('AWS');
   /** The input exists in an on-premises network (MediaLive Anywhere). */
-  ON_PREMISES = 'ON_PREMISES',
+  public static readonly ON_PREMISES = new InputNetworkLocation('ON_PREMISES');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): InputNetworkLocation {
+    return new InputNetworkLocation(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -96,7 +108,7 @@ export interface InputProps {
   readonly input: InputConfiguration;
   /**
    * The network location of the input — AWS cloud or on-premises (MediaLive Anywhere).
-   * @default InputNetworkLocation.AWS
+   * @default - AWS, applied by MediaLive
    */
   readonly inputNetworkLocation?: InputNetworkLocation;
   /**
@@ -107,7 +119,9 @@ export interface InputProps {
 }
 
 /**
- * The type of MediaLive input.
+ * The type of MediaLive input. Users select an input type via
+ * the `InputConfiguration` factory methods, never by passing this type directly.
+ * @internal
  */
 export enum InputType {
   /** Push a UDP transport stream to MediaLive */
@@ -281,13 +295,25 @@ export interface SrtCallerSourceProps {
 }
 
 /** The encryption algorithm for SRT decryption. */
-export enum SrtDecryptionAlgorithm {
+export class SrtDecryptionAlgorithm {
   /** AES-128. */
-  AES128 = 'AES128',
+  public static readonly AES128 = new SrtDecryptionAlgorithm('AES128');
   /** AES-192. */
-  AES192 = 'AES192',
+  public static readonly AES192 = new SrtDecryptionAlgorithm('AES192');
   /** AES-256. */
-  AES256 = 'AES256',
+  public static readonly AES256 = new SrtDecryptionAlgorithm('AES256');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): SrtDecryptionAlgorithm {
+    return new SrtDecryptionAlgorithm(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** Properties for SRT decryption. */
@@ -340,11 +366,23 @@ export interface InputDeviceInputProps {
 }
 
 /** The transport protocol for a multicast source. */
-export enum MulticastProtocol {
+export class MulticastProtocol {
   /** UDP transport. */
-  UDP = 'udp',
+  public static readonly UDP = new MulticastProtocol('udp');
   /** RTP transport. */
-  RTP = 'rtp',
+  public static readonly RTP = new MulticastProtocol('rtp');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): MulticastProtocol {
+    return new MulticastProtocol(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** A source for a multicast input. */
@@ -753,7 +791,7 @@ export class InputConfiguration {
       inputClass: props.sources.length === 2 ? 'STANDARD' : 'SINGLE_PIPELINE',
       multicastSettings: {
         sources: props.sources.map(s => ({
-          url: `${s.protocol ?? MulticastProtocol.UDP}://${s.address}:${s.port}`,
+          url: `${(s.protocol ?? MulticastProtocol.UDP).value}://${s.address}:${s.port}`,
           sourceIp: s.sourceIp,
         })),
       },
@@ -807,7 +845,7 @@ export class InputConfiguration {
           minimumLatency: s.minimumLatency?.toMilliseconds(),
           streamId: s.streamId,
           decryption: s.decryption ? {
-            algorithm: s.decryption.algorithm,
+            algorithm: s.decryption.algorithm?.value,
             passphraseSecretArn: s.decryption.passphraseSecret?.secretArn,
           } : undefined,
         })),
@@ -819,14 +857,14 @@ export class InputConfiguration {
   public static srtListener(props: SrtListenerInputProps): InputConfiguration {
     return new InputConfiguration(() => ({
       type: InputType.SRT_LISTENER,
-      inputClass: props.inputClass ?? 'SINGLE_PIPELINE',
+      inputClass: props.inputClass?.value ?? 'SINGLE_PIPELINE',
       inputSecurityGroups: props.inputSecurityGroups.map(sg => sg.inputSecurityGroupRef.inputSecurityGroupId),
       srtSettings: {
         srtListenerSettings: {
           minimumLatency: props.minimumLatency?.toMilliseconds(),
           streamId: props.streamId,
           decryption: props.decryption ? {
-            algorithm: props.decryption.algorithm,
+            algorithm: props.decryption.algorithm?.value,
             passphraseSecretArn: props.decryption.passphraseSecret?.secretArn,
           } : undefined,
         },
@@ -940,7 +978,7 @@ export class Input extends Resource implements IInput {
 
     // Security-group rules: on-premises inputs don't support security groups, while cloud push
     // inputs require at least one. Both always fail at deploy otherwise, so validate at synth.
-    const isOnPremises = props.inputNetworkLocation === InputNetworkLocation.ON_PREMISES;
+    const isOnPremises = props.inputNetworkLocation?.value === InputNetworkLocation.ON_PREMISES.value;
     const hasSecurityGroups = (config.inputSecurityGroups?.length ?? 0) > 0;
     const isPushInput = config.type === InputType.RTMP_PUSH
       || config.type === InputType.RTP_PUSH
@@ -984,7 +1022,7 @@ export class Input extends Resource implements IInput {
       sdiSources: config.sdiSources,
       vpc: config.vpc,
       inputSecurityGroups: config.inputSecurityGroups,
-      inputNetworkLocation: props.inputNetworkLocation,
+      inputNetworkLocation: props.inputNetworkLocation?.value,
       tags: props.tags,
     });
 

@@ -72,7 +72,9 @@ export class AudioBitDepth {
 }
 
 /**
- * The type of audio codec.
+ * The type of audio codec. Users select a codec via the
+ * `AudioCodecSettings` factory methods, never by passing this type directly.
+ * @internal
  */
 export enum AudioCodecType {
   /** AAC */

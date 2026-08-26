@@ -26,12 +26,12 @@ export class FeatureActivationState {
 export interface FeatureActivations {
   /**
    * Enable Input Prepare schedule actions.
-   * @default FeatureActivationState.DISABLED
+   * @default - DISABLED, applied by MediaLive
    */
   readonly inputPrepareScheduleActions?: FeatureActivationState;
   /**
    * Enable output static image overlay schedule actions.
-   * @default FeatureActivationState.DISABLED
+   * @default - DISABLED, applied by MediaLive
    */
   readonly outputStaticImageOverlayScheduleActions?: FeatureActivationState;
 }
@@ -110,11 +110,23 @@ export interface NielsenConfiguration {
 /**
  * Thumbnail state.
  */
-export enum ThumbnailState {
+export class ThumbnailState {
   /** Enable thumbnail generation. */
-  AUTO = 'AUTO',
+  public static readonly AUTO = new ThumbnailState('AUTO');
   /** Disable thumbnail generation. */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new ThumbnailState('DISABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): ThumbnailState {
+    return new ThumbnailState(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**

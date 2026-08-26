@@ -329,7 +329,7 @@ export interface AutomaticInputFailover {
   readonly failoverConditions?: FailoverCondition[];
   /**
    * Which input to prefer once a failed input has recovered.
-   * @default InputPreference.EQUAL_INPUT_PREFERENCE
+   * @default - EQUAL_INPUT_PREFERENCE, applied by MediaLive
    */
   readonly inputPreference?: InputPreference;
   /**

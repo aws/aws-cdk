@@ -656,7 +656,7 @@ export class UdpOutput extends Output {
   protected _bindOutputSettings(): CfnChannel.OutputSettingsProperty {
     return {
       udpOutputSettings: {
-        bufferMsec: this.def.buffer?.toMilliseconds() ?? this.groupProps.buffer?.toMilliseconds() ?? 0,
+        bufferMsec: this.def.buffer?.toMilliseconds() ?? this.groupProps.buffer?.toMilliseconds(),
         destination: {
           destinationRefId: this.groupProps.name,
         },
@@ -781,7 +781,7 @@ export class SrtOutput extends Output {
     return {
       srtOutputSettings: {
         bufferMsec: this.def.buffer?.toMilliseconds(),
-        encryptionType: this.def.encryptionType,
+        encryptionType: this.def.encryptionType?.value,
         latency: this.def.latency?.toMilliseconds(),
         // Each SRT output has its own channel destination, keyed by the output name.
         destination: {

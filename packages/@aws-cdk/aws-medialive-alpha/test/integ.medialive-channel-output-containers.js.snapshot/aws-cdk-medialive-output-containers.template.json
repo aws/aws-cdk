@@ -351,7 +351,6 @@
          "OutputName": "ts",
          "OutputSettings": {
           "UdpOutputSettings": {
-           "BufferMsec": 0,
            "ContainerSettings": {
             "M2tsSettings": {
              "AudioPids": "482-498",
@@ -391,7 +390,6 @@
          "OutputName": "ts-plain",
          "OutputSettings": {
           "UdpOutputSettings": {
-           "BufferMsec": 0,
            "ContainerSettings": {
             "M2tsSettings": {}
            },

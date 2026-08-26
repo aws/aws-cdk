@@ -173,7 +173,6 @@
          "OutputName": "udp_output",
          "OutputSettings": {
           "UdpOutputSettings": {
-           "BufferMsec": 0,
            "ContainerSettings": {
             "M2tsSettings": {}
            },

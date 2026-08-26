@@ -761,7 +761,7 @@ export interface UdpOutputGroupProps {
   readonly destinations: UdpOutputDestination[];
   /**
    * The output buffering. Applied at millisecond granularity.
-   * @default Duration.millis(0)
+   * @default - service default
    */
   readonly buffer?: Duration;
   /**
@@ -1293,7 +1293,7 @@ class HlsOutputGroupConfiguration extends OutputGroupConfiguration {
         segmentLength: this.props.segment?._toSeconds() ?? 10,
         keepSegments: this.props.keepSegments ?? 21,
         indexNSegments: this.props.indexNSegments ?? 10,
-        mode: this.props.mode ?? HlsMode.LIVE,
+        mode: (this.props.mode ?? HlsMode.LIVE).value,
         minSegmentLength: this.props.minSegment?._toSeconds(),
         inputLossAction: (this.props.inputLossAction ?? HlsInputLossAction.EMIT_OUTPUT).value,
         adMarkers: this.props.adMarkers?.map(m => m.value),

@@ -1,9 +1,21 @@
 /** HLS output mode. */
-export enum HlsMode {
+export class HlsMode {
   /** Live mode — older segments are removed */
-  LIVE = 'LIVE',
+  public static readonly LIVE = new HlsMode('LIVE');
   /** VOD mode — all segments are kept */
-  VOD = 'VOD',
+  public static readonly VOD = new HlsMode('VOD');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): HlsMode {
+    return new HlsMode(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** HLS input loss action. */
@@ -687,13 +699,25 @@ export class SrtInputLossAction {
 }
 
 /** SRT output encryption type. */
-export enum SrtEncryptionType {
+export class SrtEncryptionType {
   /** AES-128 encryption */
-  AES128 = 'AES128',
+  public static readonly AES128 = new SrtEncryptionType('AES128');
   /** AES-192 encryption */
-  AES192 = 'AES192',
+  public static readonly AES192 = new SrtEncryptionType('AES192');
   /** AES-256 encryption */
-  AES256 = 'AES256',
+  public static readonly AES256 = new SrtEncryptionType('AES256');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): SrtEncryptionType {
+    return new SrtEncryptionType(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** UDP input loss action. */

@@ -1777,6 +1777,59 @@ describe('Full channel snapshot', () => {
   });
 });
 
+describe('Codec validation', () => {
+  test('fails when a modelled video codec is not supported by the output group', () => {
+    // RTMP output groups support only H.264 video; an H.265 encode must be rejected at synth.
+    const h265 = EncodeConfiguration.video({
+      name: 'v',
+      width: 1920,
+      height: 1080,
+      codecSettings: VideoCodecSettings.h265({ framerate: Framerate.FPS_29_97 }),
+    });
+
+    new Channel(stack, 'BadCodecChannel', {
+      inputs: [{ input: defaultInput }],
+      outputGroups: [
+        OutputGroupConfiguration.rtmp({
+          name: 'rtmp',
+          outputs: [{
+            encodes: [h265],
+            outputName: 'out',
+            destinations: [RtmpDestination.url('rtmp://203.0.113.100/live', 'key')],
+          }],
+        }),
+      ],
+    });
+
+    // Codec validation runs at synth time (Output._bind), so assert on synthesis.
+    expect(() => Template.fromStack(stack)).toThrow("does not support video codec 'H265'. Supported: H264.");
+  });
+
+  test('fails when a modelled audio codec is not supported by the output group', () => {
+    // RTMP output groups support only AAC audio; an AC3 encode must be rejected at synth.
+    const video = EncodeConfiguration.video({
+      name: 'v', width: 1920, height: 1080, codecSettings: VideoCodecSettings.h264(),
+    });
+    const ac3 = EncodeConfiguration.audio({ name: 'ac3', codecSettings: AudioCodecSettings.ac3() });
+
+    new Channel(stack, 'BadAudioChannel', {
+      inputs: [{ input: defaultInput }],
+      outputGroups: [
+        OutputGroupConfiguration.rtmp({
+          name: 'rtmp',
+          outputs: [{
+            encodes: [video, ac3],
+            outputName: 'out',
+            destinations: [RtmpDestination.url('rtmp://203.0.113.100/live', 'key')],
+          }],
+        }),
+      ],
+    });
+
+    expect(() => Template.fromStack(stack)).toThrow("does not support audio codec 'AC3'. Supported: AAC.");
+  });
+});
+
 describe('Validation', () => {
   test('MediaPackage V2 output group accepts single track per output', () => {
     const hd = EncodeConfiguration.video({
@@ -2340,6 +2393,37 @@ describe('Output group types', () => {
               HlsGroupSettings: Match.objectLike({
                 SegmentLength: 6,
                 Mode: 'VOD',
+              }),
+            },
+          }),
+        ]),
+      }),
+    });
+  });
+
+  test('an enum-like class of() escape-hatch value passes through to the template', () => {
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080 });
+
+    new Channel(stack, 'MyChannel', {
+      inputs: [{ input: defaultInput }],
+      outputGroups: [
+        OutputGroupConfiguration.hls({
+          name: 'hls',
+          destinations: [OutputDestination.url('s3ssl://bucket/live')],
+          // A value not modelled by CDK — the escape hatch must pass it through unchanged.
+          mode: HlsMode.of('TEST'),
+          outputs: [{ encodes: [video], outputName: 'video_output' }],
+        }),
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::MediaLive::Channel', {
+      EncoderSettings: Match.objectLike({
+        OutputGroups: Match.arrayWith([
+          Match.objectLike({
+            OutputGroupSettings: {
+              HlsGroupSettings: Match.objectLike({
+                Mode: 'TEST',
               }),
             },
           }),
@@ -3368,6 +3452,33 @@ describe('Output group types', () => {
     });
   });
 
+  test('udp output omits BufferMsec when no buffer is set (defers to service default)', () => {
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    new Channel(stack, 'Ch', {
+      inputs: [{ input: defaultInput }],
+      outputGroups: [
+        OutputGroupConfiguration.udp({
+          name: 'udp',
+          destinations: [UdpOutputDestination.rtp({ address: '239.10.10.10', port: 5001 })],
+          outputs: [{ encodes: [video], outputName: 'udp_out' }],
+        }),
+      ],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::MediaLive::Channel', {
+      EncoderSettings: Match.objectLike({
+        OutputGroups: [Match.objectLike({
+          Outputs: [Match.objectLike({
+            OutputSettings: {
+              UdpOutputSettings: Match.objectLike({
+                BufferMsec: Match.absent(),
+              }),
+            },
+          })],
+        })],
+      }),
+    });
+  });
+
   test('hls output group with segment settings', () => {
     const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
     new Channel(stack, 'Ch', {
@@ -3695,7 +3806,7 @@ describe('SRT output settings', () => {
             Outputs: Match.arrayWith([
               Match.objectLike({
                 OutputSettings: {
-                  SrtOutputSettings: Match.objectLike({ EncryptionType: encryptionType }),
+                  SrtOutputSettings: Match.objectLike({ EncryptionType: encryptionType.value }),
                 },
               }),
             ]),

@@ -310,11 +310,23 @@ class SrtListenerDestination extends SrtDestination {
 /**
  * The pipeline endpoint for a MediaPackage V2 destination.
  */
-export enum MediaPackageV2EndpointId {
+export class MediaPackageV2EndpointId {
   /** Pipeline 0 endpoint */
-  ENDPOINT_1 = 'ENDPOINT_1',
+  public static readonly ENDPOINT_1 = new MediaPackageV2EndpointId('ENDPOINT_1');
   /** Pipeline 1 endpoint */
-  ENDPOINT_2 = 'ENDPOINT_2',
+  public static readonly ENDPOINT_2 = new MediaPackageV2EndpointId('ENDPOINT_2');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): MediaPackageV2EndpointId {
+    return new MediaPackageV2EndpointId(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -353,7 +365,7 @@ class DefaultMediaPackageV2Destination extends MediaPackageV2Destination {
     return {
       channelName: this.mpChannel.channelName,
       channelGroup: this.mpChannel.channelGroupName,
-      channelEndpointId: this.endpointId,
+      channelEndpointId: this.endpointId?.value,
       // MediaLive requires an endpoint id whenever a region is set, so only emit the region
       // when an endpoint is provided. Omitting both selects same-region pipeline auto-mapping.
       mediaPackageRegionName: this.endpointId !== undefined ? this.mpChannel.region : undefined,

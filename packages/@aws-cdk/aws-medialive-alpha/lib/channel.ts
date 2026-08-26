@@ -26,7 +26,6 @@ import { extractResourceId } from './shared';
 
 export {
   VideoCodecSettings,
-  VideoCodecType,
   H264Profile,
   H264RateControl,
   H264AdaptiveQuantization,
@@ -75,7 +74,6 @@ export type {
 } from './video-codec-settings';
 export {
   AudioCodecSettings,
-  AudioCodecType,
   AacProfile,
   AacCodingMode,
   AacRateControlMode,
@@ -241,39 +239,75 @@ export class Pipeline {
 /**
  * The class of the channel. Determines the pipeline redundancy.
  */
-export enum ChannelClass {
+export class ChannelClass {
   /** Single pipeline — no redundancy */
-  SINGLE_PIPELINE = 'SINGLE_PIPELINE',
+  public static readonly SINGLE_PIPELINE = new ChannelClass('SINGLE_PIPELINE');
   /** Standard — two pipelines for redundancy */
-  STANDARD = 'STANDARD',
+  public static readonly STANDARD = new ChannelClass('STANDARD');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): ChannelClass {
+    return new ChannelClass(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * The log level for the channel.
  */
-export enum LogLevel {
+export class LogLevel {
   /** Log errors only */
-  ERROR = 'ERROR',
+  public static readonly ERROR = new LogLevel('ERROR');
   /** Log warnings and errors */
-  WARNING = 'WARNING',
+  public static readonly WARNING = new LogLevel('WARNING');
   /** Log info, warnings, and errors */
-  INFO = 'INFO',
+  public static readonly INFO = new LogLevel('INFO');
   /** Log everything */
-  DEBUG = 'DEBUG',
+  public static readonly DEBUG = new LogLevel('DEBUG');
   /** Disable logging */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new LogLevel('DISABLED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): LogLevel {
+    return new LogLevel(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * The source of timecode for the channel outputs.
  */
-export enum TimecodeSource {
+export class TimecodeSource {
   /** Use embedded timecode from the source. Falls back to zero-based if not detected. */
-  EMBEDDED = 'EMBEDDED',
+  public static readonly EMBEDDED = new TimecodeSource('EMBEDDED');
   /** Use the system clock (UTC). */
-  SYSTEMCLOCK = 'SYSTEMCLOCK',
+  public static readonly SYSTEMCLOCK = new TimecodeSource('SYSTEMCLOCK');
   /** Start at 00:00:00:00. */
-  ZEROBASED = 'ZEROBASED',
+  public static readonly ZEROBASED = new TimecodeSource('ZEROBASED');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): TimecodeSource {
+    return new TimecodeSource(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -505,11 +539,23 @@ enum OutputLockingMode {
 /**
  * Source of output timing.
  */
-export enum OutputTimingSource {
+export class OutputTimingSource {
   /** Use the input clock */
-  INPUT_CLOCK = 'INPUT_CLOCK',
+  public static readonly INPUT_CLOCK = new OutputTimingSource('INPUT_CLOCK');
   /** Use the system clock */
-  SYSTEM_CLOCK = 'SYSTEM_CLOCK',
+  public static readonly SYSTEM_CLOCK = new OutputTimingSource('SYSTEM_CLOCK');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): OutputTimingSource {
+    return new OutputTimingSource(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /** The image MediaLive substitutes into the output on input loss. */
@@ -614,7 +660,7 @@ export interface PipelineOutputLockingProps {
   readonly customEpoch?: string;
   /**
    * The method MediaLive uses to synchronise the pipelines.
-   * @default PipelineLockingMethod.SOURCE_TIMECODE
+   * @default - SOURCE_TIMECODE, applied by MediaLive
    */
   readonly method?: PipelineLockingMethod;
 }
@@ -731,21 +777,33 @@ export interface GlobalConfiguration {
 /**
  * Day of the week for maintenance.
  */
-export enum MaintenanceDay {
+export class MaintenanceDay {
   /** Monday */
-  MONDAY = 'MONDAY',
+  public static readonly MONDAY = new MaintenanceDay('MONDAY');
   /** Tuesday */
-  TUESDAY = 'TUESDAY',
+  public static readonly TUESDAY = new MaintenanceDay('TUESDAY');
   /** Wednesday */
-  WEDNESDAY = 'WEDNESDAY',
+  public static readonly WEDNESDAY = new MaintenanceDay('WEDNESDAY');
   /** Thursday */
-  THURSDAY = 'THURSDAY',
+  public static readonly THURSDAY = new MaintenanceDay('THURSDAY');
   /** Friday */
-  FRIDAY = 'FRIDAY',
+  public static readonly FRIDAY = new MaintenanceDay('FRIDAY');
   /** Saturday */
-  SATURDAY = 'SATURDAY',
+  public static readonly SATURDAY = new MaintenanceDay('SATURDAY');
   /** Sunday */
-  SUNDAY = 'SUNDAY',
+  public static readonly SUNDAY = new MaintenanceDay('SUNDAY');
+
+  /** A value not yet modelled by AWS CDK. */
+  public static of(value: string): MaintenanceDay {
+    return new MaintenanceDay(value);
+  }
+
+  /** The underlying string value passed to CloudFormation. */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -883,7 +941,7 @@ abstract class ChannelBase extends Resource implements IChannel {
   protected abstract get _channelClass(): ChannelClass | undefined;
 
   public metric(metricName: string, pipeline: Pipeline, props?: MetricOptions): Metric {
-    if (pipeline === Pipeline.PIPELINE_1 && this._channelClass === ChannelClass.SINGLE_PIPELINE) {
+    if (pipeline === Pipeline.PIPELINE_1 && this._channelClass?.value === ChannelClass.SINGLE_PIPELINE.value) {
       throw new ValidationError(
         lit`SinglePipelineChannelHasNoPipelineOne`,
         'Pipeline.PIPELINE_1 is not available on SINGLE_PIPELINE channels. Use Pipeline.PIPELINE_0, or set channelClass: ChannelClass.STANDARD',
@@ -1033,11 +1091,11 @@ export class Channel extends ChannelBase {
     // Validate input pipeline count matches channel class
     props.inputs.forEach(attachment => {
       const inputClass = attachment.input.inputClass;
-      if (inputClass && inputClass !== resolvedChannelClass) {
+      if (inputClass && inputClass !== resolvedChannelClass.value) {
         throw new ValidationError(
           lit`InputPipelineMismatch`,
           `Input '${attachment.input.node.id}' has input class '${inputClass}' which is incompatible`
-          + ` with channel class '${resolvedChannelClass}'.`,
+          + ` with channel class '${resolvedChannelClass.value}'.`,
           this,
         );
       }
@@ -1061,14 +1119,14 @@ export class Channel extends ChannelBase {
     // Failover secondary must be attached to the channel — fail fast at synth.
     this.validateInputFailoverPairs(props);
 
-    if (props.linkedChannelSettings && resolvedChannelClass !== ChannelClass.SINGLE_PIPELINE) {
+    if (props.linkedChannelSettings && resolvedChannelClass.value !== ChannelClass.SINGLE_PIPELINE.value) {
       throw new ValidationError(lit`LinkedChannelClass`, 'Linked channel settings can only be configured on SINGLE_PIPELINE channels.', this);
     }
 
     // Epoch locking requires the output timing source to be the input clock. MediaLive rejects any
     // other timing source at deploy, so fail fast at synth.
     if (props.globalConfiguration?.outputLocking?._mode() === OutputLockingMode.EPOCH_LOCKING
-      && props.globalConfiguration.outputTimingSource === OutputTimingSource.SYSTEM_CLOCK) {
+      && props.globalConfiguration.outputTimingSource?.value === OutputTimingSource.SYSTEM_CLOCK.value) {
       throw new ValidationError(
         lit`EpochLockingTimingSource`,
         'globalConfiguration.outputTimingSource must be INPUT_CLOCK when using epoch output locking.',
@@ -1102,33 +1160,33 @@ export class Channel extends ChannelBase {
 
     const resource = new CfnChannel(this, 'Resource', {
       name: this.physicalName,
-      channelClass: resolvedChannelClass,
+      channelClass: resolvedChannelClass.value,
       roleArn: channelRole.roleArn,
-      logLevel: props.logLevel ?? LogLevel.DISABLED,
+      logLevel: (props.logLevel ?? LogLevel.DISABLED).value,
       inferenceSettings: props.inferenceFeedArn ? {
         feedArn: props.inferenceFeedArn,
       } : undefined,
       tags: props.tags ? Object.entries(props.tags).map(([key, value]) => ({ key, value })) : undefined,
       maintenance: props.maintenance ? {
-        maintenanceDay: props.maintenance.day,
+        maintenanceDay: props.maintenance.day.value,
         maintenanceStartTime: props.maintenance.time ?? '02:00',
       } : undefined,
       destinations: Lazy.any({
         produce: () => this.outputGroups
-          .flatMap(og => og._bindDestination(resolvedChannelClass)),
+          .flatMap(og => og._bindDestination(resolvedChannelClass.value)),
       }, { omitEmptyArray: true }),
       inputAttachments: Lazy.any({ produce: () => this.inputAttachments }, { omitEmptyArray: true }),
       inputSpecification: inputSpec._bindInputSpecification(),
       encoderSettings: {
         timecodeConfig: {
-          source: props.timecodeConfig?.source ?? TimecodeSource.EMBEDDED,
+          source: (props.timecodeConfig?.source ?? TimecodeSource.EMBEDDED).value,
           syncThreshold: props.timecodeConfig?.syncThreshold,
         },
         globalConfiguration: props.globalConfiguration ? {
           initialAudioGain: props.globalConfiguration.initialAudioGain,
           inputEndAction: props.globalConfiguration.inputEndAction?.value,
           outputLockingMode: props.globalConfiguration.outputLocking?._mode(),
-          outputTimingSource: props.globalConfiguration.outputTimingSource,
+          outputTimingSource: props.globalConfiguration.outputTimingSource?.value,
           supportLowFramerateInputs: props.globalConfiguration.supportLowFramerateInputs ? 'ENABLED' : 'DISABLED',
           inputLossBehavior: props.globalConfiguration.inputLossBehavior ? {
             blackFrameMsec: props.globalConfiguration.inputLossBehavior.blackFrame?.toMilliseconds(),
@@ -1161,7 +1219,7 @@ export class Channel extends ChannelBase {
           nielsenPcmToId3Tagging: props.nielsenConfiguration.nielsenPcmToId3Tagging?.value,
         } : undefined,
         thumbnailConfiguration: props.thumbnailConfiguration ? {
-          state: props.thumbnailConfiguration.state ?? ThumbnailState.AUTO,
+          state: (props.thumbnailConfiguration.state ?? ThumbnailState.AUTO).value,
         } : undefined,
         blackoutSlate: props.blackoutSlate ? {
           state: (props.blackoutSlate.state
@@ -1261,7 +1319,7 @@ export class Channel extends ChannelBase {
 
     // Thumbnails — grant unless user explicitly disabled.
     const thumbnailsEnabled = props.thumbnailConfiguration === undefined
-      || props.thumbnailConfiguration.state === ThumbnailState.AUTO;
+      || props.thumbnailConfiguration.state?.value === ThumbnailState.AUTO.value;
     if (thumbnailsEnabled) {
       role.addToPrincipalPolicy(new PolicyStatement({
         actions: ['s3:PutObject'],
@@ -1272,7 +1330,7 @@ export class Channel extends ChannelBase {
     // CloudWatch Logs — required when logging is enabled.
     // MediaLive always writes to the fixed log group `ElementalMediaLive`.
     // See https://docs.aws.amazon.com/medialive/latest/ug/working-with-logs.html
-    if ((props.logLevel ?? LogLevel.DISABLED) !== LogLevel.DISABLED) {
+    if ((props.logLevel ?? LogLevel.DISABLED).value !== LogLevel.DISABLED.value) {
       const logGroupArn = stack.formatArn({
         service: 'logs',
         resource: 'log-group',

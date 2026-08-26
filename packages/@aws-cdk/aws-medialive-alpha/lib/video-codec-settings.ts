@@ -2040,7 +2040,9 @@ export interface FrameCaptureSettingsProps {
 // =============================================================================
 
 /**
- * The type of video codec.
+ * The type of video codec. Users select a codec via the
+ * `VideoCodecSettings` factory methods, never by passing this type directly.
+ * @internal
  */
 export enum VideoCodecType {
   /** H.264 (AVC) */
