@@ -1,6 +1,6 @@
 import { App, Stack } from 'aws-cdk-lib';
 import type { Construct } from 'constructs';
-import { BuildSpec, ComputeType, LinuxBuildImage, Project } from 'aws-cdk-lib/aws-codebuild';
+import { BuildSpec, ComputeType, LinuxArmBuildImage, LinuxBuildImage, Project } from 'aws-cdk-lib/aws-codebuild';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class AmazonLinuxArmTestStack extends Stack {
@@ -34,6 +34,26 @@ class AmazonLinuxArmTestStack extends Stack {
       environment: {
         buildImage: LinuxBuildImage.AMAZON_LINUX_2_ARM_3,
         computeType: ComputeType.X2_LARGE,
+      },
+    });
+
+    new Project(this, 'MyProjectAL2023Arm4Medium', {
+      buildSpec: BuildSpec.fromObject({
+        version: '0.2',
+      }),
+      environment: {
+        buildImage: LinuxArmBuildImage.AMAZON_LINUX_2023_STANDARD_4_0,
+        computeType: ComputeType.MEDIUM,
+      },
+    });
+
+    new Project(this, 'MyProjectAL2023Arm4XLarge', {
+      buildSpec: BuildSpec.fromObject({
+        version: '0.2',
+      }),
+      environment: {
+        buildImage: LinuxArmBuildImage.AMAZON_LINUX_2023_STANDARD_4_0,
+        computeType: ComputeType.X_LARGE,
       },
     });
   }

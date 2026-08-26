@@ -1,16 +1,16 @@
 {
   "version": "53.0.0",
   "files": {
-    "dd30a877ca138b9a2481e5045fca8d7679f51bb4f83506699bd0f44c7e4270f6": {
-      "displayName": "Standard6 Template",
+    "dde91c0810062670a7183c9a2d00b8525ad49678dfa0689264d4908f48bd48a6": {
+      "displayName": "codebuild-project-amazonlinux-2023-6 Template",
       "source": {
-        "path": "Standard6.template.json",
+        "path": "codebuild-project-amazonlinux-2023-6.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-49f5afac": {
+        "current_account-current_region-447c344c": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "dd30a877ca138b9a2481e5045fca8d7679f51bb4f83506699bd0f44c7e4270f6.json",
+          "objectKey": "dde91c0810062670a7183c9a2d00b8525ad49678dfa0689264d4908f48bd48a6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
