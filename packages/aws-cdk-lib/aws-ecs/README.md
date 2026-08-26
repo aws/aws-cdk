@@ -1541,6 +1541,35 @@ new ecs.Ec2Service(this, 'Service', {
 });
 ```
 
+With the `awsvpc` network mode you can create any combination of `A` and `SRV` records
+for the same service, and `AAAA` records as well when the service runs in dualstack
+subnets. This is useful when different clients discover the service in different ways -
+for example an API Gateway HTTP API private integration requires an `SRV` record, while
+clients inside the VPC resolve the same service through its `A` record:
+
+```ts
+declare const cluster: ecs.Cluster;
+
+const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef');
+const container = taskDefinition.addContainer('Container', {
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+});
+container.addPortMappings({ containerPort: 80 });
+
+new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  cloudMapOptions: {
+    // Create both an A and an SRV record
+    dnsRecordType: cloudmap.DnsRecordType.A_SRV,
+  },
+});
+```
+
+Any record type that includes `SRV` targets a container and port, following the same
+rules as `SRV` on its own. With `bridge` or `host` network modes, `SRV` remains the only
+supported record type.
+
 ### Associate With a Specific CloudMap Service
 
 You may associate an ECS service with a specific CloudMap service. To do

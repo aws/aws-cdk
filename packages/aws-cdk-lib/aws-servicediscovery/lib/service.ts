@@ -9,7 +9,7 @@ import type { INamespace } from './namespace';
 import { NamespaceType } from './namespace';
 import type { NonIpInstanceBaseProps } from './non-ip-instance';
 import { NonIpInstance } from './non-ip-instance';
-import { defaultDiscoveryType } from './private/utils';
+import { defaultDiscoveryType, splitDnsRecordType } from './private/utils';
 import { CfnService } from './servicediscovery.generated';
 import type * as elbv2 from '../../aws-elasticloadbalancingv2';
 import type { IResource } from '../../core';
@@ -111,7 +111,9 @@ export interface DnsServiceProps extends BaseServiceProps {
 
   /**
    * The DNS type of the record that you want AWS Cloud Map to create. Supported record types
-   * include A, AAAA, A and AAAA (A_AAAA), CNAME, and SRV.
+   * include A, AAAA, CNAME, SRV, and the combinations A and AAAA (`A_AAAA`), A and SRV
+   * (`A_SRV`), AAAA and SRV (`AAAA_SRV`), and A, AAAA and SRV (`A_AAAA_SRV`). A combination
+   * creates one DNS record per constituent type.
    *
    * @default A
    */
@@ -392,17 +394,9 @@ export class Service extends ServiceBase {
 function renderDnsRecords(dnsRecordType: DnsRecordType, dnsTtl: Duration = Duration.minutes(1)): CfnService.DnsRecordProperty[] {
   const ttl = dnsTtl.toSeconds();
 
-  if (dnsRecordType === DnsRecordType.A_AAAA) {
-    return [{
-      type: DnsRecordType.A,
-      ttl,
-    }, {
-      type: DnsRecordType.AAAA,
-      ttl,
-    }];
-  } else {
-    return [{ type: dnsRecordType, ttl }];
-  }
+  // Members standing for more than one record type spell out their constituent types in
+  // the enum value, e.g. `A_AAAA = 'A, AAAA'`. Each one becomes its own `DnsRecord`.
+  return splitDnsRecordType(dnsRecordType).map(type => ({ type, ttl }));
 }
 
 /**
@@ -461,6 +455,13 @@ export enum DiscoveryType {
   DNS_AND_API = 'DNS_AND_API',
 }
 
+/**
+ * The DNS record types that AWS Cloud Map creates for a service.
+ *
+ * Members that stand for more than one record type spell out their constituent
+ * types in the value, separated by `', '` (for example `A_AAAA = 'A, AAAA'`).
+ * Each constituent type becomes its own entry in the service's `DnsRecords`.
+ */
 export enum DnsRecordType {
   /**
    * An A record
@@ -481,6 +482,21 @@ export enum DnsRecordType {
    * A Srv record
    */
   SRV = 'SRV',
+
+  /**
+   * Both an A and SRV record
+   */
+  A_SRV = 'A, SRV',
+
+  /**
+   * Both an AAAA and SRV record
+   */
+  AAAA_SRV = 'AAAA, SRV',
+
+  /**
+   * An A, an AAAA and an SRV record
+   */
+  A_AAAA_SRV = 'A, AAAA, SRV',
 
   /**
    * A CNAME record
