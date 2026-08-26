@@ -4191,6 +4191,25 @@ test('TableV2MultiAccountReplica on imported table with tokenized account compon
   }).not.toThrow();
 });
 
+test('TableV2MultiAccountReplica on imported table with fully opaque token ARN does not throw', () => {
+  const app = new App();
+  const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+
+  // The whole ARN is a single deploy-time token; every component resolves to a
+  // token and the per-field checks skip both validations
+  const importedTable = TableV2.fromTableArn(
+    replicaStack,
+    'ImportedTable',
+    Token.asString({ 'Fn::ImportValue': 'SharedTableArn' }),
+  );
+
+  expect(() => {
+    new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+      replicaSourceTable: importedTable,
+    });
+  }).not.toThrow();
+});
+
 test('TableV2MultiAccountReplica works with fromTableArn without key schema', () => {
   const app = new App();
   const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });

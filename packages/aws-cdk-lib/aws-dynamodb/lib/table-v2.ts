@@ -37,11 +37,11 @@ import {
   ArnFormat,
   FeatureFlags,
   PhysicalName,
+  Resource,
   Stack,
   TagManager,
   TagType,
   Token,
-  Tokenization,
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import type { IArrayBox, IBox, IMapBox } from '../../core/lib/helpers-internal';
@@ -1604,17 +1604,17 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
     let sourceAccount = sourceStack.account;
     let sourceRegion = sourceStack.region;
 
-    // For imported tables, extract account/region from the ARN instead of the
-    // stack. The ARN may be partially tokenized (for example a tokenized table
-    // name); splitArn preserves the concrete components, and any component
-    // that is itself a token is skipped by the per-field checks below. Only a
-    // fully opaque ARN (a single token with no literal parts) cannot be split,
-    // in which case we keep the stack-based fallback.
-    const tableArn = props.replicaSourceTable!.tableArn;
-    const arnFragments = Tokenization.reverseString(tableArn);
-    const isOpaqueToken = arnFragments.length === 1 && arnFragments.tokens.length === 1;
-    if (!isOpaqueToken) {
-      const arnParts = this.stack.splitArn(tableArn, ArnFormat.SLASH_RESOURCE_NAME);
+    // For an owned table the construct's stack reflects its real environment,
+    // so the stack-based values above are authoritative (the table's own ARN is
+    // an opaque GetAtt token). For an imported table the construct's stack is
+    // the consuming stack, whose environment says nothing about where the table
+    // lives, so extract account/region from the imported ARN instead. splitArn
+    // handles concrete, partially tokenized, and fully opaque ARNs (the latter
+    // via a deploy-time Fn::Split); any component that is not statically known
+    // resolves to a token, which the per-field checks below skip rather than
+    // misvalidate against the consuming stack.
+    if (!Resource.isOwnedResource(props.replicaSourceTable!)) {
+      const arnParts = this.stack.splitArn(props.replicaSourceTable!.tableArn, ArnFormat.SLASH_RESOURCE_NAME);
       if (arnParts.account) sourceAccount = arnParts.account;
       if (arnParts.region) sourceRegion = arnParts.region;
     }
