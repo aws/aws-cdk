@@ -169,4 +169,39 @@ describe('receipt rule', () => {
       },
     });
   });
+
+  test('fails to read the rule set name of a rule imported by name', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const rule = ReceiptRule.fromReceiptRuleName(stack, 'Rule', 'MyRule');
+
+    // THEN - the rule name is still readable, only the rule set is unknown
+    expect(rule.receiptRuleRef.ruleName).toEqual('MyRule');
+    expect(() => rule.receiptRuleRef.ruleSetName).toThrow(
+      'the rule set of a receipt rule imported by rule name is not known - import the rule set with ReceiptRuleSet.fromReceiptRuleSetName() and add the rule to it instead',
+    );
+  });
+
+  test('can order a new rule after a rule imported by name', () => {
+    // GIVEN
+    const stack = new Stack();
+    const ruleSet = new ReceiptRuleSet(stack, 'RuleSet');
+    const importedRule = ReceiptRule.fromReceiptRuleName(stack, 'Imported', 'ImportedRule');
+
+    // WHEN
+    new ReceiptRule(stack, 'Rule', {
+      ruleSet,
+      after: importedRule,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SES::ReceiptRule', {
+      'After': 'ImportedRule',
+      'RuleSetName': {
+        'Ref': 'RuleSetE30C6C48',
+      },
+    });
+  });
 });

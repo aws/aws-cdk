@@ -318,3 +318,14 @@ test('kinesis firehose delivery stream destination specify stream ARN and IAM Ro
     },
   });
 });
+
+test('fails to read the configuration set name of an event destination imported by id', () => {
+  // WHEN
+  const destination = ConfigurationSetEventDestination.fromConfigurationSetEventDestinationId(stack, 'Imported', 'MyDestination');
+
+  // THEN - the destination id is still readable, only the configuration set is unknown
+  expect(destination.configurationSetEventDestinationRef.configurationSetEventDestinationId).toEqual('MyDestination');
+  expect(() => destination.configurationSetEventDestinationRef.configurationSetName).toThrow(
+    'the configuration set of an event destination imported by id is not known - import the configuration set with ConfigurationSet.fromConfigurationSetName() and add the event destination to it instead',
+  );
+});

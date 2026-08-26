@@ -5,7 +5,7 @@ import * as iam from '../../aws-iam';
 import type * as firehose from '../../aws-kinesisfirehose';
 import type * as sns from '../../aws-sns';
 import type { IResource } from '../../core';
-import { Aws, Resource, Stack, ValidationError } from '../../core';
+import { Aws, Resource, Stack, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -285,7 +285,11 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
 
       public get configurationSetEventDestinationRef(): ConfigurationSetEventDestinationReference {
         return {
-          configurationSetEventDestinationId: this.configurationSetEventDestinationId,
+          configurationSetEventDestinationId,
+          get configurationSetName(): string {
+            throw new UnscopedValidationError(lit`CannotAccessConfigurationSetNameOfImportedEventDestination`,
+              'the configuration set of an event destination imported by id is not known - import the configuration set with ConfigurationSet.fromConfigurationSetName() and add the event destination to it instead');
+          },
         };
       }
     }
@@ -293,10 +297,12 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
   }
 
   public readonly configurationSetEventDestinationId: string;
+  private readonly configurationSetName: string;
 
   public get configurationSetEventDestinationRef(): ConfigurationSetEventDestinationReference {
     return {
       configurationSetEventDestinationId: this.configurationSetEventDestinationId,
+      configurationSetName: this.configurationSetName,
     };
   }
 
@@ -306,6 +312,8 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    this.configurationSetName = props.configurationSet.configurationSetRef.configurationSetName;
 
     if (
       props.destination.bus &&
