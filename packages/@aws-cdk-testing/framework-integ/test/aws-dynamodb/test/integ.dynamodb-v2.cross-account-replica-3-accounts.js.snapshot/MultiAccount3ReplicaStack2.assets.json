@@ -1,0 +1,21 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "44eb1b3cd5a50f2840a5bfdff566af532444e22758c248ef873a525dd385b423": {
+      "displayName": "MultiAccount3ReplicaStack2 Template",
+      "source": {
+        "path": "MultiAccount3ReplicaStack2.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "333333333333-us-west-2-f0b44de1": {
+          "bucketName": "cdk-hnb659fds-assets-333333333333-us-west-2",
+          "objectKey": "44eb1b3cd5a50f2840a5bfdff566af532444e22758c248ef873a525dd385b423.json",
+          "region": "us-west-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::333333333333:role/cdk-hnb659fds-file-publishing-role-333333333333-us-west-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
