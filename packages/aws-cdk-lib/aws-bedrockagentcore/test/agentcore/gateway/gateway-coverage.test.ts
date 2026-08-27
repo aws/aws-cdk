@@ -18,6 +18,7 @@ import {
   OAuth2CredentialProvider,
 } from '../../../lib';
 import { CustomClaimOperator } from '../../../lib/common/types';
+import { PolicyEngineMode } from '../../../lib/gateway/gateway';
 import { GatewayAuthorizer } from '../../../lib/gateway/inbound-auth/authorizer';
 import { GatewayCustomClaim } from '../../../lib/gateway/inbound-auth/custom-claim';
 import { LambdaInterceptor } from '../../../lib/gateway/interceptor';
@@ -25,6 +26,7 @@ import { ApiKeyCredentialLocation } from '../../../lib/gateway/outbound-auth/api
 import { GatewayProtocol, MCPProtocolVersion, McpGatewaySearchType } from '../../../lib/gateway/protocol';
 import { ToolSchema, SchemaDefinitionType } from '../../../lib/gateway/targets/schema/tool-schema';
 import { ApiGatewayHttpMethod } from '../../../lib/gateway/targets/target-configuration';
+import { PolicyEngine } from '../../../lib/policy/policy-engine';
 
 /**
  * Helper: wraps a Metric in a minimal Alarm so we can assert on the
@@ -1426,6 +1428,158 @@ describe('SchemaDefinitionType.of() escape hatch', () => {
           }),
         }),
       }),
+    });
+  });
+});
+
+describe('PolicyEngineMode.of() escape hatch', () => {
+  test('renders custom policy engine mode in the template', () => {
+    // `Mode` is an enumerated CFN property, so an unmodelled value synthesizes with a warning.
+    const app = new cdk.App({ postCliContext: { '@aws-cdk/core:strictCfnValidateErrors': false } });
+    const stack = new cdk.Stack(app, 'PolicyEngineModeOfStack');
+    const policyEngine = new PolicyEngine(stack, 'PolicyEngine', {
+      policyEngineName: 'of_mode_engine',
+    });
+
+    new Gateway(stack, 'Gateway', {
+      gatewayName: 'of-mode-gateway',
+      policyEngineConfiguration: {
+        policyEngine,
+        mode: PolicyEngineMode.of('FUTURE_MODE'),
+      },
+    });
+
+    Template.fromStack(stack, { skipCyclicalDependenciesCheck: true }).hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      Name: 'of-mode-gateway',
+      PolicyEngineConfiguration: Match.objectLike({
+        Mode: 'FUTURE_MODE',
+      }),
+    });
+  });
+});
+
+describe('Gateway PolicyEngine association', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack');
+  });
+
+  test('Should automatically grant GetPolicyEngine to gateway role scoped to policy engine ARN', () => {
+    const policyEngine = new PolicyEngine(stack, 'PolicyEngine', {
+      policyEngineName: 'test_policy_engine',
+    });
+
+    new Gateway(stack, 'Gateway', {
+      policyEngineConfiguration: { policyEngine },
+    });
+
+    const template = Template.fromStack(stack, { skipCyclicalDependenciesCheck: true });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:GetPolicyEngine',
+            Effect: 'Allow',
+            Resource: Match.objectLike({
+              'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('PolicyEngine.*'), 'PolicyEngineArn']),
+            }),
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should automatically grant AuthorizeAction and PartiallyAuthorizeActions to both policy engine and gateway ARNs', () => {
+    const policyEngine = new PolicyEngine(stack, 'PolicyEngine2', {
+      policyEngineName: 'test_policy_engine_2',
+    });
+
+    new Gateway(stack, 'Gateway2', {
+      policyEngineConfiguration: {
+        policyEngine,
+        mode: PolicyEngineMode.ENFORCE,
+      },
+    });
+
+    const template = Template.fromStack(stack, { skipCyclicalDependenciesCheck: true });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: Match.arrayWith([
+              'bedrock-agentcore:AuthorizeAction',
+              'bedrock-agentcore:PartiallyAuthorizeActions',
+            ]),
+            Effect: 'Allow',
+            Resource: Match.arrayWith([
+              Match.objectLike({
+                'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('PolicyEngine2.*'), 'PolicyEngineArn']),
+              }),
+              Match.objectLike({
+                'Fn::Join': ['', Match.arrayWith([Match.stringLikeRegexp(':gateway/.+-\\?{10}')])],
+              }),
+            ]),
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should set PolicyEngineConfiguration on the CfnGateway with ENFORCE as default mode', () => {
+    const policyEngine = new PolicyEngine(stack, 'PolicyEngine3', {
+      policyEngineName: 'test_policy_engine_3',
+    });
+
+    new Gateway(stack, 'Gateway3', {
+      gatewayName: 'test-gateway-3',
+      policyEngineConfiguration: { policyEngine },
+    });
+
+    const template = Template.fromStack(stack, { skipCyclicalDependenciesCheck: true });
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      Name: 'test-gateway-3',
+      PolicyEngineConfiguration: {
+        Arn: Match.objectLike({
+          'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('PolicyEngine3.*'), 'PolicyEngineArn']),
+        }),
+        Mode: 'ENFORCE',
+      },
+    });
+  });
+
+  test('Should set PolicyEngineConfiguration with ENFORCE mode when specified', () => {
+    const policyEngine = new PolicyEngine(stack, 'PolicyEngine4', {
+      policyEngineName: 'test_policy_engine_4',
+    });
+
+    new Gateway(stack, 'Gateway4', {
+      gatewayName: 'test-gateway-4',
+      policyEngineConfiguration: {
+        policyEngine,
+        mode: PolicyEngineMode.ENFORCE,
+      },
+    });
+
+    const template = Template.fromStack(stack, { skipCyclicalDependenciesCheck: true });
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      Name: 'test-gateway-4',
+      PolicyEngineConfiguration: {
+        Mode: 'ENFORCE',
+      },
+    });
+  });
+
+  test('Should not set PolicyEngineConfiguration when not provided', () => {
+    new Gateway(stack, 'GatewayNoPolicyEngine', {
+      gatewayName: 'no-policy-engine-gateway',
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      Name: 'no-policy-engine-gateway',
+      PolicyEngineConfiguration: Match.absent(),
     });
   });
 });
