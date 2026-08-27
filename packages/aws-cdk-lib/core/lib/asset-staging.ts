@@ -208,7 +208,7 @@ export class AssetStaging extends Construct {
       // Check if we actually have to bundle for this stack
       skip = !stackOf(this).bundlingRequired;
       const bundling = props.bundling;
-      stageThisAsset = () => this.stageByBundling(bundling, skip, ignoreStrategy, props.follow);
+      stageThisAsset = () => this.stageByBundling(bundling, skip, props, props.follow);
     } else {
       stageThisAsset = () => this.stageByCopying();
     }
@@ -330,7 +330,7 @@ export class AssetStaging extends Construct {
    *
    * Optionally skip, in which case we pretend we did something but we don't really.
    */
-  private stageByBundling(bundling: BundlingOptions, skip: boolean, ignore: IgnoreStrategy, followMode?: SymlinkFollowMode): StagedAsset {
+  private stageByBundling(bundling: BundlingOptions, skip: boolean, props: AssetStagingProps, followMode?: SymlinkFollowMode): StagedAsset {
     if (!this.sourceStats.isDirectory()) {
       throw new ValidationError(lit`AssetExpectedDirectoryForBundling`, `Asset ${this.sourcePath} is expected to be a directory when bundling`, this);
     }
@@ -362,6 +362,7 @@ export class AssetStaging extends Construct {
 
     // Check bundling output content and determine if we will need to archive
     const bundlingOutputType = bundling.outputType ?? BundlingOutput.AUTO_DISCOVER;
+    const ignore = IgnoreStrategy.fromCopyOptions(props, bundleDir);
     const bundledAsset = determineBundledAsset(this, bundleDir, bundlingOutputType, ignore, followMode);
 
     // Calculate assetHash afterwards if we still must

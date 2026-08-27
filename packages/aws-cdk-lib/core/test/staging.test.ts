@@ -1941,7 +1941,7 @@ describe('staging', () => {
       // THEN - the output directory is staged as it was bundled, symlink intact
       expect(staging.packaging).toEqual(FileAssetPackaging.ZIP_DIRECTORY);
       expect(staging.isArchive).toEqual(true);
-      expect(fs.readdirSync(staging.absoluteStagedPath).sort()).toEqual(['local-link.txt', 'test.txt']);
+      expect(fs.readdirSync(staging.absoluteStagedPath).sort()).toEqual(['file2.txt', 'local-link.txt', 'test.txt']);
       const link = path.join(staging.absoluteStagedPath, 'local-link.txt');
       expect(fs.lstatSync(link).isSymbolicLink()).toBe(true);
       expect(fs.readlinkSync(link)).toEqual('test.txt');
@@ -2003,6 +2003,33 @@ describe('staging', () => {
         'subdir2',
         'subdir4',
       ]);
+    });
+
+    test('passes under mode BLOCK_EXTERNAL if the bundling output contains an external symlink and the external link is ignored', () => {
+      // GIVEN
+      const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+      const stack = new Stack(app, 'stack');
+
+      // WHEN
+      const staging = new AssetStaging(stack, 'Asset', {
+        sourcePath: path.join(__dirname, 'fs', 'fixtures', 'test1', 'subdir'),
+        assetHashType: AssetHashType.OUTPUT,
+        follow: SymlinkFollowMode.BLOCK_EXTERNAL,
+        bundling: {
+          image: DockerImage.fromRegistry('alpine'),
+          command: [DockerStubCommand.DIR_WITH_EXTERNAL_SYMLINK],
+          outputType: BundlingOutput.NOT_ARCHIVED,
+        },
+        exclude: ['payload.zip'],
+      });
+
+      // THEN - the symlink is excluded from validation, but the bundling output is still
+      // staged as a whole, symlink intact
+      expect(fs.readdirSync(staging.absoluteStagedPath).sort()).toEqual([
+        'file2.txt',
+        'payload.zip',
+      ]);
+      expect(fs.lstatSync(path.join(staging.absoluteStagedPath, 'payload.zip')).isSymbolicLink()).toBe(true);
     });
 
     test('does not fail under mode BLOCK_EXTERNAL if the excluded symlink points to an external directory', () => {
