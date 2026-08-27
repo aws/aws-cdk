@@ -492,6 +492,7 @@ export class Distribution extends Resource implements IDistribution {
       namespace: 'AWS/CloudFront',
       metricName,
       dimensionsMap: { DistributionId: this.distributionId, Region: 'Global' },
+      region: 'us-east-1',
       ...props,
     });
   }

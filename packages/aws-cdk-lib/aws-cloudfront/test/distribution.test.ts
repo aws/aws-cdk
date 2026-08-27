@@ -1550,6 +1550,7 @@ describe('Distribution metrics tests', () => {
       namespace: 'AWS/CloudFront',
       metricName: metric.name,
       dimensions: { DistributionId: dist.distributionId, Region: 'Global' },
+      region: 'us-east-1',
       statistic: metric.statistic,
       period: Duration.minutes(5),
     }));
