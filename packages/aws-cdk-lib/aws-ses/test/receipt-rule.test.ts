@@ -170,6 +170,22 @@ describe('receipt rule', () => {
     });
   });
 
+  test('receiptRuleRef of a rule carries its own name and its rule set', () => {
+    // GIVEN
+    const stack = new Stack();
+    const ruleSet = new ReceiptRuleSet(stack, 'RuleSet');
+
+    // WHEN
+    const rule = new ReceiptRule(stack, 'Rule', {
+      ruleSet,
+      receiptRuleName: 'MyRule',
+    });
+
+    // THEN
+    expect(stack.resolve(rule.receiptRuleRef.ruleName)).toEqual({ Ref: 'Rule4C995B7F' });
+    expect(stack.resolve(rule.receiptRuleRef.ruleSetName)).toEqual({ Ref: 'RuleSetE30C6C48' });
+  });
+
   test('fails to read the rule set name of a rule imported by name', () => {
     // GIVEN
     const stack = new Stack();
@@ -180,7 +196,7 @@ describe('receipt rule', () => {
     // THEN - the rule name is still readable, only the rule set is unknown
     expect(rule.receiptRuleRef.ruleName).toEqual('MyRule');
     expect(() => rule.receiptRuleRef.ruleSetName).toThrow(
-      'the rule set of a receipt rule imported by rule name is not known - import the rule set with ReceiptRuleSet.fromReceiptRuleSetName() and add the rule to it instead',
+      'ruleSetName is not available on a ReceiptRule imported by rule name, which does not identify the rule set the rule belongs to',
     );
   });
 

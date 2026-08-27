@@ -126,7 +126,7 @@ export class ReceiptRule extends Resource implements IReceiptRule {
           ruleName: receiptRuleName,
           get ruleSetName(): string {
             throw new UnscopedValidationError(lit`CannotAccessRuleSetNameOfImportedReceiptRule`,
-              'the rule set of a receipt rule imported by rule name is not known - import the rule set with ReceiptRuleSet.fromReceiptRuleSetName() and add the rule to it instead');
+              'ruleSetName is not available on a ReceiptRule imported by rule name, which does not identify the rule set the rule belongs to');
           },
         };
       }

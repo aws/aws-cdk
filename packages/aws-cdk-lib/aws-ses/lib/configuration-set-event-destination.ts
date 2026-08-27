@@ -288,7 +288,7 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
           configurationSetEventDestinationId,
           get configurationSetName(): string {
             throw new UnscopedValidationError(lit`CannotAccessConfigurationSetNameOfImportedEventDestination`,
-              'the configuration set of an event destination imported by id is not known - import the configuration set with ConfigurationSet.fromConfigurationSetName() and add the event destination to it instead');
+              'configurationSetName is not available on a ConfigurationSetEventDestination imported by id, which does not identify the configuration set it belongs to');
           },
         };
       }
@@ -339,7 +339,7 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
               'AWS:SourceArn': Stack.of(scope).formatArn({
                 service: 'ses',
                 resource: 'configuration-set',
-                resourceName: props.configurationSet.configurationSetRef.configurationSetName,
+                resourceName: this.configurationSetName,
               }),
             },
           },
@@ -361,7 +361,7 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
     }
 
     const configurationSet = new CfnConfigurationSetEventDestination(this, 'Resource', {
-      configurationSetName: props.configurationSet.configurationSetRef.configurationSetName,
+      configurationSetName: this.configurationSetName,
       eventDestination: {
         name: this.physicalName,
         enabled: props.enabled ?? true,
@@ -396,7 +396,7 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
         conditions: {
           StringEquals: {
             'AWS:SourceAccount': this.env.account,
-            'AWS:SourceArn': `arn:${Aws.PARTITION}:ses:${this.env.region}:${this.env.account}:configuration-set/${props.configurationSet.configurationSetRef.configurationSetName}`,
+            'AWS:SourceArn': `arn:${Aws.PARTITION}:ses:${this.env.region}:${this.env.account}:configuration-set/${this.configurationSetName}`,
           },
         },
       }));

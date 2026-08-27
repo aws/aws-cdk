@@ -142,6 +142,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
       public get dbParameterGroupRef(): aws_rds.DBParameterGroupReference {
         return {
           dbParameterGroupName: parameterGroupName,
+          // A cluster parameter group is `cluster-pg`; read dbClusterParameterGroupRef for one.
           dbParameterGroupArn: Stack.of(scope).formatArn({
             service: 'rds',
             resource: 'pg',
@@ -290,15 +291,17 @@ export class ParameterGroup extends Resource implements IParameterGroup {
    * A reference to this parameter group as a DB parameter group
    */
   public get dbParameterGroupRef(): aws_rds.DBParameterGroupReference {
-    const instanceCfnGroup = this.instanceCfnGroup;
+    const self = this;
     return {
-      dbParameterGroupName: instanceCfnGroup?.ref ?? this.name ?? '',
+      get dbParameterGroupName(): string {
+        return self.instanceCfnGroup?.ref ?? self.name ?? '';
+      },
       get dbParameterGroupArn(): string {
-        if (!instanceCfnGroup) {
+        if (!self.instanceCfnGroup) {
           throw new UnscopedValidationError(lit`CannotAccessDbParameterGroupArnOfUnboundParameterGroup`,
             'this ParameterGroup is not bound to a DB instance, so it has no DB parameter group ARN - bind it with bindToInstance() or create it with ParameterGroup.forInstance()');
         }
-        return instanceCfnGroup.attrDbParameterGroupArn;
+        return self.instanceCfnGroup.attrDbParameterGroupArn;
       },
     };
   }

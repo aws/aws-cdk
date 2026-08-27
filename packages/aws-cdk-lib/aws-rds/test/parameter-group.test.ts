@@ -345,6 +345,39 @@ describe('parameter group', () => {
     expect(parameterGroup.dbParameterGroupRef.dbParameterGroupName).toEqual('my-group');
   });
 
+  test('dbParameterGroupRef of a forInstance() group points at the created L1', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const parameterGroup = ParameterGroup.forInstance(stack, 'Params', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+    });
+
+    // THEN
+    expect(stack.resolve(parameterGroup.dbParameterGroupRef.dbParameterGroupArn)).toEqual({
+      'Fn::GetAtt': ['ParamsA8366201', 'DBParameterGroupArn'],
+    });
+  });
+
+  test('dbParameterGroupRef read before binding still resolves once the group is bound', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const parameterGroup = new ParameterGroup(stack, 'Params', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+    });
+    const ref = parameterGroup.dbParameterGroupRef;
+
+    // WHEN
+    parameterGroup.bindToInstance({});
+
+    // THEN
+    expect(stack.resolve(ref.dbParameterGroupArn)).toEqual({
+      'Fn::GetAtt': ['ParamsA8366201', 'DBParameterGroupArn'],
+    });
+    expect(stack.resolve(ref.dbParameterGroupName)).toEqual({ Ref: 'ParamsA8366201' });
+  });
+
   test('fails to read dbParameterGroupArn of a cluster-only parameter group', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -353,10 +386,21 @@ describe('parameter group', () => {
       name: 'my-group',
     });
 
-    // THEN - the name is still readable, only the ARN is unavailable
-    expect(parameterGroup.dbParameterGroupRef.dbParameterGroupName).toEqual('my-group');
+    // THEN
     expect(() => parameterGroup.dbParameterGroupRef.dbParameterGroupArn).toThrow(
       'this ParameterGroup is not bound to a DB instance, so it has no DB parameter group ARN - bind it with bindToInstance() or create it with ParameterGroup.forInstance()',
     );
+  });
+
+  test('dbParameterGroupName is empty for an unbound parameter group with no configured name', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const parameterGroup = new ParameterGroup(stack, 'Params', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+    });
+
+    // THEN
+    expect(parameterGroup.dbParameterGroupRef.dbParameterGroupName).toEqual('');
+    expect(parameterGroup.dbClusterParameterGroupRef.dbClusterParameterGroupName).toEqual('');
   });
 });

@@ -326,6 +326,22 @@ test('fails to read the configuration set name of an event destination imported 
   // THEN - the destination id is still readable, only the configuration set is unknown
   expect(destination.configurationSetEventDestinationRef.configurationSetEventDestinationId).toEqual('MyDestination');
   expect(() => destination.configurationSetEventDestinationRef.configurationSetName).toThrow(
-    'the configuration set of an event destination imported by id is not known - import the configuration set with ConfigurationSet.fromConfigurationSetName() and add the event destination to it instead',
+    'configurationSetName is not available on a ConfigurationSetEventDestination imported by id, which does not identify the configuration set it belongs to',
   );
+});
+
+test('configurationSetEventDestinationRef of a destination carries its id and configuration set', () => {
+  const topic = new sns.Topic(stack, 'Topic');
+
+  const destination = new ConfigurationSetEventDestination(stack, 'Sns', {
+    configurationSet,
+    destination: EventDestination.snsTopic(topic),
+  });
+
+  expect(stack.resolve(destination.configurationSetEventDestinationRef.configurationSetName)).toEqual({
+    Ref: 'ConfigurationSet3DD38186',
+  });
+  expect(stack.resolve(destination.configurationSetEventDestinationRef.configurationSetEventDestinationId)).toEqual({
+    'Fn::GetAtt': ['SnsF4DBA8AD', 'Id'],
+  });
 });
