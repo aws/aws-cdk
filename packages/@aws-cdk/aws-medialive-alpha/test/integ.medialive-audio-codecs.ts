@@ -24,7 +24,7 @@ const video = medialive.EncodeConfiguration.video({
   name: 'h264-1080p',
   width: 1920,
   height: 1080,
-  codecSettings: medialive.VideoCodecSettings.h264({
+  codec: medialive.VideoCodecSettings.h264({
     rateControl: medialive.H264RateControl.cbr({ bitrate: cdk.Bitrate.mbps(5) }),
     framerate: medialive.Framerate.FPS_29_97,
   }),
@@ -33,7 +33,7 @@ const video = medialive.EncodeConfiguration.video({
 // Dolby Digital (AC3) 5.1
 const ac3 = medialive.EncodeConfiguration.audio({
   name: 'ac3-surround',
-  codecSettings: medialive.AudioCodecSettings.ac3({
+  codec: medialive.AudioCodecSettings.ac3({
     bitrate: cdk.Bitrate.kbps(384),
     codingMode: medialive.Ac3CodingMode.CODING_MODE_3_2_LFE,
   }),
@@ -41,7 +41,7 @@ const ac3 = medialive.EncodeConfiguration.audio({
 // Dolby Digital Plus (EAC3) 5.1
 const eac3 = medialive.EncodeConfiguration.audio({
   name: 'eac3-surround',
-  codecSettings: medialive.AudioCodecSettings.eac3({
+  codec: medialive.AudioCodecSettings.eac3({
     bitrate: cdk.Bitrate.kbps(256),
     codingMode: medialive.Eac3CodingMode.CODING_MODE_3_2,
   }),
@@ -49,14 +49,14 @@ const eac3 = medialive.EncodeConfiguration.audio({
 // Dolby Atmos
 const atmos = medialive.EncodeConfiguration.audio({
   name: 'eac3-atmos',
-  codecSettings: medialive.AudioCodecSettings.eac3Atmos({
+  codec: medialive.AudioCodecSettings.eac3Atmos({
     codingMode: medialive.Eac3AtmosCodingMode.CODING_MODE_5_1_4,
   }),
 });
 // MPEG-1 Layer II
 const mp2 = medialive.EncodeConfiguration.audio({
   name: 'mp2-stereo',
-  codecSettings: medialive.AudioCodecSettings.mp2({
+  codec: medialive.AudioCodecSettings.mp2({
     bitrate: cdk.Bitrate.kbps(192),
     codingMode: medialive.Mp2CodingMode.CODING_MODE_2_0,
   }),

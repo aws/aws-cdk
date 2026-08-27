@@ -200,6 +200,18 @@ export abstract class OutputGroupConfiguration {
    * @internal
    */
   public _hasSrtListenerDestination(): boolean { return false; }
+  /**
+   * HLS uses this to select a compatible default program-date-time clock
+   * (the service requires INITIALIZE_FROM_OUTPUT_TIMECODE for epoch locking).
+   * @internal
+   */
+  public _setEpochLocking(_active: boolean): void {}
+  /**
+   * Whether this group explicitly requests an HLS program date time clock of SYSTEM_CLOCK, which
+   * is incompatible with epoch output locking. Only HLS groups can return true.
+   * @internal
+   */
+  public _hasExplicitSystemClock(): boolean { return false; }
 }
 
 // =============================================================================
@@ -528,7 +540,7 @@ export interface HlsOutputGroupProps {
   readonly destinations: OutputDestination[];
   /**
    * The length of each media segment. HLS supports whole-second segments only.
-   * @default - Segment.seconds(6)
+   * @default - Segment.seconds(2)
    */
   readonly segment?: Segment;
   /**
@@ -685,12 +697,13 @@ export interface HlsOutputGroupProps {
   readonly outputSelection?: HlsOutputSelection;
   /**
    * Includes or excludes the EXT-X-PROGRAM-DATE-TIME tag in .m3u8 manifest files.
-   * @default HlsProgramDateTime.EXCLUDE
+   * @default HlsProgramDateTime.INCLUDE
    */
   readonly programDateTime?: HlsProgramDateTime;
   /**
    * Specifies the algorithm used to drive the HLS EXT-X-PROGRAM-DATE-TIME clock.
-   * @default HlsProgramDateTimeClock.INITIALIZE_FROM_OUTPUT_TIMECODE
+   *
+   * @default - HlsProgramDateTimeClock.SYSTEM_CLOCK, or INITIALIZE_FROM_OUTPUT_TIMECODE with epoch locking
    */
   readonly programDateTimeClock?: HlsProgramDateTimeClock;
   /**
@@ -965,7 +978,7 @@ export interface CmafIngestOutputGroupProps {
   readonly scte35NameModifier?: string;
   /**
    * The SCTE-35 type for the CMAF ingest output.
-   * @default Scte35Type.NONE
+   * @default Scte35Type.SCTE_35_WITHOUT_SEGMENTATION
    */
   readonly scte35Type?: Scte35Type;
   /**
@@ -1284,9 +1297,26 @@ class MediaConnectRouterOutputGroupConfiguration extends OutputGroupConfiguratio
 /** @internal */
 class HlsOutputGroupConfiguration extends OutputGroupConfiguration {
   public override readonly _name: string;
+  private epochLocking = false;
   constructor(private readonly props: HlsOutputGroupProps) {
     super();
     this._name = props.name;
+  }
+  public override _setEpochLocking(active: boolean): void {
+    this.epochLocking = active;
+  }
+  /**
+   * The default program date time clock. Epoch output locking requires
+   * INITIALIZE_FROM_OUTPUT_TIMECODE; otherwise SYSTEM_CLOCK.
+   */
+  private _defaultProgramDateTimeClock(): HlsProgramDateTimeClock {
+    return this.epochLocking
+      ? HlsProgramDateTimeClock.INITIALIZE_FROM_OUTPUT_TIMECODE
+      : HlsProgramDateTimeClock.SYSTEM_CLOCK;
+  }
+  /** Whether the user explicitly set an incompatible SYSTEM_CLOCK program-date-time clock. @internal */
+  public _hasExplicitSystemClock(): boolean {
+    return this.props.programDateTimeClock?.value === HlsProgramDateTimeClock.SYSTEM_CLOCK.value;
   }
   public _createInitialOutputs(): Output[] {
     return (this.props.outputs ?? []).map(def => new HlsOutput(def));
@@ -1295,7 +1325,7 @@ class HlsOutputGroupConfiguration extends OutputGroupConfiguration {
     return {
       hlsGroupSettings: {
         destination: { destinationRefId: toDestinationId(this.props.name) },
-        segmentLength: this.props.segment?._toSeconds() ?? 6,
+        segmentLength: this.props.segment?._toSeconds() ?? 2,
         keepSegments: this.props.keepSegments ?? 21,
         indexNSegments: this.props.indexNSegments ?? 10,
         mode: (this.props.mode ?? HlsMode.LIVE).value,
@@ -1326,8 +1356,8 @@ class HlsOutputGroupConfiguration extends OutputGroupConfiguration {
         manifestCompression: (this.props.manifestCompression ?? HlsManifestCompression.NONE).value,
         manifestDurationFormat: (this.props.manifestDurationFormat ?? HlsManifestDurationFormat.FLOATING_POINT).value,
         outputSelection: (this.props.outputSelection ?? HlsOutputSelection.MANIFESTS_AND_SEGMENTS).value,
-        programDateTime: (this.props.programDateTime ?? HlsProgramDateTime.EXCLUDE).value,
-        programDateTimeClock: (this.props.programDateTimeClock ?? HlsProgramDateTimeClock.INITIALIZE_FROM_OUTPUT_TIMECODE).value,
+        programDateTime: (this.props.programDateTime ?? HlsProgramDateTime.INCLUDE).value,
+        programDateTimeClock: (this.props.programDateTimeClock ?? this._defaultProgramDateTimeClock()).value,
         programDateTimePeriod: this.props.programDateTimePeriod?.toSeconds() ?? 600,
         redundantManifest: (this.props.redundantManifest ?? HlsRedundantManifest.DISABLED).value,
         segmentationMode: (this.props.segmentationMode ?? HlsSegmentationMode.USE_SEGMENT_DURATION).value,
@@ -1348,6 +1378,14 @@ class HlsOutputGroupConfiguration extends OutputGroupConfiguration {
         throw new UnscopedValidationError(
           lit`HlsDestinationTrailingSlash`,
           `HLS output group '${this._name}' destination URL must be a file prefix, not a folder (got '${bound.url}'). Remove the trailing slash.`,
+        );
+      }
+      // An https destination pushes to a CDN/web server, which requires hlsCdnSettings.
+      if (bound.url && !Token.isUnresolved(bound.url) && bound.url.startsWith('https://')
+        && this.props.hlsCdnSettings === undefined) {
+        throw new UnscopedValidationError(
+          lit`HlsHttpsDestinationRequiresCdnSettings`,
+          `HLS output group '${this._name}' uses an https destination URL, which requires hlsCdnSettings to be set (e.g. HlsCdnSettings.basicPut(), .akamai(), or .webdav()).`,
         );
       }
       return bound;
@@ -1572,7 +1610,7 @@ class CmafIngestOutputGroupConfiguration extends OutputGroupConfiguration {
         nielsenId3Behavior: (this.props.nielsenId3Behavior ?? NielsenId3Behavior.NO_PASSTHROUGH).value,
         nielsenId3NameModifier: this.props.nielsenId3NameModifier,
         scte35NameModifier: this.props.scte35NameModifier,
-        scte35Type: (this.props.scte35Type ?? Scte35Type.NONE).value,
+        scte35Type: (this.props.scte35Type ?? Scte35Type.SCTE_35_WITHOUT_SEGMENTATION).value,
         sendDelayMs: this.props.sendDelayMs,
         timedMetadataId3Frame: (this.props.timedMetadataId3Frame ?? TimedMetadataId3Frame.NONE).value,
         timedMetadataId3Period: this.props.timedMetadataId3Period?.toSeconds() ?? 10,

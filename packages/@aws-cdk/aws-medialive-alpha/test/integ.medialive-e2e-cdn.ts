@@ -37,7 +37,7 @@ const video1080 = medialive.EncodeConfiguration.video({
   name: 'video_1080p',
   width: 1920,
   height: 1080,
-  codecSettings: medialive.VideoCodecSettings.h264({
+  codec: medialive.VideoCodecSettings.h264({
     profile: medialive.H264Profile.HIGH,
     rateControl: medialive.H264RateControl.cbr({ bitrate: Bitrate.mbps(5) }),
     framerate: medialive.Framerate.FPS_29_97,
@@ -51,7 +51,7 @@ const video720 = medialive.EncodeConfiguration.video({
   name: 'video_720p',
   width: 1280,
   height: 720,
-  codecSettings: medialive.VideoCodecSettings.h264({
+  codec: medialive.VideoCodecSettings.h264({
     profile: medialive.H264Profile.HIGH,
     rateControl: medialive.H264RateControl.cbr({ bitrate: Bitrate.mbps(3) }),
     framerate: medialive.Framerate.FPS_29_97,
@@ -63,7 +63,7 @@ const video720 = medialive.EncodeConfiguration.video({
 
 const audioStereo = medialive.EncodeConfiguration.audio({
   name: 'audio_aac_stereo',
-  codecSettings: medialive.AudioCodecSettings.aac({
+  codec: medialive.AudioCodecSettings.aac({
     bitrate: Bitrate.kbps(192),
     profile: medialive.AacProfile.LC,
     codingMode: medialive.AacCodingMode.CODING_MODE_2_0,

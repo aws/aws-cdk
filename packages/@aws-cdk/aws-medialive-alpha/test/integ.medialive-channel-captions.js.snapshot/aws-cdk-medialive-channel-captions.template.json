@@ -120,7 +120,6 @@
        "DestinationSettings": {
         "BurnInDestinationSettings": {
          "Alignment": "CENTERED",
-         "BackgroundOpacity": 0,
          "FontColor": "WHITE",
          "FontOpacity": 255,
          "FontResolution": 96,

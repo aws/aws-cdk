@@ -28,7 +28,7 @@ const video = medialive.EncodeConfiguration.video({
   name: 'h264-720p',
   width: 1280,
   height: 720,
-  codecSettings: medialive.VideoCodecSettings.h264({
+  codec: medialive.VideoCodecSettings.h264({
     framerate: medialive.Framerate.FPS_29_97,
     rateControl: medialive.H264RateControl.cbr({ bitrate: cdk.Bitrate.mbps(3) }),
   }),
@@ -42,11 +42,11 @@ const burnIn = medialive.EncodeConfiguration.caption({
   destination: medialive.CaptionDestination.burnIn({
     alignment: medialive.CaptionAlignment.CENTERED,
     fontColor: medialive.CaptionFontColor.WHITE,
-    font: medialive.FileLocation.fromBucket(assetsBucket, 'fonts/Roboto.ttf'),
+    font: medialive.FileLocation.fromBucket(assetsBucket, 'fonts/caption-font.ttf'),
   }),
 });
 
-const audio = medialive.EncodeConfiguration.audio({ name: 'aac-stereo' });
+const audio = medialive.EncodeConfiguration.audio({ name: 'aac-stereo', codec: medialive.AudioCodecSettings.aac() });
 
 const channel = new medialive.Channel(stack, 'Channel', {
   channelName: 'file-locations',

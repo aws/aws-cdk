@@ -36,7 +36,7 @@ const videoEncode = medialive.EncodeConfiguration.video({
   name: 'video-720p',
   width: 1280,
   height: 720,
-  codecSettings: medialive.VideoCodecSettings.h264({
+  codec: medialive.VideoCodecSettings.h264({
     rateControl: medialive.H264RateControl.cbr({ bitrate: cdk.Bitrate.mbps(3) }),
     framerate: medialive.Framerate.FPS_29_97,
   }),
@@ -44,6 +44,7 @@ const videoEncode = medialive.EncodeConfiguration.video({
 
 const audioEncode = medialive.EncodeConfiguration.audio({
   name: 'aac-stereo',
+  codec: medialive.AudioCodecSettings.aac(),
 });
 
 // --- Frame capture encode with interval ---
@@ -51,7 +52,7 @@ const frameCapture = medialive.EncodeConfiguration.video({
   name: 'frame-capture',
   width: 640,
   height: 360,
-  codecSettings: medialive.VideoCodecSettings.frameCapture({
+  codec: medialive.VideoCodecSettings.frameCapture({
     captureInterval: cdk.Duration.seconds(5),
   }),
 });

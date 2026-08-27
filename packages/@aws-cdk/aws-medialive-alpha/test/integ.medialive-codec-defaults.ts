@@ -35,7 +35,7 @@ const h264 = medialive.EncodeConfiguration.video({
   name: 'h264',
   width: 1920,
   height: 1080,
-  codecSettings: medialive.VideoCodecSettings.h264(),
+  codec: medialive.VideoCodecSettings.h264(),
 });
 
 // H.265 — no rate control set
@@ -43,12 +43,12 @@ const h265 = medialive.EncodeConfiguration.video({
   name: 'h265',
   width: 1920,
   height: 1080,
-  codecSettings: medialive.VideoCodecSettings.h265({
+  codec: medialive.VideoCodecSettings.h265({
     framerate: medialive.Framerate.FPS_29_97,
   }),
 });
 
-const audio = medialive.EncodeConfiguration.audio({ name: 'aac' });
+const audio = medialive.EncodeConfiguration.audio({ name: 'aac', codec: medialive.AudioCodecSettings.aac() });
 
 new medialive.Channel(stack, 'H264Channel', {
   channelName: 'codec-defaults-h264',

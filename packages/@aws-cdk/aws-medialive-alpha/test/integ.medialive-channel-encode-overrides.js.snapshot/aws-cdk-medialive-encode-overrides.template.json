@@ -411,7 +411,7 @@
          "Id3Behavior": "DISABLED",
          "KlvBehavior": "NO_PASSTHROUGH",
          "NielsenId3Behavior": "NO_PASSTHROUGH",
-         "Scte35Type": "NONE",
+         "Scte35Type": "SCTE_35_WITHOUT_SEGMENTATION",
          "SegmentLength": 1,
          "SegmentLengthUnits": "SECONDS",
          "TimedMetadataId3Frame": "NONE",

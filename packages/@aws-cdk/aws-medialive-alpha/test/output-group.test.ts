@@ -43,7 +43,7 @@ function video() {
     name: 'video',
     width: 1280,
     height: 720,
-    codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+    codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
   });
 }
 
@@ -52,7 +52,7 @@ function frameCaptureVideo() {
     name: 'frame-capture-video',
     width: 1280,
     height: 720,
-    codecSettings: VideoCodecSettings.frameCapture(),
+    codec: VideoCodecSettings.frameCapture(),
   });
 }
 
@@ -332,6 +332,50 @@ describe('HlsCdnSettings', () => {
                 HlsCdnSettings: {
                   HlsWebdavSettings: Match.objectLike({ HttpTransferMode: 'NON_CHUNKED' }),
                 },
+              }),
+            },
+          }),
+        ]),
+      }),
+    });
+  });
+
+  test('fails when an https destination has no hlsCdnSettings', () => {
+    expect(() => {
+      new Channel(stack, 'HlsHttpsChannel', {
+        inputs: [{ input: defaultInput }],
+        outputGroups: [
+          OutputGroupConfiguration.hls({
+            name: 'hls',
+            destinations: [OutputDestination.url('https://cdn.example.com/live/stream')],
+            outputs: [{ encodes: [video()], outputName: 'out' }],
+          }),
+        ],
+      });
+      Template.fromStack(stack);
+    }).toThrow(/https destination URL, which requires hlsCdnSettings/);
+  });
+
+  test('accepts an https destination when hlsCdnSettings is set', () => {
+    new Channel(stack, 'HlsHttpsOkChannel', {
+      inputs: [{ input: defaultInput }],
+      outputGroups: [
+        OutputGroupConfiguration.hls({
+          name: 'hls',
+          destinations: [OutputDestination.url('https://cdn.example.com/live/stream')],
+          hlsCdnSettings: HlsCdnSettings.basicPut(),
+          outputs: [{ encodes: [video()], outputName: 'out' }],
+        }),
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::MediaLive::Channel', {
+      EncoderSettings: Match.objectLike({
+        OutputGroups: Match.arrayWith([
+          Match.objectLike({
+            OutputGroupSettings: {
+              HlsGroupSettings: Match.objectLike({
+                HlsCdnSettings: { HlsBasicPutSettings: Match.anyValue() },
               }),
             },
           }),

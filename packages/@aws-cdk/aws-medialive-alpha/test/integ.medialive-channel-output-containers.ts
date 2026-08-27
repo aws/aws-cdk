@@ -21,16 +21,16 @@ const video = medialive.EncodeConfiguration.video({
   name: 'h264-720p',
   width: 1280,
   height: 720,
-  codecSettings: medialive.VideoCodecSettings.h264({
+  codec: medialive.VideoCodecSettings.h264({
     framerate: medialive.Framerate.FPS_29_97,
     rateControl: medialive.H264RateControl.cbr({ bitrate: cdk.Bitrate.mbps(3) }),
   }),
 });
-const audio = medialive.EncodeConfiguration.audio({ name: 'aac-stereo' });
+const audio = medialive.EncodeConfiguration.audio({ name: 'aac-stereo', codec: medialive.AudioCodecSettings.aac() });
 
 const rawAudio = medialive.EncodeConfiguration.audio({
   name: 'wav-raw',
-  codecSettings: medialive.AudioCodecSettings.wav({
+  codec: medialive.AudioCodecSettings.wav({
     codingMode: medialive.WavCodingMode.CODING_MODE_2_0,
   }),
 });

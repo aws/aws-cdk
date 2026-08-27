@@ -19,7 +19,7 @@ const h264 = medialive.EncodeConfiguration.video({
   name: 'h264-overrides',
   width: 1280,
   height: 720,
-  codecSettings: medialive.VideoCodecSettings.h264({
+  codec: medialive.VideoCodecSettings.h264({
     framerate: medialive.Framerate.FPS_29_97,
     rateControl: medialive.H264RateControl.cbr({ bitrate: cdk.Bitrate.mbps(3) }),
     profile: medialive.H264Profile.HIGH,
@@ -36,7 +36,7 @@ const h264High422 = medialive.EncodeConfiguration.video({
   name: 'h264-high422',
   width: 1280,
   height: 720,
-  codecSettings: medialive.VideoCodecSettings.h264({
+  codec: medialive.VideoCodecSettings.h264({
     framerate: medialive.Framerate.FPS_29_97,
     rateControl: medialive.H264RateControl.cbr({ bitrate: cdk.Bitrate.mbps(3) }),
     profile: medialive.H264Profile.HIGH_422,
@@ -48,7 +48,7 @@ const h265 = medialive.EncodeConfiguration.video({
   name: 'h265-overrides',
   width: 1280,
   height: 720,
-  codecSettings: medialive.VideoCodecSettings.h265({
+  codec: medialive.VideoCodecSettings.h265({
     framerate: medialive.Framerate.FPS_29_97,
     rateControl: medialive.H265RateControl.cbr({ bitrate: cdk.Bitrate.mbps(3) }),
     profile: medialive.H265Profile.MAIN_10BIT,
@@ -64,7 +64,7 @@ const av1 = medialive.EncodeConfiguration.video({
   name: 'av1-overrides',
   width: 1280,
   height: 720,
-  codecSettings: medialive.VideoCodecSettings.av1({
+  codec: medialive.VideoCodecSettings.av1({
     framerate: medialive.Framerate.FPS_29_97,
     rateControl: medialive.Av1RateControl.qvbr({ maxBitrate: cdk.Bitrate.mbps(3), qvbrQualityLevel: 7 }),
     bitDepth: medialive.Av1BitDepth.BIT_DEPTH_10,
@@ -80,7 +80,7 @@ const av1 = medialive.EncodeConfiguration.video({
 // language/stream naming + a stereo channel remix.
 const aac = medialive.EncodeConfiguration.audio({
   name: 'aac-accessible',
-  codecSettings: medialive.AudioCodecSettings.aac({
+  codec: medialive.AudioCodecSettings.aac({
     bitrate: cdk.Bitrate.kbps(192),
     profile: medialive.AacProfile.LC,
     codingMode: medialive.AacCodingMode.CODING_MODE_2_0,
@@ -105,7 +105,7 @@ const aac = medialive.EncodeConfiguration.audio({
 // AC3: surround codec settings + explicit audioTypeControl override + loudness normalization.
 const ac3 = medialive.EncodeConfiguration.audio({
   name: 'ac3-main',
-  codecSettings: medialive.AudioCodecSettings.ac3({
+  codec: medialive.AudioCodecSettings.ac3({
     bitrate: cdk.Bitrate.kbps(384),
     codingMode: medialive.Ac3CodingMode.CODING_MODE_3_2_LFE,
     dialNorm: 24,
@@ -123,7 +123,7 @@ const ac3 = medialive.EncodeConfiguration.audio({
 // EAC3: a second-language track with its default (surround) coding mode + naming.
 const eac3 = medialive.EncodeConfiguration.audio({
   name: 'eac3-main',
-  codecSettings: medialive.AudioCodecSettings.eac3(),
+  codec: medialive.AudioCodecSettings.eac3(),
   languageCode: 'spa',
   streamName: 'Espanol',
 });
@@ -131,7 +131,7 @@ const eac3 = medialive.EncodeConfiguration.audio({
 // EAC3 Atmos: immersive codec + Nielsen NAES II/NW watermarking.
 const eac3Atmos = medialive.EncodeConfiguration.audio({
   name: 'eac3-atmos',
-  codecSettings: medialive.AudioCodecSettings.eac3Atmos(),
+  codec: medialive.AudioCodecSettings.eac3Atmos(),
   audioWatermarkSettings: {
     nielsenWatermarks: {
       distributionType: medialive.NielsenDistributionType.PROGRAM_CONTENT,
@@ -146,7 +146,7 @@ const frameCapture = medialive.EncodeConfiguration.video({
   name: 'thumbnails',
   width: 1280,
   height: 720,
-  codecSettings: medialive.VideoCodecSettings.frameCapture({
+  codec: medialive.VideoCodecSettings.frameCapture({
     captureInterval: cdk.Duration.millis(500),
   }),
 });

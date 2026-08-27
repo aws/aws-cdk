@@ -23,6 +23,7 @@ import { ChannelGrants } from './medialive-grants.generated';
 import type { OutputGroupConfiguration } from './output-group';
 import { OutputGroup } from './output-group';
 import { extractResourceId } from './shared';
+import { VideoCodecType } from './video-codec-settings';
 
 export {
   VideoCodecSettings,
@@ -1125,13 +1126,45 @@ export class Channel extends ChannelBase {
 
     // Epoch locking requires the output timing source to be the input clock. MediaLive rejects any
     // other timing source at deploy, so fail fast at synth.
-    if (props.globalConfiguration?.outputLocking?._mode() === OutputLockingMode.EPOCH_LOCKING
-      && props.globalConfiguration.outputTimingSource?.value === OutputTimingSource.SYSTEM_CLOCK.value) {
+    const usesEpochLocking = props.globalConfiguration?.outputLocking?._mode() === OutputLockingMode.EPOCH_LOCKING;
+    if (usesEpochLocking
+      && props.globalConfiguration?.outputTimingSource?.value === OutputTimingSource.SYSTEM_CLOCK.value) {
       throw new ValidationError(
         lit`EpochLockingTimingSource`,
         'globalConfiguration.outputTimingSource must be INPUT_CLOCK when using epoch output locking.',
         this,
       );
+    }
+
+    // Epoch locking requires an HLS program-date-time clock of INITIALIZE_FROM_OUTPUT_TIMECODE.
+    // MediaLive rejects SYSTEM_CLOCK at deploy, so: auto-correct the default under epoch locking
+    // (via _setEpochLocking), and fail fast at synth if the user explicitly chose SYSTEM_CLOCK.
+    if (usesEpochLocking) {
+      props.outputGroups.forEach(config => config._setEpochLocking(true));
+      const conflicting = props.outputGroups.some(config => config._hasExplicitSystemClock());
+      if (conflicting) {
+        throw new ValidationError(
+          lit`EpochLockingProgramDateTimeClock`,
+          'an HLS output group programDateTimeClock must be INITIALIZE_FROM_OUTPUT_TIMECODE when using epoch output locking',
+          this,
+        );
+      }
+
+      // Epoch locking requires H.264 encodes to have an explicitly specified frame rate. H.264 is
+      // the only codec that falls back to INITIALIZE_FROM_SOURCE when framerate is omitted;
+      // H.265/AV1/Frame Capture always carry an explicit rate.
+      this.node.addValidation({
+        validate: () => {
+          const offenders = this.outputGroups
+            .flatMap(og => og._collectEncodes())
+            .filter(encode => encode._videoCodecType() === VideoCodecType.H264 && !encode._hasExplicitFramerate())
+            .map(encode => encode.name);
+          return offenders.length > 0
+            ? ['epoch output locking requires an explicit frame rate on H.264 video encodes '
+              + `(e.g. Framerate.FPS_30); these encodes follow the source frame rate: ${[...new Set(offenders)].join(', ')}`]
+            : [];
+        },
+      });
     }
 
     // Create a default role if not provided. When the caller brings their own role, the channel

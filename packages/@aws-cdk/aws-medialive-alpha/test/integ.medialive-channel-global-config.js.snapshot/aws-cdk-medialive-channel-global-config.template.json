@@ -343,7 +343,7 @@
          "ManifestDurationFormat": "FLOATING_POINT",
          "Mode": "LIVE",
          "OutputSelection": "MANIFESTS_AND_SEGMENTS",
-         "ProgramDateTime": "EXCLUDE",
+         "ProgramDateTime": "INCLUDE",
          "ProgramDateTimeClock": "INITIALIZE_FROM_OUTPUT_TIMECODE",
          "ProgramDateTimePeriod": 600,
          "RedundantManifest": "DISABLED",

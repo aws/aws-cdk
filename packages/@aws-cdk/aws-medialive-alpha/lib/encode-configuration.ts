@@ -2,8 +2,7 @@ import { Token, UnscopedValidationError } from 'aws-cdk-lib';
 import type { IRole, IRoleRef } from 'aws-cdk-lib/aws-iam';
 import type { CfnChannel } from 'aws-cdk-lib/aws-medialive';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
-import { AudioCodecSettings } from './audio-codec-settings';
-import type { AudioCodecType } from './audio-codec-settings';
+import type { AudioCodecSettings, AudioCodecType } from './audio-codec-settings';
 import type { CaptionDestination } from './caption-settings';
 import type { VideoCodecSettings, VideoCodecType } from './video-codec-settings';
 
@@ -146,10 +145,11 @@ export interface VideoEncodeProps {
    */
   readonly height: number;
   /**
-   * The codec settings for the video encode.
-   * @default - service default (no codec settings emitted)
+   * The codec for the video encode.
+   *
+   * Choose the codec explicitly (e.g. `VideoCodecSettings.h264(...)`)
    */
-  readonly codecSettings?: VideoCodecSettings;
+  readonly codec: VideoCodecSettings;
   /**
    * How to respond to AFD values in the input stream.
    * @default RespondToAfd.NONE
@@ -628,10 +628,11 @@ export interface AudioEncodeProps {
    */
   readonly audioSelectorName?: string;
   /**
-   * The codec settings for the audio encode.
-   * @default - AAC with sensible defaults
+   * The codec for the audio encode.
+   *
+   * Choose the codec explicitly (e.g. `AudioCodecSettings.aac(...)`)
    */
-  readonly codecSettings?: AudioCodecSettings;
+  readonly codec: AudioCodecSettings;
   /**
    * The ISO 639-2 language code for the audio output track (e.g. 'eng', 'spa').
    * @default - follow input
@@ -705,7 +706,7 @@ class VideoEncodeConfiguration extends EncodeConfiguration {
   }
 
   public _hasExplicitFramerate(): boolean {
-    return this.props.codecSettings?._hasExplicitFramerate() ?? false;
+    return this.props.codec._hasExplicitFramerate();
   }
 
   public _bindVideo(): CfnChannel.VideoDescriptionProperty {
@@ -716,7 +717,7 @@ class VideoEncodeConfiguration extends EncodeConfiguration {
       respondToAfd: (this.props.respondToAfd ?? RespondToAfd.NONE).value,
       scalingBehavior: (this.props.scalingBehavior ?? ScalingBehavior.DEFAULT).value,
       sharpness: this.props.sharpness ?? 50,
-      codecSettings: this.props.codecSettings?._bind(),
+      codecSettings: this.props.codec._bind(),
     };
   }
 
@@ -728,8 +729,8 @@ class VideoEncodeConfiguration extends EncodeConfiguration {
     return undefined;
   }
 
-  public _videoCodecType(): VideoCodecType | undefined {
-    return this.props.codecSettings?._codecType;
+  public _videoCodecType(): VideoCodecType {
+    return this.props.codec._codecType;
   }
 
   public _audioCodecType(): undefined {
@@ -757,7 +758,7 @@ class AudioEncodeConfiguration extends EncodeConfiguration {
   }
 
   public _bindAudio(): CfnChannel.AudioDescriptionProperty {
-    const codecSettings = this.props.codecSettings ?? AudioCodecSettings.aac();
+    const codecSettings = this.props.codec;
     return {
       name: this.name,
       audioSelectorName: this.props.audioSelectorName,
@@ -815,9 +816,8 @@ class AudioEncodeConfiguration extends EncodeConfiguration {
     return undefined;
   }
 
-  public _audioCodecType(): AudioCodecType | undefined {
-    const codec = this.props.codecSettings ?? AudioCodecSettings.aac();
-    return codec._codecType;
+  public _audioCodecType(): AudioCodecType {
+    return this.props.codec._codecType;
   }
 }
 

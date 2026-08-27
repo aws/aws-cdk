@@ -17,12 +17,12 @@ function encodes() {
     name: 'video',
     width: 1280,
     height: 720,
-    codecSettings: medialive.VideoCodecSettings.h264({
+    codec: medialive.VideoCodecSettings.h264({
       rateControl: medialive.H264RateControl.cbr({ bitrate: cdk.Bitrate.mbps(3) }),
       framerate: medialive.Framerate.FPS_29_97,
     }),
   });
-  const audio = medialive.EncodeConfiguration.audio({ name: 'audio' });
+  const audio = medialive.EncodeConfiguration.audio({ name: 'audio', codec: medialive.AudioCodecSettings.aac() });
   return { video, audio };
 }
 

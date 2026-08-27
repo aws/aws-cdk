@@ -57,7 +57,7 @@ const hd = medialive.EncodeConfiguration.video({
   name: 'hd-1080p',
   width: 1920,
   height: 1080,
-  codecSettings: medialive.VideoCodecSettings.h264({
+  codec: medialive.VideoCodecSettings.h264({
     rateControl: medialive.H264RateControl.qvbr({ maxBitrate: cdk.Bitrate.mbps(8), qvbrQualityLevel: 8 }),
     profile: medialive.H264Profile.HIGH,
     framerate: medialive.Framerate.FPS_29_97,
@@ -68,7 +68,7 @@ const sd = medialive.EncodeConfiguration.video({
   name: 'sd-720p',
   width: 1280,
   height: 720,
-  codecSettings: medialive.VideoCodecSettings.h264({
+  codec: medialive.VideoCodecSettings.h264({
     rateControl: medialive.H264RateControl.cbr({ bitrate: cdk.Bitrate.mbps(2) }),
     profile: medialive.H264Profile.MAIN,
     framerate: medialive.Framerate.FPS_29_97,
@@ -79,7 +79,7 @@ const av1 = medialive.EncodeConfiguration.video({
   name: 'av1-720p',
   width: 1280,
   height: 720,
-  codecSettings: medialive.VideoCodecSettings.av1({
+  codec: medialive.VideoCodecSettings.av1({
     rateControl: medialive.Av1RateControl.qvbr({ maxBitrate: cdk.Bitrate.mbps(3) }),
     framerate: medialive.Framerate.FPS_29_97,
   }),
@@ -87,7 +87,7 @@ const av1 = medialive.EncodeConfiguration.video({
 
 const audio = medialive.EncodeConfiguration.audio({
   name: 'aac-stereo',
-  codecSettings: medialive.AudioCodecSettings.aac({
+  codec: medialive.AudioCodecSettings.aac({
     bitrate: cdk.Bitrate.kbps(192),
     codingMode: medialive.AacCodingMode.CODING_MODE_2_0,
   }),

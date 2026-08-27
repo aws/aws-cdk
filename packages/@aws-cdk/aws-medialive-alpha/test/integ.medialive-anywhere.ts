@@ -106,11 +106,11 @@ const hd = medialive.EncodeConfiguration.video({
   name: 'hd-1080p',
   width: 1920,
   height: 1080,
-  codecSettings: medialive.VideoCodecSettings.h264({
+  codec: medialive.VideoCodecSettings.h264({
     rateControl: medialive.H264RateControl.cbr({ bitrate: cdk.Bitrate.mbps(5) }),
   }),
 });
-const audio = medialive.EncodeConfiguration.audio({ name: 'aac-stereo' });
+const audio = medialive.EncodeConfiguration.audio({ name: 'aac-stereo', codec: medialive.AudioCodecSettings.aac() });
 
 // --- Channel with Anywhere settings ---
 new medialive.Channel(stack, 'AnywhereChannel', {

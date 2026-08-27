@@ -272,7 +272,7 @@ export interface CaptionFontStyleProps {
   readonly backgroundColor?: CaptionBackgroundColor;
   /**
    * The opacity of the background rectangle (0 transparent .. 255 opaque).
-   * @default 0
+   * @default - service default
    */
   readonly backgroundOpacity?: number;
   /**
@@ -507,7 +507,7 @@ function bindFontStyle(p: CaptionFontStyleProps): CfnChannel.BurnInDestinationSe
   return {
     alignment: (p.alignment ?? CaptionAlignment.CENTERED).value,
     backgroundColor: p.backgroundColor?.value,
-    backgroundOpacity: p.backgroundOpacity ?? 0,
+    backgroundOpacity: p.backgroundOpacity,
     font: p.font?._bind(),
     fontColor: (p.fontColor ?? CaptionFontColor.WHITE).value,
     fontOpacity: p.fontOpacity ?? 255,

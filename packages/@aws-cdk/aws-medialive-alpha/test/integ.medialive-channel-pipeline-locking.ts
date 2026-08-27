@@ -25,12 +25,12 @@ const video = medialive.EncodeConfiguration.video({
   name: 'h264-1080p',
   width: 1920,
   height: 1080,
-  codecSettings: medialive.VideoCodecSettings.h264({
+  codec: medialive.VideoCodecSettings.h264({
     rateControl: medialive.H264RateControl.cbr({ bitrate: cdk.Bitrate.mbps(5) }),
     framerate: medialive.Framerate.FPS_29_97,
   }),
 });
-const audio = medialive.EncodeConfiguration.audio({ name: 'aac-stereo' });
+const audio = medialive.EncodeConfiguration.audio({ name: 'aac-stereo', codec: medialive.AudioCodecSettings.aac() });
 
 const channel = new medialive.Channel(stack, 'Channel', {
   channelName: 'pipeline-locking-channel',

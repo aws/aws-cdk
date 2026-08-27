@@ -39,7 +39,7 @@ const input = new medialive.Input(stack, 'SrtInput', {
 
 const video = medialive.EncodeConfiguration.video({
   name: 'video_720p',
-  codecSettings: medialive.VideoCodecSettings.h264({
+  codec: medialive.VideoCodecSettings.h264({
     rateControl: medialive.H264RateControl.cbr({ bitrate: Bitrate.mbps(3) }),
     framerate: medialive.Framerate.FPS_30,
   }),
@@ -49,7 +49,7 @@ const video = medialive.EncodeConfiguration.video({
 
 const audio = medialive.EncodeConfiguration.audio({
   name: 'audio_aac',
-  codecSettings: medialive.AudioCodecSettings.aac({ bitrate: Bitrate.kbps(192) }),
+  codec: medialive.AudioCodecSettings.aac({ bitrate: Bitrate.kbps(192) }),
 });
 
 new medialive.Channel(stack, 'Channel', {
@@ -182,7 +182,7 @@ declare const bucket: s3.IBucket;
 
 const video = medialive.EncodeConfiguration.video({
   name: 'video_720p',
-  codecSettings: medialive.VideoCodecSettings.h264({
+  codec: medialive.VideoCodecSettings.h264({
     rateControl: medialive.H264RateControl.cbr({ bitrate: Bitrate.mbps(3) }),
     framerate: medialive.Framerate.FPS_30,
   }),
@@ -192,7 +192,7 @@ const video = medialive.EncodeConfiguration.video({
 
 const audio = medialive.EncodeConfiguration.audio({
   name: 'audio_aac',
-  codecSettings: medialive.AudioCodecSettings.aac({ bitrate: Bitrate.kbps(192) }),
+  codec: medialive.AudioCodecSettings.aac({ bitrate: Bitrate.kbps(192) }),
 });
 
 new medialive.Channel(stack, 'Channel', {
@@ -218,7 +218,7 @@ declare const mpChannel: mediapackagev2.IChannel;
 
 const hdVideo = medialive.EncodeConfiguration.video({
   name: 'video_1080p',
-  codecSettings: medialive.VideoCodecSettings.h265({
+  codec: medialive.VideoCodecSettings.h265({
     rateControl: medialive.H265RateControl.qvbr({
       maxBitrate: Bitrate.mbps(8),
       qvbrQualityLevel: 7,
@@ -231,7 +231,7 @@ const hdVideo = medialive.EncodeConfiguration.video({
 
 const sdVideo = medialive.EncodeConfiguration.video({
   name: 'video_480p',
-  codecSettings: medialive.VideoCodecSettings.h265({
+  codec: medialive.VideoCodecSettings.h265({
     rateControl: medialive.H265RateControl.qvbr({
       maxBitrate: Bitrate.mbps(2),
       qvbrQualityLevel: 7,
@@ -244,7 +244,7 @@ const sdVideo = medialive.EncodeConfiguration.video({
 
 const audio = medialive.EncodeConfiguration.audio({
   name: 'audio_aac',
-  codecSettings: medialive.AudioCodecSettings.aac({ bitrate: Bitrate.kbps(192) }),
+  codec: medialive.AudioCodecSettings.aac({ bitrate: Bitrate.kbps(192) }),
 });
 
 new medialive.Channel(stack, 'Channel', {
@@ -395,7 +395,7 @@ Use `EncodeConfiguration.video()`, `EncodeConfiguration.audio()`, and `EncodeCon
 // H.264
 const h264 = medialive.EncodeConfiguration.video({
   name: 'h264_720p',
-  codecSettings: medialive.VideoCodecSettings.h264({
+  codec: medialive.VideoCodecSettings.h264({
     rateControl: medialive.H264RateControl.cbr({ bitrate: Bitrate.mbps(3) }),
     framerate: medialive.Framerate.FPS_30,
     profile: medialive.H264Profile.HIGH,
@@ -407,7 +407,7 @@ const h264 = medialive.EncodeConfiguration.video({
 // H.265
 const h265 = medialive.EncodeConfiguration.video({
   name: 'h265_1080p',
-  codecSettings: medialive.VideoCodecSettings.h265({
+  codec: medialive.VideoCodecSettings.h265({
     rateControl: medialive.H265RateControl.qvbr({
       maxBitrate: Bitrate.mbps(5),
       qvbrQualityLevel: 7,
@@ -426,7 +426,7 @@ Video codecs accept optional overrides for adaptive quantization, scene-change d
 ```ts
 const hdr = medialive.EncodeConfiguration.video({
   name: 'h265_hdr',
-  codecSettings: medialive.VideoCodecSettings.h265({
+  codec: medialive.VideoCodecSettings.h265({
     rateControl: medialive.H265RateControl.qvbr({ maxBitrate: Bitrate.mbps(8), qvbrQualityLevel: 8 }),
     framerate: medialive.Framerate.FPS_30,
     sceneChangeDetect: medialive.H265SceneChangeDetect.ENABLED,
@@ -443,7 +443,7 @@ const hdr = medialive.EncodeConfiguration.video({
 // AAC stereo
 const aac = medialive.EncodeConfiguration.audio({
   name: 'aac_stereo',
-  codecSettings: medialive.AudioCodecSettings.aac({
+  codec: medialive.AudioCodecSettings.aac({
     bitrate: Bitrate.kbps(192),
     codingMode: medialive.AacCodingMode.CODING_MODE_2_0,
   }),
@@ -452,7 +452,7 @@ const aac = medialive.EncodeConfiguration.audio({
 // AC3 5.1
 const ac3 = medialive.EncodeConfiguration.audio({
   name: 'ac3_surround',
-  codecSettings: medialive.AudioCodecSettings.ac3({
+  codec: medialive.AudioCodecSettings.ac3({
     bitrate: Bitrate.kbps(384),
     codingMode: medialive.Ac3CodingMode.CODING_MODE_3_2_LFE,
   }),
@@ -557,10 +557,11 @@ medialive.OutputGroupConfiguration.hls({
   outputs: [{ encodes: [video, audio], outputName: 'hls_out' }],
 });
 
-// HLS to HTTP origin
+// HLS to an HTTPS CDN origin.
 medialive.OutputGroupConfiguration.hls({
   name: 'hls-http',
   destinations: [medialive.OutputDestination.url('https://203.0.113.10/ingest/stream')],
+  hlsCdnSettings: medialive.HlsCdnSettings.basicPut(),
   outputs: [{ encodes: [video, audio], outputName: 'hls_out' }],
 });
 ```

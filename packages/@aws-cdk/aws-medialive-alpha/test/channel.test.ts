@@ -50,6 +50,7 @@ import {
   NetworkEndBlackout,
   UdpInputLossAction,
   HlsMode,
+  HlsProgramDateTimeClock,
   RtmpAuthenticationScheme,
   MediaPackageV2EndpointId,
   MediaPackageV2Destination,
@@ -154,9 +155,9 @@ describe('Channel', () => {
       name: 'hd',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+      codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
     });
-    const audio = EncodeConfiguration.audio({ name: 'aac-stereo' });
+    const audio = EncodeConfiguration.audio({ name: 'aac-stereo', codec: AudioCodecSettings.aac() });
 
     new Channel(stack, 'MyChannel', {
       channelName: 'my-channel',
@@ -199,7 +200,7 @@ describe('Channel', () => {
     const role = new Role(stack, 'Role', {
       assumedBy: new ServicePrincipal('medialive.amazonaws.com'),
     });
-    const video = EncodeConfiguration.video({ name: 'video', width: 1280, height: 720 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'MyChannel', {
       channelClass: ChannelClass.SINGLE_PIPELINE,
@@ -227,7 +228,7 @@ describe('Channel', () => {
       name: 'video',
       width: 1280,
       height: 720,
-      codecSettings: VideoCodecSettings.h264({
+      codec: VideoCodecSettings.h264({
         framerate: Framerate.FPS_29_97,
         sceneChangeDetect: H264SceneChangeDetect.DISABLED,
         spatialAq: H264SpatialAq.DISABLED,
@@ -262,12 +263,13 @@ describe('Channel', () => {
   });
 
   test('audioTypeControl defaults to USE_CONFIGURED when audioType is set, and DASH accessibility is wired', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1280, height: 720 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
     const audio = EncodeConfiguration.audio({
       name: 'aac',
       audioType: AudioType.CLEAN_EFFECTS,
       audioDashRoles: [AudioDashRole.MAIN],
       dvbDashAccessibility: DvbDashAccessibility.VISUALLY_IMPAIRED,
+      codec: AudioCodecSettings.aac(),
     });
 
     new Channel(stack, 'MyChannel', {
@@ -294,8 +296,8 @@ describe('Channel', () => {
   });
 
   test('audioTypeControl defaults to FOLLOW_INPUT when audioType is unset', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1280, height: 720 });
-    const audio = EncodeConfiguration.audio({ name: 'aac' });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
+    const audio = EncodeConfiguration.audio({ name: 'aac', codec: AudioCodecSettings.aac() });
 
     new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput }],
@@ -316,8 +318,8 @@ describe('Channel', () => {
   });
 
   test('languageCodeControl defaults to USE_CONFIGURED when languageCode is set', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1280, height: 720 });
-    const audio = EncodeConfiguration.audio({ name: 'aac', languageCode: 'eng' });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
+    const audio = EncodeConfiguration.audio({ name: 'aac', languageCode: 'eng', codec: AudioCodecSettings.aac() });
 
     new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput }],
@@ -341,8 +343,8 @@ describe('Channel', () => {
   });
 
   test('languageCodeControl defaults to FOLLOW_INPUT when languageCode is unset', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1280, height: 720 });
-    const audio = EncodeConfiguration.audio({ name: 'aac' });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
+    const audio = EncodeConfiguration.audio({ name: 'aac', codec: AudioCodecSettings.aac() });
 
     new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput }],
@@ -363,11 +365,12 @@ describe('Channel', () => {
   });
 
   test('languageCodeControl can be FOLLOW_INPUT while a fallback languageCode is configured', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1280, height: 720 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
     const audio = EncodeConfiguration.audio({
       name: 'aac',
       languageCode: 'eng',
       languageCodeControl: AudioLanguageCodeControl.FOLLOW_INPUT,
+      codec: AudioCodecSettings.aac(),
     });
 
     new Channel(stack, 'MyChannel', {
@@ -396,9 +399,9 @@ describe('Channel', () => {
       name: 'hd',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+      codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
     });
-    const audio = EncodeConfiguration.audio({ name: 'aac' });
+    const audio = EncodeConfiguration.audio({ name: 'aac', codec: AudioCodecSettings.aac() });
 
     new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput }],
@@ -442,7 +445,7 @@ describe('Channel', () => {
   });
 
   test('HLS output M3U8 settings are configurable', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1280, height: 720 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput }],
@@ -499,7 +502,7 @@ describe('Channel', () => {
   });
 
   test('HLS output defaults to standard settings with empty M3U8 settings', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1280, height: 720 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput }],
@@ -532,7 +535,7 @@ describe('Channel', () => {
   });
 
   test('caption output with burn-in destination, accessibility, and DASH roles', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1280, height: 720 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
     const caption = EncodeConfiguration.caption({
       name: 'eng-burnin',
       captionSelectorName: 'english',
@@ -584,7 +587,7 @@ describe('Channel', () => {
   });
 
   test('caption output with WebVTT sidecar destination', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1280, height: 720 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
     const caption = EncodeConfiguration.caption({
       name: 'eng-webvtt',
       captionSelectorName: 'english',
@@ -615,7 +618,7 @@ describe('Channel', () => {
   });
 
   test('initial input attachment with name', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput, inputAttachmentName: 'primary' }],
@@ -636,7 +639,7 @@ describe('Channel', () => {
   });
 
   test('adds additional input via addInput', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
     const secondSg = new InputSecurityGroup(stack, 'SecondSG', {
       allowlistRules: ['0.0.0.0/0'],
     });
@@ -671,15 +674,15 @@ describe('Channel', () => {
       name: 'hd',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+      codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
     });
     const sd = EncodeConfiguration.video({
       name: 'sd',
       width: 1280,
       height: 720,
-      codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+      codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
     });
-    const audio = EncodeConfiguration.audio({ name: 'aac' });
+    const audio = EncodeConfiguration.audio({ name: 'aac', codec: AudioCodecSettings.aac() });
 
     const channel = new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput }],
@@ -799,9 +802,9 @@ describe('Channel metrics', () => {
 
   test('SINGLE_PIPELINE channels reject Pipeline.PIPELINE_1', () => {
     const video = EncodeConfiguration.video({
-      name: 'video', width: 1920, height: 1080, codecSettings: VideoCodecSettings.h264(),
+      name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264(),
     });
-    const audio = EncodeConfiguration.audio({ name: 'audio' });
+    const audio = EncodeConfiguration.audio({ name: 'audio', codec: AudioCodecSettings.aac() });
     const channel = new Channel(stack, 'SingleChannel', {
       // channelClass defaults to SINGLE_PIPELINE
       inputs: [{ input: defaultInput }],
@@ -834,9 +837,9 @@ describe('Channel metrics', () => {
       name: 'video',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+      codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
     });
-    const audio = EncodeConfiguration.audio({ name: 'audio' });
+    const audio = EncodeConfiguration.audio({ name: 'audio', codec: AudioCodecSettings.aac() });
     const channel = new Channel(stack, 'StandardChannel', {
       channelClass: ChannelClass.STANDARD,
       inputs: [{ input }],
@@ -887,7 +890,7 @@ describe('Default codec settings (golden)', () => {
       name: 'v',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.h265({ framerate: Framerate.FPS_29_97 }),
+      codec: VideoCodecSettings.h265({ framerate: Framerate.FPS_29_97 }),
     });
     goldenTemplate(video).hasResourceProperties('AWS::MediaLive::Channel', {
       EncoderSettings: Match.objectLike({
@@ -920,7 +923,7 @@ describe('Default codec settings (golden)', () => {
       name: 'v',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.av1({
+      codec: VideoCodecSettings.av1({
         rateControl: Av1RateControl.qvbr({ maxBitrate: Bitrate.mbps(4) }),
         framerate: Framerate.FPS_29_97,
       }),
@@ -961,9 +964,9 @@ describe('Default codec settings (golden)', () => {
 
   test('aac() emits only these defaults', () => {
     const video = EncodeConfiguration.video({
-      name: 'v', width: 1920, height: 1080, codecSettings: VideoCodecSettings.h264(),
+      name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264(),
     });
-    const audio = EncodeConfiguration.audio({ name: 'a', codecSettings: AudioCodecSettings.aac() });
+    const audio = EncodeConfiguration.audio({ name: 'a', codec: AudioCodecSettings.aac() });
     goldenTemplate(video, audio).hasResourceProperties('AWS::MediaLive::Channel', {
       EncoderSettings: Match.objectLike({
         AudioDescriptions: [Match.objectLike({
@@ -986,9 +989,9 @@ describe('Default codec settings (golden)', () => {
 
   test('mp2() emits only these defaults', () => {
     const video = EncodeConfiguration.video({
-      name: 'v', width: 1920, height: 1080, codecSettings: VideoCodecSettings.h264(),
+      name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264(),
     });
-    const audio = EncodeConfiguration.audio({ name: 'a', codecSettings: AudioCodecSettings.mp2() });
+    const audio = EncodeConfiguration.audio({ name: 'a', codec: AudioCodecSettings.mp2() });
     // MP2 is not a valid HLS audio codec, so this uses an Archive (M2TS) output group rather than
     // the shared goldenTemplate() helper (which builds an HLS group).
     new Channel(stack, 'Mp2Golden', {
@@ -1019,9 +1022,9 @@ describe('Default codec settings (golden)', () => {
 
   test('wav() emits only these defaults', () => {
     const video = EncodeConfiguration.video({
-      name: 'v', width: 1920, height: 1080, codecSettings: VideoCodecSettings.h264(),
+      name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264(),
     });
-    const audio = EncodeConfiguration.audio({ name: 'a', codecSettings: AudioCodecSettings.wav() });
+    const audio = EncodeConfiguration.audio({ name: 'a', codec: AudioCodecSettings.wav() });
     // WAV is only valid in a raw-container Archive output (audio-only), which the archive group
     // must pair with a video output — so this can't use the shared goldenTemplate() helper.
     new Channel(stack, 'WavGolden', {
@@ -1062,7 +1065,7 @@ describe('Default codec settings (golden)', () => {
       name: 'v',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.frameCapture(),
+      codec: VideoCodecSettings.frameCapture(),
     });
     goldenTemplate(video).hasResourceProperties('AWS::MediaLive::Channel', {
       EncoderSettings: Match.objectLike({
@@ -1080,7 +1083,7 @@ describe('Default codec settings (golden)', () => {
       name: 'v',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.frameCapture({ captureInterval: Duration.seconds(5) }),
+      codec: VideoCodecSettings.frameCapture({ captureInterval: Duration.seconds(5) }),
     });
     goldenTemplate(video).hasResourceProperties('AWS::MediaLive::Channel', {
       EncoderSettings: Match.objectLike({
@@ -1101,7 +1104,7 @@ describe('Default codec settings (golden)', () => {
       name: 'v',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.frameCapture({ captureInterval: Duration.millis(500) }),
+      codec: VideoCodecSettings.frameCapture({ captureInterval: Duration.millis(500) }),
     });
     goldenTemplate(video).hasResourceProperties('AWS::MediaLive::Channel', {
       EncoderSettings: Match.objectLike({
@@ -1122,7 +1125,9 @@ describe('Default configuration (golden)', () => {
   // Exact-match golden records of the COMPLETE payload each non-codec configuration surface emits
   // with minimal/no config. Any field not listed is proven absent — deliberately left unset so the
   // MediaLive service default applies. A failure here means a forced default moved.
-  const video = () => EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+  const video = () => EncodeConfiguration.video({
+    name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264(),
+  });
 
   test('InputSpecification.standard() (the channel default) emits AVC / 20 Mbps / HD', () => {
     // No inputSpecification prop => Channel falls back to InputSpecification.standard().
@@ -1206,7 +1211,7 @@ describe('Default configuration (golden)', () => {
           OutputGroupSettings: {
             HlsGroupSettings: Match.objectEquals({
               Destination: { DestinationRefId: 'hls' },
-              SegmentLength: 6,
+              SegmentLength: 2,
               KeepSegments: 21,
               IndexNSegments: 10,
               Mode: 'LIVE',
@@ -1221,8 +1226,8 @@ describe('Default configuration (golden)', () => {
               ManifestCompression: 'NONE',
               ManifestDurationFormat: 'FLOATING_POINT',
               OutputSelection: 'MANIFESTS_AND_SEGMENTS',
-              ProgramDateTime: 'EXCLUDE',
-              ProgramDateTimeClock: 'INITIALIZE_FROM_OUTPUT_TIMECODE',
+              ProgramDateTime: 'INCLUDE',
+              ProgramDateTimeClock: 'SYSTEM_CLOCK',
               ProgramDateTimePeriod: 600,
               RedundantManifest: 'DISABLED',
               SegmentationMode: 'USE_SEGMENT_DURATION',
@@ -1273,9 +1278,9 @@ describe('VideoCodecSettings', () => {
       name: 'video',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.h264(),
+      codec: VideoCodecSettings.h264(),
     });
-    const audio = EncodeConfiguration.audio({ name: 'audio' });
+    const audio = EncodeConfiguration.audio({ name: 'audio', codec: AudioCodecSettings.aac() });
 
     new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput }],
@@ -1325,7 +1330,7 @@ describe('VideoCodecSettings', () => {
       name: 'custom-h264',
       width: 1280,
       height: 720,
-      codecSettings: VideoCodecSettings.h264({
+      codec: VideoCodecSettings.h264({
         rateControl: H264RateControl.cbr({ bitrate: Bitrate.mbps(3) }),
         profile: H264Profile.MAIN,
         gopSize: GopSize.frames(60),
@@ -1373,9 +1378,9 @@ describe('VideoCodecSettings', () => {
       width: 1080,
       height: 1920,
       scalingBehavior: ScalingBehavior.SMART_CROP,
-      codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+      codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
     });
-    const audio = EncodeConfiguration.audio({ name: 'audio' });
+    const audio = EncodeConfiguration.audio({ name: 'audio', codec: AudioCodecSettings.aac() });
 
     new Channel(stack, 'SmartCropChannel', {
       inputs: [{ input: defaultInput }],
@@ -1405,7 +1410,7 @@ describe('VideoCodecSettings', () => {
       name: 'video',
       width: 3840,
       height: 2160,
-      codecSettings: VideoCodecSettings.h265({
+      codec: VideoCodecSettings.h265({
         framerate: Framerate.FPS_29_97,
       }),
     });
@@ -1444,7 +1449,7 @@ describe('VideoCodecSettings', () => {
       name: 'video',
       width: 3840,
       height: 2160,
-      codecSettings: VideoCodecSettings.h265({
+      codec: VideoCodecSettings.h265({
         rateControl: H265RateControl.vbr({ bitrate: Bitrate.mbps(15), maxBitrate: Bitrate.mbps(15) }),
         profile: H265Profile.MAIN_10BIT,
         tier: H265Tier.HIGH,
@@ -1487,8 +1492,8 @@ describe('VideoCodecSettings', () => {
 
 describe('Video dimension validation', () => {
   test.each([1281, 721])('fails for odd dimension %d', (dim) => {
-    expect(() => EncodeConfiguration.video({ name: 'v', width: dim, height: 720 })).toThrow(/even number/);
-    expect(() => EncodeConfiguration.video({ name: 'v', width: 1280, height: dim })).toThrow(/even number/);
+    expect(() => EncodeConfiguration.video({ name: 'v', width: dim, height: 720, codec: VideoCodecSettings.h264() })).toThrow(/even number/);
+    expect(() => EncodeConfiguration.video({ name: 'v', width: 1280, height: dim, codec: VideoCodecSettings.h264() })).toThrow(/even number/);
   });
 
   test('does not validate tokenized width or height', () => {
@@ -1497,27 +1502,28 @@ describe('Video dimension validation', () => {
       name: 'v',
       width: Lazy.number({ produce: () => 1281 }),
       height: Lazy.number({ produce: () => 721 }),
+      codec: VideoCodecSettings.h264(),
     })).not.toThrow();
   });
 });
 
 describe('Explicit encode names', () => {
   test('video encode uses explicit name', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1280, height: 720 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
     expect(video.name).toBe('video');
   });
 
   test('audio encode uses explicit name', () => {
-    const audio1 = EncodeConfiguration.audio({ name: 'audio1' });
-    const audio2 = EncodeConfiguration.audio({ name: 'audio2' });
+    const audio1 = EncodeConfiguration.audio({ name: 'audio1', codec: AudioCodecSettings.aac() });
+    const audio2 = EncodeConfiguration.audio({ name: 'audio2', codec: AudioCodecSettings.aac() });
     expect(audio1.name).toBe('audio1');
     expect(audio2.name).toBe('audio2');
     expect(audio1.name).not.toBe(audio2.name);
   });
 
   test('explicit name is set correctly', () => {
-    const video = EncodeConfiguration.video({ name: 'my-hd', width: 1920, height: 1080 });
-    const audio = EncodeConfiguration.audio({ name: 'my-audio' });
+    const video = EncodeConfiguration.video({ name: 'my-hd', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
+    const audio = EncodeConfiguration.audio({ name: 'my-audio', codec: AudioCodecSettings.aac() });
     expect(video.name).toBe('my-hd');
     expect(audio.name).toBe('my-audio');
   });
@@ -1545,7 +1551,7 @@ describe('Full channel snapshot', () => {
       name: 'hd-1080p',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.h264({
+      codec: VideoCodecSettings.h264({
         rateControl: H264RateControl.qvbr({ maxBitrate: Bitrate.mbps(8), qvbrQualityLevel: 8 }),
         profile: H264Profile.HIGH,
         gopSize: GopSize.seconds(2),
@@ -1558,7 +1564,7 @@ describe('Full channel snapshot', () => {
       name: 'sd-720p',
       width: 1280,
       height: 720,
-      codecSettings: VideoCodecSettings.h264({
+      codec: VideoCodecSettings.h264({
         rateControl: H264RateControl.qvbr({ maxBitrate: Bitrate.mbps(3), qvbrQualityLevel: 7 }),
         profile: H264Profile.MAIN,
         framerate: Framerate.FPS_29_97,
@@ -1569,7 +1575,7 @@ describe('Full channel snapshot', () => {
       name: 'uhd-4k',
       width: 3840,
       height: 2160,
-      codecSettings: VideoCodecSettings.h265({
+      codec: VideoCodecSettings.h265({
         rateControl: H265RateControl.vbr({ bitrate: Bitrate.mbps(15), maxBitrate: Bitrate.mbps(15) }),
         profile: H265Profile.MAIN_10BIT,
         tier: H265Tier.HIGH,
@@ -1578,7 +1584,7 @@ describe('Full channel snapshot', () => {
       }),
     });
 
-    const audio = EncodeConfiguration.audio({ name: 'aac-stereo' });
+    const audio = EncodeConfiguration.audio({ name: 'aac-stereo', codec: AudioCodecSettings.aac() });
 
     const role = new Role(stack, 'ChannelRole', {
       assumedBy: new ServicePrincipal('medialive.amazonaws.com'),
@@ -1831,7 +1837,7 @@ describe('Codec validation', () => {
       name: 'v',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.h265({ framerate: Framerate.FPS_29_97 }),
+      codec: VideoCodecSettings.h265({ framerate: Framerate.FPS_29_97 }),
     });
 
     new Channel(stack, 'BadCodecChannel', {
@@ -1855,9 +1861,9 @@ describe('Codec validation', () => {
   test('fails when a modelled audio codec is not supported by the output group', () => {
     // RTMP output groups support only AAC audio; an AC3 encode must be rejected at synth.
     const video = EncodeConfiguration.video({
-      name: 'v', width: 1920, height: 1080, codecSettings: VideoCodecSettings.h264(),
+      name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264(),
     });
-    const ac3 = EncodeConfiguration.audio({ name: 'ac3', codecSettings: AudioCodecSettings.ac3() });
+    const ac3 = EncodeConfiguration.audio({ name: 'ac3', codec: AudioCodecSettings.ac3() });
 
     new Channel(stack, 'BadAudioChannel', {
       inputs: [{ input: defaultInput }],
@@ -1883,9 +1889,9 @@ describe('Validation', () => {
       name: 'hd',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+      codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
     });
-    const audio = EncodeConfiguration.audio({ name: 'aac' });
+    const audio = EncodeConfiguration.audio({ name: 'aac', codec: AudioCodecSettings.aac() });
 
     new Channel(stack, 'GoodChannel', {
       inputs: [{ input: defaultInput }],
@@ -1909,7 +1915,7 @@ describe('Validation', () => {
       name: 'hd',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+      codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
     });
     const stdInput2 = new Input(stack, 'StdInput2', {
       inputName: 'std-input-2',
@@ -1940,7 +1946,7 @@ describe('Validation', () => {
       name: 'hd',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+      codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
     });
 
     expect(() => {
@@ -1963,7 +1969,7 @@ describe('Validation', () => {
   });
 
   test('STANDARD HLS channel requires exactly 2 destinations', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
     const stdInput3 = new Input(stack, 'StdInput3', {
       inputName: 'std-input-3',
       input: InputConfiguration.srtCaller([
@@ -1989,7 +1995,7 @@ describe('Validation', () => {
   });
 
   test('epoch locking with system clock timing source throws', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
 
     expect(() => {
       new Channel(stack, 'EpochChannel', {
@@ -2010,7 +2016,8 @@ describe('Validation', () => {
   });
 
   test('epoch locking with input clock timing source is accepted', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    // Epoch locking requires an explicit frame rate on H.264 encodes.
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_30 }) });
 
     new Channel(stack, 'EpochOkChannel', {
       inputs: [{ input: defaultInput }],
@@ -2034,6 +2041,94 @@ describe('Validation', () => {
           OutputLockingSettings: { EpochLockingSettings: {} },
           OutputTimingSource: 'INPUT_CLOCK',
         }),
+        // Under epoch locking, the HLS program-date-time clock auto-corrects from the SYSTEM_CLOCK
+        // default to INITIALIZE_FROM_OUTPUT_TIMECODE (the service rejects SYSTEM_CLOCK).
+        OutputGroups: Match.arrayWith([
+          Match.objectLike({
+            OutputGroupSettings: {
+              HlsGroupSettings: Match.objectLike({
+                ProgramDateTimeClock: 'INITIALIZE_FROM_OUTPUT_TIMECODE',
+              }),
+            },
+          }),
+        ]),
+      }),
+    });
+  });
+
+  test('epoch locking with an explicit HLS SYSTEM_CLOCK program-date-time clock throws', () => {
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
+
+    expect(() => {
+      new Channel(stack, 'EpochPdtChannel', {
+        inputs: [{ input: defaultInput }],
+        globalConfiguration: {
+          outputLocking: OutputLocking.epoch(),
+          outputTimingSource: OutputTimingSource.INPUT_CLOCK,
+        },
+        outputGroups: [
+          OutputGroupConfiguration.hls({
+            name: 'hls',
+            destinations: [OutputDestination.url('s3ssl://bucket/live')],
+            programDateTimeClock: HlsProgramDateTimeClock.SYSTEM_CLOCK,
+            outputs: [{ encodes: [video], outputName: 'out' }],
+          }),
+        ],
+      });
+    }).toThrow(/programDateTimeClock must be INITIALIZE_FROM_OUTPUT_TIMECODE when using epoch output locking/);
+  });
+
+  test('epoch locking with an H.264 encode that follows the source frame rate throws', () => {
+    // No framerate on the H.264 encode => framerateControl INITIALIZE_FROM_SOURCE, which epoch
+    // locking rejects at deploy.
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
+
+    expect(() => {
+      new Channel(stack, 'EpochFramerateChannel', {
+        inputs: [{ input: defaultInput }],
+        globalConfiguration: {
+          outputLocking: OutputLocking.epoch(),
+          outputTimingSource: OutputTimingSource.INPUT_CLOCK,
+        },
+        outputGroups: [
+          OutputGroupConfiguration.hls({
+            name: 'hls',
+            destinations: [OutputDestination.url('s3ssl://bucket/live')],
+            outputs: [{ encodes: [video], outputName: 'out' }],
+          }),
+        ],
+      });
+      Template.fromStack(stack);
+    }).toThrow(/epoch output locking requires an explicit frame rate on H.264 video encodes/);
+  });
+
+  test('epoch locking with an H.264 encode that has an explicit frame rate is accepted', () => {
+    const video = EncodeConfiguration.video({
+      name: 'v',
+      width: 1920,
+      height: 1080,
+      codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+    });
+
+    new Channel(stack, 'EpochFramerateOkChannel', {
+      inputs: [{ input: defaultInput }],
+      globalConfiguration: {
+        outputLocking: OutputLocking.epoch(),
+        outputTimingSource: OutputTimingSource.INPUT_CLOCK,
+      },
+      outputGroups: [
+        OutputGroupConfiguration.hls({
+          name: 'hls',
+          destinations: [OutputDestination.url('s3ssl://bucket/live')],
+          outputs: [{ encodes: [video], outputName: 'out' }],
+        }),
+      ],
+    });
+
+    // A fractional but explicit rate (29.97) is fine — epoch locking only rejects source-derived rates.
+    Template.fromStack(stack).hasResourceProperties('AWS::MediaLive::Channel', {
+      EncoderSettings: Match.objectLike({
+        GlobalConfiguration: Match.objectLike({ OutputLockingMode: 'EPOCH_LOCKING' }),
       }),
     });
   });
@@ -2041,7 +2136,7 @@ describe('Validation', () => {
 
 describe('TimecodeConfig', () => {
   test('custom timecode source and syncThreshold', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput }],
@@ -2069,7 +2164,7 @@ describe('TimecodeConfig', () => {
   });
 
   test('default timecode uses EMBEDDED', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput }],
@@ -2094,7 +2189,7 @@ describe('TimecodeConfig', () => {
 
 describe('AvailBlanking and AvailSettings', () => {
   test('avail blanking enabled with image URL', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput }],
@@ -2122,7 +2217,7 @@ describe('AvailBlanking and AvailSettings', () => {
   });
 
   test('avail settings with splice insert', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput }],
@@ -2150,7 +2245,7 @@ describe('AvailBlanking and AvailSettings', () => {
   });
 
   test('avail settings with splice insert honors the regional blackout and web delivery flags', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput }],
@@ -2182,7 +2277,7 @@ describe('AvailBlanking and AvailSettings', () => {
   });
 
   test('avail settings with time signal APOS', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput }],
@@ -2218,7 +2313,7 @@ describe('AvailBlanking and AvailSettings', () => {
 
 describe('Nielsen audio watermarking', () => {
   test('CBET and NAES II/NW watermark settings are wired through', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
     const audio = EncodeConfiguration.audio({
       name: 'aac-stereo',
       audioWatermarkSettings: {
@@ -2236,6 +2331,7 @@ describe('Nielsen audio watermarking', () => {
           },
         },
       },
+      codec: AudioCodecSettings.aac(),
     });
 
     new Channel(stack, 'MyChannel', {
@@ -2278,7 +2374,7 @@ describe('Nielsen audio watermarking', () => {
 
 describe('Caption encode', () => {
   test('caption encode wired to output', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
     const caption = EncodeConfiguration.caption({
       name: 'eng-captions',
       captionSelectorName: 'english',
@@ -2322,7 +2418,7 @@ describe('Caption encode', () => {
 
 describe('Output group types', () => {
   test('Archive output group', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput }],
@@ -2353,7 +2449,7 @@ describe('Output group types', () => {
   });
 
   test('RTMP output group', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput }],
@@ -2384,7 +2480,7 @@ describe('Output group types', () => {
   });
 
   test('UDP output group with settings', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput }],
@@ -2417,7 +2513,7 @@ describe('Output group types', () => {
   });
 
   test('HLS output group with settings', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput }],
@@ -2449,7 +2545,7 @@ describe('Output group types', () => {
   });
 
   test('an enum-like class of() escape-hatch value passes through to the template', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput }],
@@ -2480,7 +2576,7 @@ describe('Output group types', () => {
   });
 
   test('output group emits its name as the display name', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput }],
@@ -2505,8 +2601,8 @@ describe('Output group types', () => {
 
 describe('CMAF Ingest output group', () => {
   test('accepts a destination URL that ends with a slash', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080 });
-    const audio = EncodeConfiguration.audio({ name: 'audio' });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
+    const audio = EncodeConfiguration.audio({ name: 'audio', codec: AudioCodecSettings.aac() });
 
     new Channel(stack, 'CmafChannel', {
       inputs: [{ input: defaultInput }],
@@ -2532,7 +2628,7 @@ describe('CMAF Ingest output group', () => {
   });
 
   test('fails when a destination URL does not end with a slash', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
 
     expect(() => new Channel(stack, 'CmafBadChannel', {
       inputs: [{ input: defaultInput }],
@@ -2549,7 +2645,7 @@ describe('CMAF Ingest output group', () => {
 
 describe('Per-output settings', () => {
   test('HLS output with nameModifier', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput }],
@@ -2582,7 +2678,7 @@ describe('Per-output settings', () => {
   });
 
   test('Archive output with extension', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput }],
@@ -2617,7 +2713,7 @@ describe('Per-output settings', () => {
 
 describe('Linked channel settings', () => {
   test('linked channel on STANDARD class throws', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
 
     expect(() => {
       new Channel(stack, 'MyChannel', {
@@ -2636,7 +2732,7 @@ describe('Linked channel settings', () => {
   });
 
   test('linked channel primary on SINGLE_PIPELINE', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'MyChannel', {
       channelClass: ChannelClass.SINGLE_PIPELINE,
@@ -2663,7 +2759,7 @@ describe('Linked channel settings', () => {
 
 describe('BlackoutSlate and ColorCorrection', () => {
   test('blackout slate enabled', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput }],
@@ -2689,7 +2785,7 @@ describe('BlackoutSlate and ColorCorrection', () => {
   });
 
   test('color corrections', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput }],
@@ -2720,7 +2816,7 @@ describe('BlackoutSlate and ColorCorrection', () => {
   });
 
   test('color correction with a LUT from a bucket grants read and emits the s3ssl URI', () => {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
     const lutBucket = new s3.Bucket(stack, 'LutBucket');
 
     new Channel(stack, 'MyChannel', {
@@ -2769,7 +2865,7 @@ describe('BlackoutSlate and ColorCorrection', () => {
 
 describe('NielsenConfiguration and thumbnails', () => {
   function channelWithHlsOutput() {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
     return { video };
   }
 
@@ -2855,7 +2951,7 @@ describe('FileLocation grants', () => {
   }
 
   test('avail-blanking image from a bucket grants the channel role read access', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
     const bucket = new s3.Bucket(stack, 'BlankBucket');
     new Channel(stack, 'Ch', {
       inputs: [{ input: defaultInput }],
@@ -2872,13 +2968,13 @@ describe('FileLocation grants', () => {
   });
 
   test('burn-in caption font from a bucket grants the channel role read access', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
     const fontBucket = new s3.Bucket(stack, 'FontBucket');
     const caption = EncodeConfiguration.caption({
       name: 'eng-burnin',
       captionSelectorName: 'english',
       destination: CaptionDestination.burnIn({
-        font: FileLocation.fromBucket(fontBucket, 'fonts/Roboto.ttf'),
+        font: FileLocation.fromBucket(fontBucket, 'fonts/caption-font.ttf'),
       }),
     });
     new Channel(stack, 'Ch', {
@@ -2899,8 +2995,10 @@ describe('FileLocation grants', () => {
           Match.objectLike({
             DestinationSettings: {
               BurnInDestinationSettings: Match.objectLike({
+                // backgroundOpacity defers to the service (blank in the console), so it is not emitted.
+                BackgroundOpacity: Match.absent(),
                 Font: {
-                  Uri: { 'Fn::Join': ['', ['s3ssl://', { Ref: Match.stringLikeRegexp('FontBucket') }, '/fonts/Roboto.ttf']] },
+                  Uri: { 'Fn::Join': ['', ['s3ssl://', { Ref: Match.stringLikeRegexp('FontBucket') }, '/fonts/caption-font.ttf']] },
                 },
               }),
             },
@@ -2912,7 +3010,7 @@ describe('FileLocation grants', () => {
   });
 
   test('audio-only HLS cover-art image from a bucket grants the channel role read access', () => {
-    const audio = EncodeConfiguration.audio({ name: 'aac' });
+    const audio = EncodeConfiguration.audio({ name: 'aac', codec: AudioCodecSettings.aac() });
     const artBucket = new s3.Bucket(stack, 'ArtBucket');
     new Channel(stack, 'Ch', {
       inputs: [{ input: defaultInput }],
@@ -2962,7 +3060,7 @@ describe('FileLocation grants', () => {
 
 describe('Timecode configuration', () => {
   test('defaults to EMBEDDED', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
     new Channel(stack, 'Ch', {
       inputs: [{ input: defaultInput }],
       outputGroups: [
@@ -2981,7 +3079,7 @@ describe('Timecode configuration', () => {
   });
 
   test('custom timecode source and sync threshold', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
     new Channel(stack, 'Ch', {
       inputs: [{ input: defaultInput }],
       timecodeConfig: { source: TimecodeSource.ZEROBASED, syncThreshold: 100 },
@@ -3003,7 +3101,7 @@ describe('Timecode configuration', () => {
 
 describe('Avail blanking and configuration', () => {
   test('avail blanking with image', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
     new Channel(stack, 'Ch', {
       inputs: [{ input: defaultInput }],
       availBlanking: { state: AvailBlankingState.ENABLED, image: FileLocation.url('s3://bucket/slate.png') },
@@ -3028,7 +3126,7 @@ describe('Avail blanking and configuration', () => {
 
 describe('Blackout slate', () => {
   test('blackout slate with network end blackout', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
     new Channel(stack, 'Ch', {
       inputs: [{ input: defaultInput }],
       blackoutSlate: {
@@ -3064,7 +3162,7 @@ describe('Caption descriptions', () => {
       name: 'v',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+      codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
     });
     const caption = EncodeConfiguration.caption({
       name: 'eng-captions',
@@ -3106,7 +3204,7 @@ describe('MediaPackage V2 in-band captions', () => {
       name: 'v',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+      codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
     });
     const burnIn = EncodeConfiguration.caption({
       name: 'burn-in',
@@ -3142,7 +3240,7 @@ describe('MediaPackage V2 in-band captions', () => {
       name: 'v',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+      codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
     });
     const embedded = EncodeConfiguration.caption({
       name: 'emb',
@@ -3178,7 +3276,7 @@ describe('MediaPackage V2 in-band captions', () => {
       name: 'v',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+      codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
     });
     const webvtt = EncodeConfiguration.caption({
       name: 'webvtt',
@@ -3206,11 +3304,11 @@ describe('MediaPackage V2 in-band captions', () => {
       name: 'v',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+      codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
     });
     const audio = EncodeConfiguration.audio({
       name: 'a',
-      codecSettings: AudioCodecSettings.aac({ bitrate: Bitrate.kbps(192) }),
+      codec: AudioCodecSettings.aac({ bitrate: Bitrate.kbps(192) }),
     });
 
     expect(() => {
@@ -3233,7 +3331,7 @@ describe('MediaPackage V2 in-band captions', () => {
       name: 'v',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+      codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
     });
     const emb1 = EncodeConfiguration.caption({
       name: 'emb1',
@@ -3298,7 +3396,8 @@ describe('Caption destination variants', () => {
   test.each([
     ['dvbSub', 'embedded-cc', () => CaptionSelector.embedded('embedded-cc'),
       () => CaptionDestination.dvbSub({ fontColor: CaptionFontColor.WHITE }),
-      { DvbSubDestinationSettings: Match.objectLike({ FontColor: 'WHITE' }) }],
+      // backgroundOpacity defers to the service (blank in the console), so it is not emitted.
+      { DvbSubDestinationSettings: Match.objectLike({ FontColor: 'WHITE', BackgroundOpacity: Match.absent() }) }],
     ['arib', 'arib-cc', () => CaptionSelector.arib('arib-cc'),
       () => CaptionDestination.arib(),
       { AribDestinationSettings: {} }],
@@ -3309,8 +3408,8 @@ describe('Caption destination variants', () => {
       () => CaptionDestination.teletext(),
       { TeletextDestinationSettings: {} }],
   ] as const)('%s caption destination renders on an Archive (transport-stream) output', (_label, selectorName, selectorFactory, destFactory, expected) => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
-    const audio = EncodeConfiguration.audio({ name: 'a' });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
+    const audio = EncodeConfiguration.audio({ name: 'a', codec: AudioCodecSettings.aac() });
     const caption = EncodeConfiguration.caption({
       name: 'cap',
       captionSelectorName: selectorName,
@@ -3344,8 +3443,8 @@ describe('Caption destination variants', () => {
     ['ebuTtD', () => CaptionDestination.ebuTtD({ copyrightHolder: 'Acme Corp' }), { EbuTtDDestinationSettings: Match.objectLike({ CopyrightHolder: 'Acme Corp' }) }],
     ['ttml', () => CaptionDestination.ttml(), { TtmlDestinationSettings: {} }],
   ] as const)('%s caption destination renders on an MS Smooth output', (_label, destFactory, expected) => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720 });
-    const audio = EncodeConfiguration.audio({ name: 'a' });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
+    const audio = EncodeConfiguration.audio({ name: 'a', codec: AudioCodecSettings.aac() });
     const caption = EncodeConfiguration.caption({
       name: 'cap',
       captionSelectorName: 'embedded-cc',
@@ -3378,8 +3477,8 @@ describe('Caption destination variants', () => {
 
   // RTMP CaptionInfo is only valid on an RTMP output.
   test('rtmpCaptionInfo caption destination renders on an RTMP output', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720 });
-    const audio = EncodeConfiguration.audio({ name: 'a' });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
+    const audio = EncodeConfiguration.audio({ name: 'a', codec: AudioCodecSettings.aac() });
     const caption = EncodeConfiguration.caption({
       name: 'cap',
       captionSelectorName: 'embedded-cc',
@@ -3413,7 +3512,7 @@ describe('Caption destination variants', () => {
 
 describe('Output group types', () => {
   test('archive output group', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
     new Channel(stack, 'Ch', {
       inputs: [{ input: defaultInput }],
       outputGroups: [
@@ -3444,8 +3543,8 @@ describe('Output group types', () => {
   });
 
   test('rtmp output group', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
-    const audio = EncodeConfiguration.audio({ name: 'a' });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
+    const audio = EncodeConfiguration.audio({ name: 'a', codec: AudioCodecSettings.aac() });
     new Channel(stack, 'Ch', {
       inputs: [{ input: defaultInput }],
       outputGroups: [
@@ -3472,7 +3571,7 @@ describe('Output group types', () => {
   });
 
   test('udp output group with settings', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
     new Channel(stack, 'Ch', {
       inputs: [{ input: defaultInput }],
       outputGroups: [
@@ -3500,7 +3599,7 @@ describe('Output group types', () => {
   });
 
   test('udp output omits BufferMsec when no buffer is set (defers to service default)', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
     new Channel(stack, 'Ch', {
       inputs: [{ input: defaultInput }],
       outputGroups: [
@@ -3527,7 +3626,7 @@ describe('Output group types', () => {
   });
 
   test('hls output group with segment settings', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
     new Channel(stack, 'Ch', {
       inputs: [{ input: defaultInput }],
       outputGroups: [
@@ -3568,7 +3667,7 @@ describe('Output group types', () => {
 
 describe('Linked channel settings', () => {
   test('rejects linked channel on STANDARD class', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
     expect(() => {
       new Channel(stack, 'Ch', {
         channelClass: ChannelClass.STANDARD,
@@ -3592,7 +3691,7 @@ describe('Additional destinations validation', () => {
       name: 'hd',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+      codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
     });
 
     expect(() => {
@@ -3618,7 +3717,7 @@ describe('Additional destinations validation', () => {
       name: 'hd',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+      codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
     });
     const standardInput = new Input(stack, 'StandardInput', {
       inputName: 'standard-input',
@@ -3653,7 +3752,7 @@ describe('Additional destinations validation', () => {
       name: 'hd',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+      codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
     });
     const standardInput = new Input(stack, 'StandardInput2', {
       inputName: 'standard-input-2',
@@ -3687,7 +3786,7 @@ describe('Additional destinations validation', () => {
 
 describe('SRT/RTMP STANDARD destination count validation', () => {
   test('SRT output with STANDARD channel requires two destinations (one per pipeline)', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
     const standardInput = new Input(stack, 'SrtStdInput', {
       inputName: 'srt-std-input',
       input: InputConfiguration.srtCaller([
@@ -3716,7 +3815,7 @@ describe('SRT/RTMP STANDARD destination count validation', () => {
   });
 
   test('SRT output on STANDARD channel binds two destinations (A and B) under the output name', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
     const standardInput = new Input(stack, 'SrtAbInput', {
       inputName: 'srt-ab-input',
       input: InputConfiguration.srtCaller([
@@ -3759,7 +3858,7 @@ describe('SRT/RTMP STANDARD destination count validation', () => {
   });
 
   test('RTMP output with STANDARD channel requires two destinations (one per pipeline)', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
     const standardInput = new Input(stack, 'RtmpStdInput', {
       inputName: 'rtmp-std-input',
       input: InputConfiguration.srtCaller([
@@ -3794,7 +3893,7 @@ describe('SRT output settings', () => {
     SrtInputLossAction.DROP_PROGRAM,
     SrtInputLossAction.EMIT_PROGRAM,
   ])('renders SRT group inputLossAction %s', (inputLossAction) => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'SrtLossChannel', {
       inputs: [{ input: defaultInput }],
@@ -3829,7 +3928,7 @@ describe('SRT output settings', () => {
     SrtEncryptionType.AES192,
     SrtEncryptionType.AES256,
   ])('renders SRT output encryptionType %s', (encryptionType) => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'SrtEncChannel', {
       inputs: [{ input: defaultInput }],
@@ -3864,7 +3963,7 @@ describe('SRT output settings', () => {
   });
 
   test('renders SRT output buffer and latency', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'SrtBufChannel', {
       inputs: [{ input: defaultInput }],
@@ -3902,7 +4001,7 @@ describe('SRT output settings', () => {
 
 describe('Input pipeline class validation', () => {
   test('SINGLE_PIPELINE input on STANDARD channel throws', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
 
     expect(() => {
       new Channel(stack, 'BadChannel', {
@@ -3923,7 +4022,7 @@ describe('Input pipeline class validation', () => {
   });
 
   test('STANDARD input on SINGLE_PIPELINE channel throws', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
     const standardInput = new Input(stack, 'StdInput', {
       inputName: 'std-input',
       input: InputConfiguration.srtCaller([
@@ -3947,7 +4046,7 @@ describe('Input pipeline class validation', () => {
   });
 
   test('matching input and channel class succeeds', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
     const standardInput = new Input(stack, 'MatchInput', {
       inputName: 'match-input',
       input: InputConfiguration.srtCaller([
@@ -3977,7 +4076,7 @@ describe('Input pipeline class validation', () => {
 
 describe('Anywhere-only input type validation', () => {
   test('SDI input on cloud channel throws', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
     const sdiInput = new Input(stack, 'SdiInput', {
       inputName: 'sdi-input',
       inputNetworkLocation: InputNetworkLocation.ON_PREMISES,
@@ -4001,7 +4100,7 @@ describe('Anywhere-only input type validation', () => {
   });
 
   test('multicast input on cloud channel throws', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
     const multicastInput = new Input(stack, 'McInput', {
       input: InputConfiguration.multicast({ sources: [{ address: '239.0.0.1', port: 5000 }] }),
     });
@@ -4021,7 +4120,7 @@ describe('Anywhere-only input type validation', () => {
   });
 
   test('SMPTE 2110 input on cloud channel throws', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
     const smpteInput = new Input(stack, 'SmpteInput', {
       input: InputConfiguration.smpte2110ReceiverGroup({
         videoSdp: { sdpUrl: 'https://example.com/video.sdp' },
@@ -4043,7 +4142,7 @@ describe('Anywhere-only input type validation', () => {
   });
 
   test('SDI input on Anywhere channel does not throw', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
     const sdiInput = new Input(stack, 'SdiInput2', {
       inputName: 'sdi-input-2',
       inputNetworkLocation: InputNetworkLocation.ON_PREMISES,
@@ -4083,7 +4182,7 @@ describe('S3 destination and source helpers', () => {
 
   test('OutputDestination.fromBucket auto-grants write to channel role', () => {
     const bucket = new s3.Bucket(stack, 'OutputBucket');
-    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'S3Channel', {
       inputs: [{ input: defaultInput }],
@@ -4117,7 +4216,7 @@ describe('S3 destination and source helpers', () => {
         InputSource.fromBucket(bucket, 'videos/test.mp4'),
       ]),
     });
-    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'S3Channel', {
       inputs: [{ input: fileInput }],
@@ -4154,7 +4253,7 @@ describe('S3 destination and source helpers', () => {
         InputSource.url('https://example.com/stream.m3u8', { username: 'user', password }),
       ]),
     });
-    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
 
     new Channel(stack, 'PwChannel', {
       inputs: [{ input: fileInput }],
@@ -4183,7 +4282,7 @@ describe('S3 destination and source helpers', () => {
 
   test('addOutputGroup auto-grants write to the channel role', () => {
     const bucket = new s3.Bucket(stack, 'AddedOutputBucket');
-    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
 
     const channel = new Channel(stack, 'Ch', {
       inputs: [{ input: defaultInput }],
@@ -4219,7 +4318,7 @@ describe('S3 destination and source helpers', () => {
 
   test('addInput auto-grants read to the channel role', () => {
     const bucket = new s3.Bucket(stack, 'AddedSourceBucket');
-    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
 
     const channel = new Channel(stack, 'Ch', {
       inputs: [{ input: defaultInput }],
@@ -4253,7 +4352,7 @@ describe('S3 destination and source helpers', () => {
   });
 
   test('channel auto-creates role when none provided', () => {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
 
     const channel = new Channel(stack, 'AutoRoleChannel', {
       inputs: [{ input: defaultInput }],
@@ -4301,7 +4400,7 @@ describe('Bring-your-own role: no automatic grants', () => {
     const role = userRole();
     const bucket = new s3.Bucket(stack, 'OutputBucket');
     const sourceBucket = new s3.Bucket(stack, 'SourceBucket');
-    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
     const fileInput = new Input(stack, 'FileInput', {
       inputName: 'file-input',
       input: InputConfiguration.mp4File([
@@ -4331,7 +4430,7 @@ describe('Bring-your-own role: no automatic grants', () => {
     const role = userRole();
     const outBucket = new s3.Bucket(stack, 'AddedOutputBucket');
     const srcBucket = new s3.Bucket(stack, 'AddedSourceBucket');
-    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
 
     const channel = new Channel(stack, 'ByoChannel', {
       role,
@@ -4364,7 +4463,7 @@ describe('Bring-your-own role: no automatic grants', () => {
 
 describe('Auto-grant: service-role permissions', () => {
   function minimalChannel(props: { logLevel?: LogLevel; thumbnailState?: ThumbnailState; vpc?: VpcOutputSettings } = {}) {
-    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
     return new Channel(stack, 'SvcChannel', {
       inputs: [{ input: defaultInput }],
       logLevel: props.logLevel,
@@ -4489,7 +4588,7 @@ describe('Auto-grant: MediaPackage V2 ingest', () => {
       name: 'hd',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+      codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
     });
 
     new Channel(stack, 'MpChannel', {
@@ -4521,7 +4620,7 @@ describe('Auto-grant: MediaPackage V2 ingest', () => {
 describe('Auto-grant: SRT encryption secret', () => {
   test('SrtDestination.caller with encryption secret auto-grants read', () => {
     const secret = srtSecret;
-    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
     const standardInput = new Input(stack, 'SrtInput2', {
       inputName: 'srt-input-2',
       input: InputConfiguration.srtCaller([
@@ -4565,7 +4664,7 @@ describe('SrtDestination', () => {
   test('caller and listener destinations carry the encryption passphrase and grant read', () => {
     const secret = new secretsmanager.Secret(stack, 'Passphrase');
     const sg = new InputSecurityGroup(stack, 'ChannelSg', { allowlistRules: ['203.0.113.0/24'] });
-    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
     new Channel(stack, 'SrtChannel', {
       inputs: [{ input: defaultInput }],
       // Listener output below requires channel security groups.
@@ -4623,7 +4722,7 @@ describe('SrtDestination', () => {
 
   test('callerUrl targets an explicit endpoint URL with a passphrase', () => {
     const secret = new secretsmanager.Secret(stack, 'Passphrase');
-    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
     new Channel(stack, 'SrtUrlChannel', {
       inputs: [{ input: defaultInput }],
       outputGroups: [
@@ -4654,7 +4753,7 @@ describe('SrtDestination', () => {
 
   test('fails when an SRT listener output has no channel security groups', () => {
     const secret = new secretsmanager.Secret(stack, 'Passphrase');
-    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
     expect(() => {
       new Channel(stack, 'SrtListenerNoSg', {
         inputs: [{ input: defaultInput }],
@@ -4674,7 +4773,7 @@ describe('SrtDestination', () => {
 
   test('caller-only SRT output does not require channel security groups', () => {
     const secret = new secretsmanager.Secret(stack, 'Passphrase');
-    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720 });
+    const video = EncodeConfiguration.video({ name: 'v', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
     new Channel(stack, 'SrtCallerNoSg', {
       inputs: [{ input: defaultInput }],
       outputGroups: [
@@ -4701,7 +4800,7 @@ describe('Multi-region additional destinations', () => {
       name: 'hd',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+      codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
     });
 
     // Primary stack with cross-region references enabled
@@ -4795,7 +4894,7 @@ describe('MediaPackageV2Destination endpoint', () => {
       name: 'hd',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+      codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
     });
     return OutputGroupConfiguration.mediaPackageV2PerPipeline({
       name: 'mp',
@@ -4851,7 +4950,7 @@ describe('MediaPackageV2Destination endpoint', () => {
 
 describe('Output container settings', () => {
   function video() {
-    return EncodeConfiguration.video({ name: 'v', width: 1280, height: 720 });
+    return EncodeConfiguration.video({ name: 'v', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
   }
 
   test('UDP output with FEC settings', () => {
@@ -4932,7 +5031,7 @@ describe('Output container settings', () => {
   test('Archive output with a raw container', () => {
     const wav = EncodeConfiguration.audio({
       name: 'wav',
-      codecSettings: AudioCodecSettings.wav({ codingMode: WavCodingMode.CODING_MODE_2_0 }),
+      codec: AudioCodecSettings.wav({ codingMode: WavCodingMode.CODING_MODE_2_0 }),
     });
     new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput }],
@@ -4974,7 +5073,7 @@ describe('Output container settings', () => {
     // actually Dolby-encoded, so a deploy would prove nothing without a real Dolby feed.
     const passthrough = EncodeConfiguration.audio({
       name: 'audio-passthrough',
-      codecSettings: AudioCodecSettings.passthrough(),
+      codec: AudioCodecSettings.passthrough(),
     });
     new Channel(stack, 'MyChannel', {
       inputs: [{ input: defaultInput }],
@@ -5005,7 +5104,7 @@ describe('Output container settings', () => {
   test('raw archive output requires an extension', () => {
     const wav = EncodeConfiguration.audio({
       name: 'wav',
-      codecSettings: AudioCodecSettings.wav({ codingMode: WavCodingMode.CODING_MODE_2_0 }),
+      codec: AudioCodecSettings.wav({ codingMode: WavCodingMode.CODING_MODE_2_0 }),
     });
     expect(() => {
       new Channel(stack, 'BadRawExtension', {
@@ -5028,7 +5127,7 @@ describe('Output container settings', () => {
   test('archive group with only a raw (audio-only) output throws', () => {
     const wav = EncodeConfiguration.audio({
       name: 'wav',
-      codecSettings: AudioCodecSettings.wav({ codingMode: WavCodingMode.CODING_MODE_2_0 }),
+      codec: AudioCodecSettings.wav({ codingMode: WavCodingMode.CODING_MODE_2_0 }),
     });
     expect(() => new Channel(stack, 'NoVideoArchive', {
       inputs: [{ input: defaultInput }],
@@ -5114,7 +5213,7 @@ describe('MediaPackageV2GroupSettings', () => {
       name: 'hd',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+      codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
     });
 
     new Channel(stack, 'MpV2SettingsChannel', {
@@ -5176,7 +5275,7 @@ describe('MediaPackageV2GroupSettings', () => {
       name: 'hd',
       width: 1920,
       height: 1080,
-      codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+      codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
     });
 
     new Channel(stack, 'DefaultSettingsChannel', {
@@ -5235,13 +5334,13 @@ describe('Automatic input failover', () => {
       outputGroups: [
         OutputGroupConfiguration.hls({
           name: 'hls',
-          destinations: [OutputDestination.url('https://203.0.113.10/ingest/stream')],
+          destinations: [OutputDestination.url('s3ssl://bucket/live')],
           outputs: [{
             encodes: [EncodeConfiguration.video({
               name: 'v',
               width: 1280,
               height: 720,
-              codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_30 }),
+              codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_30 }),
             })],
             outputName: 'out',
           }],
@@ -5313,13 +5412,13 @@ describe('AudioSelector', () => {
       outputGroups: [
         OutputGroupConfiguration.hls({
           name: 'hls',
-          destinations: [OutputDestination.url('https://203.0.113.10/ingest/stream')],
+          destinations: [OutputDestination.url('s3ssl://bucket/live')],
           outputs: [{
             encodes: [EncodeConfiguration.video({
               name: 'v',
               width: 1280,
               height: 720,
-              codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_30 }),
+              codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_30 }),
             })],
             outputName: 'out',
           }],
@@ -5363,13 +5462,13 @@ describe('AudioSelector', () => {
       outputGroups: [
         OutputGroupConfiguration.hls({
           name: 'hls',
-          destinations: [OutputDestination.url('https://203.0.113.10/ingest/stream')],
+          destinations: [OutputDestination.url('s3ssl://bucket/live')],
           outputs: [{
             encodes: [EncodeConfiguration.video({
               name: 'v',
               width: 1280,
               height: 720,
-              codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_30 }),
+              codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_30 }),
             })],
             outputName: 'out',
           }],
@@ -5428,13 +5527,13 @@ describe('VideoSelector', () => {
       outputGroups: [
         OutputGroupConfiguration.hls({
           name: 'hls',
-          destinations: [OutputDestination.url('https://203.0.113.10/ingest/stream')],
+          destinations: [OutputDestination.url('s3ssl://bucket/live')],
           outputs: [{
             encodes: [EncodeConfiguration.video({
               name: 'v',
               width: 1280,
               height: 720,
-              codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_30 }),
+              codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_30 }),
             })],
             outputName: 'out',
           }],
@@ -5484,13 +5583,13 @@ describe('CaptionSelector', () => {
       outputGroups: [
         OutputGroupConfiguration.hls({
           name: 'hls',
-          destinations: [OutputDestination.url('https://203.0.113.10/ingest/stream')],
+          destinations: [OutputDestination.url('s3ssl://bucket/live')],
           outputs: [{
             encodes: [EncodeConfiguration.video({
               name: 'v',
               width: 1280,
               height: 720,
-              codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_30 }),
+              codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_30 }),
             })],
             outputName: 'out',
           }],
@@ -5540,13 +5639,13 @@ describe('Selector and failover edge cases', () => {
   function hlsGroup() {
     return OutputGroupConfiguration.hls({
       name: 'hls',
-      destinations: [OutputDestination.url('https://203.0.113.10/ingest/stream')],
+      destinations: [OutputDestination.url('s3ssl://bucket/live')],
       outputs: [{
         encodes: [EncodeConfiguration.video({
           name: 'v',
           width: 1280,
           height: 720,
-          codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_30 }),
+          codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_30 }),
         })],
         outputName: 'out',
       }],
@@ -5645,9 +5744,9 @@ describe('Network input settings', () => {
   function hlsGroup() {
     return OutputGroupConfiguration.hls({
       name: 'hls',
-      destinations: [OutputDestination.url('https://203.0.113.10/ingest/stream')],
+      destinations: [OutputDestination.url('s3ssl://bucket/live')],
       outputs: [{
-        encodes: [EncodeConfiguration.video({ name: 'v', width: 1280, height: 720 })],
+        encodes: [EncodeConfiguration.video({ name: 'v', width: 1280, height: 720, codec: VideoCodecSettings.h264() })],
         outputName: 'out',
       }],
     });
@@ -5744,7 +5843,7 @@ describe('MediaPackage V2 output group codec support', () => {
       name: 'av1',
       width: 1280,
       height: 720,
-      codecSettings: VideoCodecSettings.av1({
+      codec: VideoCodecSettings.av1({
         rateControl: Av1RateControl.qvbr({ maxBitrate: Bitrate.mbps(3) }),
         framerate: Framerate.FPS_29_97,
       }),
@@ -5776,7 +5875,7 @@ describe('MediaConnect Router output group settings', () => {
     name: 'v',
     width: 1920,
     height: 1080,
-    codecSettings: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+    codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
   });
 
   function standardInput(): Input {
@@ -5988,7 +6087,7 @@ describe('MediaConnect Router output group settings', () => {
 });
 
 describe('M2TS container settings', () => {
-  const video = () => EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080 });
+  const video = () => EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
 
   test('UDP output renders configured M2TS settings with strong-type conversions', () => {
     new Channel(stack, 'M2tsUdpChannel', {
@@ -6121,7 +6220,7 @@ describe('M2TS container settings', () => {
 
 describe('Global configuration and avail', () => {
   function videoOutputGroup() {
-    const video = EncodeConfiguration.video({ name: 'video', width: 1280, height: 720 });
+    const video = EncodeConfiguration.video({ name: 'video', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
     return OutputGroupConfiguration.hls({
       name: 'hls',
       destinations: [OutputDestination.url('s3ssl://bucket/live')],

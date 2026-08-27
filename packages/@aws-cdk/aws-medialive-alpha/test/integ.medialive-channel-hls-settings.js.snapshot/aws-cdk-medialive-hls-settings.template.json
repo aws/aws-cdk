@@ -285,6 +285,14 @@
         }
        }
       ]
+     },
+     {
+      "Id": "hls-cdn",
+      "Settings": [
+       {
+        "Url": "https://cdn.example.com/live/stream"
+       }
+      ]
      }
     ],
     "EncoderSettings": {
@@ -346,11 +354,11 @@
          "ManifestDurationFormat": "FLOATING_POINT",
          "Mode": "LIVE",
          "OutputSelection": "MANIFESTS_AND_SEGMENTS",
-         "ProgramDateTime": "EXCLUDE",
-         "ProgramDateTimeClock": "INITIALIZE_FROM_OUTPUT_TIMECODE",
+         "ProgramDateTime": "INCLUDE",
+         "ProgramDateTimeClock": "SYSTEM_CLOCK",
          "ProgramDateTimePeriod": 600,
          "RedundantManifest": "DISABLED",
-         "SegmentLength": 6,
+         "SegmentLength": 2,
          "SegmentationMode": "USE_SEGMENT_DURATION",
          "SegmentsPerSubdirectory": 10000,
          "StreamInfResolution": "INCLUDE",
@@ -399,6 +407,64 @@
            }
           }
          }
+        }
+       ]
+      },
+      {
+       "Name": "hls-cdn",
+       "OutputGroupSettings": {
+        "HlsGroupSettings": {
+         "ClientCache": "ENABLED",
+         "CodecSpecification": "RFC_4281",
+         "Destination": {
+          "DestinationRefId": "hls-cdn"
+         },
+         "DirectoryStructure": "SINGLE_DIRECTORY",
+         "DiscontinuityTags": "INSERT",
+         "HlsCdnSettings": {
+          "HlsBasicPutSettings": {
+           "ConnectionRetryInterval": 2,
+           "FilecacheDuration": 300,
+           "NumRetries": 5,
+           "RestartDelay": 1
+          }
+         },
+         "HlsId3SegmentTagging": "DISABLED",
+         "IFrameOnlyPlaylists": "DISABLED",
+         "IncompleteSegmentBehavior": "AUTO",
+         "IndexNSegments": 10,
+         "InputLossAction": "EMIT_OUTPUT",
+         "KeepSegments": 21,
+         "ManifestCompression": "NONE",
+         "ManifestDurationFormat": "FLOATING_POINT",
+         "Mode": "LIVE",
+         "OutputSelection": "MANIFESTS_AND_SEGMENTS",
+         "ProgramDateTime": "INCLUDE",
+         "ProgramDateTimeClock": "SYSTEM_CLOCK",
+         "ProgramDateTimePeriod": 600,
+         "RedundantManifest": "DISABLED",
+         "SegmentLength": 2,
+         "SegmentationMode": "USE_SEGMENT_DURATION",
+         "SegmentsPerSubdirectory": 10000,
+         "StreamInfResolution": "INCLUDE",
+         "TimedMetadataId3Frame": "PRIV",
+         "TimedMetadataId3Period": 10,
+         "TsFileMode": "SEGMENTED_FILES"
+        }
+       },
+       "Outputs": [
+        {
+         "OutputName": "cdn_output",
+         "OutputSettings": {
+          "HlsOutputSettings": {
+           "HlsSettings": {
+            "StandardHlsSettings": {
+             "M3u8Settings": {}
+            }
+           }
+          }
+         },
+         "VideoDescriptionName": "h264-720p"
         }
        ]
       }

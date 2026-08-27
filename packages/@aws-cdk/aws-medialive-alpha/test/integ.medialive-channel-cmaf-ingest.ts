@@ -19,12 +19,12 @@ const video = medialive.EncodeConfiguration.video({
   name: 'av1-1080p',
   width: 1920,
   height: 1080,
-  codecSettings: medialive.VideoCodecSettings.av1({
+  codec: medialive.VideoCodecSettings.av1({
     rateControl: medialive.Av1RateControl.qvbr({ maxBitrate: cdk.Bitrate.mbps(4), qvbrQualityLevel: 7 }),
     framerate: medialive.Framerate.FPS_30,
   }),
 });
-const audio = medialive.EncodeConfiguration.audio({ name: 'aac-stereo' });
+const audio = medialive.EncodeConfiguration.audio({ name: 'aac-stereo', codec: medialive.AudioCodecSettings.aac() });
 
 const channel = new medialive.Channel(stack, 'Channel', {
   channelName: 'cmaf-ingest-channel',

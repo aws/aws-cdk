@@ -57,12 +57,12 @@ const video = medialive.EncodeConfiguration.video({
   name: 'video',
   width: 1920,
   height: 1080,
-  codecSettings: medialive.VideoCodecSettings.h264({
+  codec: medialive.VideoCodecSettings.h264({
     rateControl: medialive.H264RateControl.cbr({ bitrate: cdk.Bitrate.mbps(5) }),
     framerate: medialive.Framerate.FPS_29_97,
   }),
 });
-const audio = medialive.EncodeConfiguration.audio({ name: 'audio' });
+const audio = medialive.EncodeConfiguration.audio({ name: 'audio', codec: medialive.AudioCodecSettings.aac() });
 
 // --- Channel with additional destinations ---
 // SINGLE_PIPELINE channel with 2 destinations (1 primary + 1 additional)

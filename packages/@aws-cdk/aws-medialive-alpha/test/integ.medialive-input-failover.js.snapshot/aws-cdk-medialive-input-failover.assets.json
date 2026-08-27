@@ -1,16 +1,16 @@
 {
   "version": "54.0.0",
   "files": {
-    "d486d7a94b751e9542837ee6b64ff82732fd0ef7b55ac4057b35143ee316cb1f": {
+    "7d6a6c10c155dd5f038ce360a6cc4e0cbd1007dae3fb9c044acd8b1398b567fc": {
       "displayName": "aws-cdk-medialive-input-failover Template",
       "source": {
         "path": "aws-cdk-medialive-input-failover.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-582958a5": {
+        "current_account-current_region-7c90060f": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d486d7a94b751e9542837ee6b64ff82732fd0ef7b55ac4057b35143ee316cb1f.json",
+          "objectKey": "7d6a6c10c155dd5f038ce360a6cc4e0cbd1007dae3fb9c044acd8b1398b567fc.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

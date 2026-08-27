@@ -18,12 +18,12 @@ const video = medialive.EncodeConfiguration.video({
   name: 'h264-720p',
   width: 1280,
   height: 720,
-  codecSettings: medialive.VideoCodecSettings.h264({
+  codec: medialive.VideoCodecSettings.h264({
     framerate: medialive.Framerate.FPS_29_97,
     rateControl: medialive.H264RateControl.cbr({ bitrate: cdk.Bitrate.mbps(3) }),
   }),
 });
-const audio = medialive.EncodeConfiguration.audio({ name: 'aac-stereo' });
+const audio = medialive.EncodeConfiguration.audio({ name: 'aac-stereo', codec: medialive.AudioCodecSettings.aac() });
 
 const outputBucket = new s3.Bucket(stack, 'OutputBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -78,6 +78,16 @@ const channel = new medialive.Channel(stack, 'Channel', {
           }),
         },
       ],
+    }),
+    // Second HLS group pushing to an https CDN destination. An https URL requires hlsCdnSettings
+    medialive.OutputGroupConfiguration.hls({
+      name: 'hls-cdn',
+      destinations: [medialive.OutputDestination.url('https://cdn.example.com/live/stream')],
+      hlsCdnSettings: medialive.HlsCdnSettings.basicPut({
+        numRetries: 5,
+        connectionRetryInterval: 2,
+      }),
+      outputs: [{ encodes: [video], outputName: 'cdn_output' }],
     }),
   ],
 });
