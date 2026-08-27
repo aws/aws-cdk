@@ -196,7 +196,9 @@
       "Arn"
      ]
     }
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "CdkStagingBucket1636058C": {
    "Type": "AWS::S3::Bucket",

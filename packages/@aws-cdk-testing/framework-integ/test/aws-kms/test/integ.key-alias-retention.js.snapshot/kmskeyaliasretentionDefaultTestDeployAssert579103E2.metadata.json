@@ -1,34 +1,17 @@
 {
-  "/ScramSecretIntegTest/DefaultTest/DeployAssert": [
+  "/kms-key-alias-retention/DefaultTest/DeployAssert": [
     {
       "type": "aws:cdk:creationStack",
       "data": [
         "new DeployAssert (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:39:38)",
         "new IntegTestCase (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
         "new IntegTest (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
-        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.add-cluster-user.js:22:19)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk-testing/framework-integ/test/aws-kms/test/integ.key-alias-retention.js:17:15)",
         "...node internals..."
-      ]
-    },
-    {
-      "type": "aws:cdk:warning",
-      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
-      "trace": [
-        "Annotations.addMessage (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
-        "Annotations.addWarningV2 (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
-        "resolveValue (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/refs.js:165:54)",
-        "resolveReferences (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
-        "prepareApp (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
-        "synthesize (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
-        "App.synth (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
-        "App.synth (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/app.js:208:27)",
-        "process.<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/app.js:157:51)",
-        "Object.onceWrapper (node:events:632:26)",
-        "process.emit (node:events:517:28)"
       ]
     }
   ],
-  "/ScramSecretIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+  "/kms-key-alias-retention/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
@@ -49,7 +32,7 @@
       ]
     }
   ],
-  "/ScramSecretIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+  "/kms-key-alias-retention/DefaultTest/DeployAssert/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
@@ -70,7 +53,7 @@
       ]
     }
   ],
-  "/ScramSecretIntegTest/DefaultTest/DeployAssert/AwsApiCallKafkalistScramSecrets99a2254ce6c3e412ea0555d481633181/Default": [
+  "/kms-key-alias-retention/DefaultTest/DeployAssert/AwsApiCallKMSdescribeKeybb761589b48535b443410aace6e1eef9/Default": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -84,10 +67,10 @@
       "data": "*"
     }
   ],
-  "/ScramSecretIntegTest/DefaultTest/DeployAssert/AwsApiCallKafkalistScramSecrets99a2254ce6c3e412ea0555d481633181/AssertionResults": [
+  "/kms-key-alias-retention/DefaultTest/DeployAssert/AwsApiCallKMSdescribeKeybb761589b48535b443410aace6e1eef9/AssertionResults": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "AssertionResultsAwsApiCallKafkalistScramSecrets99a2254ce6c3e412ea0555d481633181"
+      "data": "AssertionResultsAwsApiCallKMSdescribeKeybb761589b48535b443410aace6e1eef9"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -105,7 +88,7 @@
       ]
     }
   ],
-  "/ScramSecretIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+  "/kms-key-alias-retention/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
     {
       "type": "aws:cdk:logicalId",
       "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
@@ -119,12 +102,12 @@
         "new AssertionsProvider (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:260:24)",
         "new AwsApiCall (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:49:25)",
         "DeployAssert.awsApiCall (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:49:16)",
-        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.add-cluster-user.js:25:43)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk-testing/framework-integ/test/aws-kms/test/integ.key-alias-retention.js:30:18)",
         "...node internals..."
       ]
     }
   ],
-  "/ScramSecretIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+  "/kms-key-alias-retention/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
     {
       "type": "aws:cdk:logicalId",
       "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
@@ -138,15 +121,15 @@
         "new AssertionsProvider (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:260:24)",
         "new AwsApiCall (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:49:25)",
         "DeployAssert.awsApiCall (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:49:16)",
-        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.add-cluster-user.js:25:43)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk-testing/framework-integ/test/aws-kms/test/integ.key-alias-retention.js:30:18)",
         "...node internals..."
       ]
     }
   ],
-  "/ScramSecretIntegTest/DefaultTest/DeployAssert/AwsApiCallKafkalistScramSecrets99a2254ce6c3e412ea0555d481633181/Default/Default": [
+  "/kms-key-alias-retention/DefaultTest/DeployAssert/AwsApiCallKMSdescribeKeybb761589b48535b443410aace6e1eef9/Default/Default": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "AwsApiCallKafkalistScramSecrets99a2254ce6c3e412ea0555d481633181"
+      "data": "AwsApiCallKMSdescribeKeybb761589b48535b443410aace6e1eef9"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -154,7 +137,7 @@
         "new CustomResource (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
         "new AwsApiCall (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:60:32)",
         "DeployAssert.awsApiCall (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:49:16)",
-        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.add-cluster-user.js:25:43)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk-testing/framework-integ/test/aws-kms/test/integ.key-alias-retention.js:30:18)",
         "...node internals..."
       ]
     }
