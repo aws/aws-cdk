@@ -124,6 +124,10 @@ export class ParameterGroup extends Resource implements IParameterGroup {
 
   /**
    * Imports a parameter group
+   *
+   * `dbParameterGroupRef.dbParameterGroupArn` is always an instance DB parameter group ARN (`pg:`), so
+   * it is wrong for a cluster parameter group, whose ARN uses `cluster-pg:` and is not exposed here.
+   * Read a cluster parameter group's name from `dbClusterParameterGroupRef`.
    */
   public static fromParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IParameterGroup {
     class Import extends Resource implements IParameterGroup {

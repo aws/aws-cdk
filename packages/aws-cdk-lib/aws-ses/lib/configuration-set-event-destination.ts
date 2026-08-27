@@ -291,9 +291,11 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
   /**
    * Import an existing event destination by its ID.
    *
-   * An ID alone does not identify the configuration set the destination belongs to, so
-   * `configurationSetName` is not available on the returned reference. Use
-   * `fromConfigurationSetEventDestinationAttributes()` for a complete reference.
+   * An ID alone does not identify the configuration set the destination belongs to, so reading
+   * `configurationSetName` on the returned reference raises an error - as does reading the reference as
+   * a whole, by spreading or serializing it, or by handing it to a jsii language binding that reads
+   * struct members eagerly. Use `fromConfigurationSetEventDestinationAttributes()` for a reference
+   * whose every member can be read.
    */
   public static fromConfigurationSetEventDestinationId(
     scope: Construct,

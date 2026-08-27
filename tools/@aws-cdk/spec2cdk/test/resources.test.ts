@@ -247,7 +247,8 @@ test('an unrecorded attribute name conflict fails codegen', () => {
 });
 
 test('the reference interface reads a renamed attribute through its replacement getter', () => {
-  // GIVEN - the renamed attribute is what identifies the resource, so the Ref must read its getter
+  // GIVEN - the renamed attribute is what identifies the resource, so the Ref must read its getter.
+  // The identifier shape is constructed for this test, not real EKS's.
   givenResource({
     ...BASE_RESOURCE,
     name: 'Cluster',

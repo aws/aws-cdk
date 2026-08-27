@@ -101,6 +101,19 @@ describe('receipt rule', () => {
     });
   });
 
+  test('fails to read ruleSetName of a rule imported by name', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const rule = ReceiptRule.fromReceiptRuleName(stack, 'Rule', 'MyRule');
+
+    // THEN
+    expect(() => rule.receiptRuleRef.ruleSetName).toThrow(
+      'ruleSetName is not available on a ReceiptRule imported by rule name; use ReceiptRule.fromReceiptRuleAttributes() to get a complete reference',
+    );
+  });
+
   test('receiptRuleRef of a rule imported by attributes is fully readable', () => {
     // GIVEN
     const stack = new Stack();

@@ -330,3 +330,13 @@ test('configurationSetEventDestinationRef of a destination imported by attribute
   expect(destination.configurationSetEventDestinationRef.configurationSetEventDestinationId).toEqual('MyDestination');
   expect(destination.configurationSetEventDestinationRef.configurationSetName).toEqual('MySet');
 });
+
+test('fails to read configurationSetName of a destination imported by id', () => {
+  // WHEN
+  const destination = ConfigurationSetEventDestination.fromConfigurationSetEventDestinationId(stack, 'Imported', 'MyDestination');
+
+  // THEN
+  expect(() => destination.configurationSetEventDestinationRef.configurationSetName).toThrow(
+    'configurationSetName is not available on a ConfigurationSetEventDestination imported by id; use ConfigurationSetEventDestination.fromConfigurationSetEventDestinationAttributes() to get a complete reference',
+  );
+});
