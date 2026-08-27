@@ -318,3 +318,15 @@ test('kinesis firehose delivery stream destination specify stream ARN and IAM Ro
     },
   });
 });
+
+test('configurationSetEventDestinationRef of a destination imported by attributes is fully readable', () => {
+  // WHEN
+  const destination = ConfigurationSetEventDestination.fromConfigurationSetEventDestinationAttributes(stack, 'Imported', {
+    configurationSet: ConfigurationSet.fromConfigurationSetName(stack, 'ImportedSet', 'MySet'),
+    configurationSetEventDestinationId: 'MyDestination',
+  });
+
+  // THEN
+  expect(destination.configurationSetEventDestinationRef.configurationSetEventDestinationId).toEqual('MyDestination');
+  expect(destination.configurationSetEventDestinationRef.configurationSetName).toEqual('MySet');
+});

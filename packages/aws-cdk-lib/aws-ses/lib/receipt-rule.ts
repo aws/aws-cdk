@@ -107,6 +107,21 @@ export interface ReceiptRuleProps extends ReceiptRuleOptions {
 }
 
 /**
+ * Properties of a reference to an existing receipt rule.
+ */
+export interface ReceiptRuleAttributes {
+  /**
+   * The rule set that the receipt rule belongs to.
+   */
+  readonly ruleSet: IReceiptRuleSetRef;
+
+  /**
+   * The name of the receipt rule.
+   */
+  readonly receiptRuleName: string;
+}
+
+/**
  * A new receipt rule.
  */
 @propertyInjectable
@@ -126,8 +141,25 @@ export class ReceiptRule extends Resource implements IReceiptRule {
           ruleName: receiptRuleName,
           get ruleSetName(): string {
             throw new UnscopedValidationError(lit`CannotAccessRuleSetNameOfImportedReceiptRule`,
-              'ruleSetName is not available on a ReceiptRule imported by rule name, which does not identify the rule set the rule belongs to');
+              'ruleSetName is not available on a ReceiptRule imported by rule name; use ReceiptRule.fromReceiptRuleAttributes() to get a complete reference');
           },
+        };
+      }
+    }
+    return new Import(scope, id);
+  }
+
+  /**
+   * Import an existing receipt rule from its attributes.
+   */
+  public static fromReceiptRuleAttributes(scope: Construct, id: string, attrs: ReceiptRuleAttributes): IReceiptRule {
+    class Import extends Resource implements IReceiptRule {
+      public readonly receiptRuleName = attrs.receiptRuleName;
+
+      public get receiptRuleRef(): ReceiptRuleReference {
+        return {
+          ruleName: attrs.receiptRuleName,
+          ruleSetName: attrs.ruleSet.receiptRuleSetRef.ruleSetName,
         };
       }
     }

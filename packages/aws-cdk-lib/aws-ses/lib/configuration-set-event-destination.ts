@@ -266,6 +266,21 @@ export interface FirehoseDeliveryStreamDestination {
 }
 
 /**
+ * Properties of a reference to an existing configuration set event destination.
+ */
+export interface ConfigurationSetEventDestinationAttributes {
+  /**
+   * The configuration set that the event destination belongs to.
+   */
+  readonly configurationSet: IConfigurationSetRef;
+
+  /**
+   * The ID of the configuration set event destination.
+   */
+  readonly configurationSetEventDestinationId: string;
+}
+
+/**
  * A configuration set event destination
  */
 @propertyInjectable
@@ -288,8 +303,28 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
           configurationSetEventDestinationId,
           get configurationSetName(): string {
             throw new UnscopedValidationError(lit`CannotAccessConfigurationSetNameOfImportedEventDestination`,
-              'configurationSetName is not available on a ConfigurationSetEventDestination imported by id, which does not identify the configuration set it belongs to');
+              'configurationSetName is not available on a ConfigurationSetEventDestination imported by id; use ConfigurationSetEventDestination.fromConfigurationSetEventDestinationAttributes() to get a complete reference');
           },
+        };
+      }
+    }
+    return new Import(scope, id);
+  }
+
+  /**
+   * Import an existing event destination from its attributes.
+   */
+  public static fromConfigurationSetEventDestinationAttributes(
+    scope: Construct,
+    id: string,
+    attrs: ConfigurationSetEventDestinationAttributes): IConfigurationSetEventDestination {
+    class Import extends Resource implements IConfigurationSetEventDestination {
+      public readonly configurationSetEventDestinationId = attrs.configurationSetEventDestinationId;
+
+      public get configurationSetEventDestinationRef(): ConfigurationSetEventDestinationReference {
+        return {
+          configurationSetEventDestinationId: attrs.configurationSetEventDestinationId,
+          configurationSetName: attrs.configurationSet.configurationSetRef.configurationSetName,
         };
       }
     }
