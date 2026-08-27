@@ -1003,7 +1003,7 @@ export abstract class BaseService extends Resource
       ...additionalProps,
     });
 
-    this.node.addDependency(this.taskDefinition.taskRole);
+    this.resource.node.addDependency(this.taskDefinition.taskRole);
 
     if (props.deploymentController?.type === DeploymentControllerType.EXTERNAL) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:externalDeploymentController', 'taskDefinition and launchType are blanked out when using external deployment controller.');
@@ -1057,13 +1057,13 @@ export abstract class BaseService extends Resource
       // prevent new task def revisions in the stack from triggering updates
       // to the stack's ECS service resource
       this.resource.taskDefinition = taskDefinition.family;
-      this.node.addDependency(taskDefinition);
+      this.resource.node.addDependency(taskDefinition);
     } else if (props.taskDefinitionRevision) {
       this.resource.taskDefinition = taskDefinition.family;
       if (props.taskDefinitionRevision !== TaskDefinitionRevision.LATEST) {
         this.resource.taskDefinition += `:${props.taskDefinitionRevision.revision}`;
       }
-      this.node.addDependency(taskDefinition);
+      this.resource.node.addDependency(taskDefinition);
     }
 
     this.cluster = props.cluster;
