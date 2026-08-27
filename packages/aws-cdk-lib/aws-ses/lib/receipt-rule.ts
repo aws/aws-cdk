@@ -135,10 +135,8 @@ export class ReceiptRule extends Resource implements IReceiptRule {
   /**
    * Import an existing receipt rule by its name.
    *
-   * A name alone does not identify the rule set the rule belongs to, so reading `ruleSetName` on the
-   * returned reference raises an error - as does reading the reference as a whole, by spreading or
-   * serializing it, or by handing it to a jsii language binding that reads struct members eagerly.
-   * Use `fromReceiptRuleAttributes()` for a reference whose every member can be read.
+   * A name alone does not identify the rule set the rule belongs to, so `ruleSetName` is not available
+   * on the returned reference. Use `fromReceiptRuleAttributes()` if you need it.
    */
   public static fromReceiptRuleName(scope: Construct, id: string, receiptRuleName: string): IReceiptRule {
     class Import extends Resource implements IReceiptRule {
