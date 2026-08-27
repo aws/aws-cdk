@@ -289,7 +289,11 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ses.ConfigurationSetEventDestination';
 
   /**
-   * Use an existing configuration set
+   * Import an existing event destination by its ID.
+   *
+   * An ID alone does not identify the configuration set the destination belongs to, so
+   * `configurationSetName` is not available on the returned reference. Use
+   * `fromConfigurationSetEventDestinationAttributes()` for a complete reference.
    */
   public static fromConfigurationSetEventDestinationId(
     scope: Construct,

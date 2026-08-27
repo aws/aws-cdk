@@ -132,6 +132,12 @@ export class ReceiptRule extends Resource implements IReceiptRule {
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ses.ReceiptRule';
 
+  /**
+   * Import an existing receipt rule by its name.
+   *
+   * A name alone does not identify the rule set the rule belongs to, so `ruleSetName` is not
+   * available on the returned reference. Use `fromReceiptRuleAttributes()` for a complete reference.
+   */
   public static fromReceiptRuleName(scope: Construct, id: string, receiptRuleName: string): IReceiptRule {
     class Import extends Resource implements IReceiptRule {
       public readonly receiptRuleName = receiptRuleName;

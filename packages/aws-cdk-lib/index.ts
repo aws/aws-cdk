@@ -222,6 +222,7 @@ export * as aws_oam from './aws-oam';
 export * as aws_observabilityadmin from './aws-observabilityadmin';
 export * as aws_odb from './aws-odb';
 export * as aws_omics from './aws-omics';
+export * as aws_opensearch from './aws-opensearch';
 export * as aws_opensearchserverless from './aws-opensearchserverless';
 export * as aws_opensearchservice from './aws-opensearchservice';
 export * as aws_opsworks from './aws-opsworks';
