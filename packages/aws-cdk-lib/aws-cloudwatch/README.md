@@ -401,6 +401,16 @@ const alarmRule = cloudwatch.AlarmRule.anyOf(
       alarm3,
     ),
     cloudwatch.AlarmRule.not(cloudwatch.AlarmRule.fromAlarm(alarm4, cloudwatch.AlarmState.INSUFFICIENT_DATA)),
+    // AT_LEAST with count: at least 2 of these alarms must be in ALARM state
+    cloudwatch.AlarmRule.atLeast(cloudwatch.AlarmState.ALARM, {
+      operands: [alarm1, alarm2, alarm3],
+      threshold: cloudwatch.AtLeastThreshold.count(2),
+    }),
+    // AT_LEAST with percentage and NOT: at least 60% must NOT be in OK state
+    cloudwatch.AlarmRule.atLeastNot(cloudwatch.AlarmState.OK, {
+      operands: [alarm1, alarm2, alarm3],
+      threshold: cloudwatch.AtLeastThreshold.percentage(60),
+    }),
   ),
   cloudwatch.AlarmRule.fromBoolean(false),
 );
@@ -589,6 +599,33 @@ new cloudwatch.CompositeAlarm(this, 'CompositeAlarm', {
   alarmRule: cloudwatch.AlarmRule.allOf(promqlAlarm, standardAlarm),
 });
 ```
+
+## Alarm Mute Rules
+
+Alarm Mute Rules is a CloudWatch feature that provides you a mechanism to
+automatically mute alarm actions during predefined time windows.
+When you create a mute rule, you define specific time periods and target
+alarms whose actions will be muted.
+CloudWatch will continue monitoring and evaluating alarm states while preventing
+unwanted notifications or automated alarm actions during expected operational events.
+
+```ts
+declare const alarm1: cloudwatch.Alarm;
+declare const alarm2: cloudwatch.Alarm;
+
+const alarmMuteRule = new cloudwatch.AlarmMuteRule(this, 'AlarmMuteRule', {
+  alarms: [alarm1],
+  // Defines the mute period begins at 0:00 everyday in UTC
+  schedule: cloudwatch.ScheduleExpression.cron({ minute: '0', hour: '0' }),
+  // Specifies the mute rule lasts 1 hour.
+  duration: Duration.hours(1),
+})
+
+// The mute target can be added after construction.
+alarmMuteRule.addAlarm(alarm2);
+```
+
+For more information on alarm mute rules, see the [AWS documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/alarm-mute-rules.html).
 
 ## Dashboards
 
