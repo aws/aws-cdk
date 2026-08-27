@@ -21,6 +21,22 @@ class DefaultTestStack extends core.Stack {
 }
 
 /**
+ * Snapshot test for table bucket with no name (CDK auto-generates the name)
+ */
+class AutoNamedTestStack extends core.Stack {
+  public readonly tableBucket: s3tables.TableBucket;
+
+  constructor(scope: Construct, id: string, props?: core.StackProps) {
+    super(scope, id, props);
+
+    this.tableBucket = new s3tables.TableBucket(this, 'AutoNamedBucket', {
+      // we don't want to leave trash in the account after running the deployment of this
+      removalPolicy: core.RemovalPolicy.DESTROY,
+    });
+  }
+}
+
+/**
  * Snapshot test for table bucket with optional parameters
  */
 class UnreferencedFileRemovalTestStack extends core.Stack {
@@ -46,10 +62,18 @@ const app = new core.App();
 
 const defaultBucketTest = new DefaultTestStack(app, 'DefaultTestStack');
 const unreferencedFileRemovalTestStack = new UnreferencedFileRemovalTestStack(app, 'UnreferencedFileRemovalTestStack');
+const autoNamedTestStack = new AutoNamedTestStack(app, 'AutoNamedTestStack');
 
 const integ = new IntegTest(app, 'TableBucketIntegTest', {
-  testCases: [defaultBucketTest, unreferencedFileRemovalTestStack],
+  testCases: [defaultBucketTest, unreferencedFileRemovalTestStack, autoNamedTestStack],
 });
+
+// Confirm the auto-named bucket actually exists with the CDK-generated name
+integ.assertions.awsApiCall('@aws-sdk/client-s3tables', 'GetTableBucketCommand', {
+  tableBucketARN: autoNamedTestStack.tableBucket.tableBucketArn,
+}).expect(ExpectedResult.objectLike({
+  arn: autoNamedTestStack.tableBucket.tableBucketArn,
+}));
 
 // Add assertions for unreferenced file removal
 const maintenanceConfiguration = integ.assertions.awsApiCall('@aws-sdk/client-s3tables', 'GetTableBucketMaintenanceConfigurationCommand', {
