@@ -491,7 +491,7 @@ export class Distribution extends Resource implements IDistribution {
     return new cloudwatch.Metric({
       namespace: 'AWS/CloudFront',
       metricName,
-      dimensionsMap: { DistributionId: this.distributionId },
+      dimensionsMap: { DistributionId: this.distributionId, Region: 'Global' },
       ...props,
     });
   }
