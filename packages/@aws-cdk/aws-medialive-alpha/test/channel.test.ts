@@ -2075,6 +2075,7 @@ describe('Validation', () => {
           }),
         ],
       });
+      Template.fromStack(stack);
     }).toThrow(/programDateTimeClock must be INITIALIZE_FROM_OUTPUT_TIMECODE when using epoch output locking/);
   });
 
@@ -2131,6 +2132,67 @@ describe('Validation', () => {
         GlobalConfiguration: Match.objectLike({ OutputLockingMode: 'EPOCH_LOCKING' }),
       }),
     });
+  });
+
+  // Epoch-locking checks are deferred to synth so they also cover groups added post-construction
+  // via addOutputGroup(), not just those passed in props.
+  function epochChannel(): Channel {
+    const video = EncodeConfiguration.video({
+      name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_30 }),
+    });
+    return new Channel(stack, 'EpochAddChannel', {
+      inputs: [{ input: defaultInput }],
+      globalConfiguration: {
+        outputLocking: OutputLocking.epoch(),
+        outputTimingSource: OutputTimingSource.INPUT_CLOCK,
+      },
+      outputGroups: [
+        OutputGroupConfiguration.hls({
+          name: 'hls',
+          destinations: [OutputDestination.url('s3ssl://bucket/live')],
+          outputs: [{ encodes: [video], outputName: 'out' }],
+        }),
+      ],
+    });
+  }
+
+  test('epoch locking auto-corrects the program-date-time clock on a group added via addOutputGroup()', () => {
+    const channel = epochChannel();
+    const video = EncodeConfiguration.video({
+      name: 'v2', width: 1280, height: 720, codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_30 }),
+    });
+    channel.addOutputGroup(OutputGroupConfiguration.hls({
+      name: 'hls-added',
+      destinations: [OutputDestination.url('s3ssl://bucket/added')],
+      outputs: [{ encodes: [video], outputName: 'out2' }],
+    }));
+
+    // The later-added group's clock is auto-corrected to INITIALIZE_FROM_OUTPUT_TIMECODE, same as
+    // the initial group.
+    Template.fromStack(stack).hasResourceProperties('AWS::MediaLive::Channel', {
+      EncoderSettings: Match.objectLike({
+        OutputGroups: Match.arrayWith([
+          Match.objectLike({
+            Name: 'hls-added',
+            OutputGroupSettings: {
+              HlsGroupSettings: Match.objectLike({ ProgramDateTimeClock: 'INITIALIZE_FROM_OUTPUT_TIMECODE' }),
+            },
+          }),
+        ]),
+      }),
+    });
+  });
+
+  test('epoch locking validates a group added via addOutputGroup() (H.264 without frame rate throws)', () => {
+    const channel = epochChannel();
+    const video = EncodeConfiguration.video({ name: 'v2', width: 1280, height: 720, codec: VideoCodecSettings.h264() });
+    channel.addOutputGroup(OutputGroupConfiguration.hls({
+      name: 'hls-added',
+      destinations: [OutputDestination.url('s3ssl://bucket/added')],
+      outputs: [{ encodes: [video], outputName: 'out2' }],
+    }));
+
+    expect(() => Template.fromStack(stack)).toThrow(/epoch output locking requires an explicit frame rate on H.264 video encodes/);
   });
 });
 
@@ -4018,6 +4080,7 @@ describe('Input pipeline class validation', () => {
           }),
         ],
       });
+      Template.fromStack(stack);
     }).toThrow(/incompatible.*STANDARD/);
   });
 
@@ -4042,6 +4105,7 @@ describe('Input pipeline class validation', () => {
           }),
         ],
       });
+      Template.fromStack(stack);
     }).toThrow(/incompatible.*SINGLE_PIPELINE/);
   });
 
@@ -4072,6 +4136,35 @@ describe('Input pipeline class validation', () => {
       });
     }).not.toThrow();
   });
+
+  test('an input added via addInput() is validated at synth (pipeline class mismatch throws)', () => {
+    const video = EncodeConfiguration.video({ name: 'v', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
+    const standardInput = new Input(stack, 'AddMatchInput', {
+      inputName: 'add-match-input',
+      input: InputConfiguration.srtCaller([
+        { srtListenerAddress: '203.0.113.100', srtListenerPort: 5000 },
+        { srtListenerAddress: '203.0.113.101', srtListenerPort: 5000 },
+      ]),
+    });
+
+    const channel = new Channel(stack, 'AddInputChannel', {
+      channelClass: ChannelClass.STANDARD,
+      inputs: [{ input: standardInput }],
+      outputGroups: [
+        OutputGroupConfiguration.hls({
+          name: 'hls',
+          destinations: [OutputDestination.url('s3ssl://bucket/p0'), OutputDestination.url('s3ssl://bucket/p1')],
+          outputs: [{ encodes: [video], outputName: 'out' }],
+        }),
+      ],
+    });
+
+    // defaultInput is SINGLE_PIPELINE — incompatible with the STANDARD channel. The deferred
+    // validation must catch it even though it was attached after construction.
+    channel.addInput({ input: defaultInput, inputAttachmentName: 'late' });
+
+    expect(() => Template.fromStack(stack)).toThrow(/incompatible.*STANDARD/);
+  });
 });
 
 describe('Anywhere-only input type validation', () => {
@@ -4096,6 +4189,7 @@ describe('Anywhere-only input type validation', () => {
           }),
         ],
       });
+      Template.fromStack(stack);
     }).toThrow(/requires anywhereSettings/);
   });
 
@@ -4116,6 +4210,7 @@ describe('Anywhere-only input type validation', () => {
           }),
         ],
       });
+      Template.fromStack(stack);
     }).toThrow(/requires anywhereSettings/);
   });
 
@@ -4138,6 +4233,7 @@ describe('Anywhere-only input type validation', () => {
           }),
         ],
       });
+      Template.fromStack(stack);
     }).toThrow(/requires anywhereSettings/);
   });
 
@@ -5682,6 +5778,7 @@ describe('Selector and failover edge cases', () => {
         inputs: [{ input: defaultInput, automaticInputFailover: { secondaryInput: secondary } }],
         outputGroups: [hlsGroup()],
       });
+      Template.fromStack(stack);
     }).toThrow(/not attached to the channel/);
   });
 

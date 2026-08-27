@@ -1777,6 +1777,16 @@ export class OutputGroup {
     return this.outputs.flatMap(o => o._getEncodes());
   }
 
+  /** @internal - Propagate epoch-locking state to the underlying config. */
+  public _setEpochLocking(active: boolean): void {
+    this.config._setEpochLocking(active);
+  }
+
+  /** @internal - Whether the underlying config explicitly requests an incompatible SYSTEM_CLOCK. */
+  public _hasExplicitSystemClock(): boolean {
+    return this.config._hasExplicitSystemClock();
+  }
+
   /** @internal */
   public _grantPermissions(role: IRoleRef): void {
     this.config._grantPermissions(role);

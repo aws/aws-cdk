@@ -1033,6 +1033,8 @@ export class Channel extends ChannelBase {
   protected readonly _channelClass: ChannelClass;
 
   private readonly inputAttachments: CfnChannel.InputAttachmentProperty[] = [];
+  private readonly attachments: InputAttachment[] = [];
+  private readonly hasAnywhereSettings: boolean;
   private readonly outputGroups: OutputGroup[] = [];
 
   /**
@@ -1040,6 +1042,7 @@ export class Channel extends ChannelBase {
    * grants.
    */
   private readonly userProvidedRole: boolean;
+  private readonly usesEpochLocking: boolean;
 
   constructor(scope: Construct, id: string, props: ChannelProps) {
     super(scope, id, {
@@ -1055,11 +1058,17 @@ export class Channel extends ChannelBase {
       throw new ValidationError(lit`ChannelMinOutputGroups`, 'A channel must have at least one output group.', this);
     }
     props.inputs.forEach(attachment => {
+      this.attachments.push(attachment);
       this.inputAttachments.push(this.buildInputAttachment(attachment));
     });
 
+    const usesEpochLocking = props.globalConfiguration?.outputLocking?._mode() === OutputLockingMode.EPOCH_LOCKING;
     props.outputGroups.forEach(config => {
-      this.outputGroups.push(new OutputGroup(config));
+      const outputGroup = new OutputGroup(config);
+      if (usesEpochLocking) {
+        outputGroup._setEpochLocking(true);
+      }
+      this.outputGroups.push(outputGroup);
     });
 
     // A channel may have at most one MediaConnect Router output group. Detected by output-group
@@ -1089,36 +1098,8 @@ export class Channel extends ChannelBase {
       );
     }
 
-    // Validate input pipeline count matches channel class
-    props.inputs.forEach(attachment => {
-      const inputClass = attachment.input.inputClass;
-      if (inputClass && inputClass !== resolvedChannelClass.value) {
-        throw new ValidationError(
-          lit`InputPipelineMismatch`,
-          `Input '${attachment.input.node.id}' has input class '${inputClass}' which is incompatible`
-          + ` with channel class '${resolvedChannelClass.value}'.`,
-          this,
-        );
-      }
-    });
-
-    // Validate Anywhere-only input types are not used with cloud channels
-    const anywhereOnlyInputTypes: string[] = [InputType.SDI, InputType.SMPTE_2110_RECEIVER_GROUP, InputType.MULTICAST];
-    if (!props.anywhereSettings) {
-      props.inputs.forEach(attachment => {
-        const inputType = attachment.input.inputType;
-        if (inputType && anywhereOnlyInputTypes.includes(inputType)) {
-          throw new ValidationError(
-            lit`AnywhereOnlyInputType`,
-            `Input '${attachment.input.node.id}' has type '${inputType}' which requires anywhereSettings to be configured on the channel.`,
-            this,
-          );
-        }
-      });
-    }
-
-    // Failover secondary must be attached to the channel — fail fast at synth.
-    this.validateInputFailoverPairs(props);
+    this.hasAnywhereSettings = props.anywhereSettings !== undefined;
+    this.node.addValidation({ validate: () => this.validateInputs() });
 
     if (props.linkedChannelSettings && resolvedChannelClass.value !== ChannelClass.SINGLE_PIPELINE.value) {
       throw new ValidationError(lit`LinkedChannelClass`, 'Linked channel settings can only be configured on SINGLE_PIPELINE channels.', this);
@@ -1126,7 +1107,6 @@ export class Channel extends ChannelBase {
 
     // Epoch locking requires the output timing source to be the input clock. MediaLive rejects any
     // other timing source at deploy, so fail fast at synth.
-    const usesEpochLocking = props.globalConfiguration?.outputLocking?._mode() === OutputLockingMode.EPOCH_LOCKING;
     if (usesEpochLocking
       && props.globalConfiguration?.outputTimingSource?.value === OutputTimingSource.SYSTEM_CLOCK.value) {
       throw new ValidationError(
@@ -1136,35 +1116,11 @@ export class Channel extends ChannelBase {
       );
     }
 
-    // Epoch locking requires an HLS program-date-time clock of INITIALIZE_FROM_OUTPUT_TIMECODE.
-    // MediaLive rejects SYSTEM_CLOCK at deploy, so: auto-correct the default under epoch locking
-    // (via _setEpochLocking), and fail fast at synth if the user explicitly chose SYSTEM_CLOCK.
+    // Epoch-locking checks are deferred to synth so they also cover groups added via
+    // addOutputGroup()
+    this.usesEpochLocking = usesEpochLocking;
     if (usesEpochLocking) {
-      props.outputGroups.forEach(config => config._setEpochLocking(true));
-      const conflicting = props.outputGroups.some(config => config._hasExplicitSystemClock());
-      if (conflicting) {
-        throw new ValidationError(
-          lit`EpochLockingProgramDateTimeClock`,
-          'an HLS output group programDateTimeClock must be INITIALIZE_FROM_OUTPUT_TIMECODE when using epoch output locking',
-          this,
-        );
-      }
-
-      // Epoch locking requires H.264 encodes to have an explicitly specified frame rate. H.264 is
-      // the only codec that falls back to INITIALIZE_FROM_SOURCE when framerate is omitted;
-      // H.265/AV1/Frame Capture always carry an explicit rate.
-      this.node.addValidation({
-        validate: () => {
-          const offenders = this.outputGroups
-            .flatMap(og => og._collectEncodes())
-            .filter(encode => encode._videoCodecType() === VideoCodecType.H264 && !encode._hasExplicitFramerate())
-            .map(encode => encode.name);
-          return offenders.length > 0
-            ? ['epoch output locking requires an explicit frame rate on H.264 video encodes '
-              + `(e.g. Framerate.FPS_30); these encodes follow the source frame rate: ${[...new Set(offenders)].join(', ')}`]
-            : [];
-        },
-      });
+      this.node.addValidation({ validate: () => this.validateEpochLocking() });
     }
 
     // Create a default role if not provided. When the caller brings their own role, the channel
@@ -1447,6 +1403,7 @@ export class Channel extends ChannelBase {
    * Attach an input to this channel.
    */
   public addInput(attachment: InputAttachment): void {
+    this.attachments.push(attachment);
     this.inputAttachments.push(this.buildInputAttachment(attachment));
     // Skip auto-grants when the caller owns the role.
     if (!this.userProvidedRole) {
@@ -1460,24 +1417,34 @@ export class Channel extends ChannelBase {
    * input is rejected by the service at deploy unless it is also attached to the channel, so we
    * fail fast at synth.
    */
-  private validateInputFailoverPairs(props: ChannelProps): void {
-    for (const attachment of props.inputs) {
-      const failover = attachment.automaticInputFailover;
-      if (!failover) {
-        continue;
+  /**
+   * Synth-time input validations, run over all attached inputs (initial + addInput()).
+   */
+  private validateInputs(): string[] {
+    const errors: string[] = [];
+    const anywhereOnlyInputTypes: string[] = [InputType.SDI, InputType.SMPTE_2110_RECEIVER_GROUP, InputType.MULTICAST];
+
+    for (const attachment of this.attachments) {
+      const inputClass = attachment.input.inputClass;
+      if (inputClass && inputClass !== this._channelClass.value) {
+        errors.push(`Input '${attachment.input.node.id}' has input class '${inputClass}' which is incompatible`
+          + ` with channel class '${this._channelClass.value}'.`);
       }
 
-      const secondaryAttached = props.inputs.some(other => other.input === failover.secondaryInput);
-      if (!secondaryAttached) {
-        throw new ValidationError(
-          lit`FailoverSecondaryNotAttached`,
-          `Input '${attachment.input.node.id}' declares automatic input failover to secondary input`
+      const inputType = attachment.input.inputType;
+      if (!this.hasAnywhereSettings && inputType && anywhereOnlyInputTypes.includes(inputType)) {
+        errors.push(`Input '${attachment.input.node.id}' has type '${inputType}' which requires anywhereSettings to be configured on the channel.`);
+      }
+
+      const failover = attachment.automaticInputFailover;
+      if (failover && !this.attachments.some(other => other.input === failover.secondaryInput)) {
+        errors.push(`Input '${attachment.input.node.id}' declares automatic input failover to secondary input`
           + ` '${failover.secondaryInput.node.id}', but that secondary input is not attached to the channel.`
-          + " Add the secondary input to the channel's 'inputs' as its own attachment.",
-          this,
-        );
+          + " Add the secondary input to the channel's 'inputs' as its own attachment.");
       }
     }
+
+    return errors;
   }
 
   private buildInputAttachment(attachment: InputAttachment): CfnChannel.InputAttachmentProperty {
@@ -1555,10 +1522,34 @@ export class Channel extends ChannelBase {
    */
   public addOutputGroup(config: OutputGroupConfiguration): void {
     const outputGroup = new OutputGroup(config);
+    if (this.usesEpochLocking) {
+      outputGroup._setEpochLocking(true);
+    }
     this.outputGroups.push(outputGroup);
     // Skip auto-grants when the caller owns the role.
     if (!this.userProvidedRole) {
       outputGroup._grantPermissions(this.role);
     }
+  }
+
+  /** Synth-time epoch-locking checks for configs MediaLive rejects at deploy. */
+  private validateEpochLocking(): string[] {
+    // An explicit SYSTEM_CLOCK program-date-time clock contradicts epoch locking.
+    const clockError = this.outputGroups.some(og => og._hasExplicitSystemClock())
+      ? ['an HLS output group programDateTimeClock must be INITIALIZE_FROM_OUTPUT_TIMECODE when using epoch output locking']
+      : [];
+
+    // H.264 is the only codec that falls back to INITIALIZE_FROM_SOURCE when framerate is omitted;
+    // epoch locking requires an explicit rate. H.265/AV1/Frame Capture always carry one.
+    const offenders = [...new Set(this.outputGroups
+      .flatMap(og => og._collectEncodes())
+      .filter(encode => encode._videoCodecType() === VideoCodecType.H264 && !encode._hasExplicitFramerate())
+      .map(encode => encode.name))];
+    const framerateError = offenders.length > 0
+      ? ['epoch output locking requires an explicit frame rate on H.264 video encodes '
+        + `(e.g. Framerate.FPS_30); these encodes follow the source frame rate: ${offenders.join(', ')}`]
+      : [];
+
+    return [...clockError, ...framerateError];
   }
 }
