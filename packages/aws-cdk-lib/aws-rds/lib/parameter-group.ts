@@ -142,7 +142,6 @@ export class ParameterGroup extends Resource implements IParameterGroup {
       public get dbParameterGroupRef(): aws_rds.DBParameterGroupReference {
         return {
           dbParameterGroupName: parameterGroupName,
-          // A cluster parameter group is `cluster-pg`; read dbClusterParameterGroupRef for one.
           dbParameterGroupArn: Stack.of(scope).formatArn({
             service: 'rds',
             resource: 'pg',

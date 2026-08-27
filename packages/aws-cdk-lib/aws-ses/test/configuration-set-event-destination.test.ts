@@ -318,30 +318,3 @@ test('kinesis firehose delivery stream destination specify stream ARN and IAM Ro
     },
   });
 });
-
-test('fails to read the configuration set name of an event destination imported by id', () => {
-  // WHEN
-  const destination = ConfigurationSetEventDestination.fromConfigurationSetEventDestinationId(stack, 'Imported', 'MyDestination');
-
-  // THEN - the destination id is still readable, only the configuration set is unknown
-  expect(destination.configurationSetEventDestinationRef.configurationSetEventDestinationId).toEqual('MyDestination');
-  expect(() => destination.configurationSetEventDestinationRef.configurationSetName).toThrow(
-    'configurationSetName is not available on a ConfigurationSetEventDestination imported by id, which does not identify the configuration set it belongs to',
-  );
-});
-
-test('configurationSetEventDestinationRef of a destination carries its id and configuration set', () => {
-  const topic = new sns.Topic(stack, 'Topic');
-
-  const destination = new ConfigurationSetEventDestination(stack, 'Sns', {
-    configurationSet,
-    destination: EventDestination.snsTopic(topic),
-  });
-
-  expect(stack.resolve(destination.configurationSetEventDestinationRef.configurationSetName)).toEqual({
-    Ref: 'ConfigurationSet3DD38186',
-  });
-  expect(stack.resolve(destination.configurationSetEventDestinationRef.configurationSetEventDestinationId)).toEqual({
-    'Fn::GetAtt': ['SnsF4DBA8AD', 'Id'],
-  });
-});

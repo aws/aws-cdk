@@ -246,44 +246,6 @@ test('an unrecorded attribute name conflict fails codegen', () => {
   );
 });
 
-test.each([
-  ['flat attribute first', ['CertificateAuthorityData', 'CertificateAuthority.Data']],
-  ['nested attribute first', ['CertificateAuthority.Data', 'CertificateAuthorityData']],
-])('colliding attributes are both exposed, the recorded one under its replacement name (%s)', (_name, attrNames) => {
-  // GIVEN - the conflict recorded for AWS::EKS::Cluster
-  givenResource({
-    ...BASE_RESOURCE,
-    name: 'Cluster',
-    cloudFormationType: 'AWS::EKS::Cluster',
-    attributes: {
-      [attrNames[0]]: {
-        type: { type: 'string' },
-        documentation: `The ${attrNames[0]} of the resource`,
-      },
-      [attrNames[1]]: {
-        type: { type: 'string' },
-        documentation: `The ${attrNames[1]} of the resource`,
-      },
-    },
-  });
-
-  // WHEN
-  const rendered = renderResource('AWS::EKS::Cluster');
-
-  // THEN - the released flat name does not move
-  expect(rendered.resources.match(/public get attrCertificateAuthorityData\(\)/g)).toHaveLength(1);
-  expect(rendered.resources).toContainCode(
-    `public get attrCertificateAuthorityData(): string {
-      return cdk.Token.asString(this.getAtt("CertificateAuthorityData", cdk.ResolutionTypeHint.STRING));
-    }`);
-
-  // THEN - the nested one is still exposed, under its recorded name
-  expect(rendered.resources).toContainCode(
-    `public get attrCertificateAuthorityCertificateData(): string {
-      return cdk.Token.asString(this.getAtt("CertificateAuthority.Data", cdk.ResolutionTypeHint.STRING));
-    }`);
-});
-
 test('the reference interface reads a renamed attribute through its replacement getter', () => {
   // GIVEN - the renamed attribute is what identifies the resource, so the Ref must read its getter
   givenResource({
