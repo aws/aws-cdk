@@ -3,7 +3,7 @@ import type * as lambda from '../../aws-lambda';
 import type * as sqs from '../../aws-sqs';
 
 /**
- * Use a SQS queue as a Lambda destination
+ * Use an SQS queue as a Lambda destination
  */
 export class SqsDestination implements lambda.IDestination {
   constructor(private readonly queue: sqs.IQueue) {

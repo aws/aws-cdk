@@ -275,7 +275,7 @@ export interface DeliveryStreamAttributes {
 }
 
 /**
- * Create a Amazon Data Firehose delivery stream
+ * Create an Amazon Data Firehose delivery stream
  *
  * @resource AWS::KinesisFirehose::DeliveryStream
  */
