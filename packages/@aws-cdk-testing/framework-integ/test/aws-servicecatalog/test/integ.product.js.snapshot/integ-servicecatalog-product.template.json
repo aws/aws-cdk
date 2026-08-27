@@ -333,6 +333,9 @@
   "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
+    "Architectures": [
+     "arm64"
+    ],
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
      "S3Key": "5e81a73f81885fea64662dbdb24dc7ab2983658d50f1e697f8befbdd51000b65.zip"
