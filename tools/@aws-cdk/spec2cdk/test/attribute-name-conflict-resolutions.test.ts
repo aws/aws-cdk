@@ -43,16 +43,16 @@ test('an attribute name conflict with no recorded resolution throws, naming neit
 });
 
 test('the conflict message does not single out the nested attribute, which may be the published one', () => {
-  // attrCertificateAuthorityActiveId is published, so the message must not name it as the one to rename
+  // A published nested attribute must not be named as the one to rename
   let message = '';
   try {
-    names(['CertificateAuthorityActiveId', 'CertificateAuthority.Active.Id'], {});
+    names(['FooBarBaz', 'Foo.Bar.Baz'], {});
   } catch (e) {
     message = (e as Error).message;
   }
 
   expect(message).toContain('for whichever of the two is NOT already published');
-  expect(message).not.toContain("rename 'CertificateAuthority.Active.Id'");
+  expect(message).not.toContain("rename 'Foo.Bar.Baz'");
 });
 
 test('a conflict on an attribute that already has an entry says to change it, not add one', () => {

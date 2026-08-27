@@ -4,6 +4,8 @@ import { attributePropertyName } from '../naming';
  * Replacement names for attributes whose generated property name is already taken, keyed by resource
  * type and then by CloudFormation attribute name. Values are logical names without the `attr` prefix.
  *
+ * Once a replacement name is published it is frozen, so entries are only ever added, never changed.
+ *
  * `AWS::EKS::Cluster` needs one because `CertificateAuthority.Data` flattens onto the released
  * `attrCertificateAuthorityData`, which cannot move. The EKS API models it as a `Certificate` object,
  * so `CertificateAuthorityCertificateData` follows the service's own vocabulary.
