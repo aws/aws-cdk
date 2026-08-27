@@ -232,6 +232,7 @@ test.each([
   // GIVEN - the conflict recorded for AWS::EKS::Cluster
   givenResource({
     ...BASE_RESOURCE,
+    name: 'Cluster',
     cloudFormationType: 'AWS::EKS::Cluster',
     attributes: {
       [attrNames[0]]: {
@@ -280,8 +281,41 @@ test('an unrecorded attribute name conflict fails codegen', () => {
 
   // THEN
   expect(() => renderResource()).toThrow(
-    "Attribute name conflict on AWS::Some::Resource between 'FooBar' and 'Foo.Bar', which both become 'attrFooBar'. Update attribute-name-conflict-resolutions.ts to rename the newer attribute to something else.",
+    "Attribute name conflict on AWS::Some::Resource between 'FooBar' and 'Foo.Bar', which both become 'attrFooBar'. Add an entry in attribute-name-conflict-resolutions.ts",
   );
+});
+
+test('the reference interface reads a renamed attribute through its replacement getter', () => {
+  // GIVEN - the renamed attribute is what identifies the resource, so the Ref must read its getter
+  givenResource({
+    ...BASE_RESOURCE,
+    name: 'Cluster',
+    cloudFormationType: 'AWS::EKS::Cluster',
+    primaryIdentifier: ['Id', 'CertificateAuthority.Data'],
+    cfnRefIdentifier: ['Id'],
+    attributes: {
+      'CertificateAuthorityData': {
+        type: { type: 'string' },
+        documentation: 'The CertificateAuthorityData of the resource',
+      },
+      'CertificateAuthority.Data': {
+        type: { type: 'string' },
+        documentation: 'The CertificateAuthority.Data of the resource',
+      },
+    },
+  });
+
+  // WHEN
+  const rendered = renderResource('AWS::EKS::Cluster');
+
+  // THEN - not attrCertificateAuthorityData, which is a different attribute
+  expect(rendered.resources).toContainCode(
+    `public get clusterRef(): ClusterReference {
+      return {
+        clusterId: this.ref,
+        certificateAuthorityData: this.attrCertificateAuthorityCertificateData
+      };
+    }`);
 });
 
 test('a type referenced only by a renamed attribute is still emitted', () => {
@@ -296,6 +330,7 @@ test('a type referenced only by a renamed attribute is still emitted', () => {
   });
   const resource = db.allocate('resource', {
     ...BASE_RESOURCE,
+    name: 'Cluster',
     cloudFormationType: 'AWS::EKS::Cluster',
     attributes: {
       'CertificateAuthorityData': {

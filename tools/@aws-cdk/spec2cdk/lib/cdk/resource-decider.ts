@@ -30,6 +30,8 @@ export class ResourceDecider {
   private readonly taggability?: TaggabilityStyle;
   private readonly resolverBuilder: ResolverBuilder;
 
+  private readonly attributePropertyNames: Map<string, string>;
+
   public readonly resourceReference: ResourceReference;
   public readonly propsProperties = new Array<PropsProperty>();
   public readonly classProperties = new Array<ClassProperty>();
@@ -44,6 +46,7 @@ export class ResourceDecider {
     this.camelResourceName = camelcasedResourceName(resource);
     this.taggability = resourceTaggabilityStyle(this.resource);
     this.resolverBuilder = new ResolverBuilder(this.converter, this.relationshipDecider, this.converter.module);
+    this.attributePropertyNames = attributePropertyNames(resource.cloudFormationType, Object.keys(resource.attributes));
 
     this.convertProperties();
     this.convertAttributes();
@@ -274,7 +277,6 @@ export class ResourceDecider {
 
   private convertAttributes() {
     const $ResolutionTypeHint = $T(CDK_CORE.ResolutionTypeHint);
-    const propertyNames = attributePropertyNames(this.resource.cloudFormationType, Object.keys(this.resource.attributes));
 
     for (const [attrName, attr] of Object.entries(this.resource.attributes)) {
       // Just use the oldest type for now
@@ -305,7 +307,7 @@ export class ResourceDecider {
 
       this.classAttributeProperties.push({
         propertySpec: {
-          name: propertyNames.get(attrName)!,
+          name: this.attributePropertyNames.get(attrName)!,
           type,
           immutable: true,
           docs: {

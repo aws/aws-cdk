@@ -7,53 +7,58 @@ const RESOLUTIONS = {
   },
 };
 
+const names = (attributeNames: string[], resolutions: Record<string, Record<string, string>> = RESOLUTIONS) =>
+  Object.fromEntries(attributePropertyNames(RESOURCE_TYPE, attributeNames, resolutions));
+
 test.each([
   ['flat attribute first', ['FooBar', 'Foo.Bar']],
   ['nested attribute first', ['Foo.Bar', 'FooBar']],
 ])('the flat attribute keeps the preferred name and the nested one takes its recorded name (%s)', (_name, attributeNames) => {
-  // WHEN
-  const names = attributePropertyNames(RESOURCE_TYPE, attributeNames, RESOLUTIONS);
-
-  // THEN
-  expect(names.get('FooBar')).toEqual('attrFooBar');
-  expect(names.get('Foo.Bar')).toEqual('attrFooBarValue');
+  expect(names(attributeNames)).toEqual({
+    'FooBar': 'attrFooBar',
+    'Foo.Bar': 'attrFooBarValue',
+  });
 });
 
-test('an attribute name conflict with no recorded resolution throws', () => {
-  // WHEN
-  const resolve = () => attributePropertyNames(RESOURCE_TYPE, ['FooBar', 'Foo.Bar'], {});
-
-  // THEN
-  expect(resolve).toThrow(
-    "Attribute name conflict on AWS::Some::Resource between 'FooBar' and 'Foo.Bar', which both become 'attrFooBar'. Update attribute-name-conflict-resolutions.ts to rename the newer attribute to something else.",
-  );
-});
-
-test('a recorded resolution that another attribute already uses throws', () => {
-  // WHEN
-  const resolve = () => attributePropertyNames(RESOURCE_TYPE, ['FooBar', 'FooBarValue', 'Foo.Bar'], RESOLUTIONS);
-
-  // THEN
-  expect(resolve).toThrow(
-    "Attribute name conflict on AWS::Some::Resource: the recorded name 'FooBarValue' for 'Foo.Bar' becomes 'attrFooBarValue', which 'FooBarValue' already uses. Update attribute-name-conflict-resolutions.ts to rename it to something else.",
-  );
-});
-
-test('a recorded resolution for an attribute that no longer conflicts is ignored', () => {
-  // WHEN - Foo.Bar is the only attribute, so nothing collides with it
-  const names = attributePropertyNames(RESOURCE_TYPE, ['Foo.Bar'], RESOLUTIONS);
-
-  // THEN - it keeps the preferred name rather than taking the recorded one
-  expect(names.get('Foo.Bar')).toEqual('attrFooBar');
+test('a recorded name still applies once the attribute it collided with is gone', () => {
+  // The recorded name is published, so it must not revert to the preferred name that is now free
+  expect(names(['Foo.Bar'])).toEqual({ 'Foo.Bar': 'attrFooBarValue' });
 });
 
 test('attributes that do not conflict all keep their preferred names', () => {
-  // WHEN
-  const names = attributePropertyNames(RESOURCE_TYPE, ['Arn', 'Foo.Baz'], RESOLUTIONS);
+  expect(names(['Arn', 'Foo.Baz'])).toEqual({
+    'Arn': 'attrArn',
+    'Foo.Baz': 'attrFooBaz',
+  });
+});
 
-  // THEN
-  expect([...names]).toEqual([
-    ['Arn', 'attrArn'],
-    ['Foo.Baz', 'attrFooBaz'],
-  ]);
+const RULE = "for whichever of the two is NOT already published as '%s' in the latest released aws-cdk-lib "
+  + '- renaming the published one would repoint a released getter at a different Fn::GetAtt.';
+
+test('an attribute name conflict with no recorded resolution throws, naming neither as the one to rename', () => {
+  expect(() => names(['FooBar', 'Foo.Bar'], {})).toThrow(
+    "Attribute name conflict on AWS::Some::Resource between 'FooBar' and 'Foo.Bar', which both become 'attrFooBar'. "
+    + 'Add an entry in attribute-name-conflict-resolutions.ts ' + RULE.replace('%s', 'attrFooBar'),
+  );
+});
+
+test('the conflict message does not single out the nested attribute, which may be the published one', () => {
+  // attrCertificateAuthorityActiveId is published, so the message must not name it as the one to rename
+  let message = '';
+  try {
+    names(['CertificateAuthorityActiveId', 'CertificateAuthority.Active.Id'], {});
+  } catch (e) {
+    message = (e as Error).message;
+  }
+
+  expect(message).toContain('for whichever of the two is NOT already published');
+  expect(message).not.toContain("rename 'CertificateAuthority.Active.Id'");
+});
+
+test('a conflict on an attribute that already has an entry says to change it, not add one', () => {
+  // Foo.Bar is recorded as FooBarValue, which FooBarValue's own preferred name already owns
+  expect(() => names(['FooBar', 'FooBarValue', 'Foo.Bar'])).toThrow(
+    "Attribute name conflict on AWS::Some::Resource between 'FooBarValue' and 'Foo.Bar', which both become 'attrFooBarValue'. "
+    + 'Change an entry in attribute-name-conflict-resolutions.ts ' + RULE.replace('%s', 'attrFooBarValue'),
+  );
 });
