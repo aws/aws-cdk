@@ -41,6 +41,7 @@ class TestStack extends cdk.Stack {
           maxBatchOpenDuration: Duration.millis(100),
           maxBatchSize: 5,
           maxBatchSizeBytes: Size.kibibytes(1),
+          batchAcrossTopics: true,
         },
       }),
     );
@@ -68,6 +69,7 @@ integ.assertions.awsApiCall('IoT', 'getTopicRule', {
               maxBatchOpenMs: 100,
               maxBatchSize: 5,
               maxBatchSizeBytes: 1024,
+              batchAcrossTopics: true,
             },
           },
         },
