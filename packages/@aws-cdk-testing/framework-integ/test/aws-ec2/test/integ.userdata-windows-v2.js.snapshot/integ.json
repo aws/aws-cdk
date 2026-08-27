@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "userdata-windows-v2-test/DefaultTest": {
+      "stacks": [
+        "integ-userdata-windows-v2"
+      ],
+      "assertionStack": "userdata-windows-v2-test/DefaultTest/DeployAssert",
+      "assertionStackName": "userdatawindowsv2testDefaultTestDeployAssertAA53CD98"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
