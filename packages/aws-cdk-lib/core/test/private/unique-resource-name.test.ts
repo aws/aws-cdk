@@ -1,8 +1,10 @@
 import { md5hash } from '../../lib/helpers-internal';
 import { makeUniqueResourceName } from '../../lib/private/unique-resource-name';
 
-const pathHash = (path: string[]): string => {
-  return md5hash(path.join('/')).slice(0, 8).toUpperCase();
+const pathHash = (path: string[], discriminator?: string): string => {
+  const pathString = path.join('/');
+  const hashInput = discriminator ? `${pathString}/${discriminator}` : pathString;
+  return md5hash(hashInput).slice(0, 8).toUpperCase();
 };
 
 describe('makeUniqueResourceName tests', () => {
@@ -97,5 +99,57 @@ describe('makeUniqueResourceName tests', () => {
     const expectedName = `This/unique/resourcelonger/than/allowed/${pathHash(componentsPath)}`;
 
     expect(makeUniqueResourceName(componentsPath, { maxLength: 48, separator: '/' })).toEqual(expectedName);
+  });
+
+  test('unique resource name with discriminator produces different names for same path', () => {
+    const componentsPath = ['Stack', 'Construct', 'Resource'];
+    const name1 = makeUniqueResourceName(componentsPath, { discriminator: '1' });
+    const name2 = makeUniqueResourceName(componentsPath, { discriminator: '2' });
+
+    expect(name1).not.toEqual(name2);
+    // Both should have the same human-readable part but different hashes
+    expect(name1.slice(0, -8)).toEqual(name2.slice(0, -8));
+    expect(name1.slice(-8)).not.toEqual(name2.slice(-8));
+  });
+
+  test('unique resource name with same discriminator produces same name', () => {
+    const componentsPath = ['Stack', 'Construct', 'Resource'];
+    const name1 = makeUniqueResourceName(componentsPath, { discriminator: 'same' });
+    const name2 = makeUniqueResourceName(componentsPath, { discriminator: 'same' });
+
+    expect(name1).toEqual(name2);
+  });
+
+  test('unique resource name with discriminator includes hash even for short top-level resources', () => {
+    const componentsPath = ['toplevelresource'];
+    const name = makeUniqueResourceName(componentsPath, { discriminator: '1' });
+
+    // Should include hash when discriminator is provided
+    expect(name.length).toBeGreaterThan('toplevelresource'.length);
+    expect(name).toMatch(/^toplevelresource[A-F0-9]{8}$/);
+  });
+
+  test('unique resource name discriminator is included in hash but not in human-readable part', () => {
+    const componentsPath = ['Stack', 'MyResource'];
+    const name = makeUniqueResourceName(componentsPath, { discriminator: 'my-discriminator' });
+
+    // Human-readable part should not contain discriminator
+    expect(name).not.toContain('my-discriminator');
+    // Should end with hash
+    expect(name).toMatch(/[A-F0-9]{8}$/);
+    // Hash should be different from without discriminator
+    const nameWithoutDiscriminator = makeUniqueResourceName(componentsPath, {});
+    expect(name.slice(-8)).not.toEqual(nameWithoutDiscriminator.slice(-8));
+  });
+
+  test('unique resource name with discriminator works with separator', () => {
+    const componentsPath = ['Stack', 'Resource'];
+    const name1 = makeUniqueResourceName(componentsPath, { discriminator: '1', separator: '-' });
+    const name2 = makeUniqueResourceName(componentsPath, { discriminator: '2', separator: '-' });
+
+    expect(name1).not.toEqual(name2);
+    // Both should have separator in human-readable part
+    expect(name1).toContain('-');
+    expect(name2).toContain('-');
   });
 });
