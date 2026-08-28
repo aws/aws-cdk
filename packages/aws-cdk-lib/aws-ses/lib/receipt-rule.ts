@@ -3,7 +3,7 @@ import type { IReceiptRuleAction } from './receipt-rule-action';
 import { CfnReceiptRule } from './ses.generated';
 import * as iam from '../../aws-iam';
 import type { IResource } from '../../core';
-import { Aws, Resource, UnscopedValidationError } from '../../core';
+import { Aws, Resource, ValidationError } from '../../core';
 import type { IArrayBox } from '../../core/lib/helpers-internal';
 import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -143,11 +143,12 @@ export class ReceiptRule extends Resource implements IReceiptRule {
       public readonly receiptRuleName = receiptRuleName;
 
       public get receiptRuleRef(): ReceiptRuleReference {
+        const self = this;
         return {
           ruleName: receiptRuleName,
           get ruleSetName(): string {
-            throw new UnscopedValidationError(lit`CannotAccessRuleSetNameOfImportedReceiptRule`,
-              'ruleSetName is not available on a ReceiptRule imported by rule name; use ReceiptRule.fromReceiptRuleAttributes() to get a complete reference');
+            throw new ValidationError(lit`CannotAccessRuleSetNameOfImportedReceiptRule`,
+              'ruleSetName is not available on a ReceiptRule imported by rule name; use ReceiptRule.fromReceiptRuleAttributes() to get a complete reference', self);
           },
         };
       }

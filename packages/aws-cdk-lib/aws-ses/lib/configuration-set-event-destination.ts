@@ -5,7 +5,7 @@ import * as iam from '../../aws-iam';
 import type * as firehose from '../../aws-kinesisfirehose';
 import type * as sns from '../../aws-sns';
 import type { IResource } from '../../core';
-import { Aws, Resource, Stack, UnscopedValidationError, ValidationError } from '../../core';
+import { Aws, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -303,11 +303,12 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
       public readonly configurationSetEventDestinationId = configurationSetEventDestinationId;
 
       public get configurationSetEventDestinationRef(): ConfigurationSetEventDestinationReference {
+        const self = this;
         return {
           configurationSetEventDestinationId,
           get configurationSetName(): string {
-            throw new UnscopedValidationError(lit`CannotAccessConfigurationSetNameOfImportedEventDestination`,
-              'configurationSetName is not available on a ConfigurationSetEventDestination imported by id; use ConfigurationSetEventDestination.fromConfigurationSetEventDestinationAttributes() to get a complete reference');
+            throw new ValidationError(lit`CannotAccessConfigurationSetNameOfImportedEventDestination`,
+              'configurationSetName is not available on a ConfigurationSetEventDestination imported by id; use ConfigurationSetEventDestination.fromConfigurationSetEventDestinationAttributes() to get a complete reference', self);
           },
         };
       }

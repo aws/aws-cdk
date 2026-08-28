@@ -3,7 +3,7 @@ import type { IEngine } from './engine';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated';
 import type { IResource } from '../../core';
 import { ArnFormat, RemovalPolicy, Resource, Stack } from '../../core';
-import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
+import { ValidationError } from '../../core/lib/errors';
 import type { IMapBox, IReadableBox } from '../../core/lib/helpers-internal';
 import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -300,8 +300,8 @@ export class ParameterGroup extends Resource implements IParameterGroup {
       },
       get dbParameterGroupArn(): string {
         if (!self.instanceCfnGroup) {
-          throw new UnscopedValidationError(lit`CannotAccessDbParameterGroupArnOfUnboundParameterGroup`,
-            'this ParameterGroup is not bound to a DB instance, so it has no DB parameter group ARN - bind it with bindToInstance() or create it with ParameterGroup.forInstance()');
+          throw new ValidationError(lit`CannotAccessDbParameterGroupArnOfUnboundParameterGroup`,
+            'this ParameterGroup is not bound to a DB instance, so it has no DB parameter group ARN - bind it with bindToInstance() or create it with ParameterGroup.forInstance()', self);
         }
         return self.instanceCfnGroup.attrDbParameterGroupArn;
       },
