@@ -1562,7 +1562,7 @@ new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
   cloudMapOptions: {
-    // Create both an A and an SRV record
+    // Create both an A and a SRV record
     dnsRecordType: cloudmap.DnsRecordType.A_SRV,
   },
 });

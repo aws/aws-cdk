@@ -9,7 +9,7 @@ import type { INamespace } from './namespace';
 import { NamespaceType } from './namespace';
 import type { NonIpInstanceBaseProps } from './non-ip-instance';
 import { NonIpInstance } from './non-ip-instance';
-import { defaultDiscoveryType, splitDnsRecordType } from './private/utils';
+import { defaultDiscoveryType, isAddressOnlyRecordType, splitDnsRecordType } from './private/utils';
 import { CfnService } from './servicediscovery.generated';
 import type * as elbv2 from '../../aws-elasticloadbalancingv2';
 import type { IResource } from '../../core';
@@ -298,11 +298,8 @@ export class Service extends ServiceBase {
 
     const dnsRecordType = props.dnsRecordType || DnsRecordType.A;
 
-    if (props.loadBalancer
-      && (!(dnsRecordType === DnsRecordType.A
-        || dnsRecordType === DnsRecordType.AAAA
-        || dnsRecordType === DnsRecordType.A_AAAA))) {
-      throw new ValidationError(lit`LoadBalancerRequiresAOrAaaaRecords`, 'Must support `A` or `AAAA` records to register loadbalancers.', this);
+    if (props.loadBalancer && !isAddressOnlyRecordType(dnsRecordType)) {
+      throw new ValidationError(lit`LoadBalancerRequiresAOrAaaaRecords`, 'Must use only `A` or `AAAA` records to register loadbalancers.', this);
     }
 
     const dnsConfig: CfnService.DnsConfigProperty | undefined =

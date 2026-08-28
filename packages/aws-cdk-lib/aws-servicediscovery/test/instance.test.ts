@@ -616,6 +616,37 @@ describe('instance', () => {
     });
   });
 
+  test('Registering AliasTargetInstance for a service using A_AAAA records', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const vpc = new ec2.Vpc(stack, 'MyVPC');
+    const alb = new elbv2.ApplicationLoadBalancer(stack, 'MyALB', { vpc });
+
+    const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
+      name: 'dns',
+      vpc,
+    });
+
+    const service = namespace.createService('MyService', {
+      name: 'service',
+      dnsRecordType: servicediscovery.DnsRecordType.A_AAAA,
+      loadBalancer: true,
+    });
+
+    // WHEN
+    service.registerLoadBalancer('Loadbalancer', alb);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Instance', {
+      InstanceAttributes: Match.objectLike({
+        AWS_ALIAS_DNS_NAME: {
+          'Fn::GetAtt': ['MyALB911A8556', 'DNSName'],
+        },
+      }),
+    });
+  });
+
   test('Throws when registering AliasTargetInstance for a service using A_SRV records', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -634,6 +665,6 @@ describe('instance', () => {
     // THEN
     expect(() => {
       service.registerLoadBalancer('Loadbalancer', alb);
-    }).toThrow(/Service must use `A` or `AAAA` records to register an AliasRecordTarget./);
+    }).toThrow(/Service must use only `A` or `AAAA` records to register an AliasRecordTarget./);
   });
 });

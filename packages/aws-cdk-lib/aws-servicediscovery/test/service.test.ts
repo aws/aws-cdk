@@ -360,7 +360,7 @@ describe('service', () => {
         dnsRecordType: servicediscovery.DnsRecordType.CNAME,
         loadBalancer: true,
       });
-    }).toThrow(/Must support `A` or `AAAA` records to register loadbalancers/);
+    }).toThrow(/Must use only `A` or `AAAA` records to register loadbalancers/);
   });
 
   test('Throws when specifying loadbalancer with Multivalue routing Policy', () => {
@@ -601,7 +601,7 @@ describe('service', () => {
         dnsRecordType,
         loadBalancer: true,
       });
-    }).toThrow(/Must support `A` or `AAAA` records to register loadbalancers/);
+    }).toThrow(/Must use only `A` or `AAAA` records to register loadbalancers/);
   });
 
   test('fails to create a Service with discoveryType API and dnsRecordType A_SRV', () => {

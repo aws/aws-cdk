@@ -2265,9 +2265,9 @@ interface DetermineContainerNameAndPortOptions {
  * Determine the name of the container and port to target for the service registry.
  */
 function determineContainerNameAndPort(scope: IConstruct, options: DetermineContainerNameAndPortOptions) {
-  // If the record type is SRV, then provide the containerName and containerPort to target.
-  // We use the name of the default container and the default port of the default container
-  // unless the user specifies otherwise.
+  // If the record type creates an SRV record, then provide the containerName and containerPort
+  // to target. We use the name of the default container and the default port of the default
+  // container unless the user specifies otherwise.
   if (SRV_DNS_RECORD_TYPES.includes(options.dnsRecordType)) {
     // Ensure the user-provided container is from the right task definition.
     if (options.container && options.container.taskDefinition != options.taskDefinition) {
