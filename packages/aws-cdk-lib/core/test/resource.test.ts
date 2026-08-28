@@ -541,6 +541,75 @@ describe('resource', () => {
       });
     });
 
+    test('feature-flagged addOverride preserves empty objects', () => {
+      // GIVEN
+      const app = new App({
+        context: {
+          [cxapi.CFN_RESOURCE_ADD_OVERRIDE_LIST_FOR_EMPTY_OBJECTS]: true,
+        },
+      });
+      const stack = new Stack(app, 'Stack');
+      const r = new CfnResource(stack, 'MyResource', { type: 'AWS::Resource::Type' });
+
+      // WHEN
+      r.addOverride('Properties.Rule.Action', { Block: {} });
+
+      // THEN
+      expect(toCloudFormation(stack)).toEqual({
+        Resources:
+        {
+          MyResource:
+          {
+            Type: 'AWS::Resource::Type',
+            Properties: {
+              Rule: {
+                Action: {
+                  Block: {},
+                },
+              },
+            },
+          },
+        },
+      });
+    });
+
+    test('feature-flagged addOverride preserves deletion overrides', () => {
+      // GIVEN
+      const app = new App({
+        context: {
+          [cxapi.CFN_RESOURCE_ADD_OVERRIDE_LIST_FOR_EMPTY_OBJECTS]: true,
+        },
+      });
+      const stack = new Stack(app, 'Stack');
+
+      const r = new CfnResource(stack, 'MyResource', {
+        type: 'AWS::Resource::Type',
+        properties: {
+          Hello: {
+            World: {
+              Value1: 'Hello',
+              Value2: 129,
+            },
+          },
+        },
+      });
+
+      // WHEN
+      r.addOverride('Properties.Hello.World.Value2', undefined);
+
+      // THEN
+      expect(toCloudFormation(stack)).toEqual({
+        Resources:
+        {
+          MyResource:
+          {
+            Type: 'AWS::Resource::Type',
+            Properties: { Hello: { World: { Value1: 'Hello' } } },
+          },
+        },
+      });
+    });
+
     test('addDeletionOverride(p) and addPropertyDeletionOverride(pp) are sugar for `undefined`', () => {
       // GIVEN
       const stack = new Stack();
@@ -689,6 +758,43 @@ describe('resource', () => {
             Properties: {
               Fixed: 123,
               Boom: 'Hi',
+              Foo: {
+                Bar: 'Bar',
+              },
+            },
+          },
+        },
+      });
+    });
+
+    test('feature-flagged addOverride operations are applied after render in order', () => {
+      // GIVEN
+      class MyResource extends CfnResource {
+        public renderProperties() {
+          return { Fixed: 123 };
+        }
+      }
+      const app = new App({
+        context: {
+          [cxapi.CFN_RESOURCE_ADD_OVERRIDE_LIST_FOR_EMPTY_OBJECTS]: true,
+        },
+      });
+      const stack = new Stack(app, 'Stack');
+      const cfn = new MyResource(stack, 'rr', { type: 'AWS::Resource::Type' });
+
+      // WHEN
+      cfn.addPropertyOverride('Boom', 'Hi');
+      cfn.addOverride('Properties.Boom', 'Bye');
+      cfn.addOverride('Properties.Foo.Bar', 'Bar');
+
+      // THEN
+      expect(toCloudFormation(stack)).toEqual({
+        Resources: {
+          rr: {
+            Type: 'AWS::Resource::Type',
+            Properties: {
+              Fixed: 123,
+              Boom: 'Bye',
               Foo: {
                 Bar: 'Bar',
               },
