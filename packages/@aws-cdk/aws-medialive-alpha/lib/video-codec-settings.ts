@@ -1481,7 +1481,7 @@ export interface H264SettingsProps {
   readonly profile?: H264Profile;
   /**
    * The GOP size (keyframe interval).
-   * @default GopSize.seconds(2)
+   * @default GopSize.seconds(1)
    */
   readonly gopSize?: GopSize;
   /**
@@ -1490,8 +1490,7 @@ export interface H264SettingsProps {
    */
   readonly gopNumBFrames?: number;
   /**
-   * The adaptive quantization strength. `AUTO` lets MediaLive manage AQ and enables the
-   * individual `spatialAq` / `temporalAq` / `flickerAq` controls; a fixed strength overrides them.
+   * The adaptive quantization. This allows intra-frame quantizers to vary to improve visual quality.
    * @default H264AdaptiveQuantization.AUTO
    */
   readonly adaptiveQuantization?: H264AdaptiveQuantization;
@@ -1511,7 +1510,9 @@ export interface H264SettingsProps {
    */
   readonly timecodeBurnin?: TimecodeBurninSettings;
   /**
-   * AFD signaling mode. Controls whether AFD values are written into the output stream.
+   * Indicates that AFD values will be written into the output stream. If afdSignaling is auto, the
+   * system tries to preserve the input AFD value (in cases where multiple AFD values are valid). If
+   * set to fixed, the AFD value is the value configured in the fixedAfd parameter.
    * @default AfdSignaling.NONE
    */
   readonly afdSignaling?: AfdSignaling;
@@ -1732,7 +1733,7 @@ export interface H265SettingsProps {
   readonly tier?: H265Tier;
   /**
    * The GOP size (keyframe interval).
-   * @default GopSize.seconds(2)
+   * @default GopSize.seconds(1)
    */
   readonly gopSize?: GopSize;
   /**
@@ -1750,8 +1751,7 @@ export interface H265SettingsProps {
    */
   readonly timecodeBurnin?: TimecodeBurninSettings;
   /**
-   * Adaptive quantization strength. `AUTO` lets MediaLive manage AQ and enables the individual
-   * `flickerAq` control; a fixed strength overrides it.
+   * The adaptive quantization. Allows intra-frame quantizers to vary to improve visual quality.
    * @default H265AdaptiveQuantization.AUTO
    */
   readonly adaptiveQuantization?: H265AdaptiveQuantization;
@@ -1922,7 +1922,7 @@ export interface Av1SettingsProps {
   readonly rateControl?: Av1RateControl;
   /**
    * The GOP size (keyframe interval).
-   * @default GopSize.seconds(2)
+   * @default GopSize.seconds(1)
    */
   readonly gopSize?: GopSize;
   /**
@@ -2103,7 +2103,7 @@ class H264VideoCodecSettings extends VideoCodecSettings {
         rateControlMode: rc?._mode,
         qvbrQualityLevel: rc?._qvbrQualityLevel,
         profile: (p.profile ?? H264Profile.MAIN).value,
-        gopSize: p.gopSize?._value ?? 2,
+        gopSize: p.gopSize?._value ?? 1,
         gopSizeUnits: p.gopSize?._units ?? 'SECONDS',
         gopNumBFrames: p.gopNumBFrames,
         adaptiveQuantization: (p.adaptiveQuantization ?? H264AdaptiveQuantization.AUTO).value,
@@ -2172,7 +2172,7 @@ class H265VideoCodecSettings extends VideoCodecSettings {
         profile: (p.profile ?? H265Profile.MAIN).value,
         tier: (p.tier ?? H265Tier.MAIN).value,
         level: p.level?.value,
-        gopSize: p.gopSize?._value ?? 2,
+        gopSize: p.gopSize?._value ?? 1,
         gopSizeUnits: p.gopSize?._units ?? 'SECONDS',
         framerateNumerator: p.framerate._numerator(),
         framerateDenominator: p.framerate._denominator(),
@@ -2234,7 +2234,7 @@ class Av1VideoCodecSettings extends VideoCodecSettings {
         maxBitrate: rc?._maxBitrate?.toBps(),
         rateControlMode: rc?._mode,
         qvbrQualityLevel: rc?._qvbrQualityLevel,
-        gopSize: p.gopSize?._value ?? 2,
+        gopSize: p.gopSize?._value ?? 1,
         gopSizeUnits: p.gopSize?._units ?? 'SECONDS',
         framerateNumerator: p.framerate?._numerator(),
         framerateDenominator: p.framerate?._denominator(),

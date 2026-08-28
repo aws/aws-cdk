@@ -1,16 +1,16 @@
 {
   "version": "54.0.0",
   "files": {
-    "5bfad827c334f3cf79660158b3fd2f94c7a25e31e0b06c094fb7ed22c1b6d4ce": {
+    "10a444eed60f3e238e45b253fa8b2e41cbacec78153ffcce9500abadc9c2fc0d": {
       "displayName": "aws-cdk-medialive-router-roundtrip Template",
       "source": {
         "path": "aws-cdk-medialive-router-roundtrip.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-0911820b": {
+        "current_account-current_region-7412032c": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "5bfad827c334f3cf79660158b3fd2f94c7a25e31e0b06c094fb7ed22c1b6d4ce.json",
+          "objectKey": "10a444eed60f3e238e45b253fa8b2e41cbacec78153ffcce9500abadc9c2fc0d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

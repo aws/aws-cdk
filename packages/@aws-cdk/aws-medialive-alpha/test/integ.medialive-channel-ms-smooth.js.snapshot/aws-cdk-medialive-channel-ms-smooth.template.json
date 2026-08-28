@@ -204,7 +204,7 @@
          "FramerateControl": "SPECIFIED",
          "FramerateDenominator": 1001,
          "FramerateNumerator": 30000,
-         "GopSize": 2,
+         "GopSize": 1,
          "GopSizeUnits": "SECONDS",
          "Level": "H264_LEVEL_AUTO",
          "LookAheadRateControl": "HIGH",

@@ -180,7 +180,7 @@
          "AfdSignaling": "NONE",
          "FramerateDenominator": 1,
          "FramerateNumerator": 30,
-         "GopSize": 2,
+         "GopSize": 1,
          "GopSizeUnits": "SECONDS",
          "Level": "AV1_LEVEL_AUTO",
          "LookAheadRateControl": "HIGH",

@@ -341,7 +341,7 @@
          "Bitrate": 5000000,
          "FlickerAq": "ENABLED",
          "FramerateControl": "INITIALIZE_FROM_SOURCE",
-         "GopSize": 2,
+         "GopSize": 1,
          "GopSizeUnits": "SECONDS",
          "Level": "H264_LEVEL_AUTO",
          "LookAheadRateControl": "HIGH",

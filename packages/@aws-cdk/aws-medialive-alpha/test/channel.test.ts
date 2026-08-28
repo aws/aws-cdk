@@ -899,7 +899,7 @@ describe('Default codec settings (golden)', () => {
             H265Settings: Match.objectEquals({
               Profile: 'MAIN',
               Tier: 'MAIN',
-              GopSize: 2,
+              GopSize: 1,
               GopSizeUnits: 'SECONDS',
               FramerateNumerator: 30000,
               FramerateDenominator: 1001,
@@ -945,7 +945,7 @@ describe('Default codec settings (golden)', () => {
             Av1Settings: Match.objectEquals({
               MaxBitrate: 4_000_000,
               RateControlMode: 'QVBR',
-              GopSize: 2,
+              GopSize: 1,
               GopSizeUnits: 'SECONDS',
               FramerateNumerator: 30000,
               FramerateDenominator: 1001,
@@ -1304,7 +1304,7 @@ describe('VideoCodecSettings', () => {
             // here is deliberately left unset so the MediaLive service default applies.
             H264Settings: Match.objectEquals({
               Profile: 'MAIN',
-              GopSize: 2,
+              GopSize: 1,
               GopSizeUnits: 'SECONDS',
               AdaptiveQuantization: 'AUTO',
               FramerateControl: 'INITIALIZE_FROM_SOURCE',
@@ -1434,7 +1434,7 @@ describe('VideoCodecSettings', () => {
             H265Settings: Match.objectLike({
               Profile: 'MAIN',
               Tier: 'MAIN',
-              GopSize: 2,
+              GopSize: 1,
               GopSizeUnits: 'SECONDS',
               SceneChangeDetect: 'ENABLED',
             }),
@@ -1695,7 +1695,7 @@ describe('Full channel snapshot', () => {
                 RateControlMode: 'QVBR',
                 QvbrQualityLevel: 7,
                 Profile: 'MAIN',
-                GopSize: 2,
+                GopSize: 1,
                 GopSizeUnits: 'SECONDS',
                 AdaptiveQuantization: 'AUTO',
                 FramerateControl: 'SPECIFIED',
