@@ -1,5 +1,5 @@
-import { Template } from '../../assertions';
-import { PolicyStatement, ServicePrincipal } from '../../aws-iam';
+﻿import { Template } from '../../assertions';
+import { PolicyStatement, ServicePrincipal, ArnPrincipal } from '../../aws-iam';
 import { Stack } from '../../core';
 import { LogGroup, ResourcePolicy } from '../lib';
 
@@ -59,5 +59,33 @@ describe('resource policy', () => {
 
     // THEN
     expect(resourcePolicy.node.defaultChild).toBeDefined();
+  });
+
+  test('cross-account ARN principal is converted to canonical root ARN to avoid CloudFormation drift', () => {
+    // GIVEN
+    const stack = new Stack();
+    const logGroup = new LogGroup(stack, 'LogGroup');
+
+    // WHEN - cross-account role ARN
+    logGroup.addToResourcePolicy(new PolicyStatement({
+      actions: ['logs:PutLogEvents'],
+      resources: ['*'],
+      principals: [new ArnPrincipal('arn:aws:iam::211125612616:role/Reader')],
+    }));
+
+    // THEN - should emit canonical root ARN format, not bare account ID
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
+      PolicyDocument: JSON.stringify({
+        Statement: [
+          {
+            Action: 'logs:PutLogEvents',
+            Effect: 'Allow',
+            Principal: { AWS: 'arn:aws:iam::211125612616:root' },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      }),
+    });
   });
 });
