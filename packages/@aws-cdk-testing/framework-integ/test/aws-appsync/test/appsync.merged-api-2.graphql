@@ -1,9 +1,0 @@
-type secondTest {
-  version: String!
-}
-type Query {
-  getSecondTests: [secondTest]!
-}
-type Mutation {
-  addSecondTest(version: String!): secondTest
-}

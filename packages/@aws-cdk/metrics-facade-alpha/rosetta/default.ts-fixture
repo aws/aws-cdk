@@ -1,5 +1,0 @@
-import { Construct } from 'constructs';
-
-declare const scope: Construct;
-
-/// here

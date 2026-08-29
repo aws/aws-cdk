@@ -1,1 +1,0 @@
-This is the content stored in code pipeline

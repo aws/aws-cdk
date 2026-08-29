@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/core": "0.0.0"
-  }
-}

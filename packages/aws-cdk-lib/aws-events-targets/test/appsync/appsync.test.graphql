@@ -1,9 +1,0 @@
-type Event {
-  message: String
-}
-type Query {
-  getTests: [Event]!
-}
-type Mutation {
-  publish(message: String!): Event
-}
