@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "32936a00011beec2b667a6e066e33d65280dba1a7f1dc228b8d397254975caae": {
+      "displayName": "cdk-integ-opensearch-software-update-options Template",
+      "source": {
+        "path": "cdk-integ-opensearch-software-update-options.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-ecca1be1": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "32936a00011beec2b667a6e066e33d65280dba1a7f1dc228b8d397254975caae.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
