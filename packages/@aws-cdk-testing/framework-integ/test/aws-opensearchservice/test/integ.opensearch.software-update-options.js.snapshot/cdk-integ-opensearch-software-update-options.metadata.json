@@ -1,0 +1,33 @@
+{
+  "/cdk-integ-opensearch-software-update-options/Domain": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "version": "*",
+        "removalPolicy": "destroy",
+        "enableAutoSoftwareUpdate": true,
+        "capacity": {
+          "multiAzWithStandbyEnabled": false
+        }
+      }
+    }
+  ],
+  "/cdk-integ-opensearch-software-update-options/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cdk-integ-opensearch-software-update-options/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/cdk-integ-opensearch-software-update-options/Domain/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Domain66AC69E0"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "OpenSearchSoftwareUpdateOptionsInteg/DefaultTest": {
+      "stacks": [
+        "cdk-integ-opensearch-software-update-options"
+      ],
+      "assertionStack": "OpenSearchSoftwareUpdateOptionsInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "OpenSearchSoftwareUpdateOptionsIntegDefaultTestDeployAssert277CBA0D"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
