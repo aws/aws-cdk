@@ -1531,4 +1531,40 @@ describe('State Machine', () => {
       }),
     });
   });
+
+  test('Instantiate StateMachine with timeout using string definition', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definitionBody: sfn.DefinitionBody.fromString('{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}'),
+      timeout: cdk.Duration.seconds(300),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      StateMachineName: 'MyStateMachine',
+      DefinitionString: Match.stringLikeRegexp('.*"TimeoutSeconds":300.*'),
+    });
+  });
+
+  test('Instantiate StateMachine with timeout using chain definition', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
+      timeout: cdk.Duration.seconds(300),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      StateMachineName: 'MyStateMachine',
+      DefinitionString: Match.stringLikeRegexp('.*"TimeoutSeconds":300.*'),
+    });
+  });
 });
