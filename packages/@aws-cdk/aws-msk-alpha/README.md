@@ -174,6 +174,80 @@ const cluster = new msk.Cluster(this, 'Cluster', {
 ```
 
 
+## Multi-VPC private connectivity
+
+[Amazon MSK multi-VPC private connectivity](https://docs.aws.amazon.com/msk/latest/developerguide/aws-access-mult-vpc.html)
+(powered by AWS PrivateLink) lets Apache Kafka clients hosted in another VPC or another AWS
+account connect privately to your MSK cluster.
+
+Enable it on the cluster with the `vpcConnectivity` property, selecting the client
+authentication scheme(s) to use for the private connection. The scheme you enable here must
+also be enabled on the cluster's `clientAuthentication`:
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new msk.Cluster(this, 'Cluster', {
+  clusterName: 'myCluster',
+  kafkaVersion: msk.KafkaVersion.V3_5_1,
+  vpc,
+  encryptionInTransit: {
+    clientBroker: msk.ClientBrokerEncryption.TLS,
+  },
+  clientAuthentication: msk.ClientAuthentication.sasl({ iam: true }),
+  vpcConnectivity: msk.VpcConnectivity.sasl({ iam: true }), // .tls() and .saslTls({...}) are also available
+});
+```
+
+> Amazon MSK does not allow enabling VPC connectivity authentication schemes during the
+> *initial* cluster creation (it returns an `InvalidRequest` error). Deploy the cluster first
+> without `vpcConnectivity`, then add the property and deploy again to enable it. Multi-VPC
+> private connectivity additionally requires Apache Kafka 2.7.1 or higher, TLS-encrypted
+> client-broker traffic, and is not supported on unauthenticated clusters or the
+> `kafka.t3.small` instance type.
+
+For cross-account access, attach a resource-based [cluster policy](https://docs.aws.amazon.com/msk/latest/developerguide/mvpc-cross-account.html)
+to grant principals in another account permission to create a VPC connection to the cluster:
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+
+declare const cluster: msk.Cluster;
+declare const otherAccountId: string;
+
+cluster.addClusterPolicy(new iam.PolicyDocument({
+  statements: [
+    new iam.PolicyStatement({
+      actions: [
+        'kafka:CreateVpcConnection',
+        'kafka:GetBootstrapBrokers',
+        'kafka:DescribeCluster',
+        'kafka:DescribeClusterV2',
+      ],
+      principals: [new iam.AccountPrincipal(otherAccountId)],
+      resources: [cluster.clusterArn],
+    }),
+  ],
+}));
+```
+
+On the client side (typically in the other VPC or account), create an
+`AWS::MSK::VpcConnection` targeting the cluster using the L1 `CfnVpcConnection` construct:
+
+```ts
+import { CfnVpcConnection } from 'aws-cdk-lib/aws-msk';
+
+declare const clientVpc: ec2.Vpc;
+declare const targetClusterArn: string;
+
+new CfnVpcConnection(this, 'VpcConnection', {
+  authentication: 'IAM',
+  targetClusterArn,
+  vpcId: clientVpc.vpcId,
+  clientSubnets: clientVpc.selectSubnets().subnetIds,
+  securityGroups: [new ec2.SecurityGroup(this, 'SG', { vpc: clientVpc }).securityGroupId],
+});
+```
+
 ## Logging
 
 You can deliver Apache Kafka broker logs to one or more of the following destination types:
