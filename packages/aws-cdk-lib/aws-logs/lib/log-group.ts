@@ -529,6 +529,18 @@ export enum LogGroupClass {
    * Class for reduced logs services
    */
   INFREQUENT_ACCESS = 'INFREQUENT_ACCESS',
+
+  /**
+   * Class for delivering logs to a destination such as Amazon S3 or Amazon Data
+   * Firehose (for example, Lambda vended logs).
+   *
+   * A Delivery log group does not store log events itself; it forwards them to a
+   * destination configured through a subscription filter. Because of this, the
+   * Delivery log class does not support a finite retention, field index policies,
+   * or data protection policies. `RetentionDays.INFINITE` is accepted since it
+   * means "no retention".
+   */
+  DELIVERY = 'DELIVERY',
 }
 
 /**
@@ -581,11 +593,17 @@ export interface LogGroupProps {
   readonly retention?: RetentionDays;
 
   /**
-   * The class of the log group. Possible values are: STANDARD and INFREQUENT_ACCESS.
+   * The class of the log group. Possible values are: STANDARD, INFREQUENT_ACCESS and DELIVERY.
    *
    * INFREQUENT_ACCESS class provides customers a cost-effective way to consolidate
    * logs which supports querying using Logs Insights. The logGroupClass property cannot
    * be changed once the log group is created.
+   *
+   * DELIVERY class is used to deliver logs to a destination such as Amazon S3 or Amazon
+   * Data Firehose (for example, Lambda vended logs). A Delivery log group does not support
+   * a finite `retention`, `dataProtectionPolicy`, or `fieldIndexPolicies`; setting any of
+   * these together with `LogGroupClass.DELIVERY` results in a synthesis-time error.
+   * `RetentionDays.INFINITE` is accepted since it means "no retention".
    *
    * @default LogGroupClass.STANDARD
    */
@@ -694,15 +712,41 @@ export class LogGroup extends LogGroupBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    const logGroupClass = props.logGroupClass;
+    const isDeliveryClass = logGroupClass === LogGroupClass.DELIVERY;
+
+    // The Delivery log class forwards log events to a destination (configured via a
+    // subscription filter) instead of storing them. CloudWatch Logs rejects retention,
+    // field index policies, and data protection policies for Delivery log groups
+    // (service errors: "This operation is not supported for Delivery log class" /
+    // "This operation is only supported on the Standard log class"). Fail fast at synth
+    // time when these are combined with an explicit Delivery class, and never apply the
+    // default retention to a Delivery log group.
+    if (isDeliveryClass) {
+      // RetentionDays.INFINITE (and Infinity) means "no retention", which is exactly
+      // what a Delivery log group produces anyway, so it is allowed as a no-op. Only a
+      // finite retention is unsupported and rejected.
+      const isFiniteRetention = props.retention !== undefined
+        && props.retention !== RetentionDays.INFINITE
+        && (props.retention as number) !== Infinity;
+      if (isFiniteRetention) {
+        throw new ValidationError(lit`DeliveryLogClassRetention`, 'retention is not supported for a log group with logGroupClass DELIVERY; remove retention or use a different LogGroupClass', this);
+      }
+      if (props.dataProtectionPolicy !== undefined) {
+        throw new ValidationError(lit`DeliveryLogClassDataProtection`, 'dataProtectionPolicy is not supported for a log group with logGroupClass DELIVERY; remove dataProtectionPolicy or use a different LogGroupClass', this);
+      }
+      if (props.fieldIndexPolicies !== undefined) {
+        throw new ValidationError(lit`DeliveryLogClassFieldIndex`, 'fieldIndexPolicies is not supported for a log group with logGroupClass DELIVERY; remove fieldIndexPolicies or use a different LogGroupClass', this);
+      }
+    }
+
     let retentionInDays = props.retention;
-    if (retentionInDays === undefined) { retentionInDays = RetentionDays.TWO_YEARS; }
+    if (retentionInDays === undefined && !isDeliveryClass) { retentionInDays = RetentionDays.TWO_YEARS; }
     if (retentionInDays === Infinity || retentionInDays === RetentionDays.INFINITE) { retentionInDays = undefined; }
 
     if (retentionInDays !== undefined && !Token.isUnresolved(retentionInDays) && retentionInDays <= 0) {
       throw new ValidationError(lit`RetentionDaysPositive`, `retentionInDays must be positive, got ${retentionInDays}`, this);
     }
-
-    let logGroupClass = props.logGroupClass;
 
     const dataProtectionPolicy = props.dataProtectionPolicy?._bind(this);
     const fieldIndexPolicies: any[] = [];
