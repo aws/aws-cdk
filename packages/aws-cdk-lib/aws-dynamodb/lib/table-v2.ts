@@ -880,8 +880,6 @@ export class TableV2 extends TableBaseV2 {
     this.grants = new TableGrants({
       table: this,
       regions: Array.from(this.replicaTables.keys()),
-      encryptedResource: this.encryptionKey ? this : undefined,
-      policyResource: this,
     });
 
     if (props.tableName) {
