@@ -21,10 +21,24 @@
       }
     ]
   },
+  "aws-accountaccess": {
+    "scopes": [
+      {
+        "namespace": "AWS::AccountAccess"
+      }
+    ]
+  },
   "aws-acmpca": {
     "scopes": [
       {
         "namespace": "AWS::ACMPCA"
+      }
+    ]
+  },
+  "aws-agentregistry": {
+    "scopes": [
+      {
+        "namespace": "AWS::AgentRegistry"
       }
     ]
   },
@@ -388,6 +402,13 @@
       }
     ]
   },
+  "aws-cloudhsm": {
+    "scopes": [
+      {
+        "namespace": "AWS::CloudHSM"
+      }
+    ]
+  },
   "aws-cloudtrail": {
     "scopes": [
       {
@@ -533,13 +554,6 @@
       }
     ]
   },
-  "aws-controlcatalog": {
-    "scopes": [
-      {
-        "namespace": "AWS::ControlCatalog"
-      }
-    ]
-  },
   "aws-controltower": {
     "scopes": [
       {
@@ -677,6 +691,13 @@
     "scopes": [
       {
         "namespace": "AWS::DocDBElastic"
+      }
+    ]
+  },
+  "aws-drs": {
+    "scopes": [
+      {
+        "namespace": "AWS::DRS"
       }
     ]
   },
@@ -1044,6 +1065,13 @@
       }
     ]
   },
+  "aws-iotsecuretunneling": {
+    "scopes": [
+      {
+        "namespace": "AWS::IoTSecureTunneling"
+      }
+    ]
+  },
   "aws-iotsitewise": {
     "scopes": [
       {
@@ -1313,6 +1341,13 @@
       }
     ]
   },
+  "aws-mgn": {
+    "scopes": [
+      {
+        "namespace": "AWS::MGN"
+      }
+    ]
+  },
   "aws-mpa": {
     "scopes": [
       {
@@ -1359,6 +1394,13 @@
     "scopes": [
       {
         "namespace": "AWS::NetworkFirewall"
+      }
+    ]
+  },
+  "aws-networkflowmonitor": {
+    "scopes": [
+      {
+        "namespace": "AWS::NetworkFlowMonitor"
       }
     ]
   },
@@ -1422,6 +1464,13 @@
     "scopes": [
       {
         "namespace": "AWS::Omics"
+      }
+    ]
+  },
+  "aws-opensearch": {
+    "scopes": [
+      {
+        "namespace": "AWS::OpenSearch"
       }
     ]
   },
@@ -1787,6 +1836,13 @@
       }
     ]
   },
+  "aws-scn": {
+    "scopes": [
+      {
+        "namespace": "AWS::SCN"
+      }
+    ]
+  },
   "aws-sdb": {
     "scopes": [
       {
@@ -1819,6 +1875,13 @@
     "scopes": [
       {
         "namespace": "AWS::SecurityLake"
+      }
+    ]
+  },
+  "aws-serverlessrepo": {
+    "scopes": [
+      {
+        "namespace": "AWS::ServerlessRepo"
       }
     ]
   },
@@ -1951,6 +2014,13 @@
       }
     ]
   },
+  "aws-storagegateway": {
+    "scopes": [
+      {
+        "namespace": "AWS::StorageGateway"
+      }
+    ]
+  },
   "aws-supportapp": {
     "scopes": [
       {
@@ -1972,6 +2042,13 @@
       }
     ]
   },
+  "aws-textract": {
+    "scopes": [
+      {
+        "namespace": "AWS::Textract"
+      }
+    ]
+  },
   "aws-timestream": {
     "scopes": [
       {
@@ -1979,10 +2056,24 @@
       }
     ]
   },
+  "aws-transcribe": {
+    "scopes": [
+      {
+        "namespace": "AWS::Transcribe"
+      }
+    ]
+  },
   "aws-transfer": {
     "scopes": [
       {
         "namespace": "AWS::Transfer"
+      }
+    ]
+  },
+  "aws-translate": {
+    "scopes": [
+      {
+        "namespace": "AWS::Translate"
       }
     ]
   },
@@ -2037,6 +2128,20 @@
     "scopes": [
       {
         "namespace": "AWS::WAFv2"
+      }
+    ]
+  },
+  "aws-wellarchitected": {
+    "scopes": [
+      {
+        "namespace": "AWS::WellArchitected"
+      }
+    ]
+  },
+  "aws-wickr": {
+    "scopes": [
+      {
+        "namespace": "AWS::Wickr"
       }
     ]
   },
