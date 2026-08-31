@@ -14,7 +14,7 @@ beforeEach(() => {
       region: 'us-east-1',
     },
   });
-  importedAdminRole = iam.Role.fromRoleArn(stack, 'ChangeSetRole', 'arn:aws:iam::1234:role/ImportedAdminRole');
+  importedAdminRole = iam.Role.fromRoleArn(stack, 'ChangeSetRole', 'arn:aws:iam::123456789012:role/ImportedAdminRole');
 });
 
 describe('StackSetAction', () => {
@@ -160,7 +160,7 @@ describe('StackSetAction', () => {
             {
               'Action': 'iam:PassRole',
               'Effect': 'Allow',
-              'Resource': 'arn:aws:iam::1234:role/ImportedAdminRole',
+              'Resource': 'arn:aws:iam::123456789012:role/ImportedAdminRole',
             },
             {
               'Action': [
