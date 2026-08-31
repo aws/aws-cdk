@@ -13,12 +13,6 @@
       "data": "Domain"
     }
   ],
-  "/integ-user-pool-domain-prefix-validation/CloudFrontEndpoint": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "CloudFrontEndpoint"
-    }
-  ],
   "/integ-user-pool-domain-prefix-validation/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
