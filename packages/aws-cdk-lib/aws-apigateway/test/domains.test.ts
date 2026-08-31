@@ -834,7 +834,9 @@ describe('domains', () => {
   test('"addBasePathMapping" can be used to add base path mapping to the domain with specific stage', () => {
     // GIVEN
     const stack = new Stack();
-    const api1 = new apigw.RestApi(stack, 'api1');
+    const api1 = new apigw.RestApi(stack, 'api1', {
+      deploy: false,
+    });
     const api2 = new apigw.RestApi(stack, 'api2');
     const domain = new apigw.DomainName(stack, 'my-domain', {
       domainName: 'example.com',

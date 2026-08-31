@@ -183,7 +183,7 @@ describe('BasePathMapping', () => {
   test('specify stage property', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const api = new apigw.RestApi(stack, 'MyApi');
+    const api = new apigw.RestApi(stack, 'MyApi', { deploy: false });
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
       domainName: 'example.com',
