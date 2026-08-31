@@ -14,7 +14,7 @@ import type { TaskDefinition } from '../base/task-definition';
 import type { ICluster } from '../cluster';
 import type { ServiceReference } from '../ecs.generated';
 import type { ServiceMonitoringConfiguration } from '../service-monitoring';
-import { renderServiceMonitoring } from '../service-monitoring';
+import { renderServiceMonitoring, usesHighResolutionMetrics } from '../service-monitoring';
 
 /**
  * The properties for defining a service using the Fargate launch type.
@@ -168,6 +168,7 @@ export class FargateService extends BaseService implements IFargateService {
   }
 
   private readonly availabilityZoneRebalancingEnabled: boolean;
+  private readonly highResolutionMetricsEnabled: boolean;
 
   /**
    * Constructs a new instance of the FargateService class.
@@ -222,6 +223,7 @@ export class FargateService extends BaseService implements IFargateService {
     addConstructMetadata(this, props);
 
     this.availabilityZoneRebalancingEnabled = props.availabilityZoneRebalancing === AvailabilityZoneRebalancing.ENABLED;
+    this.highResolutionMetricsEnabled = usesHighResolutionMetrics(props.monitoring);
 
     let securityGroups;
     if (props.securityGroup !== undefined) {
@@ -257,6 +259,9 @@ export class FargateService extends BaseService implements IFargateService {
   public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
     if (this.availabilityZoneRebalancingEnabled) {
       throw new ValidationError(lit`AvailabilityZoneRebalancingDisallowsClassicLB`, 'AvailabilityZoneRebalancing.ENABLED disallows using the service as a target of a Classic Load Balancer', this);
+    }
+    if (this.highResolutionMetricsEnabled) {
+      throw new ValidationError(lit`ServiceMonitoringDisallowsClassicLB`, 'high-resolution monitoring disallows using the service as a target of a Classic Load Balancer', this);
     }
     super.attachToClassicLB(loadBalancer);
   }

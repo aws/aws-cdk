@@ -19,9 +19,14 @@ const MEMORY_UTILIZATION = 'MemoryUtilization';
 const SUPPORTED_METRIC_NAMES = [CPU_UTILIZATION, MEMORY_UTILIZATION];
 
 /**
+ * The resolution, in seconds, that enables high-resolution service metrics.
+ */
+const HIGH_RESOLUTION_SECONDS = 20;
+
+/**
  * The resolutions, in seconds, that Amazon ECS supports for service-level metrics.
  */
-const SUPPORTED_RESOLUTION_SECONDS = [20, 60];
+const SUPPORTED_RESOLUTION_SECONDS = [HIGH_RESOLUTION_SECONDS, 60];
 
 /**
  * The maximum number of metric configurations Amazon ECS accepts for a service.
@@ -156,4 +161,20 @@ export function renderServiceMonitoring(
   }
 
   return monitoring;
+}
+
+/**
+ * Whether any metric configuration opts into the 20-second (high) resolution.
+ *
+ * A tokenized configuration is treated as standard resolution, since blocking a
+ * value that cannot be inspected would reject valid configurations.
+ */
+export function usesHighResolutionMetrics(monitoring?: ServiceMonitoringConfiguration): boolean {
+  if (monitoring === undefined || Token.isUnresolved(monitoring.metricConfigurations)) {
+    return false;
+  }
+
+  return monitoring.metricConfigurations.some(
+    (metricConfiguration) => metricConfiguration.resolutionSeconds === HIGH_RESOLUTION_SECONDS,
+  );
 }

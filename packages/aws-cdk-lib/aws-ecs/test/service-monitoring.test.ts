@@ -1,5 +1,6 @@
 import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
+import * as elb from '../../aws-elasticloadbalancing';
 import * as cdk from '../../core';
 import * as ecs from '../lib';
 
@@ -21,12 +22,14 @@ describe('service monitoring', () => {
     fargateTaskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
     fargateTaskDefinition.addContainer('web', {
       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      portMappings: [{ containerPort: 80 }],
     });
 
     ec2TaskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
     ec2TaskDefinition.addContainer('web', {
       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       memoryLimitMiB: 512,
+      portMappings: [{ containerPort: 80 }],
     });
   });
 
@@ -228,6 +231,60 @@ describe('service monitoring', () => {
         taskDefinition: fargateTaskDefinition,
         deploymentController: { type: ecs.DeploymentControllerType.CODE_DEPLOY },
       })).not.toThrow();
+    });
+
+    describe('Classic Load Balancer', () => {
+      const attachToClassicLB = (service: ecs.BaseService) => {
+        const lb = new elb.LoadBalancer(stack, `LB${service.node.id}`, { vpc });
+        return () => lb.addTarget(service);
+      };
+
+      test('fails for a Fargate service using high-resolution metrics', () => {
+        const service = new ecs.FargateService(stack, 'FargateService', {
+          cluster,
+          taskDefinition: fargateTaskDefinition,
+          monitoring: {
+            metricConfigurations: [{ metricNames: ['CPUUtilization'], resolutionSeconds: 20 }],
+          },
+        });
+
+        expect(attachToClassicLB(service))
+          .toThrow(/high-resolution monitoring disallows using the service as a target of a Classic Load Balancer/);
+      });
+
+      test('fails for an EC2 service using high-resolution metrics', () => {
+        const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+          cluster,
+          taskDefinition: ec2TaskDefinition,
+          monitoring: {
+            metricConfigurations: [{ metricNames: ['CPUUtilization'], resolutionSeconds: 20 }],
+          },
+        });
+
+        expect(attachToClassicLB(service))
+          .toThrow(/high-resolution monitoring disallows using the service as a target of a Classic Load Balancer/);
+      });
+
+      test('allows a service that explicitly opts into standard resolution', () => {
+        const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+          cluster,
+          taskDefinition: ec2TaskDefinition,
+          monitoring: {
+            metricConfigurations: [{ metricNames: ['CPUUtilization'], resolutionSeconds: 60 }],
+          },
+        });
+
+        expect(attachToClassicLB(service)).not.toThrow();
+      });
+
+      test('allows a service without monitoring', () => {
+        const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+          cluster,
+          taskDefinition: ec2TaskDefinition,
+        });
+
+        expect(attachToClassicLB(service)).not.toThrow();
+      });
     });
 
     test('skips validation for a tokenized metricConfigurations list', () => {

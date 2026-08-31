@@ -1282,11 +1282,13 @@ High-resolution metrics have a few limitations:
   you combine them with `monitoring`.
 - They are supported for services behind an Application Load Balancer or a
   Network Load Balancer. Services using a Classic Load Balancer without target
-  groups are not supported.
-- They are not available on `ExternalService` (ECS Anywhere). ECS only publishes
-  the service-level `CPUUtilization` and `MemoryUtilization` metrics for tasks
-  hosted on Amazon EC2 instances and Fargate, and `ExternalService` does not
-  support auto scaling.
+  groups are not supported, so CDK throws if you attach a service that opts into
+  20-second resolution to a Classic Load Balancer.
+- They are not available on `ExternalService` (ECS Anywhere), which is why the
+  `monitoring` property is not offered there. ECS only publishes the
+  service-level `CPUUtilization` and `MemoryUtilization` metrics for tasks hosted
+  on Amazon EC2 instances and Fargate, and `ExternalService` does not support
+  auto scaling.
 
 > **Note:** For an existing service, this is a two-step change. First update the
 > monitoring configuration, which triggers a deployment, and only once the tasks
