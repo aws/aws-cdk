@@ -1,6 +1,6 @@
 /* eslint-disable @cdklabs/no-throw-default-error */
 import type { FlagInfo } from './private/flag-modeling';
-import { FlagType, MAGIC_V2NEXT } from './private/flag-modeling';
+import { FlagType } from './private/flag-modeling';
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -455,7 +455,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       3. \`TLS_V1_2_2021\` when \`defaultSecurityPolicyTLSv1.2_2021\` is enabled
       4. \`TLS_V1_2_2019\` otherwise`,
     compatibilityWithOldBehaviorMd: 'Set \`@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2025\` to \`false\` to keep the previous default of \`TLSv1.2_2021\` (or \`TLSv1.2_2019\` if neither flag is set).',
-    introducedIn: { v1: undefined, v2: MAGIC_V2NEXT },
+    introducedIn: { v1: undefined, v2: 'V2NEXT' },
     unconfiguredBehavesLike: { v2: false },
     recommendedValue: true,
   },
