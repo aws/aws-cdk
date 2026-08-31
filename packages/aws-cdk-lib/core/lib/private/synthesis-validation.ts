@@ -407,8 +407,9 @@ function doInvokeValidationPlugins(
   }
 }
 
-// NOTE: intentionally coincides with `usesEnvironmentPseudoParameters` today, but the
-// intents differ (trust vs. pseudo-parameter substitution) and may diverge.
+/**
+ * A plugin for which we don't need to validate that it didn't modify the assembly
+ */
 function isTrustedPlugin(x: IPolicyValidationPlugin) {
   return x instanceof CloudFormationValidatePlugin;
 }
