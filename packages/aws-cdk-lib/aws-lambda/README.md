@@ -1414,6 +1414,21 @@ result in CloudFormation deployment errors. Modifying the parameters within `dur
 after which the stack update or deletion will timeout. If you have functions that are stuck deleting, please check if there
 are any running executions for the function.
 
+By default, durable execution data is encrypted at rest with an AWS owned key. To use a
+customer managed KMS key (CMK) instead, pass it through `durableConfig.kmsKey`:
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+const kmsKey = new kms.Key(this, 'MyKey');
+const fn = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_LATEST,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  durableConfig: { executionTimeout: Duration.hours(1), retentionPeriod: Duration.days(30), kmsKey },
+});
+```
+
 ## AutoScaling
 
 You can use Application AutoScaling to automatically configure the provisioned concurrency for your functions. AutoScaling can be set to track utilization or be based on a schedule. To configure AutoScaling on a function alias:
