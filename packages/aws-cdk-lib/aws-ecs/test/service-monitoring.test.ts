@@ -376,7 +376,7 @@ describe('service monitoring', () => {
     test('fails when a metric name is repeated within one configuration', () => {
       expect(createFargateService({
         metricConfigurations: [{ metricNames: ['CPUUtilization', 'CPUUtilization'], resolutionSeconds: 20 }],
-      })).toThrow(/monitoring metricNames must not repeat a metric name across metricConfigurations, got "CPUUtilization" more than once/);
+      })).toThrow(/monitoring metricNames must not repeat a metric name, got "CPUUtilization" more than once/);
     });
 
     test('fails when a metric name is repeated across configurations', () => {
@@ -385,7 +385,7 @@ describe('service monitoring', () => {
           { metricNames: ['CPUUtilization'], resolutionSeconds: 20 },
           { metricNames: ['CPUUtilization'], resolutionSeconds: 60 },
         ],
-      })).toThrow(/monitoring metricNames must not repeat a metric name across metricConfigurations, got "CPUUtilization" more than once/);
+      })).toThrow(/monitoring metricNames must not repeat a metric name, got "CPUUtilization" more than once/);
     });
 
     test.each([
@@ -672,6 +672,16 @@ describe('service monitoring', () => {
           }],
         },
       });
+    });
+
+    test('skips the duplicate check for a repeated tokenized metric name', () => {
+      // The same token listed twice cannot be distinguished from two distinct tokens
+      // that resolve to different names, so tokens are left to deploy-time validation.
+      const tokenizedName = cdk.Lazy.string({ produce: () => 'CPUUtilization' });
+
+      expect(createFargateService({
+        metricConfigurations: [{ metricNames: [tokenizedName, tokenizedName], resolutionSeconds: 20 }],
+      })).not.toThrow();
     });
 
     test('skips per-name validation for a tokenized metric name', () => {

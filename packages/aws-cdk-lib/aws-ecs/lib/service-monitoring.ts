@@ -141,7 +141,15 @@ export function renderServiceMonitoring(
     }
 
     for (const metricName of metricNames) {
-      if (!Token.isUnresolved(metricName) && !SUPPORTED_METRIC_NAMES.includes(metricName)) {
+      // A tokenized name cannot be checked against the supported values, and comparing
+      // it for duplication would only catch the case where the very same token is listed
+      // twice, while missing two distinct tokens that resolve to the same name. Skip it
+      // entirely so that tokens behave predictably.
+      if (Token.isUnresolved(metricName)) {
+        continue;
+      }
+
+      if (!SUPPORTED_METRIC_NAMES.includes(metricName)) {
         throw new ValidationError(
           lit`ServiceMonitoringInvalidMetricName`,
           `monitoring metricNames must only contain ${JSON.stringify(SUPPORTED_METRIC_NAMES)}, got ${JSON.stringify(metricName)}`,
@@ -152,7 +160,7 @@ export function renderServiceMonitoring(
       if (seenMetricNames.has(metricName)) {
         throw new ValidationError(
           lit`ServiceMonitoringDuplicateMetricName`,
-          `monitoring metricNames must not repeat a metric name across metricConfigurations, got ${JSON.stringify(metricName)} more than once`,
+          `monitoring metricNames must not repeat a metric name, got ${JSON.stringify(metricName)} more than once`,
           scope,
         );
       }
