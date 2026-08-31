@@ -16,6 +16,8 @@ import { NetworkMode } from '../base/task-definition';
 import type { ICluster } from '../cluster';
 import type { CfnService, ServiceReference } from '../ecs.generated';
 import type { PlacementConstraint, PlacementStrategy } from '../placement';
+import type { ServiceMonitoringConfiguration } from '../service-monitoring';
+import { renderServiceMonitoring } from '../service-monitoring';
 
 /**
  * The properties for defining a service using the EC2 launch type.
@@ -104,6 +106,19 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    * @default AvailabilityZoneRebalancing.ENABLED
    */
   readonly availabilityZoneRebalancing?: AvailabilityZoneRebalancing;
+
+  /**
+   * The monitoring configuration for the service, which defines the resolution of the
+   * service-level `CPUUtilization` and `MemoryUtilization` CloudWatch metrics.
+   *
+   * Collecting these metrics at a 20-second resolution lets Application Auto Scaling
+   * react to load changes faster. To scale on them, use the high-resolution predefined
+   * metrics on the scaling policy.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/target-tracking-faster-auto-scaling.html
+   * @default - Amazon ECS uses the default resolution of 60 seconds.
+   */
+  readonly monitoring?: ServiceMonitoringConfiguration;
 }
 
 /**
@@ -232,6 +247,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
       placementStrategies: strategies.derive(s => this.strategiesInitialized ? s : undefined),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
       availabilityZoneRebalancing: props.availabilityZoneRebalancing,
+      monitoring: renderServiceMonitoring(scope, props.monitoring),
     }, props.taskDefinition);
 
     this.constraints = constraints;

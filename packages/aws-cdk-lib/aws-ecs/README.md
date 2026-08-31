@@ -1225,6 +1225,61 @@ following criteria:
 - Uses a Classic Load Balancer.
 - Uses the `attribute:ecs.availability-zone` as a task placement constraint.
 
+### High-resolution service metrics
+
+By default, Amazon ECS publishes the service-level `CPUUtilization` and
+`MemoryUtilization` CloudWatch metrics every 60 seconds. With a 60-second
+resolution, detecting a load increase dominates the time it takes to scale out.
+
+Use the `monitoring` property to collect those metrics at a 20-second resolution
+instead, so Application Auto Scaling reacts to load changes faster:
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  monitoring: {
+    metricConfigurations: [{
+      metricNames: ['CPUUtilization', 'MemoryUtilization'],
+      resolutionSeconds: 20,
+    }],
+  },
+});
+```
+
+The valid values for `resolutionSeconds` are `20` and `60`, and the supported
+metric names are `CPUUtilization` and `MemoryUtilization`. You can supply up to
+two metric configurations to give each metric its own resolution, but a metric
+name must not appear in more than one configuration:
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  monitoring: {
+    metricConfigurations: [
+      { metricNames: ['CPUUtilization'], resolutionSeconds: 20 },
+      { metricNames: ['MemoryUtilization'], resolutionSeconds: 60 },
+    ],
+  },
+});
+```
+
+Setting the resolution to 20 seconds only changes how often the metrics are
+published. To actually scale faster, the scaling policy must also track the
+high-resolution variant of the predefined metric.
+
+> **Note:** For an existing service, this is a two-step change. First update the
+> monitoring configuration, which triggers a deployment, and only once the tasks
+> publish metrics at 20-second resolution should you attach the high-resolution
+> scaling policy. A new service can do both at creation time.
+
 ## Task Auto-Scaling
 
 You can configure the task count of a service to match demand. Task auto-scaling is

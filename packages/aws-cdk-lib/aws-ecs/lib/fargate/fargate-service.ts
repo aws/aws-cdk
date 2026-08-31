@@ -13,6 +13,8 @@ import { fromServiceAttributes, extractServiceNameFromArn } from '../base/from-s
 import type { TaskDefinition } from '../base/task-definition';
 import type { ICluster } from '../cluster';
 import type { ServiceReference } from '../ecs.generated';
+import type { ServiceMonitoringConfiguration } from '../service-monitoring';
+import { renderServiceMonitoring } from '../service-monitoring';
 
 /**
  * The properties for defining a service using the Fargate launch type.
@@ -77,6 +79,19 @@ export interface FargateServiceProps extends BaseServiceOptions {
    * @default AvailabilityZoneRebalancing.ENABLED
    */
   readonly availabilityZoneRebalancing?: AvailabilityZoneRebalancing;
+
+  /**
+   * The monitoring configuration for the service, which defines the resolution of the
+   * service-level `CPUUtilization` and `MemoryUtilization` CloudWatch metrics.
+   *
+   * Collecting these metrics at a 20-second resolution lets Application Auto Scaling
+   * react to load changes faster. To scale on them, use the high-resolution predefined
+   * metrics on the scaling policy.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/target-tracking-faster-auto-scaling.html
+   * @default - Amazon ECS uses the default resolution of 60 seconds.
+   */
+  readonly monitoring?: ServiceMonitoringConfiguration;
 }
 
 /**
@@ -197,6 +212,7 @@ export class FargateService extends BaseService implements IFargateService {
       taskDefinition: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.taskDefinition.taskDefinitionArn,
       platformVersion: props.platformVersion,
       availabilityZoneRebalancing: props.availabilityZoneRebalancing,
+      monitoring: renderServiceMonitoring(scope, props.monitoring),
     }, props.taskDefinition);
 
     // Enhanced CDK Analytics Telemetry
