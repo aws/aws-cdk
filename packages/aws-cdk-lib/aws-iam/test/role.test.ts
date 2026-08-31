@@ -719,7 +719,7 @@ describe('IAM role', () => {
     new Role(stack, 'MyRole', {
       assumedBy: new CompositePrincipal(
         new ServicePrincipal('boom.amazonaws.test'),
-        new ArnPrincipal('1111111'),
+        new ArnPrincipal('111111111111'),
       ),
     });
 
@@ -737,7 +737,7 @@ describe('IAM role', () => {
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
             Principal: {
-              AWS: '1111111',
+              AWS: '111111111111',
             },
           },
         ],
