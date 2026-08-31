@@ -358,6 +358,21 @@
       "TSV"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/schema.ts": {
+    "Schema": [
+      "BOOLEAN",
+      "BINARY",
+      "BIG_INT",
+      "DOUBLE",
+      "FLOAT",
+      "INTEGER",
+      "SMALL_INT",
+      "TINY_INT",
+      "DATE",
+      "TIMESTAMP",
+      "STRING"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/os-version.ts": {
     "OSVersion": [
       "LINUX",
@@ -588,7 +603,8 @@
       "V3_9_X",
       "V3_9_X_KRAFT",
       "V4_0_X_KRAFT",
-      "V4_1_X_KRAFT"
+      "V4_1_X_KRAFT",
+      "V4_2_X_KRAFT"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-neptune-alpha/lib/cluster.ts": {
@@ -903,6 +919,12 @@
       "ALL",
       "LAUNCH_EVENTS",
       "TERMINATION_EVENTS"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-backup/lib/rule.ts": {
+    "IndexActionResourceType": [
+      "S3",
+      "EBS"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-bedrock/lib/foundation-model.ts": {
@@ -2473,6 +2495,13 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.ts": {
+    "ControlPlaneScalingTier": [
+      "STANDARD",
+      "TIER_XL",
+      "TIER_2XL",
+      "TIER_4XL",
+      "TIER_8XL"
+    ],
     "EndpointAccess": [
       "PUBLIC",
       "PRIVATE",
@@ -2626,6 +2655,26 @@
       "SNAPPY",
       "ZIP",
       "UNCOMPRESSED"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/datadog.ts": {
+    "DatadogEndpoint": [
+      "LOGS_US1",
+      "LOGS_US3",
+      "LOGS_US5",
+      "LOGS_AP1",
+      "LOGS_EU",
+      "LOGS_GOV",
+      "METRICS_US",
+      "METRICS_US5",
+      "METRICS_AP1",
+      "METRICS_EU",
+      "CONFIGURATION_US1",
+      "CONFIGURATION_US3",
+      "CONFIGURATION_US5",
+      "CONFIGURATION_AP1",
+      "CONFIGURATION_EU",
+      "CONFIGURATION_US_GOV"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/record-format/input.ts": {
@@ -2979,7 +3028,8 @@
       "OPENSEARCH_2_19",
       "OPENSEARCH_3_1",
       "OPENSEARCH_3_3",
-      "OPENSEARCH_3_5"
+      "OPENSEARCH_3_5",
+      "OPENSEARCH_3_7"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/ca-certificate.ts": {
@@ -3797,6 +3847,7 @@
       "VER_19_0_0_0_2024_10_R1",
       "VER_19_0_0_0_2025_01_R1",
       "VER_19_0_0_0_2025_07_R1",
+      "VER_19_0_0_0_2025_10_R1",
       "VER_21",
       "VER_21_0_0_0_2022_01_R1",
       "VER_21_0_0_0_2022_04_R1",
