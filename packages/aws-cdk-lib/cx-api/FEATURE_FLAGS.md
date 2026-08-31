@@ -118,6 +118,7 @@ Flags come in three types:
 | [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-stack references are strong, weak, or both | 2.254.0 | config |
 | [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | 2.259.0 | new default |
 | [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | 2.262.0 | config |
+| [@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2\_2025](#aws-cdkaws-cloudfrontdefaultsecuritypolicytlsv12_2025) | Enable this feature flag to have CloudFront distributions default to the security policy TLSv1.2_2025 when a certificate is configured. | V2NEXT | new default |
 
 <!-- END table -->
 
@@ -138,6 +139,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": true,
     "@aws-cdk/aws-batch:defaultToAL2023": true,
     "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": true,
+    "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2025": true,
     "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": true,
     "@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup": true,
     "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true,
@@ -2549,6 +2551,29 @@ fail synthesis. When unconfigured, violations are reported as warnings only.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.262.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2025
+
+*Enable this feature flag to have CloudFront distributions default to the security policy TLSv1.2_2025 when a certificate is configured.*
+
+Flag type: New default behavior
+
+The security policy can also be configured explicitly using the `minimumProtocolVersion` property.
+
+Default selection order:
+1. Explicit `minimumProtocolVersion`
+2. `TLS_V1_2_2025` when this flag is enabled
+3. `TLS_V1_2_2021` when `defaultSecurityPolicyTLSv1.2_2021` is enabled
+4. `TLS_V1_2_2019` otherwise
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Set `@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2025` to `false` to keep the previous default of `TLSv1.2_2021` (or `TLSv1.2_2019` if neither flag is set).
 
 
 <!-- END details -->
