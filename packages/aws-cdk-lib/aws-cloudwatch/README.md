@@ -626,6 +626,116 @@ alarmMuteRule.addAlarm(alarm2);
 ```
 
 For more information on alarm mute rules, see the [AWS documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/alarm-mute-rules.html).
+## Log Alarms
+
+Log alarms evaluate a scheduled CloudWatch Logs query against one or more log
+groups and alarm on the aggregated results. Instead of a metric, a `LogAlarm`
+runs a query on a schedule and compares an aggregation of the results (for
+example `count(*)`) against a threshold using an M-out-of-N evaluation.
+
+### How Log Alarms Differ from Standard CloudWatch Alarms
+
+The standard `Alarm` construct is built around a metric, a comparison operator,
+a threshold, and evaluation periods. Log alarms have a different model:
+
+- Instead of a metric, a log alarm runs a scheduled query (`scheduledQueryConfiguration`) against log groups.
+- Instead of `evaluationPeriods` and `datapointsToAlarm`, log alarms use `queryResultsToEvaluate` (N) and `queryResultsToAlarm` (M).
+- The alarm can optionally include matching log lines in its notifications via `actionLogLineCount`.
+
+### Creating a Log Alarm
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+declare const logGroup: logs.LogGroup;
+declare const queryRole: iam.IRole;
+
+new cloudwatch.LogAlarm(this, 'ErrorRateAlarm', {
+  threshold: 5,
+  comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+  queryResultsToEvaluate: 3,
+  queryResultsToAlarm: 2,
+  scheduledQueryConfiguration: {
+    queryString: 'fields @message | filter @message like /ERROR/',
+    aggregationExpression: 'count(*)',
+    logGroups: [logGroup],
+    scheduledQueryRole: queryRole,
+    schedule: {
+      rate: Duration.minutes(5),
+      startTimeOffset: Duration.minutes(5),
+    },
+  },
+});
+```
+
+### Including Log Lines in Notifications
+
+Set `actionLogLineCount` to include matching log lines in alarm notifications.
+When it is greater than 0, a role that lets CloudWatch read the log lines is
+auto-created; pass `actionLogLineRole` to supply your own instead:
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+declare const logGroup: logs.LogGroup;
+declare const queryRole: iam.IRole;
+declare const logLineRole: iam.IRole;
+
+new cloudwatch.LogAlarm(this, 'ErrorRateAlarm', {
+  threshold: 5,
+  comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+  queryResultsToEvaluate: 3,
+  queryResultsToAlarm: 2,
+  actionLogLineCount: 10,
+  actionLogLineRole: logLineRole,
+  scheduledQueryConfiguration: {
+    queryString: 'fields @message | filter @message like /ERROR/',
+    aggregationExpression: 'count(*)',
+    logGroups: [logGroup],
+    scheduledQueryRole: queryRole,
+    schedule: {
+      rate: Duration.minutes(5),
+      startTimeOffset: Duration.minutes(5),
+    },
+  },
+});
+```
+
+### Adding Actions
+
+`LogAlarm` extends `AlarmBase`, so you can add alarm, OK, and insufficient-data
+actions the same way as standard alarms:
+
+```ts
+import * as cw_actions from 'aws-cdk-lib/aws-cloudwatch-actions';
+import * as sns from 'aws-cdk-lib/aws-sns';
+
+declare const logAlarm: cloudwatch.LogAlarm;
+declare const topic: sns.Topic;
+
+logAlarm.addAlarmAction(new cw_actions.SnsAction(topic));
+```
+
+Log alarms support **SNS notification**, **Lambda**, and **Systems Manager OpsItem**
+actions. Other action types (for example CloudWatch investigation or Systems Manager
+Incident) are not supported and are ignored by the service; adding one emits a
+synthesis-time warning.
+
+### Importing an Existing Log Alarm
+
+```ts
+const importedByArn = cloudwatch.LogAlarm.fromLogAlarmArn(
+  this, 'ImportedAlarm',
+  'arn:aws:cloudwatch:us-east-1:123456789012:alarm:MyLogAlarm',
+);
+
+const importedByName = cloudwatch.LogAlarm.fromLogAlarmName(
+  this, 'ImportedByName',
+  'MyLogAlarm',
+);
+```
 
 ## Dashboards
 
