@@ -4,6 +4,10 @@ on:
     workflows: ["Security Guardian"]
     types: [completed]
 
+concurrency:
+  group: security-report-${{ github.event.workflow_run.head_repository.full_name }}-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: true
+
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -19,7 +23,12 @@ jobs:
         uses: actions/github-script@v9
         with:
           script: |
-            const forkOwner = context.payload.workflow_run.head_repository.owner.login;
+            const headRepo = context.payload.workflow_run.head_repository;
+            if (!headRepo || !headRepo.owner || !headRepo.owner.login) {
+              core.setFailed('workflow_run.head_repository is missing (fork deleted?)');
+              return;
+            }
+            const forkOwner = headRepo.owner.login;
             const branch    = context.payload.workflow_run.head_branch;
             const headSha   = context.payload.workflow_run.head_sha;
 
@@ -44,7 +53,8 @@ jobs:
               repo:  context.repo.repo,
               pull_number: pr.number,
             });
-            if (files.some(f => f.filename === '.github/workflows/security-guardian.yml')) {
+            const target = '.github/workflows/security-guardian.yml';
+            if (files.some(f => f.filename === target || f.previous_filename === target)) {
               core.setFailed('PR modifies security-guardian workflow');
               return;
             }
