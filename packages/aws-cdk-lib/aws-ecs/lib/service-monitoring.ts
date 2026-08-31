@@ -1,4 +1,5 @@
 import type { IConstruct } from 'constructs';
+import { DeploymentControllerType } from './base/base-service';
 import { Token, ValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
 
@@ -77,9 +78,20 @@ export interface ServiceMonitoringConfiguration {
 export function renderServiceMonitoring(
   scope: IConstruct,
   monitoring?: ServiceMonitoringConfiguration,
+  deploymentControllerType?: DeploymentControllerType,
 ): ServiceMonitoringConfiguration | undefined {
   if (monitoring === undefined) {
     return undefined;
+  }
+
+  // Amazon ECS does not publish high-resolution metrics for services using the
+  // CODE_DEPLOY or EXTERNAL deployment controllers.
+  if (deploymentControllerType !== undefined && deploymentControllerType !== DeploymentControllerType.ECS) {
+    throw new ValidationError(
+      lit`ServiceMonitoringRequiresEcsController`,
+      `monitoring requires the ECS deployment controller, got ${JSON.stringify(deploymentControllerType)}`,
+      scope,
+    );
   }
 
   const metricConfigurations = monitoring.metricConfigurations;

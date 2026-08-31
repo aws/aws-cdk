@@ -115,6 +115,9 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    * react to load changes faster. To scale on them, use the high-resolution predefined
    * metrics on the scaling policy.
    *
+   * Requires the ECS deployment controller. The CODE_DEPLOY and EXTERNAL deployment
+   * controllers do not support high-resolution metrics.
+   *
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/target-tracking-faster-auto-scaling.html
    * @default - Amazon ECS uses the default resolution of 60 seconds.
    */
@@ -247,7 +250,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
       placementStrategies: strategies.derive(s => this.strategiesInitialized ? s : undefined),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
       availabilityZoneRebalancing: props.availabilityZoneRebalancing,
-      monitoring: renderServiceMonitoring(scope, props.monitoring),
+      monitoring: renderServiceMonitoring(scope, props.monitoring, props.deploymentController?.type),
     }, props.taskDefinition);
 
     this.constraints = constraints;

@@ -189,6 +189,47 @@ describe('service monitoring', () => {
       })).toThrow(/monitoring metricNames must not repeat a metric name across metricConfigurations, got "CPUUtilization" more than once/);
     });
 
+    test.each([
+      ecs.DeploymentControllerType.CODE_DEPLOY,
+      ecs.DeploymentControllerType.EXTERNAL,
+    ])('fails for the %s deployment controller', (type) => {
+      expect(() => new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition: fargateTaskDefinition,
+        deploymentController: { type },
+        monitoring: {
+          metricConfigurations: [{ metricNames: ['CPUUtilization'], resolutionSeconds: 20 }],
+        },
+      })).toThrow(new RegExp(`monitoring requires the ECS deployment controller, got "${type}"`));
+    });
+
+    test('allows an explicit ECS deployment controller', () => {
+      // WHEN
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition: fargateTaskDefinition,
+        deploymentController: { type: ecs.DeploymentControllerType.ECS },
+        monitoring: {
+          metricConfigurations: [{ metricNames: ['CPUUtilization'], resolutionSeconds: 20 }],
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        Monitoring: {
+          MetricConfigurations: [{ MetricNames: ['CPUUtilization'], ResolutionSeconds: 20 }],
+        },
+      });
+    });
+
+    test('allows a non-ECS deployment controller when monitoring is not set', () => {
+      expect(() => new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition: fargateTaskDefinition,
+        deploymentController: { type: ecs.DeploymentControllerType.CODE_DEPLOY },
+      })).not.toThrow();
+    });
+
     test('skips validation for a tokenized metricConfigurations list', () => {
       // A tokenized list always reports a length of 1, so the per-configuration
       // checks are skipped rather than run against a placeholder.

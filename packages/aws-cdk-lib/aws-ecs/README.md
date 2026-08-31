@@ -1275,6 +1275,19 @@ Setting the resolution to 20 seconds only changes how often the metrics are
 published. To actually scale faster, the scaling policy must also track the
 high-resolution variant of the predefined metric.
 
+High-resolution metrics have a few limitations:
+
+- They require the ECS deployment controller. The `CODE_DEPLOY` and `EXTERNAL`
+  deployment controllers are not supported, and CDK throws at synthesis time if
+  you combine them with `monitoring`.
+- They are supported for services behind an Application Load Balancer or a
+  Network Load Balancer. Services using a Classic Load Balancer without target
+  groups are not supported.
+- They are not available on `ExternalService` (ECS Anywhere). ECS only publishes
+  the service-level `CPUUtilization` and `MemoryUtilization` metrics for tasks
+  hosted on Amazon EC2 instances and Fargate, and `ExternalService` does not
+  support auto scaling.
+
 > **Note:** For an existing service, this is a two-step change. First update the
 > monitoring configuration, which triggers a deployment, and only once the tasks
 > publish metrics at 20-second resolution should you attach the high-resolution

@@ -88,6 +88,9 @@ export interface FargateServiceProps extends BaseServiceOptions {
    * react to load changes faster. To scale on them, use the high-resolution predefined
    * metrics on the scaling policy.
    *
+   * Requires the ECS deployment controller. The CODE_DEPLOY and EXTERNAL deployment
+   * controllers do not support high-resolution metrics.
+   *
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/target-tracking-faster-auto-scaling.html
    * @default - Amazon ECS uses the default resolution of 60 seconds.
    */
@@ -212,7 +215,7 @@ export class FargateService extends BaseService implements IFargateService {
       taskDefinition: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.taskDefinition.taskDefinitionArn,
       platformVersion: props.platformVersion,
       availabilityZoneRebalancing: props.availabilityZoneRebalancing,
-      monitoring: renderServiceMonitoring(scope, props.monitoring),
+      monitoring: renderServiceMonitoring(scope, props.monitoring, props.deploymentController?.type),
     }, props.taskDefinition);
 
     // Enhanced CDK Analytics Telemetry
