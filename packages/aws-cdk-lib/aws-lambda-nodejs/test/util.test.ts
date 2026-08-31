@@ -181,6 +181,23 @@ describe('tryGetModuleVersionFromRequire', () => {
     }
   });
 
+  test('falls back to require() when module is not resolvable from cwd', () => {
+    // Empty temp dir has no node_modules, so the cwd anchor misses. typescript is
+    // installed in this monorepo and still resolvable via the legacy require()
+    // anchor under aws-cdk-lib.
+    const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-esbuild-fallback-'));
+    fs.writeFileSync(path.join(tmpRoot, 'package.json'), JSON.stringify({ name: 'empty' }));
+    const previousCwd = process.cwd();
+    try {
+      process.chdir(tmpRoot);
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      expect(tryGetModuleVersionFromRequire('typescript')).toBe(require('typescript/package.json').version);
+    } finally {
+      process.chdir(previousCwd);
+      fs.rmSync(tmpRoot, { recursive: true, force: true });
+    }
+  });
+
   test('returns undefined when module is not installed', () => {
     expect(tryGetModuleVersionFromRequire('definitely-not-a-real-module-xyz')).toBeUndefined();
   });
