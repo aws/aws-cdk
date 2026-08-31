@@ -46,14 +46,6 @@
    "Value": {
     "Ref": "UserPoolDomainD0EA232A"
    }
-  },
-  "CloudFrontEndpoint": {
-   "Value": {
-    "Fn::GetAtt": [
-     "UserPoolDomainD0EA232A",
-     "CloudFrontDistribution"
-    ]
-   }
   }
  },
  "Parameters": {
