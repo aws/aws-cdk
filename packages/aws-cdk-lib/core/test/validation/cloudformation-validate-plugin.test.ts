@@ -289,7 +289,7 @@ describe('CloudFormationValidatePlugin', () => {
     const plugin = new core.CloudFormationValidatePlugin();
     const report = plugin.validate({
       templatePaths: [templatePath],
-      stackTemplates: [{ stackConstructPath: 'TestStack', templatePath }],
+      stackTemplates: [{ stackConstructPath: 'TestStack', templatePath, accountId: undefined, region: undefined }],
       appConstruct: new Construct(undefined as any, ''),
       accountId: undefined,
       region: undefined,
@@ -332,6 +332,8 @@ describe('CloudFormationValidatePlugin', () => {
         stackTemplates: templatePaths.map((templatePath, index) => ({
           stackConstructPath: `TestStack${index + 1}`,
           templatePath,
+          accountId: undefined,
+          region: undefined,
         })),
         appConstruct: new Construct(undefined as any, ''),
         accountId: undefined,
