@@ -122,11 +122,15 @@ export interface PolicyValidationStack {
 
   /**
    * The account ID for this stack, if known
+   *
+   * @default - the account ID is unknown
    */
   readonly accountId: string | undefined;
 
   /**
    * The region for this stack, if known
+   *
+   * @default - the region is unknown
    */
   readonly region: string | undefined;
 }
