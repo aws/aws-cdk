@@ -5,7 +5,55 @@ on:
     types: [completed]
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+      actions: read
+    outputs:
+      pr_number: ${{ steps.check.outputs.pr_number }}
+      pr_sha: ${{ steps.check.outputs.pr_sha }}
+    steps:
+      - name: Resolve PR and check diff
+        id: check
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const forkOwner = context.payload.workflow_run.head_repository.owner.login;
+            const branch    = context.payload.workflow_run.head_branch;
+            const headSha   = context.payload.workflow_run.head_sha;
+
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              state: 'open',
+              head:  `${forkOwner}:${branch}`,
+            });
+            if (prs.length !== 1) {
+              core.setFailed(`Expected 1 PR, got ${prs.length}`);
+              return;
+            }
+            const pr = prs[0];
+            if (pr.head.sha !== headSha) {
+              core.setFailed(`SHA mismatch: expected ${headSha}, got ${pr.head.sha}`);
+              return;
+            }
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              pull_number: pr.number,
+            });
+            if (files.some(f => f.filename === '.github/workflows/security-guardian.yml')) {
+              core.setFailed('PR modifies security-guardian workflow');
+              return;
+            }
+
+            core.setOutput('pr_number', pr.number);
+            core.setOutput('pr_sha',    headSha);
+
   report:
+    needs: validate
     runs-on: ubuntu-latest
     permissions:
       checks: write
@@ -23,14 +71,8 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
           repository: ${{ github.repository }}
-      
-      - name: Get PR info
-        id: pr_info
-        run: |
-          echo "pr_number=$(cat test-results/pr_number)" >> "$GITHUB_OUTPUT"
-          echo "pr_sha=$(cat test-results/pr_sha)" >> "$GITHUB_OUTPUT"
-          echo "PR: $(cat test-results/pr_number), SHA: $(cat test-results/pr_sha)"
-      - name: Publish Security Test Results 
+
+      - name: Publish Security Test Results
         id: junit_static
         uses: mikepenz/action-junit-report@v6
         if: always()
@@ -38,10 +80,10 @@ jobs:
           report_paths: 'test-results/**/cfn-guard-static.xml'
           check_name: ${{ env.CHECK_NAME_STATIC }}
           exclude_sources: 'node_modules,dist'
-          commit: ${{ steps.pr_info.outputs.pr_sha }}
+          commit: ${{ needs.validate.outputs.pr_sha }}
           check_annotations: true
           comment: true
-          pr_id: ${{ steps.pr_info.outputs.pr_number }}
+          pr_id: ${{ needs.validate.outputs.pr_number }}
           detailed_summary: true
           include_passed: false
           fail_on_failure: false
@@ -54,7 +96,7 @@ jobs:
         uses: actions/github-script@v9
         if: steps.junit_static.outcome == 'success'
         env:
-          PR_NUMBER: ${{ steps.pr_info.outputs.pr_number }}
+          PR_NUMBER: ${{ needs.validate.outputs.pr_number }}
           CHECK_NAME: ${{ env.CHECK_NAME_STATIC }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -66,13 +108,13 @@ jobs:
               repo: context.repo.repo,
               issue_number: prNumber,
             });
-            
-            const botComment = comments.data.find(comment => 
-              comment.user.type === 'Bot' && 
+
+            const botComment = comments.data.find(comment =>
+              comment.user.type === 'Bot' &&
               comment.body.includes(checkName) &&
               !comment.body.includes('resolved templates')
             );
-            
+
             if (botComment) {
               const disclaimer = '⚠️ **Experimental Feature**: This security report is currently in experimental phase. Results may include false positives and the rules are being actively refined. \n**This security report is NOT a review blocker.** Please try `merge from main` to avoid findings unrelated to the PR.\nTo suppress a specific rule, see [Suppressing Rules](https://github.com/aws/aws-cdk/blob/main/tools/%40aws-cdk/security-guardian/README.md#suppressing-rules).\n\n---\n\n';
               await github.rest.issues.updateComment({
@@ -91,10 +133,10 @@ jobs:
           report_paths: 'test-results/**/cfn-guard-resolved.xml'
           check_name: ${{ env.CHECK_NAME_RESOLVED }}
           exclude_sources: 'node_modules,dist'
-          commit: ${{ steps.pr_info.outputs.pr_sha }}
+          commit: ${{ needs.validate.outputs.pr_sha }}
           check_annotations: true
           comment: true
-          pr_id: ${{ steps.pr_info.outputs.pr_number }}
+          pr_id: ${{ needs.validate.outputs.pr_number }}
           detailed_summary: true
           include_passed: false
           fail_on_failure: false
@@ -107,7 +149,7 @@ jobs:
         uses: actions/github-script@v9
         if: steps.junit_resolved.outcome == 'success'
         env:
-          PR_NUMBER: ${{ steps.pr_info.outputs.pr_number }}
+          PR_NUMBER: ${{ needs.validate.outputs.pr_number }}
           CHECK_NAME: ${{ env.CHECK_NAME_RESOLVED }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -119,12 +161,12 @@ jobs:
               repo: context.repo.repo,
               issue_number: prNumber,
             });
-            
-            const botComment = comments.data.find(comment => 
-              comment.user.type === 'Bot' && 
+
+            const botComment = comments.data.find(comment =>
+              comment.user.type === 'Bot' &&
               comment.body.includes(checkName)
             );
-            
+
             if (botComment) {
               const disclaimer = '⚠️ **Experimental Feature**: This security report is currently in experimental phase. Results may include false positives and the rules are being actively refined. \n**This security report is NOT a review blocker.** Please try `merge from main` to avoid findings unrelated to the PR.\nTo suppress a specific rule, see [Suppressing Rules](https://github.com/aws/aws-cdk/blob/main/tools/%40aws-cdk/security-guardian/README.md#suppressing-rules).\n\n---\n\n';
               await github.rest.issues.updateComment({

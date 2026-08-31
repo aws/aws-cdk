@@ -20,12 +20,15 @@ jobs:
       !startsWith(github.event.pull_request.title, 'chore(release):') &&
       !startsWith(github.event.pull_request.title, 'chore(merge-back):')
     runs-on: ubuntu-latest
-    steps:      
-      - name: Checkout
+    steps:
+      - name: Checkout base branch
         uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0  
+          ref: ${{ github.event.pull_request.base.ref }}
+          fetch-depth: 0
+
+      - name: Fetch PR head commit
+        run: git fetch origin +refs/pull/${{ github.event.pull_request.number }}/head:refs/heads/pr-head
 
       - name: Install cfn-guard
         run: |
@@ -46,12 +49,7 @@ jobs:
           base_sha: ${{ github.event.pull_request.base.sha }}
           head_sha: ${{ github.event.pull_request.head.sha }}
           rule_set_path: './tools/@aws-cdk/security-guardian/rules'
-      - name: Save PR info for security-report
-        if: always()
-        run: |
-          echo "${{ github.event.pull_request.number }}" > ./test-results/pr_number
-          echo "${{ github.event.pull_request.head.sha }}" > ./test-results/pr_sha
-      
+
       - name: Upload Security Guardian XML Reports
         uses: actions/upload-artifact@v7
         if: always()
