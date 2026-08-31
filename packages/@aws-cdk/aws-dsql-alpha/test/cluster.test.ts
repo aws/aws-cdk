@@ -124,7 +124,6 @@ describe('Aurora DSQL Cluster', () => {
       },
     });
   });
-
 });
 
 describe('Aurora DSQL Cluster - Imports', () => {
