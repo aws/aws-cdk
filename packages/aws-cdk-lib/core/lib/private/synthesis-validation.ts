@@ -13,14 +13,14 @@ import { _aspectTreeRevisionReader } from '../aspect';
 import { AssumptionError, UnscopedValidationError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
 import type { Stage } from '../stage';
-import type { IPolicyValidationPlugin, PolicyValidationPluginReport } from '../validation';
+import type { IPolicyValidationPlugin, PolicyValidationPluginReport, PolicyValidationStack } from '../validation';
 import { STAGE_TYPE } from './core-construct-finders';
 import { profileSpan } from './perf';
 import { CloudFormationValidatePlugin } from '../validation/cloudformation-validate-plugin';
 import { ConstructTree } from '../validation/private/construct-tree';
 import { formatValidationReports, humanFriendlyFilename } from '../validation/private/modern-formatter';
 import type { NamedValidationPluginReport, SuppressedViolation } from '../validation/private/report';
-import { isPluginFailure, isSuppressibleViolation, mkPluginFailure, PolicyValidationReportFormatter } from '../validation/private/report';
+import { isSuppressibleViolation, mkPluginFailure, PolicyValidationReportFormatter } from '../validation/private/report';
 
 const LEGACY_POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
 
@@ -356,39 +356,33 @@ function doInvokeValidationPlugins(
       return [];
     }
 
-    // Only the CloudFormation validation engine is invoked once per environment: it
-    // substitutes account and region pseudo parameters into the templates it evaluates,
-    // so it needs a single unambiguous environment per invocation.
-    //
-    // All other plugins are invoked exactly once with all templates. Many external
-    // plugins (e.g. cdk-nag) evaluate the app-wide construct tree on every call to
-    // `validate()`, so invoking them once per environment would duplicate their
-    // findings once per environment (https://github.com/aws/aws-cdk/issues/38483).
-    const invocations = usesEnvironmentPseudoParameters(plugin)
-      ? groupStacksByEnvironment(stackArtifacts)
-      : [combineIntoSingleInvocation(stackArtifacts)];
+    const stackTemplates = stackArtifacts.map((s) => ({
+      stackConstructPath: s.hierarchicalId,
+      templatePath: s.templateFullPath,
+      accountId: s.environment.account !== cxapi.UNKNOWN_ACCOUNT ? s.environment.account : undefined,
+      region: s.environment.region !== cxapi.UNKNOWN_REGION ? s.environment.region : undefined,
+    } satisfies PolicyValidationStack));
 
-    const reports = invocations.map(({ accountId, region, stacks }) => {
-      try {
-        const report = makeTemplatePathsRelative(plugin.validate({
-          // path.resolve() because templateFullPath might not be as full as you'd expect
-          templatePaths: stacks.map(s => s.templateFullPath),
-          stackTemplates: stacks.map(s => ({ stackConstructPath: s.hierarchicalId, templatePath: s.templateFullPath })),
-          appConstruct: root,
-          accountId: accountId !== cxapi.UNKNOWN_ACCOUNT ? accountId : undefined,
-          region: region !== cxapi.UNKNOWN_REGION ? region : undefined,
-        }));
+    // Global account and region
+    const accountId = stackTemplates.every(s => s.accountId === stackTemplates[0].accountId) ? stackTemplates[0].accountId : undefined;
+    const region = stackTemplates.every(s => s.region === stackTemplates[0].region) ? stackTemplates[0].region : undefined;
 
-        return { ...report, pluginName: plugin.name, pluginVersion: plugin.version } satisfies NamedValidationPluginReport;
-      } catch (e: any) {
-        if (e instanceof AssumptionError && e.name === 'IllegalPluginOperation') {
-          throw e;
-        }
-        return mkPluginFailure(plugin, e);
+    try {
+      const report = makeTemplatePathsRelative(plugin.validate({
+        templatePaths: stackTemplates.map(s => s.templatePath),
+        stackTemplates,
+        appConstruct: root,
+        accountId,
+        region,
+      }));
+
+      return [{ ...report, pluginName: plugin.name, pluginVersion: plugin.version } satisfies NamedValidationPluginReport];
+    } catch (e: any) {
+      if (e instanceof AssumptionError && e.name === 'IllegalPluginOperation') {
+        throw e;
       }
-    });
-
-    return mergeReports(reports);
+      return [mkPluginFailure(plugin, e)];
+    }
   }
 
   /**
@@ -417,51 +411,6 @@ function doInvokeValidationPlugins(
 // intents differ (trust vs. pseudo-parameter substitution) and may diverge.
 function isTrustedPlugin(x: IPolicyValidationPlugin) {
   return x instanceof CloudFormationValidatePlugin;
-}
-
-/**
- * Whether the plugin's rule engine substitutes account and region pseudo parameters,
- * and must therefore be invoked once per environment.
- *
- * NOTE: intentionally coincides with `isTrustedPlugin` today, but the intents differ
- * and may diverge.
- */
-function usesEnvironmentPseudoParameters(x: IPolicyValidationPlugin) {
-  return x instanceof CloudFormationValidatePlugin;
-}
-
-interface StacksByEnvironment {
-  readonly accountId: string | undefined;
-  readonly region: string | undefined;
-  readonly stacks: private_cxapi.CloudFormationStackArtifact[];
-}
-
-/**
- * Combine all stacks into a single plugin invocation.
- *
- * The account and region are only populated if they are the same for all stacks;
- * otherwise there is no single environment to report and they are left undefined.
- */
-function combineIntoSingleInvocation(stacks: private_cxapi.CloudFormationStackArtifact[]): StacksByEnvironment {
-  const byEnv = groupStacksByEnvironment(stacks);
-  if (byEnv.length === 1) {
-    return byEnv[0];
-  }
-  return { accountId: undefined, region: undefined, stacks };
-}
-
-function groupStacksByEnvironment(stacks: private_cxapi.CloudFormationStackArtifact[]): StacksByEnvironment[] {
-  const ret = new Map<string, StacksByEnvironment>();
-
-  for (const stack of stacks) {
-    const key = `${stack.environment.account || ''}::${stack.environment.region || ''}`;
-    if (!ret.has(key)) {
-      ret.set(key, { accountId: stack.environment.account, region: stack.environment.region, stacks: [] });
-    }
-    ret.get(key)!.stacks.push(stack);
-  }
-
-  return Array.from(ret.values());
 }
 
 /**
@@ -573,41 +522,6 @@ function hasUserRegisteredCloudFormationValidatePlugin(root: IConstruct): boolea
 
 function mutable<A extends object>(obj: A): { -readonly [P in keyof A]: A[P] } {
   return obj as any;
-}
-
-/**
- * Merge the reports from multiple invocations of the same plugin into a single report.
- *
- * All non-errors are combined into a single report, and errors are combined by error message.
- */
-function mergeReports(reports: NamedValidationPluginReport[]): NamedValidationPluginReport[] {
-  const nonErrors = reports.filter(r => isPluginFailure(r) === undefined);
-  const errors = reports.filter(r => isPluginFailure(r) !== undefined);
-
-  const ret: NamedValidationPluginReport[] = [];
-  if (nonErrors.length > 0) {
-    const merged: NamedValidationPluginReport = nonErrors[0];
-    for (const candidate of nonErrors.slice(1)) {
-      merged.violations.push(...candidate.violations);
-      mutable(merged).metadata = { ...merged.metadata, ...candidate.metadata };
-      mutable(merged).success = merged.success && candidate.success;
-    }
-    ret.push(merged);
-  }
-
-  if (errors.length > 0) {
-    const errorMap = new Map<string, NamedValidationPluginReport>();
-    for (const candidate of errors) {
-      const errorMessage = isPluginFailure(candidate);
-      if (!errorMessage) continue;
-      if (!errorMap.has(errorMessage)) {
-        errorMap.set(errorMessage, candidate);
-      }
-    }
-    ret.push(...errorMap.values());
-  }
-
-  return ret;
 }
 
 function cdkAppMode(root: IConstruct): 'process' | 'inmemory' | 'unknown' {
