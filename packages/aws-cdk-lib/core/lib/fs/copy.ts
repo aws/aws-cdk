@@ -3,65 +3,74 @@ import * as path from 'path';
 import { IgnoreStrategy } from './ignore';
 import type { CopyOptions } from './options';
 import { SymlinkFollowMode } from './options';
-import { shouldFollow } from './utils';
+import { resolveLinkTarget, shouldFollow } from './utils';
 import { UnscopedValidationError } from '../errors';
 import { lit } from '../private/literal-string';
 
 export function copyDirectory(srcDir: string, destDir: string, options: CopyOptions = { }, rootDir?: string) {
   const follow = options.follow ?? SymlinkFollowMode.EXTERNAL;
-
-  rootDir = rootDir || srcDir;
-
-  const ignoreStrategy = IgnoreStrategy.fromCopyOptions(options, rootDir);
+  const root = rootDir || srcDir;
+  const ignoreStrategy = IgnoreStrategy.fromCopyOptions(options, root);
 
   if (!fs.statSync(srcDir).isDirectory()) {
     throw new UnscopedValidationError(lit`Directory`, `${srcDir} is not a directory`);
   }
 
-  const files = fs.readdirSync(srcDir);
-  for (const file of files) {
-    const sourceFilePath = path.join(srcDir, file);
+  copyInto(srcDir, destDir);
 
-    if (ignoreStrategy.completelyIgnores(sourceFilePath)) {
-      continue;
-    }
+  function copyInto(sourceDir: string, targetDir: string) {
+    for (const file of fs.readdirSync(sourceDir)) {
+      const sourceFilePath = path.join(sourceDir, file);
 
-    const destFilePath = path.join(destDir, file);
+      if (ignoreStrategy.completelyIgnores(sourceFilePath)) {
+        continue;
+      }
 
-    let stat: fs.Stats | undefined = follow === SymlinkFollowMode.ALWAYS
-      ? fs.statSync(sourceFilePath)
-      : fs.lstatSync(sourceFilePath);
+      const destFilePath = path.join(targetDir, file);
 
-    if (stat && stat.isSymbolicLink()) {
-      const target = fs.readlinkSync(sourceFilePath);
+      // ALWAYS resolves every entry up front, so symlinks never show up as links below.
+      let stat: fs.Stats | undefined = follow === SymlinkFollowMode.ALWAYS
+        ? fs.statSync(sourceFilePath)
+        : fs.lstatSync(sourceFilePath);
 
-      // determine if this is an external link (i.e. the target's absolute path
-      // is outside of the root directory).
-      const targetPath = path.normalize(path.resolve(srcDir, target));
+      if (stat.isSymbolicLink()) {
+        // Target's stats if we follow the link, undefined if we copied the link itself.
+        stat = copyOrFollowSymlink(sourceFilePath, destFilePath);
+      }
 
-      if (shouldFollow(follow, rootDir, targetPath)) {
-        stat = fs.statSync(sourceFilePath);
-      } else {
+      if (!stat) {
+        continue;
+      }
+
+      if (stat.isDirectory()) {
         if (!ignoreStrategy.ignores(sourceFilePath)) {
-          fs.mkdirSync(destDir, { recursive: true });
-          fs.symlinkSync(target, destFilePath);
+          fs.mkdirSync(destFilePath, { recursive: true });
         }
-        stat = undefined;
+        copyInto(sourceFilePath, destFilePath);
+      } else if (stat.isFile()) {
+        if (!ignoreStrategy.ignores(sourceFilePath)) {
+          fs.mkdirSync(targetDir, { recursive: true });
+          fs.copyFileSync(sourceFilePath, destFilePath);
+        }
       }
     }
+  }
 
-    if (stat && stat.isDirectory()) {
-      if (!ignoreStrategy.ignores(sourceFilePath)) fs.mkdirSync(destFilePath, { recursive: true });
-      copyDirectory(sourceFilePath, destFilePath, options, rootDir);
-      stat = undefined;
+  /**
+   * Returns the target's stats if the link should be followed, otherwise copies the link
+   * itself and returns undefined.
+   */
+  function copyOrFollowSymlink(sourceFilePath: string, destFilePath: string): fs.Stats | undefined {
+    const target = fs.readlinkSync(sourceFilePath);
+
+    if (shouldFollow(follow, root, resolveLinkTarget(sourceFilePath, target))) {
+      return fs.statSync(sourceFilePath);
     }
 
-    if (stat && stat.isFile()) {
-      if (!ignoreStrategy.ignores(sourceFilePath)) {
-        fs.mkdirSync(destDir, { recursive: true });
-        fs.copyFileSync(sourceFilePath, destFilePath);
-      }
-      stat = undefined;
+    if (!ignoreStrategy.ignores(sourceFilePath)) {
+      fs.mkdirSync(path.dirname(destFilePath), { recursive: true });
+      fs.symlinkSync(target, destFilePath);
     }
+    return undefined;
   }
 }

@@ -164,8 +164,6 @@ export class AssetStaging extends Construct {
 
   private readonly cacheKey: string;
 
-  private readonly _sourceStats?: fs.Stats;
-
   constructor(scope: Construct, id: string, props: AssetStagingProps) {
     super(scope, id);
 
@@ -178,17 +176,17 @@ export class AssetStaging extends Construct {
       extraHash: props.extraHash || salt ? `${props.extraHash ?? ''}${salt ?? ''}` : undefined,
     };
 
-    if (!fs.existsSync(this.sourcePath)) {
+    // Stat the source once; the decisions below depend on whether it's a file or a directory.
+    const sourceStats = fs.statSync(this.sourcePath, { throwIfNoEntry: false });
+    if (!sourceStats) {
       throw new ValidationError(lit`CannotFindAsset`, `Cannot find asset at ${this.sourcePath}`, this);
     }
 
-    const ignoreStrategy = IgnoreStrategy.fromCopyOptions(props, this.sourcePath);
-    // look for invalid (external) symlinks
-    if (props.follow == SymlinkFollowMode.BLOCK_EXTERNAL && fs.statSync(this.sourcePath).isDirectory()) {
-      validateInternalSymlinks(this.sourcePath, scope, props.follow, ignoreStrategy);
+    // Look for invalid (external) symlinks. Uses `fingerprintOptions`, so we check
+    // exactly the files that get packaged.
+    if (props.follow == SymlinkFollowMode.BLOCK_EXTERNAL && sourceStats.isDirectory()) {
+      validateInternalSymlinks(this.sourcePath, this, props.follow, IgnoreStrategy.fromCopyOptions(this.fingerprintOptions, this.sourcePath));
     }
-
-    this._sourceStats = fs.statSync(this.sourcePath);
 
     const outdir = stageOf(this)?.assetOutdir;
     if (!outdir) {
@@ -201,17 +199,13 @@ export class AssetStaging extends Construct {
     this.customSourceFingerprint = props.assetHash;
     this.hashType = determineHashType(this, props.assetHashType, this.customSourceFingerprint);
 
-    // Decide what we're going to do, without actually doing it yet
-    let stageThisAsset: () => StagedAsset;
-    let skip = false;
-    if (props.bundling) {
-      // Check if we actually have to bundle for this stack
-      skip = !stackOf(this).bundlingRequired;
-      const bundling = props.bundling;
-      stageThisAsset = () => this.stageByBundling(bundling, skip, props);
-    } else {
-      stageThisAsset = () => this.stageByCopying();
-    }
+    // Decide what to do, without doing it yet. Bundling is skipped when no stack needs
+    // it; we still produce a hash, so `skip` is part of the cache key below.
+    const bundling = props.bundling;
+    const skip = bundling !== undefined && !stackOf(this).bundlingRequired;
+    const stageThisAsset = bundling
+      ? () => this.stageByBundling(bundling, skip, props, sourceStats)
+      : () => this.stageByCopying(sourceStats);
 
     // Calculate a cache key from the props. This way we can check if we already
     // staged this asset and reuse the result (e.g. the same asset with the same
@@ -233,27 +227,13 @@ export class AssetStaging extends Construct {
       skip,
     });
 
+    // Actually stage the asset: on a cache miss, `obtain` runs `stageThisAsset`.
     const staged = AssetStaging.assetCache.obtain(this.cacheKey, stageThisAsset);
     this.stagedPath = staged.stagedPath;
     this.absoluteStagedPath = staged.stagedPath;
     this.assetHash = staged.assetHash;
     this.packaging = staged.packaging;
     this.isArchive = staged.isArchive;
-
-    // Memory optimization: this._sourceStats is used as a field to covertly pass
-    // arguments between functions in the constructor, but the size of that object is 1.8kB
-    //
-    // That's holding on to a lot of unnecessary memory if there are a lot of assets (think 100k+).
-    //
-    // Release the object here, we don't need it again.
-    this._sourceStats = undefined;
-  }
-
-  private get sourceStats(): fs.Stats {
-    if (!this._sourceStats) {
-      throw new AssumptionError(lit`SourceStatusUnset`, '_sourceStats has been unset');
-    }
-    return this._sourceStats;
   }
 
   /**
@@ -304,96 +284,118 @@ export class AssetStaging extends Construct {
    *
    * Optionally skip if staging is disabled, in which case we pretend we did something but we don't really.
    */
-  private stageByCopying(): StagedAsset {
+  private stageByCopying(sourceStats: fs.Stats): StagedAsset {
     const assetHash = this.calculateHash(this.hashType);
     const targetPath = this.stagingDisabled
       ? this.sourcePath
       : path.resolve(this.assetOutdir, renderAssetFilename(assetHash, getExtension(this.sourcePath)));
     const stagedPath = this.renderStagedPath(this.sourcePath, targetPath);
 
-    if (!this.sourceStats.isDirectory() && !this.sourceStats.isFile()) {
+    if (!sourceStats.isDirectory() && !sourceStats.isFile()) {
       throw new ValidationError(lit`AssetExpectedDirectoryOrFile`, `Asset ${this.sourcePath} is expected to be either a directory or a regular file`, this);
     }
 
-    this.stageAsset(this.sourcePath, stagedPath, 'copy');
+    this.copySourceIntoStaging(stagedPath, sourceStats);
 
     return {
       assetHash,
       stagedPath,
-      packaging: this.sourceStats.isDirectory() ? FileAssetPackaging.ZIP_DIRECTORY : FileAssetPackaging.FILE,
-      isArchive: this.sourceStats.isDirectory() || ARCHIVE_EXTENSIONS.includes(getExtension(this.sourcePath).toLowerCase()),
+      packaging: sourceStats.isDirectory() ? FileAssetPackaging.ZIP_DIRECTORY : FileAssetPackaging.FILE,
+      isArchive: sourceStats.isDirectory() || ARCHIVE_EXTENSIONS.includes(getExtension(this.sourcePath).toLowerCase()),
     };
   }
 
   /**
    * Stage the source to the target by bundling
-   *
-   * Optionally skip, in which case we pretend we did something but we don't really.
    */
-  private stageByBundling(bundling: BundlingOptions, skip: boolean, props: AssetStagingProps): StagedAsset {
-    if (!this.sourceStats.isDirectory()) {
+  private stageByBundling(bundling: BundlingOptions, skip: boolean, props: AssetStagingProps, sourceStats: fs.Stats): StagedAsset {
+    if (!sourceStats.isDirectory()) {
       throw new ValidationError(lit`AssetExpectedDirectoryForBundling`, `Asset ${this.sourcePath} is expected to be a directory when bundling`, this);
     }
 
     if (skip) {
-      // We should have bundled, but didn't to save time. Still pretend to have a hash.
-      // If the asset uses OUTPUT or BUNDLE, we use a CUSTOM hash to avoid fingerprinting
-      // a potentially very large source directory. Other hash types are kept the same.
-      let hashType = this.hashType;
-      if (hashType === AssetHashType.OUTPUT || hashType === AssetHashType.BUNDLE) {
-        this.customSourceFingerprint = Names.uniqueId(this);
-        hashType = AssetHashType.CUSTOM;
-      }
-      return {
-        assetHash: this.calculateHash(hashType, bundling),
-        stagedPath: this.sourcePath,
-        packaging: FileAssetPackaging.ZIP_DIRECTORY,
-        isArchive: true,
-      };
+      return this.stageBySkippingBundling(bundling);
     }
 
-    // Try to calculate assetHash beforehand (if we can)
-    let assetHash = this.hashType === AssetHashType.SOURCE || this.hashType === AssetHashType.CUSTOM
-      ? this.calculateHash(this.hashType, bundling)
-      : undefined;
-
-    const bundleDir = this.determineBundleDir(this.assetOutdir, assetHash);
+    // Bundle straight into the final asset directory if we know the hash, otherwise
+    // into a temporary one we hash and rename afterwards.
+    const knownDirHash = this.hashIsKnownBeforeBundling ? this.calculateHash(this.hashType, bundling) : undefined;
+    const bundleDir = this.determineBundleDir(knownDirHash);
     this.bundle(bundling, bundleDir);
 
-    // Check bundling output content and determine if we will need to archive
-    const bundlingOutputType = bundling.outputType ?? BundlingOutput.AUTO_DISCOVER;
-    const ignore = IgnoreStrategy.fromCopyOptions(props, bundleDir);
-    const bundledAsset = determineBundledAsset(this, bundleDir, bundlingOutputType, ignore, props.follow);
+    const outputType = bundling.outputType ?? BundlingOutput.AUTO_DISCOVER;
+    const ignore = IgnoreStrategy.fromCopyOptions(this.fingerprintOptions, bundleDir);
+    const bundledAsset = determineBundledAsset(this, bundleDir, outputType, ignore, props.follow);
 
-    // Calculate assetHash afterwards if we still must
-    assetHash = assetHash ?? this.calculateHash(this.hashType, bundling, bundledAsset.path);
-
+    const assetHash = knownDirHash ?? this.calculateHash(this.hashType, bundling, bundledAsset.path);
     const stagedPath = this.renderStagedPath(
       bundledAsset.path,
       path.resolve(this.assetOutdir, renderAssetFilename(assetHash, bundledAsset.extension)),
     );
 
-    this.stageAsset(bundledAsset.path, stagedPath, 'move');
-
-    // If bundling produced a single archive file we "touch" this file in the bundling
-    // directory after it has been moved to the staging directory if the hash is known before bundling. This way if bundling
-    // is skipped because the bundling directory already exists we can still determine
-    // the correct packaging type.
-    // If the hash is calculated after bundling we remove the temporary directory now.
-    if (bundledAsset.packaging === FileAssetPackaging.FILE) {
-      if (this.hashType === AssetHashType.OUTPUT || this.hashType === AssetHashType.BUNDLE) {
-        fs.removeSync(path.dirname(bundledAsset.path));
-      } else {
-        fs.closeSync(fs.openSync(bundledAsset.path, 'w'));
-      }
-    }
+    this.moveBundleIntoStaging(bundledAsset.path, stagedPath);
+    this.cleanUpBundleDir(bundledAsset);
 
     return {
       assetHash,
       stagedPath,
       packaging: bundledAsset.packaging,
-      isArchive: bundlingOutputType !== BundlingOutput.SINGLE_FILE,
+      isArchive: outputType !== BundlingOutput.SINGLE_FILE,
     };
+  }
+
+  /**
+   * Produce a `StagedAsset` for an asset we deliberately did not bundle.
+   *
+   * No stack needs the output, so we skip the bundling and return the source directory.
+   */
+  private stageBySkippingBundling(bundling: BundlingOptions): StagedAsset {
+    // OUTPUT and BUNDLE hash the bundling result, which we don't have. Use a CUSTOM hash
+    // instead of fingerprinting a potentially very large source directory.
+    let hashType = this.hashType;
+    if (!this.hashIsKnownBeforeBundling) {
+      this.customSourceFingerprint = Names.uniqueId(this);
+      hashType = AssetHashType.CUSTOM;
+    }
+
+    return {
+      assetHash: this.calculateHash(hashType, bundling),
+      stagedPath: this.sourcePath,
+      packaging: FileAssetPackaging.ZIP_DIRECTORY,
+      isArchive: true,
+    };
+  }
+
+  /**
+   * Whether the asset hash can be computed before bundling runs.
+   *
+   * SOURCE and CUSTOM come from the input; OUTPUT and BUNDLE come from the result.
+   */
+  private get hashIsKnownBeforeBundling(): boolean {
+    return this.hashType === AssetHashType.SOURCE || this.hashType === AssetHashType.CUSTOM;
+  }
+
+  /**
+   * Tidy up the bundling directory after its output has been staged.
+   *
+   * Only single-file output leaves a directory behind, since a bundled directory was
+   * renamed into staging. Moving that one file out left the directory empty,
+   * and what we do with it depends on whether a later run looks for it:
+   *
+   * - Hash known up front: it is `asset.<hash>`, which a later run reuses to skip
+   *   bundling. Recreate the file empty so that run still sees single-file output.
+   * - Hash known afterwards: it is `bundling-temp-<cacheKey>`, so delete it.
+   */
+  private cleanUpBundleDir(bundledAsset: BundledAsset) {
+    if (bundledAsset.packaging !== FileAssetPackaging.FILE) {
+      return;
+    }
+
+    if (this.hashIsKnownBeforeBundling) {
+      fs.closeSync(fs.openSync(bundledAsset.path, 'w'));
+    } else {
+      fs.removeSync(path.dirname(bundledAsset.path));
+    }
   }
 
   /**
@@ -404,111 +406,122 @@ export class AssetStaging extends Construct {
   }
 
   /**
-   * Copies or moves the files from sourcePath to targetPath.
+   * Move a freshly created bundle into the staging directory.
    *
-   * Moving implies the source directory is temporary and can be trashed.
+   * We own the bundle directory, since `bundle()` just produced it: renaming it into
+   * place is cheap, and if the staged asset already exists we can throw the bundle away.
    *
-   * Will not do anything if source and target are the same.
+   * Does nothing if bundle and staged path are the same.
    */
-  private stageAsset(sourcePath: string, targetPath: string, style: 'move' | 'copy') {
-    // Is the work already done?
-    const isAlreadyStaged = fs.existsSync(targetPath);
-    if (isAlreadyStaged) {
-      if (style === 'move' && sourcePath !== targetPath) {
-        fs.removeSync(sourcePath);
+  private moveBundleIntoStaging(bundlePath: string, stagedPath: string) {
+    // Already staged, so our bundle output is redundant.
+    if (fs.existsSync(stagedPath)) {
+      if (bundlePath !== stagedPath) {
+        fs.removeSync(bundlePath);
       }
       return;
     }
 
-    // Moving can be done quickly
-    if (style === 'move') {
-      fs.renameSync(sourcePath, targetPath);
+    fs.renameSync(bundlePath, stagedPath);
+  }
+
+  /**
+   * Copy the user's source into the staging directory.
+   *
+   * The source belongs to the user, so it is only ever read, never moved or deleted.
+   *
+   * Does nothing if source and staged path are the same, i.e. when staging is disabled.
+   */
+  private copySourceIntoStaging(stagedPath: string, sourceStats: fs.Stats) {
+    // Is the work already done?
+    if (fs.existsSync(stagedPath)) {
       return;
     }
 
-    // Copy file/directory to staging directory
-    if (this.sourceStats.isFile()) {
-      fs.copyFileSync(sourcePath, targetPath);
-    } else if (this.sourceStats.isDirectory()) {
-      fs.mkdirSync(targetPath);
-      FileSystem.copyDirectory(sourcePath, targetPath, this.fingerprintOptions);
+    if (sourceStats.isFile()) {
+      fs.copyFileSync(this.sourcePath, stagedPath);
+    } else if (sourceStats.isDirectory()) {
+      fs.mkdirSync(stagedPath);
+      FileSystem.copyDirectory(this.sourcePath, stagedPath, this.fingerprintOptions);
     } else {
-      throw new ValidationError(lit`UnknownFileType`, `Unknown file type: ${sourcePath}`, this);
+      throw new ValidationError(lit`UnknownFileType`, `Unknown file type: ${this.sourcePath}`, this);
     }
   }
 
   /**
    * Determine the directory where we're going to write the bundling output
    *
-   * This is the target directory where we're going to write the staged output
-   * files if we can (if the hash is fully known), or a temporary directory
-   * otherwise.
+   * The final staged asset directory if the hash is already known, otherwise an
+   * intermediate one named after the asset's cache key.
    */
-  private determineBundleDir(outdir: string, sourceHash?: string) {
-    if (sourceHash) {
-      return path.resolve(outdir, renderAssetFilename(sourceHash));
-    }
-
-    // When the asset hash isn't known in advance, bundler outputs to an
-    // intermediate directory named after the asset's cache key
-    return path.resolve(outdir, `bundling-temp-${this.cacheKey}`);
+  private determineBundleDir(assetHash?: string) {
+    return path.resolve(
+      this.assetOutdir,
+      assetHash ? renderAssetFilename(assetHash) : `bundling-temp-${this.cacheKey}`,
+    );
   }
 
   /**
-   * Bundles an asset to the given directory
+   * Bundles an asset into the given directory
    *
    * If the given directory already exists, assume that everything's already
    * in order and don't do anything.
    *
    * @param options Bundling options
    * @param bundleDir Where to create the bundle directory
-   * @returns The fully resolved bundle output directory.
    */
   private bundle(options: BundlingOptions, bundleDir: string) {
+    // An existing bundle directory is a complete bundle of identical content.
     if (fs.existsSync(bundleDir)) { return; }
 
+    // Bundle into a sibling and rename on success, so an interrupted run can't leave a
+    // partial bundle at `bundleDir` for a later run to mistake for a complete one.
     const tempDir = `${bundleDir}-building`;
-    // Remove the tempDir if it exists, then recreate it
     fs.rmSync(tempDir, { recursive: true, force: true });
-
     fs.ensureDirSync(tempDir);
-    // Chmod the bundleDir to full access.
-    fs.chmodSync(tempDir, 0o777);
+    fs.chmodSync(tempDir, 0o777); // the bundling container may run as another user
 
-    let localBundling: boolean | undefined;
+    let bundledLocally: boolean | undefined;
     try {
       process.stderr.write(`Bundling asset ${this.node.path}...\n`);
 
       using _span = timerSpanFromOptions(options);
 
-      localBundling = options.local?.tryBundle(tempDir, options);
-      if (!localBundling) {
-        const assetStagingOptions = {
-          sourcePath: this.sourcePath,
-          bundleDir: tempDir,
-          ...options,
-        };
-
-        switch (options.bundlingFileAccess) {
-          case BundlingFileAccess.VOLUME_COPY:
-            new AssetBundlingVolumeCopy(assetStagingOptions).run();
-            break;
-          case BundlingFileAccess.BIND_MOUNT:
-          default:
-            new AssetBundlingBindMount(assetStagingOptions).run();
-            break;
-        }
+      bundledLocally = options.local?.tryBundle(tempDir, options);
+      if (!bundledLocally) {
+        this.bundleWithDocker(options, tempDir);
       }
 
-      // Success, rename the tempDir into place
       fs.renameSync(tempDir, bundleDir);
     } catch (err) {
       throw new ValidationError(lit`FailedToBundleAsset`, `Failed to bundle asset ${this.node.path}, bundle output is located at ${tempDir}: ${err}`, this);
     }
 
     if (FileSystem.isEmpty(bundleDir)) {
-      const outputDir = localBundling ? bundleDir : AssetStaging.BUNDLING_OUTPUT_DIR;
+      // Name the directory the user writes to: theirs locally, the container's mount otherwise.
+      const outputDir = bundledLocally ? bundleDir : AssetStaging.BUNDLING_OUTPUT_DIR;
       throw new ValidationError(lit`BundlingProducedNoOutput`, `Bundling did not produce any output. Check that content is written to ${outputDir}.`, this);
+    }
+  }
+
+  /**
+   * Run the bundling command in a Docker container.
+   */
+  private bundleWithDocker(options: BundlingOptions, bundleDir: string) {
+    const bundlingOptions = {
+      sourcePath: this.sourcePath,
+      bundleDir,
+      ...options,
+    };
+
+    switch (options.bundlingFileAccess) {
+      case BundlingFileAccess.VOLUME_COPY:
+        new AssetBundlingVolumeCopy(bundlingOptions).run();
+        break;
+      case BundlingFileAccess.BIND_MOUNT:
+      default:
+        new AssetBundlingBindMount(bundlingOptions).run();
+        break;
     }
   }
 
@@ -583,42 +596,79 @@ function determineHashType(scope: Construct, assetHashType?: AssetHashType, cust
 
 /**
  * Walk the directory tree, throw if we find external symlinks
- * @param root true root of the directory
- * @param subRoot used for walking subdirectories
+ *
+ * Only checks entries that end up in the asset: ignored files, and the contents of
+ * ignored directories, are skipped.
  */
 function validateInternalSymlinks(
   root: string,
   scope: Construct,
   followMode: SymlinkFollowMode,
-  ignoreStrat: IgnoreStrategy,
-  subRoot: string = root,
+  ignoreStrategy: IgnoreStrategy,
 ) {
-  const entries = fs.readdirSync(subRoot, { withFileTypes: true });
-  for (const entry of entries) {
-    const childPath = path.join(subRoot, entry.name);
-    if (entry.isDirectory()) {
-      if (ignoreStrat.completelyIgnores(childPath)) {
+  const canonicalRoot = realDirectoryPath(root);
+
+  // We descend into symlinks that stay inside the tree, so without this a link pointing
+  // at one of its own ancestors would recurse forever.
+  const descendedInto = new Set<string>([canonicalRoot]);
+
+  validateDirectory(root);
+
+  function validateDirectory(directory: string) {
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+      const childPath = path.join(directory, entry.name);
+
+      if (entry.isDirectory()) {
+        if (!ignoreStrategy.completelyIgnores(childPath)) {
+          validateDirectory(childPath);
+        }
         continue;
       }
-      validateInternalSymlinks(root, scope, followMode, ignoreStrat, childPath);
-    } else if (!entry.isSymbolicLink()) {
-      continue;
-    } else { // we have a symlink
-      if (ignoreStrat.completelyIgnores(childPath)) {
+
+      if (!entry.isSymbolicLink() || ignoreStrategy.ignores(childPath)) {
         continue;
       }
-      // check whether this is internal or external
-      const linkPath = fs.readlinkSync(childPath);
-      const resolvedPath = resolveLinkTarget(childPath, linkPath);
-      if (!isInternalPath(root, resolvedPath)) {
+
+      const target = canonicalLinkTarget(resolveLinkTarget(childPath, fs.readlinkSync(childPath)));
+      if (!isInternalPath(canonicalRoot, target)) {
         throw new ValidationError(
           lit`BundlingFileSymlinkForbidden`,
-          `The file ${resolvedPath} is an external symbolic link which is forbidden due to follow mode ${followMode}. Set \`follow\` to a mode that will follow symlinks (ALWAYS or EXTERNAL) or emit a regular file`,
+          `The file ${target} is an external symbolic link which is forbidden due to follow mode ${followMode}. Set \`follow\` to a mode that will follow symlinks (ALWAYS or EXTERNAL) or emit a regular file`,
           scope,
         );
       }
+
+      // The link is internal, but a directory it points at can hold links that escape.
+      if (!descendedInto.has(target) && fs.statSync(target, { throwIfNoEntry: false })?.isDirectory()) {
+        descendedInto.add(target);
+        validateDirectory(childPath);
+      }
     }
   }
+}
+
+/**
+ * Resolve any symlinked directories in a path, so inside/outside comparisons agree.
+ *
+ * `path.resolve` normalizes `..` lexically but does not resolve links, so without this a
+ * symlinked *ancestor* of the asset root makes paths inside the tree look external.
+ *
+ * Returns the path unchanged if it cannot be resolved, e.g. a link into a missing directory.
+ */
+function realDirectoryPath(directory: string): string {
+  try {
+    return fs.realpathSync(directory);
+  } catch {
+    return directory;
+  }
+}
+
+/**
+ * Resolves the directories leading to the target, but never the target itself: a link is
+ * judged by where it points, not by where that points in turn.
+ */
+function canonicalLinkTarget(target: string): string {
+  return path.join(realDirectoryPath(path.dirname(target)), path.basename(target));
 }
 
 /**
@@ -668,31 +718,6 @@ function sanitizeHashValue(key: string, value: any): any {
   return value;
 }
 
-/**
- * Returns the single archive file of a directory or undefined
- */
-function findSingleFile(scope: Construct, directory: string, archiveOnly: boolean): string | undefined {
-  if (!fs.existsSync(directory)) {
-    throw new ValidationError(lit`DirectoryDoesNotExist`, `Directory ${directory} does not exist.`, scope);
-  }
-
-  if (!fs.statSync(directory).isDirectory()) {
-    throw new ValidationError(lit`PathIsNotDirectory`, `${directory} is not a directory.`, scope);
-  }
-
-  const content = fs.readdirSync(directory);
-  if (content.length === 1) {
-    const file = path.join(directory, content[0]);
-    const extension = getExtension(content[0]).toLowerCase();
-
-    if (fs.statSync(file).isFile() && (!archiveOnly || ARCHIVE_EXTENSIONS.includes(extension))) {
-      return file;
-    }
-  }
-
-  return undefined;
-}
-
 interface BundledAsset {
   path: string;
   packaging: FileAssetPackaging;
@@ -702,6 +727,8 @@ interface BundledAsset {
 /**
  * Returns the bundled asset to use based on the content of the bundle directory
  * and the type of output.
+ *
+ * Reads the bundle directory once; everything below is derived from those entries.
  */
 function determineBundledAsset(
   scope: Construct,
@@ -710,15 +737,24 @@ function determineBundledAsset(
   ignore: IgnoreStrategy,
   followMode?: SymlinkFollowMode,
 ): BundledAsset {
-  const archiveFile = findSingleFile(scope, bundleDir, outputType !== BundlingOutput.SINGLE_FILE);
+  const stats = fs.statSync(bundleDir, { throwIfNoEntry: false });
+  if (!stats) {
+    throw new ValidationError(lit`DirectoryDoesNotExist`, `Directory ${bundleDir} does not exist.`, scope);
+  }
+  if (!stats.isDirectory()) {
+    throw new ValidationError(lit`PathIsNotDirectory`, `${bundleDir} is not a directory.`, scope);
+  }
+
+  const entries = fs.readdirSync(bundleDir, { withFileTypes: true });
+  const singleFile = findSingleOutputFile(entries, outputType);
 
   // auto-discover means that if there is an archive file, we take it as the
   // bundle, otherwise, we will archive here.
-  if (outputType === BundlingOutput.AUTO_DISCOVER) {
-    outputType = archiveFile ? BundlingOutput.ARCHIVED : BundlingOutput.NOT_ARCHIVED;
-  }
+  const discoveredOutputType = outputType === BundlingOutput.AUTO_DISCOVER
+    ? (singleFile ? BundlingOutput.ARCHIVED : BundlingOutput.NOT_ARCHIVED)
+    : outputType;
 
-  switch (outputType) {
+  switch (discoveredOutputType) {
     case BundlingOutput.NOT_ARCHIVED:
       if (followMode == SymlinkFollowMode.BLOCK_EXTERNAL) {
         validateInternalSymlinks(bundleDir, scope, followMode, ignore);
@@ -726,13 +762,35 @@ function determineBundledAsset(
       return { path: bundleDir, packaging: FileAssetPackaging.ZIP_DIRECTORY };
     case BundlingOutput.ARCHIVED:
     case BundlingOutput.SINGLE_FILE:
-      if (!archiveFile) {
+      if (!singleFile) {
         throw new ValidationError(lit`BundlingOutputDirectoryExpectedSingleFile`, 'Bundling output directory is expected to include only a single file when `output` is set to `ARCHIVED` or `SINGLE_FILE`', scope);
-      } else if (fs.lstatSync(archiveFile).isSymbolicLink()) {
+      } else if (singleFile.isSymbolicLink()) {
         throw new ValidationError(lit`SymlinkInBundlingOutput`, 'The output from bundling is not allowed to be a symlink.', scope);
       }
-      return { path: archiveFile, packaging: FileAssetPackaging.FILE, extension: getExtension(archiveFile) };
+      return {
+        path: path.join(bundleDir, singleFile.name),
+        packaging: FileAssetPackaging.FILE,
+        extension: getExtension(singleFile.name),
+      };
   }
+}
+
+/**
+ * Returns the lone file bundling produced, or undefined if the output isn't a single file.
+ *
+ * `SINGLE_FILE` accepts any lone file. Other output types only accept one that looks like
+ * an archive, so a single loose file still gets zipped.
+ */
+function findSingleOutputFile(entries: fs.Dirent[], outputType: BundlingOutput): fs.Dirent | undefined {
+  if (entries.length !== 1) {
+    return undefined;
+  }
+
+  const entry = entries[0];
+  const isFile = entry.isFile() || entry.isSymbolicLink();
+  const isArchive = ARCHIVE_EXTENSIONS.includes(getExtension(entry.name).toLowerCase());
+
+  return isFile && (isArchive || outputType === BundlingOutput.SINGLE_FILE) ? entry : undefined;
 }
 
 /**
