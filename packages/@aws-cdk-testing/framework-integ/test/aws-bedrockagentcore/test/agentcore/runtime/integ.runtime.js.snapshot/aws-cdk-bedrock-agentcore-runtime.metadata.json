@@ -628,5 +628,18 @@
       ]
     }
   ],
-  "/aws-cdk-bedrock-agentcore-runtime/RuntimeWithRemovalPolicy/CfnRuntime": null
+  "/aws-cdk-bedrock-agentcore-runtime/RuntimeWithRemovalPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeWithRemovalPolicy91E68DB5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Runtime (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:303:36)",
+        "new Runtime (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "...node internals..."
+      ]
+    }
+  ]
 }
