@@ -471,7 +471,7 @@
     }
    }
   },
-  "SnowflakeConnection4F3151F5": {
+  "SnowflakeConnectionDC9F05AB": {
    "Type": "AWS::Glue::Connection",
    "Properties": {
     "CatalogId": {
@@ -479,8 +479,8 @@
     },
     "ConnectionInput": {
      "ConnectionProperties": {
-      "SNOWFLAKE_ROLE": "ACCOUNTADMIN",
-      "SNOWFLAKE_URL": "https://account.snowflakecomputing.com"
+      "SNOWFLAKE_URL": "https://account.snowflakecomputing.com",
+      "SNOWFLAKE_ROLE": "ACCOUNTADMIN"
      },
      "ConnectionType": "SNOWFLAKE",
      "Name": "snowflake-connection"
