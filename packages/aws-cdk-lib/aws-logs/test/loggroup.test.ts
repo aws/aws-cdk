@@ -540,7 +540,7 @@ describe('log group', () => {
           '',
           [
             '{\"Statement\":[{\"Action\":\"logs:PutLogEvents\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:',
-            { 'Ref': 'AWS::Partition' },
+            { Ref: 'AWS::Partition' },
             ':iam::',
             {
               'Fn::Select': [
