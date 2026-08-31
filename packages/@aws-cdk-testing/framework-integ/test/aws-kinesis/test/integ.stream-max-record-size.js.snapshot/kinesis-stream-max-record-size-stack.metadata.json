@@ -1,0 +1,61 @@
+{
+  "/kinesis-stream-max-record-size-stack/ProvisionedStream": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "streamMode": "PROVISIONED",
+        "shardCount": "*"
+      }
+    }
+  ],
+  "/kinesis-stream-max-record-size-stack/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
+    }
+  ],
+  "/kinesis-stream-max-record-size-stack/OnDemandStream": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "streamMode": "ON_DEMAND"
+      }
+    }
+  ],
+  "/kinesis-stream-max-record-size-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/kinesis-stream-max-record-size-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/kinesis-stream-max-record-size-stack/ProvisionedStream/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProvisionedStream83AB28ED"
+    }
+  ],
+  "/kinesis-stream-max-record-size-stack/OnDemandStream/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OnDemandStream73A5C516"
+    }
+  ],
+  "/kinesis-stream-max-record-size-stack/Exports/Output{\"Ref\":\"ProvisionedStream83AB28ED\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefProvisionedStream83AB28ED989AFF71"
+    }
+  ],
+  "/kinesis-stream-max-record-size-stack/Exports/Output{\"Ref\":\"OnDemandStream73A5C516\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefOnDemandStream73A5C5161D77A6AF"
+    }
+  ]
+}
