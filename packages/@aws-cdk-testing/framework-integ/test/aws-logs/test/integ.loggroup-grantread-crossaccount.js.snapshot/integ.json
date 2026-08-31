@@ -1,12 +1,14 @@
 {
-  "version": "22.0.0",
+  "version": "54.0.0",
   "testCases": {
     "loggroup-grantread-crossaccount/DefaultTest": {
       "stacks": [
         "aws-cdk-loggroup-grantread-crossaccount-integ"
       ],
       "assertionStack": "loggroup-grantread-crossaccount/DefaultTest/DeployAssert",
-      "assertionStackName": "loggroupgrantreadcrossaccountDefaultTestDeployAssert7C1C7FAA"
+      "assertionStackName": "loggroupgrantreadcrossaccountDefaultTestDeployAssertA499A194"
     }
-  }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
 }

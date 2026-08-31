@@ -1,0 +1,38 @@
+{
+  "/aws-cdk-loggroup-grantread-crossaccount-integ/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-loggroup-grantread-crossaccount-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-loggroup-grantread-crossaccount-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-loggroup-grantread-crossaccount-integ/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogGroupF5B46931"
+    }
+  ],
+  "/aws-cdk-loggroup-grantread-crossaccount-integ/LogGroup/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-loggroup-grantread-crossaccount-integ/LogGroup/Policy/ResourcePolicy": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogGroupPolicyResourcePolicy6FA18555"
+    }
+  ]
+}
