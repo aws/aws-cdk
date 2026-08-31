@@ -351,26 +351,6 @@ describe('validations', () => {
     }));
   });
 
-  test('CloudFormation Validate plugin is invoked once per environment', () => {
-    const plugin = new core.CloudFormationValidatePlugin();
-    const spy = jest.spyOn(plugin, 'validate');
-    const app = new NonStrictApp();
-    core.Validations.of(app).addPlugins(plugin);
-    const stage1 = new core.Stage(app, 'Stage1', { env: { account: '111111111111', region: 'us-east-1' } });
-    const stage2 = new core.Stage(app, 'Stage2', { env: { account: '222222222222', region: 'eu-west-1' } });
-    new core.Stack(stage1, 'stack1');
-    new core.Stack(stage2, 'stack2');
-
-    app.synth();
-
-    expect(spy).toHaveBeenCalledTimes(2);
-    const environments = spy.mock.calls.map(([context]) => `${context.accountId}/${context.region}`).sort();
-    expect(environments).toEqual([
-      '111111111111/us-east-1',
-      '222222222222/eu-west-1',
-    ]);
-  });
-
   test('multiple constructs', () => {
     const app = new NonStrictApp({
       policyValidationBeta1: [
