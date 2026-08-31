@@ -10,7 +10,7 @@ const stack = new Stack(app, 'MetadataContextMixinTestStack', {
 const auditQueue = new CfnResource(stack, 'AuditQueue', { type: 'AWS::SQS::Queue' });
 auditQueue.with(new MetadataContextMixin({
   why: 'append-only audit trail buffer',
-  mutable: ContextMutability.MUST_NEVER_CHANGE,
+  defaultMutability: ContextMutability.MUST_NEVER_CHANGE,
   must: ['never shorten retention below 14d (audit requirement)'],
 }));
 
