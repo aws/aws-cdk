@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { App, CfnResource, ContextMutability, MetadataContext, MetadataContextMixin, Mixins, Stack } from '../../lib';
+import { App, CfnResource, ContextMutability, MetadataContextMixin, Mixins, ResourceMetadataContext, Stack } from '../../lib';
 import { toCloudFormation } from '../util';
 
 const CONTEXT_METADATA_KEY = 'com.aws.cloudformation.Context';
@@ -19,19 +19,18 @@ describe('MetadataContextMixin', () => {
     res.with(new MetadataContextMixin({
       why: 'buffers webhook events',
       must: ['VisTimeout >= 6x fn timeout'],
-      mutable: ContextMutability.CHANGE_WITH_CONSTRAINTS,
+      defaultMutability: ContextMutability.CHANGE_WITH_CONSTRAINTS,
     }));
 
     const template = toCloudFormation(stack);
-    expect(template.Resources.Queue.Metadata[CONTEXT_METADATA_KEY]).toMatchObject({
+    expect(template.Resources.Queue.Metadata[CONTEXT_METADATA_KEY]).toEqual({
       why: 'buffers webhook events',
       must: ['VisTimeout >= 6x fn timeout'],
       mutable: 'change-with-constraints',
-      trust: { src: 'authored', conf: 'high' },
     });
   });
 
-  test('mixin replaces manually added Context', () => {
+  test('mixin context colliding with a manual Context block throws at synthesis', () => {
     const res = new CfnResource(stack, 'Queue', { type: 'AWS::SQS::Queue' });
     res.addMetadata(CONTEXT_METADATA_KEY, {
       why: 'manual rationale',
@@ -40,10 +39,7 @@ describe('MetadataContextMixin', () => {
 
     res.with(new MetadataContextMixin({ why: 'mixin rationale' }));
 
-    expect(toCloudFormation(stack).Resources.Queue.Metadata[CONTEXT_METADATA_KEY]).toEqual({
-      why: 'mixin rationale',
-      trust: { src: 'authored', conf: 'high' },
-    });
+    expect(() => toCloudFormation(stack)).toThrow(/both a manually added/);
   });
 
   test('supports() rejects non-CfnResource constructs and applyTo no-ops', () => {
@@ -74,7 +70,7 @@ describe('MetadataContextMixin', () => {
     const scope = new Construct(stack, 'SubSystem');
     const res = new CfnResource(scope, 'Res', { type: 'AWS::Fake::Thing' });
 
-    MetadataContext.of(scope).add({ why: 'cascaded rationale', must: ['cascaded rule'] });
+    ResourceMetadataContext.of(scope).add({ why: 'cascaded rationale', must: ['cascaded rule'] }, { applyToDescendants: true });
     res.with(new MetadataContextMixin({ why: 'mixin rationale', must: ['mixin rule'] }));
 
     const resources = Object.values<any>(toCloudFormation(stack).Resources);

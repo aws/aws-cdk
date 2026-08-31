@@ -47,10 +47,6 @@
    "Metadata": {
     "com.aws.cloudformation.Context": {
      "why": "fan-out of alert events to oncall channels",
-     "trust": {
-      "src": "authored",
-      "conf": "high"
-     },
      "gaps": [
       "delivery retry policy never validated under load"
      ]

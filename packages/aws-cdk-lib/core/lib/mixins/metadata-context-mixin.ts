@@ -2,7 +2,7 @@ import type { IConstruct } from 'constructs';
 import { Mixin } from './mixins';
 import { CfnResource } from '../cfn-resource';
 import type { ResourceContextProps } from '../metadata-context';
-import { MetadataContext } from '../metadata-context';
+import { ResourceMetadataContext } from '../metadata-context';
 
 /**
  * A Mixin that attaches a resource-level `Metadata["com.aws.cloudformation.Context"]` block to a
@@ -10,11 +10,14 @@ import { MetadataContext } from '../metadata-context';
  *
  * Use this form to attach context imperatively to exactly one resource via
  * `.with()`, or to many via `Mixins.of(scope).apply()`. Unlike
- * `MetadataContext.of(scope).add()` — which cascades to all primary
+ * `ResourceMetadataContext.of(scope).add()` — which can cascade to primary
  * resources beneath a scope at synthesis time — a Mixin applies only to the
  * constructs it is given. Context applied by this Mixin takes precedence
  * over context cascaded from enclosing scopes (scalar fields win; list
  * fields are unioned).
+ *
+ * This is resource-level only; use `TemplateMetadataContext` for
+ * template-level context.
  *
  * @example
  * cfnResource.with(new MetadataContextMixin({
@@ -37,10 +40,10 @@ export class MetadataContextMixin extends Mixin {
     if (!this.supports(construct)) {
       return;
     }
-    // Delegate to the MetadataContext facade: staging the entry directly on
-    // the resource participates in the standard merge model (entries on the
-    // resource itself override context cascaded from enclosing scopes;
-    // list fields union). Validation is performed by add().
-    MetadataContext.of(construct).add(this.context);
+    // Delegate to the ResourceMetadataContext facade: staging the entry
+    // directly on the resource participates in the standard merge model
+    // (entries on the resource itself override context cascaded from
+    // enclosing scopes; list fields union). Validation is performed by add().
+    ResourceMetadataContext.of(construct).add(this.context);
   }
 }

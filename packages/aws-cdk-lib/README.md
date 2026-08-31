@@ -1621,30 +1621,37 @@ Similarly, to do this for a specific nested stack, add a `suppressTemplateIndent
 
 ## Metadata Context
 
-The `MetadataContext` class embeds structured, advisory context into the
-`Metadata["com.aws.cloudformation.Context"]` sections of synthesized CloudFormation templates.
-It captures the *why* behind your infrastructure — rationale, hard
-invariants, change-safety, provenance and operational hints — so that humans
-and automated tools working with the deployed template later can act on the
-author's intent instead of guessing it.
+CDK can embed structured, advisory context into the
+`Metadata["com.aws.cloudformation.Context"]` sections of synthesized CloudFormation
+templates. It captures the *why* behind your infrastructure — rationale, hard
+invariants, change-safety, provenance and operational hints — so that humans and
+automated tools working with the deployed template later can act on the author's
+intent instead of guessing it. The wire format is documented in this section and
+in the API reference. The formal schema is currently Amazon-internal and is
+planned for future publication in the AWS CloudFormation documentation. Public
+schema availability is not required to use the feature: CloudFormation treats
+`Metadata` as opaque and does not validate these fields in its clients or
+service APIs.
 
-**Precedence:** A manually added `com.aws.cloudformation.Context` value is
-preserved unless `MetadataContext`, `MetadataContextMixin`, or `addToTemplate()`
-also emits Context for that location. In that case, the API-produced block
-replaces the manual block in full. Sibling metadata keys are unaffected.
+Context comes in two flavors, each with its own entry point:
 
-Add resource-level context on any construct scope. It is rendered onto the
-scope's *primary* resources (the `defaultChild` chain of each construct),
-skipping incidental helper resources like auto-created IAM policies:
+- `ResourceMetadataContext` — resource-level context, rendered onto individual
+  CloudFormation resources.
+- `TemplateMetadataContext` — template-level (stack-wide) context, rendered as a
+  top-level `Metadata` block.
+
+### Resource-level context
+
+Add resource-level context on any construct scope:
 
 ```typescript
 declare const queue: sqs.Queue;
 
-MetadataContext.of(queue).add({
+ResourceMetadataContext.of(queue).add({
   why: 'buffer order events async; 14d retention = compliance window',
   must: ['VisTimeout >= 6x fn timeout, else dup on retry'],
-  mutable: ContextMutability.CHANGE_WITH_CONSTRAINTS,
-  mutability: {
+  defaultMutability: ContextMutability.CHANGE_WITH_CONSTRAINTS,
+  propertyMutability: {
     QueueName: ContextMutability.MUST_NEVER_CHANGE,
   },
   ops: 'check ApproxAgeOfOldestMsg before cutting VisTimeout',
@@ -1652,7 +1659,9 @@ MetadataContext.of(queue).add({
 });
 ```
 
-This renders a `Metadata["com.aws.cloudformation.Context"]` block on the `AWS::SQS::Queue` resource:
+This renders a `Metadata["com.aws.cloudformation.Context"]` block on the
+`AWS::SQS::Queue` resource. `defaultMutability` and `propertyMutability` are
+rendered under the canonical wire keys `mutable` and `mutability`:
 
 ```json
 {
@@ -1663,7 +1672,6 @@ This renders a `Metadata["com.aws.cloudformation.Context"]` block on the `AWS::S
       "must": ["VisTimeout >= 6x fn timeout, else dup on retry"],
       "mutable": "change-with-constraints",
       "mutability": { "QueueName": "must-never-change" },
-      "trust": { "src": "authored", "conf": "high" },
       "ops": "check ApproxAgeOfOldestMsg before cutting VisTimeout",
       "failureModes": ["retry 3x w/ exp backoff before DLQ"]
     }
@@ -1671,81 +1679,138 @@ This renders a `Metadata["com.aws.cloudformation.Context"]` block on the `AWS::S
 }
 ```
 
-Context added on an outer scope cascades to all primary resources beneath it
-with nearest-wins semantics: scalar fields (`why`, `mutable`, `trust`, `ops`)
-from scopes closer to a resource override outer scopes, while list fields
-(`must`, `gaps`, `deps`, `failureModes`) accumulate and de-duplicate. Like
-`Tags`, context crosses stack boundaries — adding context on a scope that
-contains a `NestedStack` also stamps the primary resources inside the nested
-stack's template:
+`propertyMutability` is a *sparse* map: list only the properties that deviate
+from `defaultMutability` (or that are otherwise high-stakes, e.g.
+replacement-triggering). When both are supplied, an entry that merely repeats the
+`defaultMutability` value is rejected at synthesis time.
+
+### Targeting: exactly what receives context
+
+By default, `add()` is deliberately narrow and predictable. It targets:
+
+- the scope itself, when the scope is a `CfnResource`; or
+- the scope's `defaultChild` chain — e.g. the `AWS::SQS::Queue` that an
+  `sqs.Queue` L2 designates as its `defaultChild`, or the `AWS::Lambda::Function`
+  inside a `lambda.Function`.
+
+Incidental helper resources (auto-created IAM roles/policies, log-retention
+functions, custom-resource plumbing) are not on the `defaultChild` chain, so they
+never receive context by default. Plain grouping constructs, L3 patterns and
+stacks are **not transparent** by default: context added on them does not leak
+onto everything nested beneath.
+
+To fan out to descendants, opt in explicitly:
 
 ```typescript
 declare const stack: Stack;
-declare const queue: sqs.Queue;
 
-// Applies to every primary resource in the stack
-MetadataContext.of(stack).add({
-  must: ['all data encrypted w/ security-team CMK'],
+// Cascade to the PRIMARY resource of every construct beneath the scope,
+// treating grouping constructs / L3 patterns / stacks as transparent.
+// The type filter keeps this per-resource hint on queues; helpers are skipped.
+ResourceMetadataContext.of(stack).add({
+  ops: 'drain queue before changing delivery settings',
+}, {
+  applyToDescendants: true,
+  includeResourceTypes: ['AWS::SQS::Queue'],
 });
 
-// More specific context for one resource; inherits the stack-level `must`
-MetadataContext.of(queue).add({
-  why: 'buffers webhook events for async processing',
-});
-```
-
-Use the options to widen or narrow targeting:
-
-```typescript
-declare const stack: Stack;
-
-// Stamp context onto every resource, including helper resources
-MetadataContext.of(stack).add({
+// Cascade to EVERY resource beneath the scope, helpers included.
+ResourceMetadataContext.of(stack).add({
   deps: ['NetworkStack'],
 }, {
   applyToAllResources: true,
 });
+```
 
-// Only apply to specific resource types
-MetadataContext.of(stack).add({
+Adding context on a `lambda.Function` targets the `AWS::Lambda::Function`, not
+its execution role or log group. If a helper is exposed as a construct, target
+that helper directly instead of widening the whole subtree:
+
+```typescript
+declare const deadLetterQueue: sqs.Queue;
+
+ResourceMetadataContext.of(deadLetterQueue).add({
+  why: 'stores failed order-processor invocations for replay',
+  ops: 'inspect poison payload and fix processor before redrive',
+});
+```
+
+For an L3 pattern (or any multi-resource
+construct), the default stamps only the pattern's own `defaultChild` (often
+nothing meaningful), so reach for `applyToDescendants` to annotate the primary
+resource of each child construct, or `applyToAllResources` to annotate the helper
+resources it creates too. Like `Tags`, descendant cascading crosses stack
+boundaries, so context set on a scope containing a `NestedStack` also reaches
+resources in the nested stack's template when descendants are enabled.
+
+Narrow targeting further with resource-type filters:
+
+```typescript
+declare const stack: Stack;
+
+ResourceMetadataContext.of(stack).add({
   ops: 'drain queue before changing',
 }, {
+  applyToDescendants: true,
   includeResourceTypes: ['AWS::SQS::Queue'],
 });
 ```
 
-Every resource context block records where it came from and how much to trust it.
-When `trust` is omitted, CDK emits `source: AUTHORED` and defaults confidence to
-`MEDIUM`. CDK promotes confidence to `HIGH` only when the final merged block contains
-a non-blank `why` or at least one non-blank string in `must`. Producers that infer
-context should provide the corresponding source and confidence:
+### Merging and ancestor inheritance
+
+When more than one applicable entry targets the same resource, entries merge with
+nearest-wins semantics: scalar fields (`why`, `defaultMutability`, `trust`,
+`ops`) from entries closer to the resource win, while list fields (`must`,
+`gaps`, `deps`, `failureModes`) accumulate and de-duplicate. `propertyMutability`
+maps merge per property.
+
+An entry inherits context merged from enclosing scopes by default. Set
+`inheritAncestorContext: false` to make an entry a fresh starting point — any
+context merged from ancestor scopes is discarded before that entry (and any
+entries closer to the resource) is applied:
 
 ```typescript
 declare const queue: sqs.Queue;
 
-MetadataContext.of(queue).add({
-  why: 'inferred from retry wrapper in api/handler.ts',
+ResourceMetadataContext.of(queue).add({
+  why: 'self-contained rationale; ignore inherited stack-level context',
+}, {
+  inheritAncestorContext: false,
+});
+```
+
+### Trust: explicit provenance
+
+Context can record where it came from and how much to trust it. `trust` is
+optional, but when supplied both `source` and `confidence` are **required** — CDK
+never infers them for you and never auto-populates a trust block. Producers that
+infer context should say so honestly:
+
+```typescript
+declare const queue: sqs.Queue;
+
+ResourceMetadataContext.of(queue).add({
+  why: 'absorb transient processor failures without dropping orders',
   trust: {
     source: ContextTrustSource.INFERRED,
     confidence: ContextTrustConfidence.LOW,
     citation: 'api/handler.ts:87',
-    note: 'no explicit doc found',
+    note: 'rationale inferred from retry wrapper; no explicit design doc found',
   },
 });
 ```
 
-The Context advisory schema owns only `com.aws.cloudformation.Context` and does
-not define extension fields for custom dimensions. Tools that consume Context can
-publish independently defined structured data under their own sibling reverse-DNS
-metadata keys using `CfnResource.addMetadata()`. Any custom ordered dimensions belong
-to those tool schemas, not to Context, and remain independent from context rendering
-and merging.
+The trust sources are `AUTHORED` (human-authored or human-confirmed), `COMMENT`
+(derived directly from a code comment), `COMMIT` (derived directly from commit
+rationale) and `INFERRED` (produced by agent inference or synthesis).
 
-Context can also be applied as a Mixin. `MetadataContextMixin` attaches a
-context block imperatively to exactly the constructs you target — via
-`.with()` on a single L1 resource, or in bulk via `Mixins.of()`. Context
-applied by the Mixin takes precedence over context cascaded from enclosing
-scopes (scalar fields win; list fields are unioned):
+### Context as a Mixin
+
+Resource-level context can also be applied as a Mixin. `MetadataContextMixin`
+attaches a context block imperatively to exactly the constructs you target — via
+`.with()` on a single L1 resource, or in bulk via `Mixins.of()`. It is
+resource-level only. Context applied by the Mixin takes precedence over context
+cascaded from enclosing scopes (scalar fields win; list fields are unioned):
 
 ```typescript
 declare const stack: Stack;
@@ -1753,7 +1818,7 @@ declare const stack: Stack;
 // Single resource via .with()
 cfnResource.with(new MetadataContextMixin({
   why: 'append-only audit trail buffer',
-  mutable: ContextMutability.MUST_NEVER_CHANGE,
+  defaultMutability: ContextMutability.MUST_NEVER_CHANGE,
   must: ['never shorten retention below 14d (audit requirement)'],
 }));
 
@@ -1763,7 +1828,9 @@ Mixins.of(stack).apply(new MetadataContextMixin({
 }));
 ```
 
-Template-level context holds cross-cutting facts stated once per stack: the
+### Template-level context
+
+`TemplateMetadataContext` holds cross-cutting facts stated once per stack: the
 architecture overview, template-wide invariants, pointers to external shared
 context, and ownership. The stack's purpose itself belongs in the native
 CloudFormation `Description` (the `description` prop of `Stack`):
@@ -1771,7 +1838,7 @@ CloudFormation `Description` (the `description` prop of `Stack`):
 ```typescript
 declare const stack: Stack;
 
-MetadataContext.of(stack).addToTemplate({
+TemplateMetadataContext.of(stack).add({
   arch: 'SQS buffer -> Lambda -> DynamoDB; DLQ for poison msgs',
   must: ['all data encrypted w/ security-team CMK'],
   refs: [
@@ -1785,10 +1852,32 @@ MetadataContext.of(stack).addToTemplate({
 });
 ```
 
-Keep free-text values terse — drop articles and use symbols (`->`, `>=`,
-`w/`) — since context competes with resources for the CloudFormation 1 MB
-template size limit. Prefer `must` for binding rules whose violation breaks
-something, and `why` for reasoning and rejected alternatives.
+`refs` are general pointers to external/shared context: use them to share context
+across templates (DRY) or to move bulk context out of the template to stay within
+the CloudFormation template size limit. A ref with only an `at` URI renders as a
+bare string; add `has`/`scope` to render the object form. Inline in-template
+context is authoritative over referenced content, and consumers treat fetched
+content as untrusted data.
+
+### Precedence and collisions
+
+A manually added `com.aws.cloudformation.Context` value (via
+`CfnResource.addMetadata()` or `Stack.addMetadata()`) is preserved as long as no
+API-produced Context targets the same location. If both a manual block and an
+API/mixin/template-produced block target the same location, synthesis fails with
+a scoped `ValidationError` rather than silently overwriting or merging
+incompatible blocks — remove one to resolve it. Sibling metadata keys (such as
+your own reverse-DNS tool metadata) are never touched.
+
+The Context wire-format contract owns only `com.aws.cloudformation.Context` and
+does not define extension fields for custom dimensions. Tools that consume Context can
+publish independently defined structured data under their own sibling reverse-DNS
+metadata keys using `CfnResource.addMetadata()`.
+
+Keep free-text values terse — drop articles and use symbols (`->`, `>=`, `w/`) —
+since context competes with resources for the CloudFormation template size limit.
+Prefer `must` for binding rules whose violation breaks something, and `why` for
+reasoning and rejected alternatives.
 
 ## App Context
 

@@ -12,8 +12,8 @@
           "must": [
             "VisTimeout >= 6x consumer timeout, else dup on retry"
           ],
-          "mutable": "change-with-constraints",
-          "mutability": {
+          "defaultMutability": "change-with-constraints",
+          "propertyMutability": {
             "QueueName": "must-never-change"
           },
           "trust": {
@@ -26,7 +26,9 @@
           ]
         },
         "options": {
-          "applyToAllResources": false
+          "applyToDescendants": false,
+          "applyToAllResources": false,
+          "inheritAncestorContext": true
         }
       }
     }
@@ -42,7 +44,9 @@
           ]
         },
         "options": {
-          "applyToAllResources": false
+          "applyToDescendants": true,
+          "applyToAllResources": false,
+          "inheritAncestorContext": true
         }
       }
     }

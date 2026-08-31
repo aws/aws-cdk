@@ -10,7 +10,6 @@ import {
   renderResourceContext,
   validateResourceContext,
   validateTemplateContext,
-  withResourceContextTrustDefaults,
 } from './private/metadata-context-internal';
 import {
   getTemplateMetadataContext,
@@ -55,11 +54,32 @@ export enum ContextMutability {
 
 /**
  * How a piece of context was produced.
+ *
+ * Consumers weigh a source against the confidence to decide how much to
+ * trust a context block; producers must declare the source honestly rather
+ * than dressing up inference as authored fact.
  */
 export enum ContextTrustSource {
+  /**
+   * Human-authored, or produced by tooling and subsequently confirmed by a
+   * human.
+   */
   AUTHORED = 'authored',
+
+  /**
+   * Directly derived from a code comment.
+   */
   COMMENT = 'comment',
+
+  /**
+   * Directly derived from a commit message / commit rationale.
+   */
   COMMIT = 'commit',
+
+  /**
+   * Produced by agent inference or synthesis, not lifted verbatim from an
+   * authoritative source.
+   */
   INFERRED = 'infer',
 }
 
@@ -87,23 +107,20 @@ export enum ContextTrustConfidence {
  * Provenance and confidence metadata for a context block.
  *
  * Lets template consumers weight context reliability and supports
- * anti-fabrication: context written by tooling should say so.
+ * anti-fabrication: context written by tooling should say so. Supplying
+ * `trust` is optional, but when supplied both `source` and `confidence` are
+ * required — CDK never infers them on your behalf.
  */
 export interface ContextTrust {
   /**
    * How this context was produced.
-   *
-   * @default ContextTrustSource.AUTHORED - context declared in CDK code is
-   * considered authored unless stated otherwise
    */
-  readonly source?: ContextTrustSource;
+  readonly source: ContextTrustSource;
 
   /**
    * Confidence in the context's accuracy.
-   *
-   * @default ContextTrustConfidence.MEDIUM, promoted to ContextTrustConfidence.HIGH when `why` or `must` is populated
    */
-  readonly confidence?: ContextTrustConfidence;
+  readonly confidence: ContextTrustConfidence;
 
   /**
    * Source reference backing this context (e.g. `file.ts:42`, a URL, or a
@@ -185,26 +202,30 @@ export interface ResourceContextProps {
   /**
    * Resource-level DEFAULT change-safety level (one token per resource).
    *
+   * Rendered under the canonical wire key `mutable`.
+   *
    * @default - no change-safety default recorded
    */
-  readonly mutable?: ContextMutability;
+  readonly defaultMutability?: ContextMutability;
 
   /**
    * Sparse per-property change-safety override map (keys are CloudFormation
    * property names).
    *
-   * List ONLY properties that deviate from the `mutable` default or are
-   * high-stakes (e.g. replacement-triggering). Omit when empty; never
-   * enumerate all properties.
+   * Rendered under the canonical wire key `mutability`. List ONLY properties
+   * that deviate from the `defaultMutability` default or are high-stakes
+   * (e.g. replacement-triggering). Omit when empty; never enumerate all
+   * properties. When `defaultMutability` is also supplied, an entry MUST NOT
+   * repeat that default value — the map is sparse and records deviations only.
    *
    * @default - no per-property overrides
    */
-  readonly mutability?: { [propertyName: string]: ContextMutability };
+  readonly propertyMutability?: { [propertyName: string]: ContextMutability };
 
   /**
    * Provenance and confidence metadata for this context block.
    *
-   * @default - authored source and medium confidence, promoted to high when `why` or `must` is populated
+   * @default - no trust metadata recorded
    */
   readonly trust?: ContextTrust;
 
@@ -296,24 +317,56 @@ export interface TemplateContextProps {
 }
 
 /**
- * Options for adding resource-level context via `MetadataContext.of()`.
+ * Options for adding resource-level context via `ResourceMetadataContext.of()`.
  */
-export interface MetadataContextOptions {
+export interface ResourceMetadataContextOptions {
+  /**
+   * Cascade the context block to descendant resources beneath the scope,
+   * treating plain grouping constructs, L3 patterns and stacks as
+   * transparent.
+   *
+   * By default (`false`), `add()` targets only the scope itself when it is a
+   * `CfnResource`, or the `defaultChild` chain of the scope (e.g. the
+   * `AWS::SQS::Queue` inside an `sqs.Queue`). Plain grouping constructs, L3
+   * patterns and stacks are NOT transparent, so context does not leak onto
+   * resources nested behind them.
+   *
+   * Set to `true` to make those grouping/L3/stack nodes transparent, so
+   * context cascades to the primary resource of every construct beneath the
+   * scope. Incidental helper resources (auto-created IAM policies, log
+   * retention functions, custom-resource plumbing) are still skipped — use
+   * `applyToAllResources` to include those.
+   *
+   * @default false
+   */
+  readonly applyToDescendants?: boolean;
+
   /**
    * Apply the context block to every CloudFormation resource in scope,
-   * instead of only primary resources.
+   * including incidental helper resources.
    *
-   * By default, when context is added on a construct scope, it is rendered
-   * only onto "primary" resources — resources that are the `defaultChild` of
-   * their parent construct (e.g. the `AWS::SQS::Queue` inside an
-   * `sqs.Queue`), or plain `CfnResource`s created directly in the scope.
-   * This avoids stamping rationale onto incidental helper resources (IAM
-   * policies, log groups, custom-resource plumbing) synthesized by L2/L3
-   * constructs.
+   * Implies descendant traversal: setting this to `true` cascades context to
+   * all resources beneath the scope — primary resources and helper resources
+   * (IAM policies, log groups, custom-resource plumbing) alike — regardless
+   * of `applyToDescendants`.
    *
    * @default false
    */
   readonly applyToAllResources?: boolean;
+
+  /**
+   * Whether this entry inherits context merged from enclosing (ancestor)
+   * scopes.
+   *
+   * By default context added closer to a resource merges on top of context
+   * added further up the tree (nearest-wins for scalars, union for lists).
+   * Set to `false` to make this a fresh starting point for the resources it
+   * targets: any context merged from ancestor scopes is discarded before this
+   * entry (and any entries closer to the resource) is applied.
+   *
+   * @default true
+   */
+  readonly inheritAncestorContext?: boolean;
 
   /**
    * An array of CloudFormation resource types this context applies to (e.g.
@@ -342,8 +395,8 @@ export interface MetadataContextOptions {
 }
 
 /**
- * Manages `Metadata["com.aws.cloudformation.Context"]` blocks for all resources within a construct
- * scope.
+ * Manages resource-level `Metadata["com.aws.cloudformation.Context"]` blocks for CloudFormation
+ * resources within a construct scope.
  *
  * `Metadata["com.aws.cloudformation.Context"]` is structured, advisory context embedded in
  * CloudFormation templates. It carries the *why* behind infrastructure —
@@ -351,43 +404,47 @@ export interface MetadataContextOptions {
  * that humans and automated tools modifying the deployed template later can
  * act with the author's intent instead of guessing it.
  *
- * Resource-level context added on a scope cascades to primary resources in
- * that scope with nearest-wins semantics: context added closer to a resource
- * overrides context added further up the tree, field by field. List-valued
- * fields (`must`, `gaps`, `deps`, `failureModes`) accumulate across scopes
- * and are de-duplicated.
+ * By default context targets only the resource the scope resolves to (the
+ * scope itself when it is a `CfnResource`, or its `defaultChild` chain).
+ * Opt into broader fan-out with `applyToDescendants` or `applyToAllResources`.
+ * When multiple applicable entries target the same resource, they merge with
+ * nearest-wins semantics: scalar fields (`why`, `defaultMutability`, `trust`,
+ * `ops`) from entries closer to the resource win, while list-valued fields
+ * (`must`, `gaps`, `deps`, `failureModes`) accumulate and de-duplicate.
+ *
+ * Use `TemplateMetadataContext` for template-level (stack-wide) context.
  *
  * @example
  * declare const queue: sqs.Queue;
- * MetadataContext.of(queue).add({
+ * ResourceMetadataContext.of(queue).add({
  *   why: 'buffer order events async; 14d retention = compliance window',
  *   must: ['VisTimeout >= 6x fn timeout, else dup on retry'],
- *   mutable: ContextMutability.CHANGE_WITH_CONSTRAINTS,
- *   mutability: { QueueName: ContextMutability.MUST_NEVER_CHANGE },
+ *   defaultMutability: ContextMutability.CHANGE_WITH_CONSTRAINTS,
+ *   propertyMutability: { QueueName: ContextMutability.MUST_NEVER_CHANGE },
  * });
  */
-export class MetadataContext {
+export class ResourceMetadataContext {
   /**
-   * Returns the context API for the given scope.
+   * Returns the resource context API for the given scope.
    *
    * @param scope The scope on which to add context
    */
-  public static of(scope: IConstruct): MetadataContext {
-    return new MetadataContext(scope);
+  public static of(scope: IConstruct): ResourceMetadataContext {
+    return new ResourceMetadataContext(scope);
   }
 
   private constructor(private readonly scope: IConstruct) {
   }
 
   /**
-   * Add a resource-level context block to all primary resources within this
-   * scope.
+   * Add a resource-level context block targeting resources within this scope.
    *
    * Calling `add()` multiple times on the same scope merges the blocks:
-   * scalar fields (`why`, `mutable`, `trust`, `ops`) from later calls
-   * override earlier ones; list fields and the `mutability` map accumulate.
+   * scalar fields (`why`, `defaultMutability`, `trust`, `ops`) from later
+   * calls override earlier ones; list fields and the `propertyMutability`
+   * map accumulate.
    */
-  public add(context: ResourceContextProps, options: MetadataContextOptions = {}) {
+  public add(context: ResourceContextProps, options: ResourceMetadataContextOptions = {}) {
     validateResourceContext(context);
 
     // Stage the entry as construct-node metadata so the rendering aspect can
@@ -396,7 +453,9 @@ export class MetadataContext {
     this.scope.node.addMetadata(RESOURCE_CONTEXT_METADATA_TYPE, {
       context,
       options: {
+        applyToDescendants: options.applyToDescendants ?? false,
         applyToAllResources: options.applyToAllResources ?? false,
+        inheritAncestorContext: options.inheritAncestorContext ?? true,
         includeResourceTypes: options.includeResourceTypes,
         excludeResourceTypes: options.excludeResourceTypes,
       },
@@ -408,21 +467,48 @@ export class MetadataContext {
       aspects.add(new MetadataContextAspect(), aspectOptions);
     }
   }
+}
+
+/**
+ * Manages the template-level `Metadata["com.aws.cloudformation.Context"]` block for a stack.
+ *
+ * Template-level context holds cross-cutting facts stated once: the
+ * architecture overview, template-wide invariants, external context
+ * references and ownership. It is rendered as a top-level `Metadata` block in
+ * the synthesized CloudFormation template. For per-resource context, use
+ * `ResourceMetadataContext`.
+ *
+ * @example
+ * declare const stack: Stack;
+ * TemplateMetadataContext.of(stack).add({
+ *   arch: 'SQS buffer -> Lambda -> DynamoDB; DLQ for poison msgs',
+ *   must: ['all data encrypted w/ security-team CMK'],
+ *   owner: 'order-processing@example.com',
+ * });
+ */
+export class TemplateMetadataContext {
+  /**
+   * Returns the template context API for the given stack.
+   *
+   * @param stack The stack whose template receives the context
+   */
+  public static of(stack: Stack): TemplateMetadataContext {
+    return new TemplateMetadataContext(stack);
+  }
+
+  private constructor(private readonly stack: Stack) {
+  }
 
   /**
-   * Add template-level context to the stack enclosing this scope.
+   * Add template-level context to this stack's template.
    *
-   * Template-level context holds cross-cutting facts stated once: the
-   * architecture overview, template-wide invariants, external context
-   * references and ownership. Calling this method multiple times merges
-   * blocks: `arch` and `owner` from later calls win, `must` entries and
-   * `refs` accumulate.
+   * Calling this method multiple times merges blocks: `arch` and `owner`
+   * from later calls win, `must` entries and `refs` accumulate.
    */
-  public addToTemplate(context: TemplateContextProps) {
+  public add(context: TemplateContextProps) {
     validateTemplateContext(context);
 
-    const stack = Stack.of(this.scope);
-    const existing = getTemplateMetadataContext(stack) ?? {};
+    const existing = getTemplateMetadataContext(this.stack) ?? {};
     const merged: Record<string, any> = { ...existing };
 
     if (context.arch !== undefined) {
@@ -443,7 +529,7 @@ export class MetadataContext {
       return;
     }
 
-    setTemplateMetadataContext(stack, merged);
+    setTemplateMetadataContext(this.stack, merged);
   }
 }
 
@@ -453,7 +539,9 @@ export class MetadataContext {
 interface StagedEntry {
   readonly context: ResourceContextProps;
   readonly options: {
+    readonly applyToDescendants: boolean;
     readonly applyToAllResources: boolean;
+    readonly inheritAncestorContext: boolean;
     readonly includeResourceTypes?: string[];
     readonly excludeResourceTypes?: string[];
   };
@@ -463,8 +551,8 @@ interface StagedEntry {
  * The aspect that renders staged context entries into `Metadata["com.aws.cloudformation.Context"]`
  * blocks on CloudFormation resources.
  *
- * This is an internal implementation detail of `MetadataContext`; it is
- * registered automatically by `MetadataContext.of(scope).add()`.
+ * This is an internal implementation detail of `ResourceMetadataContext`; it
+ * is registered automatically by `ResourceMetadataContext.of(scope).add()`.
  */
 class MetadataContextAspect implements IAspect {
   public visit(node: IConstruct): void {
@@ -476,14 +564,23 @@ class MetadataContextAspect implements IAspect {
     // entries closer to the resource win.
     let merged: Record<string, any> | undefined;
     for (const scope of node.node.scopes) {
+      const applicableEntries: StagedEntry[] = [];
       for (const metadataEntry of scope.node.metadata) {
         if (metadataEntry.type !== RESOURCE_CONTEXT_METADATA_TYPE) {
           continue;
         }
         const staged = metadataEntry.data as StagedEntry;
-        if (!this.applies(node, scope, staged)) {
-          continue;
+        if (this.applies(node, scope, staged)) {
+          applicableEntries.push(staged);
         }
+      }
+
+      if (applicableEntries.some((entry) => !entry.options.inheritAncestorContext)) {
+        // Opt out of inherited ancestor context once before processing this
+        // scope, preserving all declarations made on the scope itself.
+        merged = undefined;
+      }
+      for (const staged of applicableEntries) {
         merged = mergeResourceContext(merged, renderResourceContext(staged.context));
       }
     }
@@ -492,7 +589,7 @@ class MetadataContextAspect implements IAspect {
       return;
     }
 
-    setResourceMetadataContext(node, withResourceContextTrustDefaults(merged));
+    setResourceMetadataContext(node, merged);
   }
 
   private applies(resource: CfnResource, appliedScope: IConstruct, staged: StagedEntry): boolean {
@@ -504,32 +601,80 @@ class MetadataContextAspect implements IAspect {
     if (exclude && exclude.length > 0 && exclude.includes(resource.cfnResourceType)) {
       return false;
     }
-    if (!staged.options.applyToAllResources && !isPrimaryResource(resource, appliedScope)) {
-      return false;
+    if (staged.options.applyToAllResources) {
+      // Every resource beneath the scope, helpers included.
+      return true;
     }
-    return true;
+    if (staged.options.applyToDescendants) {
+      // Grouping/L3/stack nodes are transparent; helper resources are skipped.
+      return isPrimaryDescendant(resource, appliedScope);
+    }
+    // Default: only the scope's own resource or its defaultChild chain.
+    return isOnDefaultChildChain(resource, appliedScope);
   }
 }
 
 /**
- * Whether a CloudFormation resource is a "primary" resource relative to the
- * scope on which context was added.
+ * Safely read a construct's `defaultChild`.
  *
- * A resource is primary when every construct on the path from the applied
- * scope down to the resource that designates a `defaultChild` designates
- * (an ancestor of) this resource. This selects e.g. the `AWS::SQS::Queue`
- * inside an `sqs.Queue` construct while skipping helper resources
- * (auto-created IAM roles/policies, log retention functions,
- * custom-resource plumbing), which hang off their enclosing construct
- * outside its `defaultChild` chain. Plain grouping constructs that do not
- * designate a `defaultChild` are transparent: context cascades through them.
- *
- * Stack nodes (including `NestedStack`, whose `defaultChild` is the
- * `AWS::CloudFormation::Stack` embedding resource) are structural
- * boundaries, not L2 wrappers — their `defaultChild` designation does not
- * gate the walk, so context cascades into nested stacks like `Tags` does.
+ * `node.defaultChild` throws when a construct has both a `Resource` and a
+ * `Default` child (ambiguous designation). Rather than crash synthesis, treat
+ * that ambiguity as "no designation".
  */
-function isPrimaryResource(resource: CfnResource, appliedScope: IConstruct): boolean {
+function safeDefaultChild(construct: IConstruct): IConstruct | undefined {
+  try {
+    return construct.node.defaultChild as IConstruct | undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Whether `resource` is reachable from `appliedScope` purely by following
+ * `defaultChild` links (the default, narrow targeting).
+ *
+ * This matches the scope itself when it is the resource, or the primary
+ * resource of an L2 (e.g. the `AWS::SQS::Queue` designated as the
+ * `defaultChild` of an `sqs.Queue`). Plain grouping constructs, L3 patterns
+ * and stacks are NOT transparent: if any construct on the path does not
+ * designate the next node down as its `defaultChild`, the resource is not a
+ * target. Ambiguous `defaultChild` designations are treated as no
+ * designation, so they block the chain rather than crash synthesis.
+ */
+function isOnDefaultChildChain(resource: CfnResource, appliedScope: IConstruct): boolean {
+  let current: IConstruct = resource;
+  while (current !== appliedScope) {
+    const parent = current.node.scope;
+    if (parent === undefined) {
+      // appliedScope is not an ancestor (should not happen for a staged entry).
+      return false;
+    }
+    if (Stack.isStack(parent)) {
+      return false;
+    }
+    if (safeDefaultChild(parent) !== current) {
+      return false;
+    }
+    current = parent;
+  }
+  return true;
+}
+
+/**
+ * Whether `resource` is a "primary" resource beneath `appliedScope` when
+ * descendant fan-out is explicitly enabled.
+ *
+ * Grouping constructs, L3 patterns and stacks are transparent: context
+ * cascades through them. Within an L2 wrapper, only the `defaultChild` chain
+ * is a target, so incidental helper resources (auto-created IAM roles/policies,
+ * log retention functions, custom-resource plumbing) are skipped. Stack nodes
+ * (including `NestedStack`, whose `defaultChild` is the
+ * `AWS::CloudFormation::Stack` embedding resource) are structural boundaries,
+ * not L2 wrappers — their `defaultChild` designation does not gate the walk,
+ * so context cascades into nested stacks like `Tags` does. Ambiguous
+ * `defaultChild` designations are treated as no designation (transparent).
+ */
+function isPrimaryDescendant(resource: CfnResource, appliedScope: IConstruct): boolean {
   let current: IConstruct = resource;
   while (current !== appliedScope) {
     const parent = current.node.scope;
@@ -537,7 +682,7 @@ function isPrimaryResource(resource: CfnResource, appliedScope: IConstruct): boo
       // appliedScope not an ancestor (should not happen) — be permissive.
       return true;
     }
-    const defaultChild = Stack.isStack(parent) ? undefined : parent.node.defaultChild;
+    const defaultChild = Stack.isStack(parent) ? undefined : safeDefaultChild(parent);
     if (defaultChild !== undefined && defaultChild !== current) {
       return false;
     }
