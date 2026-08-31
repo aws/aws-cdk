@@ -361,7 +361,7 @@ new s3deploy.BucketDeployment(this, 'DeployWithSignedPayloads', {
 
 ## Size Limits
 
-The default memory limit for the deployment resource is 128MiB. If you need to
+The default memory limit for the deployment resource is 1024MiB. If you need to
 copy larger files, you can use the `memoryLimit` configuration to increase the
 size of the AWS Lambda resource handler.
 
@@ -372,6 +372,14 @@ resource handler.
 
 > NOTE: a new AWS Lambda handler will be created in your stack for each combination
 > of memory and storage size.
+
+## Lambda Architecture
+
+The deployment resource handler runs on the `arm64` (AWS Graviton) architecture. The
+handler is CDK-managed internal code rather than your code, so the architecture is fixed
+and not configurable. Both the handler and the bundled AWS CLI v1 layer are
+architecture-independent, so the deployment behaves identically on either architecture
+while `arm64` costs less per millisecond of execution.
 
 ## JSON-Aware Source Processing
 
