@@ -302,6 +302,27 @@ describe('validations', () => {
     expect(context.region).toBeUndefined();
   });
 
+  test('plugin is not invoked when the app synthesizes no stacks', () => {
+    const mockValidate = jest.fn().mockImplementation(() => {
+      return {
+        success: true,
+        violations: [],
+      };
+    });
+    const app = new NonStrictApp({
+      policyValidationBeta1: [
+        {
+          name: 'test-plugin',
+          validate: mockValidate,
+        },
+      ],
+    });
+
+    app.synth();
+
+    expect(mockValidate).not.toHaveBeenCalled();
+  });
+
   test('plugin receives the account and region when all stacks share one environment', () => {
     const mockValidate = jest.fn().mockImplementation(() => {
       return {

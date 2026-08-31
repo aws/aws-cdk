@@ -350,6 +350,12 @@ function doInvokeValidationPlugins(
     plugin: IPolicyValidationPlugin,
     stackArtifacts: private_cxapi.CloudFormationStackArtifact[],
   ): NamedValidationPluginReport[] {
+    // Nothing to validate; also keeps external plugins symmetric with the
+    // per-environment path, which produces no invocations for zero stacks.
+    if (stackArtifacts.length === 0) {
+      return [];
+    }
+
     // Only the CloudFormation validation engine is invoked once per environment: it
     // substitutes account and region pseudo parameters into the templates it evaluates,
     // so it needs a single unambiguous environment per invocation.
@@ -407,6 +413,8 @@ function doInvokeValidationPlugins(
   }
 }
 
+// NOTE: intentionally coincides with `usesEnvironmentPseudoParameters` today, but the
+// intents differ (trust vs. pseudo-parameter substitution) and may diverge.
 function isTrustedPlugin(x: IPolicyValidationPlugin) {
   return x instanceof CloudFormationValidatePlugin;
 }
@@ -414,6 +422,9 @@ function isTrustedPlugin(x: IPolicyValidationPlugin) {
 /**
  * Whether the plugin's rule engine substitutes account and region pseudo parameters,
  * and must therefore be invoked once per environment.
+ *
+ * NOTE: intentionally coincides with `isTrustedPlugin` today, but the intents differ
+ * and may diverge.
  */
 function usesEnvironmentPseudoParameters(x: IPolicyValidationPlugin) {
   return x instanceof CloudFormationValidatePlugin;
