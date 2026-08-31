@@ -350,9 +350,19 @@ function doInvokeValidationPlugins(
     plugin: IPolicyValidationPlugin,
     stackArtifacts: private_cxapi.CloudFormationStackArtifact[],
   ): NamedValidationPluginReport[] {
-    const stacksByEnv = groupStacksByEnvironment(stackArtifacts);
+    // Only the CloudFormation validation engine is invoked once per environment: it
+    // substitutes account and region pseudo parameters into the templates it evaluates,
+    // so it needs a single unambiguous environment per invocation.
+    //
+    // All other plugins are invoked exactly once with all templates. Many external
+    // plugins (e.g. cdk-nag) evaluate the app-wide construct tree on every call to
+    // `validate()`, so invoking them once per environment would duplicate their
+    // findings once per environment (https://github.com/aws/aws-cdk/issues/38483).
+    const invocations = usesEnvironmentPseudoParameters(plugin)
+      ? groupStacksByEnvironment(stackArtifacts)
+      : [combineIntoSingleInvocation(stackArtifacts)];
 
-    const reports = stacksByEnv.map(({ accountId, region, stacks }) => {
+    const reports = invocations.map(({ accountId, region, stacks }) => {
       try {
         const report = makeTemplatePathsRelative(plugin.validate({
           // path.resolve() because templateFullPath might not be as full as you'd expect
@@ -401,10 +411,32 @@ function isTrustedPlugin(x: IPolicyValidationPlugin) {
   return x instanceof CloudFormationValidatePlugin;
 }
 
+/**
+ * Whether the plugin's rule engine substitutes account and region pseudo parameters,
+ * and must therefore be invoked once per environment.
+ */
+function usesEnvironmentPseudoParameters(x: IPolicyValidationPlugin) {
+  return x instanceof CloudFormationValidatePlugin;
+}
+
 interface StacksByEnvironment {
   readonly accountId: string | undefined;
   readonly region: string | undefined;
   readonly stacks: private_cxapi.CloudFormationStackArtifact[];
+}
+
+/**
+ * Combine all stacks into a single plugin invocation.
+ *
+ * The account and region are only populated if they are the same for all stacks;
+ * otherwise there is no single environment to report and they are left undefined.
+ */
+function combineIntoSingleInvocation(stacks: private_cxapi.CloudFormationStackArtifact[]): StacksByEnvironment {
+  const byEnv = groupStacksByEnvironment(stacks);
+  if (byEnv.length === 1) {
+    return byEnv[0];
+  }
+  return { accountId: undefined, region: undefined, stacks };
 }
 
 function groupStacksByEnvironment(stacks: private_cxapi.CloudFormationStackArtifact[]): StacksByEnvironment[] {
