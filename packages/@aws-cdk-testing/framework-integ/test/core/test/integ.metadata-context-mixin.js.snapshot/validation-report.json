@@ -17,8 +17,8 @@
           "violatingConstructs": [
             {
               "constructPath": "MetadataContextMixinInteg/DefaultTest/DeployAssert",
-              "constructFqn": "aws-cdk-lib.Stack",
-              "libraryVersion": "0.0.0"
+              "constructFqn": "constructs.Construct",
+              "libraryVersion": "10.6.0"
             }
           ]
         }

@@ -7,7 +7,7 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.MetadataContextMixin"
+        "mixin": "*"
       }
     },
     {
@@ -15,20 +15,22 @@
       "data": {
         "context": {
           "why": "append-only audit trail buffer",
-          "mutable": "must-never-change",
+          "defaultMutability": "must-never-change",
           "must": [
             "never shorten retention below 14d (audit requirement)"
           ]
         },
         "options": {
-          "applyToAllResources": false
+          "applyToDescendants": false,
+          "applyToAllResources": false,
+          "inheritAncestorContext": true
         }
       }
     },
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.MetadataContextMixin"
+        "mixin": "*"
       }
     },
     {
@@ -40,7 +42,9 @@
           ]
         },
         "options": {
-          "applyToAllResources": false
+          "applyToDescendants": false,
+          "applyToAllResources": false,
+          "inheritAncestorContext": true
         }
       }
     }
@@ -53,7 +57,7 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.MetadataContextMixin"
+        "mixin": "*"
       }
     },
     {
@@ -65,7 +69,9 @@
           ]
         },
         "options": {
-          "applyToAllResources": false
+          "applyToDescendants": false,
+          "applyToAllResources": false,
+          "inheritAncestorContext": true
         }
       }
     }

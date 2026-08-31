@@ -12,11 +12,7 @@
      "mutable": "must-never-change",
      "deps": [
       "NetworkStack"
-     ],
-     "trust": {
-      "src": "authored",
-      "conf": "high"
-     }
+     ]
     }
    }
   },
@@ -26,11 +22,7 @@
     "com.aws.cloudformation.Context": {
      "deps": [
       "NetworkStack"
-     ],
-     "trust": {
-      "src": "authored",
-      "conf": "medium"
-     }
+     ]
     }
    }
   }
