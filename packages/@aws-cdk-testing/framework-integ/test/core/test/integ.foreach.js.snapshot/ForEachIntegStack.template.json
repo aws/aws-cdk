@@ -4,6 +4,7 @@
  ],
  "Resources": {
   "Fn::ForEach::Env": [
+   "Env",
    [
     "dev",
     "staging"
@@ -25,6 +26,7 @@
  },
  "Outputs": {
   "Fn::ForEach::Env": [
+   "Env",
    [
     "dev",
     "staging"

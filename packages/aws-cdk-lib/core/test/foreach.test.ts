@@ -15,6 +15,7 @@ describe('Fn.forEach', () => {
 
     expect(stack.resolve(result)).toEqual({
       'Fn::ForEach::Item': [
+        'Item',
         ['a', 'b'],
         { 'Key${Item}': { Value: '${Item}' } },
       ],
@@ -32,7 +33,7 @@ describe('Fn.forEach', () => {
     );
 
     const resolved = stack.resolve(result);
-    expect(resolved['Fn::ForEach::Item'][0]).toEqual({ Ref: 'Items' });
+    expect(resolved['Fn::ForEach::Item'][1]).toEqual({ Ref: 'Items' });
   });
 });
 
@@ -63,6 +64,7 @@ describe('ForEachResource', () => {
 
     expect(template.Transform).toContain('AWS::LanguageExtensions');
     expect(template.Resources['Fn::ForEach::Env']).toEqual([
+      'Env',
       ['dev', 'prod'],
       {
         'Bucket${Env}': {
@@ -152,7 +154,7 @@ describe('ForEachResource', () => {
     });
 
     const template = app.synth().getStackByName('TestStack').template;
-    expect(template.Resources['Fn::ForEach::Env'][0]).toEqual({ Ref: 'Envs' });
+    expect(template.Resources['Fn::ForEach::Env'][1]).toEqual({ Ref: 'Envs' });
   });
 });
 
@@ -171,6 +173,7 @@ describe('ForEachOutput', () => {
     const template = app.synth().getStackByName('TestStack').template;
 
     expect(template.Outputs['Fn::ForEach::Env']).toEqual([
+      'Env',
       ['dev', 'prod'],
       {
         'BucketArn${Env}': {
@@ -194,7 +197,7 @@ describe('ForEachOutput', () => {
     });
 
     const template = app.synth().getStackByName('TestStack').template;
-    const outputDef = template.Outputs['Fn::ForEach::Env'][1]['BucketArn${Env}'];
+    const outputDef = template.Outputs['Fn::ForEach::Env'][2]['BucketArn${Env}'];
 
     expect(outputDef.Description).toBe('Bucket ARN');
     expect(outputDef.Export).toEqual({ Name: 'Export${Env}' });
@@ -241,6 +244,7 @@ describe('ForEachCondition', () => {
     const template = app.synth().getStackByName('TestStack').template;
 
     expect(template.Conditions['Fn::ForEach::Env']).toEqual([
+      'Env',
       ['dev', 'prod'],
       {
         'Is${Env}': { 'Fn::Equals': ['a', 'b'] },
@@ -285,7 +289,7 @@ describe('ForEachCondition', () => {
     });
 
     const template = app.synth().getStackByName('TestStack').template;
-    const condDef = template.Conditions['Fn::ForEach::Env'][1]['Is${Env}'];
+    const condDef = template.Conditions['Fn::ForEach::Env'][2]['Is${Env}'];
 
     expect(condDef).toEqual({
       'Fn::Equals': [{ Ref: 'Environment' }, '${Env}'],

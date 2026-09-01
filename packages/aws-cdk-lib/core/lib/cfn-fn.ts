@@ -1060,6 +1060,12 @@ class FnForEach implements IResolvable {
     stackOf(context.scope).addTransform('AWS::LanguageExtensions');
     return {
       [`Fn::ForEach::${this.loopName}`]: [
+        // Identifier. CloudFormation requires exactly three elements here --
+        // [Identifier, Collection, {OutputKey: OutputValue}] -- and omitting it
+        // produced a two-element list that cfn-lint rejects with E0001. This API
+        // uses the loop name as the identifier, which is what forEachRef and the
+        // ${loopName} placeholders in the L2 props already assume.
+        this.loopName,
         this.collection,
         { [this.outputKey]: this.outputValue },
       ],
