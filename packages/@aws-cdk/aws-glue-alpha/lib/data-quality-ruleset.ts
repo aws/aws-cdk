@@ -103,12 +103,6 @@ export interface DataQualityRulesetProps {
   readonly rulesetName: string;
 
   /**
-   * The client token of the ruleset
-   * @attribute
-   */
-  readonly clientToken?: string;
-
-  /**
    * The description of the ruleset
    * @attribute
    */
@@ -185,7 +179,6 @@ export class DataQualityRuleset extends Resource implements IDataQualityRuleset 
     addConstructMetadata(this, props);
 
     this.resource = new CfnDataQualityRuleset(this, 'Resource', {
-      clientToken: props.clientToken,
       description: props.description,
       name: props.rulesetName,
       ruleset: props.dqdl._render(),

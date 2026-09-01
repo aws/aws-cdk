@@ -41,7 +41,6 @@ const csvTable = new glue.S3Table(stack, 'CSVTable', {
 });
 
 new glue.DataQualityRuleset(stack, 'DataQualityRuleset', {
-  clientToken: 'client_token',
   description: 'my description',
   rulesetName: 'my_ruleset',
   dqdl: glue.Dqdl.fromString('Rules = [RowCount > 10]'),
