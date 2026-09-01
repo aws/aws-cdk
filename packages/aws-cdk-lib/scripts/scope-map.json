@@ -21,10 +21,24 @@
       }
     ]
   },
+  "aws-accountaccess": {
+    "scopes": [
+      {
+        "namespace": "AWS::AccountAccess"
+      }
+    ]
+  },
   "aws-acmpca": {
     "scopes": [
       {
         "namespace": "AWS::ACMPCA"
+      }
+    ]
+  },
+  "aws-agentregistry": {
+    "scopes": [
+      {
+        "namespace": "AWS::AgentRegistry"
       }
     ]
   },
@@ -178,13 +192,6 @@
       }
     ]
   },
-  "aws-artifact": {
-    "scopes": [
-      {
-        "namespace": "AWS::Artifact"
-      }
-    ]
-  },
   "aws-athena": {
     "scopes": [
       {
@@ -238,13 +245,6 @@
     "scopes": [
       {
         "namespace": "AWS::BackupGateway"
-      }
-    ]
-  },
-  "aws-backupsearch": {
-    "scopes": [
-      {
-        "namespace": "AWS::BackupSearch"
       }
     ]
   },
@@ -402,6 +402,13 @@
       }
     ]
   },
+  "aws-cloudhsm": {
+    "scopes": [
+      {
+        "namespace": "AWS::CloudHSM"
+      }
+    ]
+  },
   "aws-cloudtrail": {
     "scopes": [
       {
@@ -505,13 +512,6 @@
       }
     ]
   },
-  "aws-cognitosync": {
-    "scopes": [
-      {
-        "namespace": "AWS::CognitoSync"
-      }
-    ]
-  },
   "aws-comprehend": {
     "scopes": [
       {
@@ -554,13 +554,6 @@
       }
     ]
   },
-  "aws-controlcatalog": {
-    "scopes": [
-      {
-        "namespace": "AWS::ControlCatalog"
-      }
-    ]
-  },
   "aws-controltower": {
     "scopes": [
       {
@@ -586,6 +579,13 @@
     "scopes": [
       {
         "namespace": "AWS::DataBrew"
+      }
+    ]
+  },
+  "aws-dataexchange": {
+    "scopes": [
+      {
+        "namespace": "AWS::DataExchange"
       }
     ]
   },
@@ -694,6 +694,13 @@
       }
     ]
   },
+  "aws-drs": {
+    "scopes": [
+      {
+        "namespace": "AWS::DRS"
+      }
+    ]
+  },
   "aws-dsql": {
     "scopes": [
       {
@@ -742,6 +749,24 @@
         "namespace": "AWS::EKS"
       }
     ]
+  },
+  "aws-eks-v2": {
+    "scopes": [
+      {
+        "namespace": "AWS::EKS"
+      }
+    ],
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.services.eks_v2"
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.EKSv2"
+      },
+      "python": {
+        "module": "aws_cdk.aws_eks_v2"
+      }
+    }
   },
   "aws-elasticache": {
     "scopes": [
@@ -1058,6 +1083,13 @@
       }
     ]
   },
+  "aws-iotsecuretunneling": {
+    "scopes": [
+      {
+        "namespace": "AWS::IoTSecureTunneling"
+      }
+    ]
+  },
   "aws-iotsitewise": {
     "scopes": [
       {
@@ -1327,6 +1359,13 @@
       }
     ]
   },
+  "aws-mgn": {
+    "scopes": [
+      {
+        "namespace": "AWS::MGN"
+      }
+    ]
+  },
   "aws-mpa": {
     "scopes": [
       {
@@ -1443,6 +1482,13 @@
     "scopes": [
       {
         "namespace": "AWS::Omics"
+      }
+    ]
+  },
+  "aws-opensearch": {
+    "scopes": [
+      {
+        "namespace": "AWS::OpenSearch"
       }
     ]
   },
@@ -1850,6 +1896,13 @@
       }
     ]
   },
+  "aws-serverlessrepo": {
+    "scopes": [
+      {
+        "namespace": "AWS::ServerlessRepo"
+      }
+    ]
+  },
   "aws-servicecatalog": {
     "scopes": [
       {
@@ -1972,13 +2025,6 @@
       }
     ]
   },
-  "aws-states": {
-    "scopes": [
-      {
-        "namespace": "AWS::States"
-      }
-    ]
-  },
   "aws-stepfunctions": {
     "scopes": [
       {
@@ -2014,10 +2060,10 @@
       }
     ]
   },
-  "aws-thinclient": {
+  "aws-textract": {
     "scopes": [
       {
-        "namespace": "AWS::ThinClient"
+        "namespace": "AWS::Textract"
       }
     ]
   },
@@ -2042,10 +2088,10 @@
       }
     ]
   },
-  "aws-usernotifications": {
+  "aws-translate": {
     "scopes": [
       {
-        "namespace": "AWS::UserNotifications"
+        "namespace": "AWS::Translate"
       }
     ]
   },
@@ -2107,6 +2153,13 @@
     "scopes": [
       {
         "namespace": "AWS::WellArchitected"
+      }
+    ]
+  },
+  "aws-wickr": {
+    "scopes": [
+      {
+        "namespace": "AWS::Wickr"
       }
     ]
   },
