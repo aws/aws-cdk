@@ -578,7 +578,7 @@ describe('event bus', () => {
 
     // THEN
     Template.fromStack(stack1).hasResourceProperties('AWS::Events::EventBus', {
-      Name: 'stack1stack1busca19bdf8ab2e51b62a5a',
+      Name: 'stack1stack1busca19bdf823d8f39f1c0f',
     });
   });
 
