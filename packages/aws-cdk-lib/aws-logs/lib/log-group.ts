@@ -533,12 +533,6 @@ export enum LogGroupClass {
   /**
    * Class for delivering logs to a destination such as Amazon S3 or Amazon Data
    * Firehose (for example, Lambda vended logs).
-   *
-   * A Delivery log group does not store log events itself; it forwards them to a
-   * destination configured through a subscription filter. Because of this, the
-   * Delivery log class does not support a finite retention, field index policies,
-   * or data protection policies. `RetentionDays.INFINITE` is accepted since it
-   * means "no retention".
    */
   DELIVERY = 'DELIVERY',
 }
@@ -600,10 +594,10 @@ export interface LogGroupProps {
    * be changed once the log group is created.
    *
    * DELIVERY class is used to deliver logs to a destination such as Amazon S3 or Amazon
-   * Data Firehose (for example, Lambda vended logs). A Delivery log group does not support
-   * a finite `retention`, `dataProtectionPolicy`, or `fieldIndexPolicies`; setting any of
-   * these together with `LogGroupClass.DELIVERY` results in a synthesis-time error.
-   * `RetentionDays.INFINITE` is accepted since it means "no retention".
+   * Data Firehose (for example, Lambda vended logs). A Delivery log group forwards events
+   * to a destination instead of storing them, so it does not support `retention`,
+   * `dataProtectionPolicy`, or `fieldIndexPolicies`; setting any of these together with
+   * `LogGroupClass.DELIVERY` results in a synthesis-time error.
    *
    * @default LogGroupClass.STANDARD
    */
@@ -712,24 +706,12 @@ export class LogGroup extends LogGroupBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    const logGroupClass = props.logGroupClass;
-    const isDeliveryClass = logGroupClass === LogGroupClass.DELIVERY;
-
-    // The Delivery log class forwards log events to a destination (configured via a
-    // subscription filter) instead of storing them. CloudWatch Logs rejects retention,
-    // field index policies, and data protection policies for Delivery log groups
-    // (service errors: "This operation is not supported for Delivery log class" /
-    // "This operation is only supported on the Standard log class"). Fail fast at synth
-    // time when these are combined with an explicit Delivery class, and never apply the
-    // default retention to a Delivery log group.
-    if (isDeliveryClass) {
-      // RetentionDays.INFINITE (and Infinity) means "no retention", which is exactly
-      // what a Delivery log group produces anyway, so it is allowed as a no-op. Only a
-      // finite retention is unsupported and rejected.
-      const isFiniteRetention = props.retention !== undefined
-        && props.retention !== RetentionDays.INFINITE
-        && (props.retention as number) !== Infinity;
-      if (isFiniteRetention) {
+    // The Delivery log class forwards events to a destination instead of storing them.
+    // CloudWatch Logs does not allow a user-set retention on it (the service manages it
+    // internally) and rejects data protection policies and field index policies. Fail
+    // fast when any of these is set explicitly, including RetentionDays.INFINITE.
+    if (props.logGroupClass === LogGroupClass.DELIVERY) {
+      if (props.retention !== undefined) {
         throw new ValidationError(lit`DeliveryLogClassRetention`, 'retention is not supported for a log group with logGroupClass DELIVERY; remove retention or use a different LogGroupClass', this);
       }
       if (props.dataProtectionPolicy !== undefined) {
@@ -741,7 +723,10 @@ export class LogGroup extends LogGroupBase {
     }
 
     let retentionInDays = props.retention;
-    if (retentionInDays === undefined && !isDeliveryClass) { retentionInDays = RetentionDays.TWO_YEARS; }
+    // Apply the default retention only for non-Delivery classes; Delivery does not store logs.
+    if (retentionInDays === undefined && props.logGroupClass !== LogGroupClass.DELIVERY) { retentionInDays = RetentionDays.TWO_YEARS; }
+    // RetentionDays.INFINITE (and the legacy Infinity value) mean "never expire", which maps
+    // to omitting RetentionInDays on the resource.
     if (retentionInDays === Infinity || retentionInDays === RetentionDays.INFINITE) { retentionInDays = undefined; }
 
     if (retentionInDays !== undefined && !Token.isUnresolved(retentionInDays) && retentionInDays <= 0) {
@@ -758,7 +743,7 @@ export class LogGroup extends LogGroupBase {
 
     this.resource = new CfnLogGroup(this, 'Resource', {
       kmsKeyId: props.encryptionKey?.keyRef.keyArn,
-      logGroupClass,
+      logGroupClass: props.logGroupClass,
       logGroupName: this.physicalName,
       retentionInDays,
       dataProtectionPolicy: dataProtectionPolicy ? {

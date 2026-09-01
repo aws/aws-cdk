@@ -165,21 +165,15 @@ describe('log group', () => {
       });
     });
 
-    test('allows RetentionDays.INFINITE (treated as no retention)', () => {
+    test('fails when RetentionDays.INFINITE is set together with DELIVERY', () => {
       // GIVEN
       const stack = new Stack();
 
-      // WHEN - INFINITE means "no retention", which is exactly what DELIVERY produces
-      new LogGroup(stack, 'LogGroup', {
+      // THEN - retention is not supported for DELIVERY, including INFINITE
+      expect(() => new LogGroup(stack, 'LogGroup', {
         logGroupClass: LogGroupClass.DELIVERY,
         retention: RetentionDays.INFINITE,
-      });
-
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
-        LogGroupClass: 'DELIVERY',
-        RetentionInDays: Match.absent(),
-      });
+      })).toThrow(/retention is not supported for a log group with logGroupClass DELIVERY/);
     });
 
     test('allows an encryption key (KMS is supported for DELIVERY)', () => {
