@@ -1,3 +1,8 @@
+# Stage 1 of the Security Guardian 2-stage workflow. This workflow is
+# treated as untrusted: it runs with minimal, read-only permissions on
+# every pull request (including forks). It only produces scan artifacts.
+# The second workflow (`security-report.yml`) validates everything and
+# posts the findings on the PR.
 name: Security Guardian
 on:
   pull_request:
@@ -21,12 +26,17 @@ jobs:
       !startsWith(github.event.pull_request.title, 'chore(merge-back):')
     runs-on: ubuntu-latest
     steps:
+      # Check out the base branch so the security-guardian tool, rules, and
+      # dependencies come from a trusted source rather than the fork's PR head.
       - name: Checkout base branch
         uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.base.ref }}
           fetch-depth: 0
 
+      # Fetch the PR head commit so the security-guardian tool can read it in
+      # a later step. Fetch by SHA to pin the exact commit that triggered this
+      # workflow.
       - name: Fetch PR head commit
         run: git fetch origin ${{ github.event.pull_request.head.sha }}
 

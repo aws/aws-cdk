@@ -9,7 +9,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Resolve which PR triggered this run from GitHub-signed workflow_run
+  # metadata, and refuse to run the report job if the PR modifies the
+  # guardian workflow itself, since the triggering workflow is treated as
+  # untrusted.
   validate:
+    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     permissions:
       pull-requests: read
