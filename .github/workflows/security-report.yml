@@ -1,3 +1,9 @@
+# Stage 2 of the Security Guardian 2-stage workflow. Runs with privileged
+# permissions and has two jobs. The `validate` job runs with read-only
+# permissions and decides whether the rest should run. Since Stage 1 is
+# treated as untrusted, if the triggering PR modifies the Stage 1 workflow,
+# `validate` fails and the `report` job does not run. The `report` job runs
+# with the privileged permissions and posts findings on the PR.
 name: Security Report
 on:
   workflow_run:
