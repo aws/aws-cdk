@@ -164,6 +164,33 @@
     "PolicyDocument": {
      "Statement": [
       {
+       "Action": [
+        "kms:Decrypt",
+        "kms:GenerateDataKey"
+       ],
+       "Condition": {
+        "ArnEquals": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "EveryMinute2BBCEA8F",
+           "Arn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyKey6AB29FA6",
+         "Arn"
+        ]
+       },
+       "Sid": "AllowEncryptedEventRuleawscdksnseventtargetEveryMinuteD1FC5963"
+      },
+      {
        "Action": "sqs:SendMessage",
        "Condition": {
         "ArnEquals": {
