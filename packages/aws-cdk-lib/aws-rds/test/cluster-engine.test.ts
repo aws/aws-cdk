@@ -246,6 +246,7 @@ describe('cluster engine', () => {
     AuroraMysqlEngineVersion.VER_3_11_0,
     AuroraMysqlEngineVersion.VER_3_11_1,
     AuroraMysqlEngineVersion.VER_3_12_0,
+    AuroraMysqlEngineVersion.VER_3_13_0,
   ])('cluster parameter group correctly determined for AURORA_MYSQL 3.x and given version $auroraMysqlFullVersion', (version: AuroraMysqlEngineVersion) => {
     // GIVEN
     const engine_ver = DatabaseClusterEngine.auroraMysql({ version });
