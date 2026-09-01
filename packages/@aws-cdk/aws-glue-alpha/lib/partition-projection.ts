@@ -104,6 +104,24 @@ export interface IntegerPartitionProjectionConfigurationProps {
 }
 
 /**
+ * A required-together interval step for DATE partition projection.
+ *
+ * Bundling `interval` and `intervalUnit` into one value makes a partial step
+ * (one without the other) unrepresentable.
+ */
+export interface DateProjectionStep {
+  /**
+   * Interval between partition values.
+   */
+  readonly interval: number;
+
+  /**
+   * Unit for the interval.
+   */
+  readonly intervalUnit: DateIntervalUnit;
+}
+
+/**
  * Properties for DATE partition projection configuration.
  */
 export interface DatePartitionProjectionConfigurationProps {
@@ -141,26 +159,16 @@ export interface DatePartitionProjectionConfigurationProps {
   readonly format: string;
 
   /**
-   * Interval between partition values.
+   * Interval step (`interval` + `intervalUnit`) between partition values.
    *
-   * Required (together with `intervalUnit`) when `format` carries sub-day
-   * precision — i.e. a field finer than a day, such as hours or AM/PM. At day
-   * or coarser precision Athena defaults the step, so it is optional.
+   * The two are supplied together, so a partial step cannot be expressed.
+   * Required when `format` carries sub-day precision — a field finer than a
+   * day, such as hours or AM/PM; at day or coarser precision Athena defaults
+   * the step, so it may be omitted.
    *
    * @default - Athena's default step for the format's precision; required when `format` is sub-day precision
    */
-  readonly interval?: number;
-
-  /**
-   * Unit for the interval.
-   *
-   * Required (together with `interval`) when `format` carries sub-day
-   * precision — i.e. a field finer than a day, such as hours or AM/PM. At day
-   * or coarser precision Athena defaults the step, so it is optional.
-   *
-   * @default - Athena's default unit for the format's precision; required when `format` is sub-day precision
-   */
-  readonly intervalUnit?: DateIntervalUnit;
+  readonly step?: DateProjectionStep;
 }
 
 /**
@@ -387,34 +395,34 @@ export class PartitionProjectionConfiguration {
 
     // Validate interval
     if (
-      props.interval !== undefined &&
-      !Token.isUnresolved(props.interval) &&
-      (!Number.isInteger(props.interval) || props.interval <= 0)
+      props.step !== undefined &&
+      !Token.isUnresolved(props.step.interval) &&
+      (!Number.isInteger(props.step.interval) || props.step.interval <= 0)
     ) {
       throw new UnscopedValidationError(
         lit`DateIntervalInvalid`,
-        `DATE partition projection interval must be a positive integer, but got ${props.interval}`,
+        `DATE partition projection interval must be a positive integer, but got ${props.step.interval}`,
       );
     }
 
-    // For sub-day precision (a field finer than a day), Athena requires both
-    // `interval` and `intervalUnit`; at day or coarser precision it defaults
-    // them. Only enforce when the format is a resolved literal we can inspect.
-    if (!Token.isUnresolved(props.format) && dateFormatRequiresInterval(props.format)) {
-      if (props.interval === undefined || props.intervalUnit === undefined) {
-        throw new UnscopedValidationError(
-          lit`DateIntervalRequired`,
-          `DATE partition projection with format '${props.format}' has sub-day precision, so both 'interval' and 'intervalUnit' are required`,
-        );
-      }
+    // For sub-day precision (a field finer than a day), Athena requires a step;
+    // at day or coarser precision it defaults one. The interval/unit pairing is
+    // now guaranteed by the `step` type, so only the "sub-day format needs a
+    // step at all" requirement remains. Enforce only when the format is a
+    // resolved literal we can inspect.
+    if (!Token.isUnresolved(props.format) && dateFormatRequiresInterval(props.format) && props.step === undefined) {
+      throw new UnscopedValidationError(
+        lit`DateStepRequired`,
+        `DATE partition projection with format '${props.format}' has sub-day precision, so 'step' (interval and intervalUnit) is required`,
+      );
     }
 
     return new PartitionProjectionConfiguration({
       type: PartitionProjectionType.DATE,
       dateRange: [props.min, props.max],
-      interval: props.interval,
+      interval: props.step?.interval,
       format: props.format,
-      intervalUnit: props.intervalUnit,
+      intervalUnit: props.step?.intervalUnit,
     });
   }
 
@@ -472,54 +480,36 @@ export class PartitionProjectionConfiguration {
    */
   public readonly type: PartitionProjectionType;
 
-  /**
-   * Range of partition values for INTEGER type.
-   *
-   * Array of [min, max] as numbers.
-   */
-  public readonly integerRange?: number[];
+  /** @internal Range [min, max] for INTEGER type. */
+  public readonly _integerRange?: number[];
 
-  /**
-   * Range of partition values for DATE type.
-   *
-   * Array of [start, end] as date strings.
-   */
-  public readonly dateRange?: string[];
+  /** @internal Range [start, end] for DATE type. */
+  public readonly _dateRange?: string[];
 
-  /**
-   * Interval between partition values.
-   */
-  public readonly interval?: number;
+  /** @internal Interval between partition values (INTEGER, or DATE step). */
+  public readonly _interval?: number;
 
-  /**
-   * Number of digits to pad INTEGER partition values.
-   */
-  public readonly digits?: number;
+  /** @internal Number of digits to pad INTEGER partition values. */
+  public readonly _digits?: number;
 
-  /**
-   * Date format for DATE partition values (Java SimpleDateFormat).
-   */
-  public readonly format?: string;
+  /** @internal Date format for DATE partition values. */
+  public readonly _format?: string;
 
-  /**
-   * Unit for DATE partition interval.
-   */
-  public readonly intervalUnit?: DateIntervalUnit;
+  /** @internal Unit for the DATE partition interval. */
+  public readonly _intervalUnit?: DateIntervalUnit;
 
-  /**
-   * Explicit list of values for ENUM partitions.
-   */
-  public readonly values?: string[];
+  /** @internal Explicit list of values for ENUM partitions. */
+  public readonly _values?: string[];
 
   private constructor(props: PartitionProjectionConfigurationProps) {
     this.type = props.type;
-    this.integerRange = props.integerRange;
-    this.dateRange = props.dateRange;
-    this.interval = props.interval;
-    this.digits = props.digits;
-    this.format = props.format;
-    this.intervalUnit = props.intervalUnit;
-    this.values = props.values;
+    this._integerRange = props.integerRange;
+    this._dateRange = props.dateRange;
+    this._interval = props.interval;
+    this._digits = props.digits;
+    this._format = props.format;
+    this._intervalUnit = props.intervalUnit;
+    this._values = props.values;
   }
 
   /**
@@ -535,30 +525,30 @@ export class PartitionProjectionConfiguration {
 
     switch (this.type) {
       case PartitionProjectionType.INTEGER: {
-        const [min, max] = this.integerRange!;
+        const [min, max] = this._integerRange!;
         params[`projection.${columnName}.range`] = `${min},${max}`;
-        if (this.interval !== undefined) {
-          params[`projection.${columnName}.interval`] = this.interval.toString();
+        if (this._interval !== undefined) {
+          params[`projection.${columnName}.interval`] = this._interval.toString();
         }
-        if (this.digits !== undefined) {
-          params[`projection.${columnName}.digits`] = this.digits.toString();
+        if (this._digits !== undefined) {
+          params[`projection.${columnName}.digits`] = this._digits.toString();
         }
         break;
       }
       case PartitionProjectionType.DATE: {
-        const [start, end] = this.dateRange!;
+        const [start, end] = this._dateRange!;
         params[`projection.${columnName}.range`] = `${start},${end}`;
-        params[`projection.${columnName}.format`] = this.format!;
-        if (this.interval !== undefined) {
-          params[`projection.${columnName}.interval`] = this.interval.toString();
+        params[`projection.${columnName}.format`] = this._format!;
+        if (this._interval !== undefined) {
+          params[`projection.${columnName}.interval`] = this._interval.toString();
         }
-        if (this.intervalUnit !== undefined) {
-          params[`projection.${columnName}.interval.unit`] = this.intervalUnit;
+        if (this._intervalUnit !== undefined) {
+          params[`projection.${columnName}.interval.unit`] = this._intervalUnit;
         }
         break;
       }
       case PartitionProjectionType.ENUM: {
-        params[`projection.${columnName}.values`] = this.values!.join(',');
+        params[`projection.${columnName}.values`] = this._values!.join(',');
         break;
       }
       case PartitionProjectionType.INJECTED: {
