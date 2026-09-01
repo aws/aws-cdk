@@ -4,6 +4,7 @@ import * as path from 'path';
 import type * as private_cxapi from '@aws-cdk/cloud-assembly-api';
 import type { IConstruct } from 'constructs';
 import { AnnotationPlugin, collectAnnotationReport } from './annotation-plugin';
+import type { AcknowledgedRule } from './collect-acknowledged-rule-ids';
 import { collectAcknowledgedRuleIds } from './collect-acknowledged-rule-ids';
 import { lit } from './literal-string';
 import * as cxapi from '../../../cx-api';
@@ -13,7 +14,7 @@ import { _aspectTreeRevisionReader } from '../aspect';
 import { AssumptionError, UnscopedValidationError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
 import type { Stage } from '../stage';
-import type { IPolicyValidationPlugin, PolicyValidationPluginReport } from '../validation';
+import type { IPolicyValidationPlugin, PolicyValidationPluginReport, PolicyViolation, PolicyViolatingResource } from '../validation';
 import { STAGE_TYPE } from './core-construct-finders';
 import { profileSpan } from './perf';
 import { CloudFormationValidatePlugin } from '../validation/cloudformation-validate-plugin';
@@ -63,9 +64,10 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
     warningifiedAnyErrors = downgradeCfnValidateErrorsToWarnings(reports);
   }
 
-  const suppressedByReport: Map<number, SuppressedViolation[]> = collectSuppressions(root, reports);
+  const constructTree = new ConstructTree(root);
+  const suppressedByReport: Map<number, SuppressedViolation[]> = collectSuppressions(root, reports, constructTree);
 
-  const formatter = new PolicyValidationReportFormatter(new ConstructTree(root));
+  const formatter = new PolicyValidationReportFormatter(constructTree);
   const reportJson = formatter.formatJson(reports, assembly.version, suppressedByReport);
 
   // Always write validation report to disk
@@ -264,9 +266,10 @@ function downgradeCfnValidateErrorsToWarnings(reports: NamedValidationPluginRepo
  * spaces replaced by dashes. Users suppress with:
  *   Validations.of(x).acknowledge({ id: '<plugin-name>::<rule-id>' })
  */
-function collectSuppressions(root: App, reports: NamedValidationPluginReport[]) {
+function collectSuppressions(root: App, reports: NamedValidationPluginReport[], constructTree: ConstructTree) {
   const suppressedByReport: Map<number, SuppressedViolation[]> = new Map();
   const acknowledgedRules = collectAcknowledgedRuleIds(root);
+  const isScopedAcknowledgementEnabled = FeatureFlags.of(root).isEnabled(cxapi.SCOPED_VALIDATION_PLUGIN_ACKNOWLEDGMENTS);
 
   if (acknowledgedRules.size > 0) {
     for (let i = 0; i < reports.length; i++) {
@@ -294,7 +297,9 @@ function collectSuppressions(root: App, reports: NamedValidationPluginReport[]) 
           ackIds.push(`${pluginName}::${v.ruleName}`);
         }
 
-        const ack = firstThat(ackIds.map(hyphenify), id => acknowledgedRules.get(id));
+        const ack = isScopedAcknowledgementEnabled
+          ? findScopedAcknowledgement(ackIds.map(hyphenify), v, acknowledgedRules, constructTree, root.node.path)
+          : firstThat(ackIds.map(hyphenify), id => last(acknowledgedRules.get(id)));
 
         if (ack) {
           suppressed.push({
@@ -319,6 +324,66 @@ function collectSuppressions(root: App, reports: NamedValidationPluginReport[]) 
     }
   }
   return suppressedByReport;
+}
+
+function findScopedAcknowledgement(
+  acknowledgementIds: string[],
+  violation: PolicyViolation,
+  acknowledgedRules: Map<string, AcknowledgedRule[]>,
+  constructTree: ConstructTree,
+  rootPath: string,
+): { key: string; value: AcknowledgedRule } | undefined {
+  for (const id of acknowledgementIds) {
+    const acknowledgements = acknowledgedRules.get(id) ?? [];
+    for (let i = acknowledgements.length - 1; i >= 0; i--) {
+      const acknowledgement = acknowledgements[i];
+      if (violationIsWithinScope(violation, acknowledgement.constructPath, constructTree, rootPath)) {
+        return { key: id, value: acknowledgement };
+      }
+    }
+  }
+  return undefined;
+}
+
+function violationIsWithinScope(
+  violation: PolicyViolation,
+  acknowledgementPath: string,
+  constructTree: ConstructTree,
+  rootPath: string,
+): boolean {
+  if (acknowledgementPath === rootPath) {
+    return true;
+  }
+  if (violation.violatingResources.length === 0) {
+    return false;
+  }
+  // A violation can group multiple resources. Do not hide the finding unless
+  // one acknowledgement scope covers every resource involved.
+  return violation.violatingResources.every(resource => {
+    const constructPath = violatingConstructPath(resource, constructTree);
+    return constructPath !== undefined && isEqualOrDescendant(constructPath, acknowledgementPath);
+  });
+}
+
+function violatingConstructPath(resource: PolicyViolatingResource, constructTree: ConstructTree): string | undefined {
+  if (resource.constructPath !== undefined) {
+    return resource.constructPath.replace(/^\//, '');
+  }
+  if (resource.templatePath && resource.resourceLogicalId) {
+    return constructTree.getConstructByLogicalId(
+      path.basename(resource.templatePath),
+      resource.resourceLogicalId,
+    )?.node.path;
+  }
+  return undefined;
+}
+
+function isEqualOrDescendant(constructPath: string, scopePath: string): boolean {
+  return constructPath === scopePath || constructPath.startsWith(`${scopePath}/`);
+}
+
+function last<A>(xs: A[] | undefined): A | undefined {
+  return xs?.[xs.length - 1];
 }
 
 /**
