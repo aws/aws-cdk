@@ -25,6 +25,34 @@
     }
    }
   },
+  "DistWithCacheTagConfig24E52B03": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "CacheTagConfig": {
+      "HeaderName": "x-amz-meta-cache-tag"
+     },
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "Compress": true,
+      "TargetOriginId": "integdistributionbasicDistWithCacheTagConfigOrigin188900121",
+      "ViewerProtocolPolicy": "allow-all"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "CustomOriginConfig": {
+        "OriginProtocolPolicy": "https-only"
+       },
+       "DomainName": "www.example.com",
+       "Id": "integdistributionbasicDistWithCacheTagConfigOrigin188900121"
+      }
+     ]
+    }
+   }
+  },
   "Role13A5C70C1": {
    "Type": "AWS::IAM::Role",
    "Properties": {
