@@ -3,6 +3,7 @@ import { Fn } from './cfn-fn';
 import { CfnForEachFragment } from './cfn-foreach-fragment';
 import { CfnResource } from './cfn-resource';
 import { UnscopedValidationError } from './errors';
+import { lit } from './private/literal-string';
 import { Lazy } from './lazy';
 import type { IResolvable } from './resolvable';
 import { Stack } from './stack';
@@ -99,7 +100,7 @@ export class ForEachResource extends Construct {
     super(scope, id);
 
     if (!/^[A-Za-z0-9]+$/.test(props.loopName)) {
-      throw new UnscopedValidationError(`forEach loop name must be alphanumeric, got '${props.loopName}'`);
+      throw new UnscopedValidationError(lit`ForEachInvalidLoopName`, `forEach loop name must be alphanumeric, got '${props.loopName}'`);
     }
 
     this.loopName = props.loopName;

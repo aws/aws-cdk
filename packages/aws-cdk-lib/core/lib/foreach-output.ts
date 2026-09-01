@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { Fn } from './cfn-fn';
 import { CfnForEachFragment } from './cfn-foreach-fragment';
 import { UnscopedValidationError } from './errors';
+import { lit } from './private/literal-string';
 import { Stack } from './stack';
 
 const FOR_EACH_OUTPUT_SYMBOL = Symbol.for('@aws-cdk/core.ForEachOutput');
@@ -70,7 +71,7 @@ export class ForEachOutput extends Construct {
     super(scope, id);
 
     if (!/^[A-Za-z0-9]+$/.test(props.loopName)) {
-      throw new UnscopedValidationError(`forEach loop name must be alphanumeric, got '${props.loopName}'`);
+      throw new UnscopedValidationError(lit`ForEachInvalidLoopName`, `forEach loop name must be alphanumeric, got '${props.loopName}'`);
     }
 
     Object.defineProperty(this, FOR_EACH_OUTPUT_SYMBOL, { value: true });

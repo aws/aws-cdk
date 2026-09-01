@@ -4,6 +4,7 @@ import { minimalCloudFormationJoin } from './private/cloudformation-lang';
 import { stackOf } from './private/core-construct-finders';
 import { Intrinsic } from './private/intrinsic';
 import { lit } from './private/literal-string';
+import { captureStackTrace } from './private/stack-trace';
 import { Reference } from './reference';
 import type { IResolvable, IResolveContext } from './resolvable';
 import { Token } from './token';
@@ -455,7 +456,7 @@ export class Fn {
     outputValue: any,
   ): IResolvable {
     if (!/^[A-Za-z0-9]+$/.test(uniqueLoopName)) {
-      throw new UnscopedValidationError(`forEach loop name must be alphanumeric, got '${uniqueLoopName}'`);
+      throw new UnscopedValidationError(lit`ForEachInvalidLoopName`, `forEach loop name must be alphanumeric, got '${uniqueLoopName}'`);
     }
     return new FnForEach(uniqueLoopName, collection, outputKey, outputValue);
   }
@@ -1056,7 +1057,7 @@ class FnForEach implements IResolvable {
   }
 
   public resolve(context: IResolveContext): any {
-    Stack.of(context.scope).addTransform('AWS::LanguageExtensions');
+    stackOf(context.scope).addTransform('AWS::LanguageExtensions');
     return {
       [`Fn::ForEach::${this.loopName}`]: [
         this.collection,
