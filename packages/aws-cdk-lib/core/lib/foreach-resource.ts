@@ -3,8 +3,8 @@ import { Fn } from './cfn-fn';
 import { CfnForEachFragment } from './cfn-foreach-fragment';
 import { CfnResource } from './cfn-resource';
 import { UnscopedValidationError } from './errors';
-import { lit } from './private/literal-string';
 import { Lazy } from './lazy';
+import { lit } from './private/literal-string';
 import type { IResolvable } from './resolvable';
 import { Stack } from './stack';
 
