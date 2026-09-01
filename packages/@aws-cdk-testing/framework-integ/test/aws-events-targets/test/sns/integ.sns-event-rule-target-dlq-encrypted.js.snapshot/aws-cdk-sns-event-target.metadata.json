@@ -1,0 +1,164 @@
+{
+  "/aws-cdk-sns-event-target/MyTopic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sns-event-target/EveryMinute": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "schedule": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEventPattern": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addTarget": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-sns-event-target/MyQueue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sns-event-target/MyKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sns-event-target/MyDeadLetterQueue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryption": "KMS",
+        "encryptionMasterKey": "*"
+      }
+    }
+  ],
+  "/aws-cdk-sns-event-target/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-sns-event-target/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-sns-event-target/MyTopic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyTopic86869434"
+    }
+  ],
+  "/aws-cdk-sns-event-target/MyTopic/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "topics": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-sns-event-target/EveryMinute/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EveryMinute2BBCEA8F"
+    }
+  ],
+  "/aws-cdk-sns-event-target/MyQueue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyQueueE6CA6235"
+    }
+  ],
+  "/aws-cdk-sns-event-target/MyQueue/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "queues": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-sns-event-target/MyQueue/awscdksnseventtargetMyTopicB7575CD8": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "topic": "*",
+        "endpoint": "*",
+        "protocol": "sqs",
+        "rawMessageDelivery": "*",
+        "filterPolicy": "*",
+        "filterPolicyWithMessageBody": "*",
+        "region": "*",
+        "deadLetterQueue": "*"
+      }
+    }
+  ],
+  "/aws-cdk-sns-event-target/MyKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyKey6AB29FA6"
+    }
+  ],
+  "/aws-cdk-sns-event-target/MyDeadLetterQueue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyDeadLetterQueueD997968A"
+    }
+  ],
+  "/aws-cdk-sns-event-target/MyDeadLetterQueue/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "queues": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-sns-event-target/MyTopic/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyTopicPolicy12A5EC17"
+    }
+  ],
+  "/aws-cdk-sns-event-target/MyQueue/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyQueuePolicy6BBEDDAC"
+    }
+  ],
+  "/aws-cdk-sns-event-target/MyQueue/awscdksnseventtargetMyTopicB7575CD8/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyQueueawscdksnseventtargetMyTopicB7575CD87304D383"
+    }
+  ],
+  "/aws-cdk-sns-event-target/MyDeadLetterQueue/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyDeadLetterQueuePolicyCC35D52C"
+    }
+  ]
+}
