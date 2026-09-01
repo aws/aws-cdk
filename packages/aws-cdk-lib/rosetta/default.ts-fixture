@@ -39,6 +39,7 @@ import {
   CustomResourceProviderRuntime,
   DefaultStackSynthesizer,
   Duration,
+  Bitrate,
   Fn,
   ForEachCondition,
   ForEachOutput,
@@ -46,6 +47,8 @@ import {
   IAspect,
   ITaggable,
   PermissionsBoundary,
+  CrossStackReferences,
+  ReferenceStrength,
   RemovalPolicy,
   RemovalPolicies,
   Mixin,
@@ -62,6 +65,7 @@ import {
   TagType,
   Tags,
   Token,
+  Validations,
 } from 'aws-cdk-lib';
 import {
   IConstruct,

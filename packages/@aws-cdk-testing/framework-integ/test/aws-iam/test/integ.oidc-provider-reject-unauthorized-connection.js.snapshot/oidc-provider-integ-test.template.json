@@ -9,9 +9,9 @@
       "Arn"
      ]
     },
-    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test2",
+    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test2reject",
     "RejectUnauthorized": true,
-    "CodeHash": "8be22d8be71ebe9e2ddfe3ec85cf2145bb8a6c967f2678a983b4fede3cfe7ab8"
+    "CodeHash": "a6c501b56f95db60850de11c6ca7d936d88fdfc2f444fb39d5f76faaab8c1815"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -66,7 +66,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8be22d8be71ebe9e2ddfe3ec85cf2145bb8a6c967f2678a983b4fede3cfe7ab8.zip"
+     "S3Key": "a6c501b56f95db60850de11c6ca7d936d88fdfc2f444fb39d5f76faaab8c1815.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -77,7 +77,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"
@@ -96,9 +96,9 @@
      "foo",
      "bar"
     ],
-    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test3",
+    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test3reject",
     "RejectUnauthorized": true,
-    "CodeHash": "8be22d8be71ebe9e2ddfe3ec85cf2145bb8a6c967f2678a983b4fede3cfe7ab8"
+    "CodeHash": "a6c501b56f95db60850de11c6ca7d936d88fdfc2f444fb39d5f76faaab8c1815"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -116,9 +116,9 @@
      "aa00aa1122aa00aa1122aa00aa1122aa00aa1122",
      "aa00aa1122aa00aa1122aa00aa1122aa00aa1111"
     ],
-    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test4",
+    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test4reject",
     "RejectUnauthorized": true,
-    "CodeHash": "8be22d8be71ebe9e2ddfe3ec85cf2145bb8a6c967f2678a983b4fede3cfe7ab8"
+    "CodeHash": "a6c501b56f95db60850de11c6ca7d936d88fdfc2f444fb39d5f76faaab8c1815"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

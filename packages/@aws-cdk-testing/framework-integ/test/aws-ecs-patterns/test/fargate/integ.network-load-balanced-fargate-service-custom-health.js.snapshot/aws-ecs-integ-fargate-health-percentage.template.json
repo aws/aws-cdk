@@ -433,18 +433,30 @@
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "Automatically created Security Group for ELB awsecsintegfargatehealthpercentagemyServicelb1ABCF9E89",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "255.255.255.255/32",
-      "Description": "Disallow all traffic",
-      "FromPort": 252,
-      "IpProtocol": "icmp",
-      "ToPort": 86
-     }
-    ],
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   }
+  },
+  "myServicelb1SecurityGrouptoawsecsintegfargatehealthpercentagemyServiceSecurityGroupD4B46A67ALLPORTS90DEE973": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
+   "Properties": {
+    "Description": "to awsecsintegfargatehealthpercentagemyServiceSecurityGroupD4B46A67:ALL PORTS",
+    "DestinationSecurityGroupId": {
+     "Fn::GetAtt": [
+      "myServiceSecurityGroupC3B9D4E0",
+      "GroupId"
+     ]
+    },
+    "FromPort": 0,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "myServicelb1SecurityGroup342C51EA",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 65535
    }
   },
   "myServicelb1listener15ED0E805": {
@@ -660,6 +672,30 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   },
+   "DependsOn": [
+    "myServiceTaskDefTaskRole1C1DE6CC"
+   ]
+  },
+  "myServiceSecurityGroupfromawsecsintegfargatehealthpercentagemyServicelb1SecurityGroup3FE4AC72ALLPORTS3964BF9B": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "from awsecsintegfargatehealthpercentagemyServicelb1SecurityGroup3FE4AC72:ALL PORTS",
+    "FromPort": 0,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "myServiceSecurityGroupC3B9D4E0",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "myServicelb1SecurityGroup342C51EA",
+      "GroupId"
+     ]
+    },
+    "ToPort": 65535
    },
    "DependsOn": [
     "myServiceTaskDefTaskRole1C1DE6CC"

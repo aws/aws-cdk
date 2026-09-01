@@ -2,9 +2,9 @@ import { EOL } from 'os';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3tables from 'aws-cdk-lib/aws-s3tables';
-import type { IResource, RemovalPolicy } from 'aws-cdk-lib/core';
+import type { IResource, ITaggableV2, RemovalPolicy, TagManager } from 'aws-cdk-lib/core';
 import { Resource, UnscopedValidationError, Token } from 'aws-cdk-lib/core';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -145,6 +145,44 @@ export enum UnreferencedFileRemovalStatus {
    * Disable unreferenced file removal.
    */
   DISABLED = 'Disabled',
+}
+
+/**
+ * Controls whether CloudWatch request metrics are enabled or disabled for the table bucket.
+ */
+export enum RequestMetricsStatus {
+  /**
+   * Enable CloudWatch request metrics for the table bucket.
+   */
+  ENABLED = 'Enabled',
+
+  /**
+   * Disable CloudWatch request metrics for the table bucket.
+   */
+  DISABLED = 'Disabled',
+}
+
+/**
+ * Storage class for S3 Tables.
+ *
+ * Determines the storage tier used for table data, allowing optimization
+ * for different access patterns and cost profiles.
+ */
+export enum StorageClass {
+  /**
+   * Standard storage class for frequently accessed data.
+   *
+   * Use this for tables with consistent, high-frequency access patterns.
+   */
+  STANDARD = 'STANDARD',
+
+  /**
+   * Intelligent-Tiering storage class that automatically moves data between access tiers.
+   *
+   * Use this for tables with unknown or changing access patterns to optimize costs
+   * while maintaining performance for frequently accessed data.
+   */
+  INTELLIGENT_TIERING = 'INTELLIGENT_TIERING',
 }
 
 /**
@@ -349,6 +387,26 @@ export interface TableBucketProps {
    * @default RETAIN
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * CloudWatch request metrics configuration for the table bucket.
+   *
+   * When enabled, S3 Tables publishes CloudWatch request metrics for the table bucket.
+   * Request metrics provide insight into Amazon S3 Tables requests.
+   *
+   * @default - Request metrics are disabled
+   */
+  readonly requestMetricsStatus?: RequestMetricsStatus;
+
+  /**
+   * The storage class for the table bucket.
+   *
+   * Determines the storage tier used for table data, allowing optimization
+   * for different access patterns and cost profiles.
+   *
+   * @default - STANDARD storage class
+   */
+  readonly storageClass?: StorageClass;
 }
 
 /**
@@ -407,7 +465,7 @@ export interface TableBucketAttributes {
  * });
  */
 @propertyInjectable
-export class TableBucket extends TableBucketBase {
+export class TableBucket extends TableBucketBase implements ITaggableV2 {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-s3tables-alpha.TableBucket';
 
@@ -512,6 +570,7 @@ export class TableBucket extends TableBucketBase {
 
     if (errors.length > 0) {
       throw new UnscopedValidationError(
+        lit`InvalidTableBucketName`,
         `Invalid S3 table bucket name (value: ${bucketName})${EOL}${errors.join(EOL)}`,
       );
     }
@@ -558,6 +617,7 @@ export class TableBucket extends TableBucketBase {
 
     if (errors.length > 0) {
       throw new UnscopedValidationError(
+        lit`InvalidUnreferencedFileRemovalProperty`,
         `Invalid UnreferencedFileRemovalProperty})${EOL}${errors.join(EOL)}`,
       );
     }
@@ -568,6 +628,11 @@ export class TableBucket extends TableBucketBase {
    * @internal
    */
   private readonly resource: s3tables.CfnTableBucket;
+
+  /**
+   * The tag manager for this resource.
+   */
+  public readonly cdkTagManager: TagManager;
 
   /**
    * The resource policy for this tableBucket.
@@ -599,8 +664,11 @@ export class TableBucket extends TableBucketBase {
         unreferencedDays: props.unreferencedFileRemoval?.unreferencedDays,
       },
       encryptionConfiguration: bucketEncryption,
+      metricsConfiguration: props.requestMetricsStatus ? { status: props.requestMetricsStatus } : undefined,
+      storageClassConfiguration: props.storageClass ? { storageClass: props.storageClass } : undefined,
     });
 
+    this.cdkTagManager = this.resource.cdkTagManager;
     this.resource.applyRemovalPolicy(props.removalPolicy);
   }
 
@@ -679,10 +747,10 @@ export class TableBucket extends TableBucketBase {
           },
         };
       } else {
-        throw new UnscopedValidationError('Expected encryption = `KMS` with user provided encryption key');
+        throw new UnscopedValidationError(lit`InvalidEncryptionConfiguration`, 'Expected encryption = `KMS` with user provided encryption key');
       }
     }
-    throw new UnscopedValidationError(`Unknown encryption configuration detected: ${props.encryption} with key ${props.encryptionKey}`);
+    throw new UnscopedValidationError(lit`UnknownEncryptionConfiguration`, `Unknown encryption configuration detected: ${props.encryption} with key ${props.encryptionKey}`);
   }
 
   /**
@@ -715,4 +783,3 @@ export class TableBucket extends TableBucketBase {
     }));
   }
 }
-
