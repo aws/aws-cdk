@@ -13,7 +13,7 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'aws-cdk-sns-event-target');
+const stack = new cdk.Stack(app, 'aws-cdk-sns-event-target-dlq-encrypted');
 
 const topic = new sns.Topic(stack, 'MyTopic');
 const event = new events.Rule(stack, 'EveryMinute', {
