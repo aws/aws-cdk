@@ -49,7 +49,7 @@ new glue.DataQualityRuleset(stack, 'DataQualityRuleset', {
     key1: 'value1',
     key2: 'value2',
   },
-  targetTable: new glue.DataQualityTargetTable(database.databaseName, csvTable.tableName),
+  targetTable: glue.DataQualityTargetTable.fromTable(database, csvTable),
 });
 
 new IntegTest(app, 'glue-data-quality-ruleset', {

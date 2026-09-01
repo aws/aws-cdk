@@ -1098,10 +1098,11 @@ Data Quality Definition Language (DQDL) — that are evaluated against a table i
 the Data Catalog.
 
 ```ts
+declare const database: glue.IDatabase;
 new glue.DataQualityRuleset(this, 'MyRuleset', {
   rulesetName: 'my_ruleset',
   dqdl: glue.Dqdl.fromString('Rules = [ RowCount > 100, IsComplete "order_id" ]'),
-  targetTable: new glue.DataQualityTargetTable('my_database', 'my_table'),
+  targetTable: glue.DataQualityTargetTable.fromTableName(database, 'my_table'),
 });
 ```
 
