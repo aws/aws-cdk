@@ -25,18 +25,18 @@ jobs:
           script: |
             const headRepo = context.payload.workflow_run.head_repository;
             if (!headRepo || !headRepo.owner || !headRepo.owner.login) {
-              core.setFailed('workflow_run.head_repository is missing (fork deleted?)');
+              core.setFailed('workflow_run repository information not found');
               return;
             }
-            const forkOwner = headRepo.owner.login;
-            const branch    = context.payload.workflow_run.head_branch;
-            const headSha   = context.payload.workflow_run.head_sha;
+            const owner   = headRepo.owner.login;
+            const branch  = context.payload.workflow_run.head_branch;
+            const headSha = context.payload.workflow_run.head_sha;
 
             const { data: prs } = await github.rest.pulls.list({
               owner: context.repo.owner,
               repo:  context.repo.repo,
               state: 'open',
-              head:  `${forkOwner}:${branch}`,
+              head:  `${owner}:${branch}`,
             });
             if (prs.length !== 1) {
               core.setFailed(`Expected 1 PR, got ${prs.length}`);
@@ -84,7 +84,7 @@ jobs:
 
       - name: Publish Security Test Results
         id: junit_static
-        uses: mikepenz/action-junit-report@v6
+        uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d  # v6.5.0
         if: always()
         with:
           report_paths: 'test-results/**/cfn-guard-static.xml'
@@ -137,7 +137,7 @@ jobs:
 
       - name: Publish Security Test Results for resolved templates
         id: junit_resolved
-        uses: mikepenz/action-junit-report@v6
+        uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d  # v6.5.0
         if: always()
         with:
           report_paths: 'test-results/**/cfn-guard-resolved.xml'
