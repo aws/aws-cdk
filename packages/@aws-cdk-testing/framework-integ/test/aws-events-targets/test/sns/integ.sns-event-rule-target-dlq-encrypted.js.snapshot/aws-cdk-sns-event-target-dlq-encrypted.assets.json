@@ -1,16 +1,16 @@
 {
   "version": "54.0.0",
   "files": {
-    "af373145d8ad507e587eb214b170c6e45254cdb2b2e5b61c5bfe9850b47426ae": {
-      "displayName": "aws-cdk-sns-event-target Template",
+    "b6b57a98645f3b8f5d8dc8670813fcd57867c7166d872759351cc47cf7fbf05f": {
+      "displayName": "aws-cdk-sns-event-target-dlq-encrypted Template",
       "source": {
-        "path": "aws-cdk-sns-event-target.template.json",
+        "path": "aws-cdk-sns-event-target-dlq-encrypted.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-25d0edcd": {
+        "current_account-current_region-69d9a7fd": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "af373145d8ad507e587eb214b170c6e45254cdb2b2e5b61c5bfe9850b47426ae.json",
+          "objectKey": "b6b57a98645f3b8f5d8dc8670813fcd57867c7166d872759351cc47cf7fbf05f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

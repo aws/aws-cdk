@@ -3,7 +3,7 @@
   "testCases": {
     "integ.sns-event-rule-target-dlq-encrypted": {
       "stacks": [
-        "aws-cdk-sns-event-target"
+        "aws-cdk-sns-event-target-dlq-encrypted"
       ],
       "diffAssets": false,
       "stackUpdateWorkflow": true

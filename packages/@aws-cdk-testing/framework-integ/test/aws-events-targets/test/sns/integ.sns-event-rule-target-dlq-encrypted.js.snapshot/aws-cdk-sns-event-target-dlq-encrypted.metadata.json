@@ -1,11 +1,11 @@
 {
-  "/aws-cdk-sns-event-target/MyTopic": [
+  "/aws-cdk-sns-event-target-dlq-encrypted/MyTopic": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/aws-cdk-sns-event-target/EveryMinute": [
+  "/aws-cdk-sns-event-target-dlq-encrypted/EveryMinute": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -29,19 +29,19 @@
       }
     }
   ],
-  "/aws-cdk-sns-event-target/MyQueue": [
+  "/aws-cdk-sns-event-target-dlq-encrypted/MyQueue": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/aws-cdk-sns-event-target/MyKey": [
+  "/aws-cdk-sns-event-target-dlq-encrypted/MyKey": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/aws-cdk-sns-event-target/MyDeadLetterQueue": [
+  "/aws-cdk-sns-event-target-dlq-encrypted/MyDeadLetterQueue": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -50,25 +50,25 @@
       }
     }
   ],
-  "/aws-cdk-sns-event-target/BootstrapVersion": [
+  "/aws-cdk-sns-event-target-dlq-encrypted/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
     }
   ],
-  "/aws-cdk-sns-event-target/CheckBootstrapVersion": [
+  "/aws-cdk-sns-event-target-dlq-encrypted/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
     }
   ],
-  "/aws-cdk-sns-event-target/MyTopic/Resource": [
+  "/aws-cdk-sns-event-target-dlq-encrypted/MyTopic/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "MyTopic86869434"
     }
   ],
-  "/aws-cdk-sns-event-target/MyTopic/Policy": [
+  "/aws-cdk-sns-event-target-dlq-encrypted/MyTopic/Policy": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -78,19 +78,19 @@
       }
     }
   ],
-  "/aws-cdk-sns-event-target/EveryMinute/Resource": [
+  "/aws-cdk-sns-event-target-dlq-encrypted/EveryMinute/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "EveryMinute2BBCEA8F"
     }
   ],
-  "/aws-cdk-sns-event-target/MyQueue/Resource": [
+  "/aws-cdk-sns-event-target-dlq-encrypted/MyQueue/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "MyQueueE6CA6235"
     }
   ],
-  "/aws-cdk-sns-event-target/MyQueue/Policy": [
+  "/aws-cdk-sns-event-target-dlq-encrypted/MyQueue/Policy": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -100,7 +100,7 @@
       }
     }
   ],
-  "/aws-cdk-sns-event-target/MyQueue/awscdksnseventtargetMyTopicB7575CD8": [
+  "/aws-cdk-sns-event-target-dlq-encrypted/MyQueue/awscdksnseventtargetdlqencryptedMyTopic5D52AEBD": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -115,19 +115,19 @@
       }
     }
   ],
-  "/aws-cdk-sns-event-target/MyKey/Resource": [
+  "/aws-cdk-sns-event-target-dlq-encrypted/MyKey/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "MyKey6AB29FA6"
     }
   ],
-  "/aws-cdk-sns-event-target/MyDeadLetterQueue/Resource": [
+  "/aws-cdk-sns-event-target-dlq-encrypted/MyDeadLetterQueue/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "MyDeadLetterQueueD997968A"
     }
   ],
-  "/aws-cdk-sns-event-target/MyDeadLetterQueue/Policy": [
+  "/aws-cdk-sns-event-target-dlq-encrypted/MyDeadLetterQueue/Policy": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -137,25 +137,25 @@
       }
     }
   ],
-  "/aws-cdk-sns-event-target/MyTopic/Policy/Resource": [
+  "/aws-cdk-sns-event-target-dlq-encrypted/MyTopic/Policy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "MyTopicPolicy12A5EC17"
     }
   ],
-  "/aws-cdk-sns-event-target/MyQueue/Policy/Resource": [
+  "/aws-cdk-sns-event-target-dlq-encrypted/MyQueue/Policy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "MyQueuePolicy6BBEDDAC"
     }
   ],
-  "/aws-cdk-sns-event-target/MyQueue/awscdksnseventtargetMyTopicB7575CD8/Resource": [
+  "/aws-cdk-sns-event-target-dlq-encrypted/MyQueue/awscdksnseventtargetdlqencryptedMyTopic5D52AEBD/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "MyQueueawscdksnseventtargetMyTopicB7575CD87304D383"
+      "data": "MyQueueawscdksnseventtargetdlqencryptedMyTopic5D52AEBDB6036AD0"
     }
   ],
-  "/aws-cdk-sns-event-target/MyDeadLetterQueue/Policy/Resource": [
+  "/aws-cdk-sns-event-target-dlq-encrypted/MyDeadLetterQueue/Policy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "MyDeadLetterQueuePolicyCC35D52C"

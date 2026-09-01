@@ -92,7 +92,7 @@
     ]
    }
   },
-  "MyQueueawscdksnseventtargetMyTopicB7575CD87304D383": {
+  "MyQueueawscdksnseventtargetdlqencryptedMyTopic5D52AEBDB6036AD0": {
    "Type": "AWS::SNS::Subscription",
    "Properties": {
     "Endpoint": {
@@ -188,7 +188,7 @@
          "Arn"
         ]
        },
-       "Sid": "AllowEncryptedEventRuleawscdksnseventtargetEveryMinuteD1FC5963"
+       "Sid": "AllowEncryptedEventRuleawscdksnseventtargetdlqencryptedEveryMinuteDF676E33"
       },
       {
        "Action": "sqs:SendMessage",
@@ -212,7 +212,7 @@
          "Arn"
         ]
        },
-       "Sid": "AllowEventRuleawscdksnseventtargetEveryMinuteD1FC5963"
+       "Sid": "AllowEventRuleawscdksnseventtargetdlqencryptedEveryMinuteDF676E33"
       }
      ],
      "Version": "2012-10-17"
