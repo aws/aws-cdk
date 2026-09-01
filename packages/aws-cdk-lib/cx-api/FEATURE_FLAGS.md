@@ -118,6 +118,7 @@ Flags come in three types:
 | [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-stack references are strong, weak, or both | 2.254.0 | config |
 | [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | 2.259.0 | new default |
 | [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | 2.262.0 | config |
+| [@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps](#aws-cdkaws-cloudfrontdefaultviewerprotocolpolicyredirecttohttps) | Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS | V2NEXT | new default |
 
 <!-- END table -->
 
@@ -138,6 +139,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": true,
     "@aws-cdk/aws-batch:defaultToAL2023": true,
     "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": true,
+    "@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps": true,
     "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": true,
     "@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup": true,
     "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true,
@@ -2549,6 +2551,33 @@ fail synthesis. When unconfigured, violations are reported as warnings only.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.262.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps
+
+*Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS*
+
+Flag type: New default behavior
+
+When enabled, cache behaviors on a `Distribution` that do not specify an explicit
+`viewerProtocolPolicy` default to `ViewerProtocolPolicy.REDIRECT_TO_HTTPS` instead of
+`ViewerProtocolPolicy.ALLOW_ALL`, so viewers are redirected from HTTP to HTTPS rather
+than being served over plaintext HTTP.
+
+This applies to the default behavior, to `additionalBehaviors`, and to behaviors added
+later with `addBehavior()`. An explicitly specified `viewerProtocolPolicy` always wins,
+regardless of this flag.
+
+Note that `REDIRECT_TO_HTTPS` answers an HTTP request with an HTTP 301 redirect, which the
+viewer then follows with a second request. That additional request is billable.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Set `viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL` explicitly on each behavior to keep the old default.
 
 
 <!-- END details -->
