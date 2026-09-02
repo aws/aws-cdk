@@ -77,13 +77,6 @@ export interface CreateAlarmOptionsBase {
   readonly treatMissingData?: TreatMissingData;
 
   /**
-   * The warm-up configuration for the alarm.
-   *
-   * @default - No warm-up period
-   */
-  readonly warmupConfiguration?: AlarmWarmupConfiguration;
-
-  /**
    * Whether the actions for this alarm are enabled
    *
    * @default true

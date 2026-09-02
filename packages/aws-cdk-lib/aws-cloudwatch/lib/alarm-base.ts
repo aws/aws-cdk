@@ -9,6 +9,8 @@ import type { IAlarmRef, AlarmReference } from '../../interfaces/generated/aws-c
 
 /**
  * The warm-up configuration for an alarm.
+ *
+ * This can be used only with alarms based on a single `Metric`.
  */
 export interface AlarmWarmupConfiguration {
   /**

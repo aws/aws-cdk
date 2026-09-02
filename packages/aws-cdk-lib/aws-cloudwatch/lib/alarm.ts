@@ -256,6 +256,14 @@ export class Alarm extends AlarmBase {
       threshold = props.threshold;
     }
 
+    if (props.warmupConfiguration !== undefined && !isSingleMetric(props.metric)) {
+      throw new ValidationError(
+        lit`AlarmWarmupRequiresSingleMetric`,
+        'warmupConfiguration can be used only with a single Metric; math and search expressions are not supported',
+        this,
+      );
+    }
+
     const warmupConfiguration = renderAlarmWarmupConfiguration(this, props.warmupConfiguration);
 
     // Render metric, process potential overrides from the alarm
@@ -611,6 +619,14 @@ export class Alarm extends AlarmBase {
  * and have more features, like metric math.
  */
 type AlarmMetricFields = Pick<CfnAlarmProps, 'dimensions' | 'namespace' | 'metricName' | 'period' | 'statistic' | 'extendedStatistic' | 'unit' | 'metrics'>;
+
+function isSingleMetric(metric: IMetric): boolean {
+  return dispatchMetric(metric, {
+    withStat: () => true,
+    withMathExpression: () => false,
+    withSearchExpression: () => false,
+  });
+}
 
 /**
  * Check if a metric is already an anomaly detection metric

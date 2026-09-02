@@ -4,7 +4,7 @@ import { Ec2Action, Ec2InstanceAction } from '../../aws-cloudwatch-actions/lib';
 import { CfnParameter, Duration, Stack, App, Validations } from '../../core';
 import { ENABLE_PARTITION_LITERALS } from '../../cx-api';
 import type { IAlarm, IAlarmAction, IMetric } from '../lib';
-import { Alarm, AnomalyDetectionAlarm, Metric, MathExpression, Stats, ComparisonOperator } from '../lib';
+import { Alarm, Metric, MathExpression, Stats, ComparisonOperator } from '../lib';
 
 const testMetric = new Metric({
   namespace: 'CDK/Test',
@@ -147,31 +147,20 @@ describe('Alarm', () => {
     });
   });
 
-  test('MathExpression.createAlarm forwards alarm warm-up configuration', () => {
-    // GIVEN
+  test('fails when alarm warm-up is configured for a math expression', () => {
     const stack = makeStackForWarmupTest();
     const expression = new MathExpression({
       expression: 'm1',
       usingMetrics: { m1: testMetric },
     });
 
-    // WHEN
-    expression.createAlarm(stack, 'Alarm', {
+    expect(() => expression.createAlarm(stack, 'Alarm', {
       threshold: 1000,
       evaluationPeriods: 3,
       warmupConfiguration: {
         warmupPeriod: Duration.minutes(5),
-        onlyStartEvaluatingAfterWarmupPeriodEnds: false,
       },
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
-      WarmUpConfiguration: {
-        OnlyStartEvaluatingAfterWarmUpPeriodEnds: false,
-        WarmUpPeriodDurationInMinutes: 5,
-      },
-    });
+    })).toThrow('warmupConfiguration can be used only with a single Metric; math and search expressions are not supported');
   });
 
   test('alarm warm-up accepts a tokenized duration in minutes', () => {
@@ -193,27 +182,6 @@ describe('Alarm', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       WarmUpConfiguration: {
         WarmUpPeriodDurationInMinutes: { Ref: 'WarmupPeriod' },
-      },
-    });
-  });
-
-  test('AnomalyDetectionAlarm forwards alarm warm-up configuration', () => {
-    // GIVEN
-    const stack = makeStackForWarmupTest();
-
-    // WHEN
-    new AnomalyDetectionAlarm(stack, 'Alarm', {
-      metric: testMetric,
-      evaluationPeriods: 3,
-      warmupConfiguration: {
-        warmupPeriod: Duration.minutes(5),
-      },
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
-      WarmUpConfiguration: {
-        WarmUpPeriodDurationInMinutes: 5,
       },
     });
   });
