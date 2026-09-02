@@ -291,6 +291,7 @@
     "./aws-stepfunctions": "./lib/services/aws-stepfunctions/index.js",
     "./aws-storagegateway": "./lib/services/aws-storagegateway/index.js",
     "./aws-supportapp": "./lib/services/aws-supportapp/index.js",
+    "./aws-supportauthz": "./lib/services/aws-supportauthz/index.js",
     "./aws-synthetics": "./lib/services/aws-synthetics/index.js",
     "./aws-systemsmanagersap": "./lib/services/aws-systemsmanagersap/index.js",
     "./aws-textract": "./lib/services/aws-textract/index.js",

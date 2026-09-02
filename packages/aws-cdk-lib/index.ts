@@ -309,6 +309,7 @@ export * as aws_stepfunctions from './aws-stepfunctions';
 export * as aws_stepfunctions_tasks from './aws-stepfunctions-tasks';
 export * as aws_storagegateway from './aws-storagegateway';
 export * as aws_supportapp from './aws-supportapp';
+export * as aws_supportauthz from './aws-supportauthz';
 export * as aws_synthetics from './aws-synthetics';
 export * as aws_systemsmanagersap from './aws-systemsmanagersap';
 export * as aws_textract from './aws-textract';
