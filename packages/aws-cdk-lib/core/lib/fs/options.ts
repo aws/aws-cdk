@@ -35,8 +35,9 @@ export enum SymlinkFollowMode {
    * tree.
    *
    * This is the safest mode of operation as it ensures that copy operations
-   * won't materialize files from the user's file system. Internal symlinks are
-   * not followed.
+   * won't materialize files from outside the source tree. Symlinks pointing
+   * inside the source tree are followed, so their targets are copied as regular
+   * files.
    *
    * If the copy operation runs into an external symlink, it will fail.
    */

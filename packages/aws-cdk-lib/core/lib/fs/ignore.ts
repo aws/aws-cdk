@@ -220,7 +220,10 @@ export class DockerIgnoreStrategy extends IgnoreStrategy {
     }
 
     const [, negation, negatedPath] = negativeMatch;
-    for (let dir = path.dirname(negatedPath); dir !== '/' && dir !== '.'; dir = path.dirname(dir)) {
+    // Stop at a root without adding it. `dirname` of a root returns that same root, which
+    // covers `/` on posix and a drive root like `C:\` on win32 — the latter would otherwise
+    // never match a hardcoded `/` and loop forever.
+    for (let dir = path.dirname(negatedPath); dir !== '.' && path.dirname(dir) !== dir; dir = path.dirname(dir)) {
       this.completeIgnore.add(negation + dir);
     }
   }
@@ -230,20 +233,23 @@ export class DockerIgnoreStrategy extends IgnoreStrategy {
     this.completelyAdd(pattern);
   }
 
-  private getRelativePath(absoluteFilePath: string): string {
+  /**
+   * @param caller the public method to name in the error, since either can be the caller
+   */
+  private getRelativePath(absoluteFilePath: string, caller: string): string {
     if (!path.isAbsolute(absoluteFilePath)) {
-      throw new UnscopedValidationError(lit`DockerIgnoreStrategyIgnoresExpects`, 'DockerIgnoreStrategy.ignores() expects an absolute path');
+      throw new UnscopedValidationError(lit`DockerIgnoreStrategyIgnoresExpects`, `DockerIgnoreStrategy.${caller}() expects an absolute path`);
     }
 
     return path.relative(this.absoluteRootPath, absoluteFilePath);
   }
 
   public ignores(absoluteFilePath: string): boolean {
-    return this.ignore.ignores(this.getRelativePath(absoluteFilePath));
+    return this.ignore.ignores(this.getRelativePath(absoluteFilePath, 'ignores'));
   }
 
   public completelyIgnores(absoluteDirectoryPath: string): boolean {
-    const relativePath = this.getRelativePath(absoluteDirectoryPath);
+    const relativePath = this.getRelativePath(absoluteDirectoryPath, 'completelyIgnores');
     return this.ignore.ignores(relativePath) && this.completeIgnore.ignores(relativePath);
   }
 }

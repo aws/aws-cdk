@@ -3,7 +3,7 @@ import * as path from 'path';
 import { IgnoreStrategy } from './ignore';
 import type { CopyOptions } from './options';
 import { SymlinkFollowMode } from './options';
-import { resolveLinkTarget, shouldFollow } from './utils';
+import { walkDirectory } from './utils';
 import { UnscopedValidationError } from '../errors';
 import { lit } from '../private/literal-string';
 
@@ -16,61 +16,39 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
     throw new UnscopedValidationError(lit`Directory`, `${srcDir} is not a directory`);
   }
 
-  copyInto(srcDir, destDir);
+  walkDirectory(srcDir, { follow, ignoreStrategy, root }, {
+    onDirectory: (entry) => {
+      // An ignored directory is not created. If something below it is re-included, copying
+      // that file creates the directory on the way.
+      if (!entry.ignored) {
+        fs.mkdirSync(destinationOf(entry.path), { recursive: true });
+      }
+    },
 
-  function copyInto(sourceDir: string, targetDir: string) {
-    for (const file of fs.readdirSync(sourceDir)) {
-      const sourceFilePath = path.join(sourceDir, file);
+    onFile: (entry) => {
+      const destination = destinationOf(entry.path);
+      fs.mkdirSync(path.dirname(destination), { recursive: true });
+      fs.copyFileSync(entry.realPath, destination);
+    },
 
-      if (ignoreStrategy.completelyIgnores(sourceFilePath)) {
-        continue;
+    onSymlink: (entry) => {
+      if (follow === SymlinkFollowMode.BLOCK_EXTERNAL && !entry.internal) {
+        throw new UnscopedValidationError(
+          lit`BundlingFileSymlinkForbidden`,
+          `The file ${entry.resolvedLinkTarget} is an external symbolic link which is forbidden due to follow mode ${follow}. Set \`follow\` to a mode that will follow symlinks (ALWAYS or EXTERNAL) or emit a regular file`,
+        );
       }
 
-      const destFilePath = path.join(targetDir, file);
-
-      // ALWAYS resolves every entry up front, so symlinks never show up as links below.
-      let stat: fs.Stats | undefined = follow === SymlinkFollowMode.ALWAYS
-        ? fs.statSync(sourceFilePath)
-        : fs.lstatSync(sourceFilePath);
-
-      if (stat.isSymbolicLink()) {
-        // Target's stats if we follow the link, undefined if we copied the link itself.
-        stat = copyOrFollowSymlink(sourceFilePath, destFilePath);
-      }
-
-      if (!stat) {
-        continue;
-      }
-
-      if (stat.isDirectory()) {
-        if (!ignoreStrategy.ignores(sourceFilePath)) {
-          fs.mkdirSync(destFilePath, { recursive: true });
-        }
-        copyInto(sourceFilePath, destFilePath);
-      } else if (stat.isFile()) {
-        if (!ignoreStrategy.ignores(sourceFilePath)) {
-          fs.mkdirSync(targetDir, { recursive: true });
-          fs.copyFileSync(sourceFilePath, destFilePath);
-        }
-      }
-    }
-  }
+      const destination = destinationOf(entry.path);
+      fs.mkdirSync(path.dirname(destination), { recursive: true });
+      fs.symlinkSync(entry.linkTarget, destination);
+    },
+  });
 
   /**
-   * Returns the target's stats if the link should be followed, otherwise copies the link
-   * itself and returns undefined.
+   * The place under `destDir` an entry is copied to, mirroring where it sits under `srcDir`
    */
-  function copyOrFollowSymlink(sourceFilePath: string, destFilePath: string): fs.Stats | undefined {
-    const target = fs.readlinkSync(sourceFilePath);
-
-    if (shouldFollow(follow, root, resolveLinkTarget(sourceFilePath, target))) {
-      return fs.statSync(sourceFilePath);
-    }
-
-    if (!ignoreStrategy.ignores(sourceFilePath)) {
-      fs.mkdirSync(path.dirname(destFilePath), { recursive: true });
-      fs.symlinkSync(target, destFilePath);
-    }
-    return undefined;
+  function destinationOf(sourcePath: string): string {
+    return path.join(destDir, path.relative(srcDir, sourcePath));
   }
 }

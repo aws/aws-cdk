@@ -18,7 +18,7 @@ import { lit } from './private/literal-string';
 import { profileSpan } from './private/perf';
 import type { Stack } from './stack';
 import * as cxapi from '../../cx-api';
-import { isInternalPath, resolveLinkTarget } from './fs/utils';
+import { walkDirectory } from './fs/utils';
 
 const ARCHIVE_EXTENSIONS = ['.tar.gz', '.zip', '.jar', '.tar', '.tgz'];
 
@@ -158,9 +158,9 @@ export class AssetStaging extends Construct {
   /**
    * A custom source fingerprint given by the user
    *
-   * Will not be used literally, always hashed later on.
+   * Will not be changed, hashed later on.
    */
-  private customSourceFingerprint?: string;
+  private readonly customSourceFingerprint?: string;
 
   private readonly cacheKey: string;
 
@@ -285,15 +285,15 @@ export class AssetStaging extends Construct {
    * Optionally skip if staging is disabled, in which case we pretend we did something but we don't really.
    */
   private stageByCopying(sourceStats: fs.Stats): StagedAsset {
-    const assetHash = this.calculateHash(this.hashType);
+    if (!sourceStats.isDirectory() && !sourceStats.isFile()) {
+      throw new ValidationError(lit`AssetExpectedDirectoryOrFile`, `Asset ${this.sourcePath} is expected to be either a directory or a regular file`, this);
+    }
+
+    const assetHash = this.calculateHash(this.hashType, this.customSourceFingerprint);
     const targetPath = this.stagingDisabled
       ? this.sourcePath
       : path.resolve(this.assetOutdir, renderAssetFilename(assetHash, getExtension(this.sourcePath)));
     const stagedPath = this.renderStagedPath(this.sourcePath, targetPath);
-
-    if (!sourceStats.isDirectory() && !sourceStats.isFile()) {
-      throw new ValidationError(lit`AssetExpectedDirectoryOrFile`, `Asset ${this.sourcePath} is expected to be either a directory or a regular file`, this);
-    }
 
     this.copySourceIntoStaging(stagedPath, sourceStats);
 
@@ -319,7 +319,9 @@ export class AssetStaging extends Construct {
 
     // Bundle straight into the final asset directory if we know the hash, otherwise
     // into a temporary one we hash and rename afterwards.
-    const knownDirHash = this.hashIsKnownBeforeBundling ? this.calculateHash(this.hashType, bundling) : undefined;
+    const knownDirHash = this.hashIsKnownBeforeBundling
+      ? this.calculateHash(this.hashType, this.customSourceFingerprint, bundling)
+      : undefined;
     const bundleDir = this.determineBundleDir(knownDirHash);
     this.bundle(bundling, bundleDir);
 
@@ -327,7 +329,8 @@ export class AssetStaging extends Construct {
     const ignore = IgnoreStrategy.fromCopyOptions(this.fingerprintOptions, bundleDir);
     const bundledAsset = determineBundledAsset(this, bundleDir, outputType, ignore, props.follow);
 
-    const assetHash = knownDirHash ?? this.calculateHash(this.hashType, bundling, bundledAsset.path);
+    const assetHash = knownDirHash
+      ?? this.calculateHash(this.hashType, this.customSourceFingerprint, bundling, bundledAsset.path);
     const stagedPath = this.renderStagedPath(
       bundledAsset.path,
       path.resolve(this.assetOutdir, renderAssetFilename(assetHash, bundledAsset.extension)),
@@ -352,14 +355,13 @@ export class AssetStaging extends Construct {
   private stageBySkippingBundling(bundling: BundlingOptions): StagedAsset {
     // OUTPUT and BUNDLE hash the bundling result, which we don't have. Use a CUSTOM hash
     // instead of fingerprinting a potentially very large source directory.
-    let hashType = this.hashType;
-    if (!this.hashIsKnownBeforeBundling) {
-      this.customSourceFingerprint = Names.uniqueId(this);
-      hashType = AssetHashType.CUSTOM;
-    }
+    const hashType = this.hashIsKnownBeforeBundling ? this.hashType : AssetHashType.CUSTOM;
+    const customFingerprint = this.hashIsKnownBeforeBundling
+      ? this.customSourceFingerprint
+      : Names.uniqueId(this);
 
     return {
-      assetHash: this.calculateHash(hashType, bundling),
+      assetHash: this.calculateHash(hashType, customFingerprint, bundling),
       stagedPath: this.sourcePath,
       packaging: FileAssetPackaging.ZIP_DIRECTORY,
       isArchive: true,
@@ -431,6 +433,9 @@ export class AssetStaging extends Construct {
    * The source belongs to the user, so it is only ever read, never moved or deleted.
    *
    * Does nothing if source and staged path are the same, i.e. when staging is disabled.
+   *
+   * `sourceStats` is a file or a directory; `stageByCopying` has already rejected
+   * anything else.
    */
   private copySourceIntoStaging(stagedPath: string, sourceStats: fs.Stats) {
     // Is the work already done?
@@ -440,11 +445,9 @@ export class AssetStaging extends Construct {
 
     if (sourceStats.isFile()) {
       fs.copyFileSync(this.sourcePath, stagedPath);
-    } else if (sourceStats.isDirectory()) {
+    } else {
       fs.mkdirSync(stagedPath);
       FileSystem.copyDirectory(this.sourcePath, stagedPath, this.fingerprintOptions);
-    } else {
-      throw new ValidationError(lit`UnknownFileType`, `Unknown file type: ${this.sourcePath}`, this);
     }
   }
 
@@ -462,18 +465,36 @@ export class AssetStaging extends Construct {
   }
 
   /**
-   * Bundles an asset into the given directory
+   * Make sure `bundleDir` holds the bundled asset
    *
-   * If the given directory already exists, assume that everything's already
-   * in order and don't do anything.
+   * If the directory already exists, a previous run bundled identical content there and
+   * we don't bundle again. Either way the result is checked for output, so an empty
+   * directory left behind by an interrupted run is not staged as an empty asset.
    *
    * @param options Bundling options
    * @param bundleDir Where to create the bundle directory
    */
   private bundle(options: BundlingOptions, bundleDir: string) {
-    // An existing bundle directory is a complete bundle of identical content.
-    if (fs.existsSync(bundleDir)) { return; }
+    const existing = fs.statSync(bundleDir, { throwIfNoEntry: false });
+    const bundledLocally = existing ? undefined : this.runBundling(options, bundleDir);
 
+    // A `bundleDir` that isn't a directory is reported by `determineBundledAsset`, which
+    // has a clearer message for it than a failed read would.
+    if (existing && !existing.isDirectory()) {
+      return;
+    }
+
+    if (FileSystem.isEmpty(bundleDir)) {
+      // Name the directory the user writes to theirs locally, the container's mount otherwise.
+      const outputDir = bundledLocally ? bundleDir : AssetStaging.BUNDLING_OUTPUT_DIR;
+      throw new ValidationError(lit`BundlingProducedNoOutput`, `Bundling did not produce any output. Check that content is written to ${outputDir}.`, this);
+    }
+  }
+
+  /**
+   * Bundle into `bundleDir`, returning whether the bundling ran locally
+   */
+  private runBundling(options: BundlingOptions, bundleDir: string): boolean | undefined {
     // Bundle into a sibling and rename on success, so an interrupted run can't leave a
     // partial bundle at `bundleDir` for a later run to mistake for a complete one.
     const tempDir = `${bundleDir}-building`;
@@ -491,17 +512,15 @@ export class AssetStaging extends Construct {
       if (!bundledLocally) {
         this.bundleWithDocker(options, tempDir);
       }
-
-      fs.renameSync(tempDir, bundleDir);
     } catch (err) {
       throw new ValidationError(lit`FailedToBundleAsset`, `Failed to bundle asset ${this.node.path}, bundle output is located at ${tempDir}: ${err}`, this);
     }
 
-    if (FileSystem.isEmpty(bundleDir)) {
-      // Name the directory the user writes to: theirs locally, the container's mount otherwise.
-      const outputDir = bundledLocally ? bundleDir : AssetStaging.BUNDLING_OUTPUT_DIR;
-      throw new ValidationError(lit`BundlingProducedNoOutput`, `Bundling did not produce any output. Check that content is written to ${outputDir}.`, this);
-    }
+    // Outside the `catch`: bundling has succeeded, so a failure to move the output into
+    // place is not a bundling failure and must not be reported as one.
+    fs.renameSync(tempDir, bundleDir);
+
+    return bundledLocally;
   }
 
   /**
@@ -525,7 +544,13 @@ export class AssetStaging extends Construct {
     }
   }
 
-  private calculateHash(hashType: AssetHashType, bundling?: BundlingOptions, outputDir?: string): string {
+  /**
+   * Compute the asset hash.
+   *
+   * `customFingerprint` is passed in rather than read from the field, because the
+   * skipped-bundling path substitutes one of its own.
+   */
+  private calculateHash(hashType: AssetHashType, customFingerprint: string | undefined, bundling?: BundlingOptions, outputDir?: string): string {
     // When bundling a CUSTOM or SOURCE asset hash type, we want the hash to include
     // the bundling configuration. We handle CUSTOM and bundled SOURCE hash types
     // as a special case to preserve existing user asset hashes in all other cases.
@@ -533,7 +558,7 @@ export class AssetStaging extends Construct {
       const hash = crypto.createHash('sha256');
 
       // if asset hash is provided by user, use it, otherwise fingerprint the source.
-      hash.update(this.customSourceFingerprint ?? FileSystem.fingerprint(this.sourcePath, this.fingerprintOptions));
+      hash.update(customFingerprint ?? FileSystem.fingerprint(this.sourcePath, this.fingerprintOptions));
 
       // If we're bundling an asset, include the bundling configuration in the hash
       if (bundling) {
@@ -606,69 +631,20 @@ function validateInternalSymlinks(
   followMode: SymlinkFollowMode,
   ignoreStrategy: IgnoreStrategy,
 ) {
-  const canonicalRoot = realDirectoryPath(root);
-
-  // We descend into symlinks that stay inside the tree, so without this a link pointing
-  // at one of its own ancestors would recurse forever.
-  const descendedInto = new Set<string>([canonicalRoot]);
-
-  validateDirectory(root);
-
-  function validateDirectory(directory: string) {
-    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
-      const childPath = path.join(directory, entry.name);
-
-      if (entry.isDirectory()) {
-        if (!ignoreStrategy.completelyIgnores(childPath)) {
-          validateDirectory(childPath);
-        }
-        continue;
-      }
-
-      if (!entry.isSymbolicLink() || ignoreStrategy.ignores(childPath)) {
-        continue;
-      }
-
-      const target = canonicalLinkTarget(resolveLinkTarget(childPath, fs.readlinkSync(childPath)));
-      if (!isInternalPath(canonicalRoot, target)) {
+  // Under BLOCK_EXTERNAL the walk follows internal links and reports external ones, which
+  // is exactly the set we have to reject. Links the ignore strategy excludes never reach
+  // us, so nothing outside the asset is validated.
+  walkDirectory(root, { follow: followMode, ignoreStrategy }, {
+    onSymlink: (entry) => {
+      if (!entry.internal) {
         throw new ValidationError(
           lit`BundlingFileSymlinkForbidden`,
-          `The file ${target} is an external symbolic link which is forbidden due to follow mode ${followMode}. Set \`follow\` to a mode that will follow symlinks (ALWAYS or EXTERNAL) or emit a regular file`,
+          `The file ${entry.resolvedLinkTarget} is an external symbolic link which is forbidden due to follow mode ${followMode}. Set \`follow\` to a mode that will follow symlinks (ALWAYS or EXTERNAL) or emit a regular file`,
           scope,
         );
       }
-
-      // The link is internal, but a directory it points at can hold links that escape.
-      if (!descendedInto.has(target) && fs.statSync(target, { throwIfNoEntry: false })?.isDirectory()) {
-        descendedInto.add(target);
-        validateDirectory(childPath);
-      }
-    }
-  }
-}
-
-/**
- * Resolve any symlinked directories in a path, so inside/outside comparisons agree.
- *
- * `path.resolve` normalizes `..` lexically but does not resolve links, so without this a
- * symlinked *ancestor* of the asset root makes paths inside the tree look external.
- *
- * Returns the path unchanged if it cannot be resolved, e.g. a link into a missing directory.
- */
-function realDirectoryPath(directory: string): string {
-  try {
-    return fs.realpathSync(directory);
-  } catch {
-    return directory;
-  }
-}
-
-/**
- * Resolves the directories leading to the target, but never the target itself: a link is
- * judged by where it points, not by where that points in turn.
- */
-function canonicalLinkTarget(target: string): string {
-  return path.join(realDirectoryPath(path.dirname(target)), path.basename(target));
+    },
+  });
 }
 
 /**

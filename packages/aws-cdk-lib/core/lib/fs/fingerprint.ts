@@ -5,7 +5,7 @@ import { FingerprintDiskCache } from './fingerprint-disk-cache';
 import { IgnoreStrategy } from './ignore';
 import type { FingerprintOptions } from './options';
 import { IgnoreMode, SymlinkFollowMode } from './options';
-import { isInternalPath, resolveLinkTarget } from './utils';
+import { walkDirectory } from './utils';
 import { UnscopedValidationError } from '../errors';
 import { lit } from '../private/literal-string';
 
@@ -48,7 +48,7 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
   const root = fs.realpathSync(fileOrDirectory);
   const isDir = fs.statSync(root).isDirectory();
 
-  // Hash keys are relative to `root`; inside/outside checks use the directory holding it.
+  // Hash keys are relative to `root`. The disk cache is scoped to the directory holding it.
   const rootDirectory = isDir ? root : path.dirname(root);
 
   const ignoreMode = options.ignoreMode || IgnoreMode.GLOB;
@@ -63,7 +63,22 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
 
   // Dispatch based on whether the root is a file or directory
   if (isDir) {
-    processDirectory(root, root);
+    walkDirectory(root, { follow, ignoreStrategy }, {
+      // Stats are only present for a followed symlink, whose target the walk had to stat to
+      // know it was a file. Reuse those; plain files were never stat'ed, so stat them here.
+      onFile: (entry) => hashFileContent(entry.path, entry.stats
+        ? contentFingerprintWithStats(entry.realPath, entry.stats, cache)
+        : contentFingerprintOf(entry.realPath)),
+
+      onSymlink: (entry) => hashLinkTarget(entry.path, entry.linkTarget),
+
+      onUnsupported: (entry) => {
+        throw new UnscopedValidationError(
+          lit`UnableToUnableHashNeither`,
+          `Unable to hash ${entry.path}: it is neither a file nor a directory`,
+        );
+      },
+    });
   } else {
     hashFileContent(root, contentFingerprintOf(root));
   }
@@ -94,86 +109,6 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
   function contentFingerprintOf(file: string): string {
     return contentFingerprintWithStats(file, fs.statSync(file, { bigint: true }), cache);
   }
-
-  // --- Inlined shouldFollow logic (avoids per-call path.resolve + fs.existsSync overhead) ---
-
-  function shouldFollowLink(resolvedLinkTarget: string): boolean {
-    switch (follow) {
-      case SymlinkFollowMode.ALWAYS:
-        return true;
-      case SymlinkFollowMode.EXTERNAL:
-        return !isInternalPath(rootDirectory, resolvedLinkTarget);
-      case SymlinkFollowMode.BLOCK_EXTERNAL:
-        return isInternalPath(rootDirectory, resolvedLinkTarget);
-      case SymlinkFollowMode.NEVER:
-        return false;
-      default:
-        return false;
-    }
-  }
-
-  // --- Core traversal ---
-
-  function processDirectory(symbolicPath: string, realPath: string) {
-    const entries = fs.readdirSync(realPath, { withFileTypes: true });
-    const sorted = entries.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
-    for (const entry of sorted) {
-      const childSymbolicPath = path.join(symbolicPath, entry.name);
-      const childRealPath = path.join(realPath, entry.name);
-      if (entry.isSymbolicLink()) {
-        processSymlink(childSymbolicPath, childRealPath);
-      } else if (entry.isFile()) {
-        if (!ignoreStrategy.ignores(childSymbolicPath)) {
-          hashFileContent(childSymbolicPath, contentFingerprintOf(childRealPath));
-        }
-      } else if (entry.isDirectory()) {
-        if (!ignoreStrategy.completelyIgnores(childSymbolicPath)) {
-          processDirectory(childSymbolicPath, childRealPath);
-        }
-      }
-    }
-  }
-
-  function processSymlink(symbolicPath: string, realPath: string) {
-    const linkTarget = fs.readlinkSync(realPath);
-    const resolvedLinkTarget = resolveLinkTarget(realPath, linkTarget);
-
-    // Follow the link only if the mode allows it and the target exists.
-    const targetStat = shouldFollowLink(resolvedLinkTarget) ? tryStat(resolvedLinkTarget) : undefined;
-
-    if (!targetStat) {
-      if (!ignoreStrategy.ignores(symbolicPath)) {
-        hashLinkTarget(symbolicPath, linkTarget);
-      }
-      return;
-    }
-
-    if (targetStat.isDirectory()) {
-      if (!ignoreStrategy.completelyIgnores(symbolicPath)) {
-        processDirectory(symbolicPath, resolvedLinkTarget);
-      }
-    } else if (targetStat.isFile()) {
-      if (!ignoreStrategy.ignores(symbolicPath)) {
-        hashFileContent(symbolicPath, contentFingerprintWithStats(resolvedLinkTarget, targetStat, cache));
-      }
-    } else {
-      throw new UnscopedValidationError(
-        lit`UnableToUnableHashNeither`,
-        `Unable to hash ${symbolicPath}: it is neither a file nor a directory`,
-      );
-    }
-  }
-}
-
-/**
- * Stats a path, or returns undefined if it cannot be reached.
- */
-function tryStat(target: string): fs.BigIntStats | undefined {
-  try {
-    return fs.statSync(target, { bigint: true });
-  } catch {
-    return undefined;
-  }
 }
 
 export function contentFingerprint(file: string): string {
@@ -182,7 +117,9 @@ export function contentFingerprint(file: string): string {
 }
 
 function contentFingerprintWithStats(file: string, stats: fs.BigIntStats, cache: FingerprintDiskCache | undefined): string {
-  const cacheKey = `${stats.ino}|${stats.mtimeMs}|${stats.size}`;
+  // Nanosecond mtime: millisecond resolution would give same-size writes within
+  // the same millisecond an identical key, and a stale cache hit.
+  const cacheKey = `${stats.ino}|${stats.mtimeNs}|${stats.size}`;
   return cache?.obtain(cacheKey, () => contentFingerprintMiss(file)) ?? contentFingerprintMiss(file);
 }
 
