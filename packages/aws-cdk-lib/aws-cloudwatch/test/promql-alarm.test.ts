@@ -1,8 +1,17 @@
 import type { Construct } from 'constructs';
 import { Match, Template } from '../../assertions';
-import { Duration, Stack } from '../../core';
+import { Duration, Stack, Validations } from '../../core';
 import type { IAlarm, IAlarmAction } from '../lib';
 import { PromQLAlarm } from '../lib/promql-alarm';
+
+function makeStackForWarmupTest(): Stack {
+  const stack = new Stack();
+  Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::F3002',
+    reason: 'WarmUpConfiguration is a newly launched property not yet in the bundled schema',
+  });
+  return stack;
+}
 
 describe('PromQLAlarm', () => {
   test('can create a basic PromQL alarm', () => {
@@ -54,6 +63,30 @@ describe('PromQLAlarm', () => {
         },
       },
       EvaluationInterval: 60,
+      WarmUpConfiguration: Match.absent(),
+    });
+  });
+
+  test('can configure an alarm warm-up period', () => {
+    // GIVEN
+    const stack = makeStackForWarmupTest();
+
+    // WHEN
+    new PromQLAlarm(stack, 'Alarm', {
+      query: 'up == 0',
+      evaluationInterval: Duration.seconds(60),
+      warmupConfiguration: {
+        warmupPeriod: Duration.minutes(5),
+        onlyStartEvaluatingAfterWarmupPeriodEnds: true,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      WarmUpConfiguration: {
+        OnlyStartEvaluatingAfterWarmUpPeriodEnds: true,
+        WarmUpPeriodDurationInMinutes: 5,
+      },
     });
   });
 

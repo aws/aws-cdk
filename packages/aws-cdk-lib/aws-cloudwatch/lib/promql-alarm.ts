@@ -1,7 +1,8 @@
 import type { Construct } from 'constructs';
-import type { IAlarm } from './alarm-base';
+import type { AlarmWarmupConfiguration, IAlarm } from './alarm-base';
 import { AlarmBase } from './alarm-base';
 import { CfnAlarm } from './cloudwatch.generated';
+import { renderAlarmWarmupConfiguration } from './private/alarm-options';
 import { ArnFormat, Stack, Token, ValidationError } from '../../core';
 import type { Duration } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
@@ -59,6 +60,13 @@ export interface PromQLAlarmProps {
    * @default true
    */
   readonly actionsEnabled?: boolean;
+
+  /**
+   * The warm-up configuration for the alarm.
+   *
+   * @default - No warm-up period
+   */
+  readonly warmupConfiguration?: AlarmWarmupConfiguration;
 }
 
 /**
@@ -130,6 +138,7 @@ export class PromQLAlarm extends AlarmBase {
       alarmActions: Token.asList(this._alarmActionArns),
       insufficientDataActions: Token.asList(this._insufficientDataActionArns),
       okActions: Token.asList(this._okActionArns),
+      warmUpConfiguration: renderAlarmWarmupConfiguration(this, props.warmupConfiguration),
       evaluationCriteria: {
         promQlCriteria: {
           query: props.query,

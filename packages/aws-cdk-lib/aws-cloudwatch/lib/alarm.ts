@@ -9,6 +9,7 @@ import type { CreateAlarmOptions } from './metric';
 import { Metric } from './metric';
 import type { IMetric, MetricExpressionConfig, MetricStatConfig } from './metric-types';
 import type { CreateAlarmOptionsBase } from './private/alarm-options';
+import { renderAlarmWarmupConfiguration } from './private/alarm-options';
 import { isAnomalyDetectionOperator } from './private/anomaly-detection';
 import { dispatchMetric, metricPeriod } from './private/metric-util';
 import { dropUndefined } from './private/object';
@@ -255,6 +256,8 @@ export class Alarm extends AlarmBase {
       threshold = props.threshold;
     }
 
+    const warmupConfiguration = renderAlarmWarmupConfiguration(this, props.warmupConfiguration);
+
     // Render metric, process potential overrides from the alarm
     // (It would be preferable if the statistic etc. was worked into the metric,
     // but hey we're allowing overrides...)
@@ -289,6 +292,7 @@ export class Alarm extends AlarmBase {
       evaluateLowSampleCountPercentile: props.evaluateLowSampleCountPercentile,
       evaluationPeriods: props.evaluationPeriods,
       treatMissingData: props.treatMissingData,
+      warmUpConfiguration: warmupConfiguration,
 
       // Actions
       actionsEnabled: props.actionsEnabled,
