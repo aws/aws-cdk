@@ -1,7 +1,6 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
-import { ValidationError } from 'aws-cdk-lib/core';
 import type * as cdk from 'aws-cdk-lib/core';
-import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -70,11 +69,12 @@ export interface ScalaSparkEtlJobProps extends SparkJobProps {
  * Spark ETL Jobs class
  *
  * ETL jobs support pySpark and Scala languages, for which there are separate
- * but similar constructors. ETL jobs default to the G2 worker type, but you
+ * but similar constructors. ETL jobs default to the G1 worker type, but you
  * can override this default with other supported worker type values
  * (G1, G2, G4 and G8). ETL jobs defaults to Glue version 4.0, which you can
  * override to 3.0. The following ETL features are enabled by default:
- * —enable-metrics, —enable-spark-ui, —enable-continuous-cloudwatch-log.
+ * --enable-metrics, --enable-continuous-cloudwatch-log. The Spark UI
+ * (--enable-spark-ui) is off by default; enable it by setting the `sparkUI` prop.
  * You can find more details about version, worker type and other features
  * in Glue's public documentation.
  */
@@ -98,10 +98,6 @@ export class ScalaSparkEtlJob extends SparkJob {
       ...this.nonExecutableCommonArguments(props),
     };
 
-    if ((!props.workerType && props.numberOfWorkers !== undefined) || (props.workerType && props.numberOfWorkers === undefined)) {
-      throw new ValidationError(lit`WorkerTypeAndNumberOfWorkersMustBothBeSet`, 'Both workerType and numberOfWorkers must be set', this);
-    }
-
     this.resource = new CfnJob(this, 'Resource', {
       name: props.jobName,
       description: props.description,
@@ -111,8 +107,8 @@ export class ScalaSparkEtlJob extends SparkJob {
         scriptLocation: this.codeS3ObjectUrl(props.script),
       },
       glueVersion: props.glueVersion ? props.glueVersion : GlueVersion.V4_0,
-      workerType: props.workerType ? props.workerType : WorkerType.G_1X,
-      numberOfWorkers: props.numberOfWorkers ? props.numberOfWorkers : 10,
+      workerType: props.workerConfiguration?.workerType ?? WorkerType.G_1X,
+      numberOfWorkers: props.workerConfiguration?.numberOfWorkers ?? 10,
       maxRetries: props.jobRunQueuingEnabled ? 0 : props.maxRetries,
       jobRunQueuingEnabled: props.jobRunQueuingEnabled ? props.jobRunQueuingEnabled : false,
       notificationProperty: props.notifyDelayAfter ? { notifyDelayAfter: props.notifyDelayAfter.toMinutes() } : undefined,

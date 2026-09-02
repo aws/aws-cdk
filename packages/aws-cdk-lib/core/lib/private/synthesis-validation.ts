@@ -57,7 +57,7 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
 
   // When the default validation plugin is not explicitly opted-in, downgrade
   // its errors to warnings so synthesis does not fail.
-  const validateFlagExplicitlyEnabled = root.node.tryGetContext(cxapi.VALIDATE_AGAINST_DEFAULT_RULES) === true;
+  const validateFlagExplicitlyEnabled = getBooleanContext(root, cxapi.VALIDATE_AGAINST_DEFAULT_RULES, false);
   let warningifiedAnyErrors = false;
   if (!validateFlagExplicitlyEnabled) {
     warningifiedAnyErrors = downgradeCfnValidateErrorsToWarnings(reports);
@@ -329,9 +329,22 @@ function doInvokeValidationPlugins(
   plugins: Array<[IPolicyValidationPlugin, Set<private_cxapi.CloudFormationStackArtifact>]>,
   root: App,
 ) {
-  const preExistingFileHashes = snapshotFileHashes(outdir);
+  const untrustedPlugins = new Set(Array.from(plugins.values())
+    .map(p => p[0])
+    .filter(p => !isTrustedPlugin(p)));
 
-  return plugins.flatMap(([plugin, stacks]) => invokeSinglePlugin(plugin, Array.from(stacks)));
+  const preExistingFileHashes = untrustedPlugins.size > 0 ? snapshotFileHashes(outdir) : undefined;
+
+  const ret = plugins.flatMap(([plugin, stacks]) => invokeSinglePlugin(plugin, Array.from(stacks)));
+
+  if (preExistingFileHashes) {
+    if (hasModifiedPreExistingFiles(preExistingFileHashes)) {
+      const pluginNames = Array.from(untrustedPlugins).map(p => p.name);
+      throw new AssumptionError(lit`IllegalPluginOperation`, `One of the validation plugins (${pluginNames.join(', ')}) modified the cloud assembly`);
+    }
+  }
+
+  return ret;
 
   function invokeSinglePlugin(
     plugin: IPolicyValidationPlugin,
@@ -349,10 +362,6 @@ function doInvokeValidationPlugins(
           accountId: accountId !== cxapi.UNKNOWN_ACCOUNT ? accountId : undefined,
           region: region !== cxapi.UNKNOWN_REGION ? region : undefined,
         }));
-
-        if (hasModifiedPreExistingFiles(preExistingFileHashes)) {
-          throw new AssumptionError(lit`IllegalPluginOperation`, `Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
-        }
 
         return { ...report, pluginName: plugin.name, pluginVersion: plugin.version } satisfies NamedValidationPluginReport;
       } catch (e: any) {
@@ -386,6 +395,10 @@ function doInvokeValidationPlugins(
 
     return report;
   }
+}
+
+function isTrustedPlugin(x: IPolicyValidationPlugin) {
+  return x instanceof CloudFormationValidatePlugin;
 }
 
 interface StacksByEnvironment {
