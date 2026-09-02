@@ -7,6 +7,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### ⚠ BREAKING CHANGES
 
+L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
 * **aws-athena:** `AWS::Athena::Session` removed.
 * **aws-bcmdataexports:** `AWS::BCMDataExports::Table` removed.
 * **aws-bedrock:** `AWS::Bedrock::DefaultPromptRouter` and `AWS::Bedrock::ModelInvocationJob` removed.
@@ -50,7 +52,6 @@ All notable changes to this project will be documented in this file. See [standa
 * **aws-stepfunctions:** `AWS::StepFunctions::MapRun` removed.
 * **aws-transcribe:** `AWS::Transcribe::MedicalTranscriptionJob` removed.
 * **aws-vpclattice:** `AWS::VpcLattice::ServiceNetwork` `SharingConfig` property is now immutable.
-* **@aws-cdk/aws-glue-alpha:** `DataQualityRulesetProps.rulesetName` is now required. `AWS::Glue::DataQualityRuleset` made `Name` a required property, so the name can no longer be left for CloudFormation to generate.
 
 ### Features
 

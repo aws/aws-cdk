@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file. See [standa
 * **glue-alpha:** `DataQualityTargetTable`'s constructor is removed — use `DataQualityTargetTable.fromTable(database, table)` or `fromTableName(database, tableName)`; `IDatabase` now extends `IDatabaseRef`.
 * **glue-alpha**: `DataQualityRulesetProps.clientToken` is removed; use the `CfnDataQualityRuleset` L1 for request-level idempotency.
 * **glue-alpha:** S3Table.clientSideEncryptionKey is now kms.IKeyRef instead of kms.IKey.
+* **glue-alpha:** `DataQualityRulesetProps.rulesetName` is now required. `AWS::Glue::DataQualityRuleset` made `Name` a required property, so the name can no longer be left for CloudFormation to generate.
 
 ### Features
 
