@@ -58,12 +58,12 @@
     "@aws-cdk/service-spec-types" "^0.0.256"
     "@cdklabs/tskb" "^0.0.4"
 
-"@aws-cdk/aws-service-spec@0.1.207":
-  version "0.1.207"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.207.tgz#2aa3d6035fbbef369be2f5edeb07c40b6ee95a11"
-  integrity sha512-6/qaHGVjMLCEWak4Lm2QOjysUkQImS6kuEnOnCX5tfZ+zYyvsqQ3ABSsa+gkbBkYedc8EKZJNGsuQr9cOSPA8g==
+"@aws-cdk/aws-service-spec@0.1.208":
+  version "0.1.208"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.208.tgz#a35767c8b556f8b0f51bd3f4aedc5e9f5e2f17f7"
+  integrity sha512-59zkwRZmWMkmkkpkc6fNpeJtDzxeX7O9bK5+tPYPOEUXHaXjC2z3j9nuOpFDqRT9e1lTBwDzjFruHJDe/3sKJw==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.273"
+    "@aws-cdk/service-spec-types" "^0.0.274"
     "@cdklabs/tskb" "^0.0.4"
 
 "@aws-cdk/cloud-assembly-api@^2.2.6":
@@ -150,10 +150,10 @@
     glob "^8"
     sort-json "^2.0.1"
 
-"@aws-cdk/service-spec-types@0.0.273", "@aws-cdk/service-spec-types@^0.0.273":
-  version "0.0.273"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.273.tgz#4e08b2f72172aa11de405fbdb4a19aa0b284c03d"
-  integrity sha512-Pe1j265hAAl10aiUj+gk5pKbOf3A34uz2mSFgJDPpN6t3A/g6mBjMbrVwZKHIqGHvoksaJ5mo2kKczjDoKq7kw==
+"@aws-cdk/service-spec-types@0.0.274", "@aws-cdk/service-spec-types@^0.0.274":
+  version "0.0.274"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.274.tgz#e9f8bf0d5dc84b73b4d1f3fc297a6e0f87ec971e"
+  integrity sha512-D6w1h00QgN8a4cJ5cofuh4pu2ccK3DqHUDCkU6FgMUObRYlgBik/Ps4alt6Q7Jx3g0LEwiZJsDfPAEdtlFmQig==
   dependencies:
     "@cdklabs/tskb" "^0.0.4"
 
@@ -2354,10 +2354,10 @@
     "@smithy/types" "^4.16.0"
     tslib "^2.6.2"
 
-"@aws/cloudformation-validate@1.7.0-beta":
-  version "1.7.0-beta"
-  resolved "https://registry.npmjs.org/@aws/cloudformation-validate/-/cloudformation-validate-1.7.0-beta.tgz#37704db3ca54b2e1edf012d78d042b39946e157f"
-  integrity sha512-3ucys2VE2plAVijHHJmDpDDdi6gxXc/x0bvU3W8Fdm2dZF7Ewb0oQbBTLfrcPCkeHKFpfJtTtfOUl4w6J6uB6w==
+"@aws/cloudformation-validate@1.8.0-beta":
+  version "1.8.0-beta"
+  resolved "https://registry.npmjs.org/@aws/cloudformation-validate/-/cloudformation-validate-1.8.0-beta.tgz#edc0708bf5c9672d2bb63c6d24cae6a6410e6af0"
+  integrity sha512-E7KrKKz2wzpaaHuSxP2vBkk4AUpTS57/GLAV1soTqViJLGj8qBSNjy5SMhkaBeiFjVOd0oQTwO9cytDugutuVQ==
 
 "@aws/lambda-invoke-store@^0.3.0":
   version "0.3.0"
