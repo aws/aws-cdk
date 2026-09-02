@@ -1,5 +1,6 @@
 import { spawnSync } from 'child_process';
 import type { Construct } from 'constructs';
+import { CfnFunction, CfnLayerVersion } from './lambda.generated';
 import type * as ecr from '../../aws-ecr';
 import * as ecr_assets from '../../aws-ecr-assets';
 import * as iam from '../../aws-iam';
@@ -363,41 +364,7 @@ export class S3CodeV2 extends Code {
     this.bucketName = bucket.bucketName;
   }
 
-  public bind(scope: Construct): CodeConfig {
-    if (this.options?.s3ObjectStorageMode === S3ObjectStorageMode.REFERENCE) {
-      const stack = cdk.Stack.of(scope);
-      const grant = iam.Grant.addToPrincipalOrResource({
-        actions: [
-          's3:GetObject',
-          's3:GetObjectVersion',
-        ],
-        grantee: new iam.ServicePrincipal('lambda.amazonaws.com').withConditions({
-          StringEquals: {
-            'aws:SourceAccount': stack.account,
-          },
-          ArnLike: {
-            'aws:SourceArn': [
-              stack.formatArn({
-                service: 'lambda',
-                resource: 'function',
-                resourceName: '*',
-                arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
-              }),
-              stack.formatArn({
-                service: 'lambda',
-                resource: 'layer',
-                resourceName: '*',
-                arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
-              }),
-            ],
-          },
-        }),
-        resourceArns: [this.bucket.arnForObjects(this.key)],
-        resource: this.bucket,
-      });
-      grant.applyBefore(scope);
-    }
-
+  public bind(_scope: Construct): CodeConfig {
     return {
       s3Location: {
         bucketName: this.bucketName,
@@ -407,6 +374,53 @@ export class S3CodeV2 extends Code {
       sourceKMSKeyArn: this.options?.sourceKMSKey?.keyRef.keyArn,
       s3ObjectStorageMode: this.options?.s3ObjectStorageMode,
     };
+  }
+
+  public bindToResource(resource: cdk.CfnResource, _options?: ResourceBindOptions): void {
+    if (this.options?.s3ObjectStorageMode !== S3ObjectStorageMode.REFERENCE) {
+      return;
+    }
+
+    const stack = cdk.Stack.of(resource);
+    let sourceArn: string;
+
+    if (CfnFunction.isCfnFunction(resource)) {
+      const functionName = resource.functionName;
+      sourceArn = stack.formatArn({
+        service: 'lambda',
+        resource: 'function',
+        resourceName: functionName === undefined || cdk.Token.isUnresolved(functionName) ? '*' : functionName,
+        arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+      });
+    } else if (CfnLayerVersion.isCfnLayerVersion(resource)) {
+      const layerName = resource.layerName;
+      sourceArn = stack.formatArn({
+        service: 'lambda',
+        resource: 'layer',
+        resourceName: layerName === undefined || cdk.Token.isUnresolved(layerName) ? '*' : `${layerName}:*`,
+        arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+      });
+    } else {
+      return;
+    }
+
+    const grant = iam.Grant.addToPrincipalOrResource({
+      actions: [
+        's3:GetObject',
+        's3:GetObjectVersion',
+      ],
+      grantee: new iam.ServicePrincipal('lambda.amazonaws.com').withConditions({
+        StringEquals: {
+          'aws:SourceAccount': stack.account,
+        },
+        ArnLike: {
+          'aws:SourceArn': sourceArn,
+        },
+      }),
+      resourceArns: [this.bucket.arnForObjects(this.key)],
+      resource: this.bucket,
+    });
+    grant.applyBefore(resource);
   }
 }
 
