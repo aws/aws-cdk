@@ -103,8 +103,8 @@ describe('CDK Include', () => {
 
   test("throws a validation exception when an Output references a Condition that doesn't exist", () => {
     expect(() => {
-      includeTestTemplate(stack, 'output-referencing-nonexistant-condition.json');
-    }).toThrow(/Output with name 'SomeOutput' refers to a Condition with name 'NonexistantCondition' which was not found in this template/);
+      includeTestTemplate(stack, 'output-referencing-nonexistent-condition.json');
+    }).toThrow(/Output with name 'SomeOutput' refers to a Condition with name 'NonexistentCondition' which was not found in this template/);
   });
 
   test("throws a validation exception when a Resource property references a Mapping that doesn't exist", () => {
@@ -358,6 +358,11 @@ describe('CDK Include', () => {
   });
 
   test('dehydrated resources retain all attributes', () => {
+    Validations.of(stack).acknowledge(...['F0018', 'F3016', 'E3001', 'E3055'].map(id => ({
+      id: `CloudFormation-Validate::${id}`,
+      reason: 'This test is purposely creating invalid templates',
+    })));
+
     includeTestTemplate(stack, 'resource-all-attributes.json', {
       dehydratedResources: ['Foo'],
     });

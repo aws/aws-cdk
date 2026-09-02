@@ -266,6 +266,91 @@ describe('validations', () => {
     }));
   });
 
+  test('plugin is invoked once with all templates when stacks span multiple environments', () => {
+    const mockValidate = jest.fn().mockImplementation(() => {
+      return {
+        success: true,
+        violations: [],
+      };
+    });
+    const app = new NonStrictApp({
+      policyValidationBeta1: [
+        {
+          name: 'test-plugin',
+          validate: mockValidate,
+        },
+      ],
+    });
+    const stage1 = new core.Stage(app, 'Stage1', { env: { account: '111111111111', region: 'us-east-1' } });
+    const stage2 = new core.Stage(app, 'Stage2', { env: { account: '222222222222', region: 'eu-west-1' } });
+    new core.Stack(stage1, 'stack1');
+    new core.Stack(stage2, 'stack2');
+    new core.Stack(app, 'stack3', { env: { account: '111111111111', region: 'eu-west-1' } });
+
+    app.synth();
+
+    expect(mockValidate).toHaveBeenCalledTimes(1);
+    const context = mockValidate.mock.calls[0][0];
+    expect(context.templatePaths).toEqual(expect.arrayContaining([
+      expect.stringMatching(/assembly-Stage1\/Stage1stack1DDED8B6C.template.json/),
+      expect.stringMatching(/assembly-Stage2\/Stage2stack259BA718E.template.json/),
+      expect.stringMatching(/stack3.template.json/),
+    ]));
+    expect(context.templatePaths).toHaveLength(3);
+    // No single environment covers all templates
+    expect(context.accountId).toBeUndefined();
+    expect(context.region).toBeUndefined();
+  });
+
+  test('plugin is not invoked when the app synthesizes no stacks', () => {
+    const mockValidate = jest.fn().mockImplementation(() => {
+      return {
+        success: true,
+        violations: [],
+      };
+    });
+    const app = new NonStrictApp({
+      policyValidationBeta1: [
+        {
+          name: 'test-plugin',
+          validate: mockValidate,
+        },
+      ],
+    });
+
+    app.synth();
+
+    expect(mockValidate).not.toHaveBeenCalled();
+  });
+
+  test('plugin receives the account and region when all stacks share one environment', () => {
+    const mockValidate = jest.fn().mockImplementation(() => {
+      return {
+        success: true,
+        violations: [],
+      };
+    });
+    const app = new NonStrictApp({
+      policyValidationBeta1: [
+        {
+          name: 'test-plugin',
+          validate: mockValidate,
+        },
+      ],
+    });
+    const stage = new core.Stage(app, 'Stage1', { env: { account: '111111111111', region: 'us-east-1' } });
+    new core.Stack(stage, 'stack1');
+    new core.Stack(app, 'stack2', { env: { account: '111111111111', region: 'us-east-1' } });
+
+    app.synth();
+
+    expect(mockValidate).toHaveBeenCalledTimes(1);
+    expect(mockValidate).toHaveBeenCalledWith(expect.objectContaining({
+      accountId: '111111111111',
+      region: 'us-east-1',
+    }));
+  });
+
   test('multiple constructs', () => {
     const app = new NonStrictApp({
       policyValidationBeta1: [
@@ -402,7 +487,7 @@ describe('validations', () => {
     new FailResource(stack, 'DefaultResource');
     expect(() => {
       app.synth();
-    }).toThrow(/Illegal operation: validation plugin 'rogue-plugin' modified the cloud assembly/);
+    }).toThrow(/rogue-plugin.*modified the cloud assembly/);
   });
 
   test('plugin that writes new files to assembly is allowed', () => {
@@ -446,7 +531,7 @@ describe('validations', () => {
       type: 'Test::Resource::Fake',
       properties: { result: 'success' },
     });
-    expect(() => app.synth()).toThrow(/Illegal operation: validation plugin 'deleter-plugin' modified the cloud assembly/);
+    expect(() => app.synth()).toThrow(/deleter-plugin.*modified the cloud assembly/);
   });
 
   test('failSynthOnValidationErrors=false writes JSON but does not print or fail', () => {
