@@ -30,8 +30,8 @@ export class AssetManifestReader {
 
   /**
    * Load an asset manifest from the given file or directory
-   *
-   * If the argument given is a directoy, the default asset file name will be used.
+   * If the argument given is a directory, the default asset file name will be used.
+   * @param filePath Path to load an asset manifest from.
    */
   public static fromPath(filePath: string) {
     let st;
@@ -253,13 +253,14 @@ function filterDict<A>(xs: Record<string, A>, pred: (x: A, key: string) => boole
 }
 
 /**
- * A filter pattern for an destination identifier
+ * A filter pattern for a destination identifier
  */
 export class DestinationPattern {
   /**
    * Parse a ':'-separated string into an asset/destination identifier
+   * @param s The ':'-separated string that is to be parsed.
    */
-  public static parse(s: string) {
+  public static parse(s: string): DestinationPattern {
     if (!s) { throw new UnscopedValidationError(lit`EmptyStringValidDestination`, 'Empty string is not a valid destination identifier'); }
     const parts = s.split(':').map(x => x !== '*' ? x : undefined);
     if (parts.length === 1) { return new DestinationPattern(parts[0]); }
@@ -293,7 +294,7 @@ export class DestinationPattern {
   /**
    * Return a string representation for this asset identifier
    */
-  public toString() {
+  public toString(): string {
     return `${this.assetId ?? '*'}:${this.destinationId ?? '*'}`;
   }
 }
