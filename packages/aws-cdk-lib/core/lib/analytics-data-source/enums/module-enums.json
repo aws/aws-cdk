@@ -1039,6 +1039,61 @@
       "AUTOMATIC"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/audio-codec-settings.ts": {
+    "AudioCodecType": [
+      "AAC",
+      "AC3",
+      "EAC3",
+      "EAC3_ATMOS",
+      "MP2",
+      "WAV",
+      "PASSTHROUGH"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/channel.ts": {
+    "OutputLockingMode": [
+      "PIPELINE_LOCKING",
+      "EPOCH_LOCKING"
+    ],
+    "LinkedChannelType": [
+      "PRIMARY_CHANNEL",
+      "FOLLOWING_CHANNEL"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/enums.ts": {
+    "SegmentLengthUnits": [
+      "MILLISECONDS",
+      "SECONDS"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/input.ts": {
+    "InputType": [
+      "UDP_PUSH",
+      "RTP_PUSH",
+      "RTMP_PUSH",
+      "RTMP_PULL",
+      "URL_PULL",
+      "MP4_FILE",
+      "MEDIACONNECT",
+      "INPUT_DEVICE",
+      "AWS_CDI",
+      "TS_FILE",
+      "SRT_CALLER",
+      "SRT_LISTENER",
+      "MULTICAST",
+      "SMPTE_2110_RECEIVER_GROUP",
+      "SDI",
+      "MEDIACONNECT_ROUTER"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/video-codec-settings.ts": {
+    "VideoCodecType": [
+      "H264",
+      "H265",
+      "AV1",
+      "FRAME_CAPTURE"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/lib/channel.ts": {
     "InputType": [
       "CMAF",

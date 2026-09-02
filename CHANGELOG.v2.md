@@ -2,6 +2,76 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.268.0](https://github.com/aws/aws-cdk/compare/v2.267.0...v2.268.0) (2026-09-02)
+
+
+### ⚠ BREAKING CHANGES
+
+L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+* **aws-athena:** `AWS::Athena::Session` removed.
+* **aws-bcmdataexports:** `AWS::BCMDataExports::Table` removed.
+* **aws-bedrock:** `AWS::Bedrock::DefaultPromptRouter` and `AWS::Bedrock::ModelInvocationJob` removed.
+* **aws-bedrockagentcore:** `AWS::BedrockAgentCore::Browser`, `AWS::BedrockAgentCore::CodeInterpreter`, and `AWS::BedrockAgentCore::TokenVault` removed; `AWS::BedrockAgentCore::PaymentConnector` `ConnectorType` and `AWS::BedrockAgentCore::PaymentCredentialProvider` `CredentialProviderVendor` are now immutable; `AWS::BedrockAgentCore::CapacityProvider` `OperatingSystem` allowed values in the `LaunchParameters` type reduced from [`LINUX_X86_64`, `LINUX_ARM64`, `MAC_ARM64`, `WINDOWS_X86_64`] to [`LINUX_X86_64`, `LINUX_ARM64`].
+* **aws-certificatemanager:** `AWS::CertificateManager::Certificate` `Id` attribute removed.
+* **aws-chime:** on both `AWS::Chime::AppInstance` and `AWS::Chime::AppInstanceBot`, the `CreatedTimestamp` and `LastUpdatedTimestamp` attribute types changed from `number` to `string`.
+* **aws-cloudformation:** `AWS::CloudFormation::ResourceScan` removed.
+* **aws-codeartifact:** `AWS::CodeArtifact::Package` removed.
+* **aws-codebuild:** `AWS::CodeBuild::Sandbox` removed; `AWS::CodeBuild::SourceCredential` `Id` attribute removed.
+* **aws-dax:** `AWS::DAX::ParameterGroup` `Id` attribute removed; `Description` property is now immutable.
+* **aws-dms:** `Id` attribute removed from `AWS::DMS::Endpoint`, `AWS::DMS::EventSubscription`, and `AWS::DMS::ReplicationSubnetGroup`; `AWS::DMS::ReplicationTask` `MigrationType` property is now immutable.
+* **aws-docdb:** `Id` attribute removed from `AWS::DocDB::DBClusterParameterGroup` and `AWS::DocDB::DBSubnetGroup`.
+* **aws-dynamodb:** `AWS::DynamoDB::Export` removed.
+* **aws-elasticache:** `AWS::ElastiCache::ReservedCacheNode` removed.
+* **aws-emr:** `AWS::EMR::NotebookExecution` removed.
+* **aws-events:** `AWS::Events::Replay` removed.
+* **aws-fis:** `AWS::FIS::SafetyLever` removed.
+* **aws-glue:**
+  * `Id` attribute removed from `AWS::Glue::Classifier`, `AWS::Glue::Connection`, `AWS::Glue::CustomEntityType`, `AWS::Glue::DataQualityRuleset`, `AWS::Glue::MLTransform`, `AWS::Glue::SecurityConfiguration`, `AWS::Glue::TableOptimizer`, and `AWS::Glue::Workflow`.
+  * `AWS::Glue::Connection`: complex-property types `AuthenticationConfigurationInput` and `OAuth2PropertiesInput` renamed to `AuthenticationConfiguration` and `OAuth2Properties` respectively.
+  * `AWS::Glue::DataQualityRuleset`: `Name`, `TargetTable.DatabaseName`, and `TargetTable.TableName` properties are now required; `Name` property is now immutable; `Tags` property type changed from `json` to `map<string>`.
+  * `AWS::Glue::CustomEntityType`: `Name` property is now immutable; `Tags` property is no longer recognised as resource tags.
+  * `AWS::Glue::MLTransform`: `TransformEncryption` property is now immutable.
+* **aws-greengrassv2:** `AWS::GreengrassV2::Component` and `AWS::GreengrassV2::CoreDevice` removed.
+* **aws-identitystore:** `AWS::IdentityStore::AllGroupMemberships` removed.
+* **aws-imagebuilder:** `AWS::ImageBuilder::AllImageBuildVersions`, `AWS::ImageBuilder::AllWorkflowBuildVersions`, `AWS::ImageBuilder::WorkflowExecution`, and `AWS::ImageBuilder::WorkflowStepExecution` removed.
+* **aws-medialive:** `AWS::MediaLive::Offering` removed.
+* **aws-mediaconvert:** `AWS::MediaConvert::Preset` `Id` attribute removed.
+* **aws-mediapackage:** `AWS::MediaPackage::HarvestJob` removed.
+* **aws-memorydb:** `AWS::MemoryDB::MultiRegionParameterGroup` and `AWS::MemoryDB::ReservedNode` removed.
+* **aws-omics:** `AWS::Omics::Reference` removed.
+* **aws-osis:** `AWS::OSIS::PipelineBlueprint` removed.
+* **aws-personalize:** `AWS::Personalize::DataDeletionJob` and `AWS::Personalize::Recipe` removed.
+* **aws-redshiftserverless:** `AWS::RedshiftServerless::RecoveryPoint` removed.
+* **aws-route53:** `AWS::Route53::RecordSet` `GeoProximityLocation` property removed, along with its supporting `GeoProximityLocation` and `Coordinates` complex-property types; `Id` attribute removed.
+* **aws-sagemaker:** `AWS::SageMaker::ModelCardExportJob`, `AWS::SageMaker::MonitoringScheduleAlert`, and `AWS::SageMaker::TransformJob` removed.
+* **aws-ses:** `AWS::SES::ReceiptRuleSet` `Id` attribute removed.
+* **aws-signer:** `AWS::Signer::SigningJob` removed.
+* **aws-ssm:** `AWS::SSM::Session` removed; `AWS::SSM::Association` `InstanceId` property is now immutable.
+* **aws-sso:** `AWS::SSO::ApplicationProvider` removed.
+* **aws-stepfunctions:** `AWS::StepFunctions::MapRun` removed.
+* **aws-transcribe:** `AWS::Transcribe::MedicalTranscriptionJob` removed.
+* **aws-vpclattice:** `AWS::VpcLattice::ServiceNetwork` `SharingConfig` property is now immutable.
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#38732](https://github.com/aws/aws-cdk/issues/38732)) ([53fdc99](https://github.com/aws/aws-cdk/commit/53fdc99b368d5dcbfd6a27a51ee8b7897ed3f1d3))
+* **codebuild:** add Node.js 24 Lambda build image constants ([#38471](https://github.com/aws/aws-cdk/issues/38471)) ([41ca888](https://github.com/aws/aws-cdk/commit/41ca8888b90b1ff672a99cae32dcec8456a98c20)), closes [#38172](https://github.com/aws/aws-cdk/issues/38172) [#34197](https://github.com/aws/aws-cdk/issues/34197)
+* **ec2:** support CpuOptions on LaunchTemplate ([#38193](https://github.com/aws/aws-cdk/issues/38193)) ([b0f7d9c](https://github.com/aws/aws-cdk/commit/b0f7d9c1573b68bf8a6ce1ae705037d3aa3691b2)), closes [#38187](https://github.com/aws/aws-cdk/issues/38187)
+* **medialive:** new AWS Elemental MediaLive L2 Construct with integration on MediaConnect L2 alpha ([#38563](https://github.com/aws/aws-cdk/issues/38563)) ([730b2ee](https://github.com/aws/aws-cdk/commit/730b2eec628fc22a08e4f95fcec5cf354e4e0688))
+* update L1 CloudFormation resource definitions ([#38645](https://github.com/aws/aws-cdk/issues/38645)) ([e238f54](https://github.com/aws/aws-cdk/commit/e238f5475418307cce0170f8860de863d9f01a7f))
+* update L1 CloudFormation resource definitions ([#38693](https://github.com/aws/aws-cdk/issues/38693)) ([51234fd](https://github.com/aws/aws-cdk/commit/51234fd77da6b54a8b5a439c846bb67ec4efa9dc))
+* **s3-deployment:** run the deployment handler on arm64 (Graviton) ([#37174](https://github.com/aws/aws-cdk/issues/37174)) ([c2df7a3](https://github.com/aws/aws-cdk/commit/c2df7a3bb5233952ad55ea1763920b8a0385fd32)), closes [#29996](https://github.com/aws/aws-cdk/issues/29996)
+
+
+### Bug Fixes
+
+* **core:** ignored external symlinks throw validation error ([#38679](https://github.com/aws/aws-cdk/issues/38679)) ([8fd1ef6](https://github.com/aws/aws-cdk/commit/8fd1ef68c45418680a85987e00c6a1ea85701b27))
+* **core:** templates are not checked for circular dependencies ([#38712](https://github.com/aws/aws-cdk/issues/38712)) ([688b0c1](https://github.com/aws/aws-cdk/commit/688b0c104a8d8a2e76f2c52c08725d0e79ac637a))
+* **core:** upgrade CloudFormation validation to latest version ([#38668](https://github.com/aws/aws-cdk/issues/38668)) ([d5df2ee](https://github.com/aws/aws-cdk/commit/d5df2ee5a1d856efaf11d07ca508bface1cf0423))
+* **eks-v2:** generate and export L1 constructs from aws-eks-v2 ([#37640](https://github.com/aws/aws-cdk/issues/37640)) ([ecdafa9](https://github.com/aws/aws-cdk/commit/ecdafa9f8b893d4a6c0109bd5ec65a08a07d7d96)), closes [#37563](https://github.com/aws/aws-cdk/issues/37563) [#37350](https://github.com/aws/aws-cdk/issues/37350) [#37350](https://github.com/aws/aws-cdk/issues/37350)
+* **s3-deployment:** replace deprecated addDependency in integ test ([#38684](https://github.com/aws/aws-cdk/issues/38684)) ([43c4921](https://github.com/aws/aws-cdk/commit/43c492160592721d63c2a42fd012c2689f868bb7))
+
 ## [2.267.0](https://github.com/aws/aws-cdk/compare/v2.266.0...v2.267.0) (2026-08-27)
 
 
