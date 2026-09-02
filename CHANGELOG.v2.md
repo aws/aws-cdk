@@ -7,88 +7,50 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### ⚠ BREAKING CHANGES
 
-* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
-
-aws-artifact: module removed.  
-aws-backupsearch: module removed.  
-aws-cognitosync: module removed.  
-aws-controlcatalog: module removed.  
-aws-states: module removed.  
-aws-thinclient: module removed.  
-aws-usernotifications: module removed.  
-aws-athena: AWS::Athena::Session: resource removed.  
-aws-bcmdataexports: AWS::BCMDataExports::Table: resource removed.  
-aws-bedrock: AWS::Bedrock::DefaultPromptRouter: resource removed.  
-aws-bedrock: AWS::Bedrock::ModelInvocationJob: resource removed.  
-aws-bedrockagentcore: AWS::BedrockAgentCore::Browser: resource removed.  
-aws-bedrockagentcore: AWS::BedrockAgentCore::CodeInterpreter: resource removed.  
-aws-bedrockagentcore: AWS::BedrockAgentCore::TokenVault: resource removed.  
-aws-cloudformation: AWS::CloudFormation::ResourceScan: resource removed.  
-aws-codeartifact: AWS::CodeArtifact::Package: resource removed.  
-aws-codebuild: AWS::CodeBuild::Sandbox: resource removed.  
-aws-dynamodb: AWS::DynamoDB::Export: resource removed.  
-aws-elasticache: AWS::ElastiCache::ReservedCacheNode: resource removed.  
-aws-emr: AWS::EMR::NotebookExecution: resource removed.  
-aws-events: AWS::Events::Replay: resource removed.  
-aws-fis: AWS::FIS::SafetyLever: resource removed.  
-aws-greengrassv2: AWS::GreengrassV2::Component: resource removed.  
-aws-greengrassv2: AWS::GreengrassV2::CoreDevice: resource removed.  
-aws-identitystore: AWS::IdentityStore::AllGroupMemberships: resource removed.  
-aws-imagebuilder: AWS::ImageBuilder::AllImageBuildVersions: resource removed.  
-aws-imagebuilder: AWS::ImageBuilder::AllWorkflowBuildVersions: resource removed.  
-aws-imagebuilder: AWS::ImageBuilder::WorkflowExecution: resource removed.  
-aws-imagebuilder: AWS::ImageBuilder::WorkflowStepExecution: resource removed.  
-aws-medialive: AWS::MediaLive::Offering: resource removed.  
-aws-mediapackage: AWS::MediaPackage::HarvestJob: resource removed.  
-aws-memorydb: AWS::MemoryDB::MultiRegionParameterGroup: resource removed.  
-aws-memorydb: AWS::MemoryDB::ReservedNode: resource removed.  
-aws-omics: AWS::Omics::Reference: resource removed.  
-aws-osis: AWS::OSIS::PipelineBlueprint: resource removed.  
-aws-personalize: AWS::Personalize::DataDeletionJob: resource removed.  
-aws-personalize: AWS::Personalize::Recipe: resource removed.  
-aws-redshiftserverless: AWS::RedshiftServerless::RecoveryPoint: resource removed.  
-aws-sagemaker: AWS::SageMaker::ModelCardExportJob: resource removed.  
-aws-sagemaker: AWS::SageMaker::MonitoringScheduleAlert: resource removed.  
-aws-sagemaker: AWS::SageMaker::TransformJob: resource removed.  
-aws-signer: AWS::Signer::SigningJob: resource removed.  
-aws-ssm: AWS::SSM::Session: resource removed.  
-aws-sso: AWS::SSO::ApplicationProvider: resource removed.  
-aws-stepfunctions: AWS::StepFunctions::MapRun: resource removed.  
-aws-transcribe: AWS::Transcribe::MedicalTranscriptionJob: resource removed.  
-aws-certificatemanager: AWS::CertificateManager::Certificate: Id attribute removed.  
-aws-codebuild: AWS::CodeBuild::SourceCredential: Id attribute removed.  
-aws-dax: AWS::DAX::ParameterGroup: Id attribute removed.  
-aws-dms: AWS::DMS::Endpoint: Id attribute removed.  
-aws-dms: AWS::DMS::EventSubscription: Id attribute removed.  
-aws-dms: AWS::DMS::ReplicationSubnetGroup: Id attribute removed.  
-aws-docdb: AWS::DocDB::DBClusterParameterGroup: Id attribute removed.  
-aws-docdb: AWS::DocDB::DBSubnetGroup: Id attribute removed.  
-aws-glue: AWS::Glue::Classifier: Id attribute removed.  
-aws-glue: AWS::Glue::CustomEntityType: Id attribute removed.  
-aws-glue: AWS::Glue::DataQualityRuleset: Id attribute removed.  
-aws-glue: AWS::Glue::MLTransform: Id attribute removed.  
-aws-glue: AWS::Glue::SecurityConfiguration: Id attribute removed.  
-aws-glue: AWS::Glue::TableOptimizer: Id attribute removed.  
-aws-glue: AWS::Glue::Workflow: Id attribute removed.  
-aws-mediaconvert: AWS::MediaConvert::Preset: Id attribute removed.  
-aws-ses: AWS::SES::ReceiptRuleSet: Id attribute removed.  
-aws-glue: AWS::Glue::DataQualityRuleset: Name property is now required.  
-aws-glue: AWS::Glue::DataQualityRuleset: TargetTable.DatabaseName property is now required.  
-aws-glue: AWS::Glue::DataQualityRuleset: TargetTable.TableName property is now required.  
-aws-bedrockagentcore: AWS::BedrockAgentCore::PaymentConnector: ConnectorType property is now immutable.  
-aws-bedrockagentcore: AWS::BedrockAgentCore::PaymentCredentialProvider: CredentialProviderVendor property is now immutable.  
-aws-dax: AWS::DAX::ParameterGroup: Description property is now immutable.  
-aws-glue: AWS::Glue::CustomEntityType: Name property is now immutable.  
-aws-glue: AWS::Glue::DataQualityRuleset: Name property is now immutable.  
-aws-glue: AWS::Glue::MLTransform: TransformEncryption property is now immutable.  
-aws-vpclattice: AWS::VpcLattice::ServiceNetwork: SharingConfig property is now immutable.  
-aws-chime: AWS::Chime::AppInstance: CreatedTimestamp attribute type changed from number to string.  
-aws-chime: AWS::Chime::AppInstance: LastUpdatedTimestamp attribute type changed from number to string.  
-aws-chime: AWS::Chime::AppInstanceBot: CreatedTimestamp attribute type changed from number to string.  
-aws-chime: AWS::Chime::AppInstanceBot: LastUpdatedTimestamp attribute type changed from number to string.  
-aws-glue: AWS::Glue::DataQualityRuleset: Tags property type changed from json to a map of string.  
-aws-glue: AWS::Glue::CustomEntityType: Tags property is no longer recognised as resource tags.
-* **@aws-cdk/aws-glue-alpha**: `DataQualityRulesetProps.rulesetName` is now required. `AWS::Glue::DataQualityRuleset` made `Name` a required property, so the name can no longer be left for CloudFormation to generate.
+* **aws-athena:** `AWS::Athena::Session` removed.
+* **aws-bcmdataexports:** `AWS::BCMDataExports::Table` removed.
+* **aws-bedrock:** `AWS::Bedrock::DefaultPromptRouter` and `AWS::Bedrock::ModelInvocationJob` removed.
+* **aws-bedrockagentcore:** `AWS::BedrockAgentCore::Browser`, `AWS::BedrockAgentCore::CodeInterpreter`, and `AWS::BedrockAgentCore::TokenVault` removed; `AWS::BedrockAgentCore::PaymentConnector` `ConnectorType` and `AWS::BedrockAgentCore::PaymentCredentialProvider` `CredentialProviderVendor` are now immutable; `AWS::BedrockAgentCore::CapacityProvider` `OperatingSystem` allowed values in the `LaunchParameters` type reduced from [`LINUX_X86_64`, `LINUX_ARM64`, `MAC_ARM64`, `WINDOWS_X86_64`] to [`LINUX_X86_64`, `LINUX_ARM64`].
+* **aws-certificatemanager:** `AWS::CertificateManager::Certificate` `Id` attribute removed.
+* **aws-chime:** on both `AWS::Chime::AppInstance` and `AWS::Chime::AppInstanceBot`, the `CreatedTimestamp` and `LastUpdatedTimestamp` attribute types changed from `number` to `string`.
+* **aws-cloudformation:** `AWS::CloudFormation::ResourceScan` removed.
+* **aws-codeartifact:** `AWS::CodeArtifact::Package` removed.
+* **aws-codebuild:** `AWS::CodeBuild::Sandbox` removed; `AWS::CodeBuild::SourceCredential` `Id` attribute removed.
+* **aws-dax:** `AWS::DAX::ParameterGroup` `Id` attribute removed; `Description` property is now immutable.
+* **aws-dms:** `Id` attribute removed from `AWS::DMS::Endpoint`, `AWS::DMS::EventSubscription`, and `AWS::DMS::ReplicationSubnetGroup`; `AWS::DMS::ReplicationTask` `MigrationType` property is now immutable.
+* **aws-docdb:** `Id` attribute removed from `AWS::DocDB::DBClusterParameterGroup` and `AWS::DocDB::DBSubnetGroup`.
+* **aws-dynamodb:** `AWS::DynamoDB::Export` removed.
+* **aws-elasticache:** `AWS::ElastiCache::ReservedCacheNode` removed.
+* **aws-emr:** `AWS::EMR::NotebookExecution` removed.
+* **aws-events:** `AWS::Events::Replay` removed.
+* **aws-fis:** `AWS::FIS::SafetyLever` removed.
+* **aws-glue:**
+  * `Id` attribute removed from `AWS::Glue::Classifier`, `AWS::Glue::Connection`, `AWS::Glue::CustomEntityType`, `AWS::Glue::DataQualityRuleset`, `AWS::Glue::MLTransform`, `AWS::Glue::SecurityConfiguration`, `AWS::Glue::TableOptimizer`, and `AWS::Glue::Workflow`.
+  * `AWS::Glue::Connection`: complex-property types `AuthenticationConfigurationInput` and `OAuth2PropertiesInput` renamed to `AuthenticationConfiguration` and `OAuth2Properties` respectively.
+  * `AWS::Glue::DataQualityRuleset`: `Name`, `TargetTable.DatabaseName`, and `TargetTable.TableName` properties are now required; `Name` property is now immutable; `Tags` property type changed from `json` to `map<string>`.
+  * `AWS::Glue::CustomEntityType`: `Name` property is now immutable; `Tags` property is no longer recognised as resource tags.
+  * `AWS::Glue::MLTransform`: `TransformEncryption` property is now immutable.
+* **aws-greengrassv2:** `AWS::GreengrassV2::Component` and `AWS::GreengrassV2::CoreDevice` removed.
+* **aws-identitystore:** `AWS::IdentityStore::AllGroupMemberships` removed.
+* **aws-imagebuilder:** `AWS::ImageBuilder::AllImageBuildVersions`, `AWS::ImageBuilder::AllWorkflowBuildVersions`, `AWS::ImageBuilder::WorkflowExecution`, and `AWS::ImageBuilder::WorkflowStepExecution` removed.
+* **aws-medialive:** `AWS::MediaLive::Offering` removed.
+* **aws-mediaconvert:** `AWS::MediaConvert::Preset` `Id` attribute removed.
+* **aws-mediapackage:** `AWS::MediaPackage::HarvestJob` removed.
+* **aws-memorydb:** `AWS::MemoryDB::MultiRegionParameterGroup` and `AWS::MemoryDB::ReservedNode` removed.
+* **aws-omics:** `AWS::Omics::Reference` removed.
+* **aws-osis:** `AWS::OSIS::PipelineBlueprint` removed.
+* **aws-personalize:** `AWS::Personalize::DataDeletionJob` and `AWS::Personalize::Recipe` removed.
+* **aws-redshiftserverless:** `AWS::RedshiftServerless::RecoveryPoint` removed.
+* **aws-route53:** `AWS::Route53::RecordSet` `GeoProximityLocation` property removed, along with its supporting `GeoProximityLocation` and `Coordinates` complex-property types; `Id` attribute removed.
+* **aws-sagemaker:** `AWS::SageMaker::ModelCardExportJob`, `AWS::SageMaker::MonitoringScheduleAlert`, and `AWS::SageMaker::TransformJob` removed.
+* **aws-ses:** `AWS::SES::ReceiptRuleSet` `Id` attribute removed.
+* **aws-signer:** `AWS::Signer::SigningJob` removed.
+* **aws-ssm:** `AWS::SSM::Session` removed; `AWS::SSM::Association` `InstanceId` property is now immutable.
+* **aws-sso:** `AWS::SSO::ApplicationProvider` removed.
+* **aws-stepfunctions:** `AWS::StepFunctions::MapRun` removed.
+* **aws-transcribe:** `AWS::Transcribe::MedicalTranscriptionJob` removed.
+* **aws-vpclattice:** `AWS::VpcLattice::ServiceNetwork` `SharingConfig` property is now immutable.
+* **@aws-cdk/aws-glue-alpha:** `DataQualityRulesetProps.rulesetName` is now required. `AWS::Glue::DataQualityRuleset` made `Name` a required property, so the name can no longer be left for CloudFormation to generate.
 
 ### Features
 
