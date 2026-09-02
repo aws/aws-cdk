@@ -354,8 +354,10 @@ the alarm remains in `INSUFFICIENT_DATA` and does not perform alarm actions. By 
 period ends early when enough metric data is available to fill the evaluation window. Set
 `onlyStartEvaluatingAfterWarmupPeriodEnds` to wait for the entire warm-up period instead.
 
-Alarm warm-up is supported only for alarms based on a single `Metric`. It cannot be used with
-`MathExpression`, anomaly detection, or `PromQLAlarm`.
+Alarm warm-up is supported for alarms that evaluate a single time series, including metric math and
+anomaly detection. It cannot be used with `PromQLAlarm` or a multi-time-series Metrics Insights query.
+To use a Metrics Insights query with `GROUP BY`, wrap it in a metric math expression that collapses the
+query results to a single time series.
 
 ```ts
 declare const fn: lambda.Function;

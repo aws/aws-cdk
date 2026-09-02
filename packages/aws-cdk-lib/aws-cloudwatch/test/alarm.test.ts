@@ -4,7 +4,7 @@ import { Ec2Action, Ec2InstanceAction } from '../../aws-cloudwatch-actions/lib';
 import { CfnParameter, Duration, Stack, App, Validations } from '../../core';
 import { ENABLE_PARTITION_LITERALS } from '../../cx-api';
 import type { IAlarm, IAlarmAction, IMetric } from '../lib';
-import { Alarm, Metric, MathExpression, Stats, ComparisonOperator } from '../lib';
+import { Alarm, AnomalyDetectionAlarm, Metric, MathExpression, Stats, ComparisonOperator } from '../lib';
 
 const testMetric = new Metric({
   namespace: 'CDK/Test',
@@ -147,11 +147,37 @@ describe('Alarm', () => {
     });
   });
 
-  test('fails when alarm warm-up is configured for a math expression', () => {
+  test('MathExpression.createAlarm forwards alarm warm-up configuration', () => {
+    // GIVEN
     const stack = makeStackForWarmupTest();
     const expression = new MathExpression({
       expression: 'm1',
       usingMetrics: { m1: testMetric },
+    });
+
+    // WHEN
+    expression.createAlarm(stack, 'Alarm', {
+      threshold: 1000,
+      evaluationPeriods: 3,
+      warmupConfiguration: {
+        warmupPeriod: Duration.minutes(5),
+        onlyStartEvaluatingAfterWarmupPeriodEnds: false,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      WarmUpConfiguration: {
+        OnlyStartEvaluatingAfterWarmUpPeriodEnds: false,
+        WarmUpPeriodDurationInMinutes: 5,
+      },
+    });
+  });
+
+  test('fails when alarm warm-up is configured for a multi-time-series Metrics Insights query', () => {
+    const stack = makeStackForWarmupTest();
+    const expression = new MathExpression({
+      expression: 'SELECT AVG(CPUUtilization) FROM SCHEMA("AWS/EC2", InstanceId) GROUP BY InstanceId',
     });
 
     expect(() => expression.createAlarm(stack, 'Alarm', {
@@ -160,7 +186,117 @@ describe('Alarm', () => {
       warmupConfiguration: {
         warmupPeriod: Duration.minutes(5),
       },
-    })).toThrow('warmupConfiguration can be used only with a single Metric; math and search expressions are not supported');
+    })).toThrow(
+      'warmupConfiguration cannot be used with a multi-time-series Metrics Insights query; ' +
+      'remove GROUP BY or wrap the query in metric math that returns a single time series',
+    );
+  });
+
+  test('allows alarm warm-up for a single-time-series Metrics Insights query', () => {
+    const stack = makeStackForWarmupTest();
+    const expression = new MathExpression({
+      expression: 'SELECT AVG(CPUUtilization) FROM SCHEMA("AWS/EC2", InstanceId)',
+    });
+
+    expression.createAlarm(stack, 'Alarm', {
+      threshold: 1000,
+      evaluationPeriods: 3,
+      warmupConfiguration: {
+        warmupPeriod: Duration.minutes(5),
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      WarmUpConfiguration: {
+        WarmUpPeriodDurationInMinutes: 5,
+      },
+    });
+  });
+
+  test('allows alarm warm-up when GROUP BY appears only inside a quoted identifier', () => {
+    const stack = makeStackForWarmupTest();
+    const expression = new MathExpression({
+      expression: 'SELECT AVG("Bytes\\" GROUP BY Input") FROM Namespace',
+    });
+
+    expression.createAlarm(stack, 'Alarm', {
+      threshold: 1000,
+      evaluationPeriods: 3,
+      warmupConfiguration: {
+        warmupPeriod: Duration.minutes(5),
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      WarmUpConfiguration: {
+        WarmUpPeriodDurationInMinutes: 5,
+      },
+    });
+  });
+
+  test('allows alarm warm-up for a tokenized Metrics Insights expression', () => {
+    const stack = makeStackForWarmupTest();
+    const query = new CfnParameter(stack, 'Query', { type: 'String' });
+    const expression = new MathExpression({
+      expression: query.valueAsString,
+    });
+
+    expression.createAlarm(stack, 'Alarm', {
+      threshold: 1000,
+      evaluationPeriods: 3,
+      warmupConfiguration: {
+        warmupPeriod: Duration.minutes(5),
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      WarmUpConfiguration: {
+        WarmUpPeriodDurationInMinutes: 5,
+      },
+    });
+  });
+
+  test('allows alarm warm-up when metric math collapses a grouped Metrics Insights query', () => {
+    const stack = makeStackForWarmupTest();
+    const groupedQuery = new MathExpression({
+      expression: 'SELECT AVG(CPUUtilization) FROM SCHEMA("AWS/EC2", InstanceId) GROUP BY InstanceId',
+    });
+    const collapsedExpression = new MathExpression({
+      expression: 'AVG(q1)',
+      usingMetrics: { q1: groupedQuery },
+    });
+
+    collapsedExpression.createAlarm(stack, 'Alarm', {
+      threshold: 1000,
+      evaluationPeriods: 3,
+      warmupConfiguration: {
+        warmupPeriod: Duration.minutes(5),
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      WarmUpConfiguration: {
+        WarmUpPeriodDurationInMinutes: 5,
+      },
+    });
+  });
+
+  test('AnomalyDetectionAlarm forwards alarm warm-up configuration', () => {
+    const stack = makeStackForWarmupTest();
+
+    new AnomalyDetectionAlarm(stack, 'Alarm', {
+      metric: testMetric,
+      evaluationPeriods: 3,
+      warmupConfiguration: {
+        warmupPeriod: Duration.minutes(5),
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      WarmUpConfiguration: {
+        WarmUpPeriodDurationInMinutes: 5,
+      },
+    });
   });
 
   test('alarm warm-up accepts a tokenized duration in minutes', () => {

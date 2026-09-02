@@ -1,7 +1,6 @@
 import type { Construct, IConstruct } from 'constructs';
 import type { ComparisonOperator } from './alarm';
 import { Alarm } from './alarm';
-import type { AlarmWarmupConfiguration } from './alarm-base';
 import type { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Statistic, Unit } from './metric-types';
 import type { CreateAlarmOptionsBase } from './private/alarm-options';
 import { dispatchMetric, metricKey } from './private/metric-util';
@@ -1156,15 +1155,6 @@ function allIdentifiersInExpression(x: string) {
  * Properties needed to make an alarm from a metric
  */
 export interface CreateAlarmOptions extends CreateAlarmOptionsBase {
-
-  /**
-   * The warm-up configuration for the alarm.
-   *
-   * This is supported only for alarms based on a single `Metric`. It cannot be used with a `MathExpression`.
-   *
-   * @default - No warm-up period
-   */
-  readonly warmupConfiguration?: AlarmWarmupConfiguration;
 
   /**
    * Comparison to use to check if metric is breaching

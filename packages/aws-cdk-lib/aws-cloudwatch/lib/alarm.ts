@@ -256,10 +256,11 @@ export class Alarm extends AlarmBase {
       threshold = props.threshold;
     }
 
-    if (props.warmupConfiguration !== undefined && !isSingleMetric(props.metric)) {
+    if (props.warmupConfiguration !== undefined && isMultiTimeSeriesMetricsInsightsQuery(props.metric)) {
       throw new ValidationError(
-        lit`AlarmWarmupRequiresSingleMetric`,
-        'warmupConfiguration can be used only with a single Metric; math and search expressions are not supported',
+        lit`AlarmWarmupUnsupportedForMultiTimeSeriesMetricsInsights`,
+        'warmupConfiguration cannot be used with a multi-time-series Metrics Insights query; ' +
+        'remove GROUP BY or wrap the query in metric math that returns a single time series',
         this,
       );
     }
@@ -620,12 +621,48 @@ export class Alarm extends AlarmBase {
  */
 type AlarmMetricFields = Pick<CfnAlarmProps, 'dimensions' | 'namespace' | 'metricName' | 'period' | 'statistic' | 'extendedStatistic' | 'unit' | 'metrics'>;
 
-function isSingleMetric(metric: IMetric): boolean {
+function isMultiTimeSeriesMetricsInsightsQuery(metric: IMetric): boolean {
   return dispatchMetric(metric, {
-    withStat: () => true,
-    withMathExpression: () => false,
+    withStat: () => false,
+    withMathExpression: expression => {
+      if (Token.isUnresolved(expression.expression)) {
+        return false;
+      }
+
+      const queryWithoutStrings = stripQuotedStrings(expression.expression);
+      return /^\s*SELECT\b/i.test(queryWithoutStrings) && /\bGROUP\s+BY\b/i.test(queryWithoutStrings);
+    },
     withSearchExpression: () => false,
   });
+}
+
+function stripQuotedStrings(expression: string): string {
+  let result = '';
+  let quote: '"' | "'" | undefined;
+
+  for (let i = 0; i < expression.length; i++) {
+    const character = expression[i];
+    if (quote !== undefined) {
+      if (character === '\\') {
+        i++;
+      } else if (character === quote) {
+        if (expression[i + 1] === quote) {
+          i++;
+        } else {
+          quote = undefined;
+        }
+      }
+      continue;
+    }
+
+    if (character === '"' || character === "'") {
+      quote = character;
+    } else {
+      result += character;
+    }
+  }
+
+  return result;
 }
 
 /**

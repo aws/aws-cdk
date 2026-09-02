@@ -77,6 +77,16 @@ export interface CreateAlarmOptionsBase {
   readonly treatMissingData?: TreatMissingData;
 
   /**
+   * The warm-up configuration for the alarm.
+   *
+   * This is supported for alarms that evaluate a single time series, including metric math and anomaly detection.
+   * It cannot be used with a multi-time-series Metrics Insights query.
+   *
+   * @default - No warm-up period
+   */
+  readonly warmupConfiguration?: AlarmWarmupConfiguration;
+
+  /**
    * Whether the actions for this alarm are enabled
    *
    * @default true
