@@ -2,6 +2,113 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.268.0](https://github.com/aws/aws-cdk/compare/v2.267.0...v2.268.0) (2026-09-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-artifact: module removed.  
+aws-backupsearch: module removed.  
+aws-cognitosync: module removed.  
+aws-controlcatalog: module removed.  
+aws-states: module removed.  
+aws-thinclient: module removed.  
+aws-usernotifications: module removed.  
+aws-athena: AWS::Athena::Session: resource removed.  
+aws-bcmdataexports: AWS::BCMDataExports::Table: resource removed.  
+aws-bedrock: AWS::Bedrock::DefaultPromptRouter: resource removed.  
+aws-bedrock: AWS::Bedrock::ModelInvocationJob: resource removed.  
+aws-bedrockagentcore: AWS::BedrockAgentCore::Browser: resource removed.  
+aws-bedrockagentcore: AWS::BedrockAgentCore::CodeInterpreter: resource removed.  
+aws-bedrockagentcore: AWS::BedrockAgentCore::TokenVault: resource removed.  
+aws-cloudformation: AWS::CloudFormation::ResourceScan: resource removed.  
+aws-codeartifact: AWS::CodeArtifact::Package: resource removed.  
+aws-codebuild: AWS::CodeBuild::Sandbox: resource removed.  
+aws-dynamodb: AWS::DynamoDB::Export: resource removed.  
+aws-elasticache: AWS::ElastiCache::ReservedCacheNode: resource removed.  
+aws-emr: AWS::EMR::NotebookExecution: resource removed.  
+aws-events: AWS::Events::Replay: resource removed.  
+aws-fis: AWS::FIS::SafetyLever: resource removed.  
+aws-greengrassv2: AWS::GreengrassV2::Component: resource removed.  
+aws-greengrassv2: AWS::GreengrassV2::CoreDevice: resource removed.  
+aws-identitystore: AWS::IdentityStore::AllGroupMemberships: resource removed.  
+aws-imagebuilder: AWS::ImageBuilder::AllImageBuildVersions: resource removed.  
+aws-imagebuilder: AWS::ImageBuilder::AllWorkflowBuildVersions: resource removed.  
+aws-imagebuilder: AWS::ImageBuilder::WorkflowExecution: resource removed.  
+aws-imagebuilder: AWS::ImageBuilder::WorkflowStepExecution: resource removed.  
+aws-medialive: AWS::MediaLive::Offering: resource removed.  
+aws-mediapackage: AWS::MediaPackage::HarvestJob: resource removed.  
+aws-memorydb: AWS::MemoryDB::MultiRegionParameterGroup: resource removed.  
+aws-memorydb: AWS::MemoryDB::ReservedNode: resource removed.  
+aws-omics: AWS::Omics::Reference: resource removed.  
+aws-osis: AWS::OSIS::PipelineBlueprint: resource removed.  
+aws-personalize: AWS::Personalize::DataDeletionJob: resource removed.  
+aws-personalize: AWS::Personalize::Recipe: resource removed.  
+aws-redshiftserverless: AWS::RedshiftServerless::RecoveryPoint: resource removed.  
+aws-sagemaker: AWS::SageMaker::ModelCardExportJob: resource removed.  
+aws-sagemaker: AWS::SageMaker::MonitoringScheduleAlert: resource removed.  
+aws-sagemaker: AWS::SageMaker::TransformJob: resource removed.  
+aws-signer: AWS::Signer::SigningJob: resource removed.  
+aws-ssm: AWS::SSM::Session: resource removed.  
+aws-sso: AWS::SSO::ApplicationProvider: resource removed.  
+aws-stepfunctions: AWS::StepFunctions::MapRun: resource removed.  
+aws-transcribe: AWS::Transcribe::MedicalTranscriptionJob: resource removed.  
+aws-certificatemanager: AWS::CertificateManager::Certificate: Id attribute removed.  
+aws-codebuild: AWS::CodeBuild::SourceCredential: Id attribute removed.  
+aws-dax: AWS::DAX::ParameterGroup: Id attribute removed.  
+aws-dms: AWS::DMS::Endpoint: Id attribute removed.  
+aws-dms: AWS::DMS::EventSubscription: Id attribute removed.  
+aws-dms: AWS::DMS::ReplicationSubnetGroup: Id attribute removed.  
+aws-docdb: AWS::DocDB::DBClusterParameterGroup: Id attribute removed.  
+aws-docdb: AWS::DocDB::DBSubnetGroup: Id attribute removed.  
+aws-glue: AWS::Glue::Classifier: Id attribute removed.  
+aws-glue: AWS::Glue::CustomEntityType: Id attribute removed.  
+aws-glue: AWS::Glue::DataQualityRuleset: Id attribute removed.  
+aws-glue: AWS::Glue::MLTransform: Id attribute removed.  
+aws-glue: AWS::Glue::SecurityConfiguration: Id attribute removed.  
+aws-glue: AWS::Glue::TableOptimizer: Id attribute removed.  
+aws-glue: AWS::Glue::Workflow: Id attribute removed.  
+aws-mediaconvert: AWS::MediaConvert::Preset: Id attribute removed.  
+aws-ses: AWS::SES::ReceiptRuleSet: Id attribute removed.  
+aws-glue: AWS::Glue::DataQualityRuleset: Name property is now required.  
+aws-glue: AWS::Glue::DataQualityRuleset: TargetTable.DatabaseName property is now required.  
+aws-glue: AWS::Glue::DataQualityRuleset: TargetTable.TableName property is now required.  
+aws-bedrockagentcore: AWS::BedrockAgentCore::PaymentConnector: ConnectorType property is now immutable.  
+aws-bedrockagentcore: AWS::BedrockAgentCore::PaymentCredentialProvider: CredentialProviderVendor property is now immutable.  
+aws-dax: AWS::DAX::ParameterGroup: Description property is now immutable.  
+aws-glue: AWS::Glue::CustomEntityType: Name property is now immutable.  
+aws-glue: AWS::Glue::DataQualityRuleset: Name property is now immutable.  
+aws-glue: AWS::Glue::MLTransform: TransformEncryption property is now immutable.  
+aws-vpclattice: AWS::VpcLattice::ServiceNetwork: SharingConfig property is now immutable.  
+aws-chime: AWS::Chime::AppInstance: CreatedTimestamp attribute type changed from number to string.  
+aws-chime: AWS::Chime::AppInstance: LastUpdatedTimestamp attribute type changed from number to string.  
+aws-chime: AWS::Chime::AppInstanceBot: CreatedTimestamp attribute type changed from number to string.  
+aws-chime: AWS::Chime::AppInstanceBot: LastUpdatedTimestamp attribute type changed from number to string.  
+aws-glue: AWS::Glue::DataQualityRuleset: Tags property type changed from json to a map of string.  
+aws-glue: AWS::Glue::CustomEntityType: Tags property is no longer recognised as resource tags.
+* **@aws-cdk/aws-glue-alpha**: `DataQualityRulesetProps.rulesetName` is now required. `AWS::Glue::DataQualityRuleset` made `Name` a required property, so the name can no longer be left for CloudFormation to generate.
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#38732](https://github.com/aws/aws-cdk/issues/38732)) ([53fdc99](https://github.com/aws/aws-cdk/commit/53fdc99b368d5dcbfd6a27a51ee8b7897ed3f1d3))
+* **codebuild:** add Node.js 24 Lambda build image constants ([#38471](https://github.com/aws/aws-cdk/issues/38471)) ([41ca888](https://github.com/aws/aws-cdk/commit/41ca8888b90b1ff672a99cae32dcec8456a98c20)), closes [#38172](https://github.com/aws/aws-cdk/issues/38172) [#34197](https://github.com/aws/aws-cdk/issues/34197)
+* **ec2:** support CpuOptions on LaunchTemplate ([#38193](https://github.com/aws/aws-cdk/issues/38193)) ([b0f7d9c](https://github.com/aws/aws-cdk/commit/b0f7d9c1573b68bf8a6ce1ae705037d3aa3691b2)), closes [#38187](https://github.com/aws/aws-cdk/issues/38187)
+* **medialive:** new AWS Elemental MediaLive L2 Construct with integration on MediaConnect L2 alpha ([#38563](https://github.com/aws/aws-cdk/issues/38563)) ([730b2ee](https://github.com/aws/aws-cdk/commit/730b2eec628fc22a08e4f95fcec5cf354e4e0688))
+* update L1 CloudFormation resource definitions ([#38645](https://github.com/aws/aws-cdk/issues/38645)) ([e238f54](https://github.com/aws/aws-cdk/commit/e238f5475418307cce0170f8860de863d9f01a7f))
+* update L1 CloudFormation resource definitions ([#38693](https://github.com/aws/aws-cdk/issues/38693)) ([51234fd](https://github.com/aws/aws-cdk/commit/51234fd77da6b54a8b5a439c846bb67ec4efa9dc))
+* **s3-deployment:** run the deployment handler on arm64 (Graviton) ([#37174](https://github.com/aws/aws-cdk/issues/37174)) ([c2df7a3](https://github.com/aws/aws-cdk/commit/c2df7a3bb5233952ad55ea1763920b8a0385fd32)), closes [#29996](https://github.com/aws/aws-cdk/issues/29996)
+
+
+### Bug Fixes
+
+* **core:** ignored external symlinks throw validation error ([#38679](https://github.com/aws/aws-cdk/issues/38679)) ([8fd1ef6](https://github.com/aws/aws-cdk/commit/8fd1ef68c45418680a85987e00c6a1ea85701b27))
+* **core:** templates are not checked for circular dependencies ([#38712](https://github.com/aws/aws-cdk/issues/38712)) ([688b0c1](https://github.com/aws/aws-cdk/commit/688b0c104a8d8a2e76f2c52c08725d0e79ac637a))
+* **core:** upgrade CloudFormation validation to latest version ([#38668](https://github.com/aws/aws-cdk/issues/38668)) ([d5df2ee](https://github.com/aws/aws-cdk/commit/d5df2ee5a1d856efaf11d07ca508bface1cf0423))
+* **eks-v2:** generate and export L1 constructs from aws-eks-v2 ([#37640](https://github.com/aws/aws-cdk/issues/37640)) ([ecdafa9](https://github.com/aws/aws-cdk/commit/ecdafa9f8b893d4a6c0109bd5ec65a08a07d7d96)), closes [#37563](https://github.com/aws/aws-cdk/issues/37563) [#37350](https://github.com/aws/aws-cdk/issues/37350) [#37350](https://github.com/aws/aws-cdk/issues/37350)
+* **s3-deployment:** replace deprecated addDependency in integ test ([#38684](https://github.com/aws/aws-cdk/issues/38684)) ([43c4921](https://github.com/aws/aws-cdk/commit/43c492160592721d63c2a42fd012c2689f868bb7))
+
 ## [2.267.0](https://github.com/aws/aws-cdk/compare/v2.266.0...v2.267.0) (2026-08-27)
 
 
