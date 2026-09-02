@@ -750,9 +750,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "linkTag",
     "messageTag"
   ],
-  "CloudWatchEncryptionMode": [
-    "SSE-KMS"
-  ],
   "ClusterLoggingTypes": [
     "api",
     "audit",
@@ -1285,10 +1282,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "Pipfile.lock",
     "uv.lock",
     ""
-  ],
-  "DependencyOperation": [
-    0,
-    1
   ],
   "DeploymentControllerType": [
     "ECS",
@@ -2537,9 +2530,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "JitterType": [
     "FULL",
     "NONE"
-  ],
-  "JobBookmarksEncryptionMode": [
-    "CSE-KMS"
   ],
   "JobLanguage": [
     "scala",
