@@ -84,13 +84,13 @@ describe('User Pool Domain', () => {
 
     expect(() => pool.addDomain('Domain1', {
       cognitoDomain: { domainPrefix: 'domain.prefix' },
-    })).toThrow(/start and end with a lowercase alphanumeric/);
+    })).toThrow(/must match pattern/);
     expect(() => pool.addDomain('Domain2', {
       cognitoDomain: { domainPrefix: 'Domain-Prefix' },
-    })).toThrow(/start and end with a lowercase alphanumeric/);
+    })).toThrow(/must match pattern/);
     expect(() => pool.addDomain('Domain3', {
       cognitoDomain: { domainPrefix: 'dómäin-prefix' },
-    })).toThrow(/start and end with a lowercase alphanumeric/);
+    })).toThrow(/must match pattern/);
   });
 
   test('fails when domainPrefix has leading or trailing hyphens', () => {
@@ -99,10 +99,10 @@ describe('User Pool Domain', () => {
 
     expect(() => pool.addDomain('Domain1', {
       cognitoDomain: { domainPrefix: '-domain-prefix' },
-    })).toThrow(/start and end with a lowercase alphanumeric/);
+    })).toThrow(/must match pattern/);
     expect(() => pool.addDomain('Domain2', {
       cognitoDomain: { domainPrefix: 'domain-prefix-' },
-    })).toThrow(/start and end with a lowercase alphanumeric/);
+    })).toThrow(/must match pattern/);
   });
 
   test('fails when domainPrefix is longer than 63 characters', () => {
@@ -111,7 +111,7 @@ describe('User Pool Domain', () => {
 
     expect(() => pool.addDomain('Domain', {
       cognitoDomain: { domainPrefix: 'a'.repeat(64) },
-    })).toThrow(/start and end with a lowercase alphanumeric/);
+    })).toThrow(/must match pattern/);
   });
 
   test('passes when domainPrefix has valid format', () => {
