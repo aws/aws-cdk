@@ -1866,6 +1866,7 @@
     "prefer-ref-interface:aws-cdk-lib.aws_stepfunctions_tasks.StepFunctionsInvokeActivityJsonPathProps.activity",
     "prefer-ref-interface:aws-cdk-lib.aws_stepfunctions_tasks.StepFunctionsInvokeActivityProps.activity",
     "prefer-ref-interface:aws-cdk-lib.aws_synthetics.CanaryProps.artifactS3KmsKey",
+    "prefer-ref-interface:aws-cdk-lib.aws_synthetics.CanaryProps.environmentVariablesEncryptionKey",
     "prefer-ref-interface:aws-cdk-lib.aws_synthetics.ArtifactsBucketLocation.bucket",
     "prefer-ref-interface:aws-cdk-lib.aws_synthetics.CanaryProps.role",
     "prefer-ref-interface:aws-cdk-lib.aws_synthetics.CanaryProps.securityGroups",
