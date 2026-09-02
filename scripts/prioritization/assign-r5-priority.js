@@ -148,6 +148,6 @@ module.exports = async ({ github }) => {
     } catch (error) {
       console.error(`Error processing PR #${pr.number}:`, error);
       continue;
-    }
+  }
 }
 }
