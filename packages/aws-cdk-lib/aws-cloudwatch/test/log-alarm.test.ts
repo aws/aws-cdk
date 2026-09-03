@@ -285,6 +285,43 @@ describe('LogAlarm', () => {
     })).toThrow(/logGroups must contain between 1 and 50 entries, got 0/);
   });
 
+  test('fails when actionLogLineRole is given without actionLogLineCount', () => {
+    expect(() => new LogAlarm(stack, 'Alarm', {
+      ...baseProps(),
+      actionLogLineRole: queryRole,
+    })).toThrow(/actionLogLineRole is only used when actionLogLineCount is greater than 0/);
+  });
+
+  test('fails when actionLogLineRole is given with actionLogLineCount of 0', () => {
+    expect(() => new LogAlarm(stack, 'Alarm', {
+      ...baseProps(),
+      actionLogLineCount: 0,
+      actionLogLineRole: queryRole,
+    })).toThrow(/actionLogLineRole is only used when actionLogLineCount is greater than 0/);
+  });
+
+  test('accepts a tokenized schedule rate, rendering minutes', () => {
+    const props = baseProps();
+    new LogAlarm(stack, 'Alarm', {
+      ...props,
+      scheduledQueryConfiguration: {
+        ...props.scheduledQueryConfiguration,
+        schedule: {
+          rate: Duration.minutes(Token.asNumber({ Ref: 'RateParam' })),
+          startTimeOffset: Duration.minutes(5),
+        },
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::LogAlarm', {
+      ScheduledQueryConfiguration: Match.objectLike({
+        ScheduleConfiguration: Match.objectLike({
+          ScheduleExpression: { 'Fn::Join': ['', ['rate(', { Ref: 'RateParam' }, ' minutes)']] },
+        }),
+      }),
+    });
+  });
+
   test('fails when queryResultsToAlarm exceeds queryResultsToEvaluate', () => {
     expect(() => new LogAlarm(stack, 'Alarm', {
       ...baseProps(),

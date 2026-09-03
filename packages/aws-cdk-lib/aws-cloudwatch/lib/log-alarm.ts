@@ -7,7 +7,7 @@ import { CfnLogAlarm } from './cloudwatch.generated';
 import { isAnomalyDetectionOperator } from './private/anomaly-detection';
 import type { IRole } from '../../aws-iam';
 import { PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
-import { Annotations, ArnFormat, Stack, Token, ValidationError } from '../../core';
+import { Annotations, ArnFormat, Stack, Token, Tokenization, ValidationError } from '../../core';
 import type { Duration } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -361,6 +361,9 @@ export class LogAlarm extends AlarmBase {
 
     const includesLogLines = props.actionLogLineCount !== undefined
       && (Token.isUnresolved(props.actionLogLineCount) || props.actionLogLineCount > 0);
+    if (props.actionLogLineRole !== undefined && !includesLogLines) {
+      throw new ValidationError(lit`ActionLogLineRoleWithoutLogLines`, 'actionLogLineRole is only used when actionLogLineCount is greater than 0; set actionLogLineCount or remove the role', this);
+    }
     this.actionLogLineRole = props.actionLogLineRole
       ?? (includesLogLines ? this.createServiceRole('LogLineRole', 'cloudwatch.amazonaws.com', 'cloudwatch', 'alarm') : undefined);
     if (this.actionLogLineRole !== undefined) {
@@ -556,14 +559,15 @@ export class LogAlarm extends AlarmBase {
   }
 
   private renderRate(rate: Duration): string {
-    if (Token.isUnresolved(rate)) {
-      throw new ValidationError(lit`InvalidScheduleRate`, 'schedule rate must be a literal Duration, not an unresolved token', this);
+    const minutes = rate.toMinutes({ integral: false });
+    // A tokenized rate is only known at deploy time, so the unit cannot be singularised
+    // and whole hours cannot be collapsed. Render minutes and let the service validate.
+    if (Token.isUnresolved(minutes)) {
+      return `rate(${Tokenization.stringifyNumber(minutes)} minutes)`;
     }
-    const seconds = rate.toSeconds();
-    if (seconds < 60 || seconds % 60 !== 0) {
-      throw new ValidationError(lit`InvalidScheduleRate`, `schedule rate must be a whole number of minutes and at least 1 minute, got ${seconds} seconds`, this);
+    if (!Number.isInteger(minutes) || minutes < 1) {
+      throw new ValidationError(lit`InvalidScheduleRate`, `schedule rate must be a whole number of minutes and at least 1 minute, got ${rate.toSeconds()} seconds`, this);
     }
-    const minutes = seconds / 60;
     if (minutes % 60 === 0) {
       const hours = minutes / 60;
       return `rate(${hours} ${hours === 1 ? 'hour' : 'hours'})`;
