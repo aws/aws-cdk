@@ -176,7 +176,7 @@ export class AssetStaging extends Construct {
       extraHash: props.extraHash || salt ? `${props.extraHash ?? ''}${salt ?? ''}` : undefined,
     };
 
-    // Stat the source once; the decisions below depend on whether it's a file or a directory.
+    // Stat the source once. The decisions below depend on whether it's a file or a directory.
     const sourceStats = fs.statSync(this.sourcePath, { throwIfNoEntry: false });
     if (!sourceStats) {
       throw new ValidationError(lit`CannotFindAsset`, `Cannot find asset at ${this.sourcePath}`, this);
@@ -227,7 +227,7 @@ export class AssetStaging extends Construct {
       skip,
     });
 
-    // Actually stage the asset: on a cache miss, `obtain` runs `stageThisAsset`.
+    // Actually stage the asset: on a cache miss, we stage the asset.
     const staged = AssetStaging.assetCache.obtain(this.cacheKey, stageThisAsset);
     this.stagedPath = staged.stagedPath;
     this.absoluteStagedPath = staged.stagedPath;
