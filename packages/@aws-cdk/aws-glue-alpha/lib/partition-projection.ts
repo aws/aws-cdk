@@ -480,36 +480,36 @@ export class PartitionProjectionConfiguration {
    */
   public readonly type: PartitionProjectionType;
 
-  /** @internal Range [min, max] for INTEGER type. */
-  public readonly _integerRange?: number[];
+  /** Range [min, max] for INTEGER type. */
+  private readonly integerRange?: number[];
 
-  /** @internal Range [start, end] for DATE type. */
-  public readonly _dateRange?: string[];
+  /** Range [start, end] for DATE type. */
+  private readonly dateRange?: string[];
 
-  /** @internal Interval between partition values (INTEGER, or DATE step). */
-  public readonly _interval?: number;
+  /** Interval between partition values (INTEGER, or DATE step). */
+  private readonly interval?: number;
 
-  /** @internal Number of digits to pad INTEGER partition values. */
-  public readonly _digits?: number;
+  /** Number of digits to pad INTEGER partition values. */
+  private readonly digits?: number;
 
-  /** @internal Date format for DATE partition values. */
-  public readonly _format?: string;
+  /** Date format for DATE partition values. */
+  private readonly format?: string;
 
-  /** @internal Unit for the DATE partition interval. */
-  public readonly _intervalUnit?: DateIntervalUnit;
+  /** Unit for the DATE partition interval. */
+  private readonly intervalUnit?: DateIntervalUnit;
 
-  /** @internal Explicit list of values for ENUM partitions. */
-  public readonly _values?: string[];
+  /** Explicit list of values for ENUM partitions. */
+  private readonly values?: string[];
 
   private constructor(props: PartitionProjectionConfigurationProps) {
     this.type = props.type;
-    this._integerRange = props.integerRange;
-    this._dateRange = props.dateRange;
-    this._interval = props.interval;
-    this._digits = props.digits;
-    this._format = props.format;
-    this._intervalUnit = props.intervalUnit;
-    this._values = props.values;
+    this.integerRange = props.integerRange;
+    this.dateRange = props.dateRange;
+    this.interval = props.interval;
+    this.digits = props.digits;
+    this.format = props.format;
+    this.intervalUnit = props.intervalUnit;
+    this.values = props.values;
   }
 
   /**
@@ -525,30 +525,30 @@ export class PartitionProjectionConfiguration {
 
     switch (this.type) {
       case PartitionProjectionType.INTEGER: {
-        const [min, max] = this._integerRange!;
+        const [min, max] = this.integerRange!;
         params[`projection.${columnName}.range`] = `${min},${max}`;
-        if (this._interval !== undefined) {
-          params[`projection.${columnName}.interval`] = this._interval.toString();
+        if (this.interval !== undefined) {
+          params[`projection.${columnName}.interval`] = this.interval.toString();
         }
-        if (this._digits !== undefined) {
-          params[`projection.${columnName}.digits`] = this._digits.toString();
+        if (this.digits !== undefined) {
+          params[`projection.${columnName}.digits`] = this.digits.toString();
         }
         break;
       }
       case PartitionProjectionType.DATE: {
-        const [start, end] = this._dateRange!;
+        const [start, end] = this.dateRange!;
         params[`projection.${columnName}.range`] = `${start},${end}`;
-        params[`projection.${columnName}.format`] = this._format!;
-        if (this._interval !== undefined) {
-          params[`projection.${columnName}.interval`] = this._interval.toString();
+        params[`projection.${columnName}.format`] = this.format!;
+        if (this.interval !== undefined) {
+          params[`projection.${columnName}.interval`] = this.interval.toString();
         }
-        if (this._intervalUnit !== undefined) {
-          params[`projection.${columnName}.interval.unit`] = this._intervalUnit;
+        if (this.intervalUnit !== undefined) {
+          params[`projection.${columnName}.interval.unit`] = this.intervalUnit;
         }
         break;
       }
       case PartitionProjectionType.ENUM: {
-        params[`projection.${columnName}.values`] = this._values!.join(',');
+        params[`projection.${columnName}.values`] = this.values!.join(',');
         break;
       }
       case PartitionProjectionType.INJECTED: {
