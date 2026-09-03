@@ -1,0 +1,53 @@
+{
+  "/LambdaEphemeralStorageValidationStack/LambdaWithEphemeralStorage": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*",
+        "ephemeralStorageSize": "*"
+      }
+    }
+  ],
+  "/LambdaEphemeralStorageValidationStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/LambdaEphemeralStorageValidationStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/LambdaEphemeralStorageValidationStack/LambdaWithEphemeralStorage/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/LambdaEphemeralStorageValidationStack/LambdaWithEphemeralStorage/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaWithEphemeralStorage04A5EDDD"
+    }
+  ],
+  "/LambdaEphemeralStorageValidationStack/LambdaWithEphemeralStorage/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaWithEphemeralStorageServiceRole33EE1273"
+    }
+  ]
+}

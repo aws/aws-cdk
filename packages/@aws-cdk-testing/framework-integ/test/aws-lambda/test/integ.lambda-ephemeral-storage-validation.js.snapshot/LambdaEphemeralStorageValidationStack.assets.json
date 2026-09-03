@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "3bf53535f6ac096efa83789ca0d5111f217527ccb2c8ce23be6d2b054526b8e6": {
+      "displayName": "LambdaEphemeralStorageValidationStack Template",
+      "source": {
+        "path": "LambdaEphemeralStorageValidationStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-ad55c772": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3bf53535f6ac096efa83789ca0d5111f217527ccb2c8ce23be6d2b054526b8e6.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
