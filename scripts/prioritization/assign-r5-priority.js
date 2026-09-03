@@ -39,7 +39,7 @@ module.exports = async ({ github }) => {
     // Update pagination info
     hasNextPage = pullRequests.pageInfo.hasNextPage;
     cursor = pullRequests.pageInfo.endCursor;
-  }
+    }
 
   console.log(`Total PRs fetched: ${allPRs.length}`);
 
@@ -148,6 +148,6 @@ module.exports = async ({ github }) => {
     } catch (error) {
       console.error(`Error processing PR #${pr.number}:`, error);
       continue;
-  }
+    }
 }
 }
