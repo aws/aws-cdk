@@ -972,6 +972,109 @@ export class BedrockFoundationModel implements IBedrockInvokable {
     },
   );
 
+  /****************************************************************************
+   *                            OPENAI
+   ***************************************************************************/
+
+  /**
+   * OpenAI's GPT-5.6 Sol model, the most capable OpenAI model on Bedrock.
+   * Frontier reasoning and agentic performance across coding, cybersecurity,
+   * and scientific research.
+   *
+   * Features:
+   * - Cross-region support (us. and global. inference profiles only; no in-Region invocation)
+   * - Not supported by Bedrock Agents
+   * - Best for: Complex reasoning, coding, scientific research
+   */
+  public static readonly OPENAI_GPT_5_6_SOL = new BedrockFoundationModel('openai.gpt-5.6-sol', {
+    supportsAgents: false,
+    supportsCrossRegion: true,
+  });
+
+  /**
+   * OpenAI's GPT-5.6 Terra model, balanced performance for production workloads.
+   * Competitive with GPT-5.5 at half the cost.
+   *
+   * Features:
+   * - Cross-region support (us., in. and global. inference profiles only; no in-Region invocation)
+   * - Not supported by Bedrock Agents
+   * - Best for: Everyday production workloads at scale
+   */
+  public static readonly OPENAI_GPT_5_6_TERRA = new BedrockFoundationModel('openai.gpt-5.6-terra', {
+    supportsAgents: false,
+    supportsCrossRegion: true,
+  });
+
+  /**
+   * OpenAI's GPT-5.6 Luna model, fast and affordable inference.
+   * OpenAI's lowest cost model, built for high-volume tasks.
+   *
+   * Features:
+   * - Cross-region support (us., in. and global. inference profiles only; no in-Region invocation)
+   * - Not supported by Bedrock Agents
+   * - Best for: Classification, summarization, routing, real-time applications
+   */
+  public static readonly OPENAI_GPT_5_6_LUNA = new BedrockFoundationModel('openai.gpt-5.6-luna', {
+    supportsAgents: false,
+    supportsCrossRegion: true,
+  });
+
+  /**
+   * OpenAI's gpt-oss-120b model, 120-billion parameter open-weight model.
+   * General-purpose model for text generation, coding, and reasoning tasks.
+   *
+   * Features:
+   * - In-Region invocation
+   * - Not supported by Bedrock Agents
+   * - Best for: Text generation, coding, reasoning
+   */
+  public static readonly OPENAI_GPT_OSS_120B_V1 = new BedrockFoundationModel('openai.gpt-oss-120b-1:0', {
+    supportsAgents: false,
+    supportsCrossRegion: false,
+  });
+
+  /**
+   * OpenAI's gpt-oss-20b model, 20-billion parameter open-weight model.
+   * Efficient model for text generation and coding at lower compute cost.
+   *
+   * Features:
+   * - In-Region invocation
+   * - Not supported by Bedrock Agents
+   * - Best for: Efficient text generation, coding
+   */
+  public static readonly OPENAI_GPT_OSS_20B_V1 = new BedrockFoundationModel('openai.gpt-oss-20b-1:0', {
+    supportsAgents: false,
+    supportsCrossRegion: false,
+  });
+
+  /**
+   * OpenAI's GPT OSS Safeguard 120B model, open-weight safety model.
+   * Built for content moderation and guardrail enforcement in AI applications.
+   *
+   * Features:
+   * - In-Region invocation
+   * - Not supported by Bedrock Agents
+   * - Best for: Content moderation, guardrail enforcement
+   */
+  public static readonly OPENAI_GPT_OSS_SAFEGUARD_120B = new BedrockFoundationModel('openai.gpt-oss-safeguard-120b', {
+    supportsAgents: false,
+    supportsCrossRegion: false,
+  });
+
+  /**
+   * OpenAI's GPT OSS Safeguard 20B model, compact open-weight safety model.
+   * Built for lightweight content moderation and guardrail tasks.
+   *
+   * Features:
+   * - In-Region invocation
+   * - Not supported by Bedrock Agents
+   * - Best for: Lightweight content moderation, guardrail tasks
+   */
+  public static readonly OPENAI_GPT_OSS_SAFEGUARD_20B = new BedrockFoundationModel('openai.gpt-oss-safeguard-20b', {
+    supportsAgents: false,
+    supportsCrossRegion: false,
+  });
+
   /**
    * Creates a BedrockFoundationModel from a FoundationModelIdentifier.
    * Use this method when you have a model identifier from the CDK.
