@@ -287,12 +287,20 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public readonly metrics: INetworkLoadBalancerMetrics;
   public readonly ipAddressType?: IpAddressType;
   public readonly connections: ec2.Connections;
-  private _securityGroups?: string[];
+  private readonly isSecurityGroupsPropertyDefined: boolean;
   private _enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: string;
   private enablePrefixForIpv6SourceNat?: boolean;
 
+  /**
+   * After the implementation of `IConnectable` (see https://github.com/aws/aws-cdk/pull/28494), the default
+   * value for `securityGroups` is set by the `ec2.Connections` constructor to an empty array.
+   * To keep backward compatibility (`securityGroups` is `undefined` if the related property is not specified)
+   * a getter has been added.
+   */
   public get securityGroups(): string[] | undefined {
-    return this._securityGroups;
+    return this.isSecurityGroupsPropertyDefined || this.connections.securityGroups.length
+      ? this.connections.securityGroups.map(sg => sg.securityGroupId)
+      : undefined;
   }
 
   public get enforceSecurityGroupInboundRulesOnPrivateLinkTraffic(): string | undefined {
@@ -338,7 +346,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
 
     this.enablePrefixForIpv6SourceNat = props.enablePrefixForIpv6SourceNat;
     this.metrics = new NetworkLoadBalancerMetrics(this, this.loadBalancerFullName);
-    const isSecurityGroupsPropertyDefined = !!props.securityGroups;
+    this.isSecurityGroupsPropertyDefined = !!props.securityGroups;
 
     let securityGroups: ec2.ISecurityGroup[] | undefined;
     if (props.securityGroups && props.disableSecurityGroups) {
@@ -363,9 +371,6 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     }
     this._enforceSecurityGroupInboundRulesOnPrivateLinkTraffic = props.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic !== undefined
       ? (props.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic ? 'on' : 'off')
-      : undefined;
-    this._securityGroups = isSecurityGroupsPropertyDefined || this.connections.securityGroups.length
-      ? this.connections.securityGroups.map(sg => sg.securityGroupId)
       : undefined;
   }
 
@@ -396,7 +401,6 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   @MethodMetadata()
   public addSecurityGroup(securityGroup: ec2.ISecurityGroup) {
     this.connections.addSecurityGroup(securityGroup);
-    this._securityGroups = this.connections.securityGroups.map(sg => sg.securityGroupId);
   }
 
   /**
