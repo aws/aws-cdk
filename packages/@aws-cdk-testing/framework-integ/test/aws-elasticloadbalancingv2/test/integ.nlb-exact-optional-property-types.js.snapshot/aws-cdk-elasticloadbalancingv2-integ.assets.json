@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "7962e587f0e403b28ab1a08c014871f1a984bcd63a3439a1ab267c2fc8cc70af": {
+      "displayName": "aws-cdk-elasticloadbalancingv2-integ Template",
+      "source": {
+        "path": "aws-cdk-elasticloadbalancingv2-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-b358e98e": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7962e587f0e403b28ab1a08c014871f1a984bcd63a3439a1ab267c2fc8cc70af.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

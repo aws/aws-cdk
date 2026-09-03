@@ -15,6 +15,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-elasticloadbalancingv2-integ');
 
 const vpc = new ec2.Vpc(stack, 'VPC', {
   maxAzs: 2,
+  restrictDefaultSecurityGroup: false,
 });
 
 const sg = new ec2.SecurityGroup(stack, 'SG', { vpc });
