@@ -8,16 +8,17 @@ import type { BundlingOptions } from './bundling';
 import { BundlingFileAccess, BundlingOutput, PERF_BUNDLING_SRC_SYM } from './bundling';
 import { AssumptionError, ValidationError } from './errors';
 import type { FingerprintOptions } from './fs';
-import { FileSystem } from './fs';
+import { FileSystem, SymlinkFollowMode, IgnoreStrategy } from './fs';
 import { clearLargeFileFingerprintCache } from './fs/fingerprint';
 import { Names } from './names';
 import { AssetBundlingVolumeCopy, AssetBundlingBindMount } from './private/asset-staging';
 import { Cache } from './private/cache';
 import { stackOf, stageOf } from './private/core-construct-finders';
-import type { Stack } from './stack';
-import * as cxapi from '../../cx-api';
 import { lit } from './private/literal-string';
 import { profileSpan } from './private/perf';
+import type { Stack } from './stack';
+import * as cxapi from '../../cx-api';
+import { isInternalPath, resolveLinkTarget } from './fs/utils';
 
 const ARCHIVE_EXTENSIONS = ['.tar.gz', '.zip', '.jar', '.tar', '.tgz'];
 
@@ -181,6 +182,12 @@ export class AssetStaging extends Construct {
       throw new ValidationError(lit`CannotFindAsset`, `Cannot find asset at ${this.sourcePath}`, this);
     }
 
+    const ignoreStrategy = IgnoreStrategy.fromCopyOptions(props, this.sourcePath);
+    // look for invalid (external) symlinks
+    if (props.follow == SymlinkFollowMode.BLOCK_EXTERNAL && fs.statSync(this.sourcePath).isDirectory()) {
+      validateInternalSymlinks(this.sourcePath, scope, props.follow, ignoreStrategy);
+    }
+
     this._sourceStats = fs.statSync(this.sourcePath);
 
     const outdir = stageOf(this)?.assetOutdir;
@@ -201,7 +208,7 @@ export class AssetStaging extends Construct {
       // Check if we actually have to bundle for this stack
       skip = !stackOf(this).bundlingRequired;
       const bundling = props.bundling;
-      stageThisAsset = () => this.stageByBundling(bundling, skip);
+      stageThisAsset = () => this.stageByBundling(bundling, skip, props);
     } else {
       stageThisAsset = () => this.stageByCopying();
     }
@@ -323,7 +330,7 @@ export class AssetStaging extends Construct {
    *
    * Optionally skip, in which case we pretend we did something but we don't really.
    */
-  private stageByBundling(bundling: BundlingOptions, skip: boolean): StagedAsset {
+  private stageByBundling(bundling: BundlingOptions, skip: boolean, props: AssetStagingProps): StagedAsset {
     if (!this.sourceStats.isDirectory()) {
       throw new ValidationError(lit`AssetExpectedDirectoryForBundling`, `Asset ${this.sourcePath} is expected to be a directory when bundling`, this);
     }
@@ -355,7 +362,8 @@ export class AssetStaging extends Construct {
 
     // Check bundling output content and determine if we will need to archive
     const bundlingOutputType = bundling.outputType ?? BundlingOutput.AUTO_DISCOVER;
-    const bundledAsset = determineBundledAsset(this, bundleDir, bundlingOutputType);
+    const ignore = IgnoreStrategy.fromCopyOptions(props, bundleDir);
+    const bundledAsset = determineBundledAsset(this, bundleDir, bundlingOutputType, ignore, props.follow);
 
     // Calculate assetHash afterwards if we still must
     assetHash = assetHash ?? this.calculateHash(this.hashType, bundling, bundledAsset.path);
@@ -574,6 +582,46 @@ function determineHashType(scope: Construct, assetHashType?: AssetHashType, cust
 }
 
 /**
+ * Walk the directory tree, throw if we find external symlinks
+ * @param root true root of the directory
+ * @param subRoot used for walking subdirectories
+ */
+function validateInternalSymlinks(
+  root: string,
+  scope: Construct,
+  followMode: SymlinkFollowMode,
+  ignoreStrat: IgnoreStrategy,
+  subRoot: string = root,
+) {
+  const entries = fs.readdirSync(subRoot, { withFileTypes: true });
+  for (const entry of entries) {
+    const childPath = path.join(subRoot, entry.name);
+    if (entry.isDirectory()) {
+      if (ignoreStrat.completelyIgnores(childPath)) {
+        continue;
+      }
+      validateInternalSymlinks(root, scope, followMode, ignoreStrat, childPath);
+    } else if (!entry.isSymbolicLink()) {
+      continue;
+    } else { // we have a symlink
+      if (ignoreStrat.completelyIgnores(childPath)) {
+        continue;
+      }
+      // check whether this is internal or external
+      const linkPath = fs.readlinkSync(childPath);
+      const resolvedPath = resolveLinkTarget(childPath, linkPath);
+      if (!isInternalPath(root, resolvedPath)) {
+        throw new ValidationError(
+          lit`BundlingFileSymlinkForbidden`,
+          `The file ${resolvedPath} is an external symbolic link which is forbidden due to follow mode ${followMode}. Set \`follow\` to a mode that will follow symlinks (ALWAYS or EXTERNAL) or emit a regular file`,
+          scope,
+        );
+      }
+    }
+  }
+}
+
+/**
  * Calculates a cache key from the props. Normalize by sorting keys.
  */
 function calculateCacheKey<A extends object>(props: A): string {
@@ -636,6 +684,7 @@ function findSingleFile(scope: Construct, directory: string, archiveOnly: boolea
   if (content.length === 1) {
     const file = path.join(directory, content[0]);
     const extension = getExtension(content[0]).toLowerCase();
+
     if (fs.statSync(file).isFile() && (!archiveOnly || ARCHIVE_EXTENSIONS.includes(extension))) {
       return file;
     }
@@ -654,7 +703,13 @@ interface BundledAsset {
  * Returns the bundled asset to use based on the content of the bundle directory
  * and the type of output.
  */
-function determineBundledAsset(scope: Construct, bundleDir: string, outputType: BundlingOutput): BundledAsset {
+function determineBundledAsset(
+  scope: Construct,
+  bundleDir: string,
+  outputType: BundlingOutput,
+  ignore: IgnoreStrategy,
+  followMode?: SymlinkFollowMode,
+): BundledAsset {
   const archiveFile = findSingleFile(scope, bundleDir, outputType !== BundlingOutput.SINGLE_FILE);
 
   // auto-discover means that if there is an archive file, we take it as the
@@ -665,11 +720,16 @@ function determineBundledAsset(scope: Construct, bundleDir: string, outputType: 
 
   switch (outputType) {
     case BundlingOutput.NOT_ARCHIVED:
+      if (followMode == SymlinkFollowMode.BLOCK_EXTERNAL) {
+        validateInternalSymlinks(bundleDir, scope, followMode, ignore);
+      }
       return { path: bundleDir, packaging: FileAssetPackaging.ZIP_DIRECTORY };
     case BundlingOutput.ARCHIVED:
     case BundlingOutput.SINGLE_FILE:
       if (!archiveFile) {
         throw new ValidationError(lit`BundlingOutputDirectoryExpectedSingleFile`, 'Bundling output directory is expected to include only a single file when `output` is set to `ARCHIVED` or `SINGLE_FILE`', scope);
+      } else if (fs.lstatSync(archiveFile).isSymbolicLink()) {
+        throw new ValidationError(lit`SymlinkInBundlingOutput`, 'The output from bundling is not allowed to be a symlink.', scope);
       }
       return { path: archiveFile, packaging: FileAssetPackaging.FILE, extension: getExtension(archiveFile) };
   }

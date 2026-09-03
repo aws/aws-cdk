@@ -5,9 +5,11 @@ import type { PolicyValidationReportJson } from '@aws-cdk/cloud-assembly-schema'
 import { Construct } from 'constructs';
 import * as cxapi from '../../../cx-api';
 import * as core from '../../lib';
+import { readPerfCounters, resetCounters } from '../../lib/private/perf';
 
 let consoleErrorMock: jest.SpyInstance;
 beforeEach(() => {
+  resetCounters();
   consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => { return true; });
   jest.spyOn(console, 'log').mockImplementation(() => { return true; });
   process.exitCode = undefined;
@@ -50,6 +52,46 @@ describe('CloudFormationValidatePlugin', () => {
     });
 
     expect(() => app.synth()).toThrow(/BogusProperty/);
+  });
+
+  test('fails synthesis when flag is set to the string \'true\', as passed by cdk synth -c', () => {
+    const app = new core.App({
+      context: {
+        [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: 'true',
+        [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
+      },
+    });
+    const stack = new core.Stack(app, 'TestStack');
+    new core.CfnResource(stack, 'MyBucket', {
+      type: 'AWS::S3::Bucket',
+      properties: {
+        BogusProperty: 'invalid-value',
+      },
+    });
+
+    expect(() => app.synth()).toThrow(/BogusProperty/);
+  });
+
+  test('downgrades errors to warnings when flag is set to the string \'false\'', () => {
+    const app = new core.App({
+      context: {
+        [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: 'false',
+        [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
+      },
+    });
+    const stack = new core.Stack(app, 'TestStack');
+    new core.CfnResource(stack, 'MyBucket', {
+      type: 'AWS::S3::Bucket',
+      properties: {
+        BogusProperty: 'invalid-value',
+      },
+    });
+
+    app.synth();
+
+    expect(process.exitCode).toBeUndefined();
+    const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+    expect(output).toContain('Template validation found issues in your templates');
   });
 
   test('downgrades errors to warnings when flag is not explicitly enabled', () => {
@@ -287,7 +329,7 @@ describe('CloudFormationValidatePlugin', () => {
     const plugin = new core.CloudFormationValidatePlugin();
     const report = plugin.validate({
       templatePaths: [templatePath],
-      stackTemplates: [{ stackConstructPath: 'TestStack', templatePath }],
+      stackTemplates: [{ stackConstructPath: 'TestStack', templatePath, accountId: undefined, region: undefined }],
       appConstruct: new Construct(undefined as any, ''),
       accountId: undefined,
       region: undefined,
@@ -299,6 +341,307 @@ describe('CloudFormationValidatePlugin', () => {
     expect(schemaViolation).toBeDefined();
 
     fs.rmSync(tmpDir, { recursive: true });
+  });
+
+  test('records validation calls, duration, and diagnostic counts by severity', () => {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-validate-metrics-'));
+    const templatePaths = ['one.json', 'two.json'].map(fileName => path.join(tmpDir, fileName));
+    for (const templatePath of templatePaths) {
+      fs.writeFileSync(templatePath, JSON.stringify({ Resources: {} }));
+    }
+
+    try {
+      const plugin = new core.CloudFormationValidatePlugin();
+      const validateDetailed = jest.spyOn((plugin as any).engine, 'validateDetailed')
+        .mockReturnValueOnce({
+          diagnostics: [
+            { ruleId: 'F0001', severity: 'FATAL', message: 'fatal diagnostic' },
+            { ruleId: 'E0001', severity: 'ERROR', message: 'error diagnostic' },
+            { ruleId: 'W0001', severity: 'WARN', message: 'warning diagnostic' },
+          ],
+        })
+        .mockReturnValueOnce({
+          diagnostics: [
+            { ruleId: 'I0001', severity: 'INFO', message: 'informational diagnostic' },
+            { ruleId: 'D0001', severity: 'DEBUG', message: 'debug diagnostic' },
+          ],
+        });
+
+      plugin.validate({
+        templatePaths,
+        stackTemplates: templatePaths.map((templatePath, index) => ({
+          stackConstructPath: `TestStack${index + 1}`,
+          templatePath,
+          accountId: undefined,
+          region: undefined,
+        })),
+        appConstruct: new Construct(undefined as any, ''),
+        accountId: undefined,
+        region: undefined,
+      });
+
+      const counters = readPerfCounters({ telemetry: true });
+      expect(validateDetailed).toHaveBeenCalledTimes(2);
+      expect(counters).toMatchObject({
+        [VALIDATE_DETAILED_METRIC]: {
+          count: 2,
+          total: expect.any(Number),
+        },
+        [DIAGNOSTICS_METRIC]: { count: 5, total: 0 },
+        [`${DIAGNOSTICS_METRIC}.FATAL`]: { count: 1, total: 0 },
+        [`${DIAGNOSTICS_METRIC}.ERROR`]: { count: 1, total: 0 },
+        [`${DIAGNOSTICS_METRIC}.WARN`]: { count: 1, total: 0 },
+        [`${DIAGNOSTICS_METRIC}.INFO`]: { count: 1, total: 0 },
+        [`${DIAGNOSTICS_METRIC}.DEBUG`]: { count: 1, total: 0 },
+      });
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true });
+    }
+  });
+
+  describe('_additionalSchemasDirectory', () => {
+    let schemaDir: string;
+
+    beforeEach(() => {
+      schemaDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cfn-overlay-schemas-'));
+    });
+
+    afterEach(() => {
+      fs.rmSync(schemaDir, { recursive: true, force: true });
+    });
+
+    test('overlayed properties do not produce F3002', () => {
+      // Write a schema that adds a custom property to WaitConditionHandle
+      fs.writeFileSync(path.join(schemaDir, 'aws-cloudformation-waitconditionhandle.json'), JSON.stringify({
+        typeName: 'AWS::CloudFormation::WaitConditionHandle',
+        description: 'Test schema with additional property',
+        properties: {
+          PreGaProperty: { type: 'string', description: 'A pre-GA property' },
+        },
+        additionalProperties: false,
+      }));
+
+      const app = new core.App({
+        context: {
+          [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: true,
+          [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
+        },
+      });
+      core.Validations.of(app).addPlugins(new core.CloudFormationValidatePlugin({
+        _additionalSchemasDirectory: schemaDir,
+      }));
+      const stack = new core.Stack(app, 'TestStack');
+      new core.CfnResource(stack, 'Handle', {
+        type: 'AWS::CloudFormation::WaitConditionHandle',
+        properties: {
+          PreGaProperty: 'hello',
+        },
+      });
+
+      // Should NOT throw — the overlay schema declares PreGaProperty as valid
+      expect(() => app.synth()).not.toThrow();
+    });
+
+    test('properties not in overlay still produce violations', () => {
+      // Write a schema that adds only PreGaProperty — TotallyBogus is not declared
+      fs.writeFileSync(path.join(schemaDir, 'aws-cloudformation-waitconditionhandle.json'), JSON.stringify({
+        typeName: 'AWS::CloudFormation::WaitConditionHandle',
+        description: 'Test schema with additional property',
+        properties: {
+          PreGaProperty: { type: 'string' },
+        },
+        additionalProperties: false,
+      }));
+
+      const app = new core.App({
+        context: {
+          [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: true,
+          [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
+        },
+      });
+      core.Validations.of(app).addPlugins(new core.CloudFormationValidatePlugin({
+        _additionalSchemasDirectory: schemaDir,
+      }));
+      const stack = new core.Stack(app, 'TestStack');
+      new core.CfnResource(stack, 'Handle', {
+        type: 'AWS::CloudFormation::WaitConditionHandle',
+        properties: {
+          TotallyBogus: 'invalid',
+        },
+      });
+
+      // Should still throw — TotallyBogus is NOT in the overlay
+      expect(() => app.synth()).toThrow(/TotallyBogus/);
+    });
+
+    test('empty directory is a no-op', () => {
+      const app = new core.App({
+        context: {
+          [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: true,
+          [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
+        },
+      });
+      core.Validations.of(app).addPlugins(new core.CloudFormationValidatePlugin({
+        _additionalSchemasDirectory: schemaDir, // empty dir, no schemas
+      }));
+      const stack = new core.Stack(app, 'TestStack');
+      new core.CfnResource(stack, 'MyBucket', {
+        type: 'AWS::S3::Bucket',
+        properties: {
+          BogusProperty: 'invalid-value',
+        },
+      });
+
+      // Should still throw — no schemas loaded, default behavior
+      expect(() => app.synth()).toThrow(/BogusProperty/);
+    });
+
+    test('non-existent directory is a no-op', () => {
+      const plugin = new core.CloudFormationValidatePlugin({
+        _additionalSchemasDirectory: '/non/existent/path',
+      });
+
+      expect(plugin.name).toBe('CloudFormation Validate');
+      expect(plugin.version).toBeDefined();
+    });
+
+    test('schemas in nested subdirectories are discovered', () => {
+      // Simulate the real layout: temporary-schemas/us-east-1/aws-lambda-function.json
+      const regionDir = path.join(schemaDir, 'us-east-1');
+      fs.mkdirSync(regionDir);
+      fs.writeFileSync(path.join(regionDir, 'aws-cloudformation-waitconditionhandle.json'), JSON.stringify({
+        typeName: 'AWS::CloudFormation::WaitConditionHandle',
+        properties: {
+          NestedProperty: { type: 'string' },
+        },
+        additionalProperties: false,
+      }));
+
+      const app = new core.App({
+        context: {
+          [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: true,
+          [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
+        },
+      });
+      core.Validations.of(app).addPlugins(new core.CloudFormationValidatePlugin({
+        _additionalSchemasDirectory: schemaDir,
+      }));
+      const stack = new core.Stack(app, 'TestStack');
+      new core.CfnResource(stack, 'Handle', {
+        type: 'AWS::CloudFormation::WaitConditionHandle',
+        properties: {
+          NestedProperty: 'found-in-subdir',
+        },
+      });
+
+      expect(() => app.synth()).not.toThrow();
+    });
+
+    test('symlinks cause a hard failure', () => {
+      // Create a real schema
+      fs.writeFileSync(path.join(schemaDir, 'aws-cloudformation-waitconditionhandle.json'), JSON.stringify({
+        typeName: 'AWS::CloudFormation::WaitConditionHandle',
+        properties: {
+          RealProperty: { type: 'string' },
+        },
+        additionalProperties: false,
+      }));
+
+      // Create a symlink cycle (dir pointing to parent)
+      try {
+        fs.symlinkSync(schemaDir, path.join(schemaDir, 'cycle-link'));
+      } catch {
+        // Skip test if symlinks not supported (Windows)
+        return;
+      }
+
+      // Should throw — symlinks are not allowed in schema directories
+      expect(() => new core.CloudFormationValidatePlugin({
+        _additionalSchemasDirectory: schemaDir,
+      })).toThrow(/Symbolic link found in schema directory/);
+    });
+
+    test('malformed JSON files cause a hard failure', () => {
+      fs.writeFileSync(path.join(schemaDir, 'bad.json'), 'not valid json {{{');
+
+      expect(() => new core.CloudFormationValidatePlugin({
+        _additionalSchemasDirectory: schemaDir,
+      })).toThrow(/Invalid JSON in schema file.*bad\.json/);
+    });
+
+    test('schema files missing typeName cause a hard failure', () => {
+      fs.writeFileSync(path.join(schemaDir, 'no-typename.json'), JSON.stringify({ properties: {} }));
+
+      expect(() => new core.CloudFormationValidatePlugin({
+        _additionalSchemasDirectory: schemaDir,
+      })).toThrow(/missing required "typeName" field.*no-typename\.json/);
+    });
+
+    test('non-JSON files are safely ignored', () => {
+      fs.writeFileSync(path.join(schemaDir, '.keep'), '');
+      fs.writeFileSync(path.join(schemaDir, 'README.md'), '# Schemas go here');
+      fs.writeFileSync(path.join(schemaDir, 'aws-cloudformation-waitconditionhandle.json'), JSON.stringify({
+        typeName: 'AWS::CloudFormation::WaitConditionHandle',
+        properties: { MyProp: { type: 'string' } },
+        additionalProperties: false,
+      }));
+
+      const app = new core.App({
+        context: {
+          [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: true,
+          [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
+        },
+      });
+      core.Validations.of(app).addPlugins(new core.CloudFormationValidatePlugin({
+        _additionalSchemasDirectory: schemaDir,
+      }));
+      const stack = new core.Stack(app, 'TestStack');
+      new core.CfnResource(stack, 'Handle', {
+        type: 'AWS::CloudFormation::WaitConditionHandle',
+        properties: { MyProp: 'works' },
+      });
+
+      // Non-JSON files (.keep, .md) are ignored, only .json files are processed
+      expect(() => app.synth()).not.toThrow();
+    });
+  });
+
+  describe('_configureSingleton', () => {
+    test('does not conflict with tests that register their own plugin', () => {
+      // Simulate the jest hook: pre-configure the singleton with overlays
+      const singletonSchemaDir = fs.mkdtempSync(path.join(os.tmpdir(), 'singleton-schemas-'));
+      fs.writeFileSync(path.join(singletonSchemaDir, 'aws-cloudformation-waitconditionhandle.json'), JSON.stringify({
+        typeName: 'AWS::CloudFormation::WaitConditionHandle',
+        properties: { OverlayProp: { type: 'string' } },
+        additionalProperties: false,
+      }));
+      core.CloudFormationValidatePlugin._configureSingleton({
+        _additionalSchemasDirectory: singletonSchemaDir,
+      });
+
+      try {
+        // Now a test registers its own plugin (like the validation plugin's own tests do)
+        const app = new core.App({
+          context: {
+            [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: true,
+            [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
+          },
+        });
+        core.Validations.of(app).addPlugins(new core.CloudFormationValidatePlugin());
+        const stack = new core.Stack(app, 'TestStack');
+        new core.CfnResource(stack, 'MyBucket', {
+          type: 'AWS::S3::Bucket',
+        });
+
+        // Should NOT throw DuplicateCloudFormationValidatePlugin —
+        // the user-registered plugin replaces the singleton, no double-registration.
+        expect(() => app.synth()).not.toThrow();
+      } finally {
+        // Reset singleton for other tests
+        core.CloudFormationValidatePlugin._configureSingleton({});
+        fs.rmSync(singletonSchemaDir, { recursive: true, force: true });
+      }
+    });
   });
 });
 
@@ -361,6 +704,9 @@ describe('CDK_VALIDATION environment variable', () => {
     expect(() => app.synth()).toThrow(/BogusProperty/);
   });
 });
+
+const VALIDATE_DETAILED_METRIC = 'CloudFormationValidate.validate';
+const DIAGNOSTICS_METRIC = 'CloudFormationValidate.diagnostics';
 
 function loadValidationReport(asm: cxapi.CloudAssembly) {
   const p = path.join(asm.directory, 'validation-report.json');
