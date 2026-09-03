@@ -1,4 +1,4 @@
-import { App, Stack } from 'aws-cdk-lib';
+import { App, Stack, Size } from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
@@ -17,7 +17,7 @@ new lambda.Function(stack, 'LambdaWithEphemeralStorage', {
   runtime: lambda.Runtime.NODEJS_20_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline('exports.handler = async () => {};'),
-  ephemeralStorageSize: lambda.Size.mebibytes(1024),
+  ephemeralStorageSize: Size.mebibytes(1024),
 });
 
 new IntegTest(app, 'LambdaEphemeralStorageValidationTest', {
