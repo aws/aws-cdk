@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "files": {
     "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f": {
       "displayName": "appsync-rds-serverlessV2/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "baa5899a9ab2262d2dbcb2e3766d3bcd16b5848481a6c03d9be8f64721d3e3f5": {
+    "c1f9c65995c9dd864d2f20998b03be1b4b73953d72dde508a76096c4d7ec13f8": {
       "displayName": "appsync-rds-serverlessV2 Template",
       "source": {
         "path": "appsync-rds-serverlessV2.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-e0aaeb54": {
+        "current_account-current_region-bbac9bfd": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "baa5899a9ab2262d2dbcb2e3766d3bcd16b5848481a6c03d9be8f64721d3e3f5.json",
+          "objectKey": "c1f9c65995c9dd864d2f20998b03be1b4b73953d72dde508a76096c4d7ec13f8.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

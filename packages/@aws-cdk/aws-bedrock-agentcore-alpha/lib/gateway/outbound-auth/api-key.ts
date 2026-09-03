@@ -1,7 +1,8 @@
-import type { IRole } from 'aws-cdk-lib/aws-iam';
-import { Grant, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { Annotations, ArnFormat, Stack, Token } from 'aws-cdk-lib';
+import { Grant } from 'aws-cdk-lib/aws-iam';
 import type { ICredentialProviderConfig } from './credential-provider';
 import { CredentialProviderType } from './credential-provider';
+import type { IGateway } from '../gateway-base';
 import { GATEWAY_API_KEY_PERMS, GATEWAY_WORKLOAD_IDENTITY_PERMS, GATEWAY_SECRETS_PERMS } from '../perms';
 
 /******************************************************************************
@@ -9,6 +10,7 @@ import { GATEWAY_API_KEY_PERMS, GATEWAY_WORKLOAD_IDENTITY_PERMS, GATEWAY_SECRETS
  *****************************************************************************/
 /**
  * API Key additional configuration
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface ApiKeyAdditionalConfiguration {
 
@@ -34,6 +36,7 @@ export interface ApiKeyAdditionalConfiguration {
 /**
  * API Key credential location type
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export enum ApiKeyCredentialLocationType {
   HEADER = 'HEADER',
@@ -42,6 +45,7 @@ export enum ApiKeyCredentialLocationType {
 
 /**
  * API Key location within the request
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class ApiKeyCredentialLocation {
   /**
@@ -95,7 +99,10 @@ export class ApiKeyCredentialLocation {
 }
 
 /**
- * API Key configuration
+ * API key credential provider ARNs for gateway outbound auth (Token Vault identity).
+ *
+ * Pass this to {@link GatewayCredentialProvider.fromApiKeyIdentityArn} or to {@link ApiKeyCredentialProviderConfiguration}.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface ApiKeyCredentialProviderProps {
   /**
@@ -125,6 +132,7 @@ export interface ApiKeyCredentialProviderProps {
  * API Key credential provider configuration implementation
  * Can be used with OpenAPI targets
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class ApiKeyCredentialProviderConfiguration implements ICredentialProviderConfig {
   public readonly credentialProviderType = CredentialProviderType.API_KEY;
@@ -148,28 +156,71 @@ export class ApiKeyCredentialProviderConfiguration implements ICredentialProvide
   }
 
   /**
-   * Grant the needed permissions to the role for API key authentication
+   * Grant the needed permissions to the gateway role for API key authentication.
+   *
+   * Produces three scoped IAM statements matching the console-generated policy:
+   * 1. `GetWorkloadAccessToken` on the workload identity directory ARNs
+   * 2. `GetResourceApiKey` on the token vault, credential provider, directory, and identity ARNs
+   * 3. `secretsmanager:GetSecretValue` on the specific credential secret ARN
+   *
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-outbound-auth.html
    */
-  grantNeededPermissionsToRole(role: IRole): Grant | undefined {
-    const statements = [
-      new PolicyStatement({
-        actions: [
-          ...GATEWAY_API_KEY_PERMS,
-          ...GATEWAY_WORKLOAD_IDENTITY_PERMS,
-        ],
-        resources: [this.providerArn],
-      }),
-      new PolicyStatement({
-        actions: GATEWAY_SECRETS_PERMS,
-        resources: [this.secretArn],
-      }),
-    ];
-
-    return Grant.addToPrincipal({
-      grantee: role,
-      actions: statements.flatMap(s => s.actions),
-      resourceArns: statements.flatMap(s => s.resources),
+  grantNeededPermissionsToRole(gateway: IGateway): Grant | undefined {
+    const stack = Stack.of(gateway);
+    const directoryArn = stack.formatArn({
+      service: 'bedrock-agentcore',
+      resource: 'workload-identity-directory',
+      resourceName: 'default',
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
     });
+    const identityWildcardArn = `${directoryArn}/workload-identity/${gateway.name}-*`;
+    const tokenVaultArn = stack.formatArn({
+      service: 'bedrock-agentcore',
+      resource: 'token-vault',
+      resourceName: 'default',
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+    });
+
+    const workloadIdentityGrant = Grant.addToPrincipal({
+      grantee: gateway.role,
+      actions: [...GATEWAY_WORKLOAD_IDENTITY_PERMS],
+      resourceArns: [directoryArn, identityWildcardArn],
+      scope: gateway,
+    });
+    const apiKeyGrant = Grant.addToPrincipal({
+      grantee: gateway.role,
+      actions: [...GATEWAY_API_KEY_PERMS],
+      resourceArns: [tokenVaultArn, this.providerArn, directoryArn, identityWildcardArn],
+      scope: gateway,
+    });
+    // The CFN attribute ApiKeySecretArn is an object { SecretArn: string }, not a
+    // plain string, so the Token resolves to an object which cannot be placed in
+    // IAM Resource fields. When the caller supplies a literal ARN string (e.g. via
+    // fromApiKeyIdentityArn) we can scope tightly; otherwise fall back to a
+    // service-managed prefix wildcard.
+    let secretResourceArns: string[];
+    if (Token.isUnresolved(this.secretArn)) {
+      Annotations.of(gateway).addWarningV2(
+        '@aws-cdk/aws-bedrock-agentcore-alpha:wildcardSecretArnGrant',
+        'The secret ARN is an unresolved token. Granting access using a wildcard prefix (bedrock-agentcore-identity!*). ' +
+        'To scope the grant to a specific secret, supply a literal secret ARN via fromApiKeyIdentityArn.',
+      );
+      secretResourceArns = [stack.formatArn({
+        service: 'secretsmanager',
+        resource: 'secret',
+        resourceName: 'bedrock-agentcore-identity!*',
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      })];
+    } else {
+      secretResourceArns = [this.secretArn];
+    }
+    const secretGrant = Grant.addToPrincipal({
+      grantee: gateway.role,
+      actions: [...GATEWAY_SECRETS_PERMS],
+      resourceArns: secretResourceArns,
+      scope: gateway,
+    });
+    return workloadIdentityGrant.combine(apiKeyGrant).combine(secretGrant);
   }
 
   /**

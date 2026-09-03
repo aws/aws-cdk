@@ -21,10 +21,24 @@
       }
     ]
   },
+  "aws-accountaccess": {
+    "scopes": [
+      {
+        "namespace": "AWS::AccountAccess"
+      }
+    ]
+  },
   "aws-acmpca": {
     "scopes": [
       {
         "namespace": "AWS::ACMPCA"
+      }
+    ]
+  },
+  "aws-agentregistry": {
+    "scopes": [
+      {
+        "namespace": "AWS::AgentRegistry"
       }
     ]
   },
@@ -206,6 +220,13 @@
       }
     ]
   },
+  "aws-awsexternalanthropic": {
+    "scopes": [
+      {
+        "namespace": "AWS::AWSExternalAnthropic"
+      }
+    ]
+  },
   "aws-b2bi": {
     "scopes": [
       {
@@ -234,10 +255,24 @@
       }
     ]
   },
+  "aws-bcm": {
+    "scopes": [
+      {
+        "namespace": "AWS::BCM"
+      }
+    ]
+  },
   "aws-bcmdataexports": {
     "scopes": [
       {
         "namespace": "AWS::BCMDataExports"
+      }
+    ]
+  },
+  "aws-bcmpricingcalculator": {
+    "scopes": [
+      {
+        "namespace": "AWS::BcmPricingCalculator"
       }
     ]
   },
@@ -273,6 +308,13 @@
     "scopes": [
       {
         "namespace": "AWS::BillingConductor"
+      }
+    ]
+  },
+  "aws-braket": {
+    "scopes": [
+      {
+        "namespace": "AWS::Braket"
       }
     ]
   },
@@ -318,6 +360,13 @@
       }
     ]
   },
+  "aws-chime": {
+    "scopes": [
+      {
+        "namespace": "AWS::Chime"
+      }
+    ]
+  },
   "aws-cleanrooms": {
     "scopes": [
       {
@@ -350,6 +399,13 @@
     "scopes": [
       {
         "namespace": "AWS::CloudFront"
+      }
+    ]
+  },
+  "aws-cloudhsm": {
+    "scopes": [
+      {
+        "namespace": "AWS::CloudHSM"
       }
     ]
   },
@@ -526,6 +582,13 @@
       }
     ]
   },
+  "aws-dataexchange": {
+    "scopes": [
+      {
+        "namespace": "AWS::DataExchange"
+      }
+    ]
+  },
   "aws-datapipeline": {
     "scopes": [
       {
@@ -631,6 +694,13 @@
       }
     ]
   },
+  "aws-drs": {
+    "scopes": [
+      {
+        "namespace": "AWS::DRS"
+      }
+    ]
+  },
   "aws-dsql": {
     "scopes": [
       {
@@ -679,6 +749,24 @@
         "namespace": "AWS::EKS"
       }
     ]
+  },
+  "aws-eks-v2": {
+    "scopes": [
+      {
+        "namespace": "AWS::EKS"
+      }
+    ],
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.services.eks_v2"
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.EKSv2"
+      },
+      "python": {
+        "module": "aws_cdk.aws_eks_v2"
+      }
+    }
   },
   "aws-elasticache": {
     "scopes": [
@@ -995,6 +1083,13 @@
       }
     ]
   },
+  "aws-iotsecuretunneling": {
+    "scopes": [
+      {
+        "namespace": "AWS::IoTSecureTunneling"
+      }
+    ]
+  },
   "aws-iotsitewise": {
     "scopes": [
       {
@@ -1264,6 +1359,13 @@
       }
     ]
   },
+  "aws-mgn": {
+    "scopes": [
+      {
+        "namespace": "AWS::MGN"
+      }
+    ]
+  },
   "aws-mpa": {
     "scopes": [
       {
@@ -1313,6 +1415,13 @@
       }
     ]
   },
+  "aws-networkflowmonitor": {
+    "scopes": [
+      {
+        "namespace": "AWS::NetworkFlowMonitor"
+      }
+    ]
+  },
   "aws-networkmanager": {
     "scopes": [
       {
@@ -1341,6 +1450,13 @@
       }
     ]
   },
+  "aws-novaact": {
+    "scopes": [
+      {
+        "namespace": "AWS::NovaAct"
+      }
+    ]
+  },
   "aws-oam": {
     "scopes": [
       {
@@ -1366,6 +1482,13 @@
     "scopes": [
       {
         "namespace": "AWS::Omics"
+      }
+    ]
+  },
+  "aws-opensearch": {
+    "scopes": [
+      {
+        "namespace": "AWS::OpenSearch"
       }
     ]
   },
@@ -1408,6 +1531,13 @@
     "scopes": [
       {
         "namespace": "AWS::OSIS"
+      }
+    ]
+  },
+  "aws-outposts": {
+    "scopes": [
+      {
+        "namespace": "AWS::Outposts"
       }
     ]
   },
@@ -1558,6 +1688,13 @@
       }
     ]
   },
+  "aws-resiliencehubv2": {
+    "scopes": [
+      {
+        "namespace": "AWS::ResilienceHubV2"
+      }
+    ]
+  },
   "aws-resourceexplorer2": {
     "scopes": [
       {
@@ -1656,6 +1793,13 @@
       }
     ]
   },
+  "aws-s3files": {
+    "scopes": [
+      {
+        "namespace": "AWS::S3Files"
+      }
+    ]
+  },
   "aws-s3objectlambda": {
     "scopes": [
       {
@@ -1710,6 +1854,13 @@
       }
     ]
   },
+  "aws-scn": {
+    "scopes": [
+      {
+        "namespace": "AWS::SCN"
+      }
+    ]
+  },
   "aws-sdb": {
     "scopes": [
       {
@@ -1724,6 +1875,13 @@
       }
     ]
   },
+  "aws-securityagent": {
+    "scopes": [
+      {
+        "namespace": "AWS::SecurityAgent"
+      }
+    ]
+  },
   "aws-securityhub": {
     "scopes": [
       {
@@ -1735,6 +1893,13 @@
     "scopes": [
       {
         "namespace": "AWS::SecurityLake"
+      }
+    ]
+  },
+  "aws-serverlessrepo": {
+    "scopes": [
+      {
+        "namespace": "AWS::ServerlessRepo"
       }
     ]
   },
@@ -1867,10 +2032,24 @@
       }
     ]
   },
+  "aws-storagegateway": {
+    "scopes": [
+      {
+        "namespace": "AWS::StorageGateway"
+      }
+    ]
+  },
   "aws-supportapp": {
     "scopes": [
       {
         "namespace": "AWS::SupportApp"
+      }
+    ]
+  },
+  "aws-supportauthz": {
+    "scopes": [
+      {
+        "namespace": "AWS::SupportAuthZ"
       }
     ]
   },
@@ -1888,6 +2067,13 @@
       }
     ]
   },
+  "aws-textract": {
+    "scopes": [
+      {
+        "namespace": "AWS::Textract"
+      }
+    ]
+  },
   "aws-timestream": {
     "scopes": [
       {
@@ -1895,10 +2081,24 @@
       }
     ]
   },
+  "aws-transcribe": {
+    "scopes": [
+      {
+        "namespace": "AWS::Transcribe"
+      }
+    ]
+  },
   "aws-transfer": {
     "scopes": [
       {
         "namespace": "AWS::Transfer"
+      }
+    ]
+  },
+  "aws-translate": {
+    "scopes": [
+      {
+        "namespace": "AWS::Translate"
       }
     ]
   },
@@ -1953,6 +2153,20 @@
     "scopes": [
       {
         "namespace": "AWS::WAFv2"
+      }
+    ]
+  },
+  "aws-wellarchitected": {
+    "scopes": [
+      {
+        "namespace": "AWS::WellArchitected"
+      }
+    ]
+  },
+  "aws-wickr": {
+    "scopes": [
+      {
+        "namespace": "AWS::Wickr"
       }
     ]
   },

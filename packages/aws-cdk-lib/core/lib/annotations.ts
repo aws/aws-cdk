@@ -1,8 +1,8 @@
 import type { IConstruct, MetadataEntry } from 'constructs';
-import { App } from './app';
 import { UnscopedValidationError } from './errors';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
+import { appOf } from './private/core-construct-finders';
 import { lit, type LiteralString } from './private/literal-string';
 
 /**
@@ -61,6 +61,8 @@ export class Annotations {
    * If the warning is acknowledged using `acknowledgeWarning()`, it will not be shown by
    * the CLI, and will not cause `--strict` mode to fail synthesis.
    *
+   * Prefer using `Validations.of(scope).addWarning()` instead.
+   *
    * @example
    * declare const myConstruct: Construct;
    * Annotations.of(myConstruct).addWarningV2('my-library:Construct.someWarning', 'Some message explaining the warning');
@@ -75,7 +77,7 @@ export class Annotations {
   }
 
   /**
-   * Adds a warning metadata entry to this construct. Prefer using `addWarningV2`.
+   * Adds a warning metadata entry to this construct. Prefer using `Validations.of(scope).addWarning()`.
    *
    * The CLI will display the warning when an app is synthesized, or fail if run
    * in `--strict` mode.
@@ -149,6 +151,7 @@ export class Annotations {
   /**
    * Adds an { "error": <message> } metadata entry to this construct.
    * The toolkit will fail deployment of any stack that has errors reported against it.
+   * Prefer using `Validations.of(scope).addError()` instead.
    * @param message The error message.
    */
   public addError(message: string) {
@@ -227,7 +230,7 @@ export class Annotations {
  */
 class Acknowledgements {
   public static of(scope: IConstruct): Acknowledgements {
-    const app = App.of(scope);
+    const app = appOf(scope);
     if (!app) {
       return new Acknowledgements();
     }
