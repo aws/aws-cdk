@@ -1609,7 +1609,10 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
       if (arnParts.account) sourceAccount = arnParts.account;
       if (arnParts.region) sourceRegion = arnParts.region;
     } catch {
-      // Ignore splitArn failures on purely tokenized ARNs
+      // Only tolerate parse failures for fully opaque tokens; surface real parse errors.
+      if (!Token.isUnresolved(sourceArn)) {
+        throw err;
+      }
     }
 
     // Validate different account (skip if token)
