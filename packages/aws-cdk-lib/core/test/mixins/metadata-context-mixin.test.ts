@@ -86,17 +86,23 @@ describe('MetadataContextMixin', () => {
     new CfnResource(scope, 'Queue', { type: 'AWS::SQS::Queue' });
     new CfnResource(scope, 'Topic', { type: 'AWS::SNS::Topic' });
 
-    Mixins.of(scope).apply(new MetadataContextMixin({ deps: ['NetworkStack'] }));
+    Mixins.of(scope).apply(new MetadataContextMixin({
+      why: 'resource belongs to the networked subsystem',
+      deps: ['NetworkStack'],
+    }));
 
     const resources = Object.values<any>(toCloudFormation(stack).Resources);
     expect(resources).toHaveLength(2);
     for (const resource of resources) {
-      expect(resource.Metadata[CONTEXT_METADATA_KEY]).toMatchObject({ deps: ['NetworkStack'] });
+      expect(resource.Metadata[CONTEXT_METADATA_KEY]).toMatchObject({
+        why: 'resource belongs to the networked subsystem',
+        deps: ['NetworkStack'],
+      });
     }
   });
 
   test('fails when the applied context is empty', () => {
     const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
-    expect(() => res.with(new MetadataContextMixin({}))).toThrow(/at least one context field/);
+    expect(() => res.with(new MetadataContextMixin({}))).toThrow(/at least one content field/);
   });
 });

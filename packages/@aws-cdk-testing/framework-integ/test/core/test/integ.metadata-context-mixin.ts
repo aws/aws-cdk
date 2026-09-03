@@ -17,6 +17,7 @@ auditQueue.with(new MetadataContextMixin({
 // Bulk application to every CloudFormation resource in a scope
 new CfnResource(stack, 'EventsTopic', { type: 'AWS::SNS::Topic' });
 Mixins.of(stack).apply(new MetadataContextMixin({
+  why: 'resource belongs to the networked subsystem',
   deps: ['NetworkStack'],
 }));
 

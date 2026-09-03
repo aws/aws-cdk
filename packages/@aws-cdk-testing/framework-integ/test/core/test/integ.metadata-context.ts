@@ -14,9 +14,9 @@ TemplateMetadataContext.of(stack).add({
   arch: 'SQS buffer -> consumer; DLQ for poison msgs',
   must: ['all queues encrypted w/ SSE'],
   refs: [
-    { at: 's3://org-iac-ctx/shared/encryption.ctx.yaml', has: 'org CMK + tagging rules', scope: 'shared' },
+    { at: 'context/shared/encryption.ctx.yaml', has: 'org CMK + tagging rules', scope: 'shared' },
   ],
-  owner: 'framework-integ@example.com',
+  owner: 'framework-integ-team',
 });
 
 // Resource-level context on an L2: renders onto the primary AWS::SQS::Queue only
@@ -28,7 +28,6 @@ ResourceMetadataContext.of(queue).add({
   propertyMutability: { QueueName: ContextMutability.MUST_NEVER_CHANGE },
   trust: { source: ContextTrustSource.AUTHORED, confidence: ContextTrustConfidence.HIGH },
   ops: 'check ApproxAgeOfOldestMsg before cutting VisTimeout',
-  failureModes: ['retry 3x w/ exp backoff before DLQ'],
 });
 
 // Scope-level context cascading to all primary resources beneath it

@@ -8,6 +8,10 @@ export const METADATA_CONTEXT_KEY = 'com.aws.cloudformation.Context';
 const resourceContext = new WeakMap<object, Record<string, any>>();
 const templateContext = new WeakMap<object, Record<string, any>>();
 
+export function clearResourceMetadataContext(resource: object): void {
+  resourceContext.delete(resource);
+}
+
 export function setResourceMetadataContext(resource: object, context: Record<string, any>): void {
   resourceContext.set(resource, context);
 }
