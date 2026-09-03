@@ -514,12 +514,12 @@
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
     "CopyTagsToSnapshot": true,
-    "DBClusterParameterGroupName": "default.aurora-mysql8.0",
+    "DBClusterParameterGroupName": "default.aurora-mysql8.4",
     "DBSubnetGroupName": {
      "Ref": "SourceClusterSubnetsA3F9E0D8"
     },
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.12.0",
+    "EngineVersion": "8.4.mysql_aurora.8.4.7",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -1907,12 +1907,12 @@
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
     "CopyTagsToSnapshot": true,
-    "DBClusterParameterGroupName": "default.aurora-mysql8.0",
+    "DBClusterParameterGroupName": "default.aurora-mysql8.4",
     "DBSubnetGroupName": {
      "Ref": "RestoredClusterSubnets60C7DFFD"
     },
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.12.0",
+    "EngineVersion": "8.4.mysql_aurora.8.4.7",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
