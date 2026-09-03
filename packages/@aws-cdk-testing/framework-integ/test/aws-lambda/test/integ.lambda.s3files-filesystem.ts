@@ -80,6 +80,27 @@ new lambda.Function(stack, 'MyLambda', {
   filesystem: lambda.FileSystem.fromS3FilesAccessPoint(accessPoint, '/mnt/data'),
 });
 
+// Second access point for DirectS3Read test
+const accessPoint2 = new s3files.CfnAccessPoint(stack, 'AccessPoint2', {
+  fileSystemId: fileSystem.attrFileSystemId,
+  rootDirectory: {
+    path: '/export/lambda2',
+    creationPermissions: { ownerGid: '1001', ownerUid: '1001', permissions: '750' },
+  },
+  posixUser: { gid: '1001', uid: '1001' },
+});
+
+// S3 Files with DirectS3Read enabled
+new lambda.Function(stack, 'MyLambdaDirectS3Read', {
+  code: lambda.Code.fromAsset(path.join(__dirname, 's3files-handler')),
+  handler: 'index.handler',
+  runtime: lambda.Runtime.PYTHON_3_12,
+  vpc,
+  filesystem: lambda.FileSystem.fromS3FilesAccessPoint(accessPoint2, '/mnt/data', {
+    directS3Read: lambda.DirectS3ReadMode.ENABLED,
+  }),
+});
+
 new integ.IntegTest(app, 'LambdaS3FilesIntegTest', {
   testCases: [stack],
 });

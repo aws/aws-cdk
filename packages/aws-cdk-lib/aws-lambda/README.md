@@ -1747,7 +1747,11 @@ const fn = new lambda.Function(this, 'MyFunction', {
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
   vpc,
-  filesystem: lambda.FileSystem.fromS3FilesAccessPoint(accessPoint, '/mnt/s3files'),
+  filesystem: lambda.FileSystem.fromS3FilesAccessPoint(accessPoint, '/mnt/s3files', {
+    // Optional: configure DirectS3Read to stream eligible reads directly from S3 for higher throughput.
+    // Supported values: ENABLED, DISABLED, AUTO (default: direct reads for functions with 512 MB or more of memory).
+    directS3Read: lambda.DirectS3ReadMode.ENABLED,
+  }),
 });
 ```
 
