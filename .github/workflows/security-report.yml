@@ -20,7 +20,6 @@ jobs:
   # guardian workflow itself, since the triggering workflow is treated as
   # untrusted.
   validate:
-    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     permissions:
       pull-requests: read
