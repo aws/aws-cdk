@@ -5,7 +5,7 @@
    "Type": "AWS::SQS::Queue",
    "Metadata": {
     "com.aws.cloudformation.Context": {
-     "why": "append-only audit trail buffer",
+     "why": "resource belongs to the networked subsystem",
      "must": [
       "never shorten retention below 14d (audit requirement)"
      ],
@@ -20,6 +20,7 @@
    "Type": "AWS::SNS::Topic",
    "Metadata": {
     "com.aws.cloudformation.Context": {
+     "why": "resource belongs to the networked subsystem",
      "deps": [
       "NetworkStack"
      ]

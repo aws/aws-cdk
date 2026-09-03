@@ -7,7 +7,7 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "*"
+        "mixin": "aws-cdk-lib.MetadataContextMixin"
       }
     },
     {
@@ -30,13 +30,14 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "*"
+        "mixin": "aws-cdk-lib.MetadataContextMixin"
       }
     },
     {
       "type": "aws:cdk:metadata-context",
       "data": {
         "context": {
+          "why": "resource belongs to the networked subsystem",
           "deps": [
             "NetworkStack"
           ]
@@ -57,13 +58,14 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "*"
+        "mixin": "aws-cdk-lib.MetadataContextMixin"
       }
     },
     {
       "type": "aws:cdk:metadata-context",
       "data": {
         "context": {
+          "why": "resource belongs to the networked subsystem",
           "deps": [
             "NetworkStack"
           ]

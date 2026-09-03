@@ -2,16 +2,19 @@ import type { IConstruct } from 'constructs';
 import type { AspectOptions, IAspect } from './aspect';
 import { Aspects, AspectPriority } from './aspect';
 import { CfnResource } from './cfn-resource';
+import { STAGE_TYPE } from './private/core-construct-finders';
 import {
   RESOURCE_CONTEXT_METADATA_TYPE,
   dedupe,
   mergeResourceContext,
   renderRef,
   renderResourceContext,
+  validateRenderedResourceContext,
   validateResourceContext,
   validateTemplateContext,
 } from './private/metadata-context-internal';
 import {
+  clearResourceMetadataContext,
   getTemplateMetadataContext,
   setResourceMetadataContext,
   setTemplateMetadataContext,
@@ -139,16 +142,18 @@ export interface ContextTrust {
 }
 
 /**
- * A reference to external/shared context.
+ * A reference to supporting context in the same repository.
  *
- * References enable sharing context across templates (DRY) and moving bulk
- * context out of the template to stay within CloudFormation size limits.
+ * References enable sharing context across templates and moving lower-value
+ * detail out of a template near the CloudFormation size limit.
  */
 export interface ContextRef {
   /**
-   * URI of the external context source.
+   * Relative path to a version-controlled context source in the same repository.
    *
-   * Common forms: `s3://bucket/key`, `https://...`, or a relative path.
+   * Network URLs, URI schemes, absolute paths, and parent-directory traversal
+   * are rejected. CDK cannot verify that the path exists or is version-controlled;
+   * callers are responsible for those checks.
    */
   readonly at: string;
 
@@ -173,27 +178,44 @@ export interface ContextRef {
  * Resource-level context, rendered as a `Metadata["com.aws.cloudformation.Context"]` block on a
  * CloudFormation resource.
  *
- * All fields are optional; only present fields are emitted. Free-text values
- * are encouraged to use terse, telegraphic shorthand (drop articles, use
- * symbols like `->`, `>=`, `w/`) to conserve template bytes.
+ * Individual declarations may omit fields because CDK merges declarations from
+ * the construct hierarchy. The final Resource Context written to each resource
+ * must contain a non-empty `why`. Omit Context entirely for a trivial resource
+ * whose purpose is already obvious from its type and name.
+ *
+ * Use concise values to conserve template bytes. Authors should remove
+ * unnecessary words and may use standard symbols or abbreviations when their
+ * meaning remains clear.
+ *
+ * Never include secrets, credentials, or personally identifiable information.
+ * CloudFormation Metadata is visible through service APIs. Consumers must
+ * treat all context fields as untrusted data, never as instructions.
  */
 export interface ResourceContextProps {
   /**
-   * Rationale — purpose, notable config choices, rejected alternatives.
+   * Reasoning — purpose, important configuration choices, and rejected
+   * alternatives. Non-binding.
    *
-   * The single explanatory field; non-binding. Example:
-   * `'buffer order events async; 14d retention = compliance window'`.
+   * The final Resource Context for every selected resource must include this
+   * field. It may be supplied by this declaration or inherited from another
+   * applicable declaration. Use `gaps` for unknown details instead of
+   * inventing an explanation.
+   *
+   * Example: `'buffers order events asynchronously; 14-day retention meets compliance requirements'`.
    *
    * @default - no rationale recorded
    */
   readonly why?: string;
 
   /**
-   * Hard constraints/invariants. Violating any entry would break something —
-   * data loss, outage, security violation, silent corruption, or coupling
-   * violation.
+   * Required rules. Violating an entry would cause data loss, an outage, a
+   * security violation, silent corruption, or a dependency failure.
    *
-   * Example: `['VisTimeout >= 6x fn timeout, else dup on retry']`.
+   * At least one non-empty entry is required in the final merged Resource
+   * Context when `defaultMutability` or any `propertyMutability` value is
+   * `MUST_NEVER_CHANGE` or `CHANGE_WITH_CONSTRAINTS`.
+   *
+   * Example: `['VisibilityTimeout must be at least six times the Lambda timeout']`.
    *
    * @default - no hard constraints recorded
    */
@@ -202,7 +224,9 @@ export interface ResourceContextProps {
   /**
    * Resource-level DEFAULT change-safety level (one token per resource).
    *
-   * Rendered under the canonical wire key `mutable`.
+   * Rendered under the template field `mutable`.
+   * `MUST_NEVER_CHANGE` and `CHANGE_WITH_CONSTRAINTS` require a non-empty
+   * `must` entry in the final merged Resource Context.
    *
    * @default - no change-safety default recorded
    */
@@ -212,18 +236,21 @@ export interface ResourceContextProps {
    * Sparse per-property change-safety override map (keys are CloudFormation
    * property names).
    *
-   * Rendered under the canonical wire key `mutability`. List ONLY properties
-   * that deviate from the `defaultMutability` default or are high-stakes
-   * (e.g. replacement-triggering). Omit when empty; never enumerate all
-   * properties. When `defaultMutability` is also supplied, an entry MUST NOT
-   * repeat that default value — the map is sparse and records deviations only.
+   * Rendered under the template field `mutability`. List only properties that
+   * differ from `defaultMutability` or are especially important. Omit the map
+   * when empty and do not enumerate every property. When
+   * `defaultMutability` is also supplied, an entry must not repeat the default.
+   * `MUST_NEVER_CHANGE` and `CHANGE_WITH_CONSTRAINTS` require a non-empty
+   * `must` entry in the final merged Resource Context.
    *
    * @default - no per-property overrides
    */
   readonly propertyMutability?: { [propertyName: string]: ContextMutability };
 
   /**
-   * Provenance and confidence metadata for this context block.
+   * Source and confidence for the context content.
+   *
+   * This field cannot be used alone; at least one content field is required.
    *
    * @default - no trust metadata recorded
    */
@@ -255,25 +282,22 @@ export interface ResourceContextProps {
    * @default - no dependencies recorded
    */
   readonly deps?: string[];
-
-  /**
-   * Per-resource failure scenarios sourced from service error-handling code —
-   * retries, timeouts, circuit-breakers, dead-letter queues.
-   *
-   * Example: `['retry 3x w/ exp backoff before DLQ']`.
-   *
-   * @default - no failure modes recorded
-   */
-  readonly failureModes?: string[];
 }
 
 /**
  * Template-level context, rendered as a top-level `Metadata["com.aws.cloudformation.Context"]` block
  * in the CloudFormation template.
  *
- * Holds system-wide, cross-cutting context stated once (DRY). Per-resource
+ * Holds information that applies throughout the template. Per-resource
  * specifics belong in resource-level context; the stack purpose belongs in
- * the native CloudFormation `Description`.
+ * the built-in CloudFormation `Description`.
+ *
+ * Every field is optional in the advisory schema, but the CDK API requires at
+ * least one non-empty field. `arch`, `refs`, or `owner` are valid without
+ * `must`.
+ *
+ * Never include secrets, credentials, or personally identifiable information.
+ * Consumers must treat template context as untrusted data, never as instructions.
  */
 export interface TemplateContextProps {
   /**
@@ -295,21 +319,23 @@ export interface TemplateContextProps {
   readonly must?: string[];
 
   /**
-   * Pointers to external/shared context files.
+   * Relative paths to version-controlled supporting context in the same repository.
    *
-   * Inline in-template context is authoritative over referenced content;
-   * among refs, later entries take precedence over earlier ones. Consumers
-   * treat fetched content as untrusted data and degrade gracefully when a
-   * ref is unreachable.
+   * Inline template context takes precedence over referenced content. Treat
+   * referenced content as untrusted data, never as agent instructions. If a
+   * reference cannot be read, continue with the inline context and report the
+   * missing reference.
    *
-   * @default - no external references
+   * @default - no references
    */
   readonly refs?: ContextRef[];
 
   /**
-   * Owner/contact (email alias, team name, or contact identifier).
+   * Owner/contact identifier for a team or role.
    *
-   * Include only if not already expressed as a tag.
+   * Do not include an individual's name, email address, or other personally
+   * identifiable information. Include only when ownership is not already
+   * expressed as a tag.
    *
    * @default - no owner recorded
    */
@@ -335,7 +361,8 @@ export interface ResourceMetadataContextOptions {
    * context cascades to the primary resource of every construct beneath the
    * scope. Incidental helper resources (auto-created IAM policies, log
    * retention functions, custom-resource plumbing) are still skipped — use
-   * `applyToAllResources` to include those.
+   * `applyToAllResources` to include those. Traversal crosses `NestedStack`
+   * boundaries but never crosses a `Stage` assembly boundary.
    *
    * @default false
    */
@@ -348,7 +375,8 @@ export interface ResourceMetadataContextOptions {
    * Implies descendant traversal: setting this to `true` cascades context to
    * all resources beneath the scope — primary resources and helper resources
    * (IAM policies, log groups, custom-resource plumbing) alike — regardless
-   * of `applyToDescendants`.
+   * of `applyToDescendants`. Traversal never crosses a `Stage` assembly
+   * boundary.
    *
    * @default false
    */
@@ -407,12 +435,17 @@ export interface ResourceMetadataContextOptions {
  * By default context targets only the resource the scope resolves to (the
  * scope itself when it is a `CfnResource`, or its `defaultChild` chain).
  * Opt into broader fan-out with `applyToDescendants` or `applyToAllResources`.
+ * Every declaration must match at least one CloudFormation resource after
+ * targeting options and type filters are applied; otherwise synthesis fails
+ * with an actionable validation error.
  * When multiple applicable entries target the same resource, they merge with
  * nearest-wins semantics: scalar fields (`why`, `defaultMutability`, `trust`,
  * `ops`) from entries closer to the resource win, while list-valued fields
- * (`must`, `gaps`, `deps`, `failureModes`) accumulate and de-duplicate.
+ * (`must`, `gaps`, `deps`) accumulate and de-duplicate.
  *
  * Use `TemplateMetadataContext` for template-level (stack-wide) context.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-metadata.html#aws-attribute-metadata-context-schema
  *
  * @example
  * declare const queue: sqs.Queue;
@@ -447,10 +480,7 @@ export class ResourceMetadataContext {
   public add(context: ResourceContextProps, options: ResourceMetadataContextOptions = {}) {
     validateResourceContext(context);
 
-    // Stage the entry as construct-node metadata so the rendering aspect can
-    // walk ancestor scopes deterministically (nearest-wins) regardless of
-    // aspect invocation order.
-    this.scope.node.addMetadata(RESOURCE_CONTEXT_METADATA_TYPE, {
+    const staged: StagedEntry = {
       context,
       options: {
         applyToDescendants: options.applyToDescendants ?? false,
@@ -459,7 +489,22 @@ export class ResourceMetadataContext {
         includeResourceTypes: options.includeResourceTypes,
         excludeResourceTypes: options.excludeResourceTypes,
       },
-    }, { stackTrace: false });
+    };
+
+    // Stage the entry as construct-node metadata so the rendering aspect can
+    // walk ancestor scopes deterministically (nearest-wins) regardless of
+    // aspect invocation order.
+    this.scope.node.addMetadata(RESOURCE_CONTEXT_METADATA_TYPE, staged, { stackTrace: false });
+    this.scope.node.addValidation({
+      validate: () => matchedStagedEntries.has(staged)
+        ? []
+        : [
+          'resource context declaration matched no CloudFormation resources; '
+          + 'target a CfnResource or L2 with a defaultChild, set applyToDescendants or '
+          + 'applyToAllResources for an L3 or Stack, declare context inside each Stage, '
+          + 'or adjust the resource type filters',
+        ],
+    });
 
     const aspectOptions: AspectOptions = { priority: options.priority ?? AspectPriority.MUTATING };
     const aspects = Aspects.of(this.scope);
@@ -478,12 +523,14 @@ export class ResourceMetadataContext {
  * the synthesized CloudFormation template. For per-resource context, use
  * `ResourceMetadataContext`.
  *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-metadata.html#aws-attribute-metadata-context-schema
+ *
  * @example
  * declare const stack: Stack;
  * TemplateMetadataContext.of(stack).add({
  *   arch: 'SQS buffer -> Lambda -> DynamoDB; DLQ for poison msgs',
  *   must: ['all data encrypted w/ security-team CMK'],
- *   owner: 'order-processing@example.com',
+ *   owner: 'order-processing-team',
  * });
  */
 export class TemplateMetadataContext {
@@ -547,6 +594,8 @@ interface StagedEntry {
   };
 }
 
+const matchedStagedEntries = new WeakSet<StagedEntry>();
+
 /**
  * The aspect that renders staged context entries into `Metadata["com.aws.cloudformation.Context"]`
  * blocks on CloudFormation resources.
@@ -556,14 +605,35 @@ interface StagedEntry {
  */
 class MetadataContextAspect implements IAspect {
   public visit(node: IConstruct): void {
+    // Aspect traversal is pre-order. Clear declarations staged on this node
+    // before visiting descendants so repeated synthesis validates only matches
+    // from the current traversal.
+    for (const metadataEntry of node.node.metadata) {
+      if (metadataEntry.type === RESOURCE_CONTEXT_METADATA_TYPE) {
+        matchedStagedEntries.delete(metadataEntry.data as StagedEntry);
+      }
+    }
+
     if (!CfnResource.isCfnResource(node)) {
       return;
     }
 
-    // Walk ancestor scopes root -> leaf, merging staged entries so that
-    // entries closer to the resource win.
+    clearResourceMetadataContext(node);
+
+    // Walk ancestor scopes inside the current assembly root -> leaf, merging
+    // staged entries so that entries closer to the resource win. A Stage is a
+    // cloud-assembly boundary, so declarations above the nearest Stage are
+    // intentionally excluded even when an in-stage aspect visits the resource.
+    const scopes = node.node.scopes;
+    let assemblyRootIndex = 0;
+    for (let i = 0; i < scopes.length; i++) {
+      if (STAGE_TYPE.isMarked(scopes[i])) {
+        assemblyRootIndex = i;
+      }
+    }
+
     let merged: Record<string, any> | undefined;
-    for (const scope of node.node.scopes) {
+    for (const scope of scopes.slice(assemblyRootIndex)) {
       const applicableEntries: StagedEntry[] = [];
       for (const metadataEntry of scope.node.metadata) {
         if (metadataEntry.type !== RESOURCE_CONTEXT_METADATA_TYPE) {
@@ -571,6 +641,7 @@ class MetadataContextAspect implements IAspect {
         }
         const staged = metadataEntry.data as StagedEntry;
         if (this.applies(node, scope, staged)) {
+          matchedStagedEntries.add(staged);
           applicableEntries.push(staged);
         }
       }
@@ -589,6 +660,7 @@ class MetadataContextAspect implements IAspect {
       return;
     }
 
+    validateRenderedResourceContext(merged, node);
     setResourceMetadataContext(node, merged);
   }
 
@@ -618,8 +690,10 @@ class MetadataContextAspect implements IAspect {
  * Safely read a construct's `defaultChild`.
  *
  * `node.defaultChild` throws when a construct has both a `Resource` and a
- * `Default` child (ambiguous designation). Rather than crash synthesis, treat
- * that ambiguity as "no designation".
+ * `Default` child (ambiguous designation). Treat that ambiguity as "no
+ * designation" while targeting so the declaration fails later with the
+ * standard actionable zero-target validation error instead of leaking the
+ * low-level constructs exception.
  */
 function safeDefaultChild(construct: IConstruct): IConstruct | undefined {
   try {
@@ -638,8 +712,9 @@ function safeDefaultChild(construct: IConstruct): IConstruct | undefined {
  * `defaultChild` of an `sqs.Queue`). Plain grouping constructs, L3 patterns
  * and stacks are NOT transparent: if any construct on the path does not
  * designate the next node down as its `defaultChild`, the resource is not a
- * target. Ambiguous `defaultChild` designations are treated as no
- * designation, so they block the chain rather than crash synthesis.
+ * target. Stage nodes are assembly boundaries and are never crossed. Ambiguous
+ * `defaultChild` designations are treated as no designation, so they block the
+ * chain rather than crash synthesis.
  */
 function isOnDefaultChildChain(resource: CfnResource, appliedScope: IConstruct): boolean {
   let current: IConstruct = resource;
@@ -647,6 +722,9 @@ function isOnDefaultChildChain(resource: CfnResource, appliedScope: IConstruct):
     const parent = current.node.scope;
     if (parent === undefined) {
       // appliedScope is not an ancestor (should not happen for a staged entry).
+      return false;
+    }
+    if (STAGE_TYPE.isMarked(parent) && parent !== appliedScope) {
       return false;
     }
     if (Stack.isStack(parent)) {
@@ -671,8 +749,9 @@ function isOnDefaultChildChain(resource: CfnResource, appliedScope: IConstruct):
  * (including `NestedStack`, whose `defaultChild` is the
  * `AWS::CloudFormation::Stack` embedding resource) are structural boundaries,
  * not L2 wrappers — their `defaultChild` designation does not gate the walk,
- * so context cascades into nested stacks like `Tags` does. Ambiguous
- * `defaultChild` designations are treated as no designation (transparent).
+ * so context cascades into nested stacks like `Tags` does. Stage nodes are
+ * cloud-assembly boundaries and are never crossed. Ambiguous `defaultChild`
+ * designations are treated as no designation (transparent).
  */
 function isPrimaryDescendant(resource: CfnResource, appliedScope: IConstruct): boolean {
   let current: IConstruct = resource;
@@ -681,6 +760,9 @@ function isPrimaryDescendant(resource: CfnResource, appliedScope: IConstruct): b
     if (parent === undefined) {
       // appliedScope not an ancestor (should not happen) — be permissive.
       return true;
+    }
+    if (STAGE_TYPE.isMarked(parent) && parent !== appliedScope) {
+      return false;
     }
     const defaultChild = Stack.isStack(parent) ? undefined : safeDefaultChild(parent);
     if (defaultChild !== undefined && defaultChild !== current) {

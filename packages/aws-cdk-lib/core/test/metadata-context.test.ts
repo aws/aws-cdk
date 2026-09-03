@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
-import { toCloudFormation } from './util';
 import {
   App,
   CfnResource,
@@ -11,9 +10,12 @@ import {
   NestedStack,
   ResourceMetadataContext,
   Stack,
+  Stage,
   TemplateMetadataContext,
   UnscopedValidationError,
 } from '../lib';
+import { toCloudFormation } from './util';
+import { synthesize } from '../lib/private/synthesis';
 
 const CONTEXT_METADATA_KEY = 'com.aws.cloudformation.Context';
 
@@ -31,7 +33,6 @@ describe('metadata context', () => {
         ops: 'check ApproxAgeOfOldestMsg before cutting VisTimeout',
         gaps: ['memory sizing never load-tested'],
         deps: ['NetworkStack'],
-        failureModes: ['retry 3x w/ exp backoff before DLQ'],
       });
 
       const template = toCloudFormation(stack);
@@ -43,7 +44,6 @@ describe('metadata context', () => {
         ops: 'check ApproxAgeOfOldestMsg before cutting VisTimeout',
         gaps: ['memory sizing never load-tested'],
         deps: ['NetworkStack'],
-        failureModes: ['retry 3x w/ exp backoff before DLQ'],
       });
     });
 
@@ -52,6 +52,8 @@ describe('metadata context', () => {
       const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
 
       ResourceMetadataContext.of(res).add({
+        why: 'resource name is referenced by an external consumer',
+        must: ['Name must not change because replacement loses the external reference'],
         defaultMutability: ContextMutability.FREE_TO_TUNE,
         propertyMutability: { Name: ContextMutability.MUST_NEVER_CHANGE },
       });
@@ -125,27 +127,29 @@ describe('metadata context', () => {
       expect(template.Resources[stack.getLogicalId(helper)].Metadata?.[CONTEXT_METADATA_KEY]).toBeUndefined();
     });
 
-    test('default targeting does NOT cascade through a plain grouping construct', () => {
+    test('default targeting fails when a grouping construct has no primary resource', () => {
       const stack = new Stack();
       const group = new Construct(stack, 'SubSystem');
-      const res = new CfnResource(group, 'Res', { type: 'AWS::Fake::Thing' });
+      new CfnResource(group, 'Res', { type: 'AWS::Fake::Thing' });
 
       ResourceMetadataContext.of(group).add({ why: 'grouping rationale' });
 
-      const template = toCloudFormation(stack);
-      expect(template.Resources[stack.getLogicalId(res)].Metadata?.[CONTEXT_METADATA_KEY]).toBeUndefined();
+      expect(() => synthesize(stack)).toThrow(
+        /resource context declaration matched no CloudFormation resources.*applyToDescendants/,
+      );
     });
 
-    test('default targeting does NOT cascade from a stack scope', () => {
+    test('default targeting fails from a Stack scope', () => {
       const stack = new Stack();
       // `Resource` is a special defaultChild id in constructs; Stack remains
       // a structural boundary even when a direct child has that id.
-      const res = new CfnResource(stack, 'Resource', { type: 'AWS::Fake::Thing' });
+      new CfnResource(stack, 'Resource', { type: 'AWS::Fake::Thing' });
 
       ResourceMetadataContext.of(stack).add({ why: 'stack-wide but narrow by default' });
 
-      const template = toCloudFormation(stack);
-      expect(template.Resources[stack.getLogicalId(res)].Metadata?.[CONTEXT_METADATA_KEY]).toBeUndefined();
+      expect(() => synthesize(stack)).toThrow(
+        /resource context declaration matched no CloudFormation resources.*applyToDescendants/,
+      );
     });
 
     test('applyToDescendants cascades through grouping constructs to nested L2 primaries and skips helpers', () => {
@@ -168,10 +172,51 @@ describe('metadata context', () => {
       const stack = new Stack();
       new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
 
-      ResourceMetadataContext.of(stack).add({ deps: ['NetworkStack'] }, { applyToDescendants: true });
+      ResourceMetadataContext.of(stack).add({ why: 'resource belongs to the networked subsystem', deps: ['NetworkStack'] }, { applyToDescendants: true });
 
       const template = toCloudFormation(stack);
       expect(template.Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toMatchObject({ deps: ['NetworkStack'] });
+    });
+
+    test('resource context inside a Stage matches resources in that assembly', () => {
+      const app = new App();
+      const stage = new Stage(app, 'Deployment');
+      const stack = new Stack(stage, 'Stack');
+      new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
+
+      ResourceMetadataContext.of(stack).add({ why: 'stage resource' }, { applyToDescendants: true });
+
+      expect(() => stage.synth()).not.toThrow();
+    });
+
+    test('resource context does not silently cross Stage assembly boundaries', () => {
+      const app = new App();
+      const stage = new Stage(app, 'Deployment');
+      const stack = new Stack(stage, 'Stack');
+      new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
+
+      ResourceMetadataContext.of(app).add({ why: 'outside assembly' }, { applyToDescendants: true });
+
+      expect(() => app.synth()).toThrow(
+        /resource context declaration matched no CloudFormation resources.*inside each Stage/,
+      );
+    });
+
+    test('an in-Stage declaration does not render context from above the Stage boundary', () => {
+      const app = new App();
+      const rootStack = new Stack(app, 'RootStack');
+      new CfnResource(rootStack, 'RootRes', { type: 'AWS::Fake::Thing' });
+      ResourceMetadataContext.of(app).add({ why: 'resources belong to the root assembly', must: ['root assembly rule'] }, { applyToAllResources: true });
+
+      const stage = new Stage(app, 'Deployment');
+      const stack = new Stack(stage, 'StageStack');
+      const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
+      ResourceMetadataContext.of(stack).add({ why: 'stage resource' }, { applyToDescendants: true });
+
+      const template = stage.synth().getStackByName(stack.stackName).template;
+      expect(template.Resources[stack.getLogicalId(res)].Metadata[CONTEXT_METADATA_KEY]).toEqual({
+        why: 'stage resource',
+      });
     });
 
     test('applyToAllResources renders onto helper resources too', () => {
@@ -188,21 +233,41 @@ describe('metadata context', () => {
       expect(template.Resources[stack.getLogicalId(helper)].Metadata[CONTEXT_METADATA_KEY]).toMatchObject({ why: 'buffers events' });
     });
 
-    test('guards ambiguous defaultChild so synthesis does not crash', () => {
+    test('ambiguous defaultChild fails with an actionable zero-target error', () => {
       const stack = new Stack();
       const ambiguous = new Construct(stack, 'Ambiguous');
-      const resourceChild = new CfnResource(ambiguous, 'Resource', { type: 'AWS::Fake::Thing' });
+      new CfnResource(ambiguous, 'Resource', { type: 'AWS::Fake::Thing' });
       // A sibling with id "Default" makes node.defaultChild ambiguous (it throws).
       new CfnResource(ambiguous, 'Default', { type: 'AWS::Fake::Other' });
 
       ResourceMetadataContext.of(ambiguous).add({ why: 'x' });
 
-      // Default targeting treats ambiguity as no designation -> no context, but no crash.
-      let template: any;
-      expect(() => {
-        template = toCloudFormation(stack);
-      }).not.toThrow();
-      expect(template.Resources[stack.getLogicalId(resourceChild)].Metadata?.[CONTEXT_METADATA_KEY]).toBeUndefined();
+      expect(() => synthesize(stack)).toThrow(
+        /resource context declaration matched no CloudFormation resources.*defaultChild/,
+      );
+    });
+
+    test('revalidates targets and clears stale render state on repeated synthesis', () => {
+      const stack = new Stack();
+      const l2 = new Construct(stack, 'MyQueue');
+      const primary = new CfnResource(l2, 'Resource', { type: 'AWS::SQS::Queue' });
+      const nonResource = new Construct(l2, 'NotAResource');
+      l2.node.defaultChild = primary;
+
+      ResourceMetadataContext.of(l2).add({ why: 'buffers events' });
+
+      const firstTemplate = synthesize(stack).getStackByName(stack.stackName).template;
+      const logicalId = stack.getLogicalId(primary);
+      expect(firstTemplate.Resources[logicalId].Metadata[CONTEXT_METADATA_KEY]).toEqual({
+        why: 'buffers events',
+      });
+
+      l2.node.defaultChild = nonResource;
+      const secondTemplate = synthesize(stack, { skipValidation: true }).getStackByName(stack.stackName).template;
+      expect(secondTemplate.Resources[logicalId].Metadata?.[CONTEXT_METADATA_KEY]).toBeUndefined();
+      expect(() => synthesize(stack)).toThrow(
+        /resource context declaration matched no CloudFormation resources.*defaultChild/,
+      );
     });
 
     test('nearest-wins: scalar fields from closer scopes override outer scopes', () => {
@@ -234,7 +299,7 @@ describe('metadata context', () => {
       const scope = new Construct(stack, 'SubSystem');
       const res = new CfnResource(scope, 'Res', { type: 'AWS::Fake::Thing' });
 
-      ResourceMetadataContext.of(scope).add({ must: ['shared rule', 'outer rule'] }, { applyToDescendants: true });
+      ResourceMetadataContext.of(scope).add({ why: 'shared subsystem resource', must: ['shared rule', 'outer rule'] }, { applyToDescendants: true });
       ResourceMetadataContext.of(res).add({ must: ['shared rule', 'inner rule'] });
 
       const template = toCloudFormation(stack);
@@ -252,12 +317,15 @@ describe('metadata context', () => {
       const res = new CfnResource(scope, 'Res', { type: 'AWS::Fake::Thing' });
 
       ResourceMetadataContext.of(scope).add({
+        why: 'queue settings preserve order-processing behavior',
+        must: ['VisibilityTimeout changes must preserve the retry timing relationship'],
         propertyMutability: {
           QueueName: ContextMutability.REVIEW_REQUIRED,
           VisibilityTimeout: ContextMutability.CHANGE_WITH_CONSTRAINTS,
         },
       }, { applyToDescendants: true });
       ResourceMetadataContext.of(res).add({
+        must: ['QueueName must not change because replacement loses the external reference'],
         propertyMutability: { QueueName: ContextMutability.MUST_NEVER_CHANGE },
       });
 
@@ -339,7 +407,7 @@ describe('metadata context', () => {
         { applyToDescendants: true, includeResourceTypes: ['AWS::SQS::Queue'] },
       );
       ResourceMetadataContext.of(scope).add(
-        { ops: 'watch everything except queues' },
+        { why: 'non-queue subsystem resource', ops: 'watch everything except queues' },
         { applyToDescendants: true, excludeResourceTypes: ['AWS::SQS::Queue'] },
       );
 
@@ -348,6 +416,76 @@ describe('metadata context', () => {
       const topicId = stack.getLogicalId(topic);
       expect(template.Resources[queueId].Metadata[CONTEXT_METADATA_KEY]).toMatchObject({ why: 'queue-specific context' });
       expect(template.Resources[topicId].Metadata[CONTEXT_METADATA_KEY]).toMatchObject({ ops: 'watch everything except queues' });
+    });
+
+    test('fails when resource type filters match no resources', () => {
+      const stack = new Stack();
+      const scope = new Construct(stack, 'SubSystem');
+      new CfnResource(scope, 'Topic', { type: 'AWS::SNS::Topic' });
+
+      ResourceMetadataContext.of(scope).add(
+        { why: 'queue-only rationale' },
+        { applyToDescendants: true, includeResourceTypes: ['AWS::SQS::Queue'] },
+      );
+
+      expect(() => synthesize(stack)).toThrow(
+        /resource context declaration matched no CloudFormation resources.*resource type filters/,
+      );
+    });
+
+    test('fails when excludeResourceTypes removes every target', () => {
+      const stack = new Stack();
+      const res = new CfnResource(stack, 'Queue', { type: 'AWS::SQS::Queue' });
+
+      ResourceMetadataContext.of(res).add(
+        { why: 'excluded rationale' },
+        { excludeResourceTypes: ['AWS::SQS::Queue'] },
+      );
+
+      expect(() => synthesize(stack)).toThrow(
+        /resource context declaration matched no CloudFormation resources.*resource type filters/,
+      );
+    });
+
+    test('each declaration must independently match at least one resource', () => {
+      const stack = new Stack();
+      const scope = new Construct(stack, 'SubSystem');
+      new CfnResource(scope, 'Queue', { type: 'AWS::SQS::Queue' });
+
+      ResourceMetadataContext.of(scope).add(
+        { why: 'queue rationale' },
+        { applyToDescendants: true, includeResourceTypes: ['AWS::SQS::Queue'] },
+      );
+      ResourceMetadataContext.of(scope).add(
+        { why: 'topic rationale' },
+        { applyToDescendants: true, includeResourceTypes: ['AWS::SNS::Topic'] },
+      );
+
+      expect(() => synthesize(stack)).toThrow(
+        /resource context declaration matched no CloudFormation resources.*resource type filters/,
+      );
+    });
+
+    test('applyToDescendants fails on an empty scope', () => {
+      const stack = new Stack();
+      const scope = new Construct(stack, 'Empty');
+
+      ResourceMetadataContext.of(scope).add({ why: 'no targets' }, { applyToDescendants: true });
+
+      expect(() => synthesize(stack)).toThrow(
+        /resource context declaration matched no CloudFormation resources/,
+      );
+    });
+
+    test('applyToAllResources fails on an empty scope', () => {
+      const stack = new Stack();
+      const scope = new Construct(stack, 'Empty');
+
+      ResourceMetadataContext.of(scope).add({ why: 'no targets' }, { applyToAllResources: true });
+
+      expect(() => synthesize(stack)).toThrow(
+        /resource context declaration matched no CloudFormation resources/,
+      );
     });
 
     test('preserves manually added Context when the API is not used', () => {
@@ -398,6 +536,53 @@ describe('metadata context', () => {
       expect(() => ResourceMetadataContext.of(res).add({ must: [] })).toThrow(UnscopedValidationError);
     });
 
+    test('throws when trust is the only field', () => {
+      const stack = new Stack();
+      const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
+
+      expect(() => ResourceMetadataContext.of(res).add({
+        trust: {
+          source: ContextTrustSource.AUTHORED,
+          confidence: ContextTrustConfidence.HIGH,
+        },
+      })).toThrow(/trust cannot be used alone/);
+    });
+
+    test('final merged Resource Context requires why', () => {
+      const stack = new Stack();
+      const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
+
+      ResourceMetadataContext.of(res).add({ ops: 'check queue depth before changing' });
+
+      expect(() => synthesize(stack)).toThrow(/requires a non-empty why field/);
+    });
+
+    test('why can be supplied by another applicable declaration', () => {
+      const stack = new Stack();
+      const scope = new Construct(stack, 'SubSystem');
+      const res = new CfnResource(scope, 'Res', { type: 'AWS::Fake::Thing' });
+
+      ResourceMetadataContext.of(scope).add({ why: 'processes order events' }, { applyToDescendants: true });
+      ResourceMetadataContext.of(res).add({ ops: 'check queue depth before changing' });
+
+      expect(() => synthesize(stack)).not.toThrow();
+    });
+
+    test('allows trust when accompanied by why', () => {
+      const stack = new Stack();
+      const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
+
+      ResourceMetadataContext.of(res).add({
+        why: 'processes order events',
+        trust: {
+          source: ContextTrustSource.AUTHORED,
+          confidence: ContextTrustConfidence.HIGH,
+        },
+      });
+
+      expect(() => synthesize(stack)).not.toThrow();
+    });
+
     test('throws on empty list entries', () => {
       const stack = new Stack();
       const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
@@ -443,6 +628,66 @@ describe('metadata context', () => {
       })).toThrow(/trust 'note' must be a non-empty string/);
     });
 
+    test.each([
+      ContextMutability.MUST_NEVER_CHANGE,
+      ContextMutability.CHANGE_WITH_CONSTRAINTS,
+    ])('throws when constrained defaultMutability %s has no must rule', mutability => {
+      const stack = new Stack();
+      const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
+
+      ResourceMetadataContext.of(res).add({
+        why: 'processes order events',
+        defaultMutability: mutability,
+      });
+
+      expect(() => synthesize(stack)).toThrow(/requires at least one non-empty must entry/);
+    });
+
+    test.each([
+      ContextMutability.MUST_NEVER_CHANGE,
+      ContextMutability.CHANGE_WITH_CONSTRAINTS,
+    ])('throws when constrained propertyMutability %s has no must rule', mutability => {
+      const stack = new Stack();
+      const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
+
+      ResourceMetadataContext.of(res).add({
+        why: 'processes order events',
+        propertyMutability: { Name: mutability },
+      });
+
+      expect(() => synthesize(stack)).toThrow(/requires at least one non-empty must entry/);
+    });
+
+    test('allows constrained mutability with a non-empty must rule', () => {
+      const stack = new Stack();
+      const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
+
+      ResourceMetadataContext.of(res).add({
+        why: 'processes order events',
+        must: ['Name must not change because replacement loses the external reference'],
+        defaultMutability: ContextMutability.CHANGE_WITH_CONSTRAINTS,
+        propertyMutability: { Name: ContextMutability.MUST_NEVER_CHANGE },
+      });
+
+      expect(() => synthesize(stack)).not.toThrow();
+    });
+
+    test('constrained mutability can use an inherited must rule', () => {
+      const stack = new Stack();
+      const scope = new Construct(stack, 'SubSystem');
+      const res = new CfnResource(scope, 'Res', { type: 'AWS::Fake::Thing' });
+
+      ResourceMetadataContext.of(scope).add({
+        why: 'processes order events',
+        must: ['VisibilityTimeout must preserve the retry timing relationship'],
+      }, { applyToDescendants: true });
+      ResourceMetadataContext.of(res).add({
+        propertyMutability: { VisibilityTimeout: ContextMutability.CHANGE_WITH_CONSTRAINTS },
+      });
+
+      expect(() => synthesize(stack)).not.toThrow();
+    });
+
     test('throws when a propertyMutability entry repeats defaultMutability', () => {
       const stack = new Stack();
       const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
@@ -458,6 +703,8 @@ describe('metadata context', () => {
       const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
 
       expect(() => ResourceMetadataContext.of(res).add({
+        why: 'processes order events',
+        must: ['Name must not change because replacement loses the external reference'],
         defaultMutability: ContextMutability.FREE_TO_TUNE,
         propertyMutability: { Name: ContextMutability.MUST_NEVER_CHANGE },
       })).not.toThrow();
@@ -468,6 +715,7 @@ describe('metadata context', () => {
       const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
 
       expect(() => ResourceMetadataContext.of(res).add({
+        why: 'processes order events',
         propertyMutability: { Name: ContextMutability.FREE_TO_TUNE },
       })).not.toThrow();
     });
@@ -480,31 +728,39 @@ describe('metadata context', () => {
       TemplateMetadataContext.of(stack).add({
         arch: 'SQS buffer -> Lambda -> DynamoDB; DLQ for poison msgs',
         must: ['all data encrypted w/ security-team CMK'],
-        owner: 'order-processing@',
+        owner: 'order-processing-team',
       });
 
       const template = toCloudFormation(stack);
       expect(template.Metadata[CONTEXT_METADATA_KEY]).toMatchObject({
         arch: 'SQS buffer -> Lambda -> DynamoDB; DLQ for poison msgs',
         must: ['all data encrypted w/ security-team CMK'],
-        owner: 'order-processing@',
+        owner: 'order-processing-team',
       });
     });
 
-    test('refs render bare-string form when only a URI is given', () => {
+    test('allows template context without must', () => {
+      const archStack = new Stack();
+      const ownerStack = new Stack();
+
+      expect(() => TemplateMetadataContext.of(archStack).add({ arch: 'queue to function to database' })).not.toThrow();
+      expect(() => TemplateMetadataContext.of(ownerStack).add({ owner: 'order-processing-team' })).not.toThrow();
+    });
+
+    test('refs render bare-string form when only a relative path is given', () => {
       const stack = new Stack();
 
       TemplateMetadataContext.of(stack).add({
         refs: [
-          { at: 's3://org-iac-ctx/shared/net.ctx.yaml' },
-          { at: 's3://org-iac-ctx/shared/encryption.ctx.yaml', has: 'org CMK + tagging rules', scope: 'shared' },
+          { at: 'docs/network-context.yaml' },
+          { at: 'docs/encryption-context.yaml', has: 'organization encryption and tagging rules', scope: 'shared' },
         ],
       });
 
       const template = toCloudFormation(stack);
       expect(template.Metadata[CONTEXT_METADATA_KEY].ref).toEqual([
-        's3://org-iac-ctx/shared/net.ctx.yaml',
-        { at: 's3://org-iac-ctx/shared/encryption.ctx.yaml', has: 'org CMK + tagging rules', scope: 'shared' },
+        'docs/network-context.yaml',
+        { at: 'docs/encryption-context.yaml', has: 'organization encryption and tagging rules', scope: 'shared' },
       ]);
     });
 
@@ -512,13 +768,13 @@ describe('metadata context', () => {
       const stack = new Stack();
 
       TemplateMetadataContext.of(stack).add({ arch: 'first arch', must: ['rule 1'] });
-      TemplateMetadataContext.of(stack).add({ arch: 'second arch', must: ['rule 2'], owner: 'team@' });
+      TemplateMetadataContext.of(stack).add({ arch: 'second arch', must: ['rule 2'], owner: 'platform-team' });
 
       const template = toCloudFormation(stack);
       expect(template.Metadata[CONTEXT_METADATA_KEY]).toMatchObject({
         arch: 'second arch',
         must: ['rule 1', 'rule 2'],
-        owner: 'team@',
+        owner: 'platform-team',
       });
     });
 
@@ -561,7 +817,10 @@ describe('metadata context', () => {
       const nested = new NestedStack(parent, 'Child');
       new CfnResource(nested, 'Res', { type: 'AWS::Fake::Thing' });
 
-      ResourceMetadataContext.of(parent).add({ must: ['all data encrypted w/ CMK'] }, { applyToDescendants: true });
+      ResourceMetadataContext.of(parent).add({
+        why: 'resource belongs to the encrypted application stack',
+        must: ['all data encrypted w/ CMK'],
+      }, { applyToDescendants: true });
 
       const assembly = app.synth();
       const nestedTemplate = JSON.parse(
@@ -598,9 +857,24 @@ describe('metadata context', () => {
       expect(() => TemplateMetadataContext.of(stack).add({})).toThrow(UnscopedValidationError);
     });
 
-    test('throws on empty ref URI', () => {
+    test('throws on empty ref path', () => {
       const stack = new Stack();
-      expect(() => TemplateMetadataContext.of(stack).add({ refs: [{ at: ' ' }] })).toThrow(/non-empty 'at' URI/);
+      expect(() => TemplateMetadataContext.of(stack).add({ refs: [{ at: ' ' }] })).toThrow(/non-empty 'at' path/);
+    });
+
+    test.each([
+      'https://example.com/context.md',
+      's3://example-bucket/context.yaml',
+      '/absolute/context.yaml',
+      'C:\\absolute\\context.yaml',
+      '~/context.yaml',
+      '../outside/context.yaml',
+      'docs/../../outside/context.yaml',
+    ])('throws on unsafe ref path %s', at => {
+      const stack = new Stack();
+      expect(() => TemplateMetadataContext.of(stack).add({ refs: [{ at }] })).toThrow(
+        /must be a relative path within the same repository/,
+      );
     });
   });
 
@@ -639,12 +913,11 @@ describe('metadata context', () => {
         ops: 'o',
         gaps: ['g'],
         deps: ['d'],
-        failureModes: ['f'],
       });
 
       const template = toCloudFormation(stack);
       const context = template.Resources.Res.Metadata[CONTEXT_METADATA_KEY];
-      const resourceFields = ['why', 'must', 'mutable', 'mutability', 'trust', 'ops', 'gaps', 'deps', 'failureModes'];
+      const resourceFields = ['why', 'must', 'mutable', 'mutability', 'trust', 'ops', 'gaps', 'deps'];
       expect(Object.keys(context).sort()).toEqual([...resourceFields].sort());
       // Enum values are frozen advisory-schema tokens
       expect(context.mutable).toEqual('free-to-tune');
@@ -658,7 +931,7 @@ describe('metadata context', () => {
       TemplateMetadataContext.of(stack).add({
         arch: 'a',
         must: ['m'],
-        refs: [{ at: 's3://x/y' }],
+        refs: [{ at: 'docs/context.yaml' }],
         owner: 'o',
       });
 

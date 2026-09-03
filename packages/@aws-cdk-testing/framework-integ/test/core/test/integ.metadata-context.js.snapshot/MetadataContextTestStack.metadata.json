@@ -20,10 +20,7 @@
             "source": "authored",
             "confidence": "high"
           },
-          "ops": "check ApproxAgeOfOldestMsg before cutting VisTimeout",
-          "failureModes": [
-            "retry 3x w/ exp backoff before DLQ"
-          ]
+          "ops": "check ApproxAgeOfOldestMsg before cutting VisTimeout"
         },
         "options": {
           "applyToDescendants": false,
