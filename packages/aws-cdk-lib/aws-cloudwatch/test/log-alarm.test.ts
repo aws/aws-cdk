@@ -187,6 +187,19 @@ describe('LogAlarm', () => {
     });
   });
 
+  test('grants logs:DescribeLogGroups on * because it has no resource-level permissions', () => {
+    new LogAlarm(stack, 'Alarm', baseProps());
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: Match.objectLike({
+        Statement: Match.arrayWith([
+          Match.objectLike({ Action: 'logs:DescribeLogGroups', Resource: '*' }),
+        ]),
+      }),
+      Roles: [{ Ref: Match.stringLikeRegexp('^QueryRole') }],
+    });
+  });
+
   test('falls back to a region-wide log group scope when no log groups are given', () => {
     const props = baseProps();
     const { logGroups, ...sqcWithout } = props.scheduledQueryConfiguration;

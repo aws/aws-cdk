@@ -47,22 +47,7 @@
       {
        "Action": "logs:DescribeLogGroups",
        "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":logs:",
-          {
-           "Ref": "AWS::Region"
-          },
-          ":*:*"
-         ]
-        ]
-       }
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -174,22 +159,7 @@
       {
        "Action": "logs:DescribeLogGroups",
        "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":logs:",
-          {
-           "Ref": "AWS::Region"
-          },
-          ":*:*"
-         ]
-        ]
-       }
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
