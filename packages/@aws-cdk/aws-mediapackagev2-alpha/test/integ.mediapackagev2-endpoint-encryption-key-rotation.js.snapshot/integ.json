@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "cdk-integ-mediapackage-key-rotation/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediapackagev2-key-rotation"
+      ],
+      "assertionStack": "cdk-integ-mediapackage-key-rotation/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegmediapackagekeyrotationDefaultTestDeployAssertF48FF058"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

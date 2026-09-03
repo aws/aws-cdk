@@ -7,7 +7,11 @@ import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import type * as sns from '../../aws-sns';
 import * as cdk from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -213,6 +217,7 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
  * A new Slack channel configuration
  */
 @propertyInjectable
+@noBoxStackTraces
 export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
   /**
    * Uniquely identifies this class.
@@ -223,7 +228,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
    * Import an existing Slack channel configuration provided an ARN
    * @param scope The parent creating construct
    * @param id The construct's name
-   * @param slackChannelConfigurationArn configuration ARN (i.e. arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack)
+   * @param slackChannelConfigurationArn configuration ARN (i.e. arn:aws:chatbot::123456789012:chat-configuration/slack-channel/my-slack)
    *
    * @returns a reference to the existing Slack channel configuration
    */
@@ -232,7 +237,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
     const resourceName = cdk.Arn.extractResourceName(slackChannelConfigurationArn, 'chat-configuration');
 
     if (!cdk.Token.isUnresolved(slackChannelConfigurationArn) && !re.test(resourceName)) {
-      throw new cdk.ValidationError('The ARN of a Slack integration must be in the form: arn:<partition>:chatbot:<region>:<account>:chat-configuration/slack-channel/<slackChannelName>', scope);
+      throw new cdk.ValidationError(lit`InvalidSlackChannelArn`, 'The ARN of a Slack integration must be in the form: arn:<partition>:chatbot:<region>:<account>:chat-configuration/slack-channel/<slackChannelName>', scope);
     }
 
     class Import extends SlackChannelConfigurationBase {
@@ -247,7 +252,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
        * Returns a name of Slack channel configuration
        *
        * NOTE:
-       * For example: arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack
+       * For example: arn:aws:chatbot::123456789012:chat-configuration/slack-channel/my-slack
        * The ArnComponents API will return `slack-channel/my-slack`
        * It need to handle that to gets a correct name.`my-slack`
        */
@@ -295,7 +300,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
    * The SNS topic that deliver notifications to AWS Chatbot.
    * @attribute
    */
-  private readonly notificationTopics: sns.ITopic[];
+  private readonly notificationTopics: IArrayBox<sns.ITopic>;
 
   constructor(scope: Construct, id: string, props: SlackChannelConfigurationProps) {
     super(scope, id, {
@@ -310,14 +315,14 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
 
     this.grantPrincipal = this.role;
 
-    this.notificationTopics = props.notificationTopics ?? [];
+    this.notificationTopics = Box.fromArray(props.notificationTopics ?? []);
 
     const configuration = new CfnSlackChannelConfiguration(this, 'Resource', {
       configurationName: props.slackChannelConfigurationName,
       iamRoleArn: this.role.roleArn,
       slackWorkspaceId: props.slackWorkspaceId,
       slackChannelId: props.slackChannelId,
-      snsTopicArns: cdk.Lazy.list({ produce: () => this.notificationTopics.map(topic => topic.topicArn) }, { omitEmpty: true } ),
+      snsTopicArns: cdk.Token.asList(this.notificationTopics.map(topic => topic.topicArn), { displayHint: 'snsTopicArns' }),
       loggingLevel: props.loggingLevel?.toString(),
       guardrailPolicies: cdk.Lazy.list({ produce: () => props.guardrailPolicies?.map(policy => policy.managedPolicyArn) }, { omitEmpty: true } ),
       userRoleRequired: props.userRoleRequired,

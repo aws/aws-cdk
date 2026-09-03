@@ -5,8 +5,9 @@ import type { DestinationBindOptions, DestinationConfig, IDestination } from './
 import type { IInputFormat, IOutputFormat, SchemaConfiguration } from './record-format';
 import * as iam from '../../aws-iam';
 import type * as s3 from '../../aws-s3';
-import { createBackupConfig, createBufferingHints, createDynamicPartitioningConfiguration, createEncryptionConfig, createLoggingOptions, createProcessingConfig, ERROR_OUTPUT_TYPE, PARTITION_KEY_LAMBDA, PARTITION_KEY_QUERY } from './private/helpers';
+import { createBackupConfig, createBufferingHints, createDynamicPartitioningConfiguration, createEncryptionConfig, createLoggingOptions, createProcessingConfig, createTimezoneName, ERROR_OUTPUT_TYPE, PARTITION_KEY_LAMBDA, PARTITION_KEY_QUERY } from './private/helpers';
 import * as cdk from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Props for defining an S3 destination of an Amazon Data Firehose delivery stream.
@@ -26,15 +27,16 @@ export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinati
   /**
    * The time zone you prefer.
    *
-   * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html#timestamp-namespace
+   * AWS Kinesis Data Firehose supports standard IANA time zone identifiers (e.g., 'America/New_York', 'Europe/London', 'Asia/Tokyo').
    *
+   * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-object-name.html
    * @default - UTC
    */
   readonly timeZone?: cdk.TimeZone;
 
   /**
    * The input format, output format, and schema config for converting data from the JSON format to the Parquet or ORC format before writing to Amazon S3.
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-extendeds3destinationconfiguration.html#cfn-kinesisfirehose-deliverystream-extendeds3destinationconfiguration-dataformatconversionconfiguration
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-extendeds3destinationconfiguration.html#cfn-kinesisfirehose-deliverystream-extendeds3destinationconfiguration-dataformatconversionconfiguration
    *
    * @default - no data format conversion is done
    */
@@ -109,11 +111,11 @@ export interface DynamicPartitioningProps {
 export class S3Bucket implements IDestination {
   constructor(private readonly bucket: s3.IBucket, private readonly props: S3BucketProps = {}) {
     if (this.props.s3Backup?.mode === BackupMode.FAILED) {
-      throw new cdk.UnscopedValidationError('S3 destinations do not support BackupMode.FAILED');
+      throw new cdk.UnscopedValidationError(lit`S3BackupModeFailedNotSupported`, 'S3 destinations do not support BackupMode.FAILED');
     }
 
     if (this.props.dataFormatConversion && this.props.compression) {
-      throw new cdk.UnscopedValidationError('When data record format conversion is enabled, compression cannot be set on the S3 Destination. Compression may only be set in the OutputFormat. By default, this compression is SNAPPY');
+      throw new cdk.UnscopedValidationError(lit`DataFormatConversionCompressionConflict`, 'When data record format conversion is enabled, compression cannot be set on the S3 Destination. Compression may only be set in the OutputFormat. By default, this compression is SNAPPY');
     }
 
     validateOutputPrefix(this.props.dataOutputPrefix, this.props.errorOutputPrefix);
@@ -122,7 +124,7 @@ export class S3Bucket implements IDestination {
       !this.props.dynamicPartitioning?.enabled &&
       (this.props.dataOutputPrefix?.includes(`!{${PARTITION_KEY_LAMBDA}:`) || this.props.dataOutputPrefix?.includes(`!{${PARTITION_KEY_QUERY}:`))
     ) {
-      throw new cdk.UnscopedValidationError(`When dynamic partitioning is not enabled, the dataOutputPrefix cannot contain neither ${PARTITION_KEY_LAMBDA} nor ${PARTITION_KEY_QUERY}.`);
+      throw new cdk.UnscopedValidationError(lit`DynamicPartitioningNamespaceWithoutEnabled`, `When dynamic partitioning is not enabled, the dataOutputPrefix cannot contain neither ${PARTITION_KEY_LAMBDA} nor ${PARTITION_KEY_QUERY}.`);
     }
   }
 
@@ -144,10 +146,10 @@ export class S3Bucket implements IDestination {
     const fileExtension = this.props.fileExtension;
     if (fileExtension && !cdk.Token.isUnresolved(fileExtension)) {
       if (!fileExtension.startsWith('.')) {
-        throw new cdk.ValidationError("fileExtension must start with '.'", scope);
+        throw new cdk.ValidationError(lit`FileExtensionMustStartWithPeriod`, "fileExtension must start with '.'", scope);
       }
       if (/[^0-9a-z!\-_.*'()]/.test(fileExtension)) {
-        throw new cdk.ValidationError("fileExtension can contain allowed characters: 0-9a-z!-_.*'()", scope);
+        throw new cdk.ValidationError(lit`FileExtensionInvalidCharacters`, "fileExtension can contain allowed characters: 0-9a-z!-_.*'()", scope);
       }
     }
 
@@ -180,7 +182,7 @@ export class S3Bucket implements IDestination {
         errorOutputPrefix: this.props.errorOutputPrefix,
         prefix: this.props.dataOutputPrefix,
         fileExtension: this.props.fileExtension,
-        customTimeZone: this.props.timeZone?.timezoneName,
+        customTimeZone: createTimezoneName(scope, this.props.timeZone),
         dynamicPartitioningConfiguration: createDynamicPartitioningConfiguration(scope, this.props.dynamicPartitioning),
       },
       dependables: [bucketGrant, ...(loggingDependables ?? []), ...(backupDependables ?? [])],
@@ -204,24 +206,24 @@ function validateOutputPrefix(prefix?: string, errorOutputPrefix?: string) {
   if (errorOutputPrefix) validateOutputPrefixExpression(errorOutputPrefix, 'errorOutputPrefix');
   // ErrorOutputPrefix can be null only if Prefix contains no expressions.
   if (prefix?.includes('!{') && !errorOutputPrefix) {
-    throw new cdk.UnscopedValidationError('Specify the errorOutputPrefix in order to use expressions in the dataOutputPrefix.');
+    throw new cdk.UnscopedValidationError(lit`ErrorOutputPrefixRequiredWithExpressions`, 'Specify the errorOutputPrefix in order to use expressions in the dataOutputPrefix.');
   }
   // If you specify an expression for ErrorOutputPrefix, you must include at least one instance of !{firehose:error-output-type}.
   if (errorOutputPrefix?.includes('!{') && !errorOutputPrefix.includes(ERROR_OUTPUT_TYPE)) {
-    throw new cdk.UnscopedValidationError(`The errorOutputPrefix expression must include at least one instance of ${ERROR_OUTPUT_TYPE}.`);
+    throw new cdk.UnscopedValidationError(lit`ErrorOutputPrefixMustIncludeErrorOutputType`, `The errorOutputPrefix expression must include at least one instance of ${ERROR_OUTPUT_TYPE}.`);
   }
   // Prefix can't contain !{firehose:error-output-type}.
   if (prefix?.includes(ERROR_OUTPUT_TYPE)) {
-    throw new cdk.UnscopedValidationError(`The dataOutputPrefix cannot contain ${ERROR_OUTPUT_TYPE}.`);
+    throw new cdk.UnscopedValidationError(lit`DataOutputPrefixCannotContainErrorOutputType`, `The dataOutputPrefix cannot contain ${ERROR_OUTPUT_TYPE}.`);
   }
   // You cannot use partitionKeyFromLambda and partitionKeyFromQuery namespaces when creating ErrorOutputPrefix expressions.
   if (errorOutputPrefix?.includes(`!{${PARTITION_KEY_LAMBDA}:`) || errorOutputPrefix?.includes(`!{${PARTITION_KEY_QUERY}:`)) {
-    throw new cdk.UnscopedValidationError(`You cannot use ${PARTITION_KEY_LAMBDA} and ${PARTITION_KEY_QUERY} namespaces in errorOutputPreix.`);
+    throw new cdk.UnscopedValidationError(lit`ErrorOutputPrefixCannotUsePartitionKeyNamespaces`, `You cannot use ${PARTITION_KEY_LAMBDA} and ${PARTITION_KEY_QUERY} namespaces in errorOutputPreix.`);
   }
 }
 
 function validateOutputPrefixExpression(prefix: string, prop: string) {
   if (/!\{(?!(?:firehose|timestamp|partitionKeyFrom(?:Lambda|Query)):[^{}]+\})/.test(prefix)) {
-    throw new cdk.UnscopedValidationError(`The expression must be of the form !{namespace:value} and include a valid namespace at ${prop}.`);
+    throw new cdk.UnscopedValidationError(lit`InvalidExpressionFormat`, `The expression must be of the form !{namespace:value} and include a valid namespace at ${prop}.`);
   }
 }

@@ -1,0 +1,62 @@
+{
+  "/issue-4324/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:38:38)",
+        "new IntegTestCase (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/integ.s3.imported-bucket.js:24:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/issue-4324/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:258:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/issue-4324/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:266:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

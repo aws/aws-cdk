@@ -1,4 +1,4 @@
-import type { CloudAssembly } from '../../cx-api';
+import type { CloudAssembly, MetadataEntry } from '../../cx-api';
 import { CloudArtifact, SynthesisMessageLevel } from '../../cx-api';
 import type { Stack } from '../lib';
 import { CDK_DEBUG } from '../lib/debug';
@@ -57,4 +57,20 @@ export function getInfos(casm: CloudAssembly) {
     });
   }
   return result;
+}
+
+/**
+ * Flatten metadata so it's easier to `expect().toMatchObject()` against
+ */
+export function flattenMeta(meta: Record<string, MetadataEntry[]>): Record<string, Record<string, unknown[]>> {
+  const ret: Record<string, Record<string, unknown[]>> = {};
+  for (const [cPath, entries] of Object.entries(meta)) {
+    for (const { type, data } of entries) {
+      ret[cPath] ??= {};
+      ret[cPath][type] ??= [];
+      ret[cPath][type].push(data);
+    }
+  }
+
+  return ret;
 }

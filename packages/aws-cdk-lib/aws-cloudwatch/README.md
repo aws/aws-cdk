@@ -401,6 +401,16 @@ const alarmRule = cloudwatch.AlarmRule.anyOf(
       alarm3,
     ),
     cloudwatch.AlarmRule.not(cloudwatch.AlarmRule.fromAlarm(alarm4, cloudwatch.AlarmState.INSUFFICIENT_DATA)),
+    // AT_LEAST with count: at least 2 of these alarms must be in ALARM state
+    cloudwatch.AlarmRule.atLeast(cloudwatch.AlarmState.ALARM, {
+      operands: [alarm1, alarm2, alarm3],
+      threshold: cloudwatch.AtLeastThreshold.count(2),
+    }),
+    // AT_LEAST with percentage and NOT: at least 60% must NOT be in OK state
+    cloudwatch.AlarmRule.atLeastNot(cloudwatch.AlarmState.OK, {
+      operands: [alarm1, alarm2, alarm3],
+      threshold: cloudwatch.AtLeastThreshold.percentage(60),
+    }),
   ),
   cloudwatch.AlarmRule.fromBoolean(false),
 );
@@ -504,6 +514,118 @@ When creating an anomaly detection alarm, you must use one of the following comp
 - `LESS_THAN_LOWER_THRESHOLD`: Alarm only when the metric is below the band
 
 For more information on anomaly detection in CloudWatch, see the [AWS documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Anomaly_Detection.html).
+
+## PromQL Alarms
+
+PromQL alarms evaluate a [PromQL](https://prometheus.io/docs/prometheus/latest/querying/basics/) instant query against metrics ingested through the CloudWatch OTLP endpoint on a recurring schedule. All matching time series returned by the query are considered breaching, and each is tracked independently as a _contributor_.
+
+### How PromQL Alarms Differ from Standard CloudWatch Alarms
+
+The existing `Alarm` construct is designed around the standard CloudWatch alarm model: a metric, a comparison operator, a threshold, and evaluation periods. PromQL alarms have a fundamentally different configuration model:
+
+- Instead of using alarm condition (threshold + comparison), all matching time series returned by the PromQL alarm query are considered to be breaching.
+- Instead of `evaluationPeriods` and `period`, PromQL alarms use `evaluationInterval`, `pendingPeriod`, and `recoveryPeriod`.
+- PromQL alarms do not use `MetricName`, `Namespace`, `Statistic`, `Dimensions`, or `Threshold` properties.
+- PromQL alarms only work with metrics ingested through the CloudWatch OTLP endpoint. Standard CloudWatch namespace metrics (e.g., `AWS/EC2`, `AWS/Lambda`) are not queryable via PromQL.
+
+### Creating a PromQL Alarm
+
+```ts
+new cloudwatch.PromQLAlarm(this, 'HighCpuAlarm', {
+  alarmName: 'HighCpuAlarm',
+  alarmDescription: 'Alarm when average CPU exceeds 80%',
+  query: 'avg(cpu_utilization_percent) > 80',
+  evaluationInterval: Duration.seconds(60),
+});
+```
+
+### Pending and Recovery Periods
+
+Use `pendingPeriod` to require a contributor to breach continuously for a duration before entering ALARM state (equivalent to Prometheus `for` duration). Use `recoveryPeriod` to require a contributor to stop breaching for a duration before returning to OK state (equivalent to Prometheus `keep_firing_for` duration).
+
+```ts
+new cloudwatch.PromQLAlarm(this, 'HighLatencyAlarm', {
+  alarmDescription: 'P99 latency exceeds 500ms for 5 minutes',
+  query: 'histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m])) > 0.5',
+  evaluationInterval: Duration.seconds(60),
+  pendingPeriod: Duration.seconds(300),
+  recoveryPeriod: Duration.seconds(600),
+});
+```
+
+### Adding Actions
+
+`PromQLAlarm` extends `AlarmBase`, so you can add alarm, OK, and insufficient-data actions the same way as standard alarms:
+
+```ts
+import * as cloudwatch_actions from 'aws-cdk-lib/aws-cloudwatch-actions';
+
+declare const topic: sns.Topic;
+
+const alarm = new cloudwatch.PromQLAlarm(this, 'ServiceDownAlarm', {
+  query: 'up == 0',
+  evaluationInterval: Duration.seconds(60),
+  pendingPeriod: Duration.seconds(300),
+  recoveryPeriod: Duration.seconds(300),
+});
+
+alarm.addAlarmAction(new cloudwatch_actions.SnsAction(topic));
+alarm.addOkAction(new cloudwatch_actions.SnsAction(topic));
+```
+
+### Importing an Existing PromQL Alarm
+
+```ts
+const importedByArn = cloudwatch.PromQLAlarm.fromPromQLAlarmArn(
+  this, 'ImportedAlarm',
+  'arn:aws:cloudwatch:us-east-1:123456789012:alarm:MyPromQLAlarm',
+);
+
+const importedByName = cloudwatch.PromQLAlarm.fromPromQLAlarmName(
+  this, 'ImportedByName',
+  'MyPromQLAlarm',
+);
+```
+
+### Using in Composite Alarms
+
+Since `PromQLAlarm` implements `IAlarm`, it can be used in composite alarm rules alongside standard alarms:
+
+```ts
+declare const promqlAlarm: cloudwatch.PromQLAlarm;
+declare const standardAlarm: cloudwatch.Alarm;
+
+new cloudwatch.CompositeAlarm(this, 'CompositeAlarm', {
+  alarmRule: cloudwatch.AlarmRule.allOf(promqlAlarm, standardAlarm),
+});
+```
+
+## Alarm Mute Rules
+
+Alarm Mute Rules is a CloudWatch feature that provides you a mechanism to
+automatically mute alarm actions during predefined time windows.
+When you create a mute rule, you define specific time periods and target
+alarms whose actions will be muted.
+CloudWatch will continue monitoring and evaluating alarm states while preventing
+unwanted notifications or automated alarm actions during expected operational events.
+
+```ts
+declare const alarm1: cloudwatch.Alarm;
+declare const alarm2: cloudwatch.Alarm;
+
+const alarmMuteRule = new cloudwatch.AlarmMuteRule(this, 'AlarmMuteRule', {
+  alarms: [alarm1],
+  // Defines the mute period begins at 0:00 everyday in UTC
+  schedule: cloudwatch.ScheduleExpression.cron({ minute: '0', hour: '0' }),
+  // Specifies the mute rule lasts 1 hour.
+  duration: Duration.hours(1),
+})
+
+// The mute target can be added after construction.
+alarmMuteRule.addAlarm(alarm2);
+```
+
+For more information on alarm mute rules, see the [AWS documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/alarm-mute-rules.html).
 
 ## Dashboards
 
@@ -959,7 +1081,7 @@ You can add a widget after object instantiation with the method
 ### Interval duration for dashboard
 
 Interval duration for metrics in dashboard. You can specify `defaultInterval` with
-the relative time(eg. 7 days) as `Duration.days(7)`.
+the relative time (e.g. 7 days) as `Duration.days(7)`.
 
 ```ts
 import * as cw from 'aws-cdk-lib/aws-cloudwatch';

@@ -1,4 +1,4 @@
-import { Template } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as core from 'aws-cdk-lib/core';
 import * as s3tables from '../lib';
@@ -84,16 +84,43 @@ describe('Table', () => {
         icebergSchema: {
           schemaFieldList: [
             {
+              id: 1,
               name: 'id',
               type: 'int',
               required: true,
             },
             {
+              id: 2,
               name: 'name',
               type: 'string',
             },
           ],
         },
+        icebergPartitionSpec: {
+          specId: 0,
+          fields: [
+            {
+              sourceId: 1,
+              transform: s3tables.IcebergTransform.IDENTITY,
+              name: 'id_partition',
+            },
+          ],
+        },
+        icebergSortOrder: {
+          orderId: 1,
+          fields: [
+            {
+              sourceId: 2,
+              transform: s3tables.IcebergTransform.IDENTITY,
+              direction: s3tables.SortDirection.ASC,
+              nullOrder: s3tables.NullOrder.NULLS_FIRST,
+            },
+          ],
+        },
+        tableProperties: [
+          { key: 'write.parquet.compression-codec', value: 'snappy' },
+          { key: 'write.metadata.compression-codec', value: 'gzip' },
+        ],
       },
       snapshotManagement: {
         maxSnapshotAgeHours: 24,
@@ -126,15 +153,42 @@ describe('Table', () => {
           'IcebergSchema': {
             'SchemaFieldList': [
               {
+                'Id': 1,
                 'Name': 'id',
                 'Type': 'int',
                 'Required': true,
               },
               {
+                'Id': 2,
                 'Name': 'name',
                 'Type': 'string',
               },
             ],
+          },
+          'IcebergPartitionSpec': {
+            'SpecId': 0,
+            'Fields': [
+              {
+                'SourceId': 1,
+                'Transform': 'identity',
+                'Name': 'id_partition',
+              },
+            ],
+          },
+          'IcebergSortOrder': {
+            'OrderId': 1,
+            'Fields': [
+              {
+                'SourceId': 2,
+                'Transform': 'identity',
+                'Direction': 'asc',
+                'NullOrder': 'nulls-first',
+              },
+            ],
+          },
+          'TableProperties': {
+            'write.parquet.compression-codec': 'snappy',
+            'write.metadata.compression-codec': 'gzip',
           },
         },
         'SnapshotManagement': {
@@ -168,6 +222,83 @@ describe('Table', () => {
     test('has withoutMetadata set to "Yes"', () => {
       Template.fromStack(stack).hasResourceProperties(TABLE_CFN_RESOURCE, {
         'WithoutMetadata': 'Yes',
+      });
+    });
+  });
+
+  describe('created with partition spec and sort order', () => {
+    beforeEach(() => {
+      new s3tables.Table(stack, 'PartitionedTable', {
+        tableName: 'partitioned_table',
+        namespace,
+        openTableFormat: s3tables.OpenTableFormat.ICEBERG,
+        icebergMetadata: {
+          icebergSchema: {
+            schemaFieldList: [
+              { id: 1, name: 'event_id', type: 'string' },
+              { id: 2, name: 'event_time', type: 'timestamp' },
+              { id: 3, name: 'category', type: 'string' },
+            ],
+          },
+          icebergPartitionSpec: {
+            specId: 0,
+            fields: [
+              { sourceId: 2, transform: s3tables.IcebergTransform.DAY, name: 'event_day' },
+              { sourceId: 3, transform: s3tables.IcebergTransform.IDENTITY, name: 'category_partition' },
+            ],
+          },
+          icebergSortOrder: {
+            orderId: 1,
+            fields: [
+              {
+                sourceId: 1,
+                transform: s3tables.IcebergTransform.IDENTITY,
+                direction: s3tables.SortDirection.ASC,
+                nullOrder: s3tables.NullOrder.NULLS_FIRST,
+              },
+            ],
+          },
+          tableProperties: [
+            { key: 'write.parquet.compression-codec', value: 'snappy' },
+          ],
+        },
+      });
+    });
+
+    test('has partition spec', () => {
+      Template.fromStack(stack).hasResourceProperties(TABLE_CFN_RESOURCE, {
+        'IcebergMetadata': {
+          'IcebergPartitionSpec': {
+            'SpecId': 0,
+            'Fields': [
+              { 'SourceId': 2, 'Transform': 'day', 'Name': 'event_day' },
+              { 'SourceId': 3, 'Transform': 'identity', 'Name': 'category_partition' },
+            ],
+          },
+        },
+      });
+    });
+
+    test('has sort order', () => {
+      Template.fromStack(stack).hasResourceProperties(TABLE_CFN_RESOURCE, {
+        'IcebergMetadata': {
+          'IcebergSortOrder': {
+            'OrderId': 1,
+            'Fields': [
+              { 'SourceId': 1, 'Transform': 'identity', 'Direction': 'asc', 'NullOrder': 'nulls-first' },
+            ],
+          },
+        },
+      });
+    });
+
+    test('has table properties', () => {
+      Template.fromStack(stack).hasResourceProperties(TABLE_CFN_RESOURCE, {
+        'IcebergMetadata': {
+          'TableProperties': {
+            'write.parquet.compression-codec': 'snappy',
+          },
+        },
       });
     });
   });
@@ -383,6 +514,192 @@ describe('Table', () => {
           openTableFormat: s3tables.OpenTableFormat.ICEBERG,
         });
       }).toThrow('Table name must start with a lowercase letter or number');
+    });
+  });
+
+  describe('tagging', () => {
+    test('implements ITaggableV2', () => {
+      const table = new s3tables.Table(stack, 'TaggedTable', {
+        tableName: 'tagged_table',
+        namespace,
+        openTableFormat: s3tables.OpenTableFormat.ICEBERG,
+        withoutMetadata: true,
+      });
+      expect(core.TagManager.of(table)).toBeDefined();
+    });
+
+    test('tags are applied to the table', () => {
+      const table = new s3tables.Table(stack, 'TaggedTable', {
+        tableName: 'tagged_table',
+        namespace,
+        openTableFormat: s3tables.OpenTableFormat.ICEBERG,
+        withoutMetadata: true,
+      });
+
+      core.Tags.of(table).add('Environment', 'Production');
+
+      Template.fromStack(stack).hasResourceProperties(TABLE_CFN_RESOURCE, {
+        Tags: Match.arrayWith([
+          Match.objectLike({ Key: 'Environment', Value: 'Production' }),
+        ]),
+      });
+    });
+
+    test('stack-level tags propagate to table', () => {
+      new s3tables.Table(stack, 'TaggedTable', {
+        tableName: 'tagged_table',
+        namespace,
+        openTableFormat: s3tables.OpenTableFormat.ICEBERG,
+        withoutMetadata: true,
+      });
+
+      core.Tags.of(stack).add('StackTag', 'Propagated');
+
+      Template.fromStack(stack).hasResourceProperties(TABLE_CFN_RESOURCE, {
+        Tags: Match.arrayWith([
+          Match.objectLike({ Key: 'StackTag', Value: 'Propagated' }),
+        ]),
+      });
+    });
+  });
+
+  describe('IcebergTransform validation', () => {
+    test('bucket rejects zero', () => {
+      expect(() => s3tables.IcebergTransform.bucket(0)).toThrow('Bucket count must be a positive integer.');
+    });
+
+    test('bucket rejects negative numbers', () => {
+      expect(() => s3tables.IcebergTransform.bucket(-5)).toThrow('Bucket count must be a positive integer.');
+    });
+
+    test('bucket rejects non-integers', () => {
+      expect(() => s3tables.IcebergTransform.bucket(3.5)).toThrow('Bucket count must be a positive integer.');
+    });
+
+    test('bucket accepts positive integers', () => {
+      const transform = s3tables.IcebergTransform.bucket(16);
+      expect(transform.value).toBe('bucket[16]');
+    });
+
+    test('truncate rejects zero', () => {
+      expect(() => s3tables.IcebergTransform.truncate(0)).toThrow('Truncate width must be a positive integer.');
+    });
+
+    test('truncate rejects negative numbers', () => {
+      expect(() => s3tables.IcebergTransform.truncate(-10)).toThrow('Truncate width must be a positive integer.');
+    });
+
+    test('truncate rejects non-integers', () => {
+      expect(() => s3tables.IcebergTransform.truncate(2.5)).toThrow('Truncate width must be a positive integer.');
+    });
+
+    test('truncate accepts positive integers', () => {
+      const transform = s3tables.IcebergTransform.truncate(8);
+      expect(transform.value).toBe('truncate[8]');
+    });
+  });
+
+  describe('created with STANDARD storage class', () => {
+    beforeEach(() => {
+      new s3tables.Table(stack, 'StandardStorageTable', {
+        tableName: 'standard_storage_table',
+        namespace,
+        openTableFormat: s3tables.OpenTableFormat.ICEBERG,
+        withoutMetadata: true,
+        storageClass: s3tables.StorageClass.STANDARD,
+      });
+    });
+
+    test('has StorageClassConfiguration with STANDARD storage class', () => {
+      Template.fromStack(stack).hasResourceProperties(TABLE_CFN_RESOURCE, {
+        'TableName': 'standard_storage_table',
+        'StorageClassConfiguration': {
+          'StorageClass': 'STANDARD',
+        },
+      });
+    });
+  });
+
+  describe('created with INTELLIGENT_TIERING storage class', () => {
+    beforeEach(() => {
+      new s3tables.Table(stack, 'IntelligentTieringTable', {
+        tableName: 'intelligent_tiering_table',
+        namespace,
+        openTableFormat: s3tables.OpenTableFormat.ICEBERG,
+        withoutMetadata: true,
+        storageClass: s3tables.StorageClass.INTELLIGENT_TIERING,
+      });
+    });
+
+    test('has StorageClassConfiguration with INTELLIGENT_TIERING storage class', () => {
+      Template.fromStack(stack).hasResourceProperties(TABLE_CFN_RESOURCE, {
+        'TableName': 'intelligent_tiering_table',
+        'StorageClassConfiguration': {
+          'StorageClass': 'INTELLIGENT_TIERING',
+        },
+      });
+    });
+  });
+
+  describe('created without storage class configuration', () => {
+    beforeEach(() => {
+      new s3tables.Table(stack, 'NoStorageClassTable', {
+        tableName: 'no_storage_class_table',
+        namespace,
+        openTableFormat: s3tables.OpenTableFormat.ICEBERG,
+        withoutMetadata: true,
+      });
+    });
+
+    test('does not have StorageClassConfiguration property', () => {
+      const template = Template.fromStack(stack);
+      const resources = template.findResources(TABLE_CFN_RESOURCE);
+      // Find the table resource (not the table bucket)
+      const tableResourceKey = Object.keys(resources).find(key =>
+        resources[key].Properties.TableName === 'no_storage_class_table',
+      );
+      expect(tableResourceKey).toBeDefined();
+      expect(resources[tableResourceKey!].Properties.StorageClassConfiguration).toBeUndefined();
+    });
+  });
+
+  describe('tableProperties validation', () => {
+    test('rejects duplicate keys in tableProperties', () => {
+      expect(() => {
+        new s3tables.Table(stack, 'TestTable', {
+          tableName: 'test_table',
+          namespace,
+          openTableFormat: s3tables.OpenTableFormat.ICEBERG,
+          icebergMetadata: {
+            icebergSchema: {
+              schemaFieldList: [{ name: 'id', type: 'int' }],
+            },
+            tableProperties: [
+              { key: 'write.format.default', value: 'parquet' },
+              { key: 'write.format.default', value: 'avro' },
+            ],
+          },
+        });
+      }).toThrow('Duplicate table property keys are not allowed: write.format.default');
+    });
+
+    test('accepts unique keys in tableProperties', () => {
+      expect(() => {
+        new s3tables.Table(stack, 'TestTable', {
+          tableName: 'test_table',
+          namespace,
+          openTableFormat: s3tables.OpenTableFormat.ICEBERG,
+          icebergMetadata: {
+            icebergSchema: {
+              schemaFieldList: [{ name: 'id', type: 'int' }],
+            },
+            tableProperties: [
+              { key: 'write.format.default', value: 'parquet' },
+              { key: 'write.parquet.compression-codec', value: 'zstd' },
+            ],
+          },
+        });
+      }).not.toThrow();
     });
   });
 });
