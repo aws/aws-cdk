@@ -78,6 +78,11 @@ export interface ScheduledQueryConfiguration {
   /**
    * The IAM role that grants CloudWatch permission to run the scheduled query.
    *
+   * Typed as `IRole` rather than `IRoleRef` because the construct adds the query
+   * permissions to this role's policy, which requires `addToPrincipalPolicy`.
+   *
+   * [disable-awslint:prefer-ref-interface]
+   *
    * @default - a role that CloudWatch Logs can assume to run the query is created automatically
    */
   readonly scheduledQueryRole?: IRole;
@@ -143,7 +148,7 @@ export interface LogAlarmProps {
    *
    * @default - Automatically generated name
    */
-  readonly alarmName?: string;
+  readonly logAlarmName?: string;
 
   /**
    * Description for the alarm.
@@ -177,6 +182,12 @@ export interface LogAlarmProps {
 
   /**
    * The IAM role used to read the log lines included in notifications.
+   *
+   * Typed as `IRole` rather than `IRoleRef` because the construct adds the
+   * log-line read permission to this role's policy, which requires
+   * `addToPrincipalPolicy`.
+   *
+   * [disable-awslint:prefer-ref-interface]
    *
    * @default - when actionLogLineCount is greater than 0, a role that CloudWatch can assume to
    * read the log lines is created automatically; otherwise no role
@@ -273,7 +284,7 @@ export class LogAlarm extends AlarmBase {
 
   constructor(scope: Construct, id: string, props: LogAlarmProps) {
     super(scope, id, {
-      physicalName: props.alarmName,
+      physicalName: props.logAlarmName,
     });
 
     addConstructMetadata(this, props);
@@ -303,9 +314,9 @@ export class LogAlarm extends AlarmBase {
 
     const sqc = props.scheduledQueryConfiguration;
 
-    if (props.alarmName !== undefined && !Token.isUnresolved(props.alarmName)
-      && (props.alarmName.length < 1 || props.alarmName.length > 255)) {
-      throw new ValidationError(lit`InvalidAlarmName`, `alarmName must be between 1 and 255 characters, got ${props.alarmName.length}`, this);
+    if (props.logAlarmName !== undefined && !Token.isUnresolved(props.logAlarmName)
+      && (props.logAlarmName.length < 1 || props.logAlarmName.length > 255)) {
+      throw new ValidationError(lit`InvalidLogAlarmName`, `logAlarmName must be between 1 and 255 characters, got ${props.logAlarmName.length}`, this);
     }
 
     this.validateTagCount('tags', props.tags);

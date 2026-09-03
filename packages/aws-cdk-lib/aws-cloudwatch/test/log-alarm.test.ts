@@ -262,11 +262,19 @@ describe('LogAlarm', () => {
     )).toThrow(new RegExp(`${propName.replace('.', '\\.')} can contain at most 50 tags`));
   });
 
-  test.each([0, 256])('fails for an alarmName of invalid length %d', (length) => {
+  test.each([0, 256])('fails for a logAlarmName of invalid length %d', (length) => {
     expect(() => new LogAlarm(stack, 'Alarm', {
       ...baseProps(),
-      alarmName: 'a'.repeat(length),
-    })).toThrow(/alarmName must be between 1 and 255 characters/);
+      logAlarmName: 'a'.repeat(length),
+    })).toThrow(/logAlarmName must be between 1 and 255 characters/);
+  });
+
+  test('renders logAlarmName as the alarm name', () => {
+    new LogAlarm(stack, 'Alarm', { ...baseProps(), logAlarmName: 'my-log-alarm' });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::LogAlarm', {
+      AlarmName: 'my-log-alarm',
+    });
   });
 
   test('fails for an empty logGroups array', () => {

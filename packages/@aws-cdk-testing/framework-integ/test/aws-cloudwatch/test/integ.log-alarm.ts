@@ -14,7 +14,7 @@ const queryRole = new Role(stack, 'ScheduledQueryRole', {
 });
 
 new LogAlarm(stack, 'LogAlarm', {
-  alarmName: 'integ-log-alarm',
+  logAlarmName: 'integ-log-alarm',
   threshold: 5,
   comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
   queryResultsToEvaluate: 3,
@@ -35,7 +35,7 @@ new LogAlarm(stack, 'LogAlarm', {
 
 // Auto-created roles: no scheduledQueryRole, and actionLogLineCount > 0 to trigger the log-line role.
 new LogAlarm(stack, 'AutoRoleLogAlarm', {
-  alarmName: 'integ-log-alarm-auto-role',
+  logAlarmName: 'integ-log-alarm-auto-role',
   threshold: 1,
   comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
   queryResultsToEvaluate: 1,
