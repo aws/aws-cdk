@@ -1,4 +1,5 @@
-import { UnscopedValidationError } from '../errors';
+import type { IConstruct } from 'constructs';
+import { UnscopedValidationError, ValidationError } from '../errors';
 import type { ResourceContextProps, TemplateContextProps, ContextRef } from '../metadata-context';
 import { lit } from './literal-string';
 
@@ -54,9 +55,6 @@ export function renderResourceContext(context: ResourceContextProps): Record<str
   if (context.deps !== undefined && context.deps.length > 0) {
     out.deps = [...context.deps];
   }
-  if (context.failureModes !== undefined && context.failureModes.length > 0) {
-    out.failureModes = [...context.failureModes];
-  }
   return out;
 }
 
@@ -75,7 +73,7 @@ export function mergeResourceContext(base: Record<string, any> | undefined, over
       out[scalar] = overriding[scalar];
     }
   }
-  for (const listField of ['must', 'gaps', 'deps', 'failureModes']) {
+  for (const listField of ['must', 'gaps', 'deps']) {
     if (overriding[listField] !== undefined) {
       out[listField] = dedupe([...(base[listField] ?? []), ...overriding[listField]]);
     }
@@ -106,15 +104,20 @@ export function dedupe(entries: string[]): string[] {
 }
 
 export function validateResourceContext(context: ResourceContextProps) {
-  if (Object.values(renderResourceContext(context)).length === 0) {
-    throw new UnscopedValidationError(lit`EmptyMetadataContext`, 'MetadataContext requires at least one context field (why, must, defaultMutability, propertyMutability, trust, ops, gaps, deps or failureModes)');
+  const rendered = renderResourceContext(context);
+  const contentFields = Object.keys(rendered).filter(field => field !== 'trust');
+  if (contentFields.length === 0) {
+    throw new UnscopedValidationError(
+      lit`MissingMetadataContextContent`,
+      'MetadataContext requires at least one content field (why, must, defaultMutability, propertyMutability, ops, gaps or deps); trust cannot be used alone',
+    );
   }
   for (const [field, value] of Object.entries({ why: context.why, ops: context.ops })) {
     if (value !== undefined && value.trim() === '') {
       throw new UnscopedValidationError(lit`EmptyMetadataContextEntry`, `MetadataContext '${field}' must be a non-empty string when provided`);
     }
   }
-  for (const [field, entries] of Object.entries({ must: context.must, gaps: context.gaps, deps: context.deps, failureModes: context.failureModes })) {
+  for (const [field, entries] of Object.entries({ must: context.must, gaps: context.gaps, deps: context.deps })) {
     for (const entry of entries ?? []) {
       if (entry.trim() === '') {
         throw new UnscopedValidationError(lit`EmptyMetadataContextEntry`, `MetadataContext '${field}' entries must be non-empty strings`);
@@ -156,6 +159,41 @@ function validatePropertyMutability(context: ResourceContextProps) {
   }
 }
 
+const CONSTRAINED_MUTABILITY_VALUES = new Set<string>([
+  'must-never-change',
+  'change-with-constraints',
+]);
+
+export function validateRenderedResourceContext(context: Record<string, any>, scope: IConstruct) {
+  if (typeof context.why !== 'string' || context.why.trim().length === 0) {
+    throw new ValidationError(
+      lit`MetadataContextWhyRequired`,
+      'Resource Context requires a non-empty why field; omit Context entirely for a trivial resource and use gaps when some reasoning is unknown',
+      scope,
+    );
+  }
+
+  const constrainedFields: string[] = [];
+  if (CONSTRAINED_MUTABILITY_VALUES.has(context.mutable)) {
+    constrainedFields.push(`mutable=${JSON.stringify(context.mutable)}`);
+  }
+  for (const [property, mutability] of Object.entries(context.mutability ?? {})) {
+    if (CONSTRAINED_MUTABILITY_VALUES.has(mutability as string)) {
+      constrainedFields.push(`mutability.${property}=${JSON.stringify(mutability)}`);
+    }
+  }
+
+  const hasMust = Array.isArray(context.must)
+    && context.must.some((entry: unknown) => typeof entry === 'string' && entry.trim().length > 0);
+  if (constrainedFields.length > 0 && !hasMust) {
+    throw new ValidationError(
+      lit`ConstrainedMetadataContextRequiresMust`,
+      `Resource Context ${constrainedFields.join(', ')} requires at least one non-empty must entry`,
+      scope,
+    );
+  }
+}
+
 export function validateTemplateContext(context: TemplateContextProps) {
   const empty = context.arch === undefined
     && (context.must === undefined || context.must.length === 0)
@@ -170,8 +208,18 @@ export function validateTemplateContext(context: TemplateContextProps) {
     }
   }
   for (const ref of context.refs ?? []) {
-    if (ref.at.trim() === '') {
-      throw new UnscopedValidationError(lit`EmptyMetadataContextRef`, 'MetadataContext refs require a non-empty \'at\' URI');
+    const at = ref.at.trim();
+    if (at === '') {
+      throw new UnscopedValidationError(lit`EmptyMetadataContextRef`, 'MetadataContext refs require a non-empty \'at\' path');
+    }
+    const hasUriScheme = /^[a-z][a-z0-9+.-]*:/i.test(at);
+    const isAbsolute = at.startsWith('/') || at.startsWith('\\') || at === '~' || at.startsWith('~/') || at.startsWith('~\\');
+    const escapesRepository = at.split(/[\\/]+/).includes('..');
+    if (hasUriScheme || isAbsolute || escapesRepository) {
+      throw new UnscopedValidationError(
+        lit`UnsafeMetadataContextRef`,
+        `MetadataContext ref ${JSON.stringify(ref.at)} must be a relative path within the same repository; network URLs, URI schemes, absolute paths and parent-directory traversal are not allowed`,
+      );
     }
   }
 }

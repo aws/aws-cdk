@@ -8,12 +8,12 @@
    ],
    "ref": [
     {
-     "at": "s3://org-iac-ctx/shared/encryption.ctx.yaml",
+     "at": "context/shared/encryption.ctx.yaml",
      "has": "org CMK + tagging rules",
      "scope": "shared"
     }
    ],
-   "owner": "framework-integ@example.com"
+   "owner": "framework-integ-team"
   }
  },
  "Resources": {
@@ -35,10 +35,7 @@
       "src": "authored",
       "conf": "high"
      },
-     "ops": "check ApproxAgeOfOldestMsg before cutting VisTimeout",
-     "failureModes": [
-      "retry 3x w/ exp backoff before DLQ"
-     ]
+     "ops": "check ApproxAgeOfOldestMsg before cutting VisTimeout"
     }
    }
   },
