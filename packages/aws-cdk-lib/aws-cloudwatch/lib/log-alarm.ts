@@ -533,7 +533,7 @@ export class LogAlarm extends AlarmBase {
     }));
     role.addToPrincipalPolicy(new PolicyStatement({
       actions: ['logs:DescribeLogGroups'],
-      resources: [Stack.of(this).formatArn({ service: 'logs', account: '*', resource: '*' })],
+      resources: ['*'],
     }));
   }
 
