@@ -1006,14 +1006,50 @@ describe('fargate service', () => {
         image: ecs.ContainerImage.fromRegistry('somecontainer'),
       });
 
-      // WHEN / THEN - should not throw
+      // WHEN - should not throw
       new ecs.FargateService(stack, 'FargateService', {
         cluster,
         taskDefinition,
         platformVersion: ecs.FargatePlatformVersion.VERSION1_0,
       });
 
-      Template.fromStack(stack);
+      // THEN - the Windows task keeps its ephemeral storage and runtime platform
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        EphemeralStorage: { SizeInGiB: 100 },
+        RuntimePlatform: { OperatingSystemFamily: 'WINDOWS_SERVER_2019_FULL' },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        PlatformVersion: '1.0.0',
+      });
+    });
+
+    test('does not error for ephemeralStorageGiB when operatingSystemFamily is a token on platform version 1.0.0', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const osFamilyParam = new cdk.CfnParameter(stack, 'OsFamily', { type: 'String' });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+        runtimePlatform: {
+          operatingSystemFamily: ecs.OperatingSystemFamily.of(osFamilyParam.valueAsString),
+          cpuArchitecture: ecs.CpuArchitecture.X86_64,
+        },
+        memoryLimitMiB: 4096,
+        cpu: 2048,
+        ephemeralStorageGiB: 100,
+      });
+      taskDefinition.addContainer('main', {
+        image: ecs.ContainerImage.fromRegistry('somecontainer'),
+      });
+
+      // WHEN / THEN - an unresolved OS family defers to deploy-time validation, so synth must not throw
+      expect(() => {
+        new ecs.FargateService(stack, 'FargateService', {
+          cluster,
+          taskDefinition,
+          platformVersion: ecs.FargatePlatformVersion.VERSION1_0,
+        });
+      }).not.toThrow();
     });
 
     test('errors when platform version does not support pidMode', () => {
