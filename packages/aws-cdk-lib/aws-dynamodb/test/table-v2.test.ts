@@ -4848,7 +4848,16 @@ test('grantReadData on encrypted table grants KMS permissions via auto-discovery
             'kms:DescribeKey',
           ]),
           Principal: {
-            AWS: 'arn:aws:iam::111111111111:root',
+            AWS: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':iam::111111111111:root',
+                ],
+              ],
+            },
           },
         }),
       ]),
