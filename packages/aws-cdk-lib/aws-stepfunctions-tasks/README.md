@@ -102,8 +102,8 @@ Learn more about input and output processing in Step Functions [here](https://do
 ## Evaluate Expression
 
 Use the `EvaluateExpression` to perform simple operations referencing state paths. The
-`expression` referenced in the task will be evaluated in a Lambda function
-(`eval()`). This allows you to not have to write Lambda code for simple operations.
+`expression` referenced in the task will be evaluated in a Node.js Lambda function.
+This allows you to not have to write Lambda code for simple operations.
 
 Example: convert a wait time from milliseconds to seconds, concat this in a message and wait:
 
@@ -137,6 +137,12 @@ new sfn.StateMachine(this, 'StateMachine', {
     .next(wait),
 });
 ```
+
+Referenced state paths are only resolved where they are used as code (for example
+`$.a + $.b`, or a function argument). To embed a value inside a string, use a template
+literal interpolation as in the `Create message` example above (`${$.waitSeconds}`). A path
+written as literal text inside a plain string, or as bare text inside a template literal
+(for example `'waited $.waitSeconds seconds'`), is not resolved and is rejected at synthesis time.
 
 The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
 runtime to use to evaluate the expression. Currently, only runtimes
@@ -1020,6 +1026,33 @@ new tasks.EmrCreateCluster(this, 'SpotSpecification', {
 });
 ```
 
+You can use the prioritized allocation strategy to specify instance type priorities for On-Demand instances:
+
+```ts
+new tasks.EmrCreateCluster(this, 'PrioritizedAllocation', {
+  instances: {
+    instanceFleets: [{
+      instanceFleetType: tasks.EmrCreateCluster.InstanceRoleType.CORE,
+      instanceTypeConfigs: [{
+        instanceType: 'm5.large',
+        priority: 0, // Highest priority
+      }, {
+        instanceType: 'm5.xlarge',
+        priority: 1, // Lower priority
+      }],
+      launchSpecifications: {
+        onDemandSpecification: {
+          allocationStrategy: tasks.EmrCreateCluster.OnDemandAllocationStrategy.PRIORITIZED,
+        },
+      },
+      targetOnDemandCapacity: 2,
+    }],
+  },
+  name: 'PrioritizedCluster',
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+});
+```
+
 You can [customize EBS root device volume](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-custom-ami-root-volume-size.html).
 
 ```ts
@@ -1759,7 +1792,7 @@ Step Functions supports [AWS MediaConvert](https://docs.aws.amazon.com/step-func
 ### CreateJob
 
 The [CreateJob](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobspost) API creates a new transcoding job.
-For information about jobs and job settings, see the User Guide at http://docs.aws.amazon.com/mediaconvert/latest/ug/what-is.html
+For information about jobs and job settings, see the User Guide at https://docs.aws.amazon.com/mediaconvert/latest/ug/what-is.html
 
 You can call the `CreateJob` API from a `Task` state. Optionally you can specify the `integrationPattern`.
 
@@ -2014,7 +2047,7 @@ Step Functions supports [AWS Step Functions](https://docs.aws.amazon.com/step-fu
 
 You can manage [AWS Step Functions](https://docs.aws.amazon.com/step-functions/latest/dg/connect-stepfunctions.html) executions.
 
-AWS Step Functions supports it's own [`StartExecution`](https://docs.aws.amazon.com/step-functions/latest/apireference/API_StartExecution.html) API as a service integration.
+AWS Step Functions supports its own [`StartExecution`](https://docs.aws.amazon.com/step-functions/latest/apireference/API_StartExecution.html) API as a service integration.
 
 ```ts
 // Define a state machine with one Pass state

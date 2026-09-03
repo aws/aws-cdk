@@ -10,6 +10,9 @@ import type {
 } from './project';
 import * as ecr from '../../aws-ecr';
 import * as core from '../../core';
+import type { IBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
+import { lit } from '../../core/lib/private/literal-string';
 import { FactName } from '../../region-info';
 
 /**
@@ -109,21 +112,18 @@ export class LinuxGpuBuildImage implements IBindableBuildImage {
   public readonly imagePullPrincipalType?: ImagePullPrincipalType = ImagePullPrincipalType.SERVICE_ROLE;
   public readonly imageId: string;
 
-  private _imageAccount?: string;
+  private readonly _imageAccount: IBox<string | undefined> = Box.fromValue<string | undefined>(undefined);
 
   private constructor(private readonly repositoryName: string, tag: string, private readonly account: string | undefined) {
-    const imageAccount = account ?? core.Lazy.string({
-      produce: () => {
-        if (this._imageAccount === undefined) {
-          throw new core.UnscopedValidationError('Make sure this \'LinuxGpuBuildImage\' is used in a CodeBuild Project construct');
+    const imageAccount = account ?? core.Token.asString(
+      Box.combine({ acct: this._imageAccount }, ({ acct }) => {
+        if (acct === undefined) {
+          throw new core.UnscopedValidationError(lit`LinuxGpuBuildImageNotUsedInProject`, 'Make sure this \'LinuxGpuBuildImage\' is used in a CodeBuild Project construct');
         }
-        return this._imageAccount;
-      },
-    });
+        return acct;
+      }),
+    );
 
-    // The value of imageId below *should* have been `Lazy.stringValue(() => repository.repositoryUriForTag(this.tag))`,
-    // but we can't change that anymore because someone somewhere might at this point have written code
-    // to do `image.imageId.includes('pytorch')` and changing this to a full-on token would break them.
     this.imageId = `${imageAccount}.dkr.ecr.${core.Aws.REGION}.${core.Aws.URL_SUFFIX}/${repositoryName}:${tag}`;
   }
 
@@ -136,7 +136,7 @@ export class LinuxGpuBuildImage implements IBindableBuildImage {
 
     repository.grantPull(project);
 
-    this._imageAccount = account;
+    this._imageAccount.set(account);
 
     return {
     };

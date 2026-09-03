@@ -191,3 +191,48 @@ test('grantSubmitJob() grants the job role the correct actions', () => {
     PolicyName: 'MyUserDefaultPolicy7B897426',
   });
 });
+
+test.each([true, false])('EcsJobDefinition respects skipDeregisterOnUpdate property %s', (skipDeregisterOnUpdate) => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new EcsJobDefinition(stack, 'JobDefnWithSkipDeregister', {
+    skipDeregisterOnUpdate,
+    container: new EcsEc2ContainerDefinition(stack, 'EcsContainer', {
+      cpu: 256,
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memory: Size.mebibytes(2048),
+    }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+    ResourceRetentionPolicy: {
+      SkipDeregisterOnUpdate: skipDeregisterOnUpdate,
+    },
+  });
+});
+
+test.each([true, false])('EcsJobDefinition with Fargate container respects skipDeregisterOnUpdate %s', (skipDeregisterOnUpdate) => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new EcsJobDefinition(stack, 'FargateJobDefnWithSkip', {
+    skipDeregisterOnUpdate,
+    container: new EcsFargateContainerDefinition(stack, 'FargateContainer', {
+      cpu: 256,
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memory: Size.mebibytes(2048),
+    }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+    ResourceRetentionPolicy: {
+      SkipDeregisterOnUpdate: skipDeregisterOnUpdate,
+    },
+    PlatformCapabilities: [Compatibility.FARGATE],
+  });
+});

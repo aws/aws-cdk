@@ -1,4 +1,5 @@
 import { Token, UnscopedValidationError } from 'aws-cdk-lib';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Partition projection type.
@@ -142,22 +143,22 @@ export interface DatePartitionProjectionConfigurationProps {
   /**
    * Interval between partition values.
    *
-   * When the provided dates are at single-day or single-month precision,
-   * the interval is optional and defaults to 1 day or 1 month, respectively.
-   * Otherwise, interval is required.
+   * Required (together with `intervalUnit`) when `format` carries sub-day
+   * precision — i.e. a field finer than a day, such as hours or AM/PM. At day
+   * or coarser precision Athena defaults the step, so it is optional.
    *
-   * @default - 1 for single-day or single-month precision, otherwise required
+   * @default - Athena's default step for the format's precision; required when `format` is sub-day precision
    */
   readonly interval?: number;
 
   /**
    * Unit for the interval.
    *
-   * When the provided dates are at single-day or single-month precision,
-   * the intervalUnit is optional and defaults to 1 day or 1 month, respectively.
-   * Otherwise, the intervalUnit is required.
+   * Required (together with `interval`) when `format` carries sub-day
+   * precision — i.e. a field finer than a day, such as hours or AM/PM. At day
+   * or coarser precision Athena defaults the step, so it is optional.
    *
-   * @default - DAYS for single-day precision, MONTHS for single-month precision, otherwise required
+   * @default - Athena's default unit for the format's precision; required when `format` is sub-day precision
    */
   readonly intervalUnit?: DateIntervalUnit;
 }
@@ -224,6 +225,45 @@ interface PartitionProjectionConfigurationProps {
 }
 
 /**
+ * Whether a DATE projection `format` carries sub-day precision, in which case
+ * Athena requires both `interval` and `intervalUnit`.
+ *
+ * Athena only requires the two when the format contains a field finer than a
+ * day (hour/minute/second/fraction, or AM/PM). At day, month, or coarser
+ * precision it defaults the step and accepts the format without them — so, e.g.
+ * a plain `yyyy` needs no interval.
+ *
+ * @see https://docs.aws.amazon.com/athena/latest/ug/partition-projection-supported-types.html#partition-projection-date-type
+ */
+function dateFormatRequiresInterval(format: string): boolean {
+  // Collect the unquoted Java DateTimeFormatter pattern letters, honoring the
+  // same single-quote literal escaping as the format validation above.
+  const letters = new Set<string>();
+  let inQuote = false;
+  for (let i = 0; i < format.length; i++) {
+    const ch = format[i];
+    if (ch === "'") {
+      if (i + 1 < format.length && format[i + 1] === "'") {
+        i++;
+      } else {
+        inQuote = !inQuote;
+      }
+    } else if (!inQuote && /[a-zA-Z]/.test(ch)) {
+      letters.add(ch);
+    }
+  }
+
+  // Sub-day fields — anything finer than a day. `a` (AM/PM-of-day) splits the
+  // day in two, so it counts alongside hour/minute/second/fraction/nano:
+  //   a am/pm  h clock-hour(1-12)  K hour-of-am-pm(0-11)  k clock-hour(1-24)
+  //   H hour-of-day(0-23)  m minute  s second  S fraction  A milli-of-day
+  //   n nano-of-second  N nano-of-day
+  // Every coarser field (day, month, year, week, quarter, day-of-week) is
+  // accepted by Athena without an interval, so only the sub-day set requires it.
+  return [...'ahKkHmsSAnN'].some(c => letters.has(c));
+}
+
+/**
  * Factory class for creating partition projection configurations.
  */
 export class PartitionProjectionConfiguration {
@@ -235,6 +275,7 @@ export class PartitionProjectionConfiguration {
     if (!Token.isUnresolved(props.min) && !Token.isUnresolved(props.max)) {
       if (!Number.isInteger(props.min) || !Number.isInteger(props.max)) {
         throw new UnscopedValidationError(
+          lit`IntegerRangeNotIntegers`,
           `INTEGER partition projection range must contain integers, but got [${props.min}, ${props.max}]`,
         );
       }
@@ -242,6 +283,7 @@ export class PartitionProjectionConfiguration {
       // Validate min <= max
       if (props.min > props.max) {
         throw new UnscopedValidationError(
+          lit`IntegerRangeMinGreaterThanMax`,
           `INTEGER partition projection range must be [min, max] where min <= max, but got [${props.min}, ${props.max}]`,
         );
       }
@@ -254,6 +296,7 @@ export class PartitionProjectionConfiguration {
       (!Number.isInteger(props.interval) || props.interval <= 0)
     ) {
       throw new UnscopedValidationError(
+        lit`IntegerIntervalInvalid`,
         `INTEGER partition projection interval must be a positive integer, but got ${props.interval}`,
       );
     }
@@ -265,6 +308,7 @@ export class PartitionProjectionConfiguration {
       (!Number.isInteger(props.digits) || props.digits < 1)
     ) {
       throw new UnscopedValidationError(
+        lit`IntegerDigitsInvalid`,
         `INTEGER partition projection digits must be an integer >= 1, but got ${props.digits}`,
       );
     }
@@ -288,6 +332,7 @@ export class PartitionProjectionConfiguration {
       (props.min.trim() === '' || props.max.trim() === '')
     ) {
       throw new UnscopedValidationError(
+        lit`DateRangeEmpty`,
         'DATE partition projection range must not contain empty strings',
       );
     }
@@ -297,6 +342,7 @@ export class PartitionProjectionConfiguration {
       // Validate format is not empty
       if (props.format.trim() === '') {
         throw new UnscopedValidationError(
+          lit`DateFormatEmpty`,
           'DATE partition projection format must be a non-empty string',
         );
       }
@@ -325,6 +371,7 @@ export class PartitionProjectionConfiguration {
 
       if (inQuote) {
         throw new UnscopedValidationError(
+          lit`DateFormatUnclosedQuote`,
           `DATE partition projection format has an unclosed single quote: '${format}'`,
         );
       }
@@ -332,6 +379,7 @@ export class PartitionProjectionConfiguration {
       if (invalidChars.length > 0) {
         const unique = [...new Set(invalidChars)];
         throw new UnscopedValidationError(
+          lit`DateFormatInvalidCharacters`,
           `DATE partition projection format contains invalid pattern characters: ${unique.join(', ')}. Must use Java DateTimeFormatter valid pattern letters.`,
         );
       }
@@ -344,8 +392,21 @@ export class PartitionProjectionConfiguration {
       (!Number.isInteger(props.interval) || props.interval <= 0)
     ) {
       throw new UnscopedValidationError(
+        lit`DateIntervalInvalid`,
         `DATE partition projection interval must be a positive integer, but got ${props.interval}`,
       );
+    }
+
+    // For sub-day precision (a field finer than a day), Athena requires both
+    // `interval` and `intervalUnit`; at day or coarser precision it defaults
+    // them. Only enforce when the format is a resolved literal we can inspect.
+    if (!Token.isUnresolved(props.format) && dateFormatRequiresInterval(props.format)) {
+      if (props.interval === undefined || props.intervalUnit === undefined) {
+        throw new UnscopedValidationError(
+          lit`DateIntervalRequired`,
+          `DATE partition projection with format '${props.format}' has sub-day precision, so both 'interval' and 'intervalUnit' are required`,
+        );
+      }
     }
 
     return new PartitionProjectionConfiguration({
@@ -364,6 +425,7 @@ export class PartitionProjectionConfiguration {
     // Validate values is not empty
     if (props.values.length === 0) {
       throw new UnscopedValidationError(
+        lit`EnumValuesEmpty`,
         'ENUM partition projection values must be a non-empty array',
       );
     }
@@ -373,11 +435,13 @@ export class PartitionProjectionConfiguration {
       if (!Token.isUnresolved(value)) {
         if (value.trim() === '') {
           throw new UnscopedValidationError(
+            lit`EnumValueEmpty`,
             'ENUM partition projection values must not contain empty strings',
           );
         }
         if (value.includes(',')) {
           throw new UnscopedValidationError(
+            lit`EnumValueContainsComma`,
             `ENUM partition projection values must not contain commas because the values are serialized as a comma-separated list, got: '${value}'`,
           );
         }
@@ -505,6 +569,7 @@ export class PartitionProjectionConfiguration {
         // TypeScript exhaustiveness check
         const exhaustiveCheck: never = this.type;
         throw new UnscopedValidationError(
+          lit`UnknownProjectionType`,
           `Unknown partition projection type for "${columnName}": ${exhaustiveCheck}`,
         );
       }

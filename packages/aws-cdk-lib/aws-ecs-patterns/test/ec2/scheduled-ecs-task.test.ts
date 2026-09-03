@@ -7,10 +7,12 @@ import { AsgCapacityProvider } from '../../../aws-ecs';
 import * as events from '../../../aws-events';
 import * as cdk from '../../../core';
 import { ScheduledEc2Task } from '../../lib';
+import { acknowledgeTestValidationRules } from '../util';
 
 test('Can create a scheduled Ec2 Task - with only required props', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
@@ -75,6 +77,7 @@ test('Can create a scheduled Ec2 Task - with only required props', () => {
 test('Can create a scheduled Ec2 Task - with optional props', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
@@ -152,6 +155,7 @@ test('Can create a scheduled Ec2 Task - with optional props', () => {
 test('Scheduled ECS Task - with securityGroups defined', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
   const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
@@ -205,6 +209,7 @@ test('Scheduled ECS Task - with securityGroups defined', () => {
 test('Scheduled Ec2 Task - with MemoryReservation defined', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
   cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -252,6 +257,7 @@ test('Scheduled Ec2 Task - with MemoryReservation defined', () => {
 test('Scheduled Ec2 Task - with Command defined', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
   cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -305,6 +311,7 @@ test('Scheduled Ec2 Task - with Command defined', () => {
 test('throws if desiredTaskCount is 0', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
   cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -332,6 +339,7 @@ test('throws if desiredTaskCount is 0', () => {
 test('Scheduled Ec2 Task - exposes ECS Task', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
@@ -351,6 +359,7 @@ test('Scheduled Ec2 Task - exposes ECS Task', () => {
 test('Scheduled Ec2 Task shows warning when minute is not defined in cron', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
@@ -370,6 +379,7 @@ test('Scheduled Ec2 Task shows warning when minute is not defined in cron', () =
 test('Scheduled Ec2 Task shows no warning when minute is * in cron', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
@@ -389,6 +399,7 @@ test('Scheduled Ec2 Task shows no warning when minute is * in cron', () => {
 test('Scheduled Ec2 Task - with tag propagation', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
@@ -425,6 +436,7 @@ test('Scheduled Ec2 Task - with tag propagation', () => {
 test('Scheduled Ec2 Task - with list of tags', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
@@ -471,6 +483,7 @@ test('Scheduled Ec2 Task - with list of tags', () => {
 test('Can create a scheduled Ec2 Task - with customized container name', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 

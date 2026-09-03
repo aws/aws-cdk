@@ -7,6 +7,7 @@
 *.zip binary
 *.png binary
 *.jpg binary
+*.tar binary
 *.tgz binary
 *.tar.gz binary
 # Hide snapshots from GitHub UI, except for the actual templates

@@ -1,4 +1,5 @@
 import { UnscopedValidationError } from './errors';
+import { lit } from './private/literal-string';
 import { Token } from './token';
 
 /**
@@ -96,7 +97,7 @@ export class Size {
 
   private constructor(amount: number, unit: StorageUnit) {
     if (!Token.isUnresolved(amount) && amount < 0) {
-      throw new UnscopedValidationError(`Storage amounts cannot be negative. Received: ${amount}`);
+      throw new UnscopedValidationError(lit`StorageAmountsCannotNegative`, `Storage amounts cannot be negative. Received: ${amount}`);
     }
     this.amount = amount;
     this.unit = unit;
@@ -174,6 +175,44 @@ export class Size {
   public isUnresolved() {
     return Token.isUnresolved(this.amount);
   }
+
+  /**
+   * Convert this Size object to the most appropriate readable number.
+   */
+  public toHumanString() {
+    if (this.isUnresolved()) {
+      return `${Token.asString(this.amount)} ${this.unit.shortLabel}`;
+    }
+
+    const bytes = this.toBytes();
+
+    for (const unit of allStorageUnits()) {
+      if (bytes >= unit.inBytes) {
+        const am = convert(bytes, StorageUnit.Bytes, unit, { rounding: SizeRoundingBehavior.NONE });
+        return `${am.toFixed(2).replace(/\.?0+$/, '')} ${unit.shortLabel}`;
+      }
+    }
+
+    return `${bytes} bytes`;
+  }
+
+  /**
+   * Convert this Size object to its constructor form
+   */
+  public toString() {
+    return `Size.${this.unit.label}(${this.amount})`;
+  }
+}
+
+function allStorageUnits() {
+  return [
+    StorageUnit.Pebibytes,
+    StorageUnit.Tebibytes,
+    StorageUnit.Gibibytes,
+    StorageUnit.Mebibytes,
+    StorageUnit.Kibibytes,
+    StorageUnit.Bytes,
+  ];
 }
 
 /**
@@ -200,14 +239,14 @@ export interface SizeConversionOptions {
 }
 
 class StorageUnit {
-  public static readonly Bytes = new StorageUnit('bytes', 1);
-  public static readonly Kibibytes = new StorageUnit('kibibytes', 1024);
-  public static readonly Mebibytes = new StorageUnit('mebibytes', 1024 * 1024);
-  public static readonly Gibibytes = new StorageUnit('gibibytes', 1024 * 1024 * 1024);
-  public static readonly Tebibytes = new StorageUnit('tebibytes', 1024 * 1024 * 1024 * 1024);
-  public static readonly Pebibytes = new StorageUnit('pebibytes', 1024 * 1024 * 1024 * 1024 * 1024);
+  public static readonly Bytes = new StorageUnit('bytes', 'bytes', 1);
+  public static readonly Kibibytes = new StorageUnit('kibibytes', 'KiB', 1024);
+  public static readonly Mebibytes = new StorageUnit('mebibytes', 'MiB', 1024 * 1024);
+  public static readonly Gibibytes = new StorageUnit('gibibytes', 'GiB', 1024 * 1024 * 1024);
+  public static readonly Tebibytes = new StorageUnit('tebibytes', 'TiB', 1024 * 1024 * 1024 * 1024);
+  public static readonly Pebibytes = new StorageUnit('pebibytes', 'PiB', 1024 * 1024 * 1024 * 1024 * 1024);
 
-  private constructor(public readonly label: string, public readonly inBytes: number) {
+  private constructor(public readonly label: string, public readonly shortLabel: string, public readonly inBytes: number) {
     // MAX_SAFE_INTEGER is 2^53, so by representing storage in kibibytes,
     // the highest storage we can represent is 8 exbibytes.
   }
@@ -221,7 +260,7 @@ function convert(amount: number, fromUnit: StorageUnit, toUnit: StorageUnit, opt
   const rounding = options.rounding ?? SizeRoundingBehavior.FAIL;
   if (fromUnit.inBytes === toUnit.inBytes) { return amount; }
   if (Token.isUnresolved(amount)) {
-    throw new UnscopedValidationError(`Size must be specified as 'Size.${toUnit}()' here since its value comes from a token and cannot be converted (got Size.${fromUnit})`);
+    throw new UnscopedValidationError(lit`MustBeSizeSpecifiedSize`, `Size must be specified as 'Size.${toUnit}()' here since its value comes from a token and cannot be converted (got Size.${fromUnit})`);
   }
 
   const multiplier = fromUnit.inBytes / toUnit.inBytes;
@@ -234,7 +273,7 @@ function convert(amount: number, fromUnit: StorageUnit, toUnit: StorageUnit, opt
     default:
     case SizeRoundingBehavior.FAIL:
       if (!Number.isInteger(value)) {
-        throw new UnscopedValidationError(`'${amount} ${fromUnit}' cannot be converted into a whole number of ${toUnit}.`);
+        throw new UnscopedValidationError(lit`CannotConvertedIntoWhole`, `'${amount} ${fromUnit}' cannot be converted into a whole number of ${toUnit}.`);
       }
       return value;
   }
