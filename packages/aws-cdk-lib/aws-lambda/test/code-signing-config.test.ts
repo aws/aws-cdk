@@ -8,7 +8,12 @@ let stack: cdk.Stack;
 beforeEach( () => {
   app = new cdk.App( {} );
   stack = new cdk.Stack( app );
-} );
+
+  cdk.Validations.of(app).acknowledge({
+    id: 'CloudFormation-Validate::W3030',
+    reason: 'FreeRTOS does not work anymore, but the tests still use it.',
+  });
+});
 
 describe('code signing config', () => {
   test('default', () => {

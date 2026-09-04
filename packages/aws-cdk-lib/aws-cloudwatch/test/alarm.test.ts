@@ -91,6 +91,25 @@ describe('Alarm', () => {
     });
   });
 
+  test('alarm without actions omits action properties', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Alarm(stack, 'Alarm', {
+      metric: testMetric,
+      threshold: 1000,
+      evaluationPeriods: 3,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      AlarmActions: Match.absent(),
+      InsufficientDataActions: Match.absent(),
+      OKActions: Match.absent(),
+    });
+  });
+
   test('override metric period in Alarm', () => {
     // GIVEN
     const stack = new Stack();

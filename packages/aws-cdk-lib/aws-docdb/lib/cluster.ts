@@ -21,6 +21,15 @@ const MIN_ENGINE_VERSION_FOR_IO_OPTIMIZED_STORAGE = 5;
 const MIN_ENGINE_VERSION_FOR_SERVERLESS = 5;
 
 /**
+ * Matches the DocumentDB maintenance window format `ddd:hh24:mi-ddd:hh24:mi`
+ * Days: mon | tue | wed | thu | fri | sat | sun (case-insensitive).
+ * Time: 00-23 hour, 00-59 minute.
+ *
+ * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/db-instance-maintain.html#maintenance-window
+ */
+const MAINTENANCE_WINDOW_REGEX = /^(mon|tue|wed|thu|fri|sat|sun):(2[0-3]|[01]\d):[0-5]\d-(mon|tue|wed|thu|fri|sat|sun):(2[0-3]|[01]\d):[0-5]\d$/i;
+
+/**
  * ServerlessV2 scaling configuration for DocumentDB clusters
  */
 export interface ServerlessV2ScalingConfiguration {
@@ -190,6 +199,25 @@ export interface DatabaseClusterProps {
   readonly preferredMaintenanceWindow?: string;
 
   /**
+   * The weekly time range during which system maintenance can occur on the cluster's instances.
+   *
+   * The cluster-level `preferredMaintenanceWindow` applies to cluster-wide maintenance events; this prop
+   * applies to each auto-created instance independently. To use the same window for both, set this prop
+   * to the same value as `preferredMaintenanceWindow`.
+   *
+   * Format: `ddd:hh24:mi-ddd:hh24:mi`. Must be at least 30 minutes long.
+   * Example: 'sat:09:00-sat:09:30'
+   *
+   * Only applicable to provisioned clusters; has no effect on serverless clusters because they do not
+   * create instances.
+   *
+   * @default - a 30-minute window selected at random from an 8-hour block of time for each AWS Region,
+   * occurring on a random day of the week.
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/db-instance-maintain.html#maintenance-window
+   */
+  readonly instanceMaintenanceWindow?: string;
+
+  /**
    * The removal policy to apply when the cluster and its instances are removed
    * or replaced during a stack update, or when the stack is deleted. This
    * removal policy also applies to the implicit security group created for the
@@ -295,6 +323,34 @@ export interface DatabaseClusterProps {
    * @default StorageType.STANDARD
    */
   readonly storageType?: StorageType;
+
+  /**
+   * Specifies whether to manage the master user password with AWS Secrets Manager.
+   *
+   * When set to true, Amazon DocumentDB will automatically generate and manage the master user password in AWS Secrets Manager.
+   * This provides enhanced security and automatic password rotation capabilities.
+   *
+   * Constraint: You can't manage the master user password with AWS Secrets Manager if `masterUser.password` is specified.
+   *
+   * The `secret` property of the cluster is not set when using this option. See the
+   * module README for how to access the managed secret.
+   *
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/docdb-secrets-manager.html
+   * @default false
+   */
+  readonly manageMasterUserPassword?: boolean;
+
+  /**
+   * The AWS KMS key to encrypt a secret that is automatically generated and managed in AWS Secrets Manager.
+   *
+   * This setting is valid only if the master user password is managed by Amazon DocumentDB in AWS Secrets Manager
+   * for the DB cluster (i.e. when `manageMasterUserPassword` is true).
+   * If you don't specify this property, then the `aws/secretsmanager` KMS key is used to encrypt the secret.
+   *
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/docdb-secrets-manager.html
+   * @default - default AWS managed key `aws/secretsmanager`
+   */
+  readonly masterUserSecretKmsKey?: kms.IKey;
 }
 
 /**
@@ -500,6 +556,11 @@ export class DatabaseCluster extends DatabaseClusterBase {
   private readonly cluster: CfnDBCluster;
 
   /**
+   * Whether the master user password is managed by Amazon DocumentDB in AWS Secrets Manager.
+   */
+  private readonly manageMasterUserPassword?: boolean;
+
+  /**
    * The VPC where the DB subnet group is created.
    */
   private readonly vpc: ec2.IVpc;
@@ -518,6 +579,17 @@ export class DatabaseCluster extends DatabaseClusterBase {
     if (!props.instanceType && !props.serverlessV2ScalingConfiguration) {
       throw new ValidationError(lit`InstanceTypeOrServerlessConfigurationRequired`, 'Either instanceType (for provisioned clusters) or serverlessV2ScalingConfiguration (for serverless clusters) must be specified', this);
     }
+
+    if (props.preferredMaintenanceWindow !== undefined && !Token.isUnresolved(props.preferredMaintenanceWindow)
+          && !MAINTENANCE_WINDOW_REGEX.test(props.preferredMaintenanceWindow)) {
+      throw new ValidationError(lit`InvalidClusterMaintenanceWindowFormat`, 'preferredMaintenanceWindow must be in the format ddd:hh24:mi-ddd:hh24:mi, e.g. sat:09:00-sat:09:30', this);
+    }
+
+    if (props.instanceMaintenanceWindow !== undefined && !Token.isUnresolved(props.instanceMaintenanceWindow)
+          && !MAINTENANCE_WINDOW_REGEX.test(props.instanceMaintenanceWindow)) {
+      throw new ValidationError(lit`InvalidInstanceMaintenanceWindowFormat`, 'instanceMaintenanceWindow must be in the format ddd:hh24:mi-ddd:hh24:mi, e.g. sat:09:00-sat:09:30', this);
+    }
+
     const isServerless = !!props.serverlessV2ScalingConfiguration;
     if (isServerless && props.instanceType) {
       throw new ValidationError(lit`CannotSpecifyBothInstanceTypeAndServerlessConfiguration`, 'Cannot specify both instanceType and serverlessV2ScalingConfiguration', this);
@@ -568,9 +640,20 @@ export class DatabaseCluster extends DatabaseClusterBase {
       enableCloudwatchLogsExports.push('profiler');
     }
 
-    // Create the secret manager secret if no password is specified
+    // Validate manageMasterUserPassword constraints
+    if (props.manageMasterUserPassword && props.masterUser.password) {
+      throw new ValidationError(lit`ManageMasterUserPasswordConflictsWithPassword`, 'You can\'t manage the master user password with AWS Secrets Manager if masterUser.password is specified', this);
+    }
+
+    if (props.masterUserSecretKmsKey && !props.manageMasterUserPassword) {
+      throw new ValidationError(lit`MasterUserSecretKmsKeyRequiresManagedPassword`, 'masterUserSecretKmsKey is valid only if manageMasterUserPassword is true', this);
+    }
+
+    this.manageMasterUserPassword = props.manageMasterUserPassword;
+
+    // Create the secret manager secret if no password is specified and manageMasterUserPassword is false
     let secret: DatabaseSecret | undefined;
-    if (!props.masterUser.password) {
+    if (!props.manageMasterUserPassword && !props.masterUser.password) {
       secret = new DatabaseSecret(this, 'Secret', {
         username: props.masterUser.username,
         encryptionKey: props.masterUser.kmsKey,
@@ -612,13 +695,16 @@ export class DatabaseCluster extends DatabaseClusterBase {
       dbSubnetGroupName: subnetGroup.ref,
       port: props.port,
       vpcSecurityGroupIds: [this.securityGroupId],
-      dbClusterParameterGroupName: props.parameterGroup?.dbClusterParameterGroupRef.dbClusterParameterGroupId,
+      dbClusterParameterGroupName: props.parameterGroup?.dbClusterParameterGroupRef.dbClusterParameterGroupName,
       deletionProtection: props.deletionProtection,
       // Admin
-      masterUsername: secret ? secret.secretValueFromJson('username').unsafeUnwrap() : props.masterUser.username,
-      masterUserPassword: secret
-        ? secret.secretValueFromJson('password').unsafeUnwrap()
-        : props.masterUser.password!.unsafeUnwrap(), // Safe usage
+      masterUsername: props.manageMasterUserPassword ? props.masterUser.username :
+        (secret ? secret.secretValueFromJson('username').unsafeUnwrap() : props.masterUser.username),
+      masterUserPassword: props.manageMasterUserPassword ? undefined :
+        (secret ? secret.secretValueFromJson('password').unsafeUnwrap() : props.masterUser.password!.unsafeUnwrap()),
+      // ManageMasterUserPassword
+      manageMasterUserPassword: props.manageMasterUserPassword,
+      masterUserSecretKmsKeyId: props.masterUserSecretKmsKey?.keyArn,
       // Backup
       backupRetentionPeriod: props.backup?.retention?.toDays(),
       preferredBackupWindow: props.backup?.preferredWindow,
@@ -676,6 +762,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
           dbInstanceClass: databaseInstanceType(props.instanceType!),
           enablePerformanceInsights: props.enablePerformanceInsights,
           caCertificateIdentifier: caCertificateIdentifier,
+          preferredMaintenanceWindow: props.instanceMaintenanceWindow,
         });
 
         instance.applyRemovalPolicy(instanceRemovalPolicy, {
@@ -738,6 +825,9 @@ export class DatabaseCluster extends DatabaseClusterBase {
    */
   @MethodMetadata()
   public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
+    if (this.manageMasterUserPassword) {
+      throw new ValidationError(lit`CannotAddRotationWithManageMasterUserPassword`, 'Cannot add rotation when `manageMasterUserPassword` is enabled. Amazon DocumentDB automatically rotates the master password when it manages the secret.', this);
+    }
     if (!this.secret) {
       throw new ValidationError(lit`CannotAddSingleUserRotationWithoutSecret`, 'Cannot add single user rotation for a cluster without secret.', this);
     }
@@ -764,6 +854,9 @@ export class DatabaseCluster extends DatabaseClusterBase {
    */
   @MethodMetadata()
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
+    if (this.manageMasterUserPassword) {
+      throw new ValidationError(lit`CannotAddRotationWithManageMasterUserPassword`, 'Cannot add rotation when `manageMasterUserPassword` is enabled. Amazon DocumentDB automatically rotates the master password when it manages the secret.', this);
+    }
     if (!this.secret) {
       throw new ValidationError(lit`CannotAddMultiUserRotationWithoutSecret`, 'Cannot add multi user rotation for a cluster without secret.', this);
     }

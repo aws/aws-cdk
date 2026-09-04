@@ -5,12 +5,12 @@ import { UnscopedValidationError, ValidationError } from '../errors';
 import { Names } from '../names';
 import type { IResolvable, IResolveContext } from '../resolvable';
 import type { IResource } from '../resource';
-import { Stack } from '../stack';
 import { Token } from '../token';
+import { stackOf } from './core-construct-finders';
 import { lit } from './literal-string';
 
 export function generatePhysicalName(resource: IResource): string {
-  const stack = Stack.of(resource);
+  const stack = stackOf(resource);
   const stackPart = new PrefixNamePart(stack.stackName, 25);
   const idPart = new SuffixNamePart(Names.nodeUniqueId(resource.node), 24);
 
@@ -83,7 +83,7 @@ const GENERATE_IF_NEEDED_SYMBOL = Symbol.for('@aws-cdk/core.<private>.GenerateIf
  * This token throws an Error when it is resolved, as a way to prevent inadvertent mis-uses of it.
  */
 export class GeneratedWhenNeededMarker implements IResolvable {
-  public readonly creationStack: string[] = [];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
 
   constructor() {
     Object.defineProperty(this, GENERATE_IF_NEEDED_SYMBOL, { value: true });

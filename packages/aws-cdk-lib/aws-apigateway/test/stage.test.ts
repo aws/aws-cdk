@@ -90,7 +90,11 @@ describe('stage', () => {
   test('SpecRestApi - stage depends on the CloudWatch role when it exists', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const api = new apigateway.SpecRestApi(stack, 'test-api', { apiDefinition: apigateway.ApiDefinition.fromInline( { foo: 'bar' }) });
+    cdk.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::W3660',
+      reason: 'We mix resources and Flutter definitions on purpose',
+    });
+    const api = new apigateway.SpecRestApi(stack, 'test-api', { deploy: false, apiDefinition: apigateway.ApiDefinition.fromInline( { foo: 'bar' }) });
     const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
     api.root.addMethod('GET');
 
@@ -617,12 +621,9 @@ describe('stage', () => {
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false });
     api.root.addMethod('GET');
-    const stage = new apigateway.Stage(stack, 'Stage', {
-      deployment: api.latestDeployment!,
-    });
 
     // WHEN
-    stage.addApiKey('MyKey');
+    api.deploymentStage.addApiKey('MyKey');
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::ApiKey', {
@@ -632,7 +633,7 @@ describe('stage', () => {
             Ref: 'testapiD6451F70',
           },
           StageName: {
-            Ref: 'Stage0E8C2AF5',
+            Ref: 'testapiDeploymentStageprod5C9E92A4',
           },
         },
       ],

@@ -524,7 +524,7 @@ test('if a role is shared between projects in a VPC, the VPC Policy is only atta
 test('can use an imported Role for a Project within a VPC', () => {
   const stack = new cdk.Stack();
 
-  const importedRole = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::1234567890:role/service-role/codebuild-bruiser-service-role');
+  const importedRole = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/service-role/codebuild-bruiser-service-role');
   const vpc = new ec2.Vpc(stack, 'Vpc');
 
   new codebuild.Project(stack, 'Project', {
@@ -544,7 +544,7 @@ test('can use an imported Role with mutable = false for a Project within a VPC',
   const stack = new cdk.Stack();
 
   const importedRole = iam.Role.fromRoleArn(stack, 'Role',
-    'arn:aws:iam::1234567890:role/service-role/codebuild-bruiser-service-role', {
+    'arn:aws:iam::123456789012:role/service-role/codebuild-bruiser-service-role', {
       mutable: false,
     });
   const vpc = new ec2.Vpc(stack, 'Vpc');
@@ -861,6 +861,95 @@ describe('Environment', () => {
         S3Logs: {
           Location: 'mybucketname/my-logs',
           Status: 'ENABLED',
+        },
+      }),
+    });
+  });
+
+  test('logs config - s3 with encrypted true sets EncryptionDisabled to false', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'LogBucket', 'mybucketname');
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        path: 'path',
+      }),
+      logging: {
+        s3: {
+          bucket,
+          encrypted: true,
+        },
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      LogsConfig: Match.objectLike({
+        S3Logs: {
+          Status: 'ENABLED',
+          EncryptionDisabled: false,
+        },
+      }),
+    });
+  });
+
+  test('logs config - s3 with encrypted false sets EncryptionDisabled to true', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'LogBucket', 'mybucketname');
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        path: 'path',
+      }),
+      logging: {
+        s3: {
+          bucket,
+          encrypted: false,
+        },
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      LogsConfig: Match.objectLike({
+        S3Logs: {
+          Status: 'ENABLED',
+          EncryptionDisabled: true,
+        },
+      }),
+    });
+  });
+
+  test('logs config - s3 with encrypted unset does not set EncryptionDisabled', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'LogBucket', 'mybucketname');
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        path: 'path',
+      }),
+      logging: {
+        s3: {
+          bucket,
+        },
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      LogsConfig: Match.objectLike({
+        S3Logs: {
+          Status: 'ENABLED',
+          EncryptionDisabled: Match.absent(),
         },
       }),
     });

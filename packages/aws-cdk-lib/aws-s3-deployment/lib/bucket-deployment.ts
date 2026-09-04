@@ -1,8 +1,7 @@
-
 import * as fs from 'fs';
 import { kebab as toKebabCase } from 'case';
 import { Construct } from 'constructs';
-import type { ISource, SourceConfig, MarkersConfig } from './source';
+import type { ISource, SourceConfig } from './source';
 import { Source } from './source';
 import type * as cloudfront from '../../aws-cloudfront';
 import type * as ec2 from '../../aws-ec2';
@@ -13,9 +12,13 @@ import type * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import type { IArrayBox, IBox, IReadableBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { BucketDeploymentSingletonFunction } from '../../custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated';
+import {
+  BucketDeploymentSingletonFunction,
+} from '../../custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
 
 // tag key has a limit of 128 characters
@@ -156,7 +159,7 @@ export interface BucketDeploymentProps {
    * If you are deploying large files, you will need to increase this number
    * accordingly.
    *
-   * @default 128
+   * @default 1024
    */
   readonly memoryLimit?: number;
 
@@ -321,9 +324,9 @@ export class BucketDeployment extends Construct {
 
   private readonly cr: cdk.CustomResource;
   private _deployedBucket?: s3.IBucket;
-  private requestDestinationArn: boolean = false;
+  private requestDestinationArn: IBox<boolean> = Box.fromValue(false);
   private readonly destinationBucket: s3.IBucket;
-  private readonly sources: SourceConfig[];
+  private readonly sources: IArrayBox<SourceConfig>;
 
   /**
    * Execution role of the Lambda function behind the custom CloudFormation resource of type `Custom::CDKBucketDeployment`.
@@ -382,6 +385,13 @@ export class BucketDeployment extends Construct {
     const mountPath = `/mnt${accessPointPath}`;
     const handler = new BucketDeploymentSingletonFunction(this, 'CustomResourceHandler', {
       uuid: this.renderSingletonUuid(props.memoryLimit, props.ephemeralStorageSize, props.vpc, props.securityGroups),
+      // The deployment handler is CDK-managed internal code, not user code, so the architecture is
+      // fixed rather than configurable. Both the handler and the bundled AWS CLI v1 layer are
+      // architecture-independent Python: the layer's only native extension is PyYAML's optional C
+      // accelerator, which is built for a different Python ABI than this runtime and is therefore
+      // never loaded (PyYAML falls back to its pure-Python implementation). So we always run the
+      // handler on ARM_64 (Graviton), which costs less per millisecond of execution.
+      architecture: lambda.Architecture.ARM_64,
       layers: [new AwsCliLayer(this, 'AwsCliLayer')],
       environment: {
         ...props.useEfs ? { MOUNT_PATH: mountPath } : undefined,
@@ -392,7 +402,7 @@ export class BucketDeployment extends Construct {
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
       role: props.role,
-      memorySize: props.memoryLimit,
+      memorySize: props.memoryLimit ?? 1024,
       ephemeralStorageSize: props.ephemeralStorageSize,
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,
@@ -411,7 +421,10 @@ export class BucketDeployment extends Construct {
     if (!handlerRole) { throw new ValidationError(lit`Lambda`, 'lambda.SingletonFunction should have created a Role', this); }
     this.handlerRole = handlerRole;
 
-    this.sources = props.sources.map((source: ISource) => source.bind(this, { handlerRole: this.handlerRole }));
+    this.sources = Box.fromArray(
+      props.sources.map((source: ISource) => source.bind(this, { handlerRole: this.handlerRole })),
+      { omitEmpty: false },
+    );
 
     this.destinationBucket.grantReadWrite(handler);
     if (props.accessControl) {
@@ -442,34 +455,26 @@ export class BucketDeployment extends Construct {
       serviceToken: handler.functionArn,
       resourceType: 'Custom::CDKBucketDeployment',
       properties: {
-        SourceBucketNames: cdk.Lazy.uncachedList({ produce: () => this.sources.map(source => source.bucket.bucketName) }),
-        SourceObjectKeys: cdk.Lazy.uncachedList({ produce: () => this.sources.map(source => source.zipObjectKey) }),
-        SourceMarkers: cdk.Lazy.uncachedAny({
-          produce: () => {
-            return this.sources.reduce((acc, source) => {
-              if (source.markers) {
-                acc.push(source.markers);
-                // if there are more than 1 source, then all sources
-                // require markers (custom resource will throw an error otherwise)
-              } else if (this.sources.length > 1) {
-                acc.push({});
-              }
-              return acc;
-            }, [] as Array<Record<string, any>>);
-          },
-        }, { omitEmptyArray: true }),
-        SourceMarkersConfig: cdk.Lazy.uncachedAny({
-          produce: () => {
-            return this.sources.reduce((acc, source) => {
-              if (source.markersConfig) {
-                acc.push(source.markersConfig);
-              } else if (this.sources.length > 1) {
-                acc.push({});
-              }
-              return acc;
-            }, [] as Array<MarkersConfig>);
-          },
-        }, { omitEmptyArray: true }),
+        SourceBucketNames: this.sources.map(source => source.bucket.bucketName),
+        SourceObjectKeys: this.sources.map(source => source.zipObjectKey),
+        SourceMarkers: sanitize(this.sources.map((source) => {
+          if (source.markers) {
+            return source.markers;
+            // if there are more than 1 source, then all sources
+            // require markers (custom resource will throw an error otherwise)
+          } else if (this.sources.length > 1) {
+            return {};
+          }
+          return undefined;
+        })),
+        SourceMarkersConfig: sanitize(this.sources.map((source) => {
+          if (source.markersConfig) {
+            return source.markersConfig;
+          } else if (this.sources.length > 1) {
+            return {};
+          }
+          return undefined;
+        })),
         DestinationBucketName: this.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         WaitForDistributionInvalidation: props.waitForDistributionInvalidation ?? true,
@@ -485,7 +490,7 @@ export class BucketDeployment extends Construct {
         SignContent: props.signContent,
         OutputObjectKeys: props.outputObjectKeys ?? true,
         // Passing through the ARN sequences dependency on the deployment
-        DestinationBucketArn: cdk.Lazy.string({ produce: () => this.requestDestinationArn ? this.destinationBucket.bucketArn : undefined }),
+        DestinationBucketArn: this.requestDestinationArn.derive(v => v ? this.destinationBucket.bucketArn : undefined),
       },
     });
 
@@ -557,7 +562,7 @@ export class BucketDeployment extends Construct {
    * on the bucket deployment instead: `otherResource.node.addDependency(deployment)`
    */
   public get deployedBucket(): s3.IBucket {
-    this.requestDestinationArn = true;
+    this.requestDestinationArn.set(true);
     this._deployedBucket = this._deployedBucket ?? s3.Bucket.fromBucketAttributes(this, 'DestinationBucket', {
       bucketArn: cdk.Token.asString(this.cr.getAtt('DestinationBucketArn')),
       region: this.destinationBucket.env.region,
@@ -986,4 +991,9 @@ function sourceConfigEqual(stack: cdk.Stack, a: SourceConfig, b: SourceConfig) {
     resolveName(a) === resolveName(b)
     && a.zipObjectKey === b.zipObjectKey
     && a.markers === undefined && b.markers === undefined);
+}
+
+function sanitize<A>(box: IReadableBox<Array<A>>) {
+  return box.derive(arr => arr.filter(Boolean))
+    .derive(arr => arr.length === 0 ? undefined : arr);
 }

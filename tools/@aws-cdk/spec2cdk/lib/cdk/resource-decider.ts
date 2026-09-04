@@ -2,6 +2,7 @@ import type { Property, Resource, TagVariant } from '@aws-cdk/service-spec-types
 import { Deprecation, RichProperty } from '@aws-cdk/service-spec-types';
 import type { Expression, PropertySpec } from '@cdklabs/typewriter';
 import { $E, $T, $this, Type, expr } from '@cdklabs/typewriter';
+import { attributePropertyNames } from './attribute-name-conflict-resolutions';
 import { CDK_CORE } from './cdk';
 import type { PropertyMapping } from './cloudformation-mapping';
 import type { RelationshipDecider } from './relationship-decider';
@@ -9,7 +10,7 @@ import { ResolverBuilder } from './resolver-builder';
 import type { TaggabilityStyle } from './tagging';
 import { NON_RESOLVABLE_PROPERTY_NAMES, resourceTaggabilityStyle } from './tagging';
 import type { TypeConverter } from './type-converter';
-import { attributePropertyName, camelcasedResourceName, cloudFormationDocLink, propertyNameFromCloudFormation } from '../naming';
+import { camelcasedResourceName, cloudFormationDocLink, propertyNameFromCloudFormation } from '../naming';
 import { splitDocumentation } from '../util';
 import { ResourceReference } from './reference-props';
 
@@ -29,6 +30,8 @@ export class ResourceDecider {
   private readonly taggability?: TaggabilityStyle;
   private readonly resolverBuilder: ResolverBuilder;
 
+  private readonly attributePropertyNames: Map<string, string>;
+
   public readonly resourceReference: ResourceReference;
   public readonly propsProperties = new Array<PropsProperty>();
   public readonly classProperties = new Array<ClassProperty>();
@@ -43,6 +46,7 @@ export class ResourceDecider {
     this.camelResourceName = camelcasedResourceName(resource);
     this.taggability = resourceTaggabilityStyle(this.resource);
     this.resolverBuilder = new ResolverBuilder(this.converter, this.relationshipDecider, this.converter.module);
+    this.attributePropertyNames = attributePropertyNames(resource.cloudFormationType, Object.keys(resource.attributes));
 
     this.convertProperties();
     this.convertAttributes();
@@ -104,8 +108,9 @@ export class ResourceDecider {
         immutable: false,
         docs: this.defaultClassPropDocs(cfnName, prop),
       },
+      cfnName,
       initializer: resolverResult.resolver,
-      cfnValueToRender: { [resolverResult.name]: $this[resolverResult.name] },
+      cfnValueToRender: { [resolverResult.name]: $this[`_${resolverResult.name}`] },
     });
   }
 
@@ -166,6 +171,7 @@ export class ResourceDecider {
             summary: 'Tag Manager which manages the tags for this resource',
           },
         },
+        cfnName,
         initializer: (props: Expression) =>
           new CDK_CORE.TagManager(
             this.tagManagerVariant(variant),
@@ -184,6 +190,7 @@ export class ResourceDecider {
           optional: true, // Tags are never required
           docs: this.defaultClassPropDocs(cfnName, prop),
         },
+        cfnName,
         initializer: (props: Expression) => $E(props)[originalName],
         cfnValueToRender: {}, // Gets rendered as part of the TagManager above
       },
@@ -221,6 +228,7 @@ export class ResourceDecider {
             summary: 'Tag Manager which manages the tags for this resource',
           },
         },
+        cfnName,
         initializer: (_: Expression) =>
           new CDK_CORE.TagManager(
             this.tagManagerVariant(variant),
@@ -229,7 +237,7 @@ export class ResourceDecider {
             expr.object({ tagPropertyName: expr.lit(originalName) }),
           ),
         cfnValueToRender: {
-          [originalName]: $this.cdkTagManager.renderTags($this[originalName]),
+          [originalName]: $this.cdkTagManager.renderTags($this[`_${originalName}`]),
         },
       },
       {
@@ -239,6 +247,7 @@ export class ResourceDecider {
           optional: true, // Tags are never required
           docs: this.defaultClassPropDocs(cfnName, prop),
         },
+        cfnName,
         initializer: (props: Expression) => $E(props)[originalName],
         cfnValueToRender: {}, // Gets rendered as part of the TagManager above
       },
@@ -298,7 +307,7 @@ export class ResourceDecider {
 
       this.classAttributeProperties.push({
         propertySpec: {
-          name: attributePropertyName(attrName),
+          name: this.attributePropertyNames.get(attrName)!,
           type,
           immutable: true,
           docs: {
@@ -363,6 +372,9 @@ export interface PropsProperty {
 
 export interface ClassProperty {
   readonly propertySpec: PropertySpec;
+
+  /** The original CloudFormation property name */
+  readonly cfnName: string;
 
   /** Given the name of the props value, produce the member value */
   readonly initializer: (props: Expression) => Expression;

@@ -1,7 +1,6 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import type * as iam from 'aws-cdk-lib/aws-iam';
-import { ValidationError } from 'aws-cdk-lib/core';
-import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -11,6 +10,10 @@ import { JobType, GlueVersion, WorkerType, Runtime } from '../constants';
 
 /**
  * Properties for creating a Ray Glue job
+ *
+ * @deprecated AWS Glue for Ray is closed to new customers as of April 30, 2026.
+ * Migrate to Amazon EKS with KubeRay Operator. See
+ * https://docs.aws.amazon.com/glue/latest/dg/awsglue-ray-jobs-availability-change.html
  */
 export interface RayJobProps extends JobProps {
   /**
@@ -19,6 +22,15 @@ export interface RayJobProps extends JobProps {
    * @default - Runtime version will default to Ray2.4
    */
   readonly runtime?: Runtime;
+
+  /**
+   * The number of workers allocated when a job runs.
+   *
+   * Ray jobs only support the Z.2X worker type, so the worker type is not configurable.
+   *
+   * @default 3
+   */
+  readonly numberOfWorkers?: number;
 
   /**
    * Specifies whether job run queuing is enabled for the job runs for this job.
@@ -58,6 +70,10 @@ export interface RayJobProps extends JobProps {
  * These are not overrideable since these are the only configuration that
  * Glue Ray jobs currently support. The runtime defaults to Ray2.4 and min
  * workers defaults to 3.
+ *
+ * @deprecated AWS Glue for Ray is closed to new customers as of April 30, 2026.
+ * Migrate to Amazon EKS with KubeRay Operator. See
+ * https://docs.aws.amazon.com/glue/latest/dg/awsglue-ray-jobs-availability-change.html
  */
 @propertyInjectable
 export class RayJob extends Job {
@@ -96,10 +112,6 @@ export class RayJob extends Job {
       ...observabilityMetricsArgs,
     };
 
-    if (props.workerType && props.workerType !== WorkerType.Z_2X) {
-      throw new ValidationError(lit`RayJobsOnlySupportZ2XWorkerType`, 'Ray jobs only support Z.2X worker type', this);
-    }
-
     this.resource = new CfnJob(this, 'Resource', {
       name: props.jobName,
       description: props.description,
@@ -110,8 +122,8 @@ export class RayJob extends Job {
         runtime: props.runtime ? props.runtime : Runtime.RAY_TWO_FOUR,
       },
       glueVersion: GlueVersion.V4_0,
-      workerType: props.workerType ? props.workerType : WorkerType.Z_2X,
-      numberOfWorkers: props.numberOfWorkers ? props.numberOfWorkers: 3,
+      workerType: WorkerType.Z_2X,
+      numberOfWorkers: props.numberOfWorkers ? props.numberOfWorkers : 3,
       maxRetries: props.jobRunQueuingEnabled ? 0 : props.maxRetries,
       jobRunQueuingEnabled: props.jobRunQueuingEnabled ? props.jobRunQueuingEnabled : false,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,

@@ -51,6 +51,8 @@ jest.mock('../../custom-resources', () => {
   };
 });
 
+const tableStreamArn = 'arn:aws:dynamodb:us-east-1:111111111111:table/TableName/stream/StreamLabel';
+
 /* eslint-disable @stylistic/quote-props */
 
 // CDK parameters
@@ -119,6 +121,15 @@ describe('default properties', () => {
     });
 
     Template.fromStack(stack).hasResource('AWS::DynamoDB::Table', { DeletionPolicy: CfnDeletionPolicy.RETAIN });
+  });
+
+  test('table without indexes omits GSI and LSI properties', () => {
+    new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+      GlobalSecondaryIndexes: Match.absent(),
+      LocalSecondaryIndexes: Match.absent(),
+    });
   });
 
   test('removalPolicy is DESTROY', () => {
@@ -2837,7 +2848,7 @@ describe('import', () => {
   test('static fromTableArn(arn) allows importing an external/existing table from arn', () => {
     const stack = new Stack();
 
-    const tableArn = 'arn:aws:dynamodb:us-east-1:11111111:table/MyTable';
+    const tableArn = 'arn:aws:dynamodb:us-east-1:111111111111:table/MyTable';
     const table = Table.fromTableArn(stack, 'ImportedTable', tableArn);
 
     const role = new iam.Role(stack, 'NewRole', {
@@ -2987,7 +2998,6 @@ describe('import', () => {
       const stack = new Stack();
 
       const tableName = 'MyTable';
-      const tableStreamArn = 'arn:foo:bar:baz:TrustMeThisIsATableStream';
       const table = Table.fromTableAttributes(stack, 'ImportedTable', { tableName, tableStreamArn });
 
       const role = new iam.Role(stack, 'NewRole', {
@@ -3015,7 +3025,6 @@ describe('import', () => {
       const stack = new Stack();
 
       const tableName = 'MyTable';
-      const tableStreamArn = 'arn:foo:bar:baz:TrustMeThisIsATableStream';
       const table = Table.fromTableAttributes(stack, 'ImportedTable', { tableName, tableStreamArn });
 
       const role = new iam.Role(stack, 'NewRole', {
@@ -3048,7 +3057,6 @@ describe('import', () => {
       const stack = new Stack();
 
       const tableName = 'MyTable';
-      const tableStreamArn = 'arn:foo:bar:baz:TrustMeThisIsATableStream';
       const encryptionKey = new kms.Key(stack, 'Key', {
         enableKeyRotation: true,
       });
@@ -3089,7 +3097,7 @@ describe('import', () => {
                 'dynamodb:GetShardIterator',
               ],
               'Effect': 'Allow',
-              'Resource': 'arn:foo:bar:baz:TrustMeThisIsATableStream',
+              'Resource': tableStreamArn,
             },
           ],
           Version: '2012-10-17',
@@ -5384,6 +5392,7 @@ test('grant read permission to CfnTable with encryption adds KMS permissions', (
       sseType: 'KMS',
       kmsMasterKeyId: encryptionKey.keyArn,
     },
+    billingMode: 'PAY_PER_REQUEST',
   });
   const user = new iam.User(stack, 'User');
 
@@ -5411,6 +5420,7 @@ test('grant write permission to CfnTable with encryption adds KMS permissions', 
       sseType: 'KMS',
       kmsMasterKeyId: encryptionKey.keyArn,
     },
+    billingMode: 'PAY_PER_REQUEST',
   });
   const user = new iam.User(stack, 'User');
 
@@ -5438,6 +5448,7 @@ test('grant readWrite permission to CfnTable with encryption adds KMS permission
       sseType: 'KMS',
       kmsMasterKeyId: encryptionKey.keyArn,
     },
+    billingMode: 'PAY_PER_REQUEST',
   });
   const user = new iam.User(stack, 'User');
 
