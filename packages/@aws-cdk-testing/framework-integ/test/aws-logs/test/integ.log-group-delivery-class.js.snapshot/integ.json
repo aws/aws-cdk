@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "LogGroupDeliveryClassInteg/DefaultTest": {
+      "stacks": [
+        "aws-cdk-log-group-delivery-class-integ"
+      ],
+      "assertionStack": "LogGroupDeliveryClassInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "LogGroupDeliveryClassIntegDefaultTestDeployAssert0793FCB7"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
