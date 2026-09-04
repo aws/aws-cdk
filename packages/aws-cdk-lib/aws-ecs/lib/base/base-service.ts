@@ -1768,6 +1768,14 @@ export abstract class BaseService extends Resource
       }
     }
 
+    if (dnsRecordType !== undefined && !ECS_SUPPORTED_DNS_RECORD_TYPES.includes(dnsRecordType)) {
+      throw new ValidationError(
+        lit`UnsupportedCloudMapDnsRecordType`,
+        `dnsRecordType ${JSON.stringify(dnsRecordType)} is not supported for ECS service discovery, use one of ${JSON.stringify(ECS_SUPPORTED_DNS_RECORD_TYPES)}`,
+        this,
+      );
+    }
+
     const { containerName, containerPort } = determineContainerNameAndPort(this, {
       taskDefinition: this.taskDefinition,
       dnsRecordType: dnsRecordType!,
@@ -2052,11 +2060,15 @@ export interface CloudMapOptions {
   readonly cloudMapNamespace?: cloudmap.INamespace;
 
   /**
-   * The DNS record type that you want AWS Cloud Map to create. The supported record types are A or SRV.
+   * The DNS record type that you want AWS Cloud Map to create.
+   *
+   * ECS service discovery supports `A`, `AAAA` and `SRV` records, and the combinations
+   * `A_AAAA`, `A_SRV`, `AAAA_SRV` and `A_AAAA_SRV`. Only `SRV` is supported when the task
+   * definition uses the `bridge` or `host` network mode.
    *
    * @default - DnsRecordType.A if TaskDefinition.networkMode = AWS_VPC, otherwise DnsRecordType.SRV
    */
-  readonly dnsRecordType?: cloudmap.DnsRecordType.A | cloudmap.DnsRecordType.SRV;
+  readonly dnsRecordType?: cloudmap.DnsRecordType;
 
   /**
    * The amount of time that you want DNS resolvers to cache the settings for this record.
@@ -2220,6 +2232,26 @@ export enum PropagatedTagSource {
 }
 
 /**
+ * The DNS record types that create an SRV record, and so need a container and port to target.
+ */
+const SRV_DNS_RECORD_TYPES = [
+  cloudmap.DnsRecordType.SRV,
+  cloudmap.DnsRecordType.A_SRV,
+  cloudmap.DnsRecordType.AAAA_SRV,
+  cloudmap.DnsRecordType.A_AAAA_SRV,
+];
+
+/**
+ * The DNS record types that ECS service discovery supports.
+ */
+const ECS_SUPPORTED_DNS_RECORD_TYPES = [
+  cloudmap.DnsRecordType.A,
+  cloudmap.DnsRecordType.AAAA,
+  cloudmap.DnsRecordType.A_AAAA,
+  ...SRV_DNS_RECORD_TYPES,
+];
+
+/**
  * Options for `determineContainerNameAndPort`
  */
 interface DetermineContainerNameAndPortOptions {
@@ -2233,10 +2265,10 @@ interface DetermineContainerNameAndPortOptions {
  * Determine the name of the container and port to target for the service registry.
  */
 function determineContainerNameAndPort(scope: IConstruct, options: DetermineContainerNameAndPortOptions) {
-  // If the record type is SRV, then provide the containerName and containerPort to target.
-  // We use the name of the default container and the default port of the default container
-  // unless the user specifies otherwise.
-  if (options.dnsRecordType === cloudmap.DnsRecordType.SRV) {
+  // If the record type creates an SRV record, then provide the containerName and containerPort
+  // to target. We use the name of the default container and the default port of the default
+  // container unless the user specifies otherwise.
+  if (SRV_DNS_RECORD_TYPES.includes(options.dnsRecordType)) {
     // Ensure the user-provided container is from the right task definition.
     if (options.container && options.container.taskDefinition != options.taskDefinition) {
       throw new ValidationError(lit`CannotDiscoveryContainer`, 'Cannot add discovery for a container from another task definition', scope);

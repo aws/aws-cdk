@@ -3972,6 +3972,304 @@ describe('fargate service', () => {
         ],
       });
     });
+
+    test('creates cloud map service with A and SRV records and targets the default container', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
+      });
+
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      // WHEN
+      new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        cloudMapOptions: {
+          name: 'myApp',
+          dnsRecordType: cloudmap.DnsRecordType.A_SRV,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
+        DnsConfig: Match.objectLike({
+          DnsRecords: [
+            { TTL: 60, Type: 'A' },
+            { TTL: 60, Type: 'SRV' },
+          ],
+          RoutingPolicy: 'MULTIVALUE',
+        }),
+        Name: 'myApp',
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        ServiceRegistries: [
+          {
+            RegistryArn: { 'Fn::GetAtt': ['ServiceCloudmapService046058A4', 'Arn'] },
+            ContainerName: 'MainContainer',
+            ContainerPort: 8000,
+          },
+        ],
+      });
+    });
+
+    test('user can select any container and port with A and SRV records', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
+      });
+
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      const mainContainer = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+      mainContainer.addPortMappings({ containerPort: 8000 });
+
+      const otherContainer = taskDefinition.addContainer('OtherContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+      otherContainer.addPortMappings({ containerPort: 8001 });
+
+      // WHEN
+      new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        cloudMapOptions: {
+          dnsRecordType: cloudmap.DnsRecordType.A_SRV,
+          container: otherContainer,
+          containerPort: 8001,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        ServiceRegistries: [
+          {
+            RegistryArn: { 'Fn::GetAtt': ['ServiceCloudmapService046058A4', 'Arn'] },
+            ContainerName: 'OtherContainer',
+            ContainerPort: 8001,
+          },
+        ],
+      });
+    });
+
+    test('errors when A and SRV records target a container port that has not been mapped', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
+      });
+
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      // THEN
+      expect(() => {
+        new ecs.FargateService(stack, 'Service', {
+          cluster,
+          taskDefinition,
+          cloudMapOptions: {
+            dnsRecordType: cloudmap.DnsRecordType.A_SRV,
+            containerPort: 8001,
+          },
+        });
+      }).toThrow(/Cannot add discovery for a container port that has not been mapped/);
+    });
+
+    test('omits ContainerName and ContainerPort from the service registry for A records', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
+      });
+
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      // WHEN
+      new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        cloudMapOptions: {
+          dnsRecordType: cloudmap.DnsRecordType.A,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        ServiceRegistries: [
+          {
+            RegistryArn: { 'Fn::GetAtt': ['ServiceCloudmapService046058A4', 'Arn'] },
+            ContainerName: Match.absent(),
+            ContainerPort: Match.absent(),
+          },
+        ],
+      });
+    });
+
+    test('creates cloud map service with AAAA records and no service registry container', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
+      });
+
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      // WHEN
+      new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        cloudMapOptions: {
+          dnsRecordType: cloudmap.DnsRecordType.AAAA,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
+        DnsConfig: Match.objectLike({
+          DnsRecords: [{ TTL: 60, Type: 'AAAA' }],
+        }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        ServiceRegistries: [
+          {
+            RegistryArn: { 'Fn::GetAtt': ['ServiceCloudmapService046058A4', 'Arn'] },
+            ContainerName: Match.absent(),
+            ContainerPort: Match.absent(),
+          },
+        ],
+      });
+    });
+
+    test('errors when dnsRecordType is CNAME', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
+      });
+
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      // THEN
+      expect(() => {
+        new ecs.FargateService(stack, 'Service', {
+          cluster,
+          taskDefinition,
+          cloudMapOptions: {
+            dnsRecordType: cloudmap.DnsRecordType.CNAME,
+          },
+        });
+      }).toThrow(/dnsRecordType "CNAME" is not supported for ECS service discovery/);
+    });
+
+    test('associates a cloud map service using A and SRV records with a container and port', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      const cloudMapNamespace = new cloudmap.PrivateDnsNamespace(stack, 'TestCloudMapNamespace', {
+        name: 'scorekeep.com',
+        vpc,
+      });
+
+      const cloudMapService = new cloudmap.Service(stack, 'Service', {
+        name: 'service-name',
+        namespace: cloudMapNamespace,
+        dnsRecordType: cloudmap.DnsRecordType.A_SRV,
+      });
+
+      const ecsService = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+      });
+
+      // WHEN
+      ecsService.associateCloudMapService({
+        service: cloudMapService,
+        container: container,
+        containerPort: 8000,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        ServiceRegistries: [
+          {
+            ContainerName: 'web',
+            ContainerPort: 8000,
+            RegistryArn: { 'Fn::GetAtt': ['ServiceDBC79909', 'Arn'] },
+          },
+        ],
+      });
+    });
   });
 
   test('Metric', () => {
