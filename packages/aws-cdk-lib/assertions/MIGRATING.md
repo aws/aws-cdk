@@ -5,7 +5,7 @@ Make the following modifications to your CDK test files to migrate to the
 `@aws-cdk/assertions` module.
 
 For a migration script that handles most common use cases for you, see
-[Migration Script](migration-script).
+[Migration Script](#migration-script).
 
 ## Translation Guide
 
