@@ -35,11 +35,12 @@ import type { IServiceRef, ServiceReference } from '../../../interfaces/generate
 import { RegionInfo } from '../../../region-info';
 import type { IAlternateTarget } from '../alternate-target-configuration';
 import type {
+  ITaskDefinition,
   LoadBalancerTargetOptions,
-  TaskDefinition,
 } from '../base/task-definition';
 import {
   NetworkMode,
+  TaskDefinition,
   TaskDefinitionRevision,
 } from '../base/task-definition';
 import type { CapacityProviderStrategy, ICluster } from '../cluster';
@@ -798,6 +799,12 @@ export abstract class BaseService extends Resource
 
   /**
    * The task definition to use for tasks in the service.
+   *
+   * Note: When the service was created with an imported task definition (`ITaskDefinition`),
+   * some `TaskDefinition`-specific properties (e.g. `defaultContainer`, `addToTaskRolePolicy`)
+   * may not be available at runtime.
+   *
+   * [disable-awslint:ref-via-interface]
    */
   public readonly taskDefinition: TaskDefinition;
 
@@ -933,7 +940,7 @@ export abstract class BaseService extends Resource
     id: string,
     props: BaseServiceProps,
     additionalProps: any,
-    taskDefinition: TaskDefinition) {
+    taskDefinition: ITaskDefinition) {
     super(scope, id, {
       physicalName: props.serviceName,
     });
@@ -941,7 +948,10 @@ export abstract class BaseService extends Resource
       throw new ValidationError(lit`OnlySpecifyEitherPropagateTags`, 'You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank', this);
     }
 
-    this.taskDefinition = taskDefinition;
+    // Type assertion: props accept ITaskDefinition (backward-compatible widening),
+    // but the public property retains TaskDefinition type to avoid a breaking API change.
+    // TaskDefinition-specific methods are guarded with isTaskDefinition() throughout this class.
+    this.taskDefinition = taskDefinition as TaskDefinition;
     this._volumes = Box.fromArray();
     this._lifecycleHooks = Box.fromArray();
 
@@ -1003,7 +1013,9 @@ export abstract class BaseService extends Resource
       ...additionalProps,
     });
 
-    this.node.addDependency(this.taskDefinition.taskRole);
+    if (TaskDefinition.isTaskDefinition(this.taskDefinition)) {
+      this.node.addDependency(this.taskDefinition.taskRole);
+    }
 
     if (props.deploymentController?.type === DeploymentControllerType.EXTERNAL) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:externalDeploymentController', 'taskDefinition and launchType are blanked out when using external deployment controller.');
@@ -1056,9 +1068,25 @@ export abstract class BaseService extends Resource
       // Strip the revision ID from the service's task definition property to
       // prevent new task def revisions in the stack from triggering updates
       // to the stack's ECS service resource
+      // CODE_DEPLOY requires the family property which is only available on owned TaskDefinitions
+      if (!TaskDefinition.isTaskDefinition(taskDefinition)) {
+        throw new ValidationError(
+          lit`CodeDeployRequiresOwnedTaskDefinition`,
+          'CODE_DEPLOY deployment controller requires an owned TaskDefinition. Cannot use imported task definitions.',
+          this,
+        );
+      }
       this.resource.taskDefinition = taskDefinition.family;
       this.node.addDependency(taskDefinition);
     } else if (props.taskDefinitionRevision) {
+      // taskDefinitionRevision also requires the family property which is only available on owned TaskDefinitions
+      if (!TaskDefinition.isTaskDefinition(taskDefinition)) {
+        throw new ValidationError(
+          lit`TaskDefinitionRevisionRequiresOwnedTaskDefinition`,
+          'taskDefinitionRevision requires an owned TaskDefinition. Cannot use imported task definitions.',
+          this,
+        );
+      }
       this.resource.taskDefinition = taskDefinition.family;
       if (props.taskDefinitionRevision !== TaskDefinitionRevision.LATEST) {
         this.resource.taskDefinition += `:${props.taskDefinitionRevision.revision}`;
@@ -1309,7 +1337,10 @@ export abstract class BaseService extends Resource
      * 2. Client alias enumeration
      */
     const services = cfg.services?.map(svc => {
-      const containerPort = this.taskDefinition.findPortMappingByName(svc.portMappingName)?.containerPort;
+      // findPortMappingByName is only available on owned TaskDefinitions
+      // (validated in validateServiceConnectConfiguration)
+      const taskDef = this.taskDefinition as TaskDefinition;
+      const containerPort = taskDef.findPortMappingByName(svc.portMappingName)?.containerPort;
       if (!containerPort) {
         throw new ValidationError(lit`PortMappingNameDoes`, `Port mapping with name ${svc.portMappingName} does not exist.`, this);
       }
@@ -1337,10 +1368,12 @@ export abstract class BaseService extends Resource
     });
 
     let logConfig: LogDriverConfig | undefined;
-    if (cfg.logDriver && this.taskDefinition.defaultContainer) {
+    const hasDefaultContainer = TaskDefinition.isTaskDefinition(this.taskDefinition) &&
+      this.taskDefinition.defaultContainer !== undefined;
+    if (cfg.logDriver && hasDefaultContainer) {
       // Default container existence is validated in validateServiceConnectConfiguration.
       // We only need the default container so that bind() can get the task definition from the container definition.
-      logConfig = cfg.logDriver.bind(this, this.taskDefinition.defaultContainer);
+      logConfig = cfg.logDriver.bind(this, (this.taskDefinition as TaskDefinition).defaultContainer!);
     }
 
     this._serviceConnectConfig.set({
@@ -1359,7 +1392,10 @@ export abstract class BaseService extends Resource
    * Validate Service Connect Configuration
    */
   private validateServiceConnectConfiguration(config?: ServiceConnectProps) {
-    if (!this.taskDefinition.defaultContainer) {
+    const hasDefaultContainer = TaskDefinition.isTaskDefinition(this.taskDefinition) &&
+      this.taskDefinition.defaultContainer !== undefined;
+
+    if (!hasDefaultContainer) {
       throw new ValidationError(lit`TaskDefinitionLeastContainer`, 'Task definition must have at least one container to enable service connect.', this);
     }
 
@@ -1386,10 +1422,20 @@ export abstract class BaseService extends Resource
     if (!config.services) {
       return;
     }
+
+    // Service Connect with services requires an owned TaskDefinition for port mapping lookups
+    if (!TaskDefinition.isTaskDefinition(this.taskDefinition)) {
+      throw new ValidationError(
+        lit`ServiceConnectRequiresOwnedTaskDefinition`,
+        'Service Connect requires an owned TaskDefinition. Cannot use imported task definitions with Service Connect.',
+        this,
+      );
+    }
+
     let portNames = new Map<string, string[]>();
     config.services.forEach(serviceConnectService => {
       // port must exist on the task definition
-      if (!this.taskDefinition.findPortMappingByName(serviceConnectService.portMappingName)) {
+      if (!(this.taskDefinition as TaskDefinition).findPortMappingByName(serviceConnectService.portMappingName)) {
         throw new ValidationError(lit`PortMappingDoesExist`, `Port Mapping '${serviceConnectService.portMappingName}' does not exist on the task definition.`, this);
       }
 
@@ -1520,6 +1566,12 @@ export abstract class BaseService extends Resource
   }
 
   private executeCommandLogConfiguration() {
+    if (!TaskDefinition.isTaskDefinition(this.taskDefinition)) {
+      Annotations.of(this).addInfo(
+        'Using an imported TaskDefinition. Execute Command permissions must be manually configured on the task role.',
+      );
+      return;
+    }
     const reducePermissions = FeatureFlags.of(this).isEnabled(cxapi.REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS);
     const logConfiguration = this.cluster.executeCommandConfiguration?.logConfiguration;
 
@@ -1570,6 +1622,9 @@ export abstract class BaseService extends Resource
   }
 
   private enableExecuteCommandEncryption(logging: ExecuteCommandLogging) {
+    if (!TaskDefinition.isTaskDefinition(this.taskDefinition)) {
+      return;
+    }
     this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
       actions: [
         'kms:Decrypt',
@@ -1652,12 +1707,23 @@ export abstract class BaseService extends Resource
       throw new ValidationError(lit`RequiresDeploymentLifecycleHooks`, 'Deployment lifecycle hooks requires the ECS deployment controller.', this);
     }
 
+    // _validateTarget is only available on owned TaskDefinitions
+    if (!TaskDefinition.isTaskDefinition(this.taskDefinition)) {
+      throw new ValidationError(
+        lit`LoadBalancerTargetRequiresOwnedTaskDefinition`,
+        'Cannot create load balancer target from imported TaskDefinition. ' +
+        'Use a concrete TaskDefinition created in this stack.',
+        this,
+      );
+    }
+
     const self = this;
     const target = this.taskDefinition._validateTarget(options);
     const connections = self.connections;
     return {
       attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
-        targetGroup.registerConnectable(self, self.taskDefinition._portRangeFromPortMapping(target.portMapping));
+        // Type assertion is safe because we've already checked with isTaskDefinition at line 1464
+        targetGroup.registerConnectable(self, (self.taskDefinition as TaskDefinition)._portRangeFromPortMapping(target.portMapping));
         return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!, options.alternateTarget);
       },
       attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
@@ -1949,8 +2015,16 @@ export abstract class BaseService extends Resource
   }
 
   private get defaultLoadBalancerTarget() {
+    if (!TaskDefinition.isTaskDefinition(this.taskDefinition) ||
+      !this.taskDefinition.defaultContainer) {
+      throw new ValidationError(
+        lit`DefaultLoadBalancerTargetRequiresDefaultContainer`,
+        'Cannot create default load balancer target. TaskDefinition must have a default container.',
+        this,
+      );
+    }
     return this.loadBalancerTarget({
-      containerName: this.taskDefinition.defaultContainer!.containerName,
+      containerName: this.taskDefinition.defaultContainer.containerName,
     });
   }
 
@@ -1990,6 +2064,12 @@ export abstract class BaseService extends Resource
   }
 
   private enableExecuteCommand() {
+    if (!TaskDefinition.isTaskDefinition(this.taskDefinition)) {
+      Annotations.of(this).addInfo(
+        'Using an imported TaskDefinition. Execute Command SSM permissions must be manually configured on the task role.',
+      );
+      return;
+    }
     this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
       actions: [
         'ssmmessages:CreateControlChannel',
@@ -2224,7 +2304,7 @@ export enum PropagatedTagSource {
  */
 interface DetermineContainerNameAndPortOptions {
   dnsRecordType: cloudmap.DnsRecordType;
-  taskDefinition: TaskDefinition;
+  taskDefinition: ITaskDefinition;
   container?: ContainerDefinition;
   containerPort?: number;
 }
@@ -2240,6 +2320,11 @@ function determineContainerNameAndPort(scope: IConstruct, options: DetermineCont
     // Ensure the user-provided container is from the right task definition.
     if (options.container && options.container.taskDefinition != options.taskDefinition) {
       throw new ValidationError(lit`CannotDiscoveryContainer`, 'Cannot add discovery for a container from another task definition', scope);
+    }
+
+    // defaultContainer access requires owned TaskDefinition
+    if (!TaskDefinition.isTaskDefinition(options.taskDefinition)) {
+      throw new ValidationError(lit`CloudMapRequiresOwnedTaskDefinition`, 'Cloud Map service discovery requires an owned TaskDefinition with container configuration', scope);
     }
 
     const container = options.container ?? options.taskDefinition.defaultContainer!;
