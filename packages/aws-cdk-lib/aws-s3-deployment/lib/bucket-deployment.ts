@@ -417,6 +417,10 @@ export class BucketDeployment extends Construct {
       logGroup: props.logGroup,
     });
 
+    if (props.logGroup) {
+      handler.permissionsNode.addDependency(props.logGroup);
+    }
+
     const handlerRole = handler.role;
     if (!handlerRole) { throw new ValidationError(lit`Lambda`, 'lambda.SingletonFunction should have created a Role', this); }
     this.handlerRole = handlerRole;
