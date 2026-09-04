@@ -437,6 +437,98 @@ describe('selinux docker mount', () => {
       'cool', 'command',
     ]);
   });
+
+  test('sshForwarding mounts the host SSH agent socket and sets SSH_AUTH_SOCK', () => {
+    // GIVEN
+    sinon.stub(process, 'platform').value('darwin');
+    sinon.stub(process, 'env').value({ ...process.env, SSH_AUTH_SOCK: '/tmp/ssh-agent.sock' });
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    // WHEN
+    const image = DockerImage.fromRegistry('alpine');
+    image.run({ sshForwarding: true });
+
+    // THEN
+    expect(spawnSyncStub.calledWith(dockerCmd, [
+      'run', '--rm',
+      '-v', '/tmp/ssh-agent.sock:/run/host-services/ssh-auth.sock:delegated',
+      '--env', 'SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock',
+      'alpine',
+    ], { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+  });
+
+  test('sshForwarding preserves caller-provided volumes and environment', () => {
+    // GIVEN
+    sinon.stub(process, 'platform').value('darwin');
+    sinon.stub(process, 'env').value({ ...process.env, SSH_AUTH_SOCK: '/tmp/ssh-agent.sock' });
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    // WHEN
+    const image = DockerImage.fromRegistry('alpine');
+    image.run({
+      sshForwarding: true,
+      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+      environment: { VAR1: 'value1' },
+    });
+
+    // THEN
+    expect(spawnSyncStub.calledWith(dockerCmd, [
+      'run', '--rm',
+      '-v', '/host-path:/container-path:delegated',
+      '-v', '/tmp/ssh-agent.sock:/run/host-services/ssh-auth.sock:delegated',
+      '--env', 'VAR1=value1',
+      '--env', 'SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock',
+      'alpine',
+    ], { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+  });
+
+  test('sshForwarding throws when SSH_AUTH_SOCK is not set on the host', () => {
+    // GIVEN
+    const { SSH_AUTH_SOCK: _omit, ...envWithoutSshAuthSock } = process.env;
+    sinon.stub(process, 'env').value(envWithoutSshAuthSock);
+
+    // WHEN / THEN
+    const image = DockerImage.fromRegistry('alpine');
+    expect(() => image.run({ sshForwarding: true })).toThrow(/SSH_AUTH_SOCK environment variable is not set/);
+  });
+
+  test('sshForwarding off (default) does not mount the SSH agent socket', () => {
+    // GIVEN
+    sinon.stub(process, 'platform').value('darwin');
+    sinon.stub(process, 'env').value({ ...process.env, SSH_AUTH_SOCK: '/tmp/ssh-agent.sock' });
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    // WHEN
+    const image = DockerImage.fromRegistry('alpine');
+    image.run();
+
+    // THEN
+    expect(spawnSyncStub.calledWith(dockerCmd, [
+      'run', '--rm',
+      'alpine',
+    ], { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+  });
 });
 
 test('ensure correct Docker CLI arguments are returned', () => {
