@@ -569,6 +569,28 @@ new codepipeline_actions.CodeBuildAction({
 });
 ```
 
+#### Overriding the CodeBuild service role
+
+By default, the build action runs under the role created for the CodeBuild
+project. To run the action's build under a different existing role, use the
+`serviceRoleOverride` property. This maps to the CodePipeline action
+configuration key `ServiceRoleArnOverride`, and the pipeline role is granted
+`iam:PassRole` on the given role automatically:
+
+```ts
+declare const project: codebuild.PipelineProject;
+const customBuildRole = new iam.Role(this, 'CustomBuildRole', {
+  assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+});
+const sourceOutput = new codepipeline.Artifact();
+const buildAction = new codepipeline_actions.CodeBuildAction({
+  actionName: 'CodeBuild',
+  project,
+  input: sourceOutput,
+  serviceRoleOverride: customBuildRole,
+});
+```
+
 ### Jenkins
 
 In order to use Jenkins Actions in the Pipeline,
