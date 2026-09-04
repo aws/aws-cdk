@@ -945,8 +945,9 @@ new glue.S3Table(this, 'MyTable', {
       min: '2020-01-01',
       max: '2023-12-31',
       format: 'yyyy-MM-dd',
-      interval: 1,  // optional, defaults to 1
-      intervalUnit: glue.DateIntervalUnit.DAYS,  // optional: YEARS, MONTHS, WEEKS, DAYS, HOURS, MINUTES, SECONDS
+      // `step` bundles interval + unit (supply both or neither). Optional at day
+      // precision or coarser; required when the format is sub-day (e.g. hours).
+      step: { interval: 1, intervalUnit: glue.DateIntervalUnit.DAYS },
     }),
   },
 });
