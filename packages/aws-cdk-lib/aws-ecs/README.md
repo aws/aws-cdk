@@ -2432,6 +2432,10 @@ const service = new ecs.FargateService(this, 'Service', {
 
 service.addLifecycleHook(new ecs.DeploymentLifecycleLambdaTarget(lambdaHook, 'PreScaleHook', {
   lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
+  hookDetails: {
+    environment: 'production',
+    timeout: 300,
+  },
 }));
 
 const target = service.loadBalancerTarget({

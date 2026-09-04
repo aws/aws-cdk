@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "aws-ecs-blue-green-deployment.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3f2de3687de753e01df8af1f3f5db3418f528a660a93dfdd7cb90e7ed75c213f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/077a3711d8dac75cd630d8384a4e392dfea4b16f0a7fad17127786a32432e674.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,749 +33,7 @@
       "dependencies": [
         "aws-ecs-blue-green-deployment.assets"
       ],
-      "metadata": {
-        "/aws-ecs-blue-green-deployment/Vpc": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "maxAzs": "*",
-              "restrictDefaultSecurityGroup": false
-            }
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Vpc8378EB38"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addNatGateway": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1Subnet5C2D37C4"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1RouteTable6C95E38E"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet1/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1EIPD7E02669"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet1/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1NATGateway4D7517AA"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addNatGateway": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2Subnet691E08A3"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2RouteTable94F7E489"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2DefaultRoute97F91067"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet2/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2EIP3C605A87"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/PublicSubnet2/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2NATGateway9182C01D"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/PrivateSubnet1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/PrivateSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1Subnet536B997A"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/PrivateSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/PrivateSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/PrivateSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/PrivateSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/PrivateSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2Subnet3788AAA1"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/PrivateSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2RouteTableA678073B"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/PrivateSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/PrivateSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/IGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcIGWD7BA715C"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Vpc/VPCGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcVPCGWBF912B6E"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/FargateCluster": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpc": "*",
-              "defaultCloudMapNamespace": {
-                "name": "*",
-                "useForServiceConnect": true
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addDefaultCloudMapNamespace": [
-                {
-                  "name": "*",
-                  "useForServiceConnect": true
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/FargateCluster/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FargateCluster7CCD5F93"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/FargateCluster/DefaultServiceDiscoveryNamespace": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "name": "*",
-              "vpc": "*"
-            }
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/FargateCluster/DefaultServiceDiscoveryNamespace/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FargateClusterDefaultServiceDiscoveryNamespace04381E1E"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/BlueTG/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BlueTG7C058B2C"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/GreenTG/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "GreenTG71A27F2F"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/LBSecurityGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpc": "*",
-              "allowAllOutbound": true
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addIngressRule": [
-                {
-                  "canInlineRule": true,
-                  "connections": "*",
-                  "uniqueId": "*"
-                },
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addIngressRule": [
-                {
-                  "canInlineRule": true,
-                  "connections": "*",
-                  "uniqueId": "*"
-                },
-                {},
-                "*",
-                false
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEgressRule": [
-                "*",
-                {},
-                "*",
-                true
-              ]
-            }
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/LBSecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LBSecurityGroup4464B654"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/ECSSecurityGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpc": "*",
-              "allowAllOutbound": true
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addIngressRule": [
-                "*",
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addIngressRule": [
-                "*",
-                {},
-                "*",
-                false
-              ]
-            }
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/ECSSecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ECSSecurityGroupA14DBE7D"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/ECSSecurityGroup/from awsecsbluegreendeploymentLBSecurityGroup67E4A783:80": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ECSSecurityGroupfromawsecsbluegreendeploymentLBSecurityGroup67E4A78380F93FD2DA"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/ALB": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/ALB/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ALBAEE750D2"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/ALB/ALBListenerHTTP": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/ALB/ALBListenerHTTP/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ALBALBListenerHTTP413250C3"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/ALBProductionListenerRule/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ALBProductionListenerRule243D0687"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/LambdaHook": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "handler": "*",
-              "runtime": "*",
-              "code": "*"
-            }
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/LambdaHook/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/LambdaHook/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/LambdaHook/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaHookServiceRole9AAAD33B"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/LambdaHook/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaHookBF1BC8B4"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/LambdaHook/LogGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "logGroupName": "*"
-            }
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/LambdaHook/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaHookLogGroup46DB72C9"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/TaskDef": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/TaskDef/TaskRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/TaskDef/TaskRole/ImportTaskRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/TaskDef/TaskRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TaskDefTaskRole1EDB4A67"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/TaskDef/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TaskDef54694570",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Service": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Service/Service": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ServiceD69D759B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Service/LBAlternateOptionsRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Service/LBAlternateOptionsRole/ImportLBAlternateOptionsRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Service/LBAlternateOptionsRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ServiceLBAlternateOptionsRole06C91D94"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Service/PreScaleUpRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Service/PreScaleUpRole/ImportPreScaleUpRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Service/PreScaleUpRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ServicePreScaleUpRoleD002A553"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Service/PreScaleUpRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/Service/PreScaleUpRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ServicePreScaleUpRoleDefaultPolicyF1032E86"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/aws-ecs-blue-green-deployment/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ],
-        "EcsTaskExecutionRoleC0B6A84D": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsTaskExecutionRoleC0B6A84D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ServiceRole4288B192": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ServiceRole4288B192",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ServiceRoleDefaultPolicy94CF55F6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ServiceRoleDefaultPolicy94CF55F6",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ]
-      },
+      "additionalMetadataFile": "aws-ecs-blue-green-deployment.metadata.json",
       "displayName": "aws-ecs-blue-green-deployment"
     },
     "awsecsbluegreenDefaultTestDeployAssertA9C6C1DC.assets": {
@@ -810,20 +68,7 @@
       "dependencies": [
         "awsecsbluegreenDefaultTestDeployAssertA9C6C1DC.assets"
       ],
-      "metadata": {
-        "/aws-ecs-blue-green/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/aws-ecs-blue-green/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "awsecsbluegreenDefaultTestDeployAssertA9C6C1DC.metadata.json",
       "displayName": "aws-ecs-blue-green/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -837,19 +82,10 @@
       "properties": {
         "module": "aws-cdk-lib",
         "flags": {
-          "@aws-cdk/core:enableStackNameDuplicates": {
+          "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
-            "explanation": "Allow multiple stacks with the same name",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "aws-cdk:enableDiffNoFail": {
-            "recommendedValue": true,
-            "explanation": "Make `cdk diff` not fail when there are differences",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
           "@aws-cdk/core:newStyleStackSynthesis": {
             "recommendedValue": true,
@@ -865,40 +101,10 @@
               "v2": true
             }
           },
-          "@aws-cdk/aws-ecr-assets:dockerIgnoreSupport": {
+          "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
-            "explanation": "DockerImageAsset properly supports `.dockerignore` files by default",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "@aws-cdk/aws-secretsmanager:parseOwnedSecretName": {
-            "recommendedValue": true,
-            "explanation": "Fix the referencing of SecretsManager names from ARNs",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "@aws-cdk/aws-kms:defaultKeyPolicies": {
-            "recommendedValue": true,
-            "explanation": "Tighten default KMS key policies",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "@aws-cdk/aws-s3:grantWriteWithoutAcl": {
-            "recommendedValue": true,
-            "explanation": "Remove `PutObjectAcl` from Bucket.grantWrite",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "@aws-cdk/aws-ecs-patterns:removeDefaultDesiredCount": {
-            "recommendedValue": true,
-            "explanation": "Do not specify a default DesiredCount for ECS services",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "Disable implicit openListener when custom security groups are provided"
           },
           "@aws-cdk/aws-rds:lowercaseDbIdentifier": {
             "recommendedValue": true,
@@ -910,13 +116,6 @@
           "@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId": {
             "recommendedValue": true,
             "explanation": "Allow adding/removing multiple UsagePlanKeys independently",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "@aws-cdk/aws-efs:defaultEncryptionAtRest": {
-            "recommendedValue": true,
-            "explanation": "Enable this feature flag to have elastic file systems encrypted at rest by default.",
             "unconfiguredBehavesLike": {
               "v2": true
             }
@@ -1015,7 +214,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -1169,6 +368,11 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -1200,16 +404,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -1317,10 +511,7 @@
           },
           "@aws-cdk/cognito:logUserPoolClientSecretValue": {
             "recommendedValue": false,
-            "explanation": "When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs.",
-            "unconfiguredBehavesLike": {
-              "v2": false
-            }
+            "explanation": "When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs."
           },
           "@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope": {
             "recommendedValue": true,
@@ -1346,10 +537,7 @@
           },
           "@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration": {
             "recommendedValue": false,
-            "explanation": "When enabled, use resource IDs for VPC V2 migration",
-            "unconfiguredBehavesLike": {
-              "v2": false
-            }
+            "explanation": "When enabled, use resource IDs for VPC V2 migration"
           },
           "@aws-cdk/aws-s3:publicAccessBlockedByDefault": {
             "userValue": true,
@@ -1359,14 +547,52 @@
           "@aws-cdk/aws-lambda:useCdkManagedLogGroup": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "When enabled, CDK creates and manages loggroup for the lambda function",
+            "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
             "unconfiguredBehavesLike": {
-              "v2": false
+              "v2": true
             }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1023.0"
+  "minimumCliVersion": "2.1108.0"
 }
