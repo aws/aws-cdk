@@ -779,7 +779,8 @@ export class Runtime extends RuntimeBase {
     // Skip validation if the URI contains CDK tokens (unresolved values)
     if (Token.isUnresolved(uri)) {
       // Add a warning that validation will be skipped for token-based URIs
-      Annotations.of(this).addInfo(
+      Annotations.of(this).addInfoV2(
+        '@aws-cdk/aws-bedrock-agentcore:containerUriValidationSkipped',
         'Container URI validation skipped as it contains unresolved CDK tokens. ' +
         'The URI will be validated at deployment time.',
       );
@@ -848,7 +849,8 @@ export class Runtime extends RuntimeBase {
 
     const stackAccount = Stack.of(this).account;
     if (!Token.isUnresolved(stackAccount) && accountId !== stackAccount) {
-      Annotations.of(this).addWarning(
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-bedrock-agentcore:iamRoleCrossAccount',
         `IAM role is from a different account (${accountId}) than the stack account (${stackAccount}). ` +
         'Ensure cross-account permissions are properly configured.',
       );
@@ -858,7 +860,8 @@ export class Runtime extends RuntimeBase {
     const region = arnComponents.region;
     const stackRegion = Stack.of(this).region;
     if (region && region !== '' && region !== stackRegion && !Token.isUnresolved(stackRegion)) {
-      Annotations.of(this).addWarning(
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-bedrock-agentcore:iamRoleCrossAccount',
         `IAM role ARN contains a region (${region}) that doesn't match the stack region (${stackRegion}). ` +
         'IAM is a global service, so this might be intentional.',
       );
