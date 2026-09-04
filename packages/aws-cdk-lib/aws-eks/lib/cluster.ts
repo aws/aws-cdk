@@ -1800,7 +1800,23 @@ export class Cluster extends ClusterBase {
       description: 'EKS Control Plane Security Group',
     });
 
-    this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }];
+    // selecting a subnet type the VPC doesn't have throws, so only default to the
+    // subnet types that actually exist. a fully isolated VPC (no NAT gateway) has
+    // neither public nor private-with-egress subnets, so fall back to its isolated ones.
+    const defaultVpcSubnets: ec2.SubnetSelection[] = [];
+    if (this.vpc.publicSubnets.length > 0) {
+      defaultVpcSubnets.push({ subnetType: ec2.SubnetType.PUBLIC });
+    }
+    if (this.vpc.privateSubnets.length > 0) {
+      defaultVpcSubnets.push({ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS });
+    } else if (this.vpc.isolatedSubnets.length > 0) {
+      defaultVpcSubnets.push({ subnetType: ec2.SubnetType.PRIVATE_ISOLATED });
+    }
+
+    // an imported VPC may not report any subnets at all; keep the historical default for it.
+    this.vpcSubnets = props.vpcSubnets ?? (defaultVpcSubnets.length > 0
+      ? defaultVpcSubnets
+      : [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }]);
 
     const selectedSubnetIdsPerGroup = this.vpcSubnets.map(s => this.vpc.selectSubnets(s).subnetIds);
     if (selectedSubnetIdsPerGroup.some(Token.isUnresolved) && selectedSubnetIdsPerGroup.length > 1) {
@@ -2449,6 +2465,7 @@ export class Cluster extends ClusterBase {
 
     // https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html
     tagAllSubnets('private', this.vpc.privateSubnets, 'kubernetes.io/role/internal-elb');
+    tagAllSubnets('isolated', this.vpc.isolatedSubnets, 'kubernetes.io/role/internal-elb');
     tagAllSubnets('public', this.vpc.publicSubnets, 'kubernetes.io/role/elb');
   }
 
