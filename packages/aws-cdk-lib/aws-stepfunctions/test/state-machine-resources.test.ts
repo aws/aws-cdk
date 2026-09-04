@@ -4,6 +4,7 @@ import { Match, Template } from '../../assertions';
 import type * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
+import { STEPFUNCTIONS_GRANT_READ_CORRECT_RESOURCE_SCOPES } from '../../cx-api';
 import * as stepfunctions from '../lib';
 
 describe('State Machine Resources', () => {
@@ -412,6 +413,51 @@ describe('State Machine Resources', () => {
       },
     },
     );
+  }),
+
+  test('grantRead scopes DescribeStateMachine to the state machine and ListStateMachines to * when the feature flag is enabled', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(STEPFUNCTIONS_GRANT_READ_CORRECT_RESOURCE_SCOPES, true);
+    const task = new FakeTask(stack, 'Task');
+    const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
+      definitionBody: stepfunctions.DefinitionBody.fromChainable(task),
+    });
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    // WHEN
+    stateMachine.grantRead(role);
+
+    // THEN
+    const statements = Template.fromStack(stack)
+      .findResources('AWS::IAM::Policy').RoleDefaultPolicy5FFB7DAB.Properties.PolicyDocument.Statement;
+
+    // `states:ListStateMachines` has no resource type, so it only authorizes on '*'
+    expect(statements).toContainEqual(expect.objectContaining({
+      Action: 'states:ListStateMachines',
+      Effect: 'Allow',
+      Resource: '*',
+    }));
+
+    // `states:DescribeStateMachine` supports a statemachine ARN, so it is no longer granted account-wide
+    expect(statements).toContainEqual(expect.objectContaining({
+      Action: ['states:ListExecutions', 'states:DescribeStateMachine'],
+      Effect: 'Allow',
+      Resource: { Ref: 'StateMachine2E01A3A5' },
+    }));
+
+    // no statement grants anything on '*' other than ListStateMachines
+    const wildcardActions = statements
+      .filter((s: any) => s.Resource === '*')
+      .flatMap((s: any) => [].concat(s.Action));
+    expect(wildcardActions).toEqual(['states:ListStateMachines']);
+
+    // activity actions are not granted by a state machine read grant at all
+    const allActions = statements.flatMap((s: any) => [].concat(s.Action));
+    expect(allActions).not.toContain('states:ListActivities');
+    expect(allActions).not.toContain('states:DescribeActivity');
   }),
 
   test('Created state machine can grant task response actions to the state machine', () => {
