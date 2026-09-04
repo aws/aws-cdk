@@ -100,6 +100,68 @@ describe('Metric Math', () => {
     expect(m.with({ period: Duration.minutes(5) })).not.toEqual(m);
   });
 
+  test('MathExpression stores visible property and includes it in toMetricConfig', () => {
+    const withVisibleFalse = new MathExpression({
+      expression: 'a + b',
+      usingMetrics: { a, b },
+      visible: false,
+    });
+
+    expect(withVisibleFalse.visible).toBe(false);
+    expect(withVisibleFalse.toMetricConfig().renderingProperties!.visible).toBe(false);
+
+    const withVisibleTrue = new MathExpression({
+      expression: 'a + b',
+      usingMetrics: { a, b },
+      visible: true,
+    });
+
+    expect(withVisibleTrue.visible).toBe(true);
+    expect(withVisibleTrue.toMetricConfig().renderingProperties!.visible).toBe(true);
+  });
+
+  test('MathExpression visible defaults to undefined when not set (backwards compat)', () => {
+    const m = new MathExpression({
+      expression: 'a + b',
+      usingMetrics: { a, b },
+    });
+
+    expect(m.visible).toBeUndefined();
+    expect(m.toMetricConfig().renderingProperties!.visible).toBeUndefined();
+  });
+
+  test('MathExpression optimization: "with" the same visible returns the same object', () => {
+    const m = new MathExpression({ expression: 'a + b', usingMetrics: { a, b }, visible: false });
+
+    // Note: object equality, NOT deep equality on purpose
+    expect(m.with({})).toBe(m);
+    expect(m.with({ visible: false })).toBe(m);
+
+    // A different visible value produces a new object
+    expect(m.with({ visible: true })).not.toBe(m);
+    expect(m.with({ visible: true }).visible).toBe(true);
+  });
+
+  test('MathExpression optimization: "with" visible on an expression without one produces a new object', () => {
+    const m = new MathExpression({ expression: 'a + b', usingMetrics: { a, b } });
+
+    expect(m.with({})).toBe(m);
+    expect(m.with({ visible: false })).not.toBe(m);
+    expect(m.with({ visible: false }).visible).toBe(false);
+  });
+
+  test('Metric.anomalyDetectionFor forwards visible without clobbering internal defaults', () => {
+    const expr = Metric.anomalyDetectionFor({
+      metric: a,
+      visible: false,
+    });
+
+    expect(expr.visible).toBe(false);
+    expect(expr.toMetricConfig().renderingProperties!.visible).toBe(false);
+    // The internal default label is preserved (props spread does not overwrite it)
+    expect(expr.label).toBe('Anomaly Detection Band');
+  });
+
   test('math expression referring to unknown expressions produces a warning', () => {
     const m = new MathExpression({
       expression: 'm1 + m2',
@@ -324,6 +386,48 @@ describe('Metric Math', () => {
       });
 
       // THEN
+      graphMetricsAre(graph, [
+        [{ expression: 'a + b', label: 'a + b' }],
+        ['Test', 'ACount', { visible: false, id: 'a' }],
+        ['Test', 'BCount', { visible: false, id: 'b' }],
+      ]);
+    });
+
+    test('visible is passed through to the graph JSON for a top-level MathExpression', () => {
+      // GIVEN
+      const graph = new GraphWidget({
+        left: [
+          new MathExpression({
+            expression: 'a + b',
+            usingMetrics: { a, b },
+            visible: false,
+          }),
+        ],
+      });
+
+      // THEN
+      // A hidden top-level expression flows `visible: false` through and does not
+      // auto-generate a label (matching the rendering behavior for hidden metrics).
+      graphMetricsAre(graph, [
+        [{ expression: 'a + b', visible: false }],
+        ['Test', 'ACount', { visible: false, id: 'a' }],
+        ['Test', 'BCount', { visible: false, id: 'b' }],
+      ]);
+    });
+
+    test('visible defaults are unchanged in the graph JSON when visible is not set', () => {
+      // GIVEN
+      const graph = new GraphWidget({
+        left: [
+          new MathExpression({
+            expression: 'a + b',
+            usingMetrics: { a, b },
+          }),
+        ],
+      });
+
+      // THEN
+      // No `visible` key is rendered for the top-level expression (backwards compat).
       graphMetricsAre(graph, [
         [{ expression: 'a + b', label: 'a + b' }],
         ['Test', 'ACount', { visible: false, id: 'a' }],

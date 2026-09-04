@@ -119,6 +119,28 @@ const problemPercentage = new cloudwatch.MathExpression({
 });
 ```
 
+Like `Metric`, a `MathExpression` can be hidden from a graph by setting
+`visible: false`. This keeps the expression available (for example, as an input
+to another expression) while removing its line from the widget:
+
+```ts
+declare const fn: lambda.Function;
+declare const dashboard: cloudwatch.Dashboard;
+
+const errorRate = new cloudwatch.MathExpression({
+  expression: "errors / invocations * 100",
+  usingMetrics: {
+    errors: fn.metricErrors(),
+    invocations: fn.metricInvocations(),
+  },
+  visible: false,
+});
+
+dashboard.addWidgets(new cloudwatch.GraphWidget({
+  left: [fn.metricInvocations(), errorRate],
+}));
+```
+
 ### Metric ID Usage in Math Expressions
 
 When metrics have custom IDs, you can reference them directly in math expressions.
