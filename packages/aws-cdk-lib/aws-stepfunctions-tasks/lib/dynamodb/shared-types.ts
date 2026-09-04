@@ -222,7 +222,7 @@ export class DynamoAttributeValue {
    */
   public static mapFromJsonPath(value: string) {
     validateJsonPath(value);
-    return new DynamoAttributeValue({ 'M.$': value });
+    return new DynamoAttributeValue({ M: value });
   }
 
   /**
