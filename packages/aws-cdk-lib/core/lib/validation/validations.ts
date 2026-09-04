@@ -119,9 +119,32 @@ export class Validations {
       const qualifiedId = this.qualifyId(rule.id);
       this.recordAcknowledgment(qualifiedId, rule.reason);
 
-      // For now, all rules route to annotation acknowledgment.
-      // Future validation types will be distinguished by their prefix.
+      // There is a mess here, that has been created for historical reasons and we now
+      // sort of have to leave in place for backwards compatibility.
+      //
+      // Annotations can be added via:
+      //
+      // 1) `Annotations.of().addWarningV2('<id>')`         -- adds an annotation with the given ID
+      // 2) `Validations.of().addWarning('<id>')`           -- adds an annotation with ID 'Annotation::<id>'
+      // 3) `Validations.of().addWarning('<prefix>::<id>')` -- adds an annotation with ID '<prefix>::<id>'
+      //
+      // For both cases (2) and (3), we would like to be able to suppress the warning by calling one of:
+      //
+      // b) `Validations.of().acknowledge('Annotation::<id>')`            -- validation namespace
+      // a) `Validations.of().acknowledge('<id>')`                        -- legacy behavior we are committed to
+      // c) `Validations.of().acknowledge('Construct-Annotations::<id>')` -- previous name of validation namespace
+      //
+      // Since we can't know if `Validations.of().acknowledge('<id>')` should
+      // suppress the namespaced or unnamespaced version of the warning, we will suppress both.
       Annotations.of(this.scope).acknowledgeWarning(qualifiedId);
+
+      if (qualifiedId.startsWith(`${AnnotationPlugin.RULE_PREFIX}::`) || qualifiedId.startsWith(`${AnnotationPlugin.LEGACY_RULE_PREFIX}::`)) {
+        const annotationId = qualifiedId.split('::')[1];
+
+        // Suppress both qualified and unqualified versions of the warning, see the big comment above.
+        Annotations.of(this.scope).acknowledgeWarning(annotationId);
+        Annotations.of(this.scope).acknowledgeWarning(qualifiedId);
+      }
     }
   }
 

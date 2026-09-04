@@ -23,6 +23,7 @@ import type { PolicyValidationPluginReport, PolicyViolation, PolicyViolatingReso
  */
 export class AnnotationPlugin implements IPolicyValidationPlugin {
   public static RULE_PREFIX = 'Annotation';
+  public static LEGACY_RULE_PREFIX = 'Construct-Annotations';
   public static NAME = 'Construct Annotations';
   public readonly name = AnnotationPlugin.NAME;
 
