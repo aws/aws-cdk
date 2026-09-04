@@ -561,7 +561,7 @@ test('metricIncomingLogEvents', () => {
       unit: { label: 'minutes', inMillis: 60000, isoLabel: 'M' },
     },
     namespace: 'AWS/Logs',
-    metricName: 'IncomingLogs',
+    metricName: 'IncomingLogEvents',
     statistic: 'Sum',
   });
 });
@@ -582,7 +582,7 @@ test('metricIncomingLogEvents with MetricOptions props', () => {
       unit: { label: 'hours', inMillis: 3600000, isoLabel: 'H' },
     },
     namespace: 'AWS/Logs',
-    metricName: 'IncomingLogs',
+    metricName: 'IncomingLogEvents',
     statistic: 'Sum',
     label: 'MyMetric',
   });
