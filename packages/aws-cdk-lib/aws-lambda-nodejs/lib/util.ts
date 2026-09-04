@@ -2,6 +2,7 @@ import type { SpawnSyncOptions } from 'child_process';
 import { spawnSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
+import type { DevEngines } from './types';
 import { Runtime } from '../../aws-lambda';
 import { UnscopedValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
@@ -278,4 +279,24 @@ export function isSdkV2Runtime(runtime: Runtime): boolean {
   ];
 
   return sdkV2RuntimeList.some((r) => {return r.family === runtime.family && r.name === runtime.name;});
+}
+
+/**
+ * Reads the `devEngines` field from the nearest `package.json` found by
+ * walking up parent directories from `directory`.
+ *
+ * Returns `undefined` when no `package.json` exists in the directory tree
+ * or when the found file does not contain a `devEngines` field.
+ */
+export function readDevEngines(directory: string): DevEngines | undefined {
+  const pkgPath = findUp('package.json', directory);
+  if (!pkgPath) {
+    return undefined;
+  }
+  try {
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
+    return pkg.devEngines ?? undefined;
+  } catch {
+    return undefined;
+  }
 }

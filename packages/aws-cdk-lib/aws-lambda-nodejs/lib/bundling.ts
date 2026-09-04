@@ -4,9 +4,9 @@ import * as path from 'path';
 import type { IConstruct } from 'constructs';
 import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
-import type { BundlingOptions } from './types';
+import type { BundlingOptions, DevEngines } from './types';
 import { OutputFormat, SourceMapMode } from './types';
-import { exec, extractDependencies, findUp, getTsconfigCompilerOptionsArray, isSdkV2Runtime } from './util';
+import { exec, extractDependencies, findUp, getTsconfigCompilerOptionsArray, isSdkV2Runtime, readDevEngines } from './util';
 import type { Architecture, AssetCode } from '../../aws-lambda';
 import { Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
@@ -125,6 +125,7 @@ export class Bundling implements cdk.BundlingOptions {
   private readonly relativeDepsLockFilePath: string;
   private readonly externals: string[];
   private readonly packageManager: PackageManager;
+  private readonly devEngines?: DevEngines;
 
   constructor(scope: IConstruct, private readonly props: BundlingProps) {
     this.packageManager = PackageManager.fromLockFile(props.depsLockFilePath, props.logLevel);
@@ -135,6 +136,7 @@ export class Bundling implements cdk.BundlingOptions {
     this.projectRoot = props.projectRoot;
     this.relativeEntryPath = path.relative(this.projectRoot, path.resolve(props.entry));
     this.relativeDepsLockFilePath = path.relative(this.projectRoot, path.resolve(props.depsLockFilePath));
+    this.devEngines = readDevEngines(path.dirname(props.entry));
 
     if (pathEscapesRoot(this.relativeEntryPath)) {
       throw new ValidationError(lit`PathNotUnderRoot`, `entryPath (${props.entry}) should be under projectRoot (${this.projectRoot})`, scope);
@@ -330,7 +332,10 @@ export class Bundling implements cdk.BundlingOptions {
       type: 'shell',
       commands: [chain([
         isPnpm ? osCommand.write(pathJoin(options.outputDir, 'pnpm-workspace.yaml'), '') : '',
-        osCommand.writeJson(pathJoin(options.outputDir, 'package.json'), { dependencies: deps.dependencies }),
+        osCommand.writeJson(pathJoin(options.outputDir, 'package.json'), {
+          ...(this.devEngines ? { devEngines: this.devEngines } : {}),
+          dependencies: deps.dependencies,
+        }),
         osCommand.copy(lockFilePath, pathJoin(options.outputDir, this.packageManager.lockFile)),
         osCommand.changeDirectory(options.outputDir),
         this.packageManager.installCommand.join(' '),
@@ -356,7 +361,10 @@ export class Bundling implements cdk.BundlingOptions {
         if (isPnpm) {
           fs.writeFileSync(path.join(outputDir, 'pnpm-workspace.yaml'), '');
         }
-        fs.writeFileSync(path.join(outputDir, 'package.json'), JSON.stringify({ dependencies: deps.dependencies }));
+        fs.writeFileSync(path.join(outputDir, 'package.json'), JSON.stringify({
+          ...(this.devEngines ? { devEngines: this.devEngines } : {}),
+          dependencies: deps.dependencies,
+        }));
         fs.copyFileSync(lockFilePath, path.join(outputDir, this.packageManager.lockFile));
       },
     });
