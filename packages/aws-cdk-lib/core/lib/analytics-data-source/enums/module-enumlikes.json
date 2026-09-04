@@ -358,6 +358,21 @@
       "TSV"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/schema.ts": {
+    "Schema": [
+      "BOOLEAN",
+      "BINARY",
+      "BIG_INT",
+      "DOUBLE",
+      "FLOAT",
+      "INTEGER",
+      "SMALL_INT",
+      "TINY_INT",
+      "DATE",
+      "TIMESTAMP",
+      "STRING"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/os-version.ts": {
     "OSVersion": [
       "LINUX",
@@ -405,6 +420,1351 @@
       "SQL_1_0"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/bridge.ts": {
+    "BridgeType": [
+      "INGRESS_BRIDGE",
+      "EGRESS_BRIDGE"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow-source-configuration.ts": {
+    "Encoding": [
+      "JXSV",
+      "RAW",
+      "SMPTE291",
+      "PCM"
+    ],
+    "SourceProtocol": [
+      "ZIXI_PUSH",
+      "RTP_FEC",
+      "RTP",
+      "RIST",
+      "SRT_LISTENER",
+      "SRT_CALLER",
+      "JPEGXS",
+      "CDI",
+      "NDI_SPEED_HQ"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow.ts": {
+    "FlowSize": [
+      "MEDIUM",
+      "LARGE",
+      "LARGE_4X"
+    ],
+    "Colorimetry": [
+      "BT601",
+      "BT709",
+      "BT2020",
+      "BT2100",
+      "ST2065_1",
+      "ST2065_3",
+      "XYZ"
+    ],
+    "VideoRange": [
+      "NARROW",
+      "FULL",
+      "FULLPROTECT"
+    ],
+    "ScanMode": [
+      "PROGRESSIVE",
+      "INTERLACE",
+      "PROGRESSIVE_SEGMENTED_FRAME"
+    ],
+    "Tcs": [
+      "SDR",
+      "PQ",
+      "HLG",
+      "LINEAR",
+      "BT2100LINPQ",
+      "BT2100LINHLG",
+      "ST2065_1",
+      "ST428_1",
+      "DENSITY"
+    ],
+    "AudioStreamOrderOptions": [
+      "MONO",
+      "DUAL_MONO",
+      "STANDARD_STEREO",
+      "LTRT_MATRIX_STEREO",
+      "SURROUND_5_1",
+      "SURROUND_7_1",
+      "SURROUND_22_2",
+      "ONE_SDI_AUDIO_GROUP"
+    ],
+    "MediaVideoFormat": [
+      "UHD_2160P",
+      "HD_1080P",
+      "HD_1080I",
+      "HD_720P",
+      "SD_480P"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/router-input.ts": {
+    "RouterInputProtocolOptions": [
+      "RTP",
+      "RIST",
+      "SRT_CALLER",
+      "SRT_LISTENER"
+    ],
+    "RoutingScope": [
+      "REGIONAL",
+      "GLOBAL"
+    ],
+    "RouterInputTier": [
+      "INPUT_100",
+      "INPUT_50",
+      "INPUT_20"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/router-output.ts": {
+    "RouterOutputProtocolOptions": [
+      "RTP",
+      "RIST",
+      "SRT_CALLER",
+      "SRT_LISTENER"
+    ],
+    "RouterOutputTier": [
+      "OUTPUT_100",
+      "OUTPUT_50",
+      "OUTPUT_20"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/shared.ts": {
+    "EncryptionAlgorithm": [
+      "AES128",
+      "AES192",
+      "AES256"
+    ],
+    "KeyType": [
+      "STATIC_KEY",
+      "SRT_PASSWORD"
+    ],
+    "BridgeProtocol": [
+      "RTP_FEC",
+      "RTP",
+      "UDP"
+    ],
+    "FailoverMode": [
+      "MERGE",
+      "FAILOVER"
+    ],
+    "NetworkInterface": [
+      "ENA",
+      "EFA"
+    ],
+    "Framerate": [
+      "FPS_24",
+      "FPS_25",
+      "FPS_29_97",
+      "FPS_30",
+      "FPS_50",
+      "FPS_59_94",
+      "FPS_60"
+    ],
+    "PixelAspectRatio": [
+      "SQUARE"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/audio-codec-settings.ts": {
+    "AudioSampleRate": [
+      "HZ_8000",
+      "HZ_12000",
+      "HZ_16000",
+      "HZ_22050",
+      "HZ_24000",
+      "HZ_32000",
+      "HZ_44100",
+      "HZ_48000",
+      "HZ_88200",
+      "HZ_96000"
+    ],
+    "AudioBitDepth": [
+      "DEPTH_16",
+      "DEPTH_24"
+    ],
+    "AacProfile": [
+      "HEV1",
+      "HEV2",
+      "LC"
+    ],
+    "AacCodingMode": [
+      "AD_RECEIVER_MIX",
+      "CODING_MODE_1_0",
+      "CODING_MODE_1_1",
+      "CODING_MODE_2_0",
+      "CODING_MODE_5_1"
+    ],
+    "AacRateControlMode": [
+      "CBR",
+      "VBR"
+    ],
+    "AacRawFormat": [
+      "LATM_LOAS",
+      "NONE"
+    ],
+    "AacSpec": [
+      "MPEG2",
+      "MPEG4"
+    ],
+    "AacInputType": [
+      "BROADCASTER_MIXED_AD",
+      "NORMAL"
+    ],
+    "AacVbrQuality": [
+      "HIGH",
+      "LOW",
+      "MEDIUM_HIGH",
+      "MEDIUM_LOW"
+    ],
+    "Ac3AttenuationControl": [
+      "ATTENUATE_3_DB",
+      "NONE"
+    ],
+    "Ac3BitstreamMode": [
+      "COMMENTARY",
+      "COMPLETE_MAIN",
+      "DIALOGUE",
+      "EMERGENCY",
+      "HEARING_IMPAIRED",
+      "MUSIC_AND_EFFECTS",
+      "VISUALLY_IMPAIRED",
+      "VOICE_OVER"
+    ],
+    "Ac3CodingMode": [
+      "CODING_MODE_1_0",
+      "CODING_MODE_1_1",
+      "CODING_MODE_2_0",
+      "CODING_MODE_3_2_LFE"
+    ],
+    "Ac3DrcProfile": [
+      "FILM_STANDARD",
+      "NONE"
+    ],
+    "Ac3LfeFilter": [
+      "DISABLED",
+      "ENABLED"
+    ],
+    "Ac3MetadataControl": [
+      "FOLLOW_INPUT",
+      "USE_CONFIGURED"
+    ],
+    "Eac3AttenuationControl": [
+      "ATTENUATE_3_DB",
+      "NONE"
+    ],
+    "Eac3BitstreamMode": [
+      "COMMENTARY",
+      "COMPLETE_MAIN",
+      "EMERGENCY",
+      "HEARING_IMPAIRED",
+      "VISUALLY_IMPAIRED"
+    ],
+    "Eac3CodingMode": [
+      "CODING_MODE_1_0",
+      "CODING_MODE_2_0",
+      "CODING_MODE_3_2"
+    ],
+    "Eac3DcFilter": [
+      "DISABLED",
+      "ENABLED"
+    ],
+    "Eac3DrcLine": [
+      "FILM_LIGHT",
+      "FILM_STANDARD",
+      "MUSIC_LIGHT",
+      "MUSIC_STANDARD",
+      "NONE",
+      "SPEECH"
+    ],
+    "Eac3DrcRf": [
+      "FILM_LIGHT",
+      "FILM_STANDARD",
+      "MUSIC_LIGHT",
+      "MUSIC_STANDARD",
+      "NONE",
+      "SPEECH"
+    ],
+    "Eac3LfeControl": [
+      "LFE",
+      "NO_LFE"
+    ],
+    "Eac3LfeFilter": [
+      "DISABLED",
+      "ENABLED"
+    ],
+    "Eac3MetadataControl": [
+      "FOLLOW_INPUT",
+      "USE_CONFIGURED"
+    ],
+    "Eac3PassthroughControl": [
+      "NO_PASSTHROUGH",
+      "WHEN_POSSIBLE"
+    ],
+    "Eac3PhaseControl": [
+      "NO_SHIFT",
+      "SHIFT_90_DEGREES"
+    ],
+    "Eac3StereoDownmix": [
+      "DPL2",
+      "LO_RO",
+      "LT_RT",
+      "NOT_INDICATED"
+    ],
+    "Eac3SurroundExMode": [
+      "DISABLED",
+      "ENABLED",
+      "NOT_INDICATED"
+    ],
+    "Eac3SurroundMode": [
+      "DISABLED",
+      "ENABLED",
+      "NOT_INDICATED"
+    ],
+    "Eac3AtmosCodingMode": [
+      "CODING_MODE_5_1_4",
+      "CODING_MODE_7_1_4",
+      "CODING_MODE_9_1_6"
+    ],
+    "Eac3AtmosDrcLine": [
+      "FILM_LIGHT",
+      "FILM_STANDARD",
+      "MUSIC_LIGHT",
+      "MUSIC_STANDARD",
+      "NONE",
+      "SPEECH"
+    ],
+    "Eac3AtmosDrcRf": [
+      "FILM_LIGHT",
+      "FILM_STANDARD",
+      "MUSIC_LIGHT",
+      "MUSIC_STANDARD",
+      "NONE",
+      "SPEECH"
+    ],
+    "Mp2CodingMode": [
+      "CODING_MODE_1_0",
+      "CODING_MODE_2_0"
+    ],
+    "WavCodingMode": [
+      "CODING_MODE_1_0",
+      "CODING_MODE_2_0",
+      "CODING_MODE_4_0",
+      "CODING_MODE_8_0"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/audio-selector.ts": {
+    "AudioLanguageSelectionPolicy": [
+      "STRICT",
+      "LOOSE"
+    ],
+    "DolbyEProgramSelection": [
+      "ALL_CHANNELS",
+      "PROGRAM_1",
+      "PROGRAM_2",
+      "PROGRAM_3",
+      "PROGRAM_4",
+      "PROGRAM_5",
+      "PROGRAM_6",
+      "PROGRAM_7",
+      "PROGRAM_8"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/avail-settings.ts": {
+    "AvailBlankingState": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "Scte35FlagBehavior": [
+      "FOLLOW",
+      "IGNORE"
+    ],
+    "Scte35SegmentationScope": [
+      "ALL_OUTPUT_GROUPS",
+      "SCTE35_ENABLED_OUTPUT_GROUPS"
+    ],
+    "BlackoutSlateState": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "NetworkEndBlackout": [
+      "ENABLED",
+      "DISABLED"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/caption-selector.ts": {
+    "OcrLanguage": [
+      "DEU",
+      "ENG",
+      "FRA",
+      "NLD",
+      "POR",
+      "SPA"
+    ],
+    "Convert608To708": [
+      "DISABLED",
+      "UPCONVERT"
+    ],
+    "Scte20Detection": [
+      "AUTO",
+      "OFF"
+    ],
+    "CaptionSynchronizationMode": [
+      "NO_VIDEO_DELAY",
+      "VIDEO_ALIGNED_CAPTIONS"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/caption-settings.ts": {
+    "CaptionAlignment": [
+      "CENTERED",
+      "LEFT",
+      "SMART"
+    ],
+    "CaptionFontColor": [
+      "BLACK",
+      "BLUE",
+      "GREEN",
+      "RED",
+      "WHITE",
+      "YELLOW"
+    ],
+    "CaptionOutlineColor": [
+      "BLACK",
+      "BLUE",
+      "GREEN",
+      "RED",
+      "WHITE",
+      "YELLOW"
+    ],
+    "CaptionBackgroundColor": [
+      "BLACK",
+      "NONE",
+      "WHITE"
+    ],
+    "CaptionShadowColor": [
+      "BLACK",
+      "NONE",
+      "WHITE"
+    ],
+    "CaptionTeletextGridControl": [
+      "FIXED",
+      "SCALED"
+    ],
+    "EbuTtDFillLineGap": [
+      "DISABLED",
+      "ENABLED"
+    ],
+    "EbuTtDStyleControl": [
+      "EXCLUDE",
+      "INCLUDE"
+    ],
+    "TtmlStyleControl": [
+      "PASSTHROUGH",
+      "USE_CONFIGURED"
+    ],
+    "WebvttStyleControl": [
+      "NO_STYLE_DATA",
+      "PASSTHROUGH"
+    ],
+    "CaptionFontSize": [
+      "AUTO"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/channel-features.ts": {
+    "FeatureActivationState": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "MotionGraphicsInsertion": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "NielsenPcmToId3TaggingState": [
+      "DISABLED",
+      "ENABLED"
+    ],
+    "ThumbnailState": [
+      "AUTO",
+      "DISABLED"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/channel.ts": {
+    "Pipeline": [
+      "PIPELINE_0",
+      "PIPELINE_1"
+    ],
+    "ChannelClass": [
+      "SINGLE_PIPELINE",
+      "STANDARD"
+    ],
+    "LogLevel": [
+      "ERROR",
+      "WARNING",
+      "INFO",
+      "DEBUG",
+      "DISABLED"
+    ],
+    "TimecodeSource": [
+      "EMBEDDED",
+      "SYSTEMCLOCK",
+      "ZEROBASED"
+    ],
+    "InputEndAction": [
+      "SWITCH_AND_LOOP_INPUTS",
+      "NONE"
+    ],
+    "OutputTimingSource": [
+      "INPUT_CLOCK",
+      "SYSTEM_CLOCK"
+    ],
+    "InputLossImageType": [
+      "COLOR",
+      "SLATE"
+    ],
+    "PipelineLockingMethod": [
+      "SOURCE_TIMECODE",
+      "VIDEO_ALIGNMENT"
+    ],
+    "MaintenanceDay": [
+      "MONDAY",
+      "TUESDAY",
+      "WEDNESDAY",
+      "THURSDAY",
+      "FRIDAY",
+      "SATURDAY",
+      "SUNDAY"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/cluster.ts": {
+    "ClusterType": [
+      "ON_PREMISES",
+      "OUTPOSTS_RACK",
+      "OUTPOSTS_SERVER",
+      "EC2"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/color-correction.ts": {
+    "ColorSpace": [
+      "HDR10",
+      "HLG_2020",
+      "REC_601",
+      "REC_709"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/destinations.ts": {
+    "MediaPackageV2EndpointId": [
+      "ENDPOINT_1",
+      "ENDPOINT_2"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/encode-configuration.ts": {
+    "RespondToAfd": [
+      "RESPOND",
+      "PASSTHROUGH",
+      "NONE"
+    ],
+    "ScalingBehavior": [
+      "DEFAULT",
+      "STRETCH_TO_OUTPUT",
+      "SMART_CROP"
+    ],
+    "AudioNormalizationAlgorithm": [
+      "ITU_1770_1",
+      "ITU_1770_2"
+    ],
+    "AudioNormalizationAlgorithmControl": [
+      "CORRECT_AUDIO",
+      "MEASURE_ONLY"
+    ],
+    "AudioNormalizationPeakCalculation": [
+      "TRUE_PEAK"
+    ],
+    "NielsenCbetStepaside": [
+      "DISABLED",
+      "ENABLED"
+    ],
+    "NielsenWatermarkTimezone": [
+      "AMERICA_PUERTO_RICO",
+      "US_ALASKA",
+      "US_ARIZONA",
+      "US_CENTRAL",
+      "US_EASTERN",
+      "US_HAWAII",
+      "US_MOUNTAIN",
+      "US_PACIFIC",
+      "US_SAMOA",
+      "UTC"
+    ],
+    "NielsenDistributionType": [
+      "PROGRAM_CONTENT",
+      "FINAL_DISTRIBUTOR"
+    ],
+    "AudioTypeControl": [
+      "FOLLOW_INPUT",
+      "USE_CONFIGURED"
+    ],
+    "AudioLanguageCodeControl": [
+      "FOLLOW_INPUT",
+      "USE_CONFIGURED"
+    ],
+    "AudioType": [
+      "CLEAN_EFFECTS",
+      "HEARING_IMPAIRED",
+      "UNDEFINED",
+      "VISUAL_IMPAIRED_COMMENTARY"
+    ],
+    "DvbDashAccessibility": [
+      "VISUALLY_IMPAIRED",
+      "HARD_OF_HEARING",
+      "SUPPLEMENTAL_COMMENTARY",
+      "DIRECTORS_COMMENTARY",
+      "EDUCATIONAL_NOTES",
+      "MAIN_PROGRAM",
+      "CLEAN_FEED"
+    ],
+    "AudioDashRole": [
+      "ALTERNATE",
+      "COMMENTARY",
+      "DESCRIPTION",
+      "DUB",
+      "EMERGENCY",
+      "ENHANCED_AUDIO_INTELLIGIBILITY",
+      "KARAOKE",
+      "MAIN",
+      "SUPPLEMENTARY"
+    ],
+    "CaptionAccessibility": [
+      "DOES_NOT_IMPLEMENT_ACCESSIBILITY_FEATURES",
+      "IMPLEMENTS_ACCESSIBILITY_FEATURES"
+    ],
+    "CaptionDashRole": [
+      "ALTERNATE",
+      "CAPTION",
+      "COMMENTARY",
+      "DESCRIPTION",
+      "DUB",
+      "EASYREADER",
+      "EMERGENCY",
+      "FORCED_SUBTITLE",
+      "KARAOKE",
+      "MAIN",
+      "METADATA",
+      "SUBTITLE",
+      "SUPPLEMENTARY"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/enums.ts": {
+    "HlsMode": [
+      "LIVE",
+      "VOD"
+    ],
+    "HlsInputLossAction": [
+      "EMIT_OUTPUT",
+      "PAUSE_OUTPUT"
+    ],
+    "HlsClientCache": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "HlsCodecSpecification": [
+      "RFC_4281",
+      "RFC_6381"
+    ],
+    "HlsDirectoryStructure": [
+      "SINGLE_DIRECTORY",
+      "SUBDIRECTORY_PER_STREAM"
+    ],
+    "HlsDiscontinuityTags": [
+      "INSERT",
+      "NEVER_INSERT"
+    ],
+    "HlsEncryptionType": [
+      "AES128",
+      "SAMPLE_AES"
+    ],
+    "HlsId3SegmentTaggingState": [
+      "DISABLED",
+      "ENABLED"
+    ],
+    "HlsIFrameOnlyPlaylists": [
+      "DISABLED",
+      "STANDARD"
+    ],
+    "HlsIncompleteSegmentBehavior": [
+      "AUTO",
+      "SUPPRESS"
+    ],
+    "HlsIvInManifest": [
+      "INCLUDE",
+      "EXCLUDE"
+    ],
+    "HlsIvSource": [
+      "FOLLOWS_SEGMENT_NUMBER",
+      "EXPLICIT"
+    ],
+    "HlsManifestCompression": [
+      "NONE",
+      "GZIP"
+    ],
+    "HlsManifestDurationFormat": [
+      "FLOATING_POINT",
+      "INTEGER"
+    ],
+    "HlsOutputSelection": [
+      "MANIFESTS_AND_SEGMENTS",
+      "SEGMENTS_ONLY",
+      "VARIANT_MANIFESTS_AND_SEGMENTS"
+    ],
+    "HlsProgramDateTime": [
+      "INCLUDE",
+      "EXCLUDE"
+    ],
+    "HlsProgramDateTimeClock": [
+      "INITIALIZE_FROM_OUTPUT_TIMECODE",
+      "SYSTEM_CLOCK"
+    ],
+    "HlsRedundantManifest": [
+      "DISABLED",
+      "ENABLED"
+    ],
+    "HlsSegmentationMode": [
+      "USE_INPUT_SEGMENTATION",
+      "USE_SEGMENT_DURATION"
+    ],
+    "HlsStreamInfResolution": [
+      "INCLUDE",
+      "EXCLUDE"
+    ],
+    "HlsCaptionLanguageSetting": [
+      "INSERT",
+      "NONE",
+      "OMIT"
+    ],
+    "MediaPackageV2HlsSetting": [
+      "YES",
+      "NO",
+      "OMIT"
+    ],
+    "HlsAdMarkers": [
+      "ADOBE",
+      "ELEMENTAL",
+      "ELEMENTAL_SCTE35"
+    ],
+    "RtmpAdMarkers": [
+      "ON_CUE_POINT_SCTE35"
+    ],
+    "HlsTimedMetadataId3Frame": [
+      "NONE",
+      "PRIV",
+      "TDRL"
+    ],
+    "HttpTransferMode": [
+      "CHUNKED",
+      "NON_CHUNKED"
+    ],
+    "HlsTsFileMode": [
+      "SEGMENTED_FILES",
+      "SINGLE_FILE"
+    ],
+    "RtmpAuthenticationScheme": [
+      "COMMON",
+      "AKAMAI"
+    ],
+    "RtmpCacheFullBehavior": [
+      "DISCONNECT_IMMEDIATELY",
+      "WAIT_FOR_SERVER"
+    ],
+    "RtmpCaptionData": [
+      "ALL",
+      "FIELD1_AND_FIELD2_608",
+      "FIELD1_608"
+    ],
+    "RtmpInputLossAction": [
+      "EMIT_OUTPUT",
+      "PAUSE_OUTPUT"
+    ],
+    "RtmpIncludeFillerNalUnits": [
+      "AUTO",
+      "DROP",
+      "INCLUDE"
+    ],
+    "RtmpCertificateMode": [
+      "VERIFY_AUTHENTICITY",
+      "SELF_SIGNED"
+    ],
+    "SrtInputLossAction": [
+      "DROP_TS",
+      "DROP_PROGRAM",
+      "EMIT_PROGRAM"
+    ],
+    "SrtEncryptionType": [
+      "AES128",
+      "AES192",
+      "AES256"
+    ],
+    "UdpInputLossAction": [
+      "DROP_TS",
+      "DROP_PROGRAM",
+      "EMIT_PROGRAM"
+    ],
+    "FecMode": [
+      "COLUMN",
+      "COLUMN_AND_ROW"
+    ],
+    "UdpTimedMetadataId3Frame": [
+      "NONE",
+      "PRIV",
+      "TDRL"
+    ],
+    "MsSmoothAudioOnlyTimecodeControl": [
+      "PASSTHROUGH",
+      "USE_CONFIGURED_CLOCK"
+    ],
+    "MsSmoothCertificateMode": [
+      "SELF_SIGNED",
+      "VERIFY_AUTHENTICITY"
+    ],
+    "MsSmoothEventIdMode": [
+      "NO_EVENT_ID",
+      "USE_CONFIGURED",
+      "USE_TIMESTAMP"
+    ],
+    "MsSmoothEventStopBehavior": [
+      "NONE",
+      "SEND_EOS"
+    ],
+    "MsSmoothInputLossAction": [
+      "EMIT_OUTPUT",
+      "PAUSE_OUTPUT"
+    ],
+    "MsSmoothSegmentationMode": [
+      "USE_INPUT_SEGMENTATION",
+      "USE_SEGMENT_DURATION"
+    ],
+    "MsSmoothSparseTrackType": [
+      "NONE",
+      "SCTE_35",
+      "SCTE_35_WITHOUT_SEGMENTATION"
+    ],
+    "MsSmoothStreamManifestBehavior": [
+      "DO_NOT_SEND",
+      "SEND"
+    ],
+    "MsSmoothTimestampOffsetMode": [
+      "USE_CONFIGURED_OFFSET",
+      "USE_EVENT_START_DATE"
+    ],
+    "Id3Behavior": [
+      "DISABLED",
+      "ENABLED"
+    ],
+    "KlvBehavior": [
+      "NO_PASSTHROUGH",
+      "PASSTHROUGH"
+    ],
+    "NielsenId3Behavior": [
+      "NO_PASSTHROUGH",
+      "PASSTHROUGH"
+    ],
+    "Scte35Type": [
+      "NONE",
+      "SCTE_35_WITHOUT_SEGMENTATION"
+    ],
+    "TimedMetadataId3Frame": [
+      "NONE",
+      "PRIV",
+      "TDRL"
+    ],
+    "TimedMetadataPassthrough": [
+      "DISABLED",
+      "ENABLED"
+    ],
+    "S3CannedAcl": [
+      "AUTHENTICATED_READ",
+      "BUCKET_OWNER_FULL_CONTROL",
+      "BUCKET_OWNER_READ",
+      "PUBLIC_READ"
+    ],
+    "H265PackagingType": [
+      "HEV1",
+      "HVC1"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/framerate.ts": {
+    "Framerate": [
+      "FPS_24",
+      "FPS_25",
+      "FPS_29_97",
+      "FPS_30",
+      "FPS_50",
+      "FPS_59_94",
+      "FPS_60"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/input-attachment.ts": {
+    "SourceEndBehavior": [
+      "CONTINUE",
+      "LOOP"
+    ],
+    "InputFilter": [
+      "AUTO",
+      "DISABLED",
+      "FORCED"
+    ],
+    "Smpte2038DataPreference": [
+      "PREFER",
+      "IGNORE"
+    ],
+    "ServerValidation": [
+      "CHECK_CRYPTOGRAPHY_AND_VALIDATE_NAME",
+      "CHECK_CRYPTOGRAPHY_ONLY"
+    ],
+    "HlsScte35Source": [
+      "SEGMENTS",
+      "MANIFEST"
+    ],
+    "InputPreference": [
+      "EQUAL_INPUT_PREFERENCE",
+      "PRIMARY_INPUT_PREFERRED"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/input-specification.ts": {
+    "InputCodec": [
+      "AVC",
+      "HEVC",
+      "MPEG2"
+    ],
+    "InputMaximumBitrate": [
+      "MAX_10_MBPS",
+      "MAX_20_MBPS",
+      "MAX_50_MBPS"
+    ],
+    "InputResolution": [
+      "SD",
+      "HD",
+      "UHD"
+    ],
+    "CdiInputResolution": [
+      "SD",
+      "HD",
+      "FHD",
+      "UHD"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/input.ts": {
+    "InputNetworkLocation": [
+      "AWS",
+      "ON_PREMISES"
+    ],
+    "SrtDecryptionAlgorithm": [
+      "AES128",
+      "AES192",
+      "AES256"
+    ],
+    "MulticastProtocol": [
+      "UDP",
+      "RTP"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/m2ts-settings.ts": {
+    "M2tsRateMode": [
+      "CBR",
+      "VBR"
+    ],
+    "M2tsBufferModel": [
+      "MULTIPLEX",
+      "NONE"
+    ],
+    "M2tsAudioBufferModel": [
+      "ATSC",
+      "DVB"
+    ],
+    "M2tsAudioStreamType": [
+      "ATSC",
+      "DVB"
+    ],
+    "M2tsPcrControl": [
+      "CONFIGURED_PCR_PERIOD",
+      "PCR_EVERY_PES_PACKET"
+    ],
+    "M2tsEsRateInPes": [
+      "EXCLUDE",
+      "INCLUDE"
+    ],
+    "M2tsArib": [
+      "DISABLED",
+      "ENABLED"
+    ],
+    "M2tsAribCaptionsPidControl": [
+      "AUTO",
+      "USE_CONFIGURED"
+    ],
+    "M2tsKlv": [
+      "NONE",
+      "PASSTHROUGH"
+    ],
+    "M2tsEbif": [
+      "NONE",
+      "PASSTHROUGH"
+    ],
+    "M2tsNielsenId3Behavior": [
+      "NO_PASSTHROUGH",
+      "PASSTHROUGH"
+    ],
+    "M2tsCcDescriptor": [
+      "DISABLED",
+      "ENABLED"
+    ],
+    "M2tsAbsentInputAudioBehavior": [
+      "DROP",
+      "ENCODE_SILENCE"
+    ],
+    "M2tsEbpAudioInterval": [
+      "VIDEO_AND_FIXED_INTERVALS",
+      "VIDEO_INTERVAL"
+    ],
+    "M2tsEbpPlacement": [
+      "VIDEO_AND_AUDIO_PIDS",
+      "VIDEO_PID"
+    ],
+    "M2tsScte35Control": [
+      "NONE",
+      "PASSTHROUGH"
+    ],
+    "M2tsSegmentationMarkers": [
+      "NONE",
+      "RAI_SEGSTART",
+      "RAI_ADAPT",
+      "PSI_SEGSTART",
+      "EBP",
+      "EBP_LEGACY"
+    ],
+    "M2tsSegmentationStyle": [
+      "MAINTAIN_CADENCE",
+      "RESET_CADENCE"
+    ],
+    "M2tsTimedMetadataBehavior": [
+      "NO_PASSTHROUGH",
+      "PASSTHROUGH"
+    ],
+    "DvbSdtOutputMode": [
+      "SDT_FOLLOW",
+      "SDT_FOLLOW_IF_PRESENT",
+      "SDT_MANUAL",
+      "SDT_NONE"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/m3u8-settings.ts": {
+    "M3u8PcrControl": [
+      "CONFIGURED_PCR_PERIOD",
+      "PCR_EVERY_PES_PACKET"
+    ],
+    "M3u8Scte35Behavior": [
+      "NO_PASSTHROUGH",
+      "PASSTHROUGH"
+    ],
+    "M3u8TimedMetadataBehavior": [
+      "NO_PASSTHROUGH",
+      "PASSTHROUGH"
+    ],
+    "M3u8NielsenId3Behavior": [
+      "NO_PASSTHROUGH",
+      "PASSTHROUGH"
+    ],
+    "M3u8KlvBehavior": [
+      "NONE",
+      "PASSTHROUGH"
+    ],
+    "HlsAudioTrackType": [
+      "AUDIO_ONLY_VARIANT_STREAM",
+      "ALTERNATE_AUDIO_AUTO_SELECT_DEFAULT",
+      "ALTERNATE_AUDIO_AUTO_SELECT",
+      "ALTERNATE_AUDIO_NOT_AUTO_SELECT"
+    ],
+    "HlsAudioOnlySegmentType": [
+      "AAC",
+      "FMP4"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/sdi-source.ts": {
+    "SdiType": [
+      "SINGLE",
+      "QUAD"
+    ],
+    "SdiMode": [
+      "INTERLEAVE",
+      "QUADRANT"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/shared.ts": {
+    "PixelAspectRatio": [
+      "SQUARE"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/video-codec-settings.ts": {
+    "H264Profile": [
+      "BASELINE",
+      "MAIN",
+      "HIGH",
+      "HIGH_10BIT",
+      "HIGH_422",
+      "HIGH_422_10BIT"
+    ],
+    "H264Level": [
+      "H264_LEVEL_1",
+      "H264_LEVEL_1_1",
+      "H264_LEVEL_1_2",
+      "H264_LEVEL_1_3",
+      "H264_LEVEL_2",
+      "H264_LEVEL_2_1",
+      "H264_LEVEL_2_2",
+      "H264_LEVEL_3",
+      "H264_LEVEL_3_1",
+      "H264_LEVEL_3_2",
+      "H264_LEVEL_4",
+      "H264_LEVEL_4_1",
+      "H264_LEVEL_4_2",
+      "H264_LEVEL_5",
+      "H264_LEVEL_5_1",
+      "H264_LEVEL_5_2",
+      "H264_LEVEL_AUTO"
+    ],
+    "H265Level": [
+      "H265_LEVEL_1",
+      "H265_LEVEL_2",
+      "H265_LEVEL_2_1",
+      "H265_LEVEL_3",
+      "H265_LEVEL_3_1",
+      "H265_LEVEL_4",
+      "H265_LEVEL_4_1",
+      "H265_LEVEL_5",
+      "H265_LEVEL_5_1",
+      "H265_LEVEL_5_2",
+      "H265_LEVEL_6",
+      "H265_LEVEL_6_1",
+      "H265_LEVEL_6_2",
+      "H265_LEVEL_AUTO"
+    ],
+    "Av1Level": [
+      "AV1_LEVEL_2",
+      "AV1_LEVEL_2_1",
+      "AV1_LEVEL_3",
+      "AV1_LEVEL_3_1",
+      "AV1_LEVEL_4",
+      "AV1_LEVEL_4_1",
+      "AV1_LEVEL_5",
+      "AV1_LEVEL_5_1",
+      "AV1_LEVEL_5_2",
+      "AV1_LEVEL_5_3",
+      "AV1_LEVEL_6",
+      "AV1_LEVEL_6_1",
+      "AV1_LEVEL_6_2",
+      "AV1_LEVEL_6_3",
+      "AV1_LEVEL_AUTO"
+    ],
+    "H264AdaptiveQuantization": [
+      "AUTO",
+      "HIGH",
+      "HIGHER",
+      "LOW",
+      "MAX",
+      "MEDIUM",
+      "OFF"
+    ],
+    "AfdSignaling": [
+      "AUTO",
+      "FIXED",
+      "NONE"
+    ],
+    "ColorMetadata": [
+      "IGNORE",
+      "INSERT"
+    ],
+    "ScanType": [
+      "INTERLACED",
+      "PROGRESSIVE"
+    ],
+    "FlickerAq": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "GopBReference": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "LookAheadRateControl": [
+      "HIGH",
+      "LOW",
+      "MEDIUM"
+    ],
+    "TimecodeInsertion": [
+      "DISABLED",
+      "PIC_TIMING_SEI"
+    ],
+    "SubgopLength": [
+      "DYNAMIC",
+      "FIXED"
+    ],
+    "H264EntropyEncoding": [
+      "CABAC",
+      "CAVLC"
+    ],
+    "H264ForceFieldPictures": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "H264Syntax": [
+      "DEFAULT",
+      "RP2027"
+    ],
+    "H264QualityLevel": [
+      "ENHANCED_QUALITY",
+      "STANDARD_QUALITY"
+    ],
+    "H265AdaptiveQuantization": [
+      "AUTO",
+      "HIGH",
+      "HIGHER",
+      "LOW",
+      "MAX",
+      "MEDIUM",
+      "OFF"
+    ],
+    "H265AlternativeTransferFunction": [
+      "INSERT",
+      "OMIT"
+    ],
+    "H265Deblocking": [
+      "DISABLED",
+      "ENABLED"
+    ],
+    "H265MvOverPictureBoundaries": [
+      "DISABLED",
+      "ENABLED"
+    ],
+    "H265MvTemporalPredictor": [
+      "DISABLED",
+      "ENABLED"
+    ],
+    "H265TilePadding": [
+      "NONE",
+      "PADDED"
+    ],
+    "H265TreeblockSize": [
+      "AUTO",
+      "TREE_SIZE_32X32"
+    ],
+    "Av1BitDepth": [
+      "BIT_DEPTH_8",
+      "BIT_DEPTH_10"
+    ],
+    "Av1SceneChangeDetect": [
+      "DISABLED",
+      "ENABLED"
+    ],
+    "Av1SpatialAq": [
+      "DISABLED",
+      "ENABLED"
+    ],
+    "Av1TemporalAq": [
+      "DISABLED",
+      "ENABLED"
+    ],
+    "H264SceneChangeDetect": [
+      "DISABLED",
+      "ENABLED"
+    ],
+    "H264SpatialAq": [
+      "DISABLED",
+      "ENABLED"
+    ],
+    "H264TemporalAq": [
+      "DISABLED",
+      "ENABLED"
+    ],
+    "H265SceneChangeDetect": [
+      "DISABLED",
+      "ENABLED"
+    ],
+    "Av1TimecodeInsertion": [
+      "DISABLED",
+      "METADATA_OBU"
+    ],
+    "TimecodeBurninFontSize": [
+      "EXTRA_SMALL_10",
+      "LARGE_48",
+      "MEDIUM_32",
+      "SMALL_16"
+    ],
+    "TimecodeBurninPosition": [
+      "BOTTOM_CENTER",
+      "BOTTOM_LEFT",
+      "BOTTOM_RIGHT",
+      "MIDDLE_CENTER",
+      "MIDDLE_LEFT",
+      "MIDDLE_RIGHT",
+      "TOP_CENTER",
+      "TOP_LEFT",
+      "TOP_RIGHT"
+    ],
+    "TemporalFilterPostFilterSharpening": [
+      "AUTO",
+      "DISABLED",
+      "ENABLED"
+    ],
+    "TemporalFilterStrength": [
+      "AUTO",
+      "STRENGTH_1",
+      "STRENGTH_2",
+      "STRENGTH_3",
+      "STRENGTH_4",
+      "STRENGTH_5",
+      "STRENGTH_6",
+      "STRENGTH_7",
+      "STRENGTH_8",
+      "STRENGTH_9",
+      "STRENGTH_10",
+      "STRENGTH_11",
+      "STRENGTH_12",
+      "STRENGTH_13",
+      "STRENGTH_14",
+      "STRENGTH_15",
+      "STRENGTH_16"
+    ],
+    "BandwidthReductionPostFilterSharpening": [
+      "DISABLED",
+      "SHARPENING_1",
+      "SHARPENING_2",
+      "SHARPENING_3"
+    ],
+    "BandwidthReductionStrength": [
+      "AUTO",
+      "STRENGTH_1",
+      "STRENGTH_2",
+      "STRENGTH_3",
+      "STRENGTH_4"
+    ],
+    "H265Profile": [
+      "MAIN",
+      "MAIN_10BIT"
+    ],
+    "H265Tier": [
+      "MAIN",
+      "HIGH"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/video-selection.ts": {
+    "VideoColorSpace": [
+      "FOLLOW",
+      "REC_601",
+      "REC_709",
+      "HDR10",
+      "HLG_2020"
+    ],
+    "VideoColorSpaceUsage": [
+      "FALLBACK",
+      "FORCE"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/lib/channel.ts": {
     "HeadersCMSD": [
       "MQCS"
@@ -443,7 +1803,8 @@
       "V3_9_X",
       "V3_9_X_KRAFT",
       "V4_0_X_KRAFT",
-      "V4_1_X_KRAFT"
+      "V4_1_X_KRAFT",
+      "V4_2_X_KRAFT"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-neptune-alpha/lib/cluster.ts": {
@@ -758,6 +2119,12 @@
       "ALL",
       "LAUNCH_EVENTS",
       "TERMINATION_EVENTS"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-backup/lib/rule.ts": {
+    "IndexActionResourceType": [
+      "S3",
+      "EBS"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-bedrock/lib/foundation-model.ts": {
@@ -1130,6 +2497,7 @@
       "AMAZON_LINUX_2_NODE_18",
       "AMAZON_LINUX_2023_NODE_20",
       "AMAZON_LINUX_2023_NODE_22",
+      "AMAZON_LINUX_2023_NODE_24",
       "AMAZON_LINUX_2_PYTHON_3_11",
       "AMAZON_LINUX_2023_PYTHON_3_12",
       "AMAZON_LINUX_2023_PYTHON_3_13",
@@ -1170,6 +2538,7 @@
       "AMAZON_LINUX_2_NODE_18",
       "AMAZON_LINUX_2023_NODE_20",
       "AMAZON_LINUX_2023_NODE_22",
+      "AMAZON_LINUX_2023_NODE_24",
       "AMAZON_LINUX_2_PYTHON_3_11",
       "AMAZON_LINUX_2023_PYTHON_3_12",
       "AMAZON_LINUX_2023_PYTHON_3_13",
@@ -1206,40 +2575,9 @@
       "AMAZON_LINUX_2023_CORETTO_11",
       "AMAZON_LINUX_2_ARM",
       "AMAZON_LINUX_2_ARM_2",
-      "AMAZON_LINUX_2_ARM_3",
-      "UBUNTU_14_04_BASE",
-      "UBUNTU_14_04_ANDROID_JAVA8_24_4_1",
-      "UBUNTU_14_04_ANDROID_JAVA8_26_1_1",
-      "UBUNTU_14_04_DOCKER_17_09_0",
-      "UBUNTU_14_04_DOCKER_18_09_0",
-      "UBUNTU_14_04_GOLANG_1_10",
-      "UBUNTU_14_04_GOLANG_1_11",
-      "UBUNTU_14_04_OPEN_JDK_8",
-      "UBUNTU_14_04_OPEN_JDK_9",
-      "UBUNTU_14_04_OPEN_JDK_11",
-      "UBUNTU_14_04_NODEJS_10_14_1",
-      "UBUNTU_14_04_NODEJS_10_1_0",
-      "UBUNTU_14_04_NODEJS_8_11_0",
-      "UBUNTU_14_04_NODEJS_6_3_1",
-      "UBUNTU_14_04_PHP_5_6",
-      "UBUNTU_14_04_PHP_7_0",
-      "UBUNTU_14_04_PHP_7_1",
-      "UBUNTU_14_04_PYTHON_3_7_1",
-      "UBUNTU_14_04_PYTHON_3_6_5",
-      "UBUNTU_14_04_PYTHON_3_5_2",
-      "UBUNTU_14_04_PYTHON_3_4_5",
-      "UBUNTU_14_04_PYTHON_3_3_6",
-      "UBUNTU_14_04_PYTHON_2_7_12",
-      "UBUNTU_14_04_RUBY_2_5_3",
-      "UBUNTU_14_04_RUBY_2_5_1",
-      "UBUNTU_14_04_RUBY_2_3_1",
-      "UBUNTU_14_04_RUBY_2_2_5",
-      "UBUNTU_14_04_DOTNET_CORE_1_1",
-      "UBUNTU_14_04_DOTNET_CORE_2_0",
-      "UBUNTU_14_04_DOTNET_CORE_2_1"
+      "AMAZON_LINUX_2_ARM_3"
     ],
     "WindowsBuildImage": [
-      "WIN_SERVER_CORE_2016_BASE",
       "WINDOWS_BASE_2_0",
       "WIN_SERVER_CORE_2019_BASE",
       "WIN_SERVER_CORE_2019_BASE_2_0",
@@ -1897,6 +3235,8 @@
       "CODE_CONNECTIONS",
       "COGNITO_IDP",
       "COGNITO_IDP_FIPS",
+      "COGNITO_IDENTITY",
+      "COGNITO_IDENTITY_FIPS",
       "COMPREHEND",
       "COMPREHEND_MEDICAL",
       "COMPUTE_OPTIMIZER",
@@ -2357,6 +3697,13 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.ts": {
+    "ControlPlaneScalingTier": [
+      "STANDARD",
+      "TIER_XL",
+      "TIER_2XL",
+      "TIER_4XL",
+      "TIER_8XL"
+    ],
     "EndpointAccess": [
       "PUBLIC",
       "PRIVATE",
@@ -2373,7 +3720,8 @@
       "V1_32",
       "V1_33",
       "V1_34",
-      "V1_35"
+      "V1_35",
+      "V1_36"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-eks/lib/access-entry.ts": {
@@ -2475,7 +3823,8 @@
       "V1_32",
       "V1_33",
       "V1_34",
-      "V1_35"
+      "V1_35",
+      "V1_36"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-elasticsearch/lib/domain.ts": {
@@ -2508,6 +3857,26 @@
       "SNAPPY",
       "ZIP",
       "UNCOMPRESSED"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/datadog.ts": {
+    "DatadogEndpoint": [
+      "LOGS_US1",
+      "LOGS_US3",
+      "LOGS_US5",
+      "LOGS_AP1",
+      "LOGS_EU",
+      "LOGS_GOV",
+      "METRICS_US",
+      "METRICS_US5",
+      "METRICS_AP1",
+      "METRICS_EU",
+      "CONFIGURATION_US1",
+      "CONFIGURATION_US3",
+      "CONFIGURATION_US5",
+      "CONFIGURATION_AP1",
+      "CONFIGURATION_EU",
+      "CONFIGURATION_US_GOV"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/record-format/input.ts": {
@@ -2668,6 +4037,9 @@
       "JAVA_17",
       "JAVA_21",
       "JAVA_25",
+      "JAVA_8_AL2023",
+      "JAVA_11_AL2023",
+      "JAVA_17_AL2023",
       "DOTNET_6",
       "DOTNET_8",
       "DOTNET_9",
@@ -2858,7 +4230,8 @@
       "OPENSEARCH_2_19",
       "OPENSEARCH_3_1",
       "OPENSEARCH_3_3",
-      "OPENSEARCH_3_5"
+      "OPENSEARCH_3_5",
+      "OPENSEARCH_3_7"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/ca-certificate.ts": {
@@ -3311,6 +4684,7 @@
       "VER_5_7_44_RDS_20250818",
       "VER_5_7_44_RDS_20251212",
       "VER_5_7_44_RDS_20260212",
+      "VER_5_7_44_RDS_20260521",
       "VER_8_0",
       "VER_8_0_11",
       "VER_8_0_13",
@@ -3348,7 +4722,8 @@
       "VER_8_4_6",
       "VER_8_4_7",
       "VER_8_4_8",
-      "VER_8_4_9"
+      "VER_8_4_9",
+      "VER_8_4_10"
     ],
     "PostgresEngineVersion": [
       "VER_9_5",
@@ -3674,6 +5049,7 @@
       "VER_19_0_0_0_2024_10_R1",
       "VER_19_0_0_0_2025_01_R1",
       "VER_19_0_0_0_2025_07_R1",
+      "VER_19_0_0_0_2025_10_R1",
       "VER_21",
       "VER_21_0_0_0_2022_01_R1",
       "VER_21_0_0_0_2022_04_R1",

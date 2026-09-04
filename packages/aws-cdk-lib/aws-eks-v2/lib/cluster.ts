@@ -9,6 +9,7 @@ import type { IAddon } from './addon';
 import { Addon } from './addon';
 import type { AlbControllerOptions } from './alb-controller';
 import { AlbController } from './alb-controller';
+import { CfnCluster } from './eks.generated';
 import type { FargateProfileOptions } from './fargate-profile';
 import { FargateProfile } from './fargate-profile';
 import type { HelmChartOptions } from './helm-chart';
@@ -29,8 +30,6 @@ import { ServiceAccount } from './service-account';
 import { renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 import * as autoscaling from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
-import { CfnCluster } from '../../aws-eks';
-import type { ClusterReference, IClusterRef } from '../../aws-eks';
 import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
 import * as ssm from '../../aws-ssm';
@@ -42,6 +41,7 @@ import { MethodMetadata, addConstructMetadata } from '../../core/lib/metadata-re
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { EKS_USE_NATIVE_OIDC_PROVIDER } from '../../cx-api';
+import type { ClusterReference, IClusterRef } from '../../interfaces/generated/aws-eks-interfaces.generated';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -295,6 +295,60 @@ export interface ClusterAttributes {
 }
 
 /**
+ * The scaling tier for the EKS cluster provisioned control plane.
+ *
+ * Amazon EKS Provisioned Control Plane lets you select a scaling tier to ensure high and
+ * predictable control plane performance for demanding workloads such as AI training/inference,
+ * high-performance computing, or large-scale data processing.
+ *
+ * @see https://docs.aws.amazon.com/eks/latest/userguide/eks-provisioned-control-plane.html
+ */
+export class ControlPlaneScalingTier {
+  /**
+   * Standard control plane. This is the EKS service default and incurs no additional cost.
+   */
+  public static readonly STANDARD = new ControlPlaneScalingTier('standard');
+
+  /**
+   * Extra-large provisioned control plane tier.
+   */
+  public static readonly TIER_XL = new ControlPlaneScalingTier('tier-xl');
+
+  /**
+   * 2x extra-large provisioned control plane tier.
+   */
+  public static readonly TIER_2XL = new ControlPlaneScalingTier('tier-2xl');
+
+  /**
+   * 4x extra-large provisioned control plane tier.
+   */
+  public static readonly TIER_4XL = new ControlPlaneScalingTier('tier-4xl');
+
+  /**
+   * 8x extra-large provisioned control plane tier.
+   */
+  public static readonly TIER_8XL = new ControlPlaneScalingTier('tier-8xl');
+
+  /**
+   * A custom scaling tier, for values not yet available as a static member.
+   *
+   * @param tier the scaling tier value as expected by the EKS API (for example `tier-16xl`)
+   */
+  public static of(tier: string): ControlPlaneScalingTier {
+    return new ControlPlaneScalingTier(tier);
+  }
+
+  /**
+   * The string value of the scaling tier as expected by the EKS API.
+   */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
+}
+
+/**
  * Options for configuring an EKS cluster.
  */
 export interface ClusterCommonOptions {
@@ -449,6 +503,18 @@ export interface ClusterCommonOptions {
    * @default - none
    */
   readonly remotePodNetworks?: RemotePodNetwork[];
+
+  /**
+   * The scaling tier for the cluster's provisioned control plane.
+   *
+   * Provisioned Control Plane allows you to select a scaling tier to ensure
+   * high and predictable performance for demanding workloads such as
+   * AI training/inference, high-performance computing, or large-scale data processing.
+   *
+   * @default - Standard control plane (no provisioned tier)
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/eks-provisioned-control-plane.html
+   */
+  readonly controlPlaneScalingTier?: ControlPlaneScalingTier;
 
   /**
    * The removal policy applied to all CloudFormation resources created by this construct
@@ -1382,6 +1448,9 @@ export class Cluster extends ClusterBase {
       tags: Object.keys(props.tags ?? {}).map(k => ({ key: k, value: props.tags![k] })),
       logging: this.logging,
       bootstrapSelfManagedAddons: props.bootstrapSelfManagedAddons,
+      controlPlaneScalingConfig: props.controlPlaneScalingTier
+        ? { tier: props.controlPlaneScalingTier.value }
+        : undefined,
     });
 
     this.node.defaultChild = resource;

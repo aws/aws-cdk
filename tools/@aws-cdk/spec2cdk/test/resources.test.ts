@@ -224,6 +224,62 @@ test('resource interface with "<Resource>Arn"', () => {
   expect(rendered).toMatchSnapshot();
 });
 
+test('an unrecorded attribute name conflict fails codegen', () => {
+  // GIVEN
+  givenResource({
+    ...BASE_RESOURCE,
+    attributes: {
+      'FooBar': {
+        type: { type: 'string' },
+        documentation: 'The FooBar of the resource',
+      },
+      'Foo.Bar': {
+        type: { type: 'string' },
+        documentation: 'The Foo.Bar of the resource',
+      },
+    },
+  });
+
+  // THEN
+  expect(() => renderResource()).toThrow(
+    "Attribute name conflict on AWS::Some::Resource between 'FooBar' and 'Foo.Bar', which both become 'attrFooBar'. Add an entry in attribute-name-conflict-resolutions.ts",
+  );
+});
+
+test('the reference interface reads a renamed attribute through its replacement getter', () => {
+  // GIVEN - the renamed attribute is what identifies the resource, so the Ref must read its getter.
+  // The identifier shape is constructed for this test, not real EKS's.
+  givenResource({
+    ...BASE_RESOURCE,
+    name: 'Cluster',
+    cloudFormationType: 'AWS::EKS::Cluster',
+    primaryIdentifier: ['Id', 'CertificateAuthority.Data'],
+    cfnRefIdentifier: ['Id'],
+    attributes: {
+      'CertificateAuthorityData': {
+        type: { type: 'string' },
+        documentation: 'The CertificateAuthorityData of the resource',
+      },
+      'CertificateAuthority.Data': {
+        type: { type: 'string' },
+        documentation: 'The CertificateAuthority.Data of the resource',
+      },
+    },
+  });
+
+  // WHEN
+  const rendered = renderResource('AWS::EKS::Cluster');
+
+  // THEN - not attrCertificateAuthorityData, which is a different attribute
+  expect(rendered.resources).toContainCode(
+    `public get clusterRef(): ClusterReference {
+      return {
+        clusterId: this.ref,
+        certificateAuthorityData: this.attrCertificateAuthorityCertificateData
+      };
+    }`);
+});
+
 test('resource interface with Arn as a property and not a primaryIdentifier', () => {
   // GIVEN
   const resource = db.allocate('resource', {
