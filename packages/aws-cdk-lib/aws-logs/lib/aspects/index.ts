@@ -1,1 +1,1 @@
-export * from './subscription-filter-serialization-aspect';
+export * from './subscription-filter-sequencing-aspect';

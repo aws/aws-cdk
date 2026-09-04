@@ -167,16 +167,20 @@ new logs.SubscriptionFilter(this, 'Subscription', {
 });
 ```
 
-### Serializing subscription filter deployments
+### Dealing with rate exceeded errors
 
-CloudFormation creates independent `AWS::Logs::SubscriptionFilter` resources in
-parallel. The resource handler calls the `DescribeSubscriptionFilters` API,
-which has a low rate limit, so stacks containing many subscription filters can
-fail to deploy with a "Rate exceeded" error.
+Stacks that contain many subscription filters (as a rule of thumb, more than
+about 30) can fail to deploy with an error like this:
 
-If you are affected, apply the `SubscriptionFilterSerializationAspect` to the
-stack (or any parent scope) to add a dependency chain between all subscription
-filters in each stack, so CloudFormation deploys them one at a time:
+```
+Resource handler returned message: "Rate exceeded (Service: CloudWatchLogs, Status Code: 400, ...)"
+```
+
+CloudFormation creates all subscription filters in parallel, and the volume of
+API calls this produces can exceed the CloudWatch Logs API rate limit. If this
+happens to you, apply the `SubscriptionFilterSequencingAspect` to the stack (or
+any parent scope) to limit how many subscription filters deploy at the same
+time:
 
 ```ts
 import { Aspects } from 'aws-cdk-lib';
@@ -185,6 +189,7 @@ import * as kinesis from 'aws-cdk-lib/aws-kinesis';
 
 declare const stream: kinesis.Stream;
 
+// This stack contains a large number of SubscriptionFilters
 for (let i = 0; i < 70; i++) {
   const logGroup = new logs.LogGroup(this, `LogGroup${i}`);
   new logs.SubscriptionFilter(this, `Subscription${i}`, {
@@ -194,32 +199,19 @@ for (let i = 0; i < 70; i++) {
   });
 }
 
-Aspects.of(this).add(new logs.SubscriptionFilterSerializationAspect());
-```
-
-If full serialization makes your deployments too slow, set `maxConcurrency` to
-allow a bounded number of subscription filters to deploy in parallel. Filters
-are distributed round-robin over that many dependency chains:
-
-```ts
-import { Aspects } from 'aws-cdk-lib';
-
-Aspects.of(this).add(new logs.SubscriptionFilterSerializationAspect({
-  maxConcurrency: 5,
+// Adding this Aspect limits the number of parallel calls to PutSubscriptionFilter
+Aspects.of(this).add(new logs.SubscriptionFilterSequencingAspect({
+  // Change the concurrency if desired (default: 5)
+  maxConcurrency: 3,
 }));
 ```
 
-Keep in mind:
-
-* The dependencies added by this aspect apply to every lifecycle operation,
-  so updates, replacements and deletes of the subscription filters are
-  serialized as well, and deployments that touch many filters will take
-  longer.
-* If one subscription filter fails to deploy, CloudFormation will not start
-  on the filters downstream of it in the chain, and the rollback is
-  serialized the same way.
-* Filters are chained in construct tree order, which is stable across
-  synthesis of an unchanged app.
+The default concurrency of 5 matches the default rate limit of the throttled
+API, so higher values do not speed up deployment. Lower the value if your
+deployments are still throttled, for example because other workloads in the
+account consume the same rate limit. Note that deployments that touch many
+subscription filters will take longer, since updates and deletes are limited
+to the same concurrency.
 
 ## Metric Filters
 
