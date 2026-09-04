@@ -1,3 +1,4 @@
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -115,13 +116,44 @@ taskDefinition.addContainer('container', {
   }],
 });
 
+// Create first deployment alarm
+const alarm1 = new cloudwatch.Alarm(stack, 'MyCustomAlarm', {
+  metric: new cloudwatch.Metric({
+    namespace: 'Custom',
+    metricName: 'MyCustomMetric',
+  }),
+  threshold: 80,
+  evaluationPeriods: 2,
+});
+
+// Create second deployment alarm
+const alarm2 = new cloudwatch.Alarm(stack, 'AnotherCustomAlarm', {
+  metric: new cloudwatch.Metric({
+    namespace: 'Custom',
+    metricName: 'AnotherCustomMetric',
+  }),
+  threshold: 80,
+  evaluationPeriods: 2,
+});
+
 // Create Fargate service with escape hatching for B/G deployment
 const service = new ecs.FargateService(stack, 'Service', {
   cluster,
   taskDefinition,
   securityGroups: [ecsSecurityGroup],
   deploymentStrategy: ecs.DeploymentStrategy.BLUE_GREEN,
+  deploymentAlarms: {
+    alarmNames: [alarm1.alarmName], // First deployment alarm
+  },
 });
+
+// Enable second deployment alarm
+service.enableDeploymentAlarms([alarm2.alarmName]);
+
+// Re-add an already-configured alarm. ECS accepts duplicate alarm names in
+// DeploymentConfiguration.Alarms.AlarmNames, so enableDeploymentAlarms() appends
+// them without de-duplication.
+service.enableDeploymentAlarms([alarm1.alarmName]);
 
 service.addLifecycleHook(new ecs.DeploymentLifecycleLambdaTarget(lambdaHook, 'PreScaleUp', {
   lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
@@ -140,8 +172,24 @@ const target = service.loadBalancerTarget({
 target.attachToApplicationTargetGroup(blueTargetGroup);
 
 // Create integration test
-new integ.IntegTest(app, 'aws-ecs-blue-green', {
+const integTest = new integ.IntegTest(app, 'aws-ecs-blue-green', {
   testCases: [stack],
 });
+
+// Assert that both deployment alarms are present on the deployed service. This guards
+// against a regression where enableDeploymentAlarms() replaced, rather than appended to,
+// the alarm names configured via the FargateService constructor (see issue #36308).
+const describeServices = integTest.assertions.awsApiCall('ECS', 'describeServices', {
+  cluster: cluster.clusterArn,
+  services: [service.serviceArn],
+});
+
+describeServices.assertAtPath(
+  'services.0.deploymentConfiguration.alarms.alarmNames',
+  integ.ExpectedResult.arrayWith([
+    integ.Match.stringLikeRegexp('MyCustomAlarm'),
+    integ.Match.stringLikeRegexp('AnotherCustomAlarm'),
+  ]),
+);
 
 app.synth();
