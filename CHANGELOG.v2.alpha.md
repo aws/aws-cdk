@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.268.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.267.0-alpha.0...v2.268.0-alpha.0) (2026-09-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* **glue-alpha:** `DataQualityTargetTable`'s constructor is removed — use `DataQualityTargetTable.fromTable(database, table)` or `fromTableName(database, tableName)`; `IDatabase` now extends `IDatabaseRef`.
+* **glue-alpha**: `DataQualityRulesetProps.clientToken` is removed; use the `CfnDataQualityRuleset` L1 for request-level idempotency.
+* **glue-alpha:** S3Table.clientSideEncryptionKey is now kms.IKeyRef instead of kms.IKey.
+* **glue-alpha:** `DataQualityRulesetProps.rulesetName` is now required. `AWS::Glue::DataQualityRuleset` made `Name` a required property, so the name can no longer be left for CloudFormation to generate.
+
+### Features
+
+* **glue-alpha:** reference-typed DataQualityTargetTable and remove clientToken ([#38730](https://github.com/aws/aws-cdk/issues/38730)) ([c8fafbd](https://github.com/aws/aws-cdk/commit/c8fafbddbf651176f02f7d9b6cc8a8707a959339))
+
+
+### Code Refactoring
+
+* **glue-alpha:** use kms.IKeyRef for KMS key inputs where possible ([#38725](https://github.com/aws/aws-cdk/issues/38725)) ([604ac23](https://github.com/aws/aws-cdk/commit/604ac236ed6d80d3f2fc03f7882414ed61ab8f3a))
+
 ## [2.267.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.266.0-alpha.0...v2.267.0-alpha.0) (2026-08-27)
 
 
