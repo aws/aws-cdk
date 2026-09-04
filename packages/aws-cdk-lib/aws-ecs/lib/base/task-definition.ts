@@ -71,6 +71,19 @@ export interface ITaskDefinition extends IResource, ITaskDefinitionRef {
    * The name of the IAM role that grants containers in the task permission to call AWS APIs on your behalf.
    */
   readonly taskRole: iam.IRole;
+
+  /**
+   * Whether the task definition ARN includes a specific revision (e.g. `family:1`) as opposed to
+   * referring to the family only (e.g. `family`).
+   *
+   * This is used, for example, by EventBridge targets when scoping down the `ecs:RunTask`
+   * permission: an ARN without a revision must be granted with a `:*` wildcard, whereas an ARN
+   * that already pins a revision is granted as-is.
+   *
+   * @default - the presence of a revision is inferred from the ARN string when it is a concrete
+   * (fully-resolved) value, and assumed to be included otherwise
+   */
+  readonly taskDefinitionArnIncludesRevision?: boolean;
 }
 
 /**
@@ -289,6 +302,21 @@ export interface CommonTaskDefinitionAttributes {
    * @default - undefined
    */
   readonly executionRole?: iam.IRole;
+
+  /**
+   * Whether the imported task definition ARN includes a specific revision (e.g.
+   * `arn:aws:ecs:region:account:task-definition/family:1`) or refers to the family only (e.g.
+   * `arn:aws:ecs:region:account:task-definition/family`).
+   *
+   * Set this when the ARN is only known at deploy time (for example, when it is passed in as a
+   * CloudFormation parameter or resolved via `Fn.importValue`) and its revision cannot be
+   * inferred by inspecting the string. It lets consumers such as EventBridge targets decide
+   * whether the `ecs:RunTask` permission must be scoped with a `:*` revision wildcard.
+   *
+   * @default - the presence of a revision is inferred from the ARN string when it is a concrete
+   * (fully-resolved) value, and assumed to be included otherwise
+   */
+  readonly taskDefinitionArnIncludesRevision?: boolean;
 }
 
 /**
@@ -377,6 +405,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       networkMode: attrs.networkMode,
       taskRole: attrs.taskRole,
       executionRole: attrs.executionRole,
+      taskDefinitionArnIncludesRevision: attrs.taskDefinitionArnIncludesRevision,
     });
   }
 
