@@ -7,7 +7,7 @@ import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type * as constructs from 'constructs';
 import type { Code } from '../code';
 import type { IConnection } from '../connection';
-import type { MetricType, WorkerType, GlueVersion } from '../constants';
+import type { MetricType, GlueVersion } from '../constants';
 import { JobState } from '../constants';
 import { warnOnPlaintextSecrets } from '../private/secret-detection';
 import type { ISecurityConfiguration } from '../security-configuration';
@@ -344,23 +344,6 @@ export interface JobProps {
   readonly description?: string;
 
   /**
-   * Number of Workers (optional)
-   * Number of workers for Glue to use during job execution
-   *
-   * @default 10
-   */
-  readonly numberOfWorkers?: number;
-
-  /**
-   * Worker Type (optional)
-   * Type of Worker for Glue to use during job execution
-   * Enum options: Standard, G_1X, G_2X, G_025X. G_4X, G_8X, Z_2X
-   *
-   * @default WorkerType.G_1X
-   */
-  readonly workerType?: WorkerType;
-
-  /**
    * Max Concurrent Runs (optional)
    * The maximum number of runs this Glue job can concurrently run
    *
@@ -434,7 +417,7 @@ export interface JobProps {
    * Glue Version
    * The version of Glue to use to execute this job
    *
-   * @default 3.0 for ETL
+   * @default - determined by the job type: 4.0 for ETL and Streaming, 5.0 for Flex, 3.0 for Python Shell
    */
   readonly glueVersion?: GlueVersion;
 
