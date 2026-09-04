@@ -128,7 +128,7 @@ export class Validations {
       // 2) `Validations.of().addWarning('<id>')`           -- adds an annotation with ID 'Annotation::<id>'
       // 3) `Validations.of().addWarning('<prefix>::<id>')` -- adds an annotation with ID '<prefix>::<id>'
       //
-      // For both cases (2) and (3), we would like to be able to suppress the warning by calling one of:
+      // For both cases (1) and (2), we would like to be able to suppress the warning by calling one of:
       //
       // b) `Validations.of().acknowledge('Annotation::<id>')`            -- validation namespace
       // a) `Validations.of().acknowledge('<id>')`                        -- legacy behavior we are committed to
