@@ -140,10 +140,7 @@ export class Validations {
 
       if (qualifiedId.startsWith(`${AnnotationPlugin.RULE_PREFIX}::`) || qualifiedId.startsWith(`${AnnotationPlugin.LEGACY_RULE_PREFIX}::`)) {
         const annotationId = qualifiedId.split('::')[1];
-
-        // Suppress both qualified and unqualified versions of the warning, see the big comment above.
         Annotations.of(this.scope).acknowledgeWarning(annotationId);
-        Annotations.of(this.scope).acknowledgeWarning(qualifiedId);
       }
     }
   }
