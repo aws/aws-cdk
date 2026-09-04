@@ -217,6 +217,16 @@ export interface MathExpressionOptions {
   readonly color?: string;
 
   /**
+   * Whether this metric should be visible in dashboard graphs.
+   *
+   * Setting this to false is useful when you want to hide raw metrics
+   * that are used in math expressions, and show only the expression results.
+   *
+   * @default true
+   */
+  readonly visible?: boolean;
+
+  /**
    * The period over which the math expression's statistics are applied.
    *
    * This period overrides all periods in the metrics used in this
@@ -799,6 +809,11 @@ export class MathExpression implements IMetric {
   public readonly color?: string;
 
   /**
+   * Whether this metric should be visible in dashboard graphs.
+   */
+  public readonly visible?: boolean;
+
+  /**
    * Aggregation period of this metric
    */
   public readonly period: cdk.Duration;
@@ -829,6 +844,7 @@ export class MathExpression implements IMetric {
     this.expression = props.expression;
     this.label = props.label;
     this.color = props.color;
+    this.visible = props.visible;
     this.searchAccount = props.searchAccount;
     this.searchRegion = props.searchRegion;
 
@@ -881,6 +897,7 @@ export class MathExpression implements IMetric {
     // Short-circuit creating a new object if there would be no effective change
     if ((props.label === undefined || props.label === this.label)
       && (props.color === undefined || props.color === this.color)
+      && (props.visible === undefined || props.visible === this.visible)
       && (props.period === undefined || props.period.toSeconds() === this.period.toSeconds())
       && (props.searchAccount === undefined || props.searchAccount === this.searchAccount)
       && (props.searchRegion === undefined || props.searchRegion === this.searchRegion)) {
@@ -892,6 +909,7 @@ export class MathExpression implements IMetric {
       usingMetrics: this.usingMetrics,
       label: ifUndefined(props.label, this.label),
       color: ifUndefined(props.color, this.color),
+      visible: ifUndefined(props.visible, this.visible),
       period: ifUndefined(props.period, this.period),
       searchAccount: ifUndefined(props.searchAccount, this.searchAccount),
       searchRegion: ifUndefined(props.searchRegion, this.searchRegion),
@@ -924,6 +942,7 @@ export class MathExpression implements IMetric {
       renderingProperties: {
         label: this.label,
         color: this.color,
+        visible: this.visible,
       },
     };
   }
