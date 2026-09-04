@@ -102,7 +102,7 @@ export interface WorkerConfiguration {
   /**
    * The type of predefined worker that is allocated when a job runs.
    *
-   * Enum options: Standard, G_1X, G_2X, G_025X, G_4X, G_8X, Z_2X
+   * See the `WorkerType` enum for the full set of supported values.
    */
   readonly workerType: WorkerType;
 
