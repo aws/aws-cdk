@@ -4828,6 +4828,43 @@ test('addToStreamResourcePolicy on primary table', () => {
   });
 });
 
+test('grantReadData on encrypted table grants KMS permissions via auto-discovery', () => {
+  const stack = new Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'us-east-1' } });
+  const key = new Key(stack, 'Key');
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+    encryption: TableEncryptionV2.customerManagedKey(key),
+  });
+
+  const principal = new iam.AccountRootPrincipal();
+  table.grantReadData(principal);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+    KeyPolicy: {
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: Match.arrayWith([
+            'kms:Decrypt',
+            'kms:DescribeKey',
+          ]),
+          Principal: {
+            AWS: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':iam::111111111111:root',
+                ],
+              ],
+            },
+          },
+        }),
+      ]),
+    },
+  });
+});
+
 test('no stream resource policy by default', () => {
   // GIVEN
   const stack = new Stack(undefined, 'Stack');
