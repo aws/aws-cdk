@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -15,11 +15,9 @@ test('encrypted table: SSE-S3', () => {
       name: 'col',
       type: glue.Schema.STRING,
     }],
-    encryption: glue.TableEncryption.S3_MANAGED,
+    storage: glue.S3TableStorage.managedBucket(glue.S3TableEncryption.s3Managed()),
     dataFormat: glue.DataFormat.JSON,
   });
-  expect(table.encryption).toEqual(glue.TableEncryption.S3_MANAGED);
-  expect(table.encryptionKey).toEqual(undefined);
   expect(table.bucket?.encryptionKey).toEqual(undefined);
 
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
@@ -80,6 +78,41 @@ test('encrypted table: SSE-S3', () => {
   });
 });
 
+test.each<[string, Partial<glue.S3TableProps>]>([
+  ['SSE-S3', { storage: glue.S3TableStorage.managedBucket(glue.S3TableEncryption.s3Managed()) }],
+  ['SSE-KMS', { storage: glue.S3TableStorage.managedBucket(glue.S3TableEncryption.kms()) }],
+  ['SSE-KMS-managed', { storage: glue.S3TableStorage.managedBucket(glue.S3TableEncryption.kmsManaged()) }],
+  ['CSE-KMS', { clientSideEncryption: glue.TableClientSideEncryption.kms() }],
+])('CDK-created bucket enforces SSL for %s encryption', (_name, encryptionProps) => {
+  const stack = new cdk.Stack();
+  const database = new glue.Database(stack, 'Database');
+
+  new glue.S3Table(stack, 'Table', {
+    database,
+    columns: [{
+      name: 'col',
+      type: glue.Schema.STRING,
+    }],
+    ...encryptionProps,
+    dataFormat: glue.DataFormat.JSON,
+  });
+
+  // A bucket policy denying non-TLS requests is attached to the auto-created bucket.
+  Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: 's3:*',
+          Effect: 'Deny',
+          Condition: {
+            Bool: { 'aws:SecureTransport': 'false' },
+          },
+        }),
+      ]),
+    },
+  });
+});
+
 test('encrypted table: SSE-KMS (implicitly created key)', () => {
   const stack = new cdk.Stack();
   const database = new glue.Database(stack, 'Database');
@@ -90,11 +123,10 @@ test('encrypted table: SSE-KMS (implicitly created key)', () => {
       name: 'col',
       type: glue.Schema.STRING,
     }],
-    encryption: glue.TableEncryption.KMS,
+    storage: glue.S3TableStorage.managedBucket(glue.S3TableEncryption.kms()),
     dataFormat: glue.DataFormat.JSON,
   });
-  expect(table.encryption).toEqual(glue.TableEncryption.KMS);
-  expect(table.encryptionKey).toEqual(table.bucket?.encryptionKey);
+  expect(table.bucket?.encryptionKey).toBeDefined();
 
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     Description: 'Created by Default/Table/Bucket',
@@ -177,13 +209,10 @@ test('encrypted table: SSE-KMS (explicitly created key)', () => {
       name: 'col',
       type: glue.Schema.STRING,
     }],
-    encryption: glue.TableEncryption.KMS,
-    encryptionKey,
+    storage: glue.S3TableStorage.managedBucket(glue.S3TableEncryption.kms(encryptionKey)),
     dataFormat: glue.DataFormat.JSON,
   });
-  expect(table.encryption).toEqual(glue.TableEncryption.KMS);
-  expect(table.encryptionKey).toEqual(table.bucket?.encryptionKey);
-  expect(table.encryptionKey).not.toEqual(undefined);
+  expect(table.bucket?.encryptionKey).toEqual(encryptionKey);
 
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     Description: 'OurKey',
@@ -263,11 +292,9 @@ test('encrypted table: SSE-KMS_MANAGED', () => {
       name: 'col',
       type: glue.Schema.STRING,
     }],
-    encryption: glue.TableEncryption.KMS_MANAGED,
+    storage: glue.S3TableStorage.managedBucket(glue.S3TableEncryption.kmsManaged()),
     dataFormat: glue.DataFormat.JSON,
   });
-  expect(table.encryption).toEqual(glue.TableEncryption.KMS_MANAGED);
-  expect(table.encryptionKey).toEqual(undefined);
   expect(table.bucket?.encryptionKey).toEqual(undefined);
 
   Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
@@ -338,14 +365,27 @@ test('encrypted table: CSE-KMS (implicitly created key)', () => {
       name: 'col',
       type: glue.Schema.STRING,
     }],
-    encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
+    clientSideEncryption: glue.TableClientSideEncryption.kms(),
     dataFormat: glue.DataFormat.JSON,
   });
-  expect(table.encryption).toEqual(glue.TableEncryption.CLIENT_SIDE_KMS);
-  expect(table.encryptionKey).not.toEqual(undefined);
+  expect(table.clientSideEncryptionKey).toBeDefined();
   expect(table.bucket?.encryptionKey).toEqual(undefined);
 
   Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 1);
+
+  // The bucket still enables server-side encryption at rest (SSE-S3) as defense
+  // in depth; the KMS key is used for client-side encryption, not bucket SSE.
+  Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+    BucketEncryption: {
+      ServerSideEncryptionConfiguration: [
+        {
+          ServerSideEncryptionByDefault: {
+            SSEAlgorithm: 'AES256',
+          },
+        },
+      ],
+    },
+  });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
     CatalogId: {
@@ -406,12 +446,10 @@ test('encrypted table: CSE-KMS (explicitly created key)', () => {
       name: 'col',
       type: glue.Schema.STRING,
     }],
-    encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
-    encryptionKey,
+    clientSideEncryption: glue.TableClientSideEncryption.kms(encryptionKey),
     dataFormat: glue.DataFormat.JSON,
   });
-  expect(table.encryption).toEqual(glue.TableEncryption.CLIENT_SIDE_KMS);
-  expect(table.encryptionKey).not.toEqual(undefined);
+  expect(table.clientSideEncryptionKey).toEqual(encryptionKey);
   expect(table.bucket?.encryptionKey).toEqual(undefined);
 
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
@@ -478,13 +516,11 @@ test('encrypted table: CSE-KMS (explicitly passed bucket and key)', () => {
       name: 'col',
       type: glue.Schema.STRING,
     }],
-    bucket,
-    encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
-    encryptionKey,
+    storage: glue.S3TableStorage.fromBucket(bucket),
+    clientSideEncryption: glue.TableClientSideEncryption.kms(encryptionKey),
     dataFormat: glue.DataFormat.JSON,
   });
-  expect(table.encryption).toEqual(glue.TableEncryption.CLIENT_SIDE_KMS);
-  expect(table.encryptionKey).not.toEqual(undefined);
+  expect(table.clientSideEncryptionKey).toEqual(encryptionKey);
   expect(table.bucket?.encryptionKey).toEqual(undefined);
 
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
@@ -546,7 +582,7 @@ test('explicit s3 bucket and prefix', () => {
 
   new glue.S3Table(stack, 'Table', {
     database,
-    bucket,
+    storage: glue.S3TableStorage.fromBucket(bucket),
     s3Prefix: 'prefix/',
     columns: [{
       name: 'col',
@@ -610,7 +646,7 @@ test('explicit s3 bucket and with empty prefix', () => {
 
   new glue.S3Table(stack, 'Table', {
     database,
-    bucket,
+    storage: glue.S3TableStorage.fromBucket(bucket),
     s3Prefix: '',
     columns: [{
       name: 'col',
@@ -1048,38 +1084,13 @@ describe('grants', () => {
 });
 
 describe('validate', () => {
-  test('can not specify an explicit bucket and encryption', () => {
-    expect(() => {
-      createTable({
-        columns: [{
-          name: 'col1',
-          type: glue.Schema.STRING,
-        }],
-        bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
-        encryption: glue.TableEncryption.KMS,
-      });
-    }).toThrow('you can not specify encryption settings if you also provide a bucket');
-  });
-
-  test('can explicitly pass bucket if Encryption undefined', () => {
-    expect(() => createTable({
-      columns: [{
-        name: 'col1',
-        type: glue.Schema.STRING,
-      }],
-      bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
-      encryption: undefined,
-    })).not.toThrow();
-  });
-
   test('can explicitly pass bucket if encryption is not set', () => {
     expect(() => createTable({
       columns: [{
         name: 'col1',
         type: glue.Schema.STRING,
       }],
-      bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
-      encryption: undefined,
+      storage: glue.S3TableStorage.fromBucket(new s3.Bucket(new cdk.Stack(), 'Bucket')),
     })).not.toThrow();
   });
 
@@ -1089,8 +1100,8 @@ describe('validate', () => {
         name: 'col1',
         type: glue.Schema.STRING,
       }],
-      bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
-      encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
+      storage: glue.S3TableStorage.fromBucket(new s3.Bucket(new cdk.Stack(), 'Bucket')),
+      clientSideEncryption: glue.TableClientSideEncryption.kms(),
     })).not.toThrow();
   });
 });

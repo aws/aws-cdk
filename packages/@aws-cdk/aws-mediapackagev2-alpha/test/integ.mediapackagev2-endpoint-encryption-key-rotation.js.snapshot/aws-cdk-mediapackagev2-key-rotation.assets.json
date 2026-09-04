@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "e6b43fe64ac75f682798f98c15aed9ca30d2534840c4fcd58e320db4462b483d": {
+      "displayName": "aws-cdk-mediapackagev2-key-rotation Template",
+      "source": {
+        "path": "aws-cdk-mediapackagev2-key-rotation.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-22bab30c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e6b43fe64ac75f682798f98c15aed9ca30d2534840c4fcd58e320db4462b483d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

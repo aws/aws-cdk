@@ -1,0 +1,104 @@
+{
+  "/DynamoImportSourceIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/DynamoImportSourceIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/DynamoImportSourceIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItema11c39c31c1a4ed94eac5ae4525a751c/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/DynamoImportSourceIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItema11c39c31c1a4ed94eac5ae4525a751c/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallDynamoDBgetItema11c39c31c1a4ed94eac5ae4525a751c"
+    }
+  ],
+  "/DynamoImportSourceIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/DynamoImportSourceIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/DynamoImportSourceIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItem07e988d6f5c0d6f38baf1b39c2dcd982/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/DynamoImportSourceIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItem07e988d6f5c0d6f38baf1b39c2dcd982/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallDynamoDBgetItem07e988d6f5c0d6f38baf1b39c2dcd982"
+    }
+  ],
+  "/DynamoImportSourceIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItemc19c36454c0d6ce1ffa34847c0cf2334/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/DynamoImportSourceIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItemc19c36454c0d6ce1ffa34847c0cf2334/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallDynamoDBgetItemc19c36454c0d6ce1ffa34847c0cf2334"
+    }
+  ],
+  "/DynamoImportSourceIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItema11c39c31c1a4ed94eac5ae4525a751c/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallDynamoDBgetItema11c39c31c1a4ed94eac5ae4525a751c"
+    }
+  ],
+  "/DynamoImportSourceIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItem07e988d6f5c0d6f38baf1b39c2dcd982/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallDynamoDBgetItem07e988d6f5c0d6f38baf1b39c2dcd982"
+    }
+  ],
+  "/DynamoImportSourceIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItemc19c36454c0d6ce1ffa34847c0cf2334/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallDynamoDBgetItemc19c36454c0d6ce1ffa34847c0cf2334"
+    }
+  ]
+}

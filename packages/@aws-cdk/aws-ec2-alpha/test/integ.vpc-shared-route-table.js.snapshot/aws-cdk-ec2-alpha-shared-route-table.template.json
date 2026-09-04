@@ -135,7 +135,14 @@
   "PublicSubnet1Subnet03067927": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "us-west-2a",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
     "CidrBlock": "10.1.1.0/24",
     "Tags": [
      {
@@ -178,7 +185,14 @@
   "PublicSubnet2Subnet78B4B4BD": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "us-west-2b",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
     "CidrBlock": "10.1.2.0/24",
     "Tags": [
      {

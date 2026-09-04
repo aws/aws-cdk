@@ -1,5 +1,4 @@
 import type { IConstruct } from 'constructs';
-import { Stack } from '../stack';
 import type { ConstructInfo } from './runtime-info';
 import { constructInfoFromConstruct } from './runtime-info';
 import { App } from '../app';
@@ -7,15 +6,9 @@ import { RESOURCE_SYMBOL } from '../constants';
 import { MetadataType } from '../metadata-type';
 import type { Resource } from '../resource';
 import { Stage } from '../stage';
-import type { IPolicyValidationPluginBeta1 } from '../validation';
-
-// We filter to only ever report on these constructs
-const ALLOWED_FQN_PREFIXES: ReadonlyArray<string> = [
-  // SCOPES
-  '@aws-cdk/', '@aws-cdk-containers/', '@aws-solutions-konstruk/', '@aws-solutions-constructs/', '@amzn/', '@cdklabs/',
-  // PACKAGES
-  'aws-rfdk.', 'aws-cdk-lib.', 'cdk8s.',
-];
+import type { IPolicyValidationPlugin } from '../validation';
+import { ALLOWED_FQN_PREFIXES } from './constants';
+import { STACK_TYPE, STAGE_TYPE } from './core-construct-finders';
 
 // These metadata types are always included
 const ALLOWED_METADATA_TYPES: ReadonlySet<MetadataType> = new Set([
@@ -117,7 +110,7 @@ function injectAnalytics(construct: IConstruct, info: ConstructInfo): ConstructA
 function constructsInScope(construct: IConstruct): IConstruct[] {
   const constructs = [construct];
   construct.node.children
-    .filter(child => !Stage.isStage(child) && !Stack.isStack(child))
+    .filter(child => !STAGE_TYPE.isMarked(child) && !STACK_TYPE.isMarked(child))
     .forEach(child => constructs.push(...constructsInScope(child)));
   return constructs;
 }
@@ -156,7 +149,7 @@ function addValidationPluginInfo(scope: IConstruct, allConstructInfos: Construct
       done = true;
     }
     if (stage) {
-      allConstructInfos.push(...stage.policyValidationBeta1.map(
+      allConstructInfos.push(...stage._validationPlugins.map(
         plugin => {
           return {
             fqn: pluginFqn(plugin),
@@ -176,7 +169,7 @@ function addValidationPluginInfo(scope: IConstruct, allConstructInfos: Construct
  *
  * where <rule-ids> is a pipe-separated list of rule IDs.
  */
-function pluginFqn(plugin: IPolicyValidationPluginBeta1): string {
+function pluginFqn(plugin: IPolicyValidationPlugin): string {
   let components = [
     'policyValidation',
     plugin.name,

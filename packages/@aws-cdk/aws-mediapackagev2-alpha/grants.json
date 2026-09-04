@@ -1,0 +1,16 @@
+{
+  "resources": {
+    "Channel": {
+      "hasResourcePolicy": true,
+      "grants": {
+        "ingest": {
+          "actions": [
+            "mediapackagev2:GetChannel",
+            "mediapackagev2:PutObject"
+          ],
+          "docSummary": "Grant permissions to ingest content into this channel"
+        }
+      }
+    }
+  }
+}
