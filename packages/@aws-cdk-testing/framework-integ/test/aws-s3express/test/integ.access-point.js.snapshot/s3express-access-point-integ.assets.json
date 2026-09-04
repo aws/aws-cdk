@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "c14823527fa78f00114772387e12cd46bd2ac9baa740db82761c7590694ab544": {
+      "displayName": "s3express-access-point-integ Template",
+      "source": {
+        "path": "s3express-access-point-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-236be3b1": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c14823527fa78f00114772387e12cd46bd2ac9baa740db82761c7590694ab544.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "AccessPointTest/DefaultTest": {
+      "stacks": [
+        "s3express-access-point-integ"
+      ],
+      "assertionStack": "AccessPointTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AccessPointTestDefaultTestDeployAssert755EE3E7"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
