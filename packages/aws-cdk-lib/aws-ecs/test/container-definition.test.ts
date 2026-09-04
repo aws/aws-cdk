@@ -2018,6 +2018,43 @@ describe('container definition', () => {
     });
   });
 
+  test('ecs.Secret.fromSsmParameter does not leave an unreferenced SSM Parameter in the template (regression for #38396)', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+
+    // Only the ARN is consumed below — stringValue is never read.
+    const parameter = ssm.StringParameter.fromStringParameterName(stack, 'Param', '/path-to/mongodb-uri');
+
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('nginx'),
+      secrets: {
+        MONGO_URI: ecs.Secret.fromSsmParameter(parameter),
+      },
+    });
+
+    // THEN — no Parameters section entry was synthesized for the imported SSM parameter,
+    // yet the secret still resolves to its ARN as expected.
+    const template = Template.fromStack(stack);
+    template.templateMatches(Match.not(Match.objectLike({
+      Parameters: Match.objectLike({
+        ParamParameter: Match.anyValue(),
+      }),
+    })));
+    template.hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        Match.objectLike({
+          Secrets: [
+            Match.objectLike({
+              Name: 'MONGO_URI',
+              ValueFrom: stack.resolve(parameter.parameterArn),
+            }),
+          ],
+        }),
+      ],
+    });
+  });
+
   test('use a specific secret JSON key as environment variable', () => {
     // GIVEN
     const stack = new cdk.Stack();
