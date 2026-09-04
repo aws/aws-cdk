@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "KeyCrossAccountGrant/DefaultTest": {
+      "stacks": [
+        "KeyResourceStack",
+        "KeyPrincipalStack"
+      ],
+      "assertionStack": "KeyCrossAccountGrant/DefaultTest/DeployAssert",
+      "assertionStackName": "KeyCrossAccountGrantDefaultTestDeployAssert9CB4ED73"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}
