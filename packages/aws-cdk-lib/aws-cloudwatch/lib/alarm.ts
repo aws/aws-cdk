@@ -9,6 +9,7 @@ import type { CreateAlarmOptions } from './metric';
 import { Metric } from './metric';
 import type { IMetric, MetricExpressionConfig, MetricStatConfig } from './metric-types';
 import type { CreateAlarmOptionsBase } from './private/alarm-options';
+import { renderAlarmWarmupConfiguration } from './private/alarm-options';
 import { isAnomalyDetectionOperator } from './private/anomaly-detection';
 import { dispatchMetric, metricPeriod } from './private/metric-util';
 import { dropUndefined } from './private/object';
@@ -255,6 +256,17 @@ export class Alarm extends AlarmBase {
       threshold = props.threshold;
     }
 
+    if (props.warmupConfiguration !== undefined && isMultiTimeSeriesMetricsInsightsQuery(props.metric)) {
+      throw new ValidationError(
+        lit`AlarmWarmupUnsupportedForMultiTimeSeriesMetricsInsights`,
+        'warmupConfiguration cannot be used with a multi-time-series Metrics Insights query; ' +
+        'remove GROUP BY or wrap the query in metric math that returns a single time series',
+        this,
+      );
+    }
+
+    const warmupConfiguration = renderAlarmWarmupConfiguration(this, props.warmupConfiguration);
+
     // Render metric, process potential overrides from the alarm
     // (It would be preferable if the statistic etc. was worked into the metric,
     // but hey we're allowing overrides...)
@@ -289,6 +301,7 @@ export class Alarm extends AlarmBase {
       evaluateLowSampleCountPercentile: props.evaluateLowSampleCountPercentile,
       evaluationPeriods: props.evaluationPeriods,
       treatMissingData: props.treatMissingData,
+      warmUpConfiguration: warmupConfiguration,
 
       // Actions
       actionsEnabled: props.actionsEnabled,
@@ -607,6 +620,50 @@ export class Alarm extends AlarmBase {
  * and have more features, like metric math.
  */
 type AlarmMetricFields = Pick<CfnAlarmProps, 'dimensions' | 'namespace' | 'metricName' | 'period' | 'statistic' | 'extendedStatistic' | 'unit' | 'metrics'>;
+
+function isMultiTimeSeriesMetricsInsightsQuery(metric: IMetric): boolean {
+  return dispatchMetric(metric, {
+    withStat: () => false,
+    withMathExpression: expression => {
+      if (Token.isUnresolved(expression.expression)) {
+        return false;
+      }
+
+      const queryWithoutStrings = stripQuotedStrings(expression.expression);
+      return /^\s*SELECT\b/i.test(queryWithoutStrings) && /\bGROUP\s+BY\b/i.test(queryWithoutStrings);
+    },
+    withSearchExpression: () => false,
+  });
+}
+
+function stripQuotedStrings(expression: string): string {
+  let result = '';
+  let quote: '"' | "'" | undefined;
+
+  for (let i = 0; i < expression.length; i++) {
+    const character = expression[i];
+    if (quote !== undefined) {
+      if (character === '\\') {
+        i++;
+      } else if (character === quote) {
+        if (expression[i + 1] === quote) {
+          i++;
+        } else {
+          quote = undefined;
+        }
+      }
+      continue;
+    }
+
+    if (character === '"' || character === "'") {
+      quote = character;
+    } else {
+      result += character;
+    }
+  }
+
+  return result;
+}
 
 /**
  * Check if a metric is already an anomaly detection metric
