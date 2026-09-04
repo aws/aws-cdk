@@ -96,7 +96,7 @@
      ]
     },
     "Runtime": "nodejs24.x",
-    "Timeout": 30
+    "Timeout": 60
    },
    "DependsOn": [
     "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRoleDefaultPolicy63AE5FEF",
