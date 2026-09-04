@@ -48,6 +48,24 @@ test('multiple markers', () => {
   });
 });
 
+test('marker ids are dense, sequential and unique for many tokens', () => {
+  // Guards the id-generation contract the O(n) fix relies on: ids are `t0..tN-1`
+  // in encounter order. Deriving the id from a running counter (rather than from
+  // Object.keys(markers).length) must not change which id a token gets.
+  const n = 500;
+  const tokens = Array.from({ length: n }, (_, i) => Lazy.string({ produce: () => `value-${i}` }));
+  const data = tokens.map((t, i) => `lit${i}-${t}`).join('');
+
+  const rendered = renderData(data);
+  const markerKeys = Object.keys(rendered.markers);
+
+  expect(markerKeys).toHaveLength(n);
+  markerKeys.forEach((key, i) => {
+    expect(key).toStrictEqual(`<<marker:0xbaba:${i}>>`);
+    expect(rendered.markers[key]).toStrictEqual(tokens[i]);
+  });
+});
+
 test('json-encoded string', () => {
   const stack = new Stack();
   const bucket = new s3.Bucket(stack, 'Bucket');
