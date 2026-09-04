@@ -115,7 +115,7 @@ new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
   description: 'This is a description',
   role,
   script,
-  glueVersion: glue.GlueVersion.V5_1,
+  glueVersion: glue.GlueVersion.V6_0,
   continuousLogging: { enabled: false },
   workerConfiguration: {
     workerType: glue.WorkerType.G_2X,
@@ -174,7 +174,7 @@ new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
   description: 'This is a description',
   role,
   script,
-  glueVersion: glue.GlueVersion.V5_1,
+  glueVersion: glue.GlueVersion.V6_0,
   continuousLogging: { enabled: false },
   workerConfiguration: {
     workerType: glue.WorkerType.G_2X,
@@ -231,7 +231,7 @@ new glue.PySparkFlexEtlJob(stack, 'pySparkFlexEtlJob', {
   description: 'This is a description',
   role,
   script,
-  glueVersion: glue.GlueVersion.V5_1,
+  glueVersion: glue.GlueVersion.V6_0,
   continuousLogging: { enabled: false },
   workerConfiguration: {
     workerType: glue.WorkerType.G_2X,

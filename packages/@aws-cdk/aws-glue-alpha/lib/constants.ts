@@ -186,7 +186,7 @@ export enum ExecutionClass {
 /**
  * AWS Glue version determines the versions of Apache Spark and Python that are available to the job.
  *
- * @see https://docs.aws.amazon.com/glue/latest/dg/add-job.html.
+ * @see https://docs.aws.amazon.com/glue/latest/dg/release-notes.html
  */
 export enum GlueVersion {
   /**
@@ -223,6 +223,11 @@ export enum GlueVersion {
    * Glue version using Spark 3.5.6, Python 3.11, and Scala 2.12.18
    */
   V5_1 = '5.1',
+
+  /**
+   * Glue version using Spark 4.1.1, Python 3.13, and Scala 2.13
+   */
+  V6_0 = '6.0',
 }
 
 /**
