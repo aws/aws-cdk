@@ -72,6 +72,12 @@ const testFunction = new lambda.Function(stack, 'TestInvokerFunction', {
 // Grant invoke permissions - this will include sub-resource wildcard in IAM policy
 runtime.grantInvoke(testFunction);
 
+// Acknowledge annotations
+cdk.Validations.of(runtime).acknowledge({
+  id: '@aws-cdk/aws-bedrock-agentcore:containerUriValidationSkipped',
+  reason: 'Testing annotation acknowledgment.',
+});
+
 // Output runtime and endpoint information for verification
 new cdk.CfnOutput(stack, 'RuntimeId', {
   value: runtime.agentRuntimeId,
