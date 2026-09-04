@@ -71,7 +71,7 @@ for more granular details.
 #### ETL Jobs
 
 ETL jobs support pySpark and Scala languages, for which there are separate but
-similar constructors. ETL jobs default to the G2 worker type, but you can
+similar constructors. ETL jobs default to the G1 worker type, but you can
 override this default with other supported worker type values (G1, G2, G4
 and G8). ETL jobs defaults to Glue version 4.0, which you can override to 3.0.
 The following ETL features are enabled by default:
@@ -140,7 +140,7 @@ Streaming jobs are similar to ETL jobs, except that they perform ETL on data
 streams using the Apache Spark Structured Streaming framework. Some Spark
 job features are not available to Streaming ETL jobs. They support Scala
 and pySpark languages. PySpark streaming jobs run on Python 3. It
-defaults to the G2 worker type and Glue 4.0, both of which you can override.
+defaults to the G1 worker type and Glue 4.0, both of which you can override.
 The following best practice features are enabled by default:
 `—enable-metrics, —enable-continuous-cloudwatch-log`.
 The Spark UI (`—enable-spark-ui`) is off by default; enable it by setting the
@@ -197,7 +197,7 @@ new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
 
 The flexible execution class is appropriate for non-urgent jobs such as
 pre-production jobs, testing, and one-time data loads. Flexible jobs default
-to Glue version 5.0 and worker type `G_2X`. The following best practice
+to Glue version 5.0 and worker type `G_1X`. The following best practice
 features are enabled by default:
 `—enable-metrics, —enable-continuous-cloudwatch-log`
 The Spark UI (`—enable-spark-ui`) is off by default; enable it by setting the
@@ -451,13 +451,14 @@ certain types of data stores.
 
 * **Networking - the CDK determines the best fit subnet for Glue connection
 configuration**
-    You can specify the exact subnet of the Connection when it's defined, but
-    you are not required to. Instead, you can provide a `vpc` and, optionally, a
-    `vpcSubnets` selection, and the L2 leverages the existing
+    Configure VPC placement through the `network` property, built with
+    `ConnectionNetwork.subnet(subnet)` to pin a specific subnet, or
+    `ConnectionNetwork.vpc(vpc, vpcSubnets?)` to let the L2 select one via the
+    existing
     [EC2 Subnet Selection](https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_ec2/SubnetSelection.html)
-    library to make the best choice selection for the subnet. A Glue connection
-    targets a single subnet, so the first subnet of the selection is used.
-    `subnet` and `vpc` are mutually exclusive.
+    library. A Glue connection targets a single subnet, so the first subnet of
+    the selection is used. The two factories are mutually exclusive, so a subnet
+    and a VPC can never be combined.
 
 Pin the connection to a specific subnet:
 
@@ -469,7 +470,7 @@ new glue.Connection(this, 'MyConnection', {
   // The security groups granting AWS Glue inbound access to the data source within the VPC
   securityGroups: [securityGroup],
   // The VPC subnet which contains the data source
-  subnet,
+  network: glue.ConnectionNetwork.subnet(subnet),
 });
 ```
 
@@ -481,9 +482,8 @@ declare const vpc: ec2.Vpc;
 new glue.Connection(this, 'MyConnection', {
   type: glue.ConnectionType.NETWORK,
   securityGroups: [securityGroup],
-  vpc,
-  // Optional - defaults to private subnets
-  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+  // vpcSubnets is optional - defaults to private subnets
+  network: glue.ConnectionNetwork.vpc(vpc, { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }),
 });
 ```
 
@@ -496,7 +496,7 @@ declare const db: rds.DatabaseCluster;
 new glue.Connection(this, "RdsConnection", {
   type: glue.ConnectionType.JDBC,
   securityGroups: [securityGroup],
-  subnet,
+  network: glue.ConnectionNetwork.subnet(subnet),
   secret: db.secret,
   properties: {
     JDBC_CONNECTION_URL: `jdbc:mysql://${db.clusterEndpoint.socketAddress}/databasename`,
@@ -1098,10 +1098,11 @@ Data Quality Definition Language (DQDL) — that are evaluated against a table i
 the Data Catalog.
 
 ```ts
+declare const database: glue.IDatabase;
 new glue.DataQualityRuleset(this, 'MyRuleset', {
   rulesetName: 'my_ruleset',
   dqdl: glue.Dqdl.fromString('Rules = [ RowCount > 100, IsComplete "order_id" ]'),
-  targetTable: new glue.DataQualityTargetTable('my_database', 'my_table'),
+  targetTable: glue.DataQualityTargetTable.fromTableName(database, 'my_table'),
 });
 ```
 
