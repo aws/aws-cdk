@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "b32ff3d418b3e0d77a524112f317b1dafc28ca7c45d9d4b7de08140c4ec4c634": {
+      "displayName": "kinesis-stream-max-record-size-stack Template",
+      "source": {
+        "path": "kinesis-stream-max-record-size-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-22aff6a6": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b32ff3d418b3e0d77a524112f317b1dafc28ca7c45d9d4b7de08140c4ec4c634.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

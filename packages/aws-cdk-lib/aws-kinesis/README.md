@@ -8,6 +8,7 @@ intake and aggregation.
 ## Table Of Contents
 
 - [Streams](#streams)
+  - [Maximum Record Size](#maximum-record-size)
   - [Encryption](#encryption)
   - [Import](#import)
   - [Permission Grants](#permission-grants)
@@ -45,6 +46,22 @@ new kinesis.Stream(this, 'MyFirstStream', {
   retentionPeriod: Duration.hours(48),
 });
 ```
+
+### Maximum Record Size
+
+By default a Kinesis data stream accepts records of up to 1 MiB. You can raise that limit up to
+10 MiB with the `maxRecordSize` property.
+Read more at [Quotas and Limits](https://docs.aws.amazon.com/streams/latest/dev/service-sizes-and-limits.html).
+
+```ts
+new kinesis.Stream(this, 'MyLargeRecordStream', {
+  maxRecordSize: Size.mebibytes(10),
+});
+```
+
+The value must be between 1024 KiB (1 MiB) and 10240 KiB (10 MiB), and must be a whole number of
+kibibytes. Values that are not a whole number of mebibytes are supported, so `Size.kibibytes(1536)`
+is also valid.
 
 ### Encryption
 
