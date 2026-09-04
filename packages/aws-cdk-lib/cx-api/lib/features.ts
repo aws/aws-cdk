@@ -158,6 +158,7 @@ export const EKS_DEFAULT_AL2023 = '@aws-cdk/aws-eks:defaultToAL2023';
 export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInValidationReport';
 export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackReferences';
 export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
+export const CFN_RESOURCE_ADD_OVERRIDE_LIST_FOR_EMPTY_OBJECTS = '@aws-cdk/core:cfnResourceAddOverrideListForEmptyObjects';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -191,6 +192,25 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v1: '1.16.0' },
     unconfiguredBehavesLike: { v2: true },
     compatibilityWithOldBehaviorMd: 'Pass stack identifiers to the CLI instead of stack names.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CFN_RESOURCE_ADD_OVERRIDE_LIST_FOR_EMPTY_OBJECTS]: {
+    type: FlagType.BugFix,
+    summary: 'Preserve empty objects in CfnResource addOverride values',
+    detailsMd: `
+      When enabled, \`CfnResource.addOverride()\` stores override operations in order and reapplies
+      them after the resource definition has been resolved, instead of materializing an override
+      object and merging it through \`deepMerge()\`.
+
+      This preserves empty object override values such as \`{ Block: {} }\`, while continuing to
+      support deletion overrides and sequential override semantics.
+
+      When disabled, \`addOverride()\` continues to use the legacy \`deepMerge()\`-based behavior,
+      which can drop empty objects nested inside override values.`,
+    introducedIn: { v2: 'V2·NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
   },
 
   //////////////////////////////////////////////////////////////////////

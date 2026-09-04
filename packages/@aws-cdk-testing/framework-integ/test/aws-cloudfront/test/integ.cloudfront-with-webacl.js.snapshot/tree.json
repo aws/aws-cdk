@@ -17,6 +17,27 @@
                 "defaultAction": {
                   "allow": {}
                 },
+                "rules": [
+                  {
+                    "name": "BlockRule",
+                    "priority": 0,
+                    "statement": {
+                      "geoMatchStatement": {
+                        "countryCodes": [
+                          "US"
+                        ]
+                      }
+                    },
+                    "action": {
+                      "allow": {}
+                    },
+                    "visibilityConfig": {
+                      "cloudWatchMetricsEnabled": false,
+                      "metricName": "blockRuleMetric",
+                      "sampledRequestsEnabled": false
+                    }
+                  }
+                ],
                 "scope": "CLOUDFRONT",
                 "visibilityConfig": {
                   "cloudWatchMetricsEnabled": false,

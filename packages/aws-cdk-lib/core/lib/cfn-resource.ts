@@ -84,6 +84,11 @@ export class CfnResource extends CfnRefElement {
   private readonly rawOverrides: any = Object.create(null); // Prevent prototype pollution
 
   /**
+   * Ordered override operations for the feature-flagged addOverride path.
+   */
+  private readonly overrideOperations = new Array<{ path: string; value: any; isDeletion: boolean }>();
+
+  /**
    * Logical IDs of dependencies.
    *
    * Is filled during prepare().
@@ -276,6 +281,11 @@ export class CfnResource extends CfnRefElement {
    * @param value - The value. Could be primitive or complex.
    */
   public addOverride(path: string, value: any) {
+    if (FeatureFlags.of(this).isEnabled(cxapi.CFN_RESOURCE_ADD_OVERRIDE_LIST_FOR_EMPTY_OBJECTS)) {
+      this.overrideOperations.push({ path, value, isDeletion: value === undefined });
+      return;
+    }
+
     const parts = splitOnPeriods(path);
     let curr: any = this.rawOverrides;
 
@@ -563,12 +573,30 @@ export class CfnResource extends CfnRefElement {
               const hasDefined = Object.values(renderedProps).find(v => v !== undefined);
               resourceDef.Properties = hasDefined !== undefined ? renderedProps : undefined;
             }
-            const resolvedRawOverrides = context.resolve(this.rawOverrides, {
-              // we need to preserve the empty elements here,
-              // as that's how removing overrides are represented as
-              removeEmpty: false,
-            });
-            return deepMerge(resourceDef, resolvedRawOverrides);
+            if (!FeatureFlags.of(this).isEnabled(cxapi.CFN_RESOURCE_ADD_OVERRIDE_LIST_FOR_EMPTY_OBJECTS)) {
+              const resolvedRawOverrides = context.resolve(this.rawOverrides, {
+                // we need to preserve the empty elements here,
+                // as that's how removing overrides are represented as
+                removeEmpty: false,
+              });
+              return deepMerge(resourceDef, resolvedRawOverrides);
+            }
+
+            for (const override of this.overrideOperations) {
+              if (override.isDeletion) {
+                deletePath(resourceDef, override.path);
+                continue;
+              }
+
+              const finalValue = context.resolve(override.value, {
+                removeEmpty: false,
+              });
+              if (finalValue !== undefined) {
+                assignPath(resourceDef, override.path, finalValue);
+              }
+            }
+
+            return resourceDef;
           }),
         },
       };
@@ -756,6 +784,63 @@ function splitOnPeriods(x: string): string[] {
 
   ret.reverse();
   return ret;
+}
+
+function assignPath(root: any, path: string, value: any) {
+  const parts = splitOnPeriods(path);
+  if (parts.some(isDangerousPathKey)) {
+    return;
+  }
+  let curr = root;
+
+  while (parts.length > 1) {
+    const key = parts.shift()!;
+    const next = curr[key];
+    const isContainer = next != null && typeof(next) === 'object';
+    if (!isContainer) {
+      curr[key] = Object.create(null); // Prevent prototype pollution
+    }
+    curr = curr[key];
+  }
+
+  curr[parts[0]] = value;
+}
+
+function deletePath(root: any, path: string) {
+  const parts = splitOnPeriods(path);
+  if (parts.some(isDangerousPathKey)) {
+    return;
+  }
+  const parents = new Array<{ container: any; key: string }>();
+  let curr = root;
+
+  while (parts.length > 1) {
+    const key = parts.shift()!;
+    const next = curr[key];
+    const isContainer = next != null && typeof(next) === 'object';
+    if (!isContainer) {
+      return;
+    }
+
+    parents.push({ container: curr, key });
+    curr = next;
+  }
+
+  delete curr[parts[0]];
+
+  for (let i = parents.length - 1; i >= 0; i--) {
+    const { container, key } = parents[i];
+    const child = container[key];
+    if (child != null && typeof(child) === 'object' && !Array.isArray(child) && Object.keys(child).length === 0) {
+      delete container[key];
+      continue;
+    }
+    break;
+  }
+}
+
+function isDangerousPathKey(key: string): boolean {
+  return key === '__proto__' || key === 'constructor' || key === 'prototype';
 }
 
 /**

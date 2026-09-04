@@ -6,6 +6,27 @@
     "DefaultAction": {
      "Allow": {}
     },
+    "Rules": [
+     {
+      "Action": {
+       "Block": {}
+      },
+      "Name": "BlockRule",
+      "Priority": 0,
+      "Statement": {
+       "GeoMatchStatement": {
+        "CountryCodes": [
+         "US"
+        ]
+       }
+      },
+      "VisibilityConfig": {
+       "CloudWatchMetricsEnabled": false,
+       "MetricName": "blockRuleMetric",
+       "SampledRequestsEnabled": false
+      }
+     }
+    ],
     "Scope": "CLOUDFRONT",
     "VisibilityConfig": {
      "CloudWatchMetricsEnabled": false,
