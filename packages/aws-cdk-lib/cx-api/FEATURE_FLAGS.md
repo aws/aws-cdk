@@ -118,6 +118,7 @@ Flags come in three types:
 | [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-stack references are strong, weak, or both | 2.254.0 | config |
 | [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | 2.259.0 | new default |
 | [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | 2.262.0 | config |
+| [@aws-cdk/aws-ecs:removeEmptyLoadBalancers](#aws-cdkaws-ecsremoveemptyloadbalancers) | Render an empty `LoadBalancers` array on an ECS service that has no target groups | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -159,6 +160,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker": true,
     "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": true,
     "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
+    "@aws-cdk/aws-ecs:removeEmptyLoadBalancers": true,
     "@aws-cdk/aws-efs:denyAnonymousAccess": true,
     "@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId": true,
     "@aws-cdk/aws-eks:defaultToAL2023": true,
@@ -2549,6 +2551,35 @@ fail synthesis. When unconfigured, violations are reported as warnings only.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.262.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-ecs:removeEmptyLoadBalancers
+
+*Render an empty `LoadBalancers` array on an ECS service that has no target groups*
+
+Flag type: Backwards incompatible bugfix
+
+CloudFormation distinguishes between an absent `LoadBalancers` property, which leaves the live
+service configuration untouched, and an empty array, which removes the existing load balancer
+registrations. Without this flag the CDK omits the property when a service has no target groups,
+so removing the last target group from a service never reaches the deployed service: it keeps
+serving traffic from the target groups it was registered in, and a later deployment can fail with
+`The target group with targetGroupArn ... does not have an associated load balancer`.
+
+When this flag is enabled, a service with no target groups renders `LoadBalancers: []` and
+CloudFormation removes the registrations.
+
+Enabling this adds `LoadBalancers: []` to every ECS service that has no target groups, including
+services that never had any. Amazon ECS starts a new deployment when a load balancer configuration
+is added, updated or removed, so expect a one-time deployment of those services.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Set this flag to `false` to keep omitting the property, and remove the registrations with `aws ecs update-service --load-balancers '[]'` instead.
 
 
 <!-- END details -->
