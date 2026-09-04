@@ -1,0 +1,51 @@
+{
+  "version": "54.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.7.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F3021",
+          "description": "Properties: 'MasterUsername' is a dependency of 'MasterUserPassword'",
+          "suggestedFix": "Add 'MasterUsername' when 'MasterUserPassword' is specified",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-rds-cluster-snapshot/RestoredCluster/Resource",
+              "constructFqn": "aws-cdk-lib.aws_rds.CfnDBCluster",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-rds-cluster-snapshot.template.json",
+                "logicalId": "RestoredClusterBDABFB2B",
+                "propertyPaths": [
+                  "Properties"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "F0001",
+          "description": "Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "cluster-snapshot-integ-test/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

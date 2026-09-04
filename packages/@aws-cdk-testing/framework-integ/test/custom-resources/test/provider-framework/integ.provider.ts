@@ -54,9 +54,20 @@ const app = new App({
 });
 const stack = new TestStack(app, 'integ-provider-framework');
 
-new integ.IntegTest(app, 'IntegProviderFrameworkTest', {
+const test = new integ.IntegTest(app, 'IntegProviderFrameworkTest', {
   testCases: [stack],
   diffAssets: true,
 });
+
+// The async provider behind S3Assert parks the CloudFormation response URL in SSM
+// while the waiter runs, and deletes it once the resource settles. By the time the
+// stack is deployed, nothing should be left under the framework's prefix.
+test.assertions.awsApiCall('SSM', 'describeParameters', {
+  ParameterFilters: [{
+    Key: 'Name',
+    Option: 'BeginsWith',
+    Values: ['/cdk/custom-resource-provider/'],
+  }],
+}).expect(integ.ExpectedResult.objectLike({ Parameters: [] }));
 
 app.synth();

@@ -1,6 +1,7 @@
 
 import * as url from 'url';
 import { httpRequest } from './outbound';
+import { forgetResponseUrl, resolveResponseUrl } from './response-url';
 import { log, withRetries } from './util';
 import type { OnEventResponse } from '../types';
 
@@ -18,6 +19,12 @@ export interface CloudFormationEventContext {
   PhysicalResourceId?: string;
   LogicalResourceId: string;
   ResponseURL: string;
+
+  /**
+   * Name of the SSM parameter holding the real `ResponseURL`, when the URL has
+   * been kept out of the waiter state machine state.
+   */
+  ResponseURLParameterName?: string;
   Data?: any;
 }
 
@@ -35,7 +42,7 @@ export async function submitResponse(status: 'SUCCESS' | 'FAILED', event: CloudF
 
   const responseBody = JSON.stringify(json);
 
-  const parsedUrl = url.parse(event.ResponseURL);
+  const parsedUrl = url.parse(await resolveResponseUrl(event));
   const loggingSafeUrl = `${parsedUrl.protocol}//${parsedUrl.hostname}/${parsedUrl.pathname}?***`;
   if (options?.noEcho) {
     log('submit redacted response to cloudformation', loggingSafeUrl, redactDataFromPayload(json));
@@ -100,6 +107,9 @@ export function safeHandler(block: (event: any) => Promise<void>) {
       await submitResponse('FAILED', event, {
         reason: includeStackTraces ? e.stack : e.message,
       });
+
+      // terminal state, the stored response URL is no longer needed
+      await forgetResponseUrl(event);
     }
   };
 }
