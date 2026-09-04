@@ -62,6 +62,24 @@ describe('AccessEntry', () => {
     });
   });
 
+  test('creates a new AccessEntry with Kubernetes groups and username', () => {
+    // WHEN
+    new AccessEntry(stack, 'AccessEntry', {
+      cluster,
+      accessPolicies: mockAccessPolicies,
+      principal: 'mock-principal-arn',
+      kubernetesGroups: ['system:masters', 'developers'],
+      username: 'developer',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
+      PrincipalArn: 'mock-principal-arn',
+      KubernetesGroups: ['system:masters', 'developers'],
+      Username: 'developer',
+    });
+  });
+
   test.each(Object.values(AccessEntryType))(
     'creates a new AccessEntry for AccessEntryType %s',
     (accessEntryType) => {
@@ -166,6 +184,22 @@ describe('AccessEntry', () => {
             accessEntryType,
           });
         }).toThrow(`Access entry type '${accessEntryType}' cannot have access policies attached. Use AccessEntryType.STANDARD for access entries that require policies.`);
+      },
+    );
+
+    test.each([AccessEntryType.EC2_LINUX, AccessEntryType.EC2_WINDOWS])(
+      'throws error when %s type has Kubernetes groups',
+      (accessEntryType) => {
+        // WHEN & THEN
+        expect(() => {
+          new AccessEntry(stack, `AccessEntry-${accessEntryType}`, {
+            cluster,
+            accessPolicies: [],
+            principal: 'mock-principal-arn',
+            accessEntryType,
+            kubernetesGroups: ['developers'],
+          });
+        }).toThrow(`Access entry type '${accessEntryType}' cannot have Kubernetes groups. Use AccessEntryType.STANDARD for access entries that require Kubernetes groups.`);
       },
     );
 

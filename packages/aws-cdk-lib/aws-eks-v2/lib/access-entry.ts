@@ -319,9 +319,23 @@ export interface AccessEntryProps {
    */
   readonly accessPolicies: IAccessPolicy[];
   /**
+   * The Kubernetes groups to associate with this access entry.
+   *
+   * You cannot specify Kubernetes groups for access entries of type `EC2_LINUX` or `EC2_WINDOWS`.
+   *
+   * @default - No Kubernetes groups are associated with this access entry
+   */
+  readonly kubernetesGroups?: string[];
+  /**
    * The Amazon Resource Name (ARN) of the principal (user or role) to associate the access entry with.
    */
   readonly principal: string;
+  /**
+   * The Kubernetes username to associate with this access entry.
+   *
+   * @default - Amazon EKS automatically generates a username
+   */
+  readonly username?: string;
   /**
    * The removal policy applied to the access entry.
    *
@@ -394,11 +408,14 @@ export class AccessEntry extends Resource implements IAccessEntry {
 
     // Validate that certain access entry types cannot have access policies
     this.validateAccessPoliciesForRestrictedTypes(props.accessPolicies, props.accessEntryType);
+    this.validateKubernetesGroupsForRestrictedTypes(props.kubernetesGroups, props.accessEntryType);
 
     this.resource = new CfnAccessEntry(this, 'Resource', {
       clusterName: this.cluster.clusterName,
       principalArn: this.principal,
       type: props.accessEntryType,
+      kubernetesGroups: props.kubernetesGroups,
+      username: props.username,
       accessPolicies: this._accessPolicies.map(p => ({
         accessScope: {
           type: p.accessScope.type,
@@ -460,6 +477,22 @@ export class AccessEntry extends Resource implements IAccessEntry {
     if (accessEntryType && restrictedTypes.includes(accessEntryType) &&
         !Token.isUnresolved(accessPolicies) && accessPolicies.length > 0) {
       throw new ValidationError(lit`AccessEntryTypeCannot`, `Access entry type '${accessEntryType}' cannot have access policies attached. Use AccessEntryType.STANDARD for access entries that require policies.`, this);
+    }
+  }
+
+  /**
+   * Validates that node access entry types cannot have Kubernetes groups.
+   *
+   * @param kubernetesGroups - The Kubernetes groups to validate
+   * @param accessEntryType - The access entry type to check
+   * @throws {ValidationError} If a restricted access entry type has Kubernetes groups
+   * @private
+   */
+  private validateKubernetesGroupsForRestrictedTypes(kubernetesGroups?: string[], accessEntryType?: AccessEntryType): void {
+    const restrictedTypes = [AccessEntryType.EC2_LINUX, AccessEntryType.EC2_WINDOWS];
+    if (accessEntryType && restrictedTypes.includes(accessEntryType) &&
+        !Token.isUnresolved(kubernetesGroups) && kubernetesGroups && kubernetesGroups.length > 0) {
+      throw new ValidationError(lit`AccessEntryTypeCannot`, `Access entry type '${accessEntryType}' cannot have Kubernetes groups. Use AccessEntryType.STANDARD for access entries that require Kubernetes groups.`, this);
     }
   }
 }
