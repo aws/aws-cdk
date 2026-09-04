@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "FargateServiceMonitoring/DefaultTest": {
+      "stacks": [
+        "integ-fargate-service-monitoring"
+      ],
+      "assertionStack": "FargateServiceMonitoring/DefaultTest/DeployAssert",
+      "assertionStackName": "FargateServiceMonitoringDefaultTestDeployAssertEE6E380E"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}

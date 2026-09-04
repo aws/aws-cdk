@@ -617,6 +617,23 @@ export interface BaseServiceOptions {
    */
   readonly forceNewDeployment?: ForceNewDeployment;
 
+  /**
+   * Configuration for collecting additional CloudWatch metrics for the service.
+   *
+   * By default, Amazon ECS publishes `CPUUtilization` and `MemoryUtilization`
+   * service metrics to CloudWatch at 60-second resolution. This can be used to
+   * configure 20-second resolution instead, enabling faster detection of
+   * resource utilization changes.
+   *
+   * High-resolution (20-second) metrics are not supported with the `CODE_DEPLOY`
+   * or `EXTERNAL` deployment controllers.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-monitoringconfiguration.html
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/target-tracking-faster-auto-scaling.html#faster-auto-scaling-considerations
+   * @default - no additional metrics are collected
+   */
+  readonly monitoring?: ServiceMonitoringConfiguration;
+
 }
 
 /**
@@ -963,6 +980,9 @@ export abstract class BaseService extends Resource
     if (props.canaryConfiguration) {
       this.validateCanaryConfiguration(props.canaryConfiguration);
     }
+    if (props.monitoring) {
+      this.validateMonitoring(props.monitoring);
+    }
 
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
@@ -1000,6 +1020,12 @@ export abstract class BaseService extends Resource
       serviceRegistries: this._serviceRegistries,
       serviceConnectConfiguration: this._serviceConnectConfig,
       volumeConfigurations: this._volumes.derive(_ => this.renderVolumes()),
+      monitoring: props.monitoring && props.monitoring.metricConfigurations.length > 0 ? {
+        metricConfigurations: props.monitoring.metricConfigurations.map(mc => ({
+          metricNames: mc.metricNames,
+          resolutionSeconds: mc.resolution.seconds,
+        })),
+      } : undefined,
       ...additionalProps,
     });
 
@@ -1478,6 +1504,36 @@ export abstract class BaseService extends Resource
       }
       if (minutes < 0 || minutes > 1440) {
         throw new ValidationError(lit`MustBeLinearDeploymentStepBakeTime`, `Linear deployment stepBakeTime must be between 0 and 1440 minutes, received ${minutes} minutes`, this);
+      }
+    }
+  }
+
+  /**
+   * Validates monitoring configuration against the constraints documented for the
+   * ECS `MonitoringConfiguration` and `MetricConfiguration` API shapes: up to 5 metric
+   * configurations, each requiring between 1 and 5 metric names, and high-resolution
+   * (20-second) metrics requiring the ECS deployment controller.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_MonitoringConfiguration.html
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_MetricConfiguration.html
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/target-tracking-faster-auto-scaling.html#faster-auto-scaling-considerations
+   */
+  private validateMonitoring(monitoring: ServiceMonitoringConfiguration) {
+    if (monitoring.metricConfigurations.length > 5) {
+      throw new ValidationError(lit`TooManyMetricConfigurations`, `monitoring.metricConfigurations must have 5 or fewer entries, got ${monitoring.metricConfigurations.length}`, this);
+    }
+
+    const usesHighResolution = monitoring.metricConfigurations.some(mc => mc.resolution.seconds === MetricResolution.TWENTY_SECONDS.seconds);
+    if (usesHighResolution && !this.isEcsDeploymentController) {
+      throw new ValidationError(lit`HighResolutionMonitoringRequiresEcsController`, 'high-resolution service monitoring (MetricResolution.TWENTY_SECONDS) is not supported with the CODE_DEPLOY or EXTERNAL deployment controller', this);
+    }
+
+    for (const metricConfiguration of monitoring.metricConfigurations) {
+      if (metricConfiguration.metricNames.length === 0) {
+        throw new ValidationError(lit`IsRequiredLeastMetricName`, 'at least one metric name is required when specifying a metric configuration, received empty array', this);
+      }
+      if (metricConfiguration.metricNames.length > 5) {
+        throw new ValidationError(lit`TooManyMetricNames`, `metricNames must have 5 or fewer entries, got ${metricConfiguration.metricNames.length}`, this);
       }
     }
   }
@@ -2217,6 +2273,69 @@ export enum PropagatedTagSource {
    * Do not propagate
    */
   NONE = 'NONE',
+}
+
+/**
+ * The metric to collect for a monitored ECS service.
+ */
+export enum ServiceMetricName {
+  /**
+   * CPU utilization of the service.
+   */
+  CPU_UTILIZATION = 'CPUUtilization',
+
+  /**
+   * Memory utilization of the service.
+   */
+  MEMORY_UTILIZATION = 'MemoryUtilization',
+}
+
+/**
+ * The resolution, in seconds, at which to collect service metrics.
+ */
+export class MetricResolution {
+  /**
+   * Collect metrics at 20-second resolution.
+   */
+  public static readonly TWENTY_SECONDS = new MetricResolution(20);
+
+  /**
+   * Collect metrics at 60-second resolution. This is the default resolution
+   * used by Amazon ECS when no monitoring configuration is specified.
+   */
+  public static readonly SIXTY_SECONDS = new MetricResolution(60);
+
+  /**
+   * @param seconds The resolution, in seconds, at which to collect the metrics.
+   */
+  private constructor(public readonly seconds: number) { }
+}
+
+/**
+ * The configuration for a specific set of metrics to collect for a service.
+ */
+export interface ServiceMetricConfiguration {
+  /**
+   * The metrics to collect for the service.
+   */
+  readonly metricNames: ServiceMetricName[];
+
+  /**
+   * The resolution at which to collect the metrics.
+   */
+  readonly resolution: MetricResolution;
+}
+
+/**
+ * The monitoring configuration for a service, which defines the resolution
+ * for the service-level `CPUUtilization` and `MemoryUtilization` Amazon
+ * CloudWatch metrics.
+ */
+export interface ServiceMonitoringConfiguration {
+  /**
+   * The metric configurations for the service.
+   */
+  readonly metricConfigurations: ServiceMetricConfiguration[];
 }
 
 /**

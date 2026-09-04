@@ -1266,3 +1266,307 @@ describe('forceNewDeployment constructor option', () => {
     });
   });
 });
+
+describe('Service Monitoring', () => {
+  let stack: cdk.Stack;
+  let vpc: ec2.Vpc;
+  let cluster: ecs.Cluster;
+  let taskDefinition: ecs.FargateTaskDefinition;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+    vpc = new ec2.Vpc(stack, 'Vpc');
+    cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    });
+  });
+
+  test('renders Monitoring with a single metric configuration', () => {
+    // WHEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      monitoring: {
+        metricConfigurations: [{
+          metricNames: [ecs.ServiceMetricName.CPU_UTILIZATION],
+          resolution: ecs.MetricResolution.TWENTY_SECONDS,
+        }],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      Monitoring: {
+        MetricConfigurations: [{
+          MetricNames: ['CPUUtilization'],
+          ResolutionSeconds: 20,
+        }],
+      },
+    });
+  });
+
+  test('renders Monitoring with multiple metric configurations', () => {
+    // WHEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      monitoring: {
+        metricConfigurations: [
+          {
+            metricNames: [ecs.ServiceMetricName.CPU_UTILIZATION],
+            resolution: ecs.MetricResolution.TWENTY_SECONDS,
+          },
+          {
+            metricNames: [ecs.ServiceMetricName.MEMORY_UTILIZATION],
+            resolution: ecs.MetricResolution.SIXTY_SECONDS,
+          },
+        ],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      Monitoring: {
+        MetricConfigurations: [
+          {
+            MetricNames: ['CPUUtilization'],
+            ResolutionSeconds: 20,
+          },
+          {
+            MetricNames: ['MemoryUtilization'],
+            ResolutionSeconds: 60,
+          },
+        ],
+      },
+    });
+  });
+
+  test('does not render Monitoring when not specified', () => {
+    // WHEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      Monitoring: Match.absent(),
+    });
+  });
+
+  test('does not render Monitoring when metricConfigurations is empty', () => {
+    // WHEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      monitoring: {
+        metricConfigurations: [],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      Monitoring: Match.absent(),
+    });
+  });
+
+  test.each([
+    [ecs.MetricResolution.TWENTY_SECONDS, 20],
+    [ecs.MetricResolution.SIXTY_SECONDS, 60],
+  ])('renders ResolutionSeconds for MetricResolution %s as %d', (resolution, resolutionSeconds) => {
+    // WHEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      monitoring: {
+        metricConfigurations: [{
+          metricNames: [ecs.ServiceMetricName.CPU_UTILIZATION],
+          resolution,
+        }],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      Monitoring: {
+        MetricConfigurations: [Match.objectLike({
+          ResolutionSeconds: resolutionSeconds,
+        })],
+      },
+    });
+  });
+
+  test.each([
+    [ecs.ServiceMetricName.CPU_UTILIZATION, 'CPUUtilization'],
+    [ecs.ServiceMetricName.MEMORY_UTILIZATION, 'MemoryUtilization'],
+  ])('renders MetricNames for ServiceMetricName %s as %s', (metricName, cfnMetricName) => {
+    // WHEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      monitoring: {
+        metricConfigurations: [{
+          metricNames: [metricName],
+          resolution: ecs.MetricResolution.SIXTY_SECONDS,
+        }],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      Monitoring: {
+        MetricConfigurations: [Match.objectLike({
+          MetricNames: [cfnMetricName],
+        })],
+      },
+    });
+  });
+
+  test('renders Monitoring on an Ec2Service', () => {
+    // GIVEN
+    cluster.addCapacity('DefaultAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t3.micro'),
+      minCapacity: 1,
+    });
+    const ec2TaskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+    ec2TaskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512,
+    });
+
+    // WHEN
+    new ecs.Ec2Service(stack, 'Ec2Service', {
+      cluster,
+      taskDefinition: ec2TaskDefinition,
+      monitoring: {
+        metricConfigurations: [{
+          metricNames: [ecs.ServiceMetricName.CPU_UTILIZATION, ecs.ServiceMetricName.MEMORY_UTILIZATION],
+          resolution: ecs.MetricResolution.TWENTY_SECONDS,
+        }],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      Monitoring: {
+        MetricConfigurations: [{
+          MetricNames: ['CPUUtilization', 'MemoryUtilization'],
+          ResolutionSeconds: 20,
+        }],
+      },
+    });
+  });
+
+  test('fails when high-resolution monitoring is used with the CODE_DEPLOY deployment controller', () => {
+    // THEN
+    expect(() => new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      deploymentController: {
+        type: ecs.DeploymentControllerType.CODE_DEPLOY,
+      },
+      monitoring: {
+        metricConfigurations: [{
+          metricNames: [ecs.ServiceMetricName.CPU_UTILIZATION],
+          resolution: ecs.MetricResolution.TWENTY_SECONDS,
+        }],
+      },
+    })).toThrow('high-resolution service monitoring (MetricResolution.TWENTY_SECONDS) is not supported with the CODE_DEPLOY or EXTERNAL deployment controller');
+  });
+
+  test('fails when high-resolution monitoring is used with the EXTERNAL deployment controller', () => {
+    // THEN
+    expect(() => new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      deploymentController: {
+        type: ecs.DeploymentControllerType.EXTERNAL,
+      },
+      monitoring: {
+        metricConfigurations: [{
+          metricNames: [ecs.ServiceMetricName.CPU_UTILIZATION],
+          resolution: ecs.MetricResolution.TWENTY_SECONDS,
+        }],
+      },
+    })).toThrow('high-resolution service monitoring (MetricResolution.TWENTY_SECONDS) is not supported with the CODE_DEPLOY or EXTERNAL deployment controller');
+  });
+
+  test('allows 60-second resolution monitoring with the CODE_DEPLOY deployment controller', () => {
+    // WHEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      deploymentController: {
+        type: ecs.DeploymentControllerType.CODE_DEPLOY,
+      },
+      monitoring: {
+        metricConfigurations: [{
+          metricNames: [ecs.ServiceMetricName.CPU_UTILIZATION],
+          resolution: ecs.MetricResolution.SIXTY_SECONDS,
+        }],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      Monitoring: {
+        MetricConfigurations: [{
+          MetricNames: ['CPUUtilization'],
+          ResolutionSeconds: 60,
+        }],
+      },
+    });
+  });
+
+  test('fails for an empty metricNames array', () => {
+    // THEN
+    expect(() => new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      monitoring: {
+        metricConfigurations: [{
+          metricNames: [],
+          resolution: ecs.MetricResolution.SIXTY_SECONDS,
+        }],
+      },
+    })).toThrow('at least one metric name is required when specifying a metric configuration, received empty array');
+  });
+
+  test('fails when a metric configuration has more than 5 metric names', () => {
+    // THEN
+    expect(() => new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      monitoring: {
+        metricConfigurations: [{
+          metricNames: [
+            ecs.ServiceMetricName.CPU_UTILIZATION,
+            ecs.ServiceMetricName.MEMORY_UTILIZATION,
+            ecs.ServiceMetricName.CPU_UTILIZATION,
+            ecs.ServiceMetricName.CPU_UTILIZATION,
+            ecs.ServiceMetricName.CPU_UTILIZATION,
+            ecs.ServiceMetricName.CPU_UTILIZATION,
+          ],
+          resolution: ecs.MetricResolution.SIXTY_SECONDS,
+        }],
+      },
+    })).toThrow('metricNames must have 5 or fewer entries, got 6');
+  });
+
+  test('fails when more than 5 metric configurations are specified', () => {
+    // GIVEN
+    const metricConfigurations = Array.from({ length: 6 }, () => ({
+      metricNames: [ecs.ServiceMetricName.CPU_UTILIZATION],
+      resolution: ecs.MetricResolution.SIXTY_SECONDS,
+    }));
+
+    // THEN
+    expect(() => new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      monitoring: { metricConfigurations },
+    })).toThrow('monitoring.metricConfigurations must have 5 or fewer entries, got 6');
+  });
+});

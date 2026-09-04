@@ -1029,6 +1029,33 @@ This issue only applies if the metrics to alarm on are emitted by the service
 itself. If the metrics are emitted by a different resource, that does not depend
 on the service, there will be no restrictions on the alarm name.
 
+### Service Monitoring
+
+By default, Amazon ECS publishes `CPUUtilization` and `MemoryUtilization` service metrics
+to CloudWatch at 60-second resolution. You can configure 20-second resolution instead,
+which enables faster detection of resource utilization changes and can be used to drive
+faster service auto scaling. This is supported for services running on both the EC2 and
+Fargate launch types.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.FargateTaskDefinition;
+
+new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  monitoring: {
+    metricConfigurations: [{
+      metricNames: [ecs.ServiceMetricName.CPU_UTILIZATION, ecs.ServiceMetricName.MEMORY_UTILIZATION],
+      resolution: ecs.MetricResolution.TWENTY_SECONDS,
+    }],
+  },
+});
+```
+
+`MetricResolution.TWENTY_SECONDS` (high-resolution metrics) is not supported when using the
+`CODE_DEPLOY` or `EXTERNAL` deployment controller.
+
 ### Include an application/network load balancer
 
 `Services` are load balancing targets and can be added to a target group, which will be attached to an application/network load balancers:
