@@ -1,0 +1,404 @@
+{
+  "/RegionalNatGatewayStack/VpcMinimal": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/RegionalNatGatewayStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/RegionalNatGatewayStack/NatEip": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NatEip"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithEip": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/RegionalNatGatewayStack/NatEip1": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NatEip1"
+    }
+  ],
+  "/RegionalNatGatewayStack/NatEip2": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NatEip2"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithAzAddresses": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/RegionalNatGatewayStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/RegionalNatGatewayStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcMinimal/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcMinimalE698D2C3"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcMinimal/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcMinimal/PrivateSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcMinimal/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcMinimalIGW8F34E96F"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcMinimal/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcMinimalVPCGWFD28F5A0"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcMinimal/RegionalNatGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcMinimalRegionalNatGateway29AEA777"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcMinimal/RestrictDefaultSecurityGroupCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/RegionalNatGatewayStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+    }
+  ],
+  "/RegionalNatGatewayStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithEip/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithEip3E290B42"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithEip/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithEip/PrivateSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithEip/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithEipIGW61363602"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithEip/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithEipVPCGWADFBEA2B"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithEip/RegionalNatGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithEipRegionalNatGatewayA5BB7343"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithEip/RestrictDefaultSecurityGroupCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithAzAddresses/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithAzAddressesE1CB7BD3"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithAzAddresses/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithAzAddresses/PrivateSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithAzAddresses/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithAzAddressesIGW6718AF4C"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithAzAddresses/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithAzAddressesVPCGWF2C3D410"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithAzAddresses/RegionalNatGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithAzAddressesRegionalNatGateway6423F064"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithAzAddresses/RestrictDefaultSecurityGroupCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcMinimal/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcMinimalPrivateSubnet1SubnetE07A1DFE"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcMinimal/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcMinimalPrivateSubnet1RouteTableB98D88F5"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcMinimal/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcMinimalPrivateSubnet1RouteTableAssociationA4F4D523"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcMinimal/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcMinimalPrivateSubnet1DefaultRoute689932DE"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcMinimal/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcMinimalPrivateSubnet2Subnet5650C335"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcMinimal/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcMinimalPrivateSubnet2RouteTable6F73FEFC"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcMinimal/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcMinimalPrivateSubnet2RouteTableAssociationD0AA47A8"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcMinimal/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcMinimalPrivateSubnet2DefaultRoute87899180"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcMinimal/RestrictDefaultSecurityGroupCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcMinimalRestrictDefaultSecurityGroupCustomResourceDBEDBFF9"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithEip/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithEipPrivateSubnet1Subnet3AE2A530"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithEip/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithEipPrivateSubnet1RouteTable2188AD25"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithEip/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithEipPrivateSubnet1RouteTableAssociation5F05058A"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithEip/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithEipPrivateSubnet1DefaultRouteC049064C"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithEip/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithEipPrivateSubnet2SubnetD754D8FE"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithEip/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithEipPrivateSubnet2RouteTable2792E72D"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithEip/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithEipPrivateSubnet2RouteTableAssociation1567316E"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithEip/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithEipPrivateSubnet2DefaultRouteA982E219"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithEip/RestrictDefaultSecurityGroupCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithEipRestrictDefaultSecurityGroupCustomResourceB8CA6CD6"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithAzAddresses/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithAzAddressesPrivateSubnet1SubnetFA62492B"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithAzAddresses/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithAzAddressesPrivateSubnet1RouteTableB923A5D1"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithAzAddresses/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithAzAddressesPrivateSubnet1RouteTableAssociation39A9C818"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithAzAddresses/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithAzAddressesPrivateSubnet1DefaultRoute9A373F1E"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithAzAddresses/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithAzAddressesPrivateSubnet2Subnet0FB5DD00"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithAzAddresses/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithAzAddressesPrivateSubnet2RouteTableE9662F6F"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithAzAddresses/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithAzAddressesPrivateSubnet2RouteTableAssociation30D3FBD1"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithAzAddresses/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithAzAddressesPrivateSubnet2DefaultRoute1FF6BA5E"
+    }
+  ],
+  "/RegionalNatGatewayStack/VpcWithAzAddresses/RestrictDefaultSecurityGroupCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithAzAddressesRestrictDefaultSecurityGroupCustomResource288A38FE"
+    }
+  ]
+}

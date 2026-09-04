@@ -31,8 +31,8 @@ class RegionalNatGatewayStack extends cdk.Stack {
     new ec2.Vpc(this, 'VpcWithAzAddresses', {
       natGatewayProvider: ec2.NatProvider.regionalGateway({
         availabilityZoneAddresses: [
-          { allocationIds: [eip1.attrAllocationId], availabilityZone: 'us-east-1a' },
-          { allocationIds: [eip2.attrAllocationId], availabilityZone: 'us-east-1b' },
+          { allocationIds: [eip1.attrAllocationId], availabilityZone: this.availabilityZones[0] },
+          { allocationIds: [eip2.attrAllocationId], availabilityZone: this.availabilityZones[1] },
         ],
       }),
       subnetConfiguration: [
