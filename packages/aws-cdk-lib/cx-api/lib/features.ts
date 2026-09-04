@@ -158,6 +158,7 @@ export const EKS_DEFAULT_AL2023 = '@aws-cdk/aws-eks:defaultToAL2023';
 export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInValidationReport';
 export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackReferences';
 export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
+export const CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS = '@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1929,6 +1930,28 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.262.0' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS]: {
+    type: FlagType.ApiDefault,
+    summary: 'Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS',
+    detailsMd: `
+      When enabled, cache behaviors on a \`Distribution\` that do not specify an explicit
+      \`viewerProtocolPolicy\` default to \`ViewerProtocolPolicy.REDIRECT_TO_HTTPS\` instead of
+      \`ViewerProtocolPolicy.ALLOW_ALL\`, so viewers are redirected from HTTP to HTTPS rather
+      than being served over plaintext HTTP.
+
+      This applies to the default behavior, to \`additionalBehaviors\`, and to behaviors added
+      later with \`addBehavior()\`. An explicitly specified \`viewerProtocolPolicy\` always wins,
+      regardless of this flag.
+
+      Note that \`REDIRECT_TO_HTTPS\` answers an HTTP request with an HTTP 301 redirect, which the
+      viewer then follows with a second request. That additional request is billable.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Set `viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL` explicitly on each behavior to keep the old default.',
   },
 };
 
