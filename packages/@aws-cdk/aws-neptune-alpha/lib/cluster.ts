@@ -3,6 +3,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type * as kms from 'aws-cdk-lib/aws-kms';
 import * as logs from 'aws-cdk-lib/aws-logs';
+import type { DBClusterReference, IDBClusterRef, IGlobalClusterRef } from 'aws-cdk-lib/aws-neptune';
 import { CfnDBCluster, CfnDBInstance } from 'aws-cdk-lib/aws-neptune';
 import type { Duration, IResource } from 'aws-cdk-lib/core';
 import { Aws, Lazy, RemovalPolicy, Resource, Token, ValidationError } from 'aws-cdk-lib/core';
@@ -403,12 +404,24 @@ export interface DatabaseClusterProps {
    * @default 8182
    */
   readonly port?: number;
+
+  /**
+   * The Neptune global database cluster to attach this cluster to as a member.
+   *
+   * Use this to create a cluster within an existing global database. The
+   * cluster's engine version must match the global database cluster.
+   *
+   * @see https://docs.aws.amazon.com/neptune/latest/userguide/neptune-global-database.html
+   *
+   * @default - the cluster is not part of a global database.
+   */
+  readonly globalCluster?: IGlobalClusterRef;
 }
 
 /**
  * Create a clustered database with a given number of instances.
  */
-export interface IDatabaseCluster extends IResource, ec2.IConnectable {
+export interface IDatabaseCluster extends IResource, ec2.IConnectable, IDBClusterRef {
   /**
    * Identifier of the cluster
    */
@@ -540,6 +553,10 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
   public abstract readonly connections: ec2.Connections;
 
   protected abstract enableIamAuthentication?: boolean;
+
+  public get dbClusterRef(): DBClusterReference {
+    return { dbClusterIdentifier: this.clusterIdentifier };
+  }
 
   /**
    * [disable-awslint:no-grants]
@@ -698,6 +715,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       associatedRoles: props.associatedRoles ? props.associatedRoles.map(role => ({ roleArn: role.roleArn })) : undefined,
       iamAuthEnabled: Lazy.any({ produce: () => this.enableIamAuthentication }),
       dbPort: props.port,
+      globalClusterIdentifier: props.globalCluster?.globalClusterRef.globalClusterIdentifier,
       // Backup
       backupRetentionPeriod: props.backupRetention?.toDays(),
       preferredBackupWindow: props.preferredBackupWindow,
