@@ -1,0 +1,60 @@
+digraph G {
+  # Arrows represent an "unlocks" relationship (opposite of dependency). So chosen
+  # because the layout looks more natural that way.
+  # To represent subgraph dependencies, subgraphs are represented by BEGIN/END nodes.
+  # To render: `dot -Tsvg PipelineStackDeployGatePipelineCB4716F8.dot > graph.svg`, open in a browser.
+  node [shape="box"];
+"BEGIN Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Build.Synth";
+"Source.c840d0c4f1736d743edef43d08ff573f41d10f1f85" -> "Build.Synth";
+"BEGIN Build" -> "Build.Synth";
+"Build.Synth" -> "END Build";
+"BEGIN UpdatePipeline" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END UpdatePipeline" [shape="cds", style="filled", fillcolor="#b7deff"];
+"UpdatePipeline.SelfMutate";
+"Build.Synth" -> "UpdatePipeline.SelfMutate";
+"BEGIN UpdatePipeline" -> "UpdatePipeline.SelfMutate";
+"UpdatePipeline.SelfMutate" -> "END UpdatePipeline";
+"BEGIN Prod" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Prod" [shape="cds", style="filled", fillcolor="#b7deff"];
+"UpdatePipeline.SelfMutate" -> "BEGIN Prod";
+"BEGIN Prod.Stack1" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Prod.Stack1" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Prod.Stack1.Prepare";
+"Build.Synth" -> "Prod.Stack1.Prepare";
+"BEGIN Prod.Stack1" -> "Prod.Stack1.Prepare";
+"Prod.Stack1.Prepare" -> "END Prod.Stack1";
+"BEGIN Prod.Stack1-Deploy" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Prod.Stack1-Deploy" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Prod.Stack1" -> "BEGIN Prod.Stack1-Deploy";
+"Prod.Stack1-Deploy.Deploy";
+"Prod.ReviewAllChangeSets" -> "Prod.Stack1-Deploy.Deploy";
+"BEGIN Prod.Stack1-Deploy" -> "Prod.Stack1-Deploy.Deploy";
+"Prod.Stack1-Deploy.Deploy" -> "END Prod.Stack1-Deploy";
+"BEGIN Prod.Stack2" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Prod.Stack2" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Prod.Stack2.Prepare";
+"Build.Synth" -> "Prod.Stack2.Prepare";
+"BEGIN Prod.Stack2" -> "Prod.Stack2.Prepare";
+"Prod.Stack2.Prepare" -> "END Prod.Stack2";
+"BEGIN Prod.Stack2-Deploy" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Prod.Stack2-Deploy" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Prod.Stack2" -> "BEGIN Prod.Stack2-Deploy";
+"Prod.Stack2-Deploy.Deploy";
+"Prod.ReviewAllChangeSets" -> "Prod.Stack2-Deploy.Deploy";
+"BEGIN Prod.Stack2-Deploy" -> "Prod.Stack2-Deploy.Deploy";
+"Prod.Stack2-Deploy.Deploy" -> "END Prod.Stack2-Deploy";
+"Prod.ReviewAllChangeSets";
+"END Prod.Stack1" -> "Prod.ReviewAllChangeSets";
+"END Prod.Stack2" -> "Prod.ReviewAllChangeSets";
+"BEGIN Prod" -> "BEGIN Prod.Stack1";
+"BEGIN Prod" -> "BEGIN Prod.Stack2";
+"END Prod.Stack1-Deploy" -> "END Prod";
+"END Prod.Stack2-Deploy" -> "END Prod";
+"BEGIN Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Source.c840d0c4f1736d743edef43d08ff573f41d10f1f85";
+"BEGIN Source" -> "Source.c840d0c4f1736d743edef43d08ff573f41d10f1f85";
+"Source.c840d0c4f1736d743edef43d08ff573f41d10f1f85" -> "END Source";
+}
