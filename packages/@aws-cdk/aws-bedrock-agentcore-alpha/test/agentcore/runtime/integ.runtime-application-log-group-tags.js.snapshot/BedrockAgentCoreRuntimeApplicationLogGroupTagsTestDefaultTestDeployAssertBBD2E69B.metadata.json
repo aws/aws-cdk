@@ -1,0 +1,150 @@
+{
+  "/BedrockAgentCoreRuntimeApplicationLogGroupTagsTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\integ-tests-alpha\\lib\\assertions\\private\\deploy-assert.ts:62:34)",
+        "new IntegTestCase (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\integ-tests-alpha\\lib\\test-case.ts:47:20)",
+        "new IntegTest (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\integ-tests-alpha\\lib\\test-case.ts:160:29)",
+        "<anonymous> (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\aws-bedrock-agentcore-alpha\\test\\agentcore\\runtime\\integ.runtime-application-log-group-tags.ts:35:18)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\annotations.ts:220:23)",
+        "Annotations.addWarningV2 (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\annotations.ts:75:12)",
+        "resolveValue (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\refs.ts:145:32)",
+        "resolveReferences (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\refs.ts:103:24)",
+        "prepareApp (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\prepare-app.ts:50:20)",
+        "synthesize (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:59:13)",
+        "App.synth (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\stage.ts:278:55)",
+        "App.synth (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\app.ts:314:23)",
+        "process.<anonymous> (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\app.ts:263:45)",
+        "Object.onceWrapper (node:events:623:26)",
+        "process.emit (node:events:508:28)",
+        "process.emit (node:domain:489:12)",
+        "process.emit.sharedData.processEmitHook.installedValue [as emit] (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\node_modules\\@cspotcode\\source-map-support\\source-map-support.js:745:40)"
+      ]
+    }
+  ],
+  "/BedrockAgentCoreRuntimeApplicationLogGroupTagsTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\stack-synthesizers\\stack-synthesizer.ts:339:17)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\stack-synthesizers\\stack-synthesizer.ts:153:5)",
+        "DefaultStackSynthesizer.synthesize (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\stack-synthesizers\\default-synthesizer.ts:498:12)",
+        "C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:522: (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:522:2)",
+        "visit (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:587:5)",
+        "visit (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:583:5)",
+        "visit (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:583:5)",
+        "visit (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:583:5)",
+        "synthesizeTree (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:514:3)",
+        "synthesize (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:74:3)"
+      ]
+    }
+  ],
+  "/BedrockAgentCoreRuntimeApplicationLogGroupTagsTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\stack-synthesizers\\stack-synthesizer.ts:349:3)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\stack-synthesizers\\stack-synthesizer.ts:153:5)",
+        "DefaultStackSynthesizer.synthesize (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\stack-synthesizers\\default-synthesizer.ts:498:12)",
+        "C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:522: (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:522:2)",
+        "visit (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:587:5)",
+        "visit (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:583:5)",
+        "visit (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:583:5)",
+        "visit (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:583:5)",
+        "synthesizeTree (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:514:3)",
+        "synthesize (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:74:3)"
+      ]
+    }
+  ],
+  "/BedrockAgentCoreRuntimeApplicationLogGroupTagsTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogslistTagsForResource821f7c344b8d3ef8ecaff7f5cae01cab/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCloudWatchLogslistTagsForResource821f7c344b8d3ef8ecaff7f5cae01cab"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\integ-tests-alpha\\lib\\assertions\\sdk.ts:127:13)",
+        "recurse (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:396:32)",
+        "recurse (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:414:35)",
+        "recurse (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:414:35)",
+        "recurse (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:414:35)",
+        "recurse (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:414:35)",
+        "invokeAspectsV2 (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:357:3)",
+        "synthesize (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:51:5)",
+        "App.synth (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\stage.ts:278:55)",
+        "App.synth (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\app.ts:314:23)"
+      ]
+    }
+  ],
+  "/BedrockAgentCoreRuntimeApplicationLogGroupTagsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\integ-tests-alpha\\lib\\assertions\\providers\\provider.ts:79:18)",
+        "SingletonFunction.ensureFunction (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\integ-tests-alpha\\lib\\assertions\\providers\\provider.ts:185:12)",
+        "new SingletonFunction (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\integ-tests-alpha\\lib\\assertions\\providers\\provider.ts:174:32)",
+        "new AssertionsProvider (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\integ-tests-alpha\\lib\\assertions\\providers\\provider.ts:260:20)",
+        "new AwsApiCall (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\integ-tests-alpha\\lib\\assertions\\sdk.ts:86:21)",
+        "DeployAssert.awsApiCall (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\integ-tests-alpha\\lib\\assertions\\private\\deploy-assert.ts:74:12)",
+        "<anonymous> (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\aws-bedrock-agentcore-alpha\\test\\agentcore\\runtime\\integ.runtime-application-log-group-tags.ts:47:4)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreRuntimeApplicationLogGroupTagsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\integ-tests-alpha\\lib\\assertions\\providers\\provider.ts:133:20)",
+        "SingletonFunction.ensureFunction (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\integ-tests-alpha\\lib\\assertions\\providers\\provider.ts:185:12)",
+        "new SingletonFunction (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\integ-tests-alpha\\lib\\assertions\\providers\\provider.ts:174:32)",
+        "new AssertionsProvider (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\integ-tests-alpha\\lib\\assertions\\providers\\provider.ts:260:20)",
+        "new AwsApiCall (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\integ-tests-alpha\\lib\\assertions\\sdk.ts:86:21)",
+        "DeployAssert.awsApiCall (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\integ-tests-alpha\\lib\\assertions\\private\\deploy-assert.ts:74:12)",
+        "<anonymous> (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\aws-bedrock-agentcore-alpha\\test\\agentcore\\runtime\\integ.runtime-application-log-group-tags.ts:47:4)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreRuntimeApplicationLogGroupTagsTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogslistTagsForResource821f7c344b8d3ef8ecaff7f5cae01cab/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudWatchLogslistTagsForResource821f7c344b8d3ef8ecaff7f5cae01cab"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\custom-resource.ts:197:21)",
+        "new AwsApiCall (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\integ-tests-alpha\\lib\\assertions\\sdk.ts:98:28)",
+        "DeployAssert.awsApiCall (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\integ-tests-alpha\\lib\\assertions\\private\\deploy-assert.ts:74:12)",
+        "<anonymous> (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\aws-bedrock-agentcore-alpha\\test\\agentcore\\runtime\\integ.runtime-application-log-group-tags.ts:47:4)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ]
+}
