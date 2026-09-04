@@ -1108,7 +1108,7 @@ const userRole = new iam.Role(this, "UserRole", {
 // Grant read permissions (Get and List actions)
 browser.grantRead(userRole);
 
-// Grant use permissions (Start, Update, Stop actions)
+// Grant use permissions (Start, Update, Connect to the automation stream, and Stop actions)
 browser.grantUse(userRole);
 
 // Grant specific custom permissions
