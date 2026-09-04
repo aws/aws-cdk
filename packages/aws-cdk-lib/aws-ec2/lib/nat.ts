@@ -499,7 +499,6 @@ export class RegionalNatGatewayProvider extends NatProvider {
   }
 
   public configureNat(options: ConfigureNatOptions) {
-    // Warn if natSubnets is provided - Regional NAT Gateway doesn't use public subnets
     if (options.natSubnets.length > 0) {
       Annotations.of(options.vpc).addWarningV2(
         '@aws-cdk/aws-ec2:regionalNatGatewayNatSubnetsIgnored',
@@ -507,8 +506,6 @@ export class RegionalNatGatewayProvider extends NatProvider {
       );
     }
 
-    // Warn if availabilityZoneAddresses is specified with allocationId/eip
-    // allocationId/eip will be ignored in that case
     if (this.props.availabilityZoneAddresses && (this.props.allocationId || this.props.eip)) {
       Annotations.of(options.vpc).addWarningV2(
         '@aws-cdk/aws-ec2:regionalNatGatewayAllocationIdIgnored',
@@ -525,7 +522,6 @@ export class RegionalNatGatewayProvider extends NatProvider {
       maxDrainDurationSeconds: this.props.maxDrainDuration?.toSeconds(),
     });
 
-    // Add routes to the regional NAT gateway in all private subnets
     for (const sub of options.privateSubnets) {
       this.configureSubnet(sub);
     }
@@ -535,7 +531,6 @@ export class RegionalNatGatewayProvider extends NatProvider {
     if (!this.natGateway) {
       throw new UnscopedValidationError(lit`CannotConfigureSubnetBeforeNat`, 'Cannot configure subnet before configuring NAT gateway');
     }
-    // All private subnets use the same regional NAT gateway ID
     subnet.addRoute('DefaultRoute', {
       routerType: RouterType.NAT_GATEWAY,
       routerId: this.natGateway.attrNatGatewayId,
@@ -544,7 +539,6 @@ export class RegionalNatGatewayProvider extends NatProvider {
   }
 
   public get configuredGateways(): GatewayConfig[] {
-    // Regional NAT gateway is a single gateway covering all AZs
     return this.natGateway
       ? [{ az: 'regional', gatewayId: this.natGateway.attrNatGatewayId }]
       : [];

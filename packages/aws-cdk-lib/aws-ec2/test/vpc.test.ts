@@ -1310,7 +1310,6 @@ describe('vpc', () => {
           natGatewayProvider,
         });
 
-        // Regional NAT Gateway should be created with availabilityMode: 'regional'
         Template.fromStack(stack).hasResource('AWS::EC2::NatGateway', {
           Properties: {
             AllocationId: Match.absent(),
@@ -1321,7 +1320,6 @@ describe('vpc', () => {
           DependsOn: ['VpcIGWD7BA715C'],
         });
 
-        // Only one NAT Gateway should be created (regional covers all AZs)
         Template.fromStack(stack).resourceCountIs('AWS::EC2::NatGateway', 1);
 
         expect(natGatewayProvider.configuredGateways.length).toBe(1);
@@ -1450,7 +1448,6 @@ describe('vpc', () => {
 
         Template.fromStack(stack).resourceCountIs('AWS::EC2::NatGateway', 0);
 
-        // the gateway is silently dropped otherwise, so warn about it
         Annotations.fromStack(stack).hasWarning(
           '/TestStack/Vpc',
           Match.stringLikeRegexp('`natGateways: 0` disables the Regional NAT Gateway'),
@@ -1473,7 +1470,6 @@ describe('vpc', () => {
         const stack = new Stack();
         const natGatewayProvider = NatProvider.regionalGateway();
 
-        // This should NOT throw, unlike zonal NAT gateway
         new Vpc(stack, 'Vpc', {
           natGatewayProvider,
           subnetConfiguration: [

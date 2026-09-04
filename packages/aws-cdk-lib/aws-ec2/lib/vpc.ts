@@ -1674,9 +1674,6 @@ export class Vpc extends VpcBase {
       props.natGateways, this.subnetConfiguration, this.availabilityZones.length, props.natGatewayProvider,
     );
 
-    // Add warnings for Regional NAT Gateway if unnecessary options are specified.
-    // These are emitted independently of `natGatewayCount` so that a `natGateways` value
-    // which disables the gateway entirely is not silently honored.
     if (props.natGatewayProvider instanceof RegionalNatGatewayProvider) {
       if (props.natGateways !== undefined && props.natGateways < 1) {
         Annotations.of(this).addWarningV2(
@@ -1844,13 +1841,12 @@ export class Vpc extends VpcBase {
         privateSubnets: this.privateSubnets as PrivateSubnet[],
       });
 
-      // NAT Gateway needs needs to be created after Internet Gateway is ready
+      // NAT Gateway must be created after the Internet Gateway is ready
       provider.natGateway?.node.addDependency(this.internetConnectivityEstablished);
 
       return;
     }
 
-    // Zonal NAT Gateway requires public subnets
     const natSubnets: PublicSubnet[] = this.selectSubnetObjects(placement) as PublicSubnet[];
     for (const sub of natSubnets) {
       if (this.publicSubnets.indexOf(sub) === -1) {
@@ -2862,8 +2858,6 @@ function determineNatGatewayCount(
   natGatewayProvider?: NatProvider,
 ) {
   if (natGatewayProvider instanceof RegionalNatGatewayProvider) {
-    // Regional NAT Gateway uses a single gateway regardless of AZ count
-    // default to 1 and keep it [0, 1] otherwise
     return requestedCount === undefined ? 1 : Math.min(1, Math.max(requestedCount, 0));
   }
 

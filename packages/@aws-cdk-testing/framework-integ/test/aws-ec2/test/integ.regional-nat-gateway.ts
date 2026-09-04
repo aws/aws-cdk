@@ -6,7 +6,6 @@ class RegionalNatGatewayStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // Minimal configuration - Regional NAT Gateway with automatic EIP allocation
     new ec2.Vpc(this, 'VpcMinimal', {
       natGatewayProvider: ec2.NatProvider.regionalGateway(),
       subnetConfiguration: [
@@ -14,7 +13,6 @@ class RegionalNatGatewayStack extends cdk.Stack {
       ],
     });
 
-    // With explicit EIP allocation
     const eip = new ec2.CfnEIP(this, 'NatEip');
     new ec2.Vpc(this, 'VpcWithEip', {
       natGatewayProvider: ec2.NatProvider.regionalGateway({
@@ -25,7 +23,6 @@ class RegionalNatGatewayStack extends cdk.Stack {
       ],
     });
 
-    // With AvailabilityZoneAddresses for manual AZ configuration
     const eip1 = new ec2.CfnEIP(this, 'NatEip1');
     const eip2 = new ec2.CfnEIP(this, 'NatEip2');
     new ec2.Vpc(this, 'VpcWithAzAddresses', {
