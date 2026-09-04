@@ -3517,6 +3517,73 @@ describe('function', () => {
     });
   });
 
+  describe('S3 Files DirectS3Read configuration', () => {
+    function createS3FilesStack(options?: lambda.S3FilesOptions) {
+      const stack = new cdk.Stack();
+      // TODO: Remove this acknowledge once the bundled CFN validation schema includes S3FilesConfig
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::F3002', reason: 'S3FilesConfig is a newly launched property not yet in the bundled schema' });
+      const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1 });
+      const bucket = new s3.Bucket(stack, 'Bucket');
+
+      const fileSystem = new s3files.CfnFileSystem(stack, 'S3FilesFs', {
+        bucket: bucket.bucketArn,
+        roleArn: 'arn:aws:iam::123456789012:role/S3FilesRole',
+      });
+
+      const sg = new ec2.SecurityGroup(stack, 'MountTargetSG', { vpc });
+
+      new s3files.CfnMountTarget(stack, 'MountTarget0', {
+        fileSystemId: fileSystem.attrFileSystemId,
+        subnetId: vpc.privateSubnets[0].subnetId,
+        securityGroups: [sg.securityGroupId],
+      });
+
+      const accessPoint = new s3files.CfnAccessPoint(stack, 'AccessPoint', {
+        fileSystemId: fileSystem.attrFileSystemId,
+      });
+
+      new lambda.Function(stack, 'MyFunction', {
+        vpc,
+        handler: 'index.handler',
+        runtime: lambda.Runtime.PYTHON_3_12,
+        code: lambda.Code.fromInline('def handler(event, context): pass'),
+        filesystem: lambda.FileSystem.fromS3FilesAccessPoint(accessPoint, '/mnt/data', options),
+      });
+
+      return stack;
+    }
+
+    test.each([
+      [lambda.DirectS3ReadMode.ENABLED, 'ENABLED'],
+      [lambda.DirectS3ReadMode.AUTO, 'AUTO'],
+      [lambda.DirectS3ReadMode.DISABLED, 'DISABLED'],
+    ])('DirectS3ReadMode.%s renders S3FilesConfig in template', (mode, expected) => {
+      const stack = createS3FilesStack({ directS3Read: mode });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        FileSystemConfigs: [
+          Match.objectLike({
+            S3FilesConfig: {
+              DirectS3Read: expected,
+            },
+          }),
+        ],
+      });
+    });
+
+    test('no S3FilesConfig is rendered when directS3Read is omitted', () => {
+      const stack = createS3FilesStack();
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        FileSystemConfigs: [
+          Match.objectLike({
+            S3FilesConfig: Match.absent(),
+          }),
+        ],
+      });
+    });
+  });
+
   describe('code config', () => {
     class MyCode extends lambda.Code {
       public readonly isInline: boolean;

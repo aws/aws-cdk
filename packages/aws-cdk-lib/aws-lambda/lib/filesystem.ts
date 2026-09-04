@@ -8,6 +8,45 @@ import { AccessPointReflection } from '../../aws-s3files/lib/private/access-poin
 import { Stack } from '../../core';
 
 /**
+ * The DirectS3Read mode for S3 Files filesystem configurations.
+ *
+ * Controls whether Lambda can read objects directly from S3 without
+ * going through the S3 Files mount target.
+ */
+export enum DirectS3ReadMode {
+  /**
+   * Direct S3 read is enabled.
+   */
+  ENABLED = 'ENABLED',
+
+  /**
+   * Direct S3 read is disabled.
+   */
+  DISABLED = 'DISABLED',
+
+  /**
+   * The service determines whether to use direct S3 read based on the function's
+   * memory configuration: direct reads are active for functions with 512 MB or more of memory.
+   */
+  AUTO = 'AUTO',
+}
+
+/**
+ * Options for mounting an S3 Files filesystem.
+ */
+export interface S3FilesOptions {
+  /**
+   * The DirectS3Read mode for the S3 Files filesystem.
+   *
+   * Controls whether Lambda can read objects directly from S3 without
+   * going through the S3 Files mount target.
+   *
+   * @default - DirectS3Read is not set. The service default is AUTO.
+   */
+  readonly directS3Read?: DirectS3ReadMode;
+}
+
+/**
  * FileSystem configurations for the Lambda function
  */
 export interface FileSystemConfig {
@@ -41,6 +80,15 @@ export interface FileSystemConfig {
    * @default - no additional policies required
    */
   readonly policies?: iam.PolicyStatement[];
+
+  /**
+   * The DirectS3Read mode, applied only for S3 Files access-point mounts.
+   *
+   * Set internally by `fromS3FilesAccessPoint`; not applicable to EFS mounts.
+   *
+   * @default - DirectS3Read is not set. The service default is AUTO.
+   */
+  readonly s3FilesDirectRead?: DirectS3ReadMode;
 }
 
 /**
@@ -84,8 +132,9 @@ export class FileSystem {
    * Mount the filesystem from Amazon S3 Files
    * @param ap the S3 Files access point
    * @param mountPath the target path in the lambda runtime environment
+   * @param options optional S3 Files mount options such as DirectS3Read mode
    */
-  public static fromS3FilesAccessPoint(ap: s3files.IAccessPointRef, mountPath: string): FileSystem {
+  public static fromS3FilesAccessPoint(ap: s3files.IAccessPointRef, mountPath: string, options?: S3FilesOptions): FileSystem {
     const reflection = AccessPointReflection.of(ap);
 
     return new FileSystem({
@@ -108,6 +157,7 @@ export class FileSystem {
           resources: [reflection.fileSystem.fileSystemRef.fileSystemArn],
         }),
       ],
+      s3FilesDirectRead: options?.directS3Read,
     });
   }
 
