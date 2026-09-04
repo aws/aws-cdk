@@ -4,7 +4,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sqs from '../../aws-sqs';
 import { Aws, CfnResource, Stack, Arn, App, PhysicalName, CfnOutput } from '../../core';
-import { EventBus, IncludeDetail, Level } from '../lib';
+import { EventBus, EventBusPolicy, IncludeDetail, Level } from '../lib';
 
 describe('event bus', () => {
   test('default event bus', () => {
@@ -626,6 +626,48 @@ describe('event bus', () => {
             'BusEA82B648',
             'Arn',
           ],
+        },
+      },
+    });
+  });
+
+  test('EventBusPolicy serializes PolicyStatement props', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    const bus = new EventBus(stack, 'Bus');
+
+    // WHEN
+    new EventBusPolicy(stack, 'Policy', {
+      eventBus: bus,
+      statementId: 'MyStatement',
+      statement: new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        principals: [new iam.AccountPrincipal('111111111111')],
+        actions: ['events:PutEvents'],
+        resources: [bus.eventBusArn],
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBusPolicy', {
+      StatementId: 'MyStatement',
+      Statement: {
+        Action: 'events:PutEvents',
+        Effect: 'Allow',
+        Principal: {
+          AWS: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':iam::111111111111:root',
+              ],
+            ],
+          },
         },
       },
     });
