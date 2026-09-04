@@ -4,7 +4,6 @@ import type { OutgoingHttpHeaders } from 'http';
 import type * as https from 'https';
 import * as os from 'os';
 import * as path from 'path';
-import * as url from 'url';
 import * as entrypoint from '../lib/nodejs-entrypoint';
 
 describe('nodejs entrypoint', () => {
@@ -164,7 +163,7 @@ function makeEvent(req: Partial<AWSLambda.CloudFormationCustomResourceEvent>): A
     LogicalResourceId: '<LogicalResourceId>',
     RequestId: '<RequestId>',
     ResourceType: '<ResourceType>',
-    ResponseURL: '<ResponseURL>',
+    ResponseURL: 'https://localhost/response-mock',
     ServiceToken: '<ServiceToken>',
     StackId: '<StackId>',
     ResourceProperties: {
@@ -176,7 +175,7 @@ function makeEvent(req: Partial<AWSLambda.CloudFormationCustomResourceEvent>): A
 }
 
 async function invokeHandler(req: AWSLambda.CloudFormationCustomResourceEvent, userHandler: entrypoint.Handler) {
-  const parsedResponseUrl = url.parse(req.ResponseURL);
+  const parsedResponseUrl = new URL(req.ResponseURL);
 
   // stage entry point and user handler.
   const workdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-custom-resource-provider-handler-test-'));
@@ -198,7 +197,7 @@ async function invokeHandler(req: AWSLambda.CloudFormationCustomResourceEvent, u
   let actualRequest;
   entrypoint.external.sendHttpRequest = async (options: https.RequestOptions, responseBody: string): Promise<void> => {
     assert(options.hostname === parsedResponseUrl.hostname, 'request hostname expected to be based on response URL');
-    assert(options.path === parsedResponseUrl.path, 'request path expected to be based on response URL');
+    assert(options.path === parsedResponseUrl.pathname + parsedResponseUrl.search, 'request path expected to be based on response URL');
     assert(options.method === 'PUT', 'request method is expected to be PUT');
     actualResponse = responseBody;
     actualRequest = options;
