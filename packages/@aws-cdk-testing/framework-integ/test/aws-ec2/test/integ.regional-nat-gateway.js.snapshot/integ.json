@@ -5,6 +5,9 @@
       "stacks": [
         "RegionalNatGatewayStack"
       ],
+      "regions": [
+        "us-east-1"
+      ],
       "assertionStack": "regional-nat-gateway-integ/DefaultTest/DeployAssert",
       "assertionStackName": "regionalnatgatewayintegDefaultTestDeployAssert62EFF3BC"
     }
