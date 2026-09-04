@@ -287,6 +287,42 @@ test('default install latest AWS SDK is true', () => {
   });
 });
 
+test('LogGroup Resource Policy is created by default', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
+    logGroupName: '/aws/events/MyLogGroup',
+  });
+  const rule1 = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  });
+
+  // WHEN
+  rule1.addTarget(new targets.CloudWatchLogGroup(logGroup));
+
+  // THEN
+  Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 1);
+});
+
+test('prevent to create LogGroup Resource Policy', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
+    logGroupName: '/aws/events/MyLogGroup',
+  });
+  const rule1 = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  });
+
+  // WHEN
+  rule1.addTarget(new targets.CloudWatchLogGroup(logGroup, {
+    createLogGroupResourcePolicy: false,
+  }));
+
+  // THEN
+  Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 0);
+});
+
 test('can use logEvent', () => {
   // GIVEN
   const stack = new cdk.Stack();
@@ -626,4 +662,3 @@ test('metricIncomingBytes with MetricOptions props', () => {
     statistic: 'Sum',
   });
 });
-
