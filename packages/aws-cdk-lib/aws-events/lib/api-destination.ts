@@ -4,6 +4,7 @@ import { HttpMethod } from './connection';
 import type { IConnectionRef } from './events.generated';
 import { CfnApiDestination } from './events.generated';
 import { toIConnection } from './private/ref-utils';
+import type { Writeable } from './private/writeable';
 import type { IResource } from '../../core';
 import { ArnFormat, Resource, Stack, UnscopedValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
@@ -100,6 +101,20 @@ export interface ApiDestinationAttributes {
 }
 
 /**
+ * Assigns the `apiDestinationArnForPolicy` on an `IApiDestination` implementation.
+ *
+ * The property is declared `readonly` (to match the `IApiDestination` contract
+ * under `exactOptionalPropertyTypes`) but is resolved after construction, so the
+ * write goes through a `Writeable` cast. The `undefined` check keeps the property
+ * absent rather than set to `undefined`, which `exactOptionalPropertyTypes` forbids.
+ */
+function setApiDestinationArnForPolicy(apiDestination: IApiDestination, apiDestinationArnForPolicy: string | undefined): void {
+  if (apiDestinationArnForPolicy !== undefined) {
+    (apiDestination as Writeable<IApiDestination>).apiDestinationArnForPolicy = apiDestinationArnForPolicy;
+  }
+}
+
+/**
  * Define an EventBridge Api Destination
  *
  * @resource AWS::Events::ApiDestination
@@ -132,8 +147,13 @@ export class ApiDestination extends Resource implements IApiDestination {
     class Import extends Resource implements IApiDestination {
       public readonly apiDestinationArn = attrs.apiDestinationArn;
       public readonly apiDestinationName = apiDestinationName!;
-      public readonly apiDestinationArnForPolicy = attrs.apiDestinationArnForPolicy;
+      public readonly apiDestinationArnForPolicy?: string;
       private readonly _importConnection = attrs.connection;
+
+      constructor(s: Construct, i: string) {
+        super(s, i);
+        setApiDestinationArnForPolicy(this, attrs.apiDestinationArnForPolicy);
+      }
 
       public get connection(): IConnection {
         return toIConnection(this._importConnection);
@@ -181,10 +201,7 @@ export class ApiDestination extends Resource implements IApiDestination {
    * The Amazon Resource Name (ARN) of an API destination in resource format.
    * @attribute
    */
-  @memoizedGetter
-  public get apiDestinationArnForPolicy(): string | undefined {
-    return this._resource.attrArnForPolicy;
-  }
+  public readonly apiDestinationArnForPolicy?: string;
 
   /**
    * The Connection to associate with Api Destination
@@ -217,5 +234,7 @@ export class ApiDestination extends Resource implements IApiDestination {
       invocationRateLimitPerSecond: props.rateLimitPerSecond,
       name: this.physicalName,
     });
+
+    setApiDestinationArnForPolicy(this, this._resource.attrArnForPolicy);
   }
 }
