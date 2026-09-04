@@ -1,0 +1,98 @@
+{
+  "/rds-removal-policy-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/Users/macintoshhd/workspace/aws-cdk-1/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:38:38)",
+        "new IntegTestCase (/Users/macintoshhd/workspace/aws-cdk-1/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:27:24)",
+        "new IntegTest (/Users/macintoshhd/workspace/aws-cdk-1/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:100:33)",
+        "<anonymous> (/Users/macintoshhd/workspace/aws-cdk-1/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-instance-removal-policy.js:52:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/rds-removal-policy-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "visit (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "visit (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)"
+      ]
+    }
+  ],
+  "/rds-removal-policy-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "visit (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "visit (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)"
+      ]
+    }
+  ],
+  "/rds-removal-policy-test/DefaultTest/DeployAssert/CDKMetadata/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKMetadata"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new MetadataResource (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/metadata-resource.js:29:30)",
+        "/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:383 (:)",
+        "visit (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "visit (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "visit (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "injectMetadataResources (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:372:5)",
+        "synthesize (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:40:5)",
+        "App.synth (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/stage.js:179:92)",
+        "process.<anonymous> (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/rds-removal-policy-test/DefaultTest/DeployAssert/CDKMetadata/Condition": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKMetadataAvailable"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new MetadataResource (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/metadata-resource.js:37:35)",
+        "/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:383 (:)",
+        "visit (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "visit (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "visit (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "injectMetadataResources (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:372:5)",
+        "synthesize (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/private/synthesis.js:40:5)",
+        "App.synth (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/stage.js:179:92)",
+        "process.<anonymous> (/Users/macintoshhd/workspace/aws-cdk-1/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ]
+}
