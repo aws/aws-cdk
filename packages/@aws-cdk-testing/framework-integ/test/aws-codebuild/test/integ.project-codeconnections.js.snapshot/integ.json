@@ -1,0 +1,10 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "integ-codebuild-project-codeconnections": {
+      "stacks": [
+        "aws-cdk-codebuild-project-codeconnections"
+      ]
+    }
+  }
+}
