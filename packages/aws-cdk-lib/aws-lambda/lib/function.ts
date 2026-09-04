@@ -1124,6 +1124,7 @@ export class Function extends FunctionBase {
         zipFile: code.inlineCode,
         imageUri: code.image?.imageUri,
         sourceKmsKeyArn: code.sourceKMSKeyArn,
+        s3ObjectStorageMode: code.s3ObjectStorageMode,
       },
       layers: Token.asList(this._layers.derive(l => this.renderLayers(l))),
       handler: props.handler === Handler.FROM_IMAGE ? undefined : props.handler,
