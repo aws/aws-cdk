@@ -118,6 +118,7 @@ Flags come in three types:
 | [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-stack references are strong, weak, or both | 2.254.0 | config |
 | [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | 2.259.0 | new default |
 | [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | 2.262.0 | config |
+| [@aws-cdk/aws-events:eventBusPolicyUniqueStatementId](#aws-cdkaws-eventseventbuspolicyuniquestatementid) | Generate unique StatementIds for EventBus resource policies to prevent collisions across stacks | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -167,6 +168,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault": true,
     "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": true,
     "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": true,
+    "@aws-cdk/aws-events:eventBusPolicyUniqueStatementId": true,
     "@aws-cdk/aws-events:eventsTargetQueueSameAccount": true,
     "@aws-cdk/aws-events:requireEventBusPolicySid": true,
     "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": true,
@@ -2549,6 +2551,32 @@ fail synthesis. When unconfigured, violations are reported as warnings only.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.262.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-events:eventBusPolicyUniqueStatementId
+
+*Generate unique StatementIds for EventBus resource policies to prevent collisions across stacks*
+
+Flag type: Backwards incompatible bugfix
+
+CloudFormation uses the `StatementId` of an `AWS::Events::EventBusPolicy` resource as its
+physical identifier, which must be unique within an account and region across all stacks and
+event buses. Previously, `EventBus.addToResourcePolicy()` used the statement's `sid` directly
+as the `StatementId`, so deploying two stacks that add a statement with the same `sid` failed
+with an "already exists" error, even though the EventBridge service allows different buses to
+use the same statement id.
+
+When this flag is enabled, the `StatementId` is suffixed with a short hash unique to the event
+bus and its stack, so identical stacks no longer collide. The statement's `sid` also becomes
+optional and is auto-generated when omitted. Logical IDs are unchanged; on the first deployment
+after enabling the flag, existing `AWS::Events::EventBusPolicy` resources are replaced in-place
+(the new statement is created before the old one is deleted, so permissions are not interrupted).
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->

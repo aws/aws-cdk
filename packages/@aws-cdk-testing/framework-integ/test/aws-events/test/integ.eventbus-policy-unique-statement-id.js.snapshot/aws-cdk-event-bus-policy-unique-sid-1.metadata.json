@@ -1,0 +1,74 @@
+{
+  "/aws-cdk-event-bus-policy-unique-sid-1/EventBus": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToResourcePolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToResourcePolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-event-bus-policy-unique-sid-1/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-event-bus-policy-unique-sid-1/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-event-bus-policy-unique-sid-1/EventBus/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventBus7B8748AA"
+    }
+  ],
+  "/aws-cdk-event-bus-policy-unique-sid-1/EventBus/cdk-AllowAccountToPutEvents": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "eventBus": "*",
+        "statement": "*",
+        "statementId": "*"
+      }
+    }
+  ],
+  "/aws-cdk-event-bus-policy-unique-sid-1/EventBus/cdk-Statement0": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "eventBus": "*",
+        "statement": "*",
+        "statementId": "*"
+      }
+    }
+  ],
+  "/aws-cdk-event-bus-policy-unique-sid-1/EventBus/cdk-AllowAccountToPutEvents/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventBuscdkAllowAccountToPutEventsF0975EE6"
+    }
+  ],
+  "/aws-cdk-event-bus-policy-unique-sid-1/EventBus/cdk-Statement0/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventBuscdkStatement0E3C3EC90"
+    }
+  ]
+}
