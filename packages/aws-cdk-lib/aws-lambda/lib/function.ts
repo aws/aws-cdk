@@ -1096,7 +1096,9 @@ export class Function extends FunctionBase {
       fileSystemConfigs = [{
         arn: props.filesystem.config.arn,
         localMountPath: props.filesystem.config.localMountPath,
-        s3FilesConfig: props.filesystem.config.s3Files,
+        s3FilesConfig: props.filesystem.config.s3FilesDirectRead
+          ? { directS3Read: props.filesystem.config.s3FilesDirectRead }
+          : undefined,
       }];
     }
 

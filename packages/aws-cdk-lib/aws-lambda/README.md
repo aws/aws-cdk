@@ -1674,6 +1674,8 @@ S3 Files uses the same NFS infrastructure as Amazon EFS. To mount the file syste
 - **Mount targets** (`CfnMountTarget`) — ENIs placed in your VPC subnets that allow NFS clients (like Lambda) to connect. Each mount target needs a security group that permits inbound NFS traffic (TCP port 2049).
 - **Access point** (`CfnAccessPoint`) — defines the POSIX user identity and root directory path that Lambda uses when accessing the file system. This scopes and isolates the function's view of the file system.
 
+You can optionally set `DirectS3Read` to stream eligible reads directly from the S3 bucket for higher throughput instead of routing them through the file system mount. Supported values are `ENABLED`, `DISABLED`, and `AUTO` (the default: direct reads are active for functions with 512 MB or more of memory). To use direct reads, grant the function's execution role the `s3:GetObject` and `s3:GetObjectVersion` permissions on the backing bucket; if a direct read fails, Lambda falls back to reading through the file system. See the [S3FilesConfig CloudFormation reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-lambda-function-s3filesconfig.html) for details.
+
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
@@ -1748,8 +1750,6 @@ const fn = new lambda.Function(this, 'MyFunction', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
   vpc,
   filesystem: lambda.FileSystem.fromS3FilesAccessPoint(accessPoint, '/mnt/s3files', {
-    // Optional: configure DirectS3Read to stream eligible reads directly from S3 for higher throughput.
-    // Supported values: ENABLED, DISABLED, AUTO (default: direct reads for functions with 512 MB or more of memory).
     directS3Read: lambda.DirectS3ReadMode.ENABLED,
   }),
 });

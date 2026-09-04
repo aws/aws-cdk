@@ -82,13 +82,13 @@ export interface FileSystemConfig {
   readonly policies?: iam.PolicyStatement[];
 
   /**
-   * S3 Files mount options for the filesystem.
+   * The DirectS3Read mode, applied only for S3 Files access-point mounts.
    *
-   * Only applicable when using S3 Files access points.
+   * Set internally by `fromS3FilesAccessPoint`; not applicable to EFS mounts.
    *
-   * @default - No S3 Files options.
+   * @default - DirectS3Read is not set. The service default is AUTO.
    */
-  readonly s3Files?: S3FilesOptions;
+  readonly s3FilesDirectRead?: DirectS3ReadMode;
 }
 
 /**
@@ -157,7 +157,7 @@ export class FileSystem {
           resources: [reflection.fileSystem.fileSystemRef.fileSystemArn],
         }),
       ],
-      s3Files: options?.directS3Read ? { directS3Read: options.directS3Read } : undefined,
+      s3FilesDirectRead: options?.directS3Read,
     });
   }
 
