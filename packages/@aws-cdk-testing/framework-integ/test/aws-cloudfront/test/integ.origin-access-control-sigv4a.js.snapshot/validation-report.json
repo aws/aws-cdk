@@ -1,0 +1,35 @@
+{
+  "version": "54.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.7.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F3031",
+          "description": "OriginAccessControlConfig.SigningProtocol: 'sigv4a' does not match pattern '^(sigv4)$'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "cloudfront-origin-access-control-sigv4a/OriginAccessControl/Resource",
+              "constructFqn": "aws-cdk-lib.aws_cloudfront.CfnOriginAccessControl",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "cloudfront-origin-access-control-sigv4a.template.json",
+                "logicalId": "OriginAccessControlDC2011A2",
+                "propertyPaths": [
+                  "Properties.OriginAccessControlConfig.SigningProtocol"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
