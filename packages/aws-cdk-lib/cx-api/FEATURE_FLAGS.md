@@ -118,6 +118,7 @@ Flags come in three types:
 | [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-stack references are strong, weak, or both | 2.254.0 | config |
 | [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | 2.259.0 | new default |
 | [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | 2.262.0 | config |
+| [@aws-cdk/aws-codepipeline-actions:autoScopeCodeBuildRoleForFullClone](#aws-cdkaws-codepipeline-actionsautoscopecodebuildroleforfullclone) | Auto-create a CodeBuild service role scoped to the repositories it uses from CodeConnections Full Clone sources | V2NEXT | new default |
 
 <!-- END table -->
 
@@ -140,6 +141,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": true,
     "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": true,
     "@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup": true,
+    "@aws-cdk/aws-codepipeline-actions:autoScopeCodeBuildRoleForFullClone": true,
     "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true,
     "@aws-cdk/aws-codepipeline:crossAccountKeyAliasStackSafeResourceName": true,
     "@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse": true,
@@ -2549,6 +2551,37 @@ fail synthesis. When unconfigured, violations are reported as warnings only.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.262.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-codepipeline-actions:autoScopeCodeBuildRoleForFullClone
+
+*Auto-create a CodeBuild service role scoped to the repositories it uses from CodeConnections Full Clone sources*
+
+Flag type: New default behavior
+
+When a CodeBuild action has any CodeConnections sources that use Full Clone, enabling this
+flag creates a dedicated CodeBuild service role whose access to the connection is scoped to the
+repositories the action clones, following the principle of least privilege. The role is exposed
+as `buildAction.serviceRole`.
+
+The auto-created role is intentionally minimal. It grants only: CloudWatch Logs for the project's
+log group, CodeBuild report groups, read/write on the pipeline artifact bucket (and its KMS key,
+if any), `UseConnection` on each connection with a `FullRepositoryId` condition for the cloned
+repositories, and `codecommit:GitPull` scoped to any CodeCommit Full Clone repositories on the
+same action. Grant any other permissions through `buildAction.serviceRole`, or pass an explicit
+`serviceRoleOverride` you control.
+
+Role creation is skipped when the CodeBuild project is imported, or when a source connection ARN is
+not known at synthesis time. Does not affect CodeBuild Rules. To override the role for a CodeBuild
+Rule, set `ServiceRoleArnOverride` in the rule's `configuration` map.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to keep using the CodeBuild project default service role, or pass an explicit `serviceRoleOverride`.
 
 
 <!-- END details -->

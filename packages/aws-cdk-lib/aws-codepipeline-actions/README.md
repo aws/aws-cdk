@@ -447,6 +447,44 @@ const testAction = new codepipeline_actions.CodeBuildAction({
 });
 ```
 
+#### Overriding the CodeBuild service role
+
+Pass `serviceRoleOverride` to override the CodeBuild project's default service role for
+builds triggered by this action — useful when a project is shared across pipelines and you
+want to grant each one custom permissions without making the shared service role overly
+permissive. CDK grants the pipeline role `iam:PassRole` on it automatically.
+
+If the `@aws-cdk/aws-codepipeline-actions:autoScopeCodeBuildRoleForFullClone` feature flag is
+enabled and no role is provided, CDK auto-creates a least-privilege role for CodeConnections
+**Full Clone** sources, scoped to the cloned repositories, and exposes it as
+`buildAction.serviceRole`. When it cannot auto-create one — an imported project, or a connection
+ARN not known at synthesis time — it logs an informational message and the project's default role is used.
+
+The auto-created role is intentionally minimal: it grants CloudWatch Logs, CodeBuild report groups,
+the pipeline artifact bucket (and its KMS key), the repository-scoped connection grant, and
+`codecommit:GitPull` for any CodeCommit Full Clone inputs. Grant any extra permissions on the auto-created
+role via `buildAction.serviceRole` (populated once the action is added to a pipeline):
+
+```ts
+declare const sourceOutput: codepipeline.Artifact;
+const project = new codebuild.PipelineProject(this, 'MyProject');
+
+const buildAction = new codepipeline_actions.CodeBuildAction({
+  actionName: 'CodeBuild',
+  project,
+  input: sourceOutput,
+});
+
+// After the action is added to a pipeline, `serviceRole` is the auto-created scoped role.
+// Grant it any additional permissions the build needs (e.g. VPC, ECR, Secrets, or extra S3):
+buildAction.serviceRole?.addToPrincipalPolicy(new iam.PolicyStatement({
+  actions: ['s3:GetObject'],
+  resources: ['arn:aws:s3:::my-extra-bucket/*'],
+}));
+```
+
+Alternatively, pass a custom role via `serviceRoleOverride`. CDK will add no extra permissions to it.
+
 #### Multiple inputs and outputs
 
 When you want to have multiple inputs and/or outputs for a Project used in a
