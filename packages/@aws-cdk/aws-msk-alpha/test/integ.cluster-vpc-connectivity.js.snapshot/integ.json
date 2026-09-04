@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "MskClusterVpcConnectivity/DefaultTest": {
+      "stacks": [
+        "aws-cdk-msk-vpc-connectivity-integ"
+      ],
+      "assertionStack": "MskClusterVpcConnectivity/DefaultTest/DeployAssert",
+      "assertionStackName": "MskClusterVpcConnectivityDefaultTestDeployAssert54F4065D"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
