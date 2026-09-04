@@ -720,16 +720,16 @@ export class Role extends Resource implements IRole {
    * Grant permissions to the given principal to pass this role.
    */
   @MethodMetadata()
-  public grantPassRole(identity: IPrincipal) {
-    return this.grants.passRole(identity);
+  public grantPassRole(grantee: IPrincipal) {
+    return this.grants.passRole(grantee);
   }
 
   /**
    * Grant permissions to the given principal to assume this role.
    */
   @MethodMetadata()
-  public grantAssumeRole(identity: IPrincipal) {
-    return this.grants.assumeRole(identity);
+  public grantAssumeRole(grantee: IPrincipal) {
+    return this.grants.assumeRole(grantee);
   }
 
   /**
