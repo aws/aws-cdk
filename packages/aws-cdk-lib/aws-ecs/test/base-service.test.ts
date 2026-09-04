@@ -525,6 +525,243 @@ test.each([
   });
 });
 
+test('circuitBreaker with resetOnHealthyTask synthesizes correctly', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+  acknowledgeTestValidationRules(stack);
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+  taskDefinition.addContainer('web', {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  });
+
+  // WHEN
+  new ecs.FargateService(stack, 'FargateService', {
+    cluster,
+    taskDefinition,
+    circuitBreaker: {
+      enable: true,
+      rollback: true,
+      resetOnHealthyTask: true,
+    },
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::ECS::Service', {
+    DeploymentConfiguration: {
+      DeploymentCircuitBreaker: {
+        Enable: true,
+        Rollback: true,
+        ResetOnHealthyTask: true,
+      },
+    },
+  });
+});
+
+test.each([
+  [ecs.DeploymentCircuitBreakerThresholdType.COUNT, 10],
+  [ecs.DeploymentCircuitBreakerThresholdType.BOUNDED_PERCENT, 50],
+  [ecs.DeploymentCircuitBreakerThresholdType.UNBOUNDED_PERCENT, 75],
+])('circuitBreaker with thresholdConfiguration type %p and value %p synthesizes correctly', (type, value) => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+  acknowledgeTestValidationRules(stack);
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+  taskDefinition.addContainer('web', {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  });
+
+  // WHEN
+  new ecs.FargateService(stack, 'FargateService', {
+    cluster,
+    taskDefinition,
+    circuitBreaker: {
+      enable: true,
+      rollback: true,
+      thresholdConfiguration: { type, value },
+    },
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::ECS::Service', {
+    DeploymentConfiguration: {
+      DeploymentCircuitBreaker: {
+        Enable: true,
+        Rollback: true,
+        ThresholdConfiguration: {
+          Type: type,
+          Value: value,
+        },
+      },
+    },
+  });
+});
+
+test('circuitBreaker with all new props synthesizes correctly', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+  acknowledgeTestValidationRules(stack);
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+  taskDefinition.addContainer('web', {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  });
+
+  // WHEN
+  new ecs.FargateService(stack, 'FargateService', {
+    cluster,
+    taskDefinition,
+    circuitBreaker: {
+      enable: true,
+      rollback: true,
+      resetOnHealthyTask: true,
+      thresholdConfiguration: {
+        type: ecs.DeploymentCircuitBreakerThresholdType.COUNT,
+        value: 10,
+      },
+    },
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::ECS::Service', {
+    DeploymentConfiguration: {
+      DeploymentCircuitBreaker: {
+        Enable: true,
+        Rollback: true,
+        ResetOnHealthyTask: true,
+        ThresholdConfiguration: {
+          Type: 'COUNT',
+          Value: 10,
+        },
+      },
+    },
+  });
+});
+
+test('circuitBreaker without new optional props preserves existing behavior', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+  taskDefinition.addContainer('web', {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  });
+
+  // WHEN
+  new ecs.FargateService(stack, 'FargateService', {
+    cluster,
+    taskDefinition,
+    circuitBreaker: {
+      enable: true,
+      rollback: true,
+    },
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::ECS::Service', {
+    DeploymentConfiguration: {
+      DeploymentCircuitBreaker: {
+        Enable: true,
+        Rollback: true,
+        ResetOnHealthyTask: Match.absent(),
+        ThresholdConfiguration: Match.absent(),
+      },
+    },
+  });
+});
+
+test.each([0, -1, 1.5])('fails when circuitBreaker thresholdConfiguration value is %p', (value) => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+  taskDefinition.addContainer('web', {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  });
+
+  // THEN
+  expect(() => {
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      circuitBreaker: {
+        thresholdConfiguration: {
+          type: ecs.DeploymentCircuitBreakerThresholdType.COUNT,
+          value,
+        },
+      },
+    });
+  }).toThrow(/thresholdConfiguration value must be a positive integer/);
+});
+
+test('fails when circuitBreaker BOUNDED_PERCENT value exceeds 100', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+  taskDefinition.addContainer('web', {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  });
+
+  // THEN
+  expect(() => {
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      circuitBreaker: {
+        thresholdConfiguration: {
+          type: ecs.DeploymentCircuitBreakerThresholdType.BOUNDED_PERCENT,
+          value: 101,
+        },
+      },
+    });
+  }).toThrow(/thresholdConfiguration value for BOUNDED_PERCENT must be between 1 and 100/);
+});
+
+test('circuitBreaker UNBOUNDED_PERCENT value above 100 does not throw', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+  acknowledgeTestValidationRules(stack);
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+  taskDefinition.addContainer('web', {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  });
+
+  // THEN
+  expect(() => {
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      circuitBreaker: {
+        thresholdConfiguration: {
+          type: ecs.DeploymentCircuitBreakerThresholdType.UNBOUNDED_PERCENT,
+          value: 150,
+        },
+      },
+    });
+  }).not.toThrow();
+});
+
 describe('Blue/Green Deployment', () => {
   let stack: cdk.Stack;
   let vpc: ec2.Vpc;

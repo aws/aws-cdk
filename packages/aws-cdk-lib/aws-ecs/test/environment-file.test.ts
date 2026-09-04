@@ -1,8 +1,8 @@
 import * as path from 'path';
+import { acknowledgeTestValidationRules } from './util';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as ecs from '../lib';
-import { acknowledgeTestValidationRules } from './util';
 
 describe('environment file', () => {
   describe('ecs.EnvironmentFile.fromAsset', () => {
