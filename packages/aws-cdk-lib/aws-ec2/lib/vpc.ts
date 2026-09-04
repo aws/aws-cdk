@@ -58,7 +58,7 @@ import type { VpcLookupOptions } from './vpc-lookup';
 import type { EnableVpnGatewayOptions, VpnConnectionOptions } from './vpn';
 import { VpnConnection, VpnConnectionType, VpnGateway } from './vpn';
 import * as cxschema from '../../cloud-assembly-schema';
-import type { IResource } from '../../core';
+import type { Duration, IResource } from '../../core';
 import {
   Annotations,
   Arn,
@@ -1674,6 +1674,29 @@ export class Vpc extends VpcBase {
       props.natGateways, this.subnetConfiguration, this.availabilityZones.length, props.natGatewayProvider,
     );
 
+    // Add warnings for Regional NAT Gateway if unnecessary options are specified.
+    // These are emitted independently of `natGatewayCount` so that a `natGateways` value
+    // which disables the gateway entirely is not silently honored.
+    if (props.natGatewayProvider instanceof RegionalNatGatewayProvider) {
+      if (props.natGateways !== undefined && props.natGateways < 1) {
+        Annotations.of(this).addWarningV2(
+          '@aws-cdk/aws-ec2:regionalNatGatewayDisabled',
+          `\`natGateways: ${props.natGateways}\` disables the Regional NAT Gateway configured via \`natGatewayProvider\`. No NAT gateway will be created.`,
+        );
+      } else if (props.natGateways !== undefined && props.natGateways > 1) {
+        Annotations.of(this).addWarningV2(
+          '@aws-cdk/aws-ec2:regionalNatGatewayCount',
+          '`natGateways` is ignored when using Regional NAT Gateway. A single regional gateway covers all AZs.',
+        );
+      }
+      if (props.natGatewaySubnets !== undefined) {
+        Annotations.of(this).addWarningV2(
+          '@aws-cdk/aws-ec2:regionalNatGatewaySubnets',
+          '`natGatewaySubnets` is ignored when using Regional NAT Gateway. The gateway is created at VPC level without requiring a public subnet.',
+        );
+      }
+    }
+
     if (this.useIpv6) {
       this.ipv6Addresses = props.ipv6Addresses ?? Ipv6Addresses.amazonProvided();
 
@@ -1719,23 +1742,6 @@ export class Vpc extends VpcBase {
       // if gateways are needed create them
       if (natGatewayCount > 0) {
         const provider = props.natGatewayProvider || NatProvider.gateway();
-
-        // Add warnings for Regional NAT Gateway if unnecessary options are specified
-        if (provider instanceof RegionalNatGatewayProvider) {
-          if (props.natGateways !== undefined && props.natGateways !== 1) {
-            Annotations.of(this).addWarningV2(
-              '@aws-cdk/aws-ec2:regionalNatGatewayCount',
-              '`natGateways` is ignored when using Regional NAT Gateway. A single regional gateway covers all AZs.',
-            );
-          }
-          if (props.natGatewaySubnets !== undefined) {
-            Annotations.of(this).addWarningV2(
-              '@aws-cdk/aws-ec2:regionalNatGatewaySubnets',
-              '`natGatewaySubnets` is ignored when using Regional NAT Gateway. The gateway is created at VPC level without requiring a public subnet.',
-            );
-          }
-        }
-
         this.createNatGateways(provider, natGatewayCount, natGatewayPlacement);
       }
     }
@@ -2539,17 +2545,20 @@ export class PublicSubnet extends Subnet implements IPublicSubnet {
   /**
    * Creates a new managed NAT gateway attached to this public subnet.
    * Also adds the EIP for the managed NAT.
+   *
+   * @param eipAllocationId Allocation ID of an Elastic IP address to assign to the NAT gateway. A new EIP is allocated when omitted.
+   * @param maxDrainDuration Maximum amount of time to wait before forcibly releasing the IP addresses if connections are still in progress. Defaults to 350 seconds.
    * @returns A ref to the NAT Gateway ID
    */
   @MethodMetadata()
-  public addNatGateway(eipAllocationId?: string, maxDrainDurationSeconds?: number) {
+  public addNatGateway(eipAllocationId?: string, maxDrainDuration?: Duration) {
     // Create a NAT Gateway in this public subnet
     const ngw = new CfnNatGateway(this, 'NATGateway', {
       subnetId: this.subnetId,
       allocationId: eipAllocationId ?? new CfnEIP(this, 'EIP', {
         domain: 'vpc',
       }).attrAllocationId,
-      maxDrainDurationSeconds,
+      maxDrainDurationSeconds: maxDrainDuration?.toSeconds(),
     });
     ngw.node.addDependency(this.internetConnectivityEstablished);
     return ngw;

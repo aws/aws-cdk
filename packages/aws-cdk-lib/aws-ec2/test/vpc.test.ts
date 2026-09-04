@@ -1290,6 +1290,18 @@ describe('vpc', () => {
       }).toThrow('`maxDrainDuration` must be between 1 and 4000 seconds, got 4001 seconds.');
     });
 
+    test('NAT gateway provider does not validate maxDrainDuration when it is an unresolved token', () => {
+      const stack = new Stack();
+      const natGatewayProvider = NatProvider.gateway({
+        maxDrainDuration: Duration.seconds(Lazy.number({ produce: () => 600 })),
+      });
+      new Vpc(stack, 'VpcNetwork', { natGatewayProvider });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
+        MaxDrainDurationSeconds: 600,
+      });
+    });
+
     describe('Regional NAT Gateway', () => {
       test('creates a single regional NAT gateway', () => {
         const stack = new Stack();
@@ -1359,6 +1371,18 @@ describe('vpc', () => {
         }).toThrow('`maxDrainDuration` must be between 1 and 4000 seconds, got 4001 seconds.');
       });
 
+      test('does not validate maxDrainDuration when it is an unresolved token', () => {
+        const stack = new Stack();
+        const natGatewayProvider = NatProvider.regionalGateway({
+          maxDrainDuration: Duration.seconds(Lazy.number({ produce: () => 600 })),
+        });
+        new Vpc(stack, 'Vpc', { natGatewayProvider });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
+          MaxDrainDurationSeconds: 600,
+        });
+      });
+
       test('with allocationId', () => {
         const stack = new Stack();
         const natGatewayProvider = NatProvider.regionalGateway({
@@ -1417,13 +1441,20 @@ describe('vpc', () => {
       });
 
       test('creates no NAT gateway when natGateways is 0', () => {
-        const stack = new Stack();
+        const app = new App();
+        const stack = new Stack(app, 'TestStack');
         new Vpc(stack, 'Vpc', {
           natGatewayProvider: NatProvider.regionalGateway(),
           natGateways: 0,
         });
 
         Template.fromStack(stack).resourceCountIs('AWS::EC2::NatGateway', 0);
+
+        // the gateway is silently dropped otherwise, so warn about it
+        Annotations.fromStack(stack).hasWarning(
+          '/TestStack/Vpc',
+          Match.stringLikeRegexp('`natGateways: 0` disables the Regional NAT Gateway'),
+        );
       });
 
       test('warns when natGatewaySubnets is specified', () => {
@@ -1609,6 +1640,47 @@ describe('vpc', () => {
             ],
           });
         }).toThrow('`allocationIds` cannot be an empty array in `AvailabilityZoneAddress`.');
+      });
+
+      test('throws when the same availabilityZone is specified twice', () => {
+        expect(() => {
+          NatProvider.regionalGateway({
+            availabilityZoneAddresses: [
+              { allocationIds: ['eipalloc-11111111'], availabilityZone: 'us-east-1a' },
+              { allocationIds: ['eipalloc-22222222'], availabilityZone: 'us-east-1a' },
+            ],
+          });
+        }).toThrow('An Availability Zone can only appear once in `availabilityZoneAddresses`, got duplicate `availabilityZone`: us-east-1a.');
+      });
+
+      test('throws when the same availabilityZoneId is specified twice', () => {
+        expect(() => {
+          NatProvider.regionalGateway({
+            availabilityZoneAddresses: [
+              { allocationIds: ['eipalloc-11111111'], availabilityZoneId: 'use1-az1' },
+              { allocationIds: ['eipalloc-22222222'], availabilityZoneId: 'use1-az1' },
+            ],
+          });
+        }).toThrow('An Availability Zone can only appear once in `availabilityZoneAddresses`, got duplicate `availabilityZoneId`: use1-az1.');
+      });
+
+      test('does not check uniqueness of unresolved availability zone tokens', () => {
+        const stack = new Stack();
+        const natGatewayProvider = NatProvider.regionalGateway({
+          availabilityZoneAddresses: [
+            { allocationIds: ['eipalloc-11111111'], availabilityZone: Lazy.string({ produce: () => 'us-east-1a' }) },
+            { allocationIds: ['eipalloc-22222222'], availabilityZone: Lazy.string({ produce: () => 'us-east-1b' }) },
+          ],
+        });
+
+        new Vpc(stack, 'Vpc', { natGatewayProvider });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
+          AvailabilityZoneAddresses: [
+            { AllocationIds: ['eipalloc-11111111'], AvailabilityZone: 'us-east-1a' },
+            { AllocationIds: ['eipalloc-22222222'], AvailabilityZone: 'us-east-1b' },
+          ],
+        });
       });
     });
 

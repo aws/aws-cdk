@@ -400,14 +400,7 @@ export class NatGatewayProvider extends NatProvider {
   constructor(private readonly props: NatGatewayProps = {}) {
     super();
 
-    if (this.props.maxDrainDuration !== undefined) {
-      const seconds = this.props.maxDrainDuration.toSeconds({ integral: false });
-      if (seconds < 1 || seconds > 4000) {
-        throw new UnscopedValidationError(
-          lit`InvalidMaxDrainDuration`, `\`maxDrainDuration\` must be between 1 and 4000 seconds, got ${seconds} seconds.`,
-        );
-      }
-    }
+    validateMaxDrainDuration(this.props.maxDrainDuration);
   }
 
   public configureNat(options: ConfigureNatOptions) {
@@ -423,7 +416,7 @@ export class NatGatewayProvider extends NatProvider {
     let i = 0;
     for (const sub of options.natSubnets) {
       const eipAllocationId = this.props.eipAllocationIds ? pickN(i, this.props.eipAllocationIds) : undefined;
-      const gateway = sub.addNatGateway(eipAllocationId, this.props.maxDrainDuration?.toSeconds());
+      const gateway = sub.addNatGateway(eipAllocationId, this.props.maxDrainDuration);
       this.gateways.add(sub.availabilityZone, gateway.ref);
       i++;
     }
@@ -488,16 +481,21 @@ export class RegionalNatGatewayProvider extends NatProvider {
           lit`EmptyAllocationIds`, '`allocationIds` cannot be an empty array in `AvailabilityZoneAddress`.',
         );
       }
-    }
-
-    if (this.props.maxDrainDuration !== undefined) {
-      const seconds = this.props.maxDrainDuration.toSeconds({ integral: false });
-      if (seconds < 1 || seconds > 4000) {
+      const duplicateZones = findDuplicates(this.props.availabilityZoneAddresses.map(az => az.availabilityZone));
+      if (duplicateZones.length > 0) {
         throw new UnscopedValidationError(
-          lit`InvalidMaxDrainDuration`, `\`maxDrainDuration\` must be between 1 and 4000 seconds, got ${seconds} seconds.`,
+          lit`DuplicateAvailabilityZone`, `An Availability Zone can only appear once in \`availabilityZoneAddresses\`, got duplicate \`availabilityZone\`: ${duplicateZones.join(', ')}.`,
+        );
+      }
+      const duplicateZoneIds = findDuplicates(this.props.availabilityZoneAddresses.map(az => az.availabilityZoneId));
+      if (duplicateZoneIds.length > 0) {
+        throw new UnscopedValidationError(
+          lit`DuplicateAvailabilityZoneId`, `An Availability Zone can only appear once in \`availabilityZoneAddresses\`, got duplicate \`availabilityZoneId\`: ${duplicateZoneIds.join(', ')}.`,
         );
       }
     }
+
+    validateMaxDrainDuration(this.props.maxDrainDuration);
   }
 
   public configureNat(options: ConfigureNatOptions) {
@@ -841,6 +839,45 @@ function isOutboundAllowed(direction: NatTrafficDirection) {
 
 function isInboundAllowed(direction: NatTrafficDirection) {
   return direction === NatTrafficDirection.INBOUND_AND_OUTBOUND;
+}
+
+/**
+ * Validate that `maxDrainDuration` is within the range accepted by the NAT gateway service.
+ *
+ * The check is skipped for unresolved tokens, whose value is only known at deploy time.
+ */
+function validateMaxDrainDuration(maxDrainDuration?: Duration) {
+  if (maxDrainDuration === undefined) {
+    return;
+  }
+
+  const seconds = maxDrainDuration.toSeconds({ integral: false });
+  if (!Token.isUnresolved(seconds) && (seconds < 1 || seconds > 4000)) {
+    throw new UnscopedValidationError(
+      lit`InvalidMaxDrainDuration`, `\`maxDrainDuration\` must be between 1 and 4000 seconds, got ${seconds} seconds.`,
+    );
+  }
+}
+
+/**
+ * Return the values that occur more than once in the given list.
+ *
+ * `undefined` values and unresolved tokens are ignored, as the latter can only
+ * be compared at deploy time.
+ */
+function findDuplicates(xs: Array<string | undefined>): string[] {
+  const seen = new Set<string>();
+  const duplicates = new Set<string>();
+  for (const x of xs) {
+    if (x === undefined || Token.isUnresolved(x)) {
+      continue;
+    }
+    if (seen.has(x)) {
+      duplicates.add(x);
+    }
+    seen.add(x);
+  }
+  return Array.from(duplicates);
 }
 
 /**
