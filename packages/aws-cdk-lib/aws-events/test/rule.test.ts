@@ -819,6 +819,139 @@ describe('rule', () => {
     });
   });
 
+  describe('addTarget with user-defined id', () => {
+    test('uses the supplied id as the CloudFormation target Id', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const rule = new Rule(stack, 'EventRule', {
+        schedule: Schedule.rate(cdk.Duration.minutes(5)),
+      });
+
+      // WHEN
+      rule.addTarget(new SomeTarget(), { id: 'MyCustomTargetId' });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+        Targets: [
+          {
+            Arn: 'ARN1',
+            Id: 'MyCustomTargetId',
+          },
+        ],
+      });
+    });
+
+    test('mixes custom and auto-generated ids correctly', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const rule = new Rule(stack, 'EventRule', {
+        schedule: Schedule.rate(cdk.Duration.minutes(5)),
+      });
+
+      // WHEN
+      rule.addTarget(new SomeTarget()); // auto -> Target0
+      rule.addTarget(new SomeTarget(), { id: 'MyCustomId' }); // custom -> MyCustomId
+      rule.addTarget(new SomeTarget()); // auto -> Target2
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+        Targets: [
+          { Arn: 'ARN1', Id: 'Target0' },
+          { Arn: 'ARN1', Id: 'MyCustomId' },
+          { Arn: 'ARN1', Id: 'Target2' },
+        ],
+      });
+    });
+
+    test('user-supplied id takes priority over RuleTargetConfig.id from bind()', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const rule = new Rule(stack, 'EventRule', {
+        schedule: Schedule.rate(cdk.Duration.minutes(5)),
+      });
+
+      // WHEN: SomeTarget('FromBind') returns { id: 'FromBind', ... } from bind()
+      rule.addTarget(new SomeTarget('FromBind'), { id: 'FromUser' });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+        Targets: [
+          { Arn: 'ARN1', Id: 'FromUser' },
+        ],
+      });
+    });
+
+    test('accepts ids with all allowed characters (alphanumerics, dot, hyphen, underscore)', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const rule = new Rule(stack, 'EventRule', {
+        schedule: Schedule.rate(cdk.Duration.minutes(5)),
+      });
+
+      // WHEN
+      rule.addTarget(new SomeTarget(), { id: 'My-Target_1.v2' });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+        Targets: [
+          { Arn: 'ARN1', Id: 'My-Target_1.v2' },
+        ],
+      });
+    });
+
+    test('throws when id is empty', () => {
+      const stack = new cdk.Stack();
+      const rule = new Rule(stack, 'EventRule', {
+        schedule: Schedule.rate(cdk.Duration.minutes(5)),
+      });
+
+      expect(() => rule.addTarget(new SomeTarget(), { id: '' }))
+        .toThrow(/Target id must be between 1 and 64 characters/);
+    });
+
+    test('throws when id is longer than 64 characters', () => {
+      const stack = new cdk.Stack();
+      const rule = new Rule(stack, 'EventRule', {
+        schedule: Schedule.rate(cdk.Duration.minutes(5)),
+      });
+
+      expect(() => rule.addTarget(new SomeTarget(), { id: 'a'.repeat(65) }))
+        .toThrow(/Target id must be between 1 and 64 characters/);
+    });
+
+    test('throws when id contains invalid characters', () => {
+      const stack = new cdk.Stack();
+      const rule = new Rule(stack, 'EventRule', {
+        schedule: Schedule.rate(cdk.Duration.minutes(5)),
+      });
+
+      [' ', '$', '/', ':', '#', 'foo bar'].forEach(invalid => {
+        expect(() => rule.addTarget(new SomeTarget(), { id: invalid }))
+          .toThrow(/can contain only letters, numbers, periods, hyphens, or underscores/);
+      });
+    });
+
+    test('accepts an unresolved Token as id without local validation', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const rule = new Rule(stack, 'EventRule', {
+        schedule: Schedule.rate(cdk.Duration.minutes(5)),
+      });
+
+      // WHEN: a Token (e.g. CFN intrinsic) is used as the id
+      const tokenizedId = cdk.Lazy.string({ produce: () => 'ResolvedAtSynth' });
+
+      // THEN: should not throw at addTarget time
+      expect(() => rule.addTarget(new SomeTarget(), { id: tokenizedId })).not.toThrow();
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+        Targets: [
+          { Arn: 'ARN1', Id: 'ResolvedAtSynth' },
+        ],
+      });
+    });
+  });
+
   describe('for cross-account and/or cross-region targets', () => {
     test('requires that the source stack specify a concrete account', () => {
       const app = new cdk.App();
