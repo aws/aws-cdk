@@ -33,6 +33,7 @@ export function acknowledgeTestWarnings(construct: IConstruct) {
     'W3011',
     'W3045',
     'W9003',
+    'W3010',
     'E3639',
     'F0018',
     'F3016',
