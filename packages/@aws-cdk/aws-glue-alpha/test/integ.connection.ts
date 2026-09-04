@@ -25,3 +25,13 @@ new glue.Connection(stack, 'NetworkConnectionFromVpc', {
   network: glue.ConnectionNetwork.vpc(vpc, { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }),
   securityGroups: [sg],
 });
+
+// Snowflake connection
+new glue.Connection(stack, 'SnowflakeConnection', {
+  connectionName: 'snowflake-connection',
+  type: glue.ConnectionType.SNOWFLAKE,
+  properties: {
+    SNOWFLAKE_URL: 'https://account.snowflakecomputing.com',
+    SNOWFLAKE_ROLE: 'ACCOUNTADMIN',
+  },
+});

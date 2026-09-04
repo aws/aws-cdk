@@ -2,13 +2,17 @@
   "/aws-glue-connection/Vpc": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "restrictDefaultSecurityGroup": false
+      }
     }
   ],
   "/aws-glue-connection/SecurityGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "vpc": "*"
+      }
     }
   ],
   "/aws-glue-connection/NetworkConnection": [
@@ -18,6 +22,12 @@
     }
   ],
   "/aws-glue-connection/NetworkConnectionFromVpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-glue-connection/SnowflakeConnection": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -44,65 +54,129 @@
   "/aws-glue-connection/Vpc/PublicSubnet1": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {}
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
     }
   ],
   "/aws-glue-connection/Vpc/PublicSubnet2": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {}
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
     }
   ],
   "/aws-glue-connection/Vpc/PrivateSubnet1": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {}
     }
   ],
   "/aws-glue-connection/Vpc/PrivateSubnet2": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {}
     }
   ],
   "/aws-glue-connection/Vpc/IGW": [
@@ -133,6 +207,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "NetworkConnectionFromVpc96D9DA5B"
+    }
+  ],
+  "/aws-glue-connection/SnowflakeConnection/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SnowflakeConnectionDC9F05AB"
     }
   ],
   "/aws-glue-connection/Vpc/PublicSubnet1/Subnet": [
