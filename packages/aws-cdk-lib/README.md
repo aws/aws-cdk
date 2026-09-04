@@ -115,6 +115,34 @@ organize their deployments with. If you want to vend a reusable construct,
 define it as a subclasses of `Construct`: the consumers of your construct
 will decide where to place it in their own stacks.
 
+## Construct IDs and CloudFormation logical IDs
+
+Every construct receives an ID as its second argument. The ID must be unique
+within its scope, and the sequence of IDs from the stack to the construct forms
+the construct path. AWS CDK uses this path to generate the CloudFormation
+logical ID for each resource.
+
+Construct paths are part of a stack's deployment identity. Renaming a construct
+or moving it to another scope usually changes its logical ID. CloudFormation
+then treats the resource as a different resource, which can cause replacement,
+service interruption, or data loss. Keep construct IDs and scopes stable after
+a stack has been deployed.
+
+Two construct IDs receive special treatment during logical ID generation:
+
+| ID | Effect | Typical use |
+| --- | --- | --- |
+| `Default` | Removed from the logical ID calculation, including the hash. | Allows a wrapper construct to add a scope without changing a child's logical ID. |
+| `Resource` | For a nested resource, omitted from the readable portion of the logical ID but retained in the hash. | Names the primary L1 resource inside an L2 construct while keeping the logical ID readable. |
+
+Because `Default` removes a path component entirely, using it can make two
+different construct paths produce the same logical ID. This can result in a
+synthesis error about duplicate entries in the `Resources` section. Use
+`Default` only when preserving a logical ID across an intentional construct
+tree refactoring, and avoid it for ordinary application constructs. `Resource`
+is primarily a convention for construct library authors; application code
+should also treat it as a special ID and use it deliberately.
+
 ## Stack Synthesizers
 
 Each Stack has a *synthesizer*, an object that determines how and where
