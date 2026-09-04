@@ -148,15 +148,15 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
   public validate(context: IPolicyValidationContext): PolicyValidationPluginReport {
     const violations: MutableViolation[] = [];
 
-    for (const { stackConstructPath, templatePath } of context.stackTemplates) {
+    for (const { stackConstructPath, templatePath, accountId, region } of context.stackTemplates) {
       const templateFile = new TemplateFile(templatePath);
       const report = (() => {
         using _span = profileSpan(VALIDATE_DETAILED_METRIC, { telemetry: true });
 
         return this.engine.validateDetailed(templateFile, {
           pseudoParameterOverrides: {
-            accountId: context.accountId,
-            region: context.region,
+            accountId,
+            region,
           },
           exclude: {
             ids: [...IGNORE_RULES],
@@ -377,4 +377,3 @@ function loadSchemasFromDirectory(dir: string): AdditionalSchemaSource[] {
 
   return schemas;
 }
-
