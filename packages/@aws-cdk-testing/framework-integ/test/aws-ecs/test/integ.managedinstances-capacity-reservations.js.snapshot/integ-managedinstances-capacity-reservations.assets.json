@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "9002d19d1cb7418f9a85aa3d3b7d97b3c4007a574bad1c6e64e42a5a0a29e563": {
+      "displayName": "integ-managedinstances-capacity-reservations Template",
+      "source": {
+        "path": "integ-managedinstances-capacity-reservations.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-246b254b": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9002d19d1cb7418f9a85aa3d3b7d97b3c4007a574bad1c6e64e42a5a0a29e563.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

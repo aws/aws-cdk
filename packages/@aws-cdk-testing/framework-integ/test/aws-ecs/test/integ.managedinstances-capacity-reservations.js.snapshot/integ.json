@@ -1,0 +1,19 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "ManagedInstancesCapacityReservations/DefaultTest": {
+      "stacks": [
+        "integ-managedinstances-capacity-reservations"
+      ],
+      "cdkCommandOptions": {
+        "destroy": {
+          "expectError": true
+        }
+      },
+      "assertionStack": "ManagedInstancesCapacityReservations/DefaultTest/DeployAssert",
+      "assertionStackName": "ManagedInstancesCapacityReservationsDefaultTestDeployAssert5FAB6F11"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
