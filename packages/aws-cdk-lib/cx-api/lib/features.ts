@@ -64,6 +64,7 @@ export const EFS_DEFAULT_ENCRYPTION_AT_REST = '@aws-cdk/aws-efs:defaultEncryptio
 export const LAMBDA_RECOGNIZE_VERSION_PROPS = '@aws-cdk/aws-lambda:recognizeVersionProps';
 export const LAMBDA_RECOGNIZE_LAYER_VERSION = '@aws-cdk/aws-lambda:recognizeLayerVersion';
 export const CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 = '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021';
+export const CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2025 = '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2025';
 export const CHECK_SECRET_USAGE = '@aws-cdk/core:checkSecretUsage';
 export const TARGET_PARTITIONS = '@aws-cdk/core:target-partitions';
 export const ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER = '@aws-cdk-containers/ecs-service-extensions:enableDefaultLogDriver';
@@ -438,6 +439,24 @@ export const FLAGS: Record<string, FlagInfo> = {
       The security policy can also be configured explicitly using the \`minimumProtocolVersion\` property.`,
     introducedIn: { v1: '1.117.0', v2: '2.0.0' },
     unconfiguredBehavesLike: { v2: true },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2025]: {
+    type: FlagType.ApiDefault,
+    summary: 'Enable this feature flag to have CloudFront distributions default to the security policy TLSv1.2_2025 when a certificate is configured.',
+    detailsMd: `
+      The security policy can also be configured explicitly using the \`minimumProtocolVersion\` property.
+
+      Default selection order:
+      1. Explicit \`minimumProtocolVersion\`
+      2. \`TLS_V1_2_2025\` when this flag is enabled
+      3. \`TLS_V1_2_2021\` when \`defaultSecurityPolicyTLSv1.2_2021\` is enabled
+      4. \`TLS_V1_2_2019\` otherwise`,
+    compatibilityWithOldBehaviorMd: 'Set \`@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2025\` to \`false\` to keep the previous default of \`TLSv1.2_2021\` (or \`TLSv1.2_2019\` if neither flag is set).',
+    introducedIn: { v1: undefined, v2: 'V2NEXT' },
+    unconfiguredBehavesLike: { v2: false },
     recommendedValue: true,
   },
 

@@ -333,7 +333,19 @@ function doInvokeValidationPlugins(
     .map(p => p[0])
     .filter(p => !isTrustedPlugin(p)));
 
-  const preExistingFileHashes = untrustedPlugins.size > 0 ? snapshotFileHashes(outdir) : undefined;
+  const preExistingFileHashes = untrustedPlugins.size > 0
+    ? snapshotFileHashes(templateFilePaths(plugins))
+    : undefined;
+
+  function templateFilePaths(pluginsToSnapshot: Array<[IPolicyValidationPlugin, Set<private_cxapi.CloudFormationStackArtifact>]>): string[] {
+    const seen = new Set<string>();
+    for (const [_plugin, stacks] of pluginsToSnapshot) {
+      for (const stack of stacks) {
+        seen.add(stack.templateFullPath);
+      }
+    }
+    return Array.from(seen);
+  }
 
   const ret = plugins.flatMap(([plugin, stacks]) => invokeSinglePlugin(plugin, Array.from(stacks)));
 
@@ -438,10 +450,12 @@ function getBooleanContext(root: IConstruct, key: string, defaultValue: boolean)
   return raw !== false && raw !== 'false';
 }
 
-function snapshotFileHashes(dir: string): Map<string, string> {
+function snapshotFileHashes(filePaths: string[]): Map<string, string> {
   const hashes = new Map<string, string>();
-  for (const filePath of collectFilePaths(dir)) {
-    hashes.set(filePath, hashFile(filePath));
+  for (const filePath of filePaths) {
+    if (fileOrSymlinkExists(filePath)) {
+      hashes.set(filePath, hashFile(filePath));
+    }
   }
   return hashes;
 }
@@ -453,26 +467,6 @@ function hasModifiedPreExistingFiles(snapshot: Map<string, string>): boolean {
     }
   }
   return false;
-}
-
-function collectFilePaths(dir: string): string[] {
-  const results: string[] = [];
-  function walk(current: string) {
-    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
-      const full = path.join(current, entry.name);
-      if (entry.isDirectory()) {
-        // `isDirectory()` is false for a symlink-to-directory, so we never recurse
-        // through symlinks (avoids following links out of the cloud assembly / cycles).
-        walk(full);
-      } else if (entry.isFile() || entry.isSymbolicLink()) {
-        // Collect regular files and symlinks (including symlink-to-directory). The
-        // symlink is hashed by its target path in hashFile(), never dereferenced.
-        results.push(full);
-      }
-    }
-  }
-  walk(dir);
-  return results;
 }
 
 function hashFile(filePath: string): string {
