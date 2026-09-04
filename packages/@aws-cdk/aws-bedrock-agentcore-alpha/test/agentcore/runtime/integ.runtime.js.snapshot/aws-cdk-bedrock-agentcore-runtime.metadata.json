@@ -1,0 +1,429 @@
+{
+  "/aws-cdk-bedrock-agentcore-runtime/TestRuntime": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:info",
+      "data": "Container URI validation skipped as it contains unresolved CDK tokens. The URI will be validated at deployment time. [ack: @aws-cdk/aws-bedrock-agentcore:containerUriValidationSkipped]",
+      "trace": [
+        "Annotations.addMessage (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addInfoV2 (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:169:18)",
+        "WrappedClass.validateContainerUri (/Users/samuel/Developer/1-perso/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/runtime/runtime.js:649:52)",
+        "WrappedClass.renderAgentRuntimeArtifact (/Users/samuel/Developer/1-perso/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/runtime/runtime.js:435:26)",
+        "Object.produce (/Users/samuel/Developer/1-perso/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/runtime/runtime.js:304:41)",
+        "LazyAny.resolve (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/lazy.js:279:66)",
+        "LazyAny.resolve (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/lazy.js:347:32)",
+        "LazyBox.get (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/lazy.js:313:27)",
+        "LazyBox.resolve (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/helpers-internal/box.js:140:21)",
+        "RememberingTokenResolver.resolveToken (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/resolvable.js:66:30)",
+        "RememberingTokenResolver.resolveToken (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:331:22)",
+        "_resolve (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:142:50)",
+        "_resolveWithPrefix (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:245:19)",
+        "resolveObject (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:208:21)",
+        "_resolve (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:150:12)",
+        "resolve (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:67:12)",
+        "Object.resolve (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:262:20)",
+        "RememberingTokenResolver.resolveToken (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/resolvable.js:68:32)",
+        "RememberingTokenResolver.resolveToken (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:331:22)",
+        "_resolve (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:142:50)",
+        "_resolveWithPrefix (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:245:19)",
+        "resolveObject (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:208:21)",
+        "_resolve (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:150:12)",
+        "resolve (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:67:12)",
+        "Object.resolve (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:262:20)",
+        "RememberingTokenResolver.resolveToken (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/resolvable.js:68:32)",
+        "RememberingTokenResolver.resolveToken (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:331:22)",
+        "_resolve (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:142:50)",
+        "_resolveWithPrefix (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:245:19)",
+        "resolveObject (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:208:21)",
+        "_resolve (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:150:12)",
+        "_resolveWithPrefix (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:245:19)",
+        "resolveObject (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:208:21)",
+        "_resolve (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:150:12)",
+        "resolve (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:67:12)",
+        "findTokens (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:283:5)",
+        "findAllReferences (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:302:55)",
+        "resolveReferences (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:123:33)",
+        "prepareApp (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:216:27)",
+        "process.<anonymous> (/Users/samuel/Developer/1-perso/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:163:51)",
+        "Object.onceWrapper (node:events:631:26)",
+        "process.emit (node:events:509:28)"
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime/BasicEndpoint": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime/TaggedEndpoint": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime/TestInvokerFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*",
+        "description": "*"
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime/RuntimeId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeId"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime/RuntimeArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeArn"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime/BasicEndpointId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BasicEndpointId"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime/TaggedEndpointId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TaggedEndpointId"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime/TestRuntime/ExecutionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*",
+        "maxSessionDuration": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime/TestRuntime/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestRuntime65042BB5"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime/BasicEndpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BasicEndpoint73A65319"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime/TaggedEndpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TaggedEndpointB1B1CDE4"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime/TestInvokerFunction/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime/TestInvokerFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestInvokerFunction6708F5AE"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime/TestInvokerFunction/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime/TestRuntime/ExecutionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestRuntimeExecutionRoleF819113E"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime/TestRuntime/ExecutionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime/TestInvokerFunction/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestInvokerFunctionServiceRole08233DAF"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime/TestInvokerFunction/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime/TestInvokerFunction/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestInvokerFunctionLogGroup003396AB"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime/TestRuntime/ExecutionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestRuntimeExecutionRoleDefaultPolicyC7A978D3"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime/TestInvokerFunction/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestInvokerFunctionServiceRoleDefaultPolicyC6DC62B6"
+    }
+  ]
+}

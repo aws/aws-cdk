@@ -105,6 +105,21 @@ describe('Runtime default tests', () => {
   test('Should have policy for execution role with correct permissions', () => {
     template.hasResourceProperties('AWS::IAM::Policy', expectedExecutionRolePolicy);
   });
+
+  test('Should have acknowledgeable annotation regarding container URI validation', () => {
+    app.synth();
+    const annotationsPreAcknowledgment = Annotations.fromStack(stack).findInfo('*', Match.stringLikeRegexp('.*Container URI validation.*'));
+    expect(annotationsPreAcknowledgment.length).toBe(1);
+
+    cdk.Validations.of(app).acknowledge({
+      id: '@aws-cdk/aws-bedrock-agentcore:containerUriValidationSkipped',
+      reason: 'Testing annotation acknowledgment.',
+    });
+
+    app.synth();
+    const annotationsPostAcknowledgment = Annotations.fromStack(stack).findInfo('*', Match.stringLikeRegexp('.*Container URI validation.*'));
+    expect(annotationsPostAcknowledgment.length).toBe(1);
+  });
 });
 
 describe('Runtime with custom execution role tests', () => {
@@ -2424,7 +2439,7 @@ describe('Runtime role validation tests', () => {
     const annotations = Annotations.fromStack(stack).findWarning('*', Match.stringLikeRegexp('.*different account.*cross-account.*'));
     expect(annotations.length).toBe(1);
 
-    Annotations.fromStack(stack).hasWarning('/test-stack/test-runtime', 'IAM role is from a different account (111111111111) than the stack account (123456789012). Ensure cross-account permissions are properly configured.');
+    Annotations.fromStack(stack).hasWarning('/test-stack/test-runtime', 'IAM role is from a different account (111111111111) than the stack account (123456789012). Ensure cross-account permissions are properly configured. [ack: @aws-cdk/aws-bedrock-agentcore:iamRoleCrossAccount]');
   });
 });
 
