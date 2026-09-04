@@ -1,0 +1,56 @@
+{
+  "/integ-dns-validated-certificate-v2-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/home/user/github/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:39:38)",
+        "new IntegTestCase (/home/user/github/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/home/user/github/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/home/user/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-certificatemanager/test/integ.dns-validated-certificate-v2.js:77:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-dns-validated-certificate-v2-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "visit (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "visit (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)"
+      ]
+    }
+  ],
+  "/integ-dns-validated-certificate-v2-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "visit (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "visit (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/home/user/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)"
+      ]
+    }
+  ]
+}
