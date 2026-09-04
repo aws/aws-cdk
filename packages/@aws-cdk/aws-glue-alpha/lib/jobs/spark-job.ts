@@ -180,9 +180,12 @@ export abstract class SparkJob extends Job {
     this.sparkUILoggingLocation = props.sparkUI ? this.setupSparkUILoggingLocation(props.sparkUI) : undefined;
   }
 
+  /**
+   * The arguments this construct manages for a Spark job. These are owned by the construct (derived from typed props).
+   */
   protected nonExecutableCommonArguments(props: SparkJobProps): {[key: string]: string} {
     // Enable CloudWatch metrics and continuous logging by default as a best practice
-    const continuousLoggingArgs = this.setupContinuousLogging(this.role, props.continuousLogging);
+    const continuousLoggingArgs = this.setupContinuousLogging(this.role, props.continuousLogging, props.securityConfiguration);
 
     // Conditionally include metrics arguments (default to enabled for backward compatibility)
     const profilingMetricsArgs = (props.enableMetrics ?? true) ? { '--enable-metrics': '' } : {};
@@ -199,7 +202,6 @@ export abstract class SparkJob extends Job {
       ...profilingMetricsArgs,
       ...observabilityMetricsArgs,
       ...sparkUIArgs,
-      ...this.checkNoReservedArgs(props.defaultArguments),
     };
   }
 
