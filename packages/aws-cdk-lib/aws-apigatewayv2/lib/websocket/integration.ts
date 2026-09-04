@@ -257,9 +257,15 @@ export abstract class WebSocketRouteIntegration {
       throw new ValidationError(lit`SingleIntegrationCannotAssociatedMultiple`, 'A single integration cannot be associated with multiple APIs.', options.scope);
     }
 
-    if (!this.integration) {
-      const config = this.bind(options);
+    // `bind()` is called for every route this integration is bound to, so that
+    // per-route side effects (such as the Lambda invoke permission created by
+    // `WebSocketLambdaIntegration`) are added for each route. When a single
+    // integration instance is reused across multiple routes, the underlying
+    // `WebSocketIntegration` (and its `AWS::ApiGatewayV2::Integration` resource)
+    // is still created only once and shared across those routes.
+    const config = this.bind(options);
 
+    if (!this.integration) {
       this.integration = new WebSocketIntegration(options.scope, this.id, {
         webSocketApi: options.route.webSocketApi,
         integrationType: config.type,
