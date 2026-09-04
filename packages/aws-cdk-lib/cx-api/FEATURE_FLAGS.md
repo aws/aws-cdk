@@ -118,6 +118,7 @@ Flags come in three types:
 | [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-stack references are strong, weak, or both | 2.254.0 | config |
 | [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | 2.259.0 | new default |
 | [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | 2.262.0 | config |
+| [@aws-cdk/aws-ecr-assets:dockerfileSpecificIgnoreFile](#aws-cdkaws-ecr-assetsdockerfilespecificignorefile) | Honor Dockerfile-specific .dockerignore files when staging DockerImageAsset | V2NEXT | new default |
 
 <!-- END table -->
 
@@ -153,6 +154,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
     "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": true,
     "@aws-cdk/aws-ec2:uniqueImdsv2TemplateName": true,
+    "@aws-cdk/aws-ecr-assets:dockerfileSpecificIgnoreFile": true,
     "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": true,
     "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": true,
     "@aws-cdk/aws-ecs:arnFormatIncludesClusterName": true,
@@ -2549,6 +2551,29 @@ fail synthesis. When unconfigured, violations are reported as warnings only.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.262.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-ecr-assets:dockerfileSpecificIgnoreFile
+
+*Honor Dockerfile-specific .dockerignore files when staging DockerImageAsset*
+
+Flag type: New default behavior
+
+When enabled, DockerImageAsset looks for `<dockerfile>.dockerignore` next to the
+Dockerfile (including the default name `Dockerfile.dockerignore`) and uses it in
+preference to the context-root `.dockerignore`, matching Docker's Filename and
+location rule. The two files are not merged.
+
+When disabled, only the context-root `.dockerignore` is read, which is the
+historic CDK behavior.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Leave `@aws-cdk/aws-ecr-assets:dockerfileSpecificIgnoreFile` unset or set it to `false`. CDK will keep reading only `.dockerignore`.
 
 
 <!-- END details -->
