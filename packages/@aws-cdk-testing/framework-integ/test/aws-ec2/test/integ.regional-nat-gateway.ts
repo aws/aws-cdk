@@ -47,6 +47,4 @@ const stack = new RegionalNatGatewayStack(app, 'RegionalNatGatewayStack');
 
 new IntegTest(app, 'regional-nat-gateway-integ', {
   testCases: [stack],
-  // `availabilityZoneAddresses` above refers to us-east-1 Availability Zones by name
-  regions: ['us-east-1'],
 });
