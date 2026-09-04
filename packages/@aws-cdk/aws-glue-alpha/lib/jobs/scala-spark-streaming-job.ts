@@ -62,11 +62,11 @@ export interface ScalaSparkStreamingJobProps extends SparkJobProps {
  *
  * A Streaming job is similar to an ETL job, except that it performs ETL on data streams
  * using the Apache Spark Structured Streaming framework.
- * These jobs will default to use Python 3.9.
+ * This job runs on the Scala runtime.
  *
- * Similar to ETL jobs, streaming job supports Scala and Python languages. Similar to ETL,
- * it supports G1 and G2 worker type and 2.0, 3.0 and 4.0 version. We’ll default to G1 worker
- * and 4.0 version for streaming jobs which developers can override.
+ * Similar to ETL jobs, streaming job supports Scala and Python languages. Streaming jobs
+ * default to the `G_1X` worker type and Glue version 4.0, both of which developers can
+ * override with any supported `WorkerType` or `GlueVersion`.
  * We will enable --enable-metrics, --enable-continuous-cloudwatch-log. The Spark UI
  * (--enable-spark-ui) is off by default; enable it by setting the `sparkUI` prop.
  */

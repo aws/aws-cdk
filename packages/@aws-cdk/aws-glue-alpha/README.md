@@ -41,8 +41,9 @@ and deploy new resources.
 ## Create a Glue Job
 
 A Job encapsulates a script that connects to data sources, processes
-them, and then writes output to a data target. There are four types of Glue
-Jobs: Spark (ETL and Streaming), Python Shell, and Flex Jobs. Most
+them, and then writes output to a data target. There are three types of Glue
+Jobs: Spark jobs (with ETL, Streaming, and Flex execution variants), Python
+Shell jobs, and (deprecated) Ray jobs. Most
 of the required parameters for these jobs are common across all types,
 but there are a few differences depending on the languages supported
 and features provided by each type. For all job types, the L2 defaults
@@ -71,12 +72,13 @@ for more granular details.
 #### ETL Jobs
 
 ETL jobs support pySpark and Scala languages, for which there are separate but
-similar constructors. ETL jobs default to the G1 worker type, but you can
-override this default with other supported worker type values (G1, G2, G4
-and G8). ETL jobs defaults to Glue version 4.0, which you can override to 3.0.
+similar constructors. ETL jobs default to the `G_1X` worker type, but you can
+override this default with any other supported `WorkerType` (e.g. `G_2X`,
+`G_4X`, `G_8X`). ETL jobs default to Glue version 4.0, which you can override
+to any supported `GlueVersion` (e.g. 3.0, 5.0, 5.1).
 The following ETL features are enabled by default:
-`—enable-metrics, —enable-continuous-cloudwatch-log.`
-The Spark UI (`—enable-spark-ui`) is off by default; enable it by setting the
+`--enable-metrics, --enable-continuous-cloudwatch-log.`
+The Spark UI (`--enable-spark-ui`) is off by default; enable it by setting the
 `sparkUI` prop.
 You can find more details about version, worker type and other features in
 [Glue's public documentation](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-jobs-job.html).
@@ -140,10 +142,10 @@ Streaming jobs are similar to ETL jobs, except that they perform ETL on data
 streams using the Apache Spark Structured Streaming framework. Some Spark
 job features are not available to Streaming ETL jobs. They support Scala
 and pySpark languages. PySpark streaming jobs run on Python 3. It
-defaults to the G1 worker type and Glue 4.0, both of which you can override.
+defaults to the `G_1X` worker type and Glue 4.0, both of which you can override.
 The following best practice features are enabled by default:
-`—enable-metrics, —enable-continuous-cloudwatch-log`.
-The Spark UI (`—enable-spark-ui`) is off by default; enable it by setting the
+`--enable-metrics, --enable-continuous-cloudwatch-log`.
+The Spark UI (`--enable-spark-ui`) is off by default; enable it by setting the
 `sparkUI` prop.
 
 Reference the pyspark-streaming-jobs.test.ts and scalaspark-streaming-jobs.test.ts 
@@ -199,8 +201,8 @@ The flexible execution class is appropriate for non-urgent jobs such as
 pre-production jobs, testing, and one-time data loads. Flexible jobs default
 to Glue version 5.0 and worker type `G_1X`. The following best practice
 features are enabled by default:
-`—enable-metrics, —enable-continuous-cloudwatch-log`
-The Spark UI (`—enable-spark-ui`) is off by default; enable it by setting the
+`--enable-metrics, --enable-continuous-cloudwatch-log`
+The Spark UI (`--enable-spark-ui`) is off by default; enable it by setting the
 `sparkUI` prop.
 
 Reference the pyspark-flex-etl-jobs.test.ts and scalaspark-flex-etl-jobs.test.ts 
@@ -259,7 +261,7 @@ Python 3.9 and a MaxCapacity of `0.0625`. Python 3.9 supports pre-loaded
 analytics libraries using the `library-set=analytics` flag, which is
 enabled by default.
 
-Reference the pyspark-shell-job.test.ts unit tests for examples of 
+Reference the python-shell-job.test.ts unit tests for examples of 
 required-only and optional job parameters when creating these types of jobs.
 
 Example with only required parameters:

@@ -392,7 +392,7 @@ export interface JobProps {
    * The maximum time that a job run can consume resources before it is
    * terminated and enters TIMEOUT status. Specified in minutes.
    *
-   * @default 2880 (2 days for non-streaming)
+   * @default - no value set; Glue applies its service default (2880 minutes for non-streaming jobs)
    *
    */
   readonly timeout?: cdk.Duration;
