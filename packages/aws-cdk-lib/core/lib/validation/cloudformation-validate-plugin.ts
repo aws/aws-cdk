@@ -148,15 +148,15 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
   public validate(context: IPolicyValidationContext): PolicyValidationPluginReport {
     const violations: MutableViolation[] = [];
 
-    for (const { stackConstructPath, templatePath } of context.stackTemplates) {
+    for (const { stackConstructPath, templatePath, accountId, region } of context.stackTemplates) {
       const templateFile = new TemplateFile(templatePath);
       const report = (() => {
         using _span = profileSpan(VALIDATE_DETAILED_METRIC, { telemetry: true });
 
         return this.engine.validateDetailed(templateFile, {
           pseudoParameterOverrides: {
-            accountId: context.accountId,
-            region: context.region,
+            accountId,
+            region,
           },
           exclude: {
             ids: [...IGNORE_RULES],
@@ -266,11 +266,6 @@ const IGNORE_RULES = new Set([
   // and customers cannot control the generated expression.
   // https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/intrinsic-function-reference-split.html
   'E1018',
-
-  // WHAT: Circular dependency detection
-  // WHY: Something seems fishy about it
-  // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/53>.
-  'F3004',
 
   // WHAT: Hardcoded ARNs
   // WHY: Hardcoding an ARN is part of the behavior of some constructs (e.g., setting up multi-account DynamoDB table replicas)
@@ -389,4 +384,3 @@ function loadSchemasFromDirectory(dir: string): AdditionalSchemaSource[] {
 
   return schemas;
 }
-
