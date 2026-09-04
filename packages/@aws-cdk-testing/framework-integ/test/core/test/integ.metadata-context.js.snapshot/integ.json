@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "MetadataContextInteg/DefaultTest": {
+      "stacks": [
+        "MetadataContextTestStack"
+      ],
+      "assertionStack": "MetadataContextInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "MetadataContextIntegDefaultTestDeployAssert9187EC06"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
