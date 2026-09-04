@@ -145,6 +145,35 @@ file you are referencing. Zips from untrusted sources might be able to execute
 arbitrary code in the Lambda Function used by this module, and use its permissions
 to read or write unexpected files in the S3 bucket.
 
+## Referencing deployed object versions
+
+When you deploy a single zip file without extracting it (`extract: false`) to a
+**versioned** destination bucket, you can obtain the S3 `VersionId` of each deployed
+object via `objectVersionIds`. This is useful when a consumer must reference a specific,
+immutable version of a deployed object — for example a Lambda function that references its
+code in S3 by version rather than copying it.
+
+```ts
+const bucket = new s3.Bucket(this, 'CodeBucket', { versioned: true });
+
+const deployment = new s3deploy.BucketDeployment(this, 'DeployCode', {
+  sources: [s3deploy.Source.asset('/path/to/handler.zip')],
+  destinationBucket: bucket,
+  extract: false,
+});
+
+// `objectVersionIds` positionally matches `objectKeys`
+const objectKey = cdk.Fn.select(0, deployment.objectKeys);
+const versionId = cdk.Fn.select(0, deployment.objectVersionIds);
+```
+
+`objectVersionIds` returns a list of tokenized version IDs that positionally matches
+`objectKeys`. It is only supported with `extract: false` (reading it with `extract: true`
+throws), and requires versioning to be enabled on the destination bucket — otherwise the
+returned version IDs are empty strings. A consumer holding a version reference pins that
+specific object version, so it should not rely on `prune` semantics for lifecycle of the
+referenced version.
+
 ## Retain on Delete
 
 By default, the contents of the destination bucket will **not** be deleted when the

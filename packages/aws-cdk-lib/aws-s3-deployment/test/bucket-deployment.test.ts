@@ -1093,6 +1093,82 @@ test('deploy without extracting files in destination and get the object key', ()
   });
 });
 
+test('OutputObjectVersionIds is absent from the custom resource when objectVersionIds is never read', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest', { versioned: true });
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+    destinationBucket: bucket,
+    extract: false,
+  });
+
+  // THEN - no snapshot churn for existing users: the property must not appear
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    OutputObjectVersionIds: Match.absent(),
+  });
+});
+
+test('reading objectVersionIds opts in via OutputObjectVersionIds and renders a Fn::GetAtt list', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest', { versioned: true });
+
+  // WHEN
+  const deployment = new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+    destinationBucket: bucket,
+    extract: false,
+  });
+
+  const versionId = cdk.Fn.select(0, deployment.objectVersionIds);
+  new cdk.CfnOutput(stack, 'VersionId', { value: versionId });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('Custom::CDKBucketDeployment', {
+    OutputObjectVersionIds: true,
+  });
+  // the accessor resolves to a GetAtt on SourceObjectVersionIds
+  template.hasOutput('VersionId', {
+    Value: {
+      'Fn::Select': [0, { 'Fn::GetAtt': [Match.stringLikeRegexp('CustomResource'), 'SourceObjectVersionIds'] }],
+    },
+  });
+});
+
+test('objectVersionIds throws when extract is true (the default)', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest', { versioned: true });
+
+  const deployment = new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+    destinationBucket: bucket,
+    // extract defaults to true
+  });
+
+  // THEN
+  expect(() => deployment.objectVersionIds).toThrow("'objectVersionIds' is only supported when 'extract' is set to false");
+});
+
+test('objectVersionIds throws when extract is explicitly true', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest', { versioned: true });
+
+  const deployment = new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+    destinationBucket: bucket,
+    extract: true,
+  });
+
+  // THEN
+  expect(() => deployment.objectVersionIds).toThrow("'objectVersionIds' is only supported when 'extract' is set to false");
+});
+
 test('given a source with markers and extract is false, BucketDeployment throws an error', () => {
   // GIVEN
   const stack = new cdk.Stack();

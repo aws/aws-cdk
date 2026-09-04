@@ -325,8 +325,10 @@ export class BucketDeployment extends Construct {
   private readonly cr: cdk.CustomResource;
   private _deployedBucket?: s3.IBucket;
   private requestDestinationArn: IBox<boolean> = Box.fromValue(false);
+  private requestObjectVersionIds: IBox<boolean> = Box.fromValue(false);
   private readonly destinationBucket: s3.IBucket;
   private readonly sources: IArrayBox<SourceConfig>;
+  private readonly extract: boolean;
 
   /**
    * Execution role of the Lambda function behind the custom CloudFormation resource of type `Custom::CDKBucketDeployment`.
@@ -352,6 +354,7 @@ export class BucketDeployment extends Construct {
     }
 
     this.destinationBucket = props.destinationBucket;
+    this.extract = props.extract ?? true;
 
     const accessPointPath = '/lambda';
     let accessPoint;
@@ -491,6 +494,9 @@ export class BucketDeployment extends Construct {
         OutputObjectKeys: props.outputObjectKeys ?? true,
         // Passing through the ARN sequences dependency on the deployment
         DestinationBucketArn: this.requestDestinationArn.derive(v => v ? this.destinationBucket.bucketArn : undefined),
+        // Only threaded through (and only queried by the handler) when `objectVersionIds` is read.
+        // Deriving to `undefined` keeps the property out of the template for existing users.
+        OutputObjectVersionIds: this.requestObjectVersionIds.derive(v => v ? true : undefined),
       },
     });
 
@@ -587,6 +593,33 @@ export class BucketDeployment extends Construct {
   public get objectKeys(): string[] {
     const objectKeys = cdk.Token.asList(this.cr.getAtt('SourceObjectKeys'));
     return objectKeys;
+  }
+
+  /**
+   * The S3 version IDs of the objects deployed to the destination bucket.
+   *
+   * Returns a list of tokenized version IDs, positionally matching `objectKeys`: the version ID at
+   * a given index corresponds to the object key at the same index.
+   *
+   * This is useful when a consumer must reference a specific, immutable version of a deployed
+   * object — for example a Lambda function that references its code in S3 by version rather than
+   * copying it.
+   *
+   * Requires versioning to be enabled on the destination bucket; otherwise the returned version IDs
+   * will be empty strings. Only supported with `extract` set to `false`, where each source zip maps
+   * 1:1 to a destination object. Reading this accessor with `extract` set to `true` (the default)
+   * throws.
+   *
+   * @example
+   * declare const deployment: s3deploy.BucketDeployment;
+   * const versionId = cdk.Fn.select(0, deployment.objectVersionIds);
+   */
+  public get objectVersionIds(): string[] {
+    if (this.extract) {
+      throw new ValidationError(lit`ObjectVersionIdsRequiresExtractFalse`, "'objectVersionIds' is only supported when 'extract' is set to false", this);
+    }
+    this.requestObjectVersionIds.set(true);
+    return cdk.Token.asList(this.cr.getAtt('SourceObjectVersionIds'));
   }
 
   /**

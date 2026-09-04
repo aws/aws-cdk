@@ -783,6 +783,124 @@ class TestHandler(unittest.TestCase):
             self.assertEqual(file.read().rstrip(), "Another value1-source2 file with _marker2_ hey!\nLine 2 with value1-source2 again :-)")
 
 
+    def test_output_object_version_ids(self):
+        # extract=false, flag on: handler head_objects the destination key and returns its VersionId
+        head_calls = []
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'HeadObject':
+                head_calls.append(kwarg)
+                return {'VersionId': '<version-id>'}
+            raise ClientError({'Error': {'Code': '500', 'Message': 'Unsupported operation'}}, operation_name)
+
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            resp = invoke_handler("Create", {
+                "SourceBucketNames": ["<source-bucket>"],
+                "SourceObjectKeys": ["<source-object-key>"],
+                "DestinationBucketName": "<dest-bucket-name>",
+                "Extract": "false",
+                "OutputObjectVersionIds": "true",
+            })
+
+        self.assertEqual(resp["Data"]["SourceObjectVersionIds"], ["<version-id>"])
+        self.assertEqual(len(head_calls), 1)
+        self.assertEqual(head_calls[0]["Bucket"], "<dest-bucket-name>")
+        self.assertEqual(head_calls[0]["Key"], "<source-object-key>")
+
+    def test_output_object_version_ids_with_prefix(self):
+        # destination key is "<prefix><basename(source key)>"
+        head_calls = []
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'HeadObject':
+                head_calls.append(kwarg)
+                return {'VersionId': '<version-id>'}
+            raise ClientError({'Error': {'Code': '500', 'Message': 'Unsupported operation'}}, operation_name)
+
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            resp = invoke_handler("Create", {
+                "SourceBucketNames": ["<source-bucket>"],
+                "SourceObjectKeys": ["some/path/object.zip"],
+                "DestinationBucketName": "<dest-bucket-name>",
+                "DestinationBucketKeyPrefix": "my-prefix/",
+                "Extract": "false",
+                "OutputObjectVersionIds": "true",
+            })
+
+        self.assertEqual(resp["Data"]["SourceObjectVersionIds"], ["<version-id>"])
+        self.assertEqual(head_calls[0]["Key"], "my-prefix/object.zip")
+
+    def test_output_object_version_ids_multiple_sources(self):
+        # positionally matches SourceObjectKeys
+        versions = {"<key1>": "<v1>", "<key2>": "<v2>"}
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'HeadObject':
+                return {'VersionId': versions[kwarg["Key"]]}
+            raise ClientError({'Error': {'Code': '500', 'Message': 'Unsupported operation'}}, operation_name)
+
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            resp = invoke_handler("Create", {
+                "SourceBucketNames": ["<source-bucket1>", "<source-bucket2>"],
+                "SourceObjectKeys": ["<key1>", "<key2>"],
+                "DestinationBucketName": "<dest-bucket-name>",
+                "Extract": "false",
+                "OutputObjectVersionIds": "true",
+            })
+
+        self.assertEqual(resp["Data"]["SourceObjectVersionIds"], ["<v1>", "<v2>"])
+
+    def test_output_object_version_ids_unversioned_bucket_returns_empty(self):
+        # head_object on an unversioned bucket returns no VersionId -> empty string
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'HeadObject':
+                return {}
+            raise ClientError({'Error': {'Code': '500', 'Message': 'Unsupported operation'}}, operation_name)
+
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            resp = invoke_handler("Create", {
+                "SourceBucketNames": ["<source-bucket>"],
+                "SourceObjectKeys": ["<source-object-key>"],
+                "DestinationBucketName": "<dest-bucket-name>",
+                "Extract": "false",
+                "OutputObjectVersionIds": "true",
+            })
+
+        self.assertEqual(resp["Data"]["SourceObjectVersionIds"], [""])
+
+    def test_no_object_version_ids_when_flag_absent(self):
+        # default: no HeadObject calls are made and the attribute is not returned
+        def mock_make_api_call(self, operation_name, kwarg):
+            raise Exception("no S3 API call should be made when OutputObjectVersionIds is not set, got %s" % operation_name)
+
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            resp = invoke_handler("Create", {
+                "SourceBucketNames": ["<source-bucket>"],
+                "SourceObjectKeys": ["<source-object-key>"],
+                "DestinationBucketName": "<dest-bucket-name>",
+                "Extract": "false",
+            })
+
+        self.assertNotIn("SourceObjectVersionIds", resp["Data"])
+
+    def test_object_version_ids_on_delete_returns_empty(self):
+        # on delete the objects are gone; when requested the attribute is present as []
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'GetBucketTagging':
+                return {'TagSet': [{'Key': 'random-key', 'Value': '<logical-resource-id>'}]}
+            if operation_name == 'HeadObject':
+                raise Exception("HeadObject should not be called on delete")
+            raise ClientError({'Error': {'Code': '500', 'Message': 'Unsupported operation'}}, operation_name)
+
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            resp = invoke_handler("Delete", {
+                "SourceBucketNames": ["<source-bucket>"],
+                "SourceObjectKeys": ["<source-object-key>"],
+                "DestinationBucketName": "<dest-bucket-name>",
+                "Extract": "false",
+                "OutputObjectVersionIds": "true",
+                "RetainOnDelete": "false",
+            }, physical_id="<physicalid>")
+
+        self.assertEqual(resp["Data"]["SourceObjectVersionIds"], [])
+
     # asserts that a given list of "aws xxx" commands have been invoked (in order)
     def assertAwsCommands(self, *expected):
         actual = read_aws_out()
