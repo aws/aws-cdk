@@ -156,6 +156,22 @@ describe('serverless cluster', () => {
     });
   });
 
+  test("sets the retention policy of the SubnetGroup to 'Retain' if the Serverless Cluster is created with 'RetainOnUpdateOrDelete'", () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new ServerlessCluster(stack, 'Cluster', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpc,
+      removalPolicy: cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE,
+    });
+
+    Template.fromStack(stack).hasResource('AWS::RDS::DBSubnetGroup', {
+      DeletionPolicy: 'RetainExceptOnCreate',
+      UpdateReplacePolicy: 'Retain',
+    });
+  });
+
   test('creates a secret when master credentials are not specified', () => {
     // GIVEN
     const stack = testStack();
