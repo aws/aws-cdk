@@ -548,6 +548,17 @@ const distribution = new cloudfront.Distribution(this, 'Distribution', {
 distribution.attachWebAclId(webAcl.attrArn);
 ```
 
+### Adding an Origin Without a Behavior
+
+You can add an origin to a distribution without associating it with a cache behavior using `addOrigin()`.
+This is useful when you need to register an origin for use in an origin group or other advanced configurations:
+
+```ts
+declare const myDistribution: cloudfront.Distribution;
+
+myDistribution.addOrigin(new origins.HttpOrigin('api.example.com'));
+```
+
 ### Customizing Cache Keys and TTLs with Cache Policies
 
 You can use a cache policy to improve your cache hit ratio by controlling the values (URL query strings, HTTP headers, and cookies)
