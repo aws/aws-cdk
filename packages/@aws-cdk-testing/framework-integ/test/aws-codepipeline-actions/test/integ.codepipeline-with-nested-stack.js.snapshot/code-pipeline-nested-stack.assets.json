@@ -1,13 +1,14 @@
 {
-  "version": "40.0.0",
+  "version": "53.0.0",
   "files": {
     "e9bdb2e29c996292dd4a35bf37486dfd5d453c102ecee8dd47db844ba97465d6": {
+      "displayName": "PipelineCrossRegionStack Nested Stack Template",
       "source": {
         "path": "codepipelinenestedstackPipelineCrossRegionStack37C990C7.nested.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "123456789012-us-east-1": {
+        "123456789012-us-east-1-82cebc0f": {
           "bucketName": "cdk-hnb659fds-assets-123456789012-us-east-1",
           "objectKey": "e9bdb2e29c996292dd4a35bf37486dfd5d453c102ecee8dd47db844ba97465d6.json",
           "region": "us-east-1",
@@ -16,12 +17,13 @@
       }
     },
     "f990258ec094de5d996b40bc8d84c6caf91c8c2040b7ee9121466ef19fb24c9d": {
+      "displayName": "code-pipeline-nested-stack Template",
       "source": {
         "path": "code-pipeline-nested-stack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "123456789012-us-east-1": {
+        "123456789012-us-east-1-b1d19ef5": {
           "bucketName": "cdk-hnb659fds-assets-123456789012-us-east-1",
           "objectKey": "f990258ec094de5d996b40bc8d84c6caf91c8c2040b7ee9121466ef19fb24c9d.json",
           "region": "us-east-1",
