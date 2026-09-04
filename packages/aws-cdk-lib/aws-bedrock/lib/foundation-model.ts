@@ -344,6 +344,33 @@ export class FoundationModelIdentifier {
   /** Base model "openai.gpt-oss-20b-1:0". */
   public static readonly OPENAI_GPT_OSS_20B_1 = new FoundationModelIdentifier('openai.gpt-oss-20b-1:0');
 
+  /** Base model "openai.gpt-oss-safeguard-120b". */
+  public static readonly OPENAI_GPT_OSS_SAFEGUARD_120B = new FoundationModelIdentifier('openai.gpt-oss-safeguard-120b');
+
+  /** Base model "openai.gpt-oss-safeguard-20b". */
+  public static readonly OPENAI_GPT_OSS_SAFEGUARD_20B = new FoundationModelIdentifier('openai.gpt-oss-safeguard-20b');
+
+  /** Base model "openai.gpt-5.4". */
+  public static readonly OPENAI_GPT_5_4 = new FoundationModelIdentifier('openai.gpt-5.4');
+
+  /** Base model "openai.gpt-5.5". */
+  public static readonly OPENAI_GPT_5_5 = new FoundationModelIdentifier('openai.gpt-5.5');
+
+  /** Base model "openai.gpt-5.6-sol". */
+  public static readonly OPENAI_GPT_5_6_SOL = new FoundationModelIdentifier('openai.gpt-5.6-sol');
+
+  /** Base model "openai.gpt-5.6-terra". */
+  public static readonly OPENAI_GPT_5_6_TERRA = new FoundationModelIdentifier('openai.gpt-5.6-terra');
+
+  /** Base model "openai.gpt-5.6-luna". */
+  public static readonly OPENAI_GPT_5_6_LUNA = new FoundationModelIdentifier('openai.gpt-5.6-luna');
+
+  /** Base model "openai.gpt-5.6-cyber". */
+  public static readonly OPENAI_GPT_5_6_CYBER = new FoundationModelIdentifier('openai.gpt-5.6-cyber');
+
+  /** Base model "openai.gpt-daybreak-blue-5.6-sol". */
+  public static readonly OPENAI_GPT_DAYBREAK_BLUE_5_6_SOL = new FoundationModelIdentifier('openai.gpt-daybreak-blue-5.6-sol');
+
   /** Base model "luma.ray-v2:0". */
   public static readonly LUMA_RAY_V2_0 = new FoundationModelIdentifier('luma.ray-v2:0');
 
