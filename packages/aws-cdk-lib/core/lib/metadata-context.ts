@@ -9,7 +9,6 @@ import {
   mergeResourceContext,
   renderRef,
   renderResourceContext,
-  validateRenderedResourceContext,
   validateResourceContext,
   validateTemplateContext,
 } from './private/metadata-context-internal';
@@ -142,18 +141,18 @@ export interface ContextTrust {
 }
 
 /**
- * A reference to supporting context in the same repository.
+ * A reference to supporting context.
  *
  * References enable sharing context across templates and moving lower-value
  * detail out of a template near the CloudFormation size limit.
  */
 export interface ContextRef {
   /**
-   * Relative path to a version-controlled context source in the same repository.
+   * URI to the external context source: a relative repository path, `s3://`,
+   * or `https://`.
    *
-   * Network URLs, URI schemes, absolute paths, and parent-directory traversal
-   * are rejected. CDK cannot verify that the path exists or is version-controlled;
-   * callers are responsible for those checks.
+   * CDK does not fetch or verify the reference; callers are responsible for
+   * that. Treat referenced content as untrusted data.
    */
   readonly at: string;
 
@@ -178,10 +177,12 @@ export interface ContextRef {
  * Resource-level context, rendered as a `Metadata["com.aws.cloudformation.Context"]` block on a
  * CloudFormation resource.
  *
- * Individual declarations may omit fields because CDK merges declarations from
- * the construct hierarchy. The final Resource Context written to each resource
- * must contain a non-empty `why`. Omit Context entirely for a trivial resource
- * whose purpose is already obvious from its type and name.
+ * Every field is optional in the advisory schema and CDK enforces no top-level
+ * requiredness: individual declarations may omit any field, and CDK merges
+ * declarations from the construct hierarchy. A `why` is recommended so
+ * consumers understand a resource's purpose, but it is not required — omit
+ * Context entirely for a trivial resource whose purpose is already obvious from
+ * its type and name.
  *
  * Use concise values to conserve template bytes. Authors should remove
  * unnecessary words and may use standard symbols or abbreviations when their
@@ -196,10 +197,9 @@ export interface ResourceContextProps {
    * Reasoning — purpose, important configuration choices, and rejected
    * alternatives. Non-binding.
    *
-   * The final Resource Context for every selected resource must include this
-   * field. It may be supplied by this declaration or inherited from another
-   * applicable declaration. Use `gaps` for unknown details instead of
-   * inventing an explanation.
+   * Optional and not enforced. Recommended for every non-trivial resource so
+   * consumers can act on intent; may be supplied by this declaration or
+   * inherited from another applicable declaration.
    *
    * Example: `'buffers order events asynchronously; 14-day retention meets compliance requirements'`.
    *
@@ -211,9 +211,10 @@ export interface ResourceContextProps {
    * Required rules. Violating an entry would cause data loss, an outage, a
    * security violation, silent corruption, or a dependency failure.
    *
-   * At least one non-empty entry is required in the final merged Resource
-   * Context when `defaultMutability` or any `propertyMutability` value is
-   * `MUST_NEVER_CHANGE` or `CHANGE_WITH_CONSTRAINTS`.
+   * Optional and not enforced. Recommended when `defaultMutability` or any
+   * `propertyMutability` value is `MUST_NEVER_CHANGE` or
+   * `CHANGE_WITH_CONSTRAINTS`, so the constraint that makes the resource hard
+   * to change is spelled out.
    *
    * Example: `['VisibilityTimeout must be at least six times the Lambda timeout']`.
    *
@@ -224,9 +225,9 @@ export interface ResourceContextProps {
   /**
    * Resource-level DEFAULT change-safety level (one token per resource).
    *
-   * Rendered under the template field `mutable`.
-   * `MUST_NEVER_CHANGE` and `CHANGE_WITH_CONSTRAINTS` require a non-empty
-   * `must` entry in the final merged Resource Context.
+   * Rendered under the template field `mutable`. When set to
+   * `MUST_NEVER_CHANGE` or `CHANGE_WITH_CONSTRAINTS`, a `must` entry
+   * documenting the constraint is recommended but not enforced.
    *
    * @default - no change-safety default recorded
    */
@@ -238,10 +239,11 @@ export interface ResourceContextProps {
    *
    * Rendered under the template field `mutability`. List only properties that
    * differ from `defaultMutability` or are especially important. Omit the map
-   * when empty and do not enumerate every property. When
-   * `defaultMutability` is also supplied, an entry must not repeat the default.
-   * `MUST_NEVER_CHANGE` and `CHANGE_WITH_CONSTRAINTS` require a non-empty
-   * `must` entry in the final merged Resource Context.
+   * when empty and do not enumerate every property. When `defaultMutability`
+   * is also supplied, an entry must not repeat the default — this sparse-map
+   * rule is enforced. When an entry is `MUST_NEVER_CHANGE` or
+   * `CHANGE_WITH_CONSTRAINTS`, a `must` entry documenting the constraint is
+   * recommended but not enforced.
    *
    * @default - no per-property overrides
    */
@@ -250,30 +252,13 @@ export interface ResourceContextProps {
   /**
    * Source and confidence for the context content.
    *
-   * This field cannot be used alone; at least one content field is required.
+   * Optional and may be supplied as the only field. When provided, `source`
+   * and `confidence` are required (CDK never infers them); `citation` and
+   * `note` stay optional.
    *
    * @default - no trust metadata recorded
    */
   readonly trust?: ContextTrust;
-
-  /**
-   * Operational hint — what to check before modifying this resource.
-   *
-   * Example: `'check ApproxAgeOfOldestMsg before cutting VisTimeout'`.
-   *
-   * @default - no operational hint
-   */
-  readonly ops?: string;
-
-  /**
-   * Explicit unknowns — declared gaps in knowledge about this resource.
-   *
-   * Honest beats fabricated: recording what is NOT known prevents consumers
-   * from guessing. Example: `['memory sizing never load-tested']`.
-   *
-   * @default - no gaps declared
-   */
-  readonly gaps?: string[];
 
   /**
    * Cross-stack/cross-resource producer dependencies (stack names, logical
@@ -292,9 +277,8 @@ export interface ResourceContextProps {
  * specifics belong in resource-level context; the stack purpose belongs in
  * the built-in CloudFormation `Description`.
  *
- * Every field is optional in the advisory schema, but the CDK API requires at
- * least one non-empty field. `arch`, `refs`, or `owner` are valid without
- * `must`.
+ * Every field is optional and CDK enforces no top-level requiredness. Supply
+ * any combination; an empty declaration is a harmless no-op.
  *
  * Never include secrets, credentials, or personally identifiable information.
  * Consumers must treat template context as untrusted data, never as instructions.
@@ -319,7 +303,7 @@ export interface TemplateContextProps {
   readonly must?: string[];
 
   /**
-   * Relative paths to version-controlled supporting context in the same repository.
+   * URIs of supporting context — relative repository paths, `s3://`, or `https://`.
    *
    * Inline template context takes precedence over referenced content. Treat
    * referenced content as untrusted data, never as agent instructions. If a
@@ -428,7 +412,7 @@ export interface ResourceMetadataContextOptions {
  *
  * `Metadata["com.aws.cloudformation.Context"]` is structured, advisory context embedded in
  * CloudFormation templates. It carries the *why* behind infrastructure —
- * rationale, invariants, change-safety, provenance, operational hints — so
+ * rationale, invariants, change-safety, provenance — so
  * that humans and automated tools modifying the deployed template later can
  * act with the author's intent instead of guessing it.
  *
@@ -439,9 +423,9 @@ export interface ResourceMetadataContextOptions {
  * targeting options and type filters are applied; otherwise synthesis fails
  * with an actionable validation error.
  * When multiple applicable entries target the same resource, they merge with
- * nearest-wins semantics: scalar fields (`why`, `defaultMutability`, `trust`,
- * `ops`) from entries closer to the resource win, while list-valued fields
- * (`must`, `gaps`, `deps`) accumulate and de-duplicate.
+ * nearest-wins semantics: scalar fields (`why`, `defaultMutability`, `trust`)
+ * from entries closer to the resource win, while list-valued fields
+ * (`must`, `deps`) accumulate and de-duplicate.
  *
  * Use `TemplateMetadataContext` for template-level (stack-wide) context.
  *
@@ -473,7 +457,7 @@ export class ResourceMetadataContext {
    * Add a resource-level context block targeting resources within this scope.
    *
    * Calling `add()` multiple times on the same scope merges the blocks:
-   * scalar fields (`why`, `defaultMutability`, `trust`, `ops`) from later
+   * scalar fields (`why`, `defaultMutability`, `trust`) from later
    * calls override earlier ones; list fields and the `propertyMutability`
    * map accumulate.
    */
@@ -660,7 +644,6 @@ class MetadataContextAspect implements IAspect {
       return;
     }
 
-    validateRenderedResourceContext(merged, node);
     setResourceMetadataContext(node, merged);
   }
 

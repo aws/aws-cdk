@@ -101,8 +101,10 @@ describe('MetadataContextMixin', () => {
     }
   });
 
-  test('fails when the applied context is empty', () => {
+  test('applying an empty context is a harmless no-op', () => {
     const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
-    expect(() => res.with(new MetadataContextMixin({}))).toThrow(/at least one content field/);
+
+    expect(() => res.with(new MetadataContextMixin({}))).not.toThrow();
+    expect(toCloudFormation(stack).Resources.Res.Metadata?.[CONTEXT_METADATA_KEY]).toBeUndefined();
   });
 });
