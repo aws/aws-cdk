@@ -27,7 +27,6 @@ ResourceMetadataContext.of(queue).add({
   defaultMutability: ContextMutability.CHANGE_WITH_CONSTRAINTS,
   propertyMutability: { QueueName: ContextMutability.MUST_NEVER_CHANGE },
   trust: { source: ContextTrustSource.AUTHORED, confidence: ContextTrustConfidence.HIGH },
-  ops: 'check ApproxAgeOfOldestMsg before cutting VisTimeout',
 });
 
 // Scope-level context cascading to all primary resources beneath it
@@ -35,7 +34,6 @@ const subsystem = new Construct(stack, 'Notifications');
 new sns.Topic(subsystem, 'AlertsTopic');
 ResourceMetadataContext.of(subsystem).add({
   why: 'fan-out of alert events to oncall channels',
-  gaps: ['delivery retry policy never validated under load'],
 }, {
   applyToDescendants: true,
 });

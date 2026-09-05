@@ -34,8 +34,7 @@
      "trust": {
       "src": "authored",
       "conf": "high"
-     },
-     "ops": "check ApproxAgeOfOldestMsg before cutting VisTimeout"
+     }
     }
    }
   },
@@ -43,10 +42,7 @@
    "Type": "AWS::SNS::Topic",
    "Metadata": {
     "com.aws.cloudformation.Context": {
-     "why": "fan-out of alert events to oncall channels",
-     "gaps": [
-      "delivery retry policy never validated under load"
-     ]
+     "why": "fan-out of alert events to oncall channels"
     }
    }
   }

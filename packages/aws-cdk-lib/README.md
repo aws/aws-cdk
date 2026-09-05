@@ -1624,15 +1624,16 @@ Similarly, to do this for a specific nested stack, add a `suppressTemplateIndent
 CDK can embed structured, advisory context into the
 `Metadata["com.aws.cloudformation.Context"]` sections of synthesized CloudFormation
 templates. It captures the *why* behind your infrastructure — rationale, hard
-invariants, change-safety, provenance and operational hints — so that humans and
+invariants, change-safety and provenance — so that humans and
 automated tools working with the deployed template later can act on the author's
-intent instead of guessing it. The advisory schema is documented in the
-[AWS CloudFormation `Metadata` attribute documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-metadata.html#aws-attribute-metadata-context-schema).
-The published
-[AWS CloudFormation agent skill guidance](https://github.com/aws/agent-toolkit-for-aws/pull/257)
-is authoritative for field meaning and authoring behavior. This README and the
-API reference mirror that guidance and add typed conveniences without changing
-its semantics. CloudFormation does not validate `Metadata` fields.
+intent instead of guessing it. The structural source of truth is the published
+[AWS CloudFormation `Metadata` Context schema](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-metadata.html#aws-attribute-metadata-context-schema):
+every field it defines is optional, and it sets no `minLength`/`minItems`, so
+blank strings and empty arrays are structurally valid. The schema is advisory —
+CloudFormation does not validate or enforce `Metadata` fields. CDK maps a few
+ergonomic API names (`defaultMutability`, `propertyMutability`) onto the
+schema's wire keys and adds typed conveniences, but does not add top-level or
+content requirements the schema itself does not impose.
 
 Context comes in two flavors, each with its own entry point:
 
@@ -1655,7 +1656,6 @@ ResourceMetadataContext.of(queue).add({
   propertyMutability: {
     QueueName: ContextMutability.MUST_NEVER_CHANGE,
   },
-  ops: 'check ApproxAgeOfOldestMsg before cutting VisTimeout',
 });
 ```
 
@@ -1671,8 +1671,7 @@ rendered under the canonical wire keys `mutable` and `mutability`:
       "why": "buffer order events async; 14d retention = compliance window",
       "must": ["VisTimeout >= 6x fn timeout, else dup on retry"],
       "mutable": "change-with-constraints",
-      "mutability": { "QueueName": "must-never-change" },
-      "ops": "check ApproxAgeOfOldestMsg before cutting VisTimeout"
+      "mutability": { "QueueName": "must-never-change" }
     }
   }
 }
@@ -1681,26 +1680,30 @@ rendered under the canonical wire keys `mutable` and `mutability`:
 `propertyMutability` is a *sparse* map: list only the properties that deviate
 from `defaultMutability` (or that are otherwise high-stakes, e.g.
 replacement-triggering). When both are supplied, an entry that merely repeats the
-`defaultMutability` value is rejected at synthesis time.
+`defaultMutability` value is rejected — the map records deviations only.
 
 ### Resource context quality rules
 
-The CDK API applies these authoring checks:
+Every top-level field is optional. The advisory schema requires none of them and
+sets no `minLength`/`minItems`, so CDK does **not** reject a missing `why`, a
+missing `must`, blank strings, empty arrays, or a block whose only field is
+`trust` or `deps`. The following are authoring *recommendations*, not enforced
+rules:
 
-- The final merged Resource Context for every selected resource requires a
-  non-empty `why`. Omit Context entirely for a trivial resource whose purpose is
-  already obvious from its type and name.
+- Provide a `why` for every non-trivial resource so consumers understand its
+  purpose. Omit Context entirely for a trivial resource whose purpose is already
+  obvious from its type and name.
 - Add `must` only when violating the rule would break correctness,
-  availability, security, data integrity, or a required dependency. Never
-  invent a rule merely to populate the field.
-- `MUST_NEVER_CHANGE` and `CHANGE_WITH_CONSTRAINTS`, whether used as the
-  resource default or for a property, require at least one non-empty `must` in
-  the final merged Resource Context.
-- `trust` describes other content and cannot be used alone.
+  availability, security, data integrity, or a required dependency — especially
+  when `defaultMutability` or a `propertyMutability` entry is `MUST_NEVER_CHANGE`
+  or `CHANGE_WITH_CONSTRAINTS`. Never invent a rule merely to populate the field.
 
-Individual `add()` calls may omit `why` or `must` when another applicable
-ancestor or resource declaration supplies them; CDK validates the final merged
-block for each resource.
+CDK enforces only the schema's nested requirements:
+
+- When `trust` is supplied, both `source` and `confidence` are required
+  (`citation` and `note` remain optional).
+- In the sparse `propertyMutability` map, an entry must not repeat
+  `defaultMutability` when both are supplied — the map records deviations only.
 
 ### Targeting: exactly what receives context
 
@@ -1729,7 +1732,6 @@ declare const stack: Stack;
 // The type filter keeps this per-resource hint on queues; helpers are skipped.
 ResourceMetadataContext.of(stack).add({
   why: 'queue in the order-delivery path',
-  ops: 'drain queue before changing delivery settings',
 }, {
   applyToDescendants: true,
   includeResourceTypes: ['AWS::SQS::Queue'],
@@ -1753,7 +1755,6 @@ declare const deadLetterQueue: sqs.Queue;
 
 ResourceMetadataContext.of(deadLetterQueue).add({
   why: 'stores failed order-processor invocations for replay',
-  ops: 'inspect poison payload and fix processor before redrive',
 });
 ```
 
@@ -1774,7 +1775,6 @@ declare const stack: Stack;
 
 ResourceMetadataContext.of(stack).add({
   why: 'queue in the order-delivery path',
-  ops: 'drain queue before changing',
 }, {
   applyToDescendants: true,
   includeResourceTypes: ['AWS::SQS::Queue'],
@@ -1784,9 +1784,9 @@ ResourceMetadataContext.of(stack).add({
 ### Merging and ancestor inheritance
 
 When more than one applicable entry targets the same resource, entries merge with
-nearest-wins semantics: scalar fields (`why`, `defaultMutability`, `trust`,
-`ops`) from entries closer to the resource win, while list fields (`must`,
-`gaps`, `deps`) accumulate and de-duplicate. `propertyMutability`
+nearest-wins semantics: scalar fields (`why`, `defaultMutability`, `trust`)
+from entries closer to the resource win, while list fields (`must`,
+`deps`) accumulate and de-duplicate. `propertyMutability`
 maps merge per property.
 
 An entry inherits context merged from enclosing scopes by default. Set
@@ -1807,7 +1807,7 @@ ResourceMetadataContext.of(queue).add({
 ### Trust: explicit provenance
 
 Context can record where it came from and how much to trust it. `trust` is
-optional, but cannot be used as the only field. When supplied, both `source` and
+optional and may be the only field you supply. When supplied, both `source` and
 `confidence` are **required** — CDK never infers them for you or automatically
 adds a trust block. Producers that infer context should say so honestly:
 
@@ -1859,8 +1859,9 @@ Mixins.of(stack).apply(new MetadataContextMixin({
 `TemplateMetadataContext` holds cross-cutting facts stated once per stack: the
 architecture overview, template-wide invariants, pointers to external shared
 context, and ownership. The stack's purpose itself belongs in the native
-CloudFormation `Description` (the `description` prop of `Stack`). Template
-context does not require `must`; `arch`, `refs`, or `owner` alone are valid:
+CloudFormation `Description` (the `description` prop of `Stack`). Every
+template-context field is optional; supply any combination, and an empty
+declaration is a harmless no-op:
 
 ```typescript
 declare const stack: Stack;
@@ -1879,10 +1880,9 @@ TemplateMetadataContext.of(stack).add({
 });
 ```
 
-`refs` point to version-controlled supporting files in the same repository. A
-ref containing only `at` renders as a string; add `has` or `scope` to render the
-object form. CDK rejects network URLs, URI schemes, absolute paths, home-relative
-paths, and parent-directory traversal. Inline template context takes precedence.
+`refs` point to supporting context by URI — a relative repository path, `s3://`,
+or `https://`. A ref containing only `at` renders as a string; add `has` or
+`scope` to render the object form. Inline template context takes precedence.
 Consumers must treat referenced content as untrusted data, never as agent
 instructions, and continue with inline context if a reference is unavailable.
 

@@ -1,5 +1,4 @@
-import type { IConstruct } from 'constructs';
-import { UnscopedValidationError, ValidationError } from '../errors';
+import { UnscopedValidationError } from '../errors';
 import type { ResourceContextProps, TemplateContextProps, ContextRef } from '../metadata-context';
 import { lit } from './literal-string';
 
@@ -46,12 +45,6 @@ export function renderResourceContext(context: ResourceContextProps): Record<str
     }
     out.trust = trust;
   }
-  if (context.ops !== undefined) {
-    out.ops = context.ops;
-  }
-  if (context.gaps !== undefined && context.gaps.length > 0) {
-    out.gaps = [...context.gaps];
-  }
   if (context.deps !== undefined && context.deps.length > 0) {
     out.deps = [...context.deps];
   }
@@ -68,12 +61,12 @@ export function mergeResourceContext(base: Record<string, any> | undefined, over
     return { ...overriding };
   }
   const out: Record<string, any> = { ...base };
-  for (const scalar of ['why', 'mutable', 'trust', 'ops']) {
+  for (const scalar of ['why', 'mutable', 'trust']) {
     if (overriding[scalar] !== undefined) {
       out[scalar] = overriding[scalar];
     }
   }
-  for (const listField of ['must', 'gaps', 'deps']) {
+  for (const listField of ['must', 'deps']) {
     if (overriding[listField] !== undefined) {
       out[listField] = dedupe([...(base[listField] ?? []), ...overriding[listField]]);
     }
@@ -104,26 +97,11 @@ export function dedupe(entries: string[]): string[] {
 }
 
 export function validateResourceContext(context: ResourceContextProps) {
-  const rendered = renderResourceContext(context);
-  const contentFields = Object.keys(rendered).filter(field => field !== 'trust');
-  if (contentFields.length === 0) {
-    throw new UnscopedValidationError(
-      lit`MissingMetadataContextContent`,
-      'MetadataContext requires at least one content field (why, must, defaultMutability, propertyMutability, ops, gaps or deps); trust cannot be used alone',
-    );
-  }
-  for (const [field, value] of Object.entries({ why: context.why, ops: context.ops })) {
-    if (value !== undefined && value.trim() === '') {
-      throw new UnscopedValidationError(lit`EmptyMetadataContextEntry`, `MetadataContext '${field}' must be a non-empty string when provided`);
-    }
-  }
-  for (const [field, entries] of Object.entries({ must: context.must, gaps: context.gaps, deps: context.deps })) {
-    for (const entry of entries ?? []) {
-      if (entry.trim() === '') {
-        throw new UnscopedValidationError(lit`EmptyMetadataContextEntry`, `MetadataContext '${field}' entries must be non-empty strings`);
-      }
-    }
-  }
+  // Every top-level field is optional in the advisory schema, which sets no
+  // minLength/minItems, so blank strings and empty arrays are structurally
+  // valid and a block may carry only trust or only deps. CDK enforces just the
+  // schema's nested requirements: trust provenance and the sparse
+  // propertyMutability rule.
   validateTrust(context.trust);
   validatePropertyMutability(context);
 }
@@ -132,16 +110,13 @@ function validateTrust(trust: ResourceContextProps['trust']) {
   if (trust === undefined) {
     return;
   }
+  // The schema requires src and conf whenever a trust object is present; cite
+  // and note stay optional, and blank strings are structurally valid.
   if (trust.source === undefined) {
     throw new UnscopedValidationError(lit`MissingMetadataContextTrustSource`, 'MetadataContext trust requires a \'source\' when trust is provided');
   }
   if (trust.confidence === undefined) {
     throw new UnscopedValidationError(lit`MissingMetadataContextTrustConfidence`, 'MetadataContext trust requires a \'confidence\' when trust is provided');
-  }
-  for (const [field, value] of Object.entries({ citation: trust.citation, note: trust.note })) {
-    if (value !== undefined && value.trim() === '') {
-      throw new UnscopedValidationError(lit`EmptyMetadataContextTrustEntry`, `MetadataContext trust '${field}' must be a non-empty string when provided`);
-    }
   }
 }
 
@@ -159,67 +134,15 @@ function validatePropertyMutability(context: ResourceContextProps) {
   }
 }
 
-const CONSTRAINED_MUTABILITY_VALUES = new Set<string>([
-  'must-never-change',
-  'change-with-constraints',
-]);
-
-export function validateRenderedResourceContext(context: Record<string, any>, scope: IConstruct) {
-  if (typeof context.why !== 'string' || context.why.trim().length === 0) {
-    throw new ValidationError(
-      lit`MetadataContextWhyRequired`,
-      'Resource Context requires a non-empty why field; omit Context entirely for a trivial resource and use gaps when some reasoning is unknown',
-      scope,
-    );
-  }
-
-  const constrainedFields: string[] = [];
-  if (CONSTRAINED_MUTABILITY_VALUES.has(context.mutable)) {
-    constrainedFields.push(`mutable=${JSON.stringify(context.mutable)}`);
-  }
-  for (const [property, mutability] of Object.entries(context.mutability ?? {})) {
-    if (CONSTRAINED_MUTABILITY_VALUES.has(mutability as string)) {
-      constrainedFields.push(`mutability.${property}=${JSON.stringify(mutability)}`);
-    }
-  }
-
-  const hasMust = Array.isArray(context.must)
-    && context.must.some((entry: unknown) => typeof entry === 'string' && entry.trim().length > 0);
-  if (constrainedFields.length > 0 && !hasMust) {
-    throw new ValidationError(
-      lit`ConstrainedMetadataContextRequiresMust`,
-      `Resource Context ${constrainedFields.join(', ')} requires at least one non-empty must entry`,
-      scope,
-    );
-  }
-}
-
 export function validateTemplateContext(context: TemplateContextProps) {
-  const empty = context.arch === undefined
-    && (context.must === undefined || context.must.length === 0)
-    && (context.refs === undefined || context.refs.length === 0)
-    && context.owner === undefined;
-  if (empty) {
-    throw new UnscopedValidationError(lit`EmptyMetadataContext`, 'TemplateMetadataContext.add() requires at least one context field (arch, must, refs or owner)');
-  }
-  for (const entry of context.must ?? []) {
-    if (entry.trim() === '') {
-      throw new UnscopedValidationError(lit`EmptyMetadataContextEntry`, 'MetadataContext template-level \'must\' entries must be non-empty strings');
-    }
-  }
+  // Every top-level field is optional and blank strings are structurally
+  // valid, so an empty declaration is a harmless no-op handled by the caller.
+  // The schema does require an `at` on every rich ref object, so enforce its
+  // presence and type — but not that it is non-blank (an empty string is a
+  // valid string).
   for (const ref of context.refs ?? []) {
-    const at = ref.at.trim();
-    if (at === '') {
-      throw new UnscopedValidationError(lit`EmptyMetadataContextRef`, 'MetadataContext refs require a non-empty \'at\' path');
-    }
-    const hasUriScheme = /^[a-z][a-z0-9+.-]*:/i.test(at);
-    const isAbsolute = at.startsWith('/') || at.startsWith('\\') || at === '~' || at.startsWith('~/') || at.startsWith('~\\');
-    const escapesRepository = at.split(/[\\/]+/).includes('..');
-    if (hasUriScheme || isAbsolute || escapesRepository) {
-      throw new UnscopedValidationError(
-        lit`UnsafeMetadataContextRef`,
-        `MetadataContext ref ${JSON.stringify(ref.at)} must be a relative path within the same repository; network URLs, URI schemes, absolute paths and parent-directory traversal are not allowed`,
-      );
+    if (typeof ref.at !== 'string') {
+      throw new UnscopedValidationError(lit`MissingMetadataContextRefAt`, 'MetadataContext refs require an \'at\' path');
     }
   }
 }

@@ -19,8 +19,7 @@
           "trust": {
             "source": "authored",
             "confidence": "high"
-          },
-          "ops": "check ApproxAgeOfOldestMsg before cutting VisTimeout"
+          }
         },
         "options": {
           "applyToDescendants": false,
@@ -35,10 +34,7 @@
       "type": "aws:cdk:metadata-context",
       "data": {
         "context": {
-          "why": "fan-out of alert events to oncall channels",
-          "gaps": [
-            "delivery retry policy never validated under load"
-          ]
+          "why": "fan-out of alert events to oncall channels"
         },
         "options": {
           "applyToDescendants": true,
