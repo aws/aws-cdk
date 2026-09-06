@@ -62,6 +62,42 @@ describe('Gateway Coverage Tests', () => {
     });
   });
 
+  test('Should scope every ServiceRole trust policy statement to this account and gateway', () => {
+    new Gateway(stack, 'Gateway', { gatewayName: 'my-gateway' });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Condition: {
+              StringEquals: { 'aws:SourceAccount': { Ref: 'AWS::AccountId' } },
+              ArnLike: {
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':bedrock-agentcore:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':gateway/my-gateway*',
+                    ],
+                  ],
+                },
+              },
+            },
+            Effect: 'Allow',
+            Principal: { Service: 'bedrock-agentcore.amazonaws.com' },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
   test('Should use the provided role and not create a ServiceRole', () => {
     const role = new iam.Role(stack, 'CustomRole', {
       assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),

@@ -7,13 +7,6 @@
      "Statement": [
       {
        "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "bedrock-agentcore.amazonaws.com"
-       }
-      },
-      {
-       "Action": "sts:AssumeRole",
        "Condition": {
         "StringEquals": {
          "aws:SourceAccount": {
