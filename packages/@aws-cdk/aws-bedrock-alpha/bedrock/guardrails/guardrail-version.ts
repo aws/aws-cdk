@@ -1,7 +1,6 @@
 import type { IResource } from 'aws-cdk-lib';
 import { Resource } from 'aws-cdk-lib';
 import { CfnGuardrailVersion } from 'aws-cdk-lib/aws-bedrock';
-import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -132,10 +131,7 @@ export class GuardrailVersion extends GuardrailVersionBase {
     addConstructMetadata(this, props);
     this.guardrail = props.guardrail;
 
-    // Compute hash from guardrail, to recreate the resource when guardrail has changed
-    const hash = md5hash(props.guardrail.lastUpdated ?? 'Default');
-
-    this._resource = new CfnGuardrailVersion(this, `GuardrailVersion-${hash.slice(0, 16)}`, {
+    this._resource = new CfnGuardrailVersion(this, 'Resource', {
       guardrailIdentifier: this.guardrail.guardrailId,
       description: props.description,
     });
