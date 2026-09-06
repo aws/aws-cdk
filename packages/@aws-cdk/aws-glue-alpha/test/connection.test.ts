@@ -40,7 +40,7 @@ test('a connection with a subnet and security group', () => {
   new glue.Connection(stack, 'Connection', {
     type: glue.ConnectionType.NETWORK,
     securityGroups: [securityGroup],
-    subnet,
+    network: glue.ConnectionNetwork.subnet(subnet),
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::Connection', {
@@ -63,7 +63,7 @@ test('a connection with a vpc selects a subnet automatically', () => {
   const vpc = new ec2.Vpc(stack, 'Vpc');
   new glue.Connection(stack, 'Connection', {
     type: glue.ConnectionType.NETWORK,
-    vpc,
+    network: glue.ConnectionNetwork.vpc(vpc),
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::Connection', {
@@ -82,8 +82,7 @@ test('a connection with a vpc and explicit subnet selection', () => {
   const vpc = new ec2.Vpc(stack, 'Vpc');
   new glue.Connection(stack, 'Connection', {
     type: glue.ConnectionType.NETWORK,
-    vpc,
-    vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+    network: glue.ConnectionNetwork.vpc(vpc, { subnetType: ec2.SubnetType.PUBLIC }),
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::Connection', {
@@ -96,38 +95,13 @@ test('a connection with a vpc and explicit subnet selection', () => {
   });
 });
 
-test('fails when both subnet and vpc are specified', () => {
-  const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'Vpc');
-  const subnet = ec2.Subnet.fromSubnetAttributes(stack, 'subnet', {
-    subnetId: 'subnetId',
-    availabilityZone: 'azId',
-  });
-
-  expect(() => new glue.Connection(stack, 'Connection', {
-    type: glue.ConnectionType.NETWORK,
-    subnet,
-    vpc,
-  })).toThrow(/cannot specify both `subnet` and `vpc`/);
-});
-
-test('fails when vpcSubnets is specified without vpc', () => {
-  const stack = new cdk.Stack();
-
-  expect(() => new glue.Connection(stack, 'Connection', {
-    type: glue.ConnectionType.NETWORK,
-    vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
-  })).toThrow(/`vpcSubnets` can only be specified together with `vpc`/);
-});
-
 test('fails with a clear message when vpcSubnets selects no subnets', () => {
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'Vpc');
 
   expect(() => new glue.Connection(stack, 'Connection', {
     type: glue.ConnectionType.NETWORK,
-    vpc,
-    vpcSubnets: { subnets: [] },
+    network: glue.ConnectionNetwork.vpc(vpc, { subnets: [] }),
   })).toThrow(/`vpcSubnets` selected no subnets from the provided `vpc`/);
 });
 
@@ -139,8 +113,7 @@ test('does not fail on an empty selection while the vpc lookup is pending', () =
 
   expect(() => new glue.Connection(stack, 'Connection', {
     type: glue.ConnectionType.NETWORK,
-    vpc,
-    vpcSubnets: { subnetGroupName: 'DoesNotExist' },
+    network: glue.ConnectionNetwork.vpc(vpc, { subnetGroupName: 'DoesNotExist' }),
   })).not.toThrow();
 });
 
