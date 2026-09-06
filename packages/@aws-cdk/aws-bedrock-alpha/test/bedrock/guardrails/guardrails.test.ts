@@ -1866,7 +1866,7 @@ describe('CDK-Created-Guardrail', () => {
     });
   });
 
-  test('Versioning is stable when unrelated constructs are added before the guardrail', () => {
+  test('Versioning - Stable Logical Id Regardless Of Construct Order', () => {
     const versionLogicalIds = (fillers: number) => {
       const testStack = new core.Stack(new App(), 'test-stack');
       for (let i = 0; i < fillers; i++) {
@@ -1880,6 +1880,7 @@ describe('CDK-Created-Guardrail', () => {
       return Object.keys(Template.fromStack(testStack).findResources('AWS::Bedrock::GuardrailVersion'));
     };
 
+    expect(versionLogicalIds(0)).toHaveLength(1);
     expect(versionLogicalIds(1)).toEqual(versionLogicalIds(0));
     expect(versionLogicalIds(2)).toEqual(versionLogicalIds(0));
   });
