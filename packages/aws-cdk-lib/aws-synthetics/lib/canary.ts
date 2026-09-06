@@ -868,7 +868,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
         (!cdk.Token.isUnresolved(props.runtime.name) && props.runtime.name.includes('playwright'))
       )
     ) {
-      throw new ValidationError(lit`ActiveTracingNotSupported`, `You can only enable active tracing for canaries that use canary runtime version 'syn-nodejs-2.0' or later, are not using the Playwright runtime, got ${props.runtime.name}.`, this);
+      throw new ValidationError(lit`ActiveTracingNotSupported`, `You can only enable active tracing for canaries that use canary runtime version 'syn-nodejs-2.0' or later (excluding Playwright runtimes) or Java runtimes, got ${props.runtime.name}.`, this);
     }
 
     let memoryInMb: number | undefined;
