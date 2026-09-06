@@ -62,7 +62,7 @@ describe('Gateway Coverage Tests', () => {
     });
   });
 
-  test('Should scope every ServiceRole trust policy statement to this account and gateway', () => {
+  test('Should have a single service role statement with confused deputy conditions', () => {
     new Gateway(stack, 'Gateway', { gatewayName: 'my-gateway' });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {

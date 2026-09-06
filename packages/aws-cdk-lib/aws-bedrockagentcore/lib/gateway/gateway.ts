@@ -756,10 +756,10 @@ export class Gateway extends GatewayBase {
     const account = Stack.of(this).account;
     const partition = Stack.of(this).partition;
 
-    // This restricts role assumption to the specific gateway resource only in this account,
-    // preventing other accounts from assuming this role.
-    // See:https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-prerequisites-permissions.html#gateway-service-role-permissions
     const role = new iam.Role(this, 'ServiceRole', {
+      // This restricts role assumption to the specific gateway resource only in this account,
+      // preventing other accounts from assuming this role.
+      // See:https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-prerequisites-permissions.html#gateway-service-role-permissions
       assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com', {
         conditions: {
           StringEquals: { 'aws:SourceAccount': account },
