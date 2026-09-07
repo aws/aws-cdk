@@ -281,6 +281,9 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-sonnet-4-6". */
   public static readonly ANTHROPIC_CLAUDE_SONNET_4_6 = new FoundationModelIdentifier('anthropic.claude-sonnet-4-6');
 
+  /** Base model "anthropic.claude-sonnet-5". */
+  public static readonly ANTHROPIC_CLAUDE_SONNET_5 = new FoundationModelIdentifier('anthropic.claude-sonnet-5');
+
   /**
    * Base model "anthropic.claude-instant-v1".
    * @deprecated use latest version of the model

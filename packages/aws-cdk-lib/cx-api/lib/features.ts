@@ -1888,12 +1888,10 @@ export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
   [DEFAULT_CROSS_STACK_REFERENCES]: {
     type: FlagType.VisibleContext,
-    summary: 'Controls whether cross-region stack references are strong, weak, or both',
+    summary: 'Controls whether cross-stack references are strong, weak, or both',
     detailsMd: `
-      Controls the default type of cross-region stack references. Accepted values are
-      \`"strong"\`, \`"weak"\`, and \`"both"\`. This setting only affects same-account,
-      cross-region references. Cross-account references are always weak, and same-region
-      references are always strong (Fn::ImportValue).
+      Controls the default type of cross-stack references. Accepted values are
+      \`"strong"\`, \`"weak"\`, and \`"both"\`.
 
       The flag is read from the **consumer** stack's context, not the producer's.
 
@@ -1928,7 +1926,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       When this flag is explicitly set to \`true\`, violations are treated as errors and will
       fail synthesis. When unconfigured, violations are reported as warnings only.`,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.262.0' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
   },

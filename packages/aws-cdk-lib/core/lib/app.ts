@@ -1,7 +1,7 @@
 import { performance } from 'perf_hooks';
 import type { Construct, IConstruct } from 'constructs';
 import * as fs from 'fs-extra';
-import { readPerfCounters, TELEMETRY_FIELD } from './helpers-internal';
+import { readPerfCounters, recordPerformanceEntry, resetCounters } from './helpers-internal';
 import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
 import type { ICustomSynthesis } from './private/synthesis';
 import { addCustomSynthesis } from './private/synthesis';
@@ -13,8 +13,7 @@ import { Stage } from './stage';
 import type { IPolicyValidationPluginBeta1 } from './validation/validation';
 import * as cxapi from '../../cx-api';
 import type * as public_cxapi from '../../cx-api';
-
-const APP_SYMBOL = Symbol.for('@aws-cdk/core.App');
+import { appOf, APP_TYPE } from './private/core-construct-finders';
 
 /**
  * Can hold a function to globally initialize Apps.
@@ -188,11 +187,11 @@ export interface AppProps {
 export class App extends Stage {
   /**
    * Return the app that is the root of the construct tree, if available.
-   *
    */
   public static of(construct: IConstruct): Stage | undefined {
-    const root = construct.node.root;
-    return App.isApp(root) ? root : undefined;
+    // This cannot return `App` because we inherit this method from `Stage` and jsii doesn't allow us
+    // to change the return type (even though it is static T_T)
+    return appOf(construct);
   }
 
   /**
@@ -201,7 +200,7 @@ export class App extends Stage {
    * @param obj The object to evaluate
    */
   public static isApp(obj: any): obj is App {
-    return APP_SYMBOL in obj;
+    return APP_TYPE.isMarked(obj);
   }
 
   /**
@@ -229,9 +228,9 @@ export class App extends Stage {
     if (!PERF_STATE.loadTimeMeasured) {
       // Measure the load time of the application -- up until the construction of the first App
       // object is considered "Load Time" (executing all require()s).
-      performance.measure('phase:Load', {
-        end: this.initMark,
-        detail: { [TELEMETRY_FIELD]: true },
+      recordPerformanceEntry('phase:Load', {
+        durationMs: this.initMark,
+        telemetry: true,
       });
       PERF_STATE.loadTimeMeasured = true;
     }
@@ -245,7 +244,7 @@ export class App extends Stage {
       this._addValidationPlugins(...props.policyValidationBeta1);
     }
 
-    Object.defineProperty(this, APP_SYMBOL, { value: true });
+    APP_TYPE.mark(this);
 
     this.loadContext(props.context, props.postCliContext);
 
@@ -316,17 +315,15 @@ export class App extends Stage {
     this.alreadySynthed = true;
 
     const startSynthMark = performance.now();
-    performance.measure('phase:Construction', {
-      start: this.initMark,
-      end: startSynthMark,
-      detail: { [TELEMETRY_FIELD]: true },
+
+    recordPerformanceEntry('phase:Construction', {
+      durationMs: startSynthMark - this.initMark,
+      telemetry: true,
     });
-
     const ret = super.synth(options);
-
-    performance.measure('phase:Synthesis', {
-      start: startSynthMark,
-      detail: { [TELEMETRY_FIELD]: true },
+    recordPerformanceEntry('phase:Synthesis', {
+      durationMs: performance.now() - startSynthMark,
+      telemetry: true,
     });
 
     const totalAppTimeMs = performance.now() - this.initMark;
@@ -334,7 +331,7 @@ export class App extends Stage {
     if (this.shouldReportSlowSynth(totalAppTimeMs / stackCount)) {
       emitPerformanceCountersFile();
     }
-    performance.clearMeasures();
+    resetCounters();
 
     return ret;
   }
