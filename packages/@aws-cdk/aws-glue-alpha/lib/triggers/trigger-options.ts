@@ -6,10 +6,35 @@ import type { JobState, CrawlerState, PredicateLogical } from '../constants';
 import type { ISecurityConfiguration } from '../security-configuration';
 
 /**
- * Options shared by all trigger actions, regardless of whether they run a job
- * or a crawler.
+ * Options for the execution of a crawler.
  */
-export interface ActionOptions {
+export interface CrawlerActionOptions {
+  /**
+   * The arguments used when this trigger fires.
+   *
+   * @default - no arguments are passed to the job
+   */
+  readonly arguments?: { [key: string]: string };
+
+  /**
+   * The run timeout. This is the maximum time that a run can consume resources before it is terminated and enters TIMEOUT status.
+   *
+   * @default - the default timeout value set in the job definition
+   */
+  readonly timeout?: cdk.Duration;
+
+  /**
+   * The `SecurityConfiguration` to be used with this action.
+   *
+   * @default - no security configuration is used
+   */
+  readonly securityConfiguration?: ISecurityConfiguration;
+}
+
+/**
+ * Options for the execution of a job.
+ */
+export interface JobActionOptions {
   /**
    * The arguments used when this trigger fires.
    *
@@ -46,7 +71,7 @@ export abstract class Action {
    * @param job the job to run when the trigger fires.
    * @param options additional options for the action.
    */
-  public static job(job: IJobRef, options: ActionOptions = {}): Action {
+  public static job(job: IJobRef, options: CrawlerActionOptions = {}): Action {
     return new JobAction(job, options);
   }
 
@@ -56,7 +81,7 @@ export abstract class Action {
    * @param crawler the crawler to run when the trigger fires.
    * @param options additional options for the action.
    */
-  public static crawler(crawler: ICrawlerRef, options: ActionOptions = {}): Action {
+  public static crawler(crawler: ICrawlerRef, options: JobActionOptions = {}): Action {
     return new CrawlerAction(crawler, options);
   }
 
@@ -72,7 +97,7 @@ export abstract class Action {
  * An action that runs a job.
  */
 class JobAction extends Action {
-  constructor(private readonly job: IJobRef, private readonly options: ActionOptions) {
+  constructor(private readonly job: IJobRef, private readonly options: CrawlerActionOptions) {
     super();
   }
 
@@ -90,7 +115,7 @@ class JobAction extends Action {
  * An action that runs a crawler.
  */
 class CrawlerAction extends Action {
-  constructor(private readonly crawler: ICrawlerRef, private readonly options: ActionOptions) {
+  constructor(private readonly crawler: ICrawlerRef, private readonly options: CrawlerActionOptions) {
     super();
   }
 
