@@ -3,7 +3,7 @@ import { lit } from '../../private/literal-string';
 import { type Branded } from '../../private/type-brand';
 
 export interface ValidationId {
-  readonly namespace?: string;
+  readonly namespace?: ValidationNs;
   readonly ruleId: string;
 }
 
@@ -58,7 +58,7 @@ export function parseValidationId(id: string): ValidationId {
     throw new UnscopedValidationError(lit`InvalidValidationId`, `Invalid validation rule ID '${id}'. Missing plugin name before '::'.`);
   }
 
-  const namespace = id.substring(0, nsSeparator);
+  const namespace = id.substring(0, nsSeparator) as ValidationNs;
   const ruleId = id.substring(nsSeparator + 2);
 
   return { namespace, ruleId };
@@ -67,8 +67,8 @@ export function parseValidationId(id: string): ValidationId {
 /**
  * Normalize the given validation ID to a fully qualified ID, using the `annotation` namespace if no namespace is provided.
  */
-export function normalizeValidationId(id: string, defaultNamespace: ValidationNs): string {
-  const parsed = parseValidationId(id);
+export function normalizeValidationId(id: string | ValidationId, defaultNamespace: ValidationNs): string {
+  const parsed = typeof id === 'string' ? parseValidationId(id) : id;
 
   // Allow aliases for this namespace, but normalize it to the actual namespace we settled on.
   if (parsed.namespace && ['annotation', 'Construct-Annotations'].includes(parsed.namespace)) {
@@ -96,6 +96,14 @@ export function namespaceFromPluginName(pluginName: string): ValidationNs {
   }
 
   return pluginName.replace(/ /g, '-') as ValidationNs;
+}
+
+/**
+ * Convert a namespace to a displayable plugin name
+ */
+export function pluginNameFromNamespace(namespace: ValidationNs): string {
+  // We do not convert the annotation namespace back to its legacy plugin name.
+  return namespace.replace(/-/g, ' ');
 }
 
 export const ANNOTATION_PLUGIN_NAME = 'Construct Annotations';

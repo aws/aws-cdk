@@ -7,7 +7,7 @@ import path from 'path';
 import type { PluginReportJson, PolicyViolationJson, ViolatingConstructJson } from '@aws-cdk/cloud-assembly-schema';
 import { Colorize } from './color';
 import { isSuppressibleViolation } from './report';
-import { normalizeValidationIdForAnnotations, parseValidationId } from './validation-id';
+import { namespaceFromPluginName, normalizeValidationId, parseValidationId, pluginNameFromNamespace } from './validation-id';
 import { topUserFrame } from '../../private/stack-trace';
 
 export function formatValidationReports(fileRoot: string, reports: PluginReportJson[]): string[] {
@@ -64,10 +64,13 @@ function formatViolationBlock(fileRoot: string, v: FlattenedViolation): string {
     lines.push(Colorize.underline(sanitize(location)));
   }
 
+  const pluginNs = namespaceFromPluginName(v.pluginName);
+  const parsed = parseValidationId(v.ruleName);
+
   lines.push([
     Colorize.bold(getSeverityColor(v.severity)(sanitize(v.severity))),
     Colorize.bold(stripAckTag(sanitize(v.description))),
-    Colorize.grey(`(${sanitize(namespace(v))})`),
+    Colorize.grey(`(${sanitize(parsed.namespace ? pluginNameFromNamespace(parsed.namespace) : v.pluginName)})`),
   ].join(' '));
 
   const constructInfo = formatConstructInfo(fileRoot, v.construct);
@@ -77,11 +80,12 @@ function formatViolationBlock(fileRoot: string, v: FlattenedViolation): string {
     lines.push(`   Suggested fix: ${sanitize(v.suggestedFix).replace(/\n/g, '\n   ')}`);
   }
 
+  const ackId = normalizeValidationId(v.ruleName, pluginNs);
   if (isSuppressibleViolation(v)) {
-    lines.push(`   ${Colorize.grey(`Acknowledge with '${sanitize(ackId(v))}'`)}`);
+    lines.push(`   ${Colorize.grey(`Acknowledge with '${sanitize(ackId)}'`)}`);
   } else {
     // If not acknowledgeable, we should still show the rule name for reference.
-    lines.push(`   ${Colorize.grey(`Rule ${sanitize(ackId(v))}`)}`);
+    lines.push(`   ${Colorize.grey(`Rule ${sanitize(ackId)}`)}`);
   }
 
   return lines.join('\n');
@@ -173,12 +177,4 @@ function isPluginFailure(r: PluginReportJson): PluginError | undefined {
     return undefined;
   }
   return { error: r.metadata.error };
-}
-
-function namespace(v: FlattenedViolation): string {
-  return parseValidationId(v.ruleName).namespace ?? '';
-}
-
-function ackId(v: FlattenedViolation): string {
-  return normalizeValidationIdForAnnotations(v.ruleName);
 }
