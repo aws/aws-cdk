@@ -61,10 +61,11 @@ export interface PySparkFlexEtlJobProps extends SparkJobProps {
  * The flexible execution class is appropriate for non-urgent jobs such as
  * pre-production jobs, testing, and one-time data loads.
  * Flexible job runs are supported for jobs using AWS Glue version 3.0 or later and G.1X or
- * G.2X worker types but will default to the latest version of Glue (currently Glue 3.0.)
+ * G.2X worker types but will default to the latest version of Glue (currently Glue 5.0.)
  *
- * Similar to ETL, we’ll enable these features: —enable-metrics, —enable-spark-ui,
- * —enable-continuous-cloudwatch-log
+ * Similar to ETL, we’ll enable these features: --enable-metrics,
+ * --enable-continuous-cloudwatch-log. The Spark UI (--enable-spark-ui) is off by
+ * default; enable it by setting the `sparkUI` prop.
  */
 @propertyInjectable
 export class PySparkFlexEtlJob extends SparkJob {
@@ -95,9 +96,9 @@ export class PySparkFlexEtlJob extends SparkJob {
         scriptLocation: this.codeS3ObjectUrl(props.script),
         pythonVersion: PythonVersion.THREE,
       },
-      glueVersion: props.glueVersion ? props.glueVersion : GlueVersion.V3_0,
-      workerType: props.workerType ? props.workerType : WorkerType.G_1X,
-      numberOfWorkers: props.numberOfWorkers ? props.numberOfWorkers : 10,
+      glueVersion: props.glueVersion ? props.glueVersion : GlueVersion.V5_0,
+      workerType: props.workerConfiguration?.workerType ?? WorkerType.G_1X,
+      numberOfWorkers: props.workerConfiguration?.numberOfWorkers ?? 10,
       maxRetries: props.maxRetries,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
       notificationProperty: props.notifyDelayAfter ? { notifyDelayAfter: props.notifyDelayAfter.toMinutes() } : undefined,
