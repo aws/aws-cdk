@@ -7,6 +7,7 @@ import path from 'path';
 import type { PluginReportJson, PolicyViolationJson, ViolatingConstructJson } from '@aws-cdk/cloud-assembly-schema';
 import { Colorize } from './color';
 import { isSuppressibleViolation } from './report';
+import { normalizeValidationIdForAnnotations, parseValidationId } from './validation-id';
 import { topUserFrame } from '../../private/stack-trace';
 
 export function formatValidationReports(fileRoot: string, reports: PluginReportJson[]): string[] {
@@ -66,7 +67,7 @@ function formatViolationBlock(fileRoot: string, v: FlattenedViolation): string {
   lines.push([
     Colorize.bold(getSeverityColor(v.severity)(sanitize(v.severity))),
     Colorize.bold(stripAckTag(sanitize(v.description))),
-    Colorize.grey(`(${namespace(v)})`),
+    Colorize.grey(`(${sanitize(namespace(v))})`),
   ].join(' '));
 
   const constructInfo = formatConstructInfo(fileRoot, v.construct);
@@ -77,7 +78,7 @@ function formatViolationBlock(fileRoot: string, v: FlattenedViolation): string {
   }
 
   if (isSuppressibleViolation(v)) {
-    lines.push(`   ${Colorize.grey(`Acknowledge with '${ackId(v)}'`)}`);
+    lines.push(`   ${Colorize.grey(`Acknowledge with '${sanitize(ackId(v))}'`)}`);
   } else {
     // If not acknowledgeable, we should still show the rule name for reference.
     lines.push(`   ${Colorize.grey(`Rule ${sanitize(ackId(v))}`)}`);
@@ -175,9 +176,9 @@ function isPluginFailure(r: PluginReportJson): PluginError | undefined {
 }
 
 function namespace(v: FlattenedViolation): string {
-  return v.ruleName.includes('::') ? sanitize(v.ruleName.split('::')[0]) : sanitize(v.pluginName);
+  return parseValidationId(v.ruleName).namespace ?? '';
 }
 
 function ackId(v: FlattenedViolation): string {
-  return (v.ruleName.includes('::') ? sanitize(v.ruleName) : `${sanitize(v.pluginName)}::${sanitize(v.ruleName)}`).replace(/ /g, '-');
+  return normalizeValidationIdForAnnotations(v.ruleName);
 }
