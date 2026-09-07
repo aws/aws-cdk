@@ -3,7 +3,7 @@ import { acknowledgeTestValidationRules } from './util';
 import { Annotations, Match, Template } from '../../assertions';
 import { App, CfnOutput, CfnResource, Fn, Lazy, Stack, Tags } from '../../core';
 import { EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
-import type { PublicSubnet } from '../lib';
+import type { NatInstanceProps, PublicSubnet } from '../lib';
 import {
   AclCidr,
   AclTraffic,
@@ -41,6 +41,7 @@ import {
   KeyPair,
   UserData,
 } from '../lib';
+import * as instanceLib from '../lib/instance';
 
 describe('vpc', () => {
   describe('When creating a VPC', () => {
@@ -1674,6 +1675,63 @@ describe('vpc', () => {
       }).toThrow("Cannot specify both of 'keyName' and 'keyPair'; prefer 'keyPair'");
     });
 
+    // Both providers pass `keyName` on to `Instance`, so both need the regression assertion.
+    const natInstanceProviders: Array<[string, (props: NatInstanceProps) => NatProvider]> = [
+      ['V1', NatProvider.instance],
+      ['V2', NatProvider.instanceV2],
+    ];
+
+    testDeprecated.each(natInstanceProviders)('NAT instances %s do not pass the deprecated keyName to instances when it is not provided', (_version, natInstanceProvider) => {
+      // GIVEN
+      // The deprecation warning for InstanceProps#keyName triggers on the mere presence
+      // of the key, even when its value is undefined
+      // https://github.com/aws/aws-cdk/issues/30806
+      const OriginalInstance = instanceLib.Instance;
+      const instanceConstructorSpy = jest.spyOn(instanceLib, 'Instance')
+        .mockImplementation((...args: ConstructorParameters<typeof instanceLib.Instance>) => new OriginalInstance(...args));
+
+      try {
+        const stack = getTestStack();
+
+        // WHEN
+        const natGatewayProvider = natInstanceProvider({
+          instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.SMALL),
+          machineImage: new GenericLinuxImage({
+            'us-east-1': 'ami-1',
+          }),
+        });
+        new Vpc(stack, 'TheVPC', { natGatewayProvider });
+
+        // THEN
+        expect(instanceConstructorSpy).toHaveBeenCalled();
+        for (const [, , instanceProps] of instanceConstructorSpy.mock.calls) {
+          expect(instanceProps).not.toHaveProperty('keyName');
+        }
+      } finally {
+        instanceConstructorSpy.mockRestore();
+      }
+    });
+
+    testDeprecated.each(natInstanceProviders)('NAT instances %s still set KeyName when keyName is provided', (_version, natInstanceProvider) => {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      const natGatewayProvider = natInstanceProvider({
+        instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.SMALL),
+        machineImage: new GenericLinuxImage({
+          'us-east-1': 'ami-1',
+        }),
+        keyName: 'my-key-pair',
+      });
+      new Vpc(stack, 'TheVPC', { natGatewayProvider });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+        KeyName: 'my-key-pair',
+      });
+    });
+
     test('throws if creditSpecification is set with a non-burstable instance type', () => {
       // GIVEN
       const stack = getTestStack();
@@ -2099,6 +2157,21 @@ describe('vpc', () => {
 
       // THEN
       expect(subnetIds).toEqual(vpc.isolatedSubnets.map(s => s.subnetId));
+    });
+
+    test('can select subnets by environment-agnostic AZ', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      const { subnetIds } = vpc.selectSubnets({
+        subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+        availabilityZones: [stack.availabilityZones[0], stack.availabilityZones[1]],
+      });
+
+      // THEN
+      expect(subnetIds).toHaveLength(2); // 2 private subnets
     });
 
     test('can select subnets by name', () => {
@@ -2751,6 +2824,26 @@ describe('vpc', () => {
       VpcId: {
         Ref: Match.stringLikeRegexp('^Vpc.*'),
       },
+    });
+  });
+  test('dual-stack IPv6 default route has DependsOn VPCGatewayAttachment', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'DualStackStack');
+
+    // WHEN
+    new Vpc(stack, 'Vpc', {
+      ipProtocol: IpProtocol.DUAL_STACK,
+      maxAzs: 1,
+    });
+
+    // THEN - IPv6 default route (::/0) must depend on VPCGatewayAttachment;
+    // CloudFormation rejects routes whose IGW has not yet been attached to the VPC.
+    Template.fromStack(stack).hasResource('AWS::EC2::Route', {
+      Properties: {
+        DestinationIpv6CidrBlock: '::/0',
+      },
+      DependsOn: Match.arrayWith([Match.stringLikeRegexp('VPCGW')]),
     });
   });
   test('EgressOnlyIGW is created if no private subnet configured in dual stack and feature flag EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY is not enabled', () => {
